@@ -1,0 +1,16 @@
+{
+  "name": "@quality-metrics-cli/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@nx/js": "16.7.0",
+    "@nx/workspace": "16.7.0",
+    "nx": "16.7.0",
+    "nx-cloud": "latest",
+    "prettier": "^2.6.2",
+    "typescript": "~5.1.3"
+  }
+}
