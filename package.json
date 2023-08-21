@@ -2,15 +2,35 @@
   "name": "@quality-metrics-cli/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "patch-package"
+  },
   "private": true,
-  "dependencies": {},
   "devDependencies": {
     "@nx/js": "16.7.0",
+    "@nx/rollup": "16.7.0",
+    "@nx/vite": "16.7.0",
     "@nx/workspace": "16.7.0",
+    "@swc/cli": "~0.1.62",
+    "@swc/core": "~1.3.51",
+    "@types/eslint": "^8.44.2",
+    "@types/node": "18.7.1",
+    "@vitest/coverage-c8": "~0.32.0",
+    "@vitest/ui": "~0.32.0",
+    "eslint": "~8.46.0",
+    "lighthouse": "^11.0.0",
     "nx": "16.7.0",
     "nx-cloud": "latest",
+    "patch-package": "^8.0.0",
     "prettier": "^2.6.2",
-    "typescript": "~5.1.3"
-  }
+    "typescript": "~5.1.3",
+    "vite": "~4.3.9",
+    "vitest": "~0.32.0"
+  },
+  "dependencies": {
+    "@swc/helpers": "~0.5.0"
+  },
+  "workspaces": [
+    "dist/packages/*"
+  ]
 }
