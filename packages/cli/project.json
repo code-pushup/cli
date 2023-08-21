@@ -1,0 +1,50 @@
+{
+  "name": "cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/cli/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/cli",
+        "main": "packages/cli/src/index.ts",
+        "tsConfig": "packages/cli/tsconfig.lib.json",
+        "assets": [],
+        "project": "packages/cli/package.json",
+        "compiler": "swc",
+        "format": ["esm"],
+        "rollupConfig": "rollup.config.js"
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "exec": {
+      "command": "node dist/packages/cli",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/cli/**/*.ts",
+          "packages/cli/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/cli"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/cli"
+      },
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": []
+}

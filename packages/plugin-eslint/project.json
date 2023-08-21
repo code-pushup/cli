@@ -1,0 +1,47 @@
+{
+  "name": "plugin-eslint",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-eslint/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-eslint",
+        "main": "packages/plugin-eslint/src/index.ts",
+        "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
+        "assets": [],
+        "project": "packages/plugin-eslint/package.json",
+        "compiler": "swc",
+        "format": ["cjs", "esm"],
+        "external": "all",
+        "generateExportsField": true,
+        "rollupConfig": "rollup.config.js"
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-eslint/**/*.ts",
+          "packages/plugin-eslint/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["coverage/packages/plugin-eslint"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/plugin-eslint"
+      }
+    }
+  },
+  "tags": []
+}
