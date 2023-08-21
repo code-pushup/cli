@@ -14,7 +14,7 @@
         "assets": [],
         "project": "packages/plugin-lighthouse/package.json",
         "compiler": "swc",
-        "format": ["cjs", "esm"],
+        "format": ["esm"],
         "external": "all",
         "generateExportsField": true,
         "rollupConfig": "rollup.config.js"

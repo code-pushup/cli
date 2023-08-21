@@ -15,6 +15,7 @@
         "project": "packages/cli/package.json",
         "compiler": "swc",
         "format": ["esm"],
+        "external": "all",
         "rollupConfig": "rollup.config.js"
       }
     },
