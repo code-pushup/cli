@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "tsup": {
+      "implementation": "./src/executors/tsup/executor",
+      "schema": "./src/executors/tsup/schema.json",
+      "description": "Packages a library using tsup"
+    }
+  }
+}
