@@ -13,7 +13,7 @@
         "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
         "assets": [],
         "project": "packages/plugin-eslint/package.json",
-        "compiler": "swc",
+        "compiler": "tsc",
         "format": ["cjs", "esm"],
         "external": "all",
         "generateExportsField": true,
