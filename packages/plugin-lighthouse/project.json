@@ -5,19 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/rollup:rollup",
+      "executor": "@quality-metrics/nx-plugin:tsup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/plugin-lighthouse",
         "main": "packages/plugin-lighthouse/src/index.ts",
         "tsConfig": "packages/plugin-lighthouse/tsconfig.lib.json",
-        "assets": [],
         "project": "packages/plugin-lighthouse/package.json",
-        "compiler": "tsc",
-        "format": ["esm"],
-        "external": "all",
-        "generateExportsField": true,
-        "rollupConfig": "rollup.config.js"
+        "format": ["esm"]
       }
     },
     "lint": {

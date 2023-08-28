@@ -5,18 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/rollup:rollup",
+      "executor": "@quality-metrics/nx-plugin:tsup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/cli",
         "main": "packages/cli/src/index.ts",
         "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": [],
         "project": "packages/cli/package.json",
-        "compiler": "tsc",
-        "format": ["esm"],
-        "external": "all",
-        "rollupConfig": "rollup.config.js"
+        "format": ["esm"]
       }
     },
     "publish": {

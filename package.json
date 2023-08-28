@@ -2,9 +2,7 @@
   "name": "@quality-metrics-cli/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "postinstall": "patch-package"
-  },
+  "scripts": {},
   "private": true,
   "workspaces": [
     "dist/packages/*"
@@ -13,7 +11,8 @@
     "@nx/devkit": "16.7.4",
     "@swc/helpers": "~0.5.0",
     "jiti": "^1.19.3",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "tsup": "^7.2.0"
   },
   "devDependencies": {
     "@nx/jest": "16.7.4",
@@ -37,10 +36,10 @@
     "lighthouse": "^11.0.0",
     "nx": "16.7.0",
     "nx-cloud": "latest",
-    "patch-package": "^8.0.0",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
+    "type-fest": "^4.3.1",
     "typescript": "~5.1.3",
     "verdaccio": "^5.0.4",
     "vite": "~4.3.9",
