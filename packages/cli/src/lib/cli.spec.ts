@@ -1,17 +1,20 @@
 import { cli } from './cli';
 
 describe('cli', () => {
-  it('CommonJS', async () => {
-    await expect(
-      cli('./packages/cli/src/lib/config.mock.cjs')
-    ).resolves.toEqual({
-      plugins: [{ name: 'eslint', version: '8.46.0' }],
-    });
+  it('.js', async () => {
+    await expect(cli('./packages/cli/src/lib/config.mock.js')).resolves.toEqual(
+      {
+        plugins: [
+          { name: 'eslint', version: '8.46.0' },
+          { name: 'lighthouse', defaultConfig: expect.any(Object) },
+        ],
+      },
+    );
   });
 
-  it('ESM', async () => {
+  it('.mjs', async () => {
     await expect(
-      cli('./packages/cli/src/lib/config.mock.mjs')
+      cli('./packages/cli/src/lib/config.mock.mjs'),
     ).resolves.toEqual({
       plugins: [
         { name: 'eslint', version: '8.46.0' },
@@ -20,14 +23,14 @@ describe('cli', () => {
     });
   });
 
-  it('TypeScript', async () => {
+  it('.ts', async () => {
     await expect(cli('./packages/cli/src/lib/config.mock.ts')).resolves.toEqual(
       {
         plugins: [
           { name: 'eslint', version: '8.46.0' },
           { name: 'lighthouse', defaultConfig: expect.any(Object) },
         ],
-      }
+      },
     );
   });
 });
