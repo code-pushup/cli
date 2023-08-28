@@ -1,9 +1,51 @@
 {
   "$schema": "http://json-schema.org/schema",
   "version": 2,
-  "title": "Tsup executor",
+  "title": "tsup executor",
   "description": "",
   "type": "object",
-  "properties": {},
-  "required": []
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The path to package.json file.",
+      "x-priority": "important"
+    },
+    "main": {
+      "type": "string",
+      "description": "The path to the entry file, relative to project.",
+      "alias": "entryFile",
+      "x-completion-type": "file",
+      "x-completion-glob": "**/*@(.js|.ts)",
+      "x-priority": "important"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "The output path of the generated files.",
+      "x-completion-type": "directory",
+      "x-priority": "important"
+    },
+    "deleteOutputPath": {
+      "type": "boolean",
+      "description": "Delete the output path before building.",
+      "default": true
+    },
+    "tsConfig": {
+      "type": "string",
+      "description": "The path to tsconfig file.",
+      "x-completion-type": "file",
+      "x-completion-glob": "tsconfig.*.json",
+      "x-priority": "important"
+    },
+    "format": {
+      "type": "array",
+      "description": "List of module formats to output. Defaults to both ESM and CJS.",
+      "alias": "f",
+      "items": {
+        "type": "string",
+        "enum": ["esm", "cjs"]
+      },
+      "default": ["esm", "cjs"]
+    }
+  },
+  "required": ["tsConfig", "main", "outputPath"]
 }

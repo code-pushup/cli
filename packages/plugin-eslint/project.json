@@ -5,19 +5,13 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/rollup:rollup",
+      "executor": "@quality-metrics/nx-plugin:tsup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/plugin-eslint",
         "main": "packages/plugin-eslint/src/index.ts",
         "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
-        "assets": [],
-        "project": "packages/plugin-eslint/package.json",
-        "compiler": "tsc",
-        "format": ["cjs", "esm"],
-        "external": "all",
-        "generateExportsField": true,
-        "rollupConfig": "rollup.config.js"
+        "project": "packages/plugin-eslint/package.json"
       }
     },
     "publish": {
