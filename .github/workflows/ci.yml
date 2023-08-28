@@ -1,0 +1,98 @@
+name: CI
+
+on: push
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    name: Audit
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --omit=optional
+
+  format:
+    runs-on: ubuntu-latest
+    name: Format check
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Check formatting of affected files
+        run: npx nx format:check
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Linter
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint affected projects
+        run: npx nx affected:lint --parallel=3 --max-warnings=0
+
+  test:
+    runs-on: ubuntu-latest
+    name: Unit tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Test affected projects
+        run: npx nx affected:test --parallel=3 --configuration=ci
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Build affected projects
+        run: npx nx affected:build --parallel=3
