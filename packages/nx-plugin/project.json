@@ -46,7 +46,8 @@
       "options": {
         "lintFilePatterns": [
           "packages/nx-plugin/**/*.ts",
-          "packages/nx-plugin/package.json"
+          "packages/nx-plugin/package.json",
+          "packages/nx-plugin/executors.json"
         ]
       }
     },
