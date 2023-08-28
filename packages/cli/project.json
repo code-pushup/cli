@@ -13,7 +13,7 @@
         "tsConfig": "packages/cli/tsconfig.lib.json",
         "assets": [],
         "project": "packages/cli/package.json",
-        "compiler": "swc",
+        "compiler": "tsc",
         "format": ["esm"],
         "external": "all",
         "rollupConfig": "rollup.config.js"
