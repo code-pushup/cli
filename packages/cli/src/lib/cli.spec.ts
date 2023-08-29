@@ -1,6 +1,12 @@
+import { execSync } from 'child_process';
 import { cli } from './cli';
 
 describe('cli', () => {
+  beforeAll(() => {
+    // symlink NPM workspaces
+    execSync('npm install');
+  });
+
   it('.js', async () => {
     await expect(cli('./packages/cli/src/lib/config.mock.js')).resolves.toEqual(
       {
