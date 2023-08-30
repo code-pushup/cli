@@ -1,11 +1,4 @@
-import {z} from 'zod';
-
-/**
- * Define Zod schema for the IssueSeverity type.
- */
-const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
-  description: 'Severity level',
-});
+import { z } from 'zod';
 
 /**
  * Define Zod schema for the SourceFileLocation type.

@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import { z } from 'zod';
 
 /**
  *
@@ -40,16 +40,22 @@ export const categoryConfigSchema = z.object(
       })
       .optional(),
     metrics: z.array(
-      z.object({
-        ref: z.string({
-          description:
-            "Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')",
-        }),
-        weight: z.number({
-          description:
-            'Coefficient for the given score (use weight 0 if only for display)',
-        }).default(0).optional(),
-      }, {description: "Array of metrics associated with the category"})
+      z.object(
+        {
+          ref: z.string({
+            description:
+              "Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')",
+          }),
+          weight: z
+            .number({
+              description:
+                'Coefficient for the given score (use weight 0 if only for display)',
+            })
+            .default(0)
+            .optional(),
+        },
+        { description: 'Array of metrics associated with the category' },
+      ),
     ),
   },
   {
