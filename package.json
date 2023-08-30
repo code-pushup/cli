@@ -8,7 +8,8 @@
     "dist/packages/*"
   ],
   "dependencies": {
-    "bundle-require": "^4.0.1"
+    "bundle-require": "^4.0.1",
+    "zod": "^3.22.1"
   },
   "devDependencies": {
     "@nx/esbuild": "16.7.4",
