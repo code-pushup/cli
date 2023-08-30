@@ -5,7 +5,7 @@ Model definitions for the CLI configuration as well as plugin types and respecti
 ## Usage
 
 ```ts
-import { CoreConfigSchema, pluginConfigSchema } from '@qm/cli-models';
+import { CoreConfigSchema, pluginConfigSchema } from '@quality-metrics/models';
 
 export default {
   // ...
