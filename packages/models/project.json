@@ -1,19 +1,16 @@
 {
   "name": "@quality-metrics/cli/models",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/cli-models/src",
+  "sourceRoot": "libs/models/src",
   "projectType": "library",
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/cli-models/**/*.ts"]
+        "lintFilePatterns": ["packages/models/**/*.ts"]
       }
-    },
-    "generate-schema-from-type": {
-      "command": "npx json-schema-to-zod -s libs/cli-models/schema.json -t libs/cli/schema.ts --deref"
     }
   },
-  "tags": ["scope:cli", "type:util"]
+  "tags": []
 }
