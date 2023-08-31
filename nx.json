@@ -23,6 +23,10 @@
     },
     "test": {
       "inputs": ["default", "^production"]
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
