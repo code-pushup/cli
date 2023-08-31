@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { slugRegex } from './implementation/utils';
 
 /**
  *
@@ -28,9 +29,11 @@ import { z } from 'zod';
  */
 export const categoryConfigSchema = z.object(
   {
-    slug: z.string({
-      description: 'Human-readable unique ID',
-    }),
+    slug: z
+      .string({
+        description: 'Human-readable unique ID',
+      })
+      .regex(slugRegex),
     title: z.string({
       description: 'Display name for the category',
     }),

@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { pluginConfigSchema } from './plugins';
 import { categoryConfigSchema } from './category-config';
 import { uploadConfigSchema } from './upload';
-import { budgetSchema } from './budgets';
 import { persistConfigSchema } from './persist';
 
 /**
@@ -35,11 +34,6 @@ export const coreConfigSchema = z.object({
   categories: z.array(categoryConfigSchema, {
     description: 'categorization of individual audits',
   }),
-  budgets: z
-    .array(budgetSchema, {
-      description: 'budget rules for assertion',
-    })
-    .optional(),
 });
 
 export type CoreConfigSchema = z.infer<typeof coreConfigSchema>;

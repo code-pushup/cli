@@ -1,11 +1,14 @@
 import { z } from 'zod';
+import { slugRegex } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
 const pluginMetadataSchema = z.object(
   {
-    slug: z.string({
-      description: 'Unique ID (human-readable, URL-safe)',
-    }),
+    slug: z
+      .string({
+        description: 'Unique ID (human-readable, URL-safe)',
+      })
+      .regex(slugRegex),
     name: z.string({
       description: 'Display name',
     }),
@@ -47,9 +50,11 @@ const runnerConfigSchema = z.object(
 // Define Zod schema for the AuditMetadata type
 const auditMetadataSchema = z.object(
   {
-    slug: z.string({
-      description: 'ID (unique within plugin)',
-    }),
+    slug: z
+      .string({
+        description: 'ID (unique within plugin)',
+      })
+      .regex(slugRegex),
     label: z.string({
       description: 'Abbreviated name',
     }),
@@ -66,9 +71,11 @@ const auditMetadataSchema = z.object(
 
 // Define Zod schema for the Group type
 const groupSchema = z.object({
-  slug: z.string({
-    description: 'Human-readable unique ID',
-  }),
+  slug: z
+    .string({
+      description: 'Human-readable unique ID',
+    })
+    .regex(slugRegex),
   title: z.string({
     description: 'Display name',
   }),

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { slugRegex } from './implementation/utils';
 
 /**
  * Define Zod schema for the SourceFileLocation type.
@@ -60,7 +61,9 @@ const issueSchema = z.object(
  */
 const auditSchema = z.object(
   {
-    slug: z.string({ description: 'References audit metadata' }),
+    slug: z
+      .string({ description: 'References audit metadata' })
+      .regex(slugRegex),
     displayValue: z
       .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
       .optional(),
