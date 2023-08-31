@@ -4,13 +4,14 @@
   "sourceRoot": "packages/cli-e2e/src",
   "projectType": "library",
   "targets": {
-    "test": {
+    "e2e": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/cli-e2e"
-      }
+      },
+      "dependsOn": ["^build"]
     }
   },
   "tags": []
