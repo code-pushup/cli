@@ -51,8 +51,6 @@ export const categoryConfigSchema = z.object(
               description:
                 'Coefficient for the given score (use weight 0 if only for display)',
             })
-            .default(0)
-            .optional(),
         },
         { description: 'Array of metrics associated with the category' },
       ),
