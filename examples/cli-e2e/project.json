@@ -10,8 +10,7 @@
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/examples/cli-e2e"
-      },
-      "dependsOn": ["^build"]
+      }
     }
   },
   "tags": []
