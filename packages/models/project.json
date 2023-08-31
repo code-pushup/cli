@@ -1,7 +1,7 @@
 {
   "name": "models",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/models/src",
+  "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
     "lint": {
