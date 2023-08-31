@@ -1,15 +1,15 @@
 {
   "name": "cli-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/cli-e2e/src",
-  "projectType": "library",
+  "sourceRoot": "examples/cli-e2e/src",
+  "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/cli-e2e"
+        "reportsDirectory": "../../coverage/examples/cli-e2e"
       },
       "dependsOn": ["^build"]
     }

@@ -9,7 +9,7 @@ describe('cli', () => {
 
   it('should load .js config file', async () => {
     await expect(
-      cli('./packages/cli-e2e/src/mocks/config.mock.js'),
+      cli('./examples/cli-e2e/mocks/config.mock.js'),
     ).resolves.toEqual({
       plugins: [
         { name: 'eslint', version: '8.46.0' },
@@ -20,7 +20,7 @@ describe('cli', () => {
 
   it('should load .mjs config file', async () => {
     await expect(
-      cli('./packages/cli-e2e/src/mocks/config.mock.mjs'),
+      cli('./examples/cli-e2e/mocks/config.mock.mjs'),
     ).resolves.toEqual({
       plugins: [
         { name: 'eslint', version: '8.46.0' },
@@ -31,7 +31,7 @@ describe('cli', () => {
 
   it('should load .ts config file', async () => {
     await expect(
-      cli('./packages/cli-e2e/src/mocks/config.mock.ts'),
+      cli('./examples/cli-e2e/mocks/config.mock.ts'),
     ).resolves.toEqual({
       plugins: [
         { name: 'eslint', version: '8.46.0' },
