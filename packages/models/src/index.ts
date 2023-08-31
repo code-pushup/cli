@@ -7,7 +7,6 @@ export {
   categoryConfigSchema,
   CategoryConfigSchema,
 } from './lib/category-config';
-export { budgetSchema, BudgetSchema } from './lib/budgets';
 export {
   globalCliArgsSchema,
   GlobalCliArgsSchema,
