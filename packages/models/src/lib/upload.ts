@@ -24,7 +24,7 @@ import { z } from 'zod';
 export const uploadConfigSchema = z.object({
   server: z.string({
     description:
-      'URL of deployed portal API. Required if self-hosting (could default to our public cloud URL later)',
+      'URL of deployed portal API',
   }),
   apiKey: z.string({
     description:
