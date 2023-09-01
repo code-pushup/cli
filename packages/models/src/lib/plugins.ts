@@ -63,7 +63,7 @@ const auditMetadataSchema = z.object(
     }),
     description: z.string({ description: 'Description (Markdown)' }).optional(),
     docsUrl: z
-      .string({ description: 'Link to documentation (rule rationale)' })
+      .string({ description: 'Link to documentation (rationale)' })
       .optional(),
   },
   { description: 'List of scorable metrics for the given plugin' },
