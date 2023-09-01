@@ -13,8 +13,8 @@ import { slugRegex } from './implementation/utils';
  *   title: 'Performance Metrics',
  *   description: 'This category includes performance-related metrics.',
  *   metrics: [
- *     { ref: 'eslint#max-lines', weight: 0.5 },
- *     { ref: 'categories:lhci#performance', weight: 0.8 },
+ *     { ref: 'eslint#max-lines', weight: 1 },
+ *     { ref: 'categories:lhci#performance', weight: 3 },
  *   ],
  * };
  *
@@ -53,7 +53,7 @@ export const categoryConfigSchema = z.object(
             .number({
               description:
                 'Coefficient for the given score (use weight 0 if only for display)',
-            })
+            }).int().nonnegative()
         },
         { description: 'Array of metrics associated with the category' },
       ),
