@@ -28,7 +28,7 @@ export const uploadConfigSchema = z.object({
   }),
   apiKey: z.string({
     description:
-      'API key with write access to portal. should use environment variable',
+      'API key with write access to portal (use `process.env` for security)',
   }),
 });
 
