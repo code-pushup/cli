@@ -28,10 +28,10 @@ const sourceFileLocationSchema = z.object(
     position: z
       .object(
         {
-          startLine: z.number({ description: 'Start line' }),
-          startColumn: z.number({ description: 'Start column' }).optional(),
-          endLine: z.number({ description: 'End line' }).optional(),
-          endColumn: z.number({ description: 'End column' }).optional(),
+          startLine: z.number({ description: 'Start line' }).int().nonnegative(),
+          startColumn: z.number({ description: 'Start column' }).int().nonnegative().optional(),
+          endLine: z.number({ description: 'End line' }).int().nonnegative().optional(),
+          endColumn: z.number({ description: 'End column' }).int().nonnegative().optional(),
         },
         { description: 'Location in file' },
       )
@@ -71,13 +71,13 @@ const auditSchema = z.object(
       .number({
         description:
           'Raw numeric value (defaults to score ?? details.warnings.length)',
-      })
+      }).nonnegative()
       .optional(),
     score: z
       .number({
         description:
           'Value between 0 and 1 (defaults to Number(details.warnings.length === 0))',
-      })
+      }).nonnegative()
       .optional(),
     details: z
       .object(

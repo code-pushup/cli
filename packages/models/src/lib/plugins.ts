@@ -61,7 +61,8 @@ const auditMetadataSchema = z.object(
     title: z.string({
       description: 'Descriptive name',
     }),
-    description: z.string({ description: 'Description (Markdown)' }).optional(),
+    description: z.string({ description: 'Description (Markdown)' })
+      .optional(),
     docsUrl: z
       .string({ description: 'Link to documentation (rationale)' })
       .optional(),
@@ -88,7 +89,7 @@ const groupSchema = z.object({
       weight: z.number({
         description:
           'Coefficient for the given score (use weight 0 if only for display)',
-      }),
+      }).int().nonnegative(),
     }),
     { description: 'Weighted references to plugin-specific audits' },
   ),
