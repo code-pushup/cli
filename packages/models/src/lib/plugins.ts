@@ -90,7 +90,7 @@ const groupSchema = z.object({
           'Coefficient for the given score (use weight 0 if only for display)',
       }),
     }),
-    { description: 'Weighted references to plugin-specific audits/categories' },
+    { description: 'Weighted references to plugin-specific audits' },
   ),
 });
 
