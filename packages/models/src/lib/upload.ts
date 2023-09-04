@@ -25,7 +25,7 @@ export const uploadConfigSchema = z.object({
   server: z.string({
     description:
       'URL of deployed portal API',
-  }),
+  }).url(),
   apiKey: z.string({
     description:
       'API key with write access to portal (use `process.env` for security)',

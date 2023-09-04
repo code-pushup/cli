@@ -10,6 +10,15 @@
       "options": {
         "lintFilePatterns": ["packages/models/**/*.ts"]
       }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/cli"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/cli"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": []
