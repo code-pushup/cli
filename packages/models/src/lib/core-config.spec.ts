@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {mockCategory, mockConfig, mockPluginConfig, mockRunnerOutput} from "./implementation/helpers.mock";
 import {coreConfigSchema} from "./core-config";
-import {runnerOutputAuditRefsPresentInPluginConfigs} from "./runner-output";
+import {runnerOutputAuditRefsPresentInPluginConfigs} from "./output";
 
 describe('CoreConfig', () => {
 

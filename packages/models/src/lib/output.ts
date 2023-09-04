@@ -103,6 +103,21 @@ export const runnerOutputSchema = z.object(
 
 export type RunnerOutputSchema = z.infer<typeof runnerOutputSchema>;
 
+
+
+/**
+ * Define Zod schema for the RunnerOutput type.
+ */
+export const pluginsOutputSchema = z.object(
+  {
+    date: z.date({description: 'ISO format date of the start of all plugin runs'}),
+    duration: z.string({description: 'Duration od all plugin runs in ms'})
+  },
+  {description: 'JSON formatted output emitted after executing all plugins.'},
+);
+export type PluginsOutputSchema = z.infer<typeof pluginsOutputSchema>;
+
+
 /**
  *
  * Validation function for a plugin runner output inside the CLI. Used immediately after generation of the output to validate the result.
