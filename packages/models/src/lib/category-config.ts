@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugRegex } from './implementation/utils';
+import {descriptionSchema, refSchema, slugSchema, titleSchema} from "./implementation/schemas";
 
 /**
  *
@@ -29,26 +29,13 @@ import { slugRegex } from './implementation/utils';
  */
 export const categoryConfigSchema = z.object(
   {
-    slug: z
-      .string({
-        description: 'Human-readable unique ID',
-      })
-      .regex(slugRegex),
-    title: z.string({
-      description: 'Display name for the category',
-    }),
-    description: z
-      .string({
-        description: 'Optional description in Markdown format',
-      })
-      .optional(),
+    slug: slugSchema('Human-readable unique ID'),
+    title: titleSchema('Display name for the category '),
+    description:descriptionSchema('Optional description in Markdown format'),
     metrics: z.array(
       z.object(
         {
-          ref: z.string({
-            description:
-              "Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')",
-          }),
+          ref: refSchema("Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')"),
           weight: z
             .number({
               description:

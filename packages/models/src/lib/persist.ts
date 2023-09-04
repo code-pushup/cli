@@ -1,4 +1,5 @@
-import { z } from 'zod';
+import {z} from 'zod';
+import {generalFilePathSchema} from "./implementation/schemas";
 
 /**
  * Define Zod schema for the PersistConfig type
@@ -22,9 +23,7 @@ import { z } from 'zod';
  *
  */
 export const persistConfigSchema = z.object({
-  outputPath: z.string({
-    description: 'Artefacts folder',
-  }),
+  outputPath: generalFilePathSchema('Artefacts folder'),
 });
 
 export type PersistConfigSchema = z.infer<typeof persistConfigSchema>;
