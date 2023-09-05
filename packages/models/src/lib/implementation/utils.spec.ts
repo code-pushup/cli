@@ -28,6 +28,7 @@ describe('slugRegex', () => {
     ' ',
     'hello world',
     'hello_world',
+    'hello-World',
     'hello-world-',
     '-hello-world',
     'hello--world',
@@ -55,6 +56,7 @@ describe('refRegex', () => {
     ' ',
     'pluginslug #auditslug',
     '123#audit slug',
+    '123#audit-Slug',
     'pluginslug.123#auditslug',
     'plugin-slug:123#audit slug',
     // groups
@@ -85,6 +87,7 @@ describe('refOrGroupRegex', () => {
     ' ',
     'hello #world',
     '123#world there',
+    'hello-123#World',
     'hello.123#world',
     'the-hello:123#world there',
   ])(`should not match invalid ref %p`, ref => {
