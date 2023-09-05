@@ -89,7 +89,7 @@ const auditSchema = z.object(
     score: z
       .number({
         description:
-          'Value between 0 and 1 (defaults to Number(details.warnings.length === 0))',
+          'Value between 0 and 1',
       })
       .min(0)
       .max(1)
