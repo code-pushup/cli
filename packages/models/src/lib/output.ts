@@ -85,7 +85,6 @@ const auditSchema = z.object(
       .number({ description: 'Raw numeric value' })
       .int()
       .nonnegative()
-      .min(0)
       .optional(),
     score: z
       .number({
