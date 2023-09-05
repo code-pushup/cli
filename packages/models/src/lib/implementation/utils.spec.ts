@@ -177,7 +177,7 @@ describe('unixFilePathRegex', () => {
 
 describe('stringUnique', () => {
   it('should return true for a list of unique strings', () => {
-    expect(hasDuplicateStrings(['a', 'b'])).toBe(true);
+    expect(hasDuplicateStrings(['a', 'b'])).toBe(false);
   });
   it('should return a list of duplicated strings for a invalid list', () => {
     expect(hasDuplicateStrings(['a', 'b', 'a', 'c'])).toEqual(['a']);
@@ -189,7 +189,7 @@ describe('stringUnique', () => {
 
 describe('stringsExist', () => {
   it('should return true for the strings exist in target array', () => {
-    expect(hasMissingStrings(['a', 'b'], ['a', 'b'])).toBe(true);
+    expect(hasMissingStrings(['a', 'b'], ['a', 'b'])).toBe(false);
   });
   it('should return a list of strings from source that are missing in target', () => {
     expect(hasMissingStrings(['a', 'b'], ['a', 'c'])).toEqual(['b']);

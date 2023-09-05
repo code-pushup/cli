@@ -67,31 +67,41 @@ function missingRefsForCategoriesErrorMsg(coreCfg) {
     missingRefs,
   )}`;
 }
+
 function isGroupRef(ref: string): boolean {
   return ref.includes('group:');
 }
+
 function getMissingRefsForCategories(coreCfg) {
   const missingRefs = [];
+  const auditRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
+    metrics.filter(({ ref }) => !isGroupRef(ref)).map(({ ref }) => ref),
+  );
+  const auditRefsFromPlugins = coreCfg.plugins.flatMap(({ audits, meta }) => {
+    const pluginSlug = meta.slug;
+    return audits.map(({ slug }) => `${pluginSlug}#${slug}`);
+  });
   const missingAuditRefs = hasMissingStrings(
-    coreCfg.categories.flatMap(({ metrics }) =>
-      metrics.filter(({ ref }) => !isGroupRef(ref)).map(({ ref }) => ref),
-    ),
-    coreCfg.plugins.flatMap(({ audits, meta }) => {
-      const pluginSlug = meta.slug;
-      return audits.map(({ slug }) => `${pluginSlug}#${slug}`);
-    }),
+    auditRefsFromCategory,
+    auditRefsFromPlugins,
   );
-  missingAuditRefs && missingRefs.concat(missingAuditRefs);
 
-  const missingGroupRefs = hasMissingStrings(
-    coreCfg.categories.flatMap(({ metrics }) =>
-      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
-    ),
-    coreCfg.plugins.flatMap(({ groups }) => {
-      return groups.map(({ slug }) => `${slug}`);
-    }),
+  if (Array.isArray(missingAuditRefs) && missingAuditRefs.length > 0) {
+    missingRefs.push(...missingAuditRefs);
+  }
+  const groupRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
+    metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
   );
-  missingGroupRefs && missingRefs.concat(missingGroupRefs);
+  const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups }) => {
+    return groups.map(({ slug }) => `${slug}`);
+  });
+  const missingGroupRefs = hasMissingStrings(
+    groupRefsFromCategory,
+    groupRefsFromPlugins,
+  );
+  if (Array.isArray(missingGroupRefs) && missingGroupRefs.length > 0) {
+    missingRefs.push(...missingGroupRefs);
+  }
 
   return missingRefs.length ? missingRefs : false;
 }
@@ -103,6 +113,7 @@ function duplicateSlugCategoriesErrorMsg(categoryCfg) {
     duplicateStringSlugs,
   )}`;
 }
+
 function getDuplicateSlugCategories(categoryCfg) {
   return hasDuplicateStrings(categoryCfg.map(({ slug }) => slug));
 }

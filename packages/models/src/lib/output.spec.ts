@@ -29,7 +29,7 @@ describe('runnerOutputSchema', () => {
   it('should throw if slugs of audits are duplicated', () => {
     const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'In runner output the audit slugs are not uniqu',
+      'In runner output the audit slugs are not unique',
     );
   });
 });
