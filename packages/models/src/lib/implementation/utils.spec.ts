@@ -188,7 +188,7 @@ describe('stringsExist', () => {
   it('should return true for the strings exist in target array', () => {
     expect(stringsExist(['a', 'b'], ['a', 'b'])).toBe(true);
   });
-  it('should return true for a list of unique strings', () => {
+  it('should return a list of strings from source that are missing in target', () => {
     expect(stringsExist(['a', 'b'], ['a', 'c'])).toEqual(['b']);
   });
 });
