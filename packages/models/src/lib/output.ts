@@ -92,7 +92,6 @@ const auditSchema = z.object(
         description:
           'Value between 0 and 1 (defaults to Number(details.warnings.length === 0))',
       })
-      .nonnegative()
       .min(0)
       .max(1)
       .optional(),
