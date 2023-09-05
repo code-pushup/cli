@@ -30,8 +30,6 @@ describe('CoreConfig', () => {
       const duplicatedSlug = 'test';
       cfg.categories.push(
         mockCategory({ categorySlug: 'test', auditRef: ['test#a'] }),
-      );
-      cfg.categories.push(
         mockCategory({ categorySlug: 'test', auditRef: ['test#b'] }),
       );
       expect(() => coreConfigSchema.parse(cfg)).toThrow(
