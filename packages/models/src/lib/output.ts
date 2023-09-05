@@ -103,7 +103,7 @@ export const runnerOutputSchema = z.object(
       .array(auditSchema, { description: 'List of audits' })
       // audit slugs are unique
       .refine(
-        audits => getDuplicateSlugsInAudits(audits),
+        audits => !getDuplicateSlugsInAudits(audits),
         audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
       ),
   },
@@ -141,12 +141,12 @@ export function runnerOutputAuditRefsPresentInPluginConfigs(
 }
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(groupAudits) {
-  const duplicateRefs = getDuplicateSlugsInAudits(groupAudits);
+function duplicateSlugsInAuditsErrorMsg(outputAudits) {
+  const duplicateRefs = getDuplicateSlugsInAudits(outputAudits);
   return `In runner output the audit slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(groupAudits) {
-  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
+function getDuplicateSlugsInAudits(outputAudits) {
+  return hasDuplicateStrings(outputAudits.map(({ slug }) => slug));
 }

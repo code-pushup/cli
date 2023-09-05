@@ -39,7 +39,7 @@ describe('CoreConfig', () => {
       groupSlug: 'group-slug',
     });
     cfg.categories.push(
-      mockCategory({ auditRefOrGroupRef: ['test#a', 'test#group:b'] }),
+      mockCategory({ auditRefOrGroupRef: ['test#a', 'test#group:group-slug'] }),
     );
     expect(() => coreConfigSchema.parse(cfg)).not.toThrow();
   });
@@ -56,7 +56,7 @@ describe('CoreConfig', () => {
     );
   });
 
-  it('should throw if ref in a category does not exist in plugins', () => {
+  it('should throw if ref in a category does not exist in audits', () => {
     const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     const missingSlug = 'missing-plugin-slug-in-category#auditref';
     cfg.categories.push(
@@ -76,7 +76,7 @@ describe('CoreConfig', () => {
       auditSlug: ['a', 'b'],
       groupSlug: 'test#a',
     });
-    const missingSlug = 'groups:missing-plugin-slug-in-category#auditref';
+    const missingSlug = 'missing-plugin-slug-in-category#groups:auditref';
     cfg.categories.push(
       mockCategory({
         categorySlug: 'test',
