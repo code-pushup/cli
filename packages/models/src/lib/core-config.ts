@@ -84,7 +84,7 @@ export const coreConfigSchema = z
   );
 
 function categoryMissingPluginRefMsg(missingRefs: string[]) {
-  return `In the categories, the following plugin ref's do not exist in the provided plugins: ${missingRefs.join(
+  return `In the categories, the following plugin refs do not exist in the provided plugins: ${missingRefs.join(
     ', ',
   )}`;
 }
