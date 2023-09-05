@@ -10,20 +10,16 @@ import {
 
 describe('slugRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
-  const slugs = [
+  it.each([
     'hello',
     'hello-world',
     'hello-123-world',
     '123',
     '123-456',
     '123-world-789',
-  ];
-  for (let i = 0; i < slugs.length; i++) {
-    it(`should match valid slugs ${slugs[i]}`, () => {
-      const slug = slugs[i];
-      expect(slugRegex.test(slug)).toBe(true);
-    });
-  }
+  ])('should match valid %p`, (slug) => {
+    expect(slug).toMatch(slugRegex);
+  });
 
   // test invalid and array of strings against slugRegex with it blocks
   const invalidSlugs = [
