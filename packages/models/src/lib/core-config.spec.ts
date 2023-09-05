@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { mockCategory, mockConfig } from './implementation/helpers.mock';
+import {
+  mockCategory,
+  mockConfig,
+  mockPluginConfig,
+} from './implementation/helpers.mock';
 import { coreConfigSchema } from './core-config';
 
 /*
@@ -11,19 +15,8 @@ import { coreConfigSchema } from './core-config';
 
  - from category to audit: es-lint#no-any
  - from category to group: es-lint#group:basics
-
   */
-
 describe('CoreConfig', () => {
-  /*
-  CategoryConfig:
-    - category slugs are unique
-    - the slug in metric is unique within the CategoryConfig.metrics
-    - plugin exists with that ref
-      - audit exists with that ref
-    - group exists with that ref
-      - audit exists with that ref
-   */
   it('should parse if configuration is valid', () => {
     const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     cfg.categories.push(
@@ -33,14 +26,15 @@ describe('CoreConfig', () => {
   });
 
   it('should parse if configuration and groups are valid', () => {
-    const cfg = mockConfig({
-      pluginSlug: 'test',
-      auditSlug: ['a', 'b'],
-      groupSlug: 'group-slug',
-    });
-    cfg.categories.push(
-      mockCategory({ auditRefOrGroupRef: ['test#a', 'test#group:group-slug'] }),
-    );
+    const pluginSlug = 'plg';
+    const cfg = mockConfig();
+    cfg.plugins = [
+      mockPluginConfig({ pluginSlug, auditSlug: 'lcp', groupSlug: 'perf' }),
+    ];
+    cfg.categories = [
+      mockCategory({ auditRefOrGroupRef: ['plg#lcp', 'plg#group:perf'] }),
+    ];
+    // In the categories, the following plugin refs do not exist in the provided plugins: test#group:group-slug
     expect(() => coreConfigSchema.parse(cfg)).not.toThrow();
   });
 

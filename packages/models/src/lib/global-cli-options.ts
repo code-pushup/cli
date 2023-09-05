@@ -7,14 +7,12 @@ import { generalFilePathSchema } from './implementation/schemas';
  * @example
  *
  * // Example data for the GlobalCliArgs type
- * const globalCliArgs = {
- *   interactive: true,
- *   verbose: true,
- *   configPath: 'any/path/config.js',
+ * const args = {
+ *  // ...
  * };
  *
  * // Validate the data against the schema
- * const validationResult = globalCliArgsSchema.safeParse(globalCliArgs);
+ * const validationResult = globalCliArgsSchema.safeParse(args);
  *
  * if (validationResult.success) {
  *   console.log('Valid config:', validationResult.data);

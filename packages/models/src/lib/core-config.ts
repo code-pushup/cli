@@ -15,12 +15,12 @@ import {
  * @example
  *
  * // Example data for the CoreConfig type
- * const coreConfigData = {
+ * const data = {
  *   // ... populate with example data ...
  * };
  *
  * // Validate the data against the schema
- * const validationResult = coreConfigSchema.safeParse(coreConfigData);
+ * const validationResult = coreConfigSchema.safeParse(data);
  *
  * if (validationResult.success) {
  *   console.log('Valid plugin config:', validationResult.data);
@@ -89,11 +89,12 @@ function getMissingRefsForCategories(coreCfg) {
   if (Array.isArray(missingAuditRefs) && missingAuditRefs.length > 0) {
     missingRefs.push(...missingAuditRefs);
   }
-  const groupRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
-    metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
+  const groupRefsFromCategory = coreCfg.categories.flatMap(
+    ({ metrics }) =>
+      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref), // plg#group:perf
   );
-  const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups }) => {
-    return groups.map(({ slug }) => `${slug}`);
+  const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
+    return groups.map(({ slug }) => `${meta.slug}#group:${slug}`);
   });
   const missingGroupRefs = hasMissingStrings(
     groupRefsFromCategory,
