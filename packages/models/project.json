@@ -18,7 +18,6 @@
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/cli"
       },
-      "dependsOn": ["build"]
     }
   },
   "tags": []
