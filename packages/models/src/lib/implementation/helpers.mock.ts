@@ -1,7 +1,9 @@
-import { PluginConfigSchema } from '../plugins';
-import { RunnerOutputSchema } from '../plugin-output';
+import { PluginConfigSchema } from '../plugin-config';
+import { RunnerOutputSchema } from '../output';
 import { CoreConfigSchema } from '../core-config';
 import { CategoryConfigSchema } from '../category-config';
+import { UploadConfigSchema } from '../upload-config';
+import { PersistConfigSchema } from '../persist-config';
 
 export function mockConfig(opt?: {
   pluginSlug?: string | string[];
@@ -26,38 +28,43 @@ export function mockPluginConfig(opt?: {
   auditSlug?: string | string[];
   groupSlug?: string | string[];
 }): PluginConfigSchema {
-  let { pluginSlug, auditSlug, groupSlug } = opt || {};
+  const { groupSlug } = opt || {};
+  let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || 'mock-plugin-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
-  groupSlug = groupSlug || 'mock-group-slug';
+  const addGroups = groupSlug !== undefined;
   const outputPath = 'out-execute-plugin.json';
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
     : [mockAuditConfig({ auditSlug })];
-  const groups = Array.isArray(groupSlug)
-    ? groupSlug.map(slug => mockGroupConfig({ groupSlug: slug }))
-    : [mockGroupConfig({ groupSlug })];
+
+  let groups = [];
+  if (addGroups) {
+    groups = Array.isArray(groupSlug)
+      ? groupSlug.map(slug => mockGroupConfig({ groupSlug: slug }))
+      : [mockGroupConfig({ groupSlug, auditSlug })];
+  }
+
   return {
     audits,
+    groups,
     runner: {
       command: 'bash',
       args: [
         '-c',
         `echo '${JSON.stringify({
           audits: audits.map(({ slug }, idx) => ({
-            slug,
+            slug: `${pluginSlug}#${slug}`,
             value: parseFloat('0.' + idx),
           })),
         } satisfies RunnerOutputSchema)}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
-    groups: groups,
     meta: {
       slug: pluginSlug,
       name: 'execute plugin',
-      type: 'static-analysis',
     },
   };
 }
@@ -66,14 +73,25 @@ export function mockAuditConfig(opt?: {
   auditSlug?: string;
 }): PluginConfigSchema['audits'][0] {
   let { auditSlug } = opt || {};
-  auditSlug = auditSlug || 'mockAuditSlug';
+  auditSlug = auditSlug || 'mock-audit-slug';
 
   return {
     slug: auditSlug,
     title: 'audit title',
     description: 'audit description',
-    label: 'mock audit lable',
-    docsUrl: 'http://www.google.com',
+    label: 'mock audit label',
+    docsUrl: 'http://www.my-docs.dev',
+  };
+}
+export function mockMetric(opt?: {
+  auditRef?: string;
+}): CategoryConfigSchema['metrics'][0] {
+  const { auditRef } = opt || {};
+  const ref = auditRef || 'mock-plugin-slug#mock-audit-slug';
+
+  return {
+    ref,
+    weight: 0,
   };
 }
 
@@ -97,38 +115,50 @@ export function mockGroupConfig(opt?: {
 
 export function mockCategory(opt?: {
   categorySlug?: string;
-  auditRef?: string | string[];
+  auditRefOrGroupRef?: string | string[];
 }): CategoryConfigSchema {
-  let { auditRef, categorySlug } = opt || {};
+  let { auditRefOrGroupRef, categorySlug } = opt || {};
   categorySlug = categorySlug || 'mock-category-slug';
-  auditRef = auditRef || 'mock-audit-ref';
+  auditRefOrGroupRef = auditRefOrGroupRef || 'mock-plugin-slug#mock-audit-slug';
+
+  const metrics = Array.isArray(auditRefOrGroupRef)
+    ? auditRefOrGroupRef.map(ref => ({ ref: ref, weight: 0 }))
+    : [{ ref: auditRefOrGroupRef, weight: 0 }];
 
   return {
     slug: categorySlug,
     title: 'Mock category title',
     description: 'mock description',
-    metrics: Array.isArray(auditRef)
-      ? auditRef.map(ref => ({
-          ref,
-          weight: 0,
-        }))
-      : [
-          {
-            ref: auditRef,
-            weight: 0,
-          },
-        ],
+    metrics,
+  };
+}
+
+export function mockUploadConfig(
+  opt?: Partial<UploadConfigSchema>,
+): UploadConfigSchema {
+  return {
+    apiKey: 'm0ck-API-k3y',
+    server: 'http://test.server.io',
+    ...opt,
+  };
+}
+export function mockPersistConfig(
+  opt?: Partial<PersistConfigSchema>,
+): PersistConfigSchema {
+  return {
+    outputPath: 'mock-output-path.json',
+    ...opt,
   };
 }
 
 export function mockRunnerOutput(opt?: {
-  auditSlug: string;
+  auditSlug: string | string[];
 }): RunnerOutputSchema {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map((slug, idx) => ({
-        slug: auditSlug,
+        slug,
         value: idx,
         displayValue: '',
         score: 0,

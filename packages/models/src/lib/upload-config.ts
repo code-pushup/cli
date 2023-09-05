@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { urlSchema } from './implementation/schemas';
 
 /**
  * Define Zod schema for the UploadConfig type
@@ -22,11 +23,7 @@ import { z } from 'zod';
  *
  */
 export const uploadConfigSchema = z.object({
-  server: z
-    .string({
-      description: 'URL of deployed portal API',
-    })
-    .url(),
+  server: urlSchema('URL of deployed portal API'),
   apiKey: z.string({
     description:
       'API key with write access to portal (use `process.env` for security)',

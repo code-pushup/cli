@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import {
+  auditOrGroupRefSchema,
   descriptionSchema,
-  refSchema,
   slugSchema,
   titleSchema,
+  weightSchema,
 } from './implementation/schemas';
+import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
 /**
  *
@@ -37,23 +39,27 @@ export const categoryConfigSchema = z.object(
     slug: slugSchema('Human-readable unique ID'),
     title: titleSchema('Display name for the category '),
     description: descriptionSchema('Optional description in Markdown format'),
-    metrics: z.array(
-      z.object(
-        {
-          ref: refSchema(
-            "Reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'groups:lhci#performance')",
-          ),
-          weight: z
-            .number({
-              description:
-                'Coefficient for the given score (use weight 0 if only for display)',
-            })
-            .int()
-            .nonnegative(),
-        },
-        { description: 'Array of metrics associated with the category' },
+    metrics: z
+      .array(
+        z.object(
+          {
+            ref: auditOrGroupRefSchema(
+              "Reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'lhci#group:lcp')",
+            ),
+            weight: weightSchema(
+              'Coefficient for the given score (use weight 0 if only for display)',
+            ),
+          },
+          { description: 'Array of metrics associated with the category' },
+        ),
+      )
+      // metrics have unique refs to audits or groups within a category
+      .refine(
+        metrics => !getDuplicateRefsInCategoryMetrics(metrics),
+        metrics => ({
+          message: duplicateRefsInCategoryMetricsErrorMsg(metrics),
+        }),
       ),
-    ),
   },
   {
     description: 'Weighted references to plugin-specific audits/categories',
@@ -61,3 +67,14 @@ export const categoryConfigSchema = z.object(
 );
 
 export type CategoryConfigSchema = z.infer<typeof categoryConfigSchema>;
+
+// helper for validator: categories have unique refs to audits or groups
+export function duplicateRefsInCategoryMetricsErrorMsg(metrics) {
+  const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
+  return `In the categories, the following audit or group refs are duplicates: ${errorItems(
+    duplicateRefs,
+  )}`;
+}
+function getDuplicateRefsInCategoryMetrics(metrics) {
+  return hasDuplicateStrings(metrics.map(({ ref }) => ref));
+}

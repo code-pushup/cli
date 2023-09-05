@@ -1,7 +1,15 @@
 import { z } from 'zod';
-import { slugSchema, unixFilePathSchema } from './implementation/schemas';
-import { PluginConfigSchema } from './plugins';
-import { stringsExist } from './implementation/utils';
+import {
+  positiveIntSchema,
+  slugSchema,
+  unixFilePathSchema,
+} from './implementation/schemas';
+import { PluginConfigSchema } from './plugin-config';
+import {
+  errorItems,
+  hasDuplicateStrings,
+  hasMissingStrings,
+} from './implementation/utils';
 
 /**
  * Define Zod schema for the SourceFileLocation type.
@@ -30,25 +38,10 @@ const sourceFileLocationSchema = z.object(
     position: z
       .object(
         {
-          startLine: z
-            .number({ description: 'Start line' })
-            .int()
-            .nonnegative(),
-          startColumn: z
-            .number({ description: 'Start column' })
-            .int()
-            .nonnegative()
-            .optional(),
-          endLine: z
-            .number({ description: 'End line' })
-            .int()
-            .nonnegative()
-            .optional(),
-          endColumn: z
-            .number({ description: 'End column' })
-            .int()
-            .nonnegative()
-            .optional(),
+          startLine: positiveIntSchema('Start line'),
+          startColumn: positiveIntSchema('Start column').optional(),
+          endLine: positiveIntSchema('End line').optional(),
+          endColumn: positiveIntSchema('End column').optional(),
         },
         { description: 'Location in file' },
       )
@@ -81,15 +74,10 @@ const auditSchema = z.object(
     displayValue: z
       .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
       .optional(),
-    value: z
-      .number({ description: 'Raw numeric value' })
-      .int()
-      .nonnegative()
-      .optional(),
+    value: positiveIntSchema('Raw numeric value').optional(),
     score: z
       .number({
-        description:
-          'Value between 0 and 1',
+        description: 'Value between 0 and 1',
       })
       .min(0)
       .max(1)
@@ -111,7 +99,13 @@ const auditSchema = z.object(
  */
 export const runnerOutputSchema = z.object(
   {
-    audits: z.array(auditSchema, { description: 'List of audits' }),
+    audits: z
+      .array(auditSchema, { description: 'List of audits' })
+      // audit slugs are unique
+      .refine(
+        audits => getDuplicateSlugsInAudits(audits),
+        audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
+      ),
   },
   { description: 'JSON formatted output emitted by the runner.' },
 );
@@ -140,8 +134,19 @@ export type PluginsOutputSchema = z.infer<typeof pluginsOutputSchema>;
 export function runnerOutputAuditRefsPresentInPluginConfigs(
   out: RunnerOutputSchema,
   cfg: PluginConfigSchema,
-): true | string[] {
+): string[] | false {
   const outRefs = out.audits.map(({ slug }) => slug);
   const pluginRef = cfg.audits.map(({ slug }) => cfg.meta.slug + '#' + slug);
-  return stringsExist(outRefs, pluginRef);
+  return hasMissingStrings(outRefs, pluginRef);
+}
+
+// helper for validator: audit slugs are unique
+function duplicateSlugsInAuditsErrorMsg(groupAudits) {
+  const duplicateRefs = getDuplicateSlugsInAudits(groupAudits);
+  return `In runner output the audit slugs are not unique: ${errorItems(
+    duplicateRefs,
+  )}`;
+}
+function getDuplicateSlugsInAudits(groupAudits) {
+  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
 }

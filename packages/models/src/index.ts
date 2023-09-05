@@ -1,13 +1,13 @@
 export { coreConfigSchema, CoreConfigSchema } from './lib/core-config';
-export { uploadConfigSchema, UploadConfigSchema } from './lib/upload';
-export { pluginConfigSchema, PluginConfigSchema } from './lib/plugins';
+export { uploadConfigSchema, UploadConfigSchema } from './lib/upload-config';
+export { pluginConfigSchema, PluginConfigSchema } from './lib/plugin-config';
 export {
   runnerOutputSchema,
   RunnerOutputSchema,
   runnerOutputAuditRefsPresentInPluginConfigs,
   PluginsOutputSchema,
 } from './lib/output';
-export { persistConfigSchema, PersistConfigSchema } from './lib/persist';
+export { persistConfigSchema, PersistConfigSchema } from './lib/persist-config';
 export {
   categoryConfigSchema,
   CategoryConfigSchema,
