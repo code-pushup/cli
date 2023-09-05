@@ -127,7 +127,7 @@ export const pluginsOutputSchema = z.object(
     date: z.date({
       description: 'ISO format date of the start of all plugin runs',
     }),
-    duration: z.string({ description: 'Duration od all plugin runs in ms' }),
+    duration: z.string({ description: 'Duration of all plugin runs in ms' }),
   },
   { description: 'JSON formatted output emitted after executing all plugins.' },
 );
