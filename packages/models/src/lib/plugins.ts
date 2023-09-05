@@ -118,10 +118,10 @@ export const pluginConfigSchema = z
   })
   .refine(
     pluginCfg =>
-      !!stringsExist(
+      stringsExist(
         pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
         pluginCfg.audits.map(({ slug }) => slug),
-      ),
+      ) === true,
     pluginCfg => {
       const notExistingStrings = stringsExist(
         pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
