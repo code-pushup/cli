@@ -41,7 +41,7 @@ export const categoryConfigSchema = z.object(
       z.object(
         {
           ref: refSchema(
-            "Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')",
+            "Reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'groups:lhci#performance')",
           ),
           weight: z
             .number({
