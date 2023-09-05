@@ -80,7 +80,7 @@ describe('CoreConfig', () => {
 
   /*
   PluginConfigGroup
-  - the ref points to an exists audit slug
+  - the ref points to an existing audit slug
   */
   describe('PluginConfigGroup', () => {
     it('should parse if group is valid', () => {
