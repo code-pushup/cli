@@ -1,9 +1,13 @@
 import { z } from 'zod';
-import { pluginConfigSchema } from './plugins';
+import { pluginConfigSchema } from './plugin-config';
 import { categoryConfigSchema } from './category-config';
-import { uploadConfigSchema } from './upload';
-import { persistConfigSchema } from './persist';
-import { stringsExist, stringsUnique } from './implementation/utils';
+import { uploadConfigSchema } from './upload-config';
+import { persistConfigSchema } from './persist-config';
+import {
+  hasMissingStrings,
+  hasDuplicateStrings,
+  errorItems,
+} from './implementation/utils';
 
 /**
  * Define Zod schema for the CoreConfig type
@@ -38,64 +42,67 @@ export const coreConfigSchema = z
       .array(categoryConfigSchema, {
         description: 'Categorization of individual audits',
       })
+      // categories slugs are unique
       .refine(
-        categoryCfg => {
-          return stringsUnique(categoryCfg.map(({ slug }) => slug)) === true;
-        },
-        categoryCfg => {
-          const duplicateStrings = stringsUnique(
-            categoryCfg.map(({ slug }) => slug),
-          );
-          const duplicateStringSlugs =
-            duplicateStrings !== true ? duplicateStrings.join(', ') : '';
-          return {
-            message: `In the categories, the following slugs are duplicated: ${duplicateStringSlugs}`,
-          };
-        },
-      )
-      .refine(
-        categoryCfg =>
-          stringsUnique(
-            categoryCfg.flatMap(({ metrics }) => metrics.map(({ ref }) => ref)),
-          ) === true,
-        categoryCfg => {
-          const duplicateStrings = stringsUnique(
-            categoryCfg.flatMap(({ metrics }) => metrics.map(({ ref }) => ref)),
-          );
-          const duplicateStringRefs =
-            duplicateStrings !== true ? duplicateStrings.join(', ') : '';
-          return {
-            message: `In the categories, the following audit refs are duplicates: ${duplicateStringRefs}`,
-          };
-        },
+        categoryCfg => !getDuplicateSlugCategories(categoryCfg),
+        categoryCfg => ({
+          message: duplicateSlugCategoriesErrorMsg(categoryCfg),
+        }),
       ),
   })
+  // categories point to existing audit or group refs
   .refine(
-    coreCfg => {
-      return getMissingRefs(coreCfg) === true;
-    },
-    coreCfg => {
-      const missingRefs = getMissingRefs(coreCfg);
-      const nonExistingRefs = missingRefs !== true ? missingRefs : [];
-      return {
-        message: categoryMissingPluginRefMsg(nonExistingRefs),
-      };
-    },
-  );
-
-function categoryMissingPluginRefMsg(missingRefs: string[]) {
-  return `In the categories, the following plugin refs do not exist in the provided plugins: ${missingRefs.join(
-    ', ',
-  )}`;
-}
-function getMissingRefs(coreCfg) {
-  return stringsExist(
-    coreCfg.categories.flatMap(({ metrics }) => metrics.map(({ ref }) => ref)),
-    coreCfg.plugins.flatMap(({ audits, meta }) => {
-      const pluginSlug = meta.slug;
-      return audits.map(({ slug }) => pluginSlug + '#' + slug);
+    coreCfg => !getMissingRefsForCategories(coreCfg),
+    coreCfg => ({
+      message: missingRefsForCategoriesErrorMsg(coreCfg),
     }),
   );
-}
 
 export type CoreConfigSchema = z.infer<typeof coreConfigSchema>;
+
+// helper for validator: categories point to existing audit or group refs
+function missingRefsForCategoriesErrorMsg(coreCfg) {
+  const missingRefs = getMissingRefsForCategories(coreCfg);
+  return `In the categories, the following plugin refs do not exist in the provided plugins: ${errorItems(
+    missingRefs,
+  )}`;
+}
+function isGroupRef(ref: string): boolean {
+  return ref.includes('group:');
+}
+function getMissingRefsForCategories(coreCfg) {
+  const missingRefs = [];
+  const missingAuditRefs = hasMissingStrings(
+    coreCfg.categories.flatMap(({ metrics }) =>
+      metrics.filter(({ ref }) => !isGroupRef(ref)).map(({ ref }) => ref),
+    ),
+    coreCfg.plugins.flatMap(({ audits, meta }) => {
+      const pluginSlug = meta.slug;
+      return audits.map(({ slug }) => `${pluginSlug}#${slug}`);
+    }),
+  );
+  missingAuditRefs && missingRefs.concat(missingAuditRefs);
+
+  const missingGroupRefs = hasMissingStrings(
+    coreCfg.categories.flatMap(({ metrics }) =>
+      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
+    ),
+    coreCfg.plugins.flatMap(({ groups }) => {
+      return groups.map(({ slug }) => `${slug}`);
+    }),
+  );
+  missingGroupRefs && missingRefs.concat(missingGroupRefs);
+
+  return missingRefs.length ? missingRefs : false;
+}
+
+// helper for validator: categories slugs are unique
+function duplicateSlugCategoriesErrorMsg(categoryCfg) {
+  const duplicateStringSlugs = getDuplicateSlugCategories(categoryCfg);
+  return `In the categories, the following slugs are duplicated: ${errorItems(
+    duplicateStringSlugs,
+  )}`;
+}
+function getDuplicateSlugCategories(categoryCfg) {
+  return hasDuplicateStrings(categoryCfg.map(({ slug }) => slug));
+}

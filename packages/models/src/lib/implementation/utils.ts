@@ -1,15 +1,29 @@
 /**
  * Regular expression to validate a slug for categories, plugins and audits.
+ * - audit (e.g. 'max-lines')
+ * - or category in RunnerOutput (e.g. 'performance')
  * Also validates ``and ` `
  */
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
- * Regular expression to validate a reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance') or audit in RunnerOutput (e.g. 'eslint#max-lines')
+ * Regular expression to validate a reference to a plugin's:
+ * - audit (e.g. 'eslint#max-lines')
+ * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
  * Also validates ``and ` `
  */
 export const refRegex =
   /^([a-z0-9:]+(?:-[a-z0-9]*)*)#([a-z0-9]+(?:-[a-z0-9]+)*$)/;
+
+/**
+ * Regular expression to validate a reference to a plugin's:
+ * - audit (e.g. 'eslint#max-lines')
+ * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
+ * - or group ref (e.g. plugin-slug#group:basics)
+ * Also validates ``and ` `
+ */
+export const refOrGroupRegex =
+  /^([a-z0-9:]+(?:-[a-z0-9]*)*)#(group:)*([a-z0-9]+(?:-[a-z0-9]+)*$)/;
 
 /**
  * Regular expression to validate filenames for Windows and UNIX
@@ -27,7 +41,7 @@ export const unixFilePathRegex = /^(?:(?:[A-Za-z]:)?[/])?(?:\w[\w .-]*[/]?)*$/;
  *
  * @param strings
  */
-export function stringsUnique(strings: string[]): true | string[] {
+export function hasDuplicateStrings(strings: string[]): string[] | false {
   const uniqueStrings = Array.from(new Set(strings));
   const duplicatedStrings = strings.filter(
     (
@@ -35,7 +49,7 @@ export function stringsUnique(strings: string[]): true | string[] {
         uniqueStrings[i] !== v || !++i
     )(0),
   );
-  return duplicatedStrings.length === 0 ? true : duplicatedStrings;
+  return duplicatedStrings.length === 0 ? false : duplicatedStrings;
 }
 
 /**
@@ -44,10 +58,21 @@ export function stringsUnique(strings: string[]): true | string[] {
  * @param toCheck
  * @param existing
  */
-export function stringsExist(
+export function hasMissingStrings(
   toCheck: string[],
   existing: string[],
-): true | string[] {
+): string[] | false {
   const nonExisting = toCheck.filter(s => !existing.includes(s));
-  return nonExisting.length ? nonExisting : true;
+  return nonExisting.length === 0 ? false : nonExisting;
+}
+
+/**
+ * helper for error items
+ */
+export function errorItems(
+  items: string[] | false,
+  transform: (items: string[]) => string = items => items.join(', '),
+): string {
+  const paredItems = items ? items : [];
+  return transform(paredItems);
 }

@@ -4,8 +4,9 @@ import {
   generalFilePathRegex,
   refRegex,
   slugRegex,
-  stringsExist,
-  stringsUnique,
+  hasMissingStrings,
+  hasDuplicateStrings,
+  refOrGroupRegex,
 } from './utils';
 
 describe('slugRegex', () => {
@@ -17,12 +18,12 @@ describe('slugRegex', () => {
     '123',
     '123-456',
     '123-world-789',
-  ])('should match valid %p`, (slug) => {
+  ])(`should match valid %p`, slug => {
     expect(slug).toMatch(slugRegex);
   });
 
   // test invalid and array of strings against slugRegex with it blocks
-  const invalidSlugs = [
+  it.each([
     '',
     ' ',
     'hello world',
@@ -33,49 +34,62 @@ describe('slugRegex', () => {
     '123-',
     '-123',
     '123--456',
-  ];
-
-  for (let i = 0; i < invalidSlugs.length; i++) {
-    it(`should not match invalid slugs ${invalidSlugs[i]}`, () => {
-      const invalidSlug = invalidSlugs[i];
-      expect(slugRegex.test(invalidSlug)).toBe(false);
-    });
-  }
+  ])(`should not match invalid slugs %p`, invalidSlugs => {
+    expect(invalidSlugs).not.toMatch(slugRegex);
+  });
 });
 
 describe('refRegex', () => {
   // test valid and array of strings against refRegex with it blocks
-  const refs = [
-    'hello#world',
-    'hello-the#world',
-    '123-the#world-there',
-    // groups
-    'hello:123#world',
-    'hello:123#world-there',
-  ];
-  for (let i = 0; i < refs.length; i++) {
-    it(`should match valid ref ${refs[i]}`, () => {
-      const ref = refs[i];
-      expect(refRegex.test(ref)).toBe(true);
-    });
-  }
+  it.each([
+    'pluginslug#auditslug',
+    'plugin-slug#auditslug',
+    '123-plugin#audit-slug-123',
+  ])(`should match valid ref %p`, ref => {
+    expect(ref).toMatch(refRegex);
+  });
 
   // test invalid and array of strings against refRegex with it blocks
-  const invalidRefs = [
+  it.each([
+    '',
+    ' ',
+    'pluginslug #auditslug',
+    '123#audit slug',
+    'pluginslug.123#auditslug',
+    'plugin-slug:123#audit slug',
+    // groups
+    'plugin-slug#:group#audit-slug',
+    '123-plugin-slug#audit:slug-123',
+    '123-plugin-slug#group:audit:slug-123',
+  ])(`should not match invalid ref %p`, ref => {
+    expect(ref).not.toMatch(refRegex);
+  });
+});
+
+describe('refOrGroupRegex', () => {
+  // test valid and array of strings against refRegex with it blocks
+  it.each([
+    'pluginslug#auditslug',
+    'plugin-slug#auditslug',
+    '123-plugin#audit-slug-123',
+    // groups
+    'plugin-slug#group:audit-slug',
+    '123-plugin-slug#group:audit-slug-123',
+  ])(`should match valid ref %p`, ref => {
+    expect(ref).toMatch(refOrGroupRegex);
+  });
+
+  // test invalid and array of strings against refRegex with it blocks
+  it.each([
     '',
     ' ',
     'hello #world',
     '123#world there',
     'hello.123#world',
     'the-hello:123#world there',
-  ];
-
-  for (let i = 0; i < invalidRefs.length; i++) {
-    it(`should not match invalid ref ${invalidRefs[i]}`, () => {
-      const invalidRef = invalidRefs[i];
-      expect(refRegex.test(invalidRef)).toBe(false);
-    });
-  }
+  ])(`should not match invalid ref %p`, ref => {
+    expect(ref).not.toMatch(refOrGroupRegex);
+  });
 });
 
 describe('generalFilePathRegex', () => {
@@ -98,14 +112,12 @@ describe('generalFilePathRegex', () => {
     'F:\\a\\b\\c\\d.txt',
     'G:/folder.with.dots/file.exe',
   ];
-  const filePaths = validPathsUnix.concat(validPathsWindows);
-
-  for (let i = 0; i < filePaths.length; i++) {
-    it(`should match valid filePath ${filePaths[i]}`, () => {
-      const filePath = filePaths[i];
-      expect(generalFilePathRegex.test(filePath)).toBe(true);
-    });
-  }
+  it.each(validPathsUnix.concat(validPathsWindows))(
+    `should match valid filePath %p`,
+    filePath => {
+      expect(filePath).toMatch(generalFilePathRegex);
+    },
+  );
 
   const invalidPathsUnix = [
     '//home/user/',
@@ -127,19 +139,17 @@ describe('generalFilePathRegex', () => {
     'E:\\star/file*.txt',
   ];
 
-  const invalidFilePaths = invalidPathsUnix.concat(invalidPathsWindows);
-
-  for (let i = 0; i < invalidFilePaths.length; i++) {
-    it(`should not match invalid filePath ${invalidFilePaths[i]}`, () => {
-      const invalidFilePath = invalidFilePaths[i];
-      expect(generalFilePathRegex.test(invalidFilePath)).toBe(false);
-    });
-  }
+  it.each(invalidPathsUnix.concat(invalidPathsWindows))(
+    `should not match invalid filePath %p`,
+    invalidFilePath => {
+      expect(invalidFilePath).not.toMatch(generalFilePathRegex);
+    },
+  );
 });
 
 describe('unixFilePathRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
-  const validPathsUnix = [
+  it.each([
     '/home/user/documents/file.txt',
     '/var/www/html/index.html',
     'home/user/',
@@ -147,16 +157,11 @@ describe('unixFilePathRegex', () => {
     '/a/b/c/d/e',
     'folder/file.ext',
     '/folder.with.dots/file',
-  ];
+  ])(`should match valid filePath %p}`, validPaths => {
+    expect(validPaths).toMatch(generalFilePathRegex);
+  });
 
-  for (let i = 0; i < validPathsUnix.length; i++) {
-    it(`should match valid filePath ${validPathsUnix[i]}`, () => {
-      const filePath = validPathsUnix[i];
-      expect(generalFilePathRegex.test(filePath)).toBe(true);
-    });
-  }
-
-  const invalidPathsUnix = [
+  it.each([
     '//home/user/',
     ' /leading-space/path',
     'home//user/',
@@ -165,30 +170,28 @@ describe('unixFilePathRegex', () => {
     'folder/name?',
     '/folder<>/file',
     'folder*',
-  ];
-
-  for (let i = 0; i < invalidPathsUnix.length; i++) {
-    it(`should not match invalid filePath ${invalidPathsUnix[i]}`, () => {
-      const invalidFilePath = invalidPathsUnix[i];
-      expect(generalFilePathRegex.test(invalidFilePath)).toBe(false);
-    });
-  }
+  ])(`should not match invalid filePath %p}`, validPaths => {
+    expect(validPaths).not.toMatch(generalFilePathRegex);
+  });
 });
 
 describe('stringUnique', () => {
   it('should return true for a list of unique strings', () => {
-    expect(stringsUnique(['a', 'b'])).toBe(true);
+    expect(hasDuplicateStrings(['a', 'b'])).toBe(true);
   });
   it('should return a list of duplicated strings for a invalid list', () => {
-    expect(stringsUnique(['a', 'b', 'a', 'c'])).toEqual(['a']);
+    expect(hasDuplicateStrings(['a', 'b', 'a', 'c'])).toEqual(['a']);
+  });
+  it('should return a false for a list with 1 item', () => {
+    expect(hasDuplicateStrings(['a'])).toBe(false);
   });
 });
 
 describe('stringsExist', () => {
   it('should return true for the strings exist in target array', () => {
-    expect(stringsExist(['a', 'b'], ['a', 'b'])).toBe(true);
+    expect(hasMissingStrings(['a', 'b'], ['a', 'b'])).toBe(true);
   });
   it('should return a list of strings from source that are missing in target', () => {
-    expect(stringsExist(['a', 'b'], ['a', 'c'])).toEqual(['b']);
+    expect(hasMissingStrings(['a', 'b'], ['a', 'c'])).toEqual(['b']);
   });
 });
