@@ -65,7 +65,7 @@ export const coreConfigSchema = z
           const duplicateStringRefs =
             duplicateStrings !== true ? duplicateStrings.join(', ') : '';
           return {
-            message: `In the categories, the following audit ref's are duplicates: ${duplicateStringRefs}`,
+            message: `In the categories, the following audit refs are duplicates: ${duplicateStringRefs}`,
           };
         },
       ),
