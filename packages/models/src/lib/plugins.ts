@@ -1,29 +1,22 @@
-import {z} from 'zod';
+import { z } from 'zod';
 import {
   descriptionSchema,
   docsUrlSchema,
   generalFilePathSchema,
   slugSchema,
-  titleSchema
-} from "./implementation/schemas";
-import {stringsExist, stringsUnique} from "./implementation/utils";
+  titleSchema,
+} from './implementation/schemas';
+import { stringsExist, stringsUnique } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
 const pluginMetadataSchema = z.object(
   {
     slug: slugSchema('Unique ID (human-readable, URL-safe)'),
-    name: z.string({
-      description: 'Display name',
-    }).max(128),
-    type: z.enum(
-      [
-        'static-analysis',
-        'performance-measurements',
-        'test-coverage',
-        'dependency-audit',
-      ],
-      {description: 'Plugin categorization'},
-    ),
+    name: z
+      .string({
+        description: 'Display name',
+      })
+      .max(128),
     icon: z.union([z.unknown(), z.string()], {
       description: 'Icon from VSCode Material Icons extension',
     }),
@@ -40,8 +33,8 @@ const runnerConfigSchema = z.object(
     command: z.string({
       description: 'Shell command to execute',
     }),
-    args: z.array(z.string({description: 'Command arguments'})).optional(),
-    outputPath: generalFilePathSchema('Output path')
+    args: z.array(z.string({ description: 'Command arguments' })).optional(),
+    outputPath: generalFilePathSchema('Output path'),
   },
   {
     description: 'How to execute runner',
@@ -52,14 +45,16 @@ const runnerConfigSchema = z.object(
 const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
-    label: z.string({
-      description: 'Abbreviated name',
-    }).max(128),
+    label: z
+      .string({
+        description: 'Abbreviated name',
+      })
+      .max(128),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
-    docsUrl: docsUrlSchema('Link to documentation (rationale)')
+    docsUrl: docsUrlSchema('Link to documentation (rationale)'),
   },
-  {description: 'List of scorable metrics for the given plugin'},
+  { description: 'List of scorable metrics for the given plugin' },
 );
 
 // Define Zod schema for the `Group` type
@@ -67,25 +62,33 @@ const groupSchema = z.object({
   slug: slugSchema('Human-readable unique ID .e.g. "performance"'),
   title: titleSchema('Display name'),
   description: descriptionSchema('Description (Markdown)'),
-  audits: z.array(
-    z.object({
-      ref: slugSchema("Reference slug to an audit within plugin (e.g. 'max-lines')"),
-      weight: z.number({
-        description: 'Coefficient for the given score (use weight 0 if only for display)'
-      }).int().nonnegative()
-    }),
-    {description: 'Weighted references to plugin-specific audits'}
-  )
-    .refine(items => stringsUnique(items.map(i => i.ref)),
+  audits: z
+    .array(
+      z.object({
+        ref: slugSchema(
+          "Reference slug to an audit within plugin (e.g. 'max-lines')",
+        ),
+        weight: z
+          .number({
+            description:
+              'Coefficient for the given score (use weight 0 if only for display)',
+          })
+          .int()
+          .nonnegative(),
+      }),
+      { description: 'Weighted references to plugin-specific audits' },
+    )
+    .refine(
+      items => stringsUnique(items.map(i => i.ref)),
       items => {
         const refs = stringsUnique(items.map(i => i.ref));
         const stringsRefs = refs !== true ? refs.join(', ') : '';
         return {
-          message: `In plugin audit's the slug are not unique: ${stringsRefs}`
-        }
-      })
+          message: `In plugin audit's the slug are not unique: ${stringsRefs}`,
+        };
+      },
+    ),
 });
-
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -106,27 +109,30 @@ const groupSchema = z.object({
  *   console.error('Invalid plugin config:', validationResult.error);
  * }
  */
-export const pluginConfigSchema = z.object({
-  meta: pluginMetadataSchema,
-  runner: runnerConfigSchema,
-  audits: z.array(auditMetadataSchema),
-  groups: z.array(groupSchema, {description: 'List of groups'}).optional(),
-})
+export const pluginConfigSchema = z
+  .object({
+    meta: pluginMetadataSchema,
+    runner: runnerConfigSchema,
+    audits: z.array(auditMetadataSchema),
+    groups: z.array(groupSchema, { description: 'List of groups' }).optional(),
+  })
   .refine(
-    pluginCfg => !!stringsExist(
-      pluginCfg.groups.flatMap(({audits}) => audits.map(({ref}) => ref)),
-      pluginCfg.audits.map(({slug}) => slug)
-    ),
+    pluginCfg =>
+      !!stringsExist(
+        pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+        pluginCfg.audits.map(({ slug }) => slug),
+      ),
     pluginCfg => {
       const notExistingStrings = stringsExist(
-        pluginCfg.groups.flatMap(({audits}) => audits.map(({ref}) => ref)),
-        pluginCfg.audits.map(({slug}) => slug)
+        pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+        pluginCfg.audits.map(({ slug }) => slug),
       );
-      const nonExistingRefs = notExistingStrings !== true ? notExistingStrings.join(', ') : '';
+      const nonExistingRefs =
+        notExistingStrings !== true ? notExistingStrings.join(', ') : '';
       return {
-        message: `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${nonExistingRefs}`
-      }
-    }
+        message: `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${nonExistingRefs}`,
+      };
+    },
   );
 
 export type PluginConfigSchema = z.infer<typeof pluginConfigSchema>;

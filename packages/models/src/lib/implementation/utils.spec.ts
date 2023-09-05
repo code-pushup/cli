@@ -1,6 +1,12 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {generalFilePathRegex, refRegex, slugRegex, stringsExist, stringsUnique} from './utils';
+import {
+  generalFilePathRegex,
+  refRegex,
+  slugRegex,
+  stringsExist,
+  stringsUnique,
+} from './utils';
 
 describe('slugRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
@@ -30,7 +36,7 @@ describe('slugRegex', () => {
     'hello--world',
     '123-',
     '-123',
-    '123--456'
+    '123--456',
   ];
 
   for (let i = 0; i < invalidSlugs.length; i++) {
@@ -79,22 +85,22 @@ describe('refRegex', () => {
 describe('generalFilePathRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
   const validPathsUnix = [
-    "/home/user/documents/file.txt",
-    "/var/www/html/index.html",
-    "home/user/",
-    "file.txt",
-    "/a/b/c/d/e",
-    "folder/file.ext",
-    "/folder.with.dots/file"
+    '/home/user/documents/file.txt',
+    '/var/www/html/index.html',
+    'home/user/',
+    'file.txt',
+    '/a/b/c/d/e',
+    'folder/file.ext',
+    '/folder.with.dots/file',
   ];
   const validPathsWindows = [
-    "C:\\Users\\John\\Documents\\file.docx",
-    "D:/Games/Valheim/game.exe",
-    "C:\\Program Files\\App\\binary.exe",
-    "I:/path with spaces/",
-    "E:/folder/file.ext",
-    "F:\\a\\b\\c\\d.txt",
-    "G:/folder.with.dots/file.exe"
+    'C:\\Users\\John\\Documents\\file.docx',
+    'D:/Games/Valheim/game.exe',
+    'C:\\Program Files\\App\\binary.exe',
+    'I:/path with spaces/',
+    'E:/folder/file.ext',
+    'F:\\a\\b\\c\\d.txt',
+    'G:/folder.with.dots/file.exe',
   ];
   const filePaths = validPathsUnix.concat(validPathsWindows);
 
@@ -106,23 +112,23 @@ describe('generalFilePathRegex', () => {
   }
 
   const invalidPathsUnix = [
-    "//home/user/",
-    " /leading-space/path",
-    "home//user/",
-    "/folder/../file",
-    "/a/b/c//d",
-    "folder/name?",
-    "/folder<>/file",
-    "folder*"
+    '//home/user/',
+    ' /leading-space/path',
+    'home//user/',
+    '/folder/../file',
+    '/a/b/c//d',
+    'folder/name?',
+    '/folder<>/file',
+    'folder*',
   ];
   const invalidPathsWindows = [
-    "C::\\Users\\John",
-    " C:\\Leading-space",
-    "D:/Games//Valheim/",
-    "H:\\invalid|char/file.txt",
-    "C:\\path<>\\file",
-    "D:/question/file?.txt",
-    "E:\\star/file*.txt"
+    'C::\\Users\\John',
+    ' C:\\Leading-space',
+    'D:/Games//Valheim/',
+    'H:\\invalid|char/file.txt',
+    'C:\\path<>\\file',
+    'D:/question/file?.txt',
+    'E:\\star/file*.txt',
   ];
 
   const invalidFilePaths = invalidPathsUnix.concat(invalidPathsWindows);
@@ -138,13 +144,13 @@ describe('generalFilePathRegex', () => {
 describe('unixFilePathRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
   const validPathsUnix = [
-    "/home/user/documents/file.txt",
-    "/var/www/html/index.html",
-    "home/user/",
-    "file.txt",
-    "/a/b/c/d/e",
-    "folder/file.ext",
-    "/folder.with.dots/file"
+    '/home/user/documents/file.txt',
+    '/var/www/html/index.html',
+    'home/user/',
+    'file.txt',
+    '/a/b/c/d/e',
+    'folder/file.ext',
+    '/folder.with.dots/file',
   ];
 
   for (let i = 0; i < validPathsUnix.length; i++) {
@@ -155,14 +161,14 @@ describe('unixFilePathRegex', () => {
   }
 
   const invalidPathsUnix = [
-    "//home/user/",
-    " /leading-space/path",
-    "home//user/",
-    "/folder/../file",
-    "/a/b/c//d",
-    "folder/name?",
-    "/folder<>/file",
-    "folder*"
+    '//home/user/',
+    ' /leading-space/path',
+    'home//user/',
+    '/folder/../file',
+    '/a/b/c//d',
+    'folder/name?',
+    '/folder<>/file',
+    'folder*',
   ];
 
   for (let i = 0; i < invalidPathsUnix.length; i++) {

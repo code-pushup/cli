@@ -1,5 +1,10 @@
-import {z} from "zod";
-import {generalFilePathRegex, refRegex, slugRegex, unixFilePathRegex} from "./utils";
+import { z } from 'zod';
+import {
+  generalFilePathRegex,
+  refRegex,
+  slugRegex,
+  unixFilePathRegex,
+} from './utils';
 
 /**
  * Schema for a slug of a categories, plugins or audits.
@@ -7,7 +12,7 @@ import {generalFilePathRegex, refRegex, slugRegex, unixFilePathRegex} from "./ut
  */
 export function slugSchema(description: string) {
   return z
-    .string({description})
+    .string({ description })
     .regex(slugRegex) // also validates ``and ` `
     .max(128);
 }
@@ -16,10 +21,7 @@ export function slugSchema(description: string) {
  * Schema for a reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance') or audit in RunnerOutput (e.g. 'eslint#max-lines')
  */
 export function refSchema(description: string) {
-  return z
-    .string({description})
-    .regex(refRegex)
-    .max(256);
+  return z.string({ description }).regex(refRegex).max(256);
 }
 
 /**
@@ -27,10 +29,7 @@ export function refSchema(description: string) {
  * @param description
  */
 export function descriptionSchema(description: string) {
-  return z
-    .string({description})
-    .max( 65536)
-    .optional();
+  return z.string({ description }).max(65536).optional();
 }
 
 /**
@@ -38,10 +37,7 @@ export function descriptionSchema(description: string) {
  * @param description
  */
 export function docsUrlSchema(description: string) {
-  return z
-    .string({ description })
-    .url()
-    .optional();
+  return z.string({ description }).url().optional();
 }
 
 /**
@@ -49,8 +45,7 @@ export function docsUrlSchema(description: string) {
  * @param description
  */
 export function titleSchema(description: string) {
-  return z.string({description})
-    .max( 128)
+  return z.string({ description }).max(128);
 }
 
 /**
@@ -58,7 +53,7 @@ export function titleSchema(description: string) {
  * @param description
  */
 export function generalFilePathSchema(description: string) {
-  return z.string({description,}).regex(generalFilePathRegex)
+  return z.string({ description }).regex(generalFilePathRegex);
 }
 
 /**
@@ -66,6 +61,5 @@ export function generalFilePathSchema(description: string) {
  * @param description
  */
 export function unixFilePathSchema(description: string) {
-  return z.string({description,}).regex(unixFilePathRegex)
+  return z.string({ description }).regex(unixFilePathRegex);
 }
-

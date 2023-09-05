@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import {descriptionSchema, refSchema, slugSchema, titleSchema} from "./implementation/schemas";
+import {
+  descriptionSchema,
+  refSchema,
+  slugSchema,
+  titleSchema,
+} from './implementation/schemas';
 
 /**
  *
@@ -31,16 +36,20 @@ export const categoryConfigSchema = z.object(
   {
     slug: slugSchema('Human-readable unique ID'),
     title: titleSchema('Display name for the category '),
-    description:descriptionSchema('Optional description in Markdown format'),
+    description: descriptionSchema('Optional description in Markdown format'),
     metrics: z.array(
       z.object(
         {
-          ref: refSchema("Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')"),
+          ref: refSchema(
+            "Reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance')",
+          ),
           weight: z
             .number({
               description:
                 'Coefficient for the given score (use weight 0 if only for display)',
-            }).int().nonnegative()
+            })
+            .int()
+            .nonnegative(),
         },
         { description: 'Array of metrics associated with the category' },
       ),

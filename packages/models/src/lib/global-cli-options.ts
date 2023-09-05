@@ -1,5 +1,5 @@
-import {z} from 'zod';
-import {generalFilePathSchema} from "./implementation/schemas";
+import { z } from 'zod';
+import { generalFilePathSchema } from './implementation/schemas';
 
 /**
  * Define Zod schema for the GlobalCliArgs type
@@ -7,13 +7,14 @@ import {generalFilePathSchema} from "./implementation/schemas";
  * @example
  *
  * // Example data for the GlobalCliArgs type
- * const uploadConfigData = {
- *   server: 'https://example.com/api',
- *   apiKey: 'your-api-key',
+ * const globalCliArgs = {
+ *   interactive: true,
+ *   verbose: true,
+ *   configPath: 'any/path/config.js',
  * };
  *
  * // Validate the data against the schema
- * const validationResult = globalCliArgsSchema.safeParse(globalCliArgsData);
+ * const validationResult = globalCliArgsSchema.safeParse(globalCliArgs);
  *
  * if (validationResult.success) {
  *   console.log('Valid config:', validationResult.data);
@@ -34,9 +35,11 @@ export const globalCliArgsSchema = z.object({
       description: 'Outputs additional information for a run',
     })
     .default(false),
-  configPath: generalFilePathSchema("Path to config.js. defaults to 'cpu-config.js'")
+  configPath: generalFilePathSchema(
+    "Path to config file in format `ts` or `mjs`. defaults to 'qm-config.js'",
+  )
     .optional()
-    .default('cpu-config.js')
+    .default('qm-config.js'),
 });
 
 export type GlobalCliArgsSchema = z.infer<typeof globalCliArgsSchema>;
