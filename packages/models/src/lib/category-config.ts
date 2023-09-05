@@ -19,7 +19,7 @@ import {
  *   description: 'This category includes performance-related metrics.',
  *   metrics: [
  *     { ref: 'eslint#max-lines', weight: 1 },
- *     { ref: 'categories:lhci#performance', weight: 3 },
+ *     { ref: 'groups:lhci#performance', weight: 3 },
  *   ],
  * };
  *
