@@ -16,7 +16,7 @@ import {
 // Define Zod schema for the PluginMetadata type
 const pluginMetadataSchema = z.object(
   {
-    slug: slugSchema('Unique ID (human-readable, URL-safe)'),
+    slug: slugSchema(),
     name: z
       .string({
         description: 'Display name',
@@ -74,9 +74,7 @@ export const groupSchema = z.object(
           ref: slugSchema(
             "Reference slug to an audit within plugin (e.g. 'max-lines')",
           ),
-          weight: weightSchema(
-            'Coefficient for the given score (use weight 0 if only for display)',
-          ),
+          weight: weightSchema(),
         }),
         { description: 'Weighted references to plugin-specific audits' },
       )
@@ -101,12 +99,12 @@ export const groupSchema = z.object(
  * @example
  *
  * // Example data for the PluginConfig type
- * const pluginConfigData = {
- *   // ... populate with example data ...
+ * const data = {
+ *   // ...
  * };
  *
  * // Validate the data against the schema
- * const validationResult = pluginConfigSchema.safeParse(pluginConfigData);
+ * const validationResult = pluginConfigSchema.safeParse(data);
  *
  * if (validationResult.success) {
  *   console.log('Valid plugin config:', validationResult.data);

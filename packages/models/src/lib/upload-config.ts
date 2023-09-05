@@ -7,13 +7,12 @@ import { urlSchema } from './implementation/schemas';
  * @example
  *
  * // Example data for the UploadConfig type
- * const uploadConfigData = {
- *   server: 'https://example.com/api',
- *   apiKey: 'your-api-key',
+ * const data = {
+ *   // ...
  * };
  *
  * // Validate the data against the schema
- * const validationResult = uploadConfigSchema.safeParse(uploadConfigData);
+ * const validationResult = uploadConfigSchema.safeParse(data);
  *
  * if (validationResult.success) {
  *   console.log('Valid upload config:', validationResult.data);

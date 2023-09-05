@@ -7,13 +7,12 @@ import { generalFilePathSchema } from './implementation/schemas';
  * @example
  *
  * // Example data for the type
- * const persistData = {
- *   server: 'https://example.com/api',
- *   apiKey: 'your-api-key',
+ * const data = {
+ *   // ...
  * };
  *
  * // Validate the data against the schema
- * const validationResult = persistConfigSchema.safeParse(persistData);
+ * const validationResult = persistConfigSchema.safeParse(data);
  *
  * if (validationResult.success) {
  *   console.log('Valid persist config:', validationResult.data);

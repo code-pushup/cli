@@ -11,7 +11,9 @@ import {
  * Schema for a slug of a categories, plugins or audits.
  * @param description
  */
-export function slugSchema(description: string) {
+export function slugSchema(
+  description = 'Unique ID (human-readable, URL-safe)',
+) {
   return (
     z
       .string({ description })
@@ -74,7 +76,7 @@ export function descriptionSchema(description: string) {
  * Schema for a docsUrl
  * @param description
  */
-export function docsUrlSchema(description: string) {
+export function docsUrlSchema(description = 'Documentation site') {
   return urlSchema(description).optional();
 }
 
@@ -108,7 +110,9 @@ export function generalFilePathSchema(description: string) {
  * Schema for a unixFilePath
  * @param description
  */
-export function weightSchema(description: string) {
+export function weightSchema(
+  description = 'Coefficient for the given score (use weight 0 if only for display)',
+) {
   return positiveIntSchema(description);
 }
 
