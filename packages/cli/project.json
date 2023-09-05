@@ -20,7 +20,7 @@
       "dependsOn": ["build"]
     },
     "exec": {
-      "command": "node dist/packages/cli",
+      "command": "node dist/packages/cli/index.js",
       "dependsOn": ["build"]
     },
     "lint": {
@@ -39,8 +39,7 @@
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/cli"
-      },
-      "dependsOn": ["build"]
+      }
     }
   },
   "tags": []

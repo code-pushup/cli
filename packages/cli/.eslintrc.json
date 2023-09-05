@@ -21,12 +21,7 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": [
-              "vite",
-              "@nx/vite",
-              "@quality-metrics/eslint-plugin",
-              "@quality-metrics/lighthouse-plugin"
-            ]
+            "ignoredDependencies": ["vite", "@nx/vite"]
           }
         ]
       }
