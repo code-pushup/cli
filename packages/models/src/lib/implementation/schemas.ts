@@ -18,7 +18,7 @@ export function slugSchema(description: string) {
 }
 
 /**
- * Schema for a reference to a plugin's audit (e.g. 'eslint#max-lines') or category (e.g. 'categories:lhci#performance') or audit in RunnerOutput (e.g. 'eslint#max-lines')
+ * Schema for a reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'groups:lhci#performance') or audit in RunnerOutput (e.g. 'eslint#max-lines')
  */
 export function refSchema(description: string) {
   return z.string({ description }).regex(refRegex).max(256);
