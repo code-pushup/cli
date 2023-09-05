@@ -84,7 +84,7 @@ const groupSchema = z.object({
         const refs = stringsUnique(items.map(i => i.ref));
         const stringsRefs = refs !== true ? refs.join(', ') : '';
         return {
-          message: `In plugin audit's the slug are not unique: ${stringsRefs}`,
+          message: `In plugin audits the slugs are not unique: ${stringsRefs}`,
         };
       },
     ),
