@@ -4,6 +4,21 @@
   "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/models",
+        "main": "packages/models/src/index.ts",
+        "tsConfig": "packages/models/tsconfig.lib.json",
+        "assets": ["packages/models/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -13,10 +28,10 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/cli"],
+      "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/cli"
+        "reportsDirectory": "../../coverage/packages/models"
       }
     }
   },
