@@ -29,11 +29,9 @@ export function slugSchema(
 }
 
 /**
- * Schema for a reference to a plugin's
- * - audit in categories (e.g. 'eslint#max-lines')
- * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
+ * Schema for a reference to a plugin's audit in categories (e.g. 'eslint#max-lines')
  */
-export function refSchema(description: string) {
+export function auditRefSchema(description: string) {
   return (
     z
       .string({ description })
