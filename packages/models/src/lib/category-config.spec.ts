@@ -18,7 +18,7 @@ describe('categoryConfigSchema', () => {
     const cfg = mockCategory({ categorySlug: invalidCategorySlug });
 
     expect(() => categoryConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patter`,
+      `slug has to follow the pattern`,
     );
   });
 
