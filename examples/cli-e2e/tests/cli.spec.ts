@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import { cli } from '@quality-metrics/cli';
 import { execSync } from 'child_process';
 
