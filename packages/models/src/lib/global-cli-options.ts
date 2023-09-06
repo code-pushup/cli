@@ -34,10 +34,10 @@ export const globalCliArgsSchema = z.object({
     })
     .default(false),
   configPath: generalFilePathSchema(
-    "Path to config file in format `ts` or `mjs`. defaults to 'qm-config.js'",
+    "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
   )
     .optional()
-    .default('qm-config.js'),
+    .default('code-pushup.config.js'),
 });
 
 export type GlobalCliArgsSchema = z.infer<typeof globalCliArgsSchema>;
