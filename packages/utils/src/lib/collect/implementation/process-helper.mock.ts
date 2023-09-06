@@ -1,6 +1,6 @@
-import {vi} from 'vitest';
-import {ProcessConfig} from './execute-process';
-import {join} from 'path';
+import { vi } from 'vitest';
+import { ProcessConfig } from './execute-process';
+import { join } from 'path';
 
 const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
 
@@ -14,13 +14,16 @@ export function getAsyncProcessRunnerConfig(
     throwError?: boolean;
     interval?: number;
     runs?: number;
+    outputPath?: string;
   } = { throwError: false },
 ) {
+  const outputPath = cfg?.outputPath || './out-async-runner.json';
   const args = [asyncProcessPath];
   cfg?.interval ? args.push(cfg?.interval + '') : args.push('10');
   cfg?.runs ? args.push(cfg?.runs + '') : args.push('4');
   cfg?.throwError ? args.push('1') : args.push('0');
-  return { command: 'node', args, outputPath: './out-async-runner.json' };
+  args.push(outputPath);
+  return { command: 'node', args, outputPath };
 }
 
 /**
@@ -39,7 +42,9 @@ export function getSyncProcessRunnerConfig(
     args: [
       '-c',
       `echo '${JSON.stringify({
-        audits: cfg.throwError ? ({ throwError: cfg.throwError } as unknown) : [],
+        audits: cfg.throwError
+          ? ({ throwError: cfg.throwError } as unknown)
+          : [],
       })}' > ${cfg.outputPath}`,
     ],
     outputPath: cfg.outputPath,

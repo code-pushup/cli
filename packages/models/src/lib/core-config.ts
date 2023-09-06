@@ -1,4 +1,4 @@
-import {Schema, z} from 'zod';
+import { Schema, z } from 'zod';
 import { pluginConfigSchema } from './plugin-config';
 import { categoryConfigSchema } from './category-config';
 import { uploadConfigSchema } from './upload-config';
@@ -28,26 +28,27 @@ import {
  *   console.error('Invalid plugin config:', validationResult.error);
  * }
  */
-export const unrefinedCoreConfigSchema = z
-  .object({
-    plugins: z.array(pluginConfigSchema, {
-      description:
-        'List of plugins to be used (official, community-provided, or custom)',
-    }),
-    /** portal configuration for persisting results */
-    persist: persistConfigSchema,
-    /** portal configuration for uploading results */
-    upload: uploadConfigSchema.optional(),
-    categories: z
-      .array(categoryConfigSchema, {
-        description: 'Categorization of individual audits',
-      })
-      // categories slugs are unique
-      .refine(
-        categoryCfg => !getDuplicateSlugCategories(categoryCfg),
-        categoryCfg => ({ message: duplicateSlugCategoriesErrorMsg(categoryCfg) }),
-      ),
-  })
+export const unrefinedCoreConfigSchema = z.object({
+  plugins: z.array(pluginConfigSchema, {
+    description:
+      'List of plugins to be used (official, community-provided, or custom)',
+  }),
+  /** portal configuration for persisting results */
+  persist: persistConfigSchema,
+  /** portal configuration for uploading results */
+  upload: uploadConfigSchema.optional(),
+  categories: z
+    .array(categoryConfigSchema, {
+      description: 'Categorization of individual audits',
+    })
+    // categories slugs are unique
+    .refine(
+      categoryCfg => !getDuplicateSlugCategories(categoryCfg),
+      categoryCfg => ({
+        message: duplicateSlugCategoriesErrorMsg(categoryCfg),
+      }),
+    ),
+});
 
 export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
 
@@ -57,14 +58,16 @@ export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
  *
  */
 export function refineCoreConfig(schema: Schema): Schema {
-  return schema
-    // categories point to existing audit or group refs
-    .refine(
-      coreCfg => !getMissingRefsForCategories(coreCfg),
-      coreCfg => ({
-        message: missingRefsForCategoriesErrorMsg(coreCfg),
-      }),
-    );
+  return (
+    schema
+      // categories point to existing audit or group refs
+      .refine(
+        coreCfg => !getMissingRefsForCategories(coreCfg),
+        coreCfg => ({
+          message: missingRefsForCategoriesErrorMsg(coreCfg),
+        }),
+      )
+  );
 }
 
 export type CoreConfigSchema = z.infer<typeof coreConfigSchema>;
@@ -98,9 +101,8 @@ function getMissingRefsForCategories(coreCfg) {
   if (Array.isArray(missingAuditRefs) && missingAuditRefs.length > 0) {
     missingRefs.push(...missingAuditRefs);
   }
-  const groupRefsFromCategory = coreCfg.categories.flatMap(
-    ({ metrics }) =>
-      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref)
+  const groupRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
+    metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
     return groups.map(({ slug }) => `${meta.slug}#group:${slug}`);

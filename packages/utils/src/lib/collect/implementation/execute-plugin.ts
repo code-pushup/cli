@@ -1,7 +1,11 @@
-import {PluginConfigSchema, runnerOutputSchema, RunnerOutputSchema} from '@quality-metrics/models';
-import {join} from 'path';
-import {executeProcess, ProcessConfig} from './execute-process';
-import {readFileSync} from 'fs';
+import {
+  PluginConfigSchema,
+  runnerOutputSchema,
+  RunnerOutputSchema,
+} from '@quality-metrics/models';
+import { join } from 'path';
+import { executeProcess, ProcessConfig } from './execute-process';
+import { readFileSync } from 'fs';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -11,8 +15,10 @@ import {readFileSync} from 'fs';
 export class PluginOutputError extends Error {
   //@TODO add trace of zod parsing error
   constructor(pluginSlug: string, error?: Error) {
-    super(`Plugin output of plugin with slug ${pluginSlug} is invalid. \n Zod Error: ${error?.message}`);
-    if(error) {
+    super(
+      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Zod Error: ${error?.message}`,
+    );
+    if (error) {
       this.name = error.name;
       this.stack = error.stack;
     }
@@ -48,7 +54,7 @@ export class PluginOutputError extends Error {
  */
 export function executePlugin(
   cfg: PluginConfigSchema,
-  observer?: ProcessConfig['observer']
+  observer?: ProcessConfig['observer'],
 ): Promise<RunnerOutputSchema> {
   const command = cfg.runner.command.toString() || '';
   const args = cfg.runner.args || [];
@@ -71,7 +77,6 @@ export function executePlugin(
       })
   );
 }
-
 
 /**
  * Execute multiple plugins and aggregates their output.
@@ -99,13 +104,10 @@ export function executePlugin(
 export async function executePlugins(
   plugins: PluginConfigSchema[],
 ): Promise<RunnerOutputSchema> {
-  return await plugins.reduce(
-    async (acc, pluginCfg) => {
-      const outputs = await acc;
-      const runnerOutput = await executePlugin(pluginCfg);
-      outputs.audits.concat(runnerOutput.audits);
-      return outputs;
-    },
-    Promise.resolve({audits: []} as RunnerOutputSchema),
-  );
+  return await plugins.reduce(async (acc, pluginCfg) => {
+    const outputs = await acc;
+    const runnerOutput = await executePlugin(pluginCfg);
+    outputs.audits.concat(runnerOutput.audits);
+    return outputs;
+  }, Promise.resolve({ audits: [] } as RunnerOutputSchema));
 }

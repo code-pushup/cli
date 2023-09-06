@@ -1,7 +1,25 @@
-import {executeProcess} from './execute-process';
-import {getAsyncProcessRunnerConfig, mockProcessConfig} from './process-helper.mock';
+import { executeProcess } from './execute-process';
+import {
+  getAsyncProcessRunnerConfig,
+  mockProcessConfig,
+} from './process-helper.mock';
+import { vol } from 'memfs';
+import { join } from 'path';
+
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+
+const outFolder = '/output';
+const outName = 'out-async-runner.json';
+const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
+  beforeAll(() => {
+    vol.fromJSON({ [outName]: '' }, outFolder);
+  });
+
   it('should work with shell command `ls`', async () => {
     const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
     const { observer } = cfg;
@@ -28,7 +46,7 @@ describe('executeProcess', () => {
 
   it('should work with npx command `node custom-script.js`', async () => {
     const cfg = mockProcessConfig(
-      getAsyncProcessRunnerConfig({ interval: 10 }),
+      getAsyncProcessRunnerConfig({ interval: 10, outputPath }),
     );
     const { observer } = cfg;
     const errorSpy = vi.fn();

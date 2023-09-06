@@ -1,4 +1,4 @@
-import {spawn} from 'child_process';
+import { spawn } from 'child_process';
 
 /**
  * Represents the process result.
@@ -128,8 +128,8 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const {observer} = cfg;
-  const {next, error, complete} = observer || {};
+  const { observer } = cfg;
+  const { next, error, complete } = observer || {};
 
   return new Promise((resolve, reject) => {
     const process = spawn(cfg.command, cfg.args);
@@ -152,9 +152,9 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     process.on('close', code => {
       if (code === 0) {
         complete?.();
-        resolve({code, stdout, stderr});
+        resolve({ code, stdout, stderr });
       } else {
-        const errorMsg = new ProcessError({code, stdout, stderr});
+        const errorMsg = new ProcessError({ code, stdout, stderr });
         error?.(errorMsg);
         reject(errorMsg);
       }

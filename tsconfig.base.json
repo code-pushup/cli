@@ -16,12 +16,12 @@
     "baseUrl": ".",
     "paths": {
       "@quality-metrics/cli": ["packages/cli/src/index.ts"],
-      "@quality-metrics/utils": ["packages/utils/src/index.ts"],
-      "@quality-metrics/models": ["packages/models/src/index.ts"],
       "@quality-metrics/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
       "@quality-metrics/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
-      ]
+      ],
+      "@quality-metrics/models": ["packages/models/src/index.ts"],
+      "@quality-metrics/utils": ["packages/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

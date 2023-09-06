@@ -2,9 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "es2022",
-    "types": [
-      "vitest"
-    ]
+    "types": ["vitest"]
   },
   "files": [],
   "include": [],

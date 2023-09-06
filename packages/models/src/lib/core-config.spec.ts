@@ -4,7 +4,7 @@ import {
   mockConfig,
   mockPluginConfig,
 } from './implementation/helpers.mock';
-import {coreConfigSchema} from './core-config';
+import { coreConfigSchema } from './core-config';
 
 /*
  - plugin slug: es-lint
