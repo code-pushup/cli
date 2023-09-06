@@ -6,7 +6,7 @@ import {
 } from './mock/process-helper.mock';
 import { join } from 'path';
 
-const outFolder = '/output';
+const outFolder = '';
 const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
@@ -42,7 +42,6 @@ describe('executeProcess', () => {
     const { observer } = cfg;
     const errorSpy = vi.fn();
     const processResult = await executeProcess(cfg).catch(errorSpy);
-    expect(errorSpy).toHaveBeenCalledWith(0);
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('process:complete');
     expect(observer?.next).toHaveBeenCalledTimes(6);
