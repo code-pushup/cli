@@ -16,7 +16,7 @@ describe('pluginConfigSchema', () => {
     const cfg = mockPluginConfig({ pluginSlug: invalidCategorySlug });
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patters`,
+      `slug has to follow the patter`,
     );
   });
 
@@ -25,7 +25,7 @@ describe('pluginConfigSchema', () => {
     const cfg = mockPluginConfig({ auditSlug: [invalidAuditRef] });
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patters`,
+      `slug has to follow the patter`,
     );
   });
 
@@ -46,7 +46,7 @@ describe('pluginConfigSchema', () => {
     cfg.groups = [mockGroupConfig({ groupSlug: invalidGroupSlug })];
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patters`,
+      `slug has to follow the patter`,
     );
   });
 
@@ -56,7 +56,7 @@ describe('pluginConfigSchema', () => {
     cfg.groups = [mockGroupConfig({ auditSlug: invalidAuditRef })];
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patters`,
+      `slug has to follow the patter`,
     );
   });
 
