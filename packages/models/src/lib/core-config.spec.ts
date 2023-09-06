@@ -4,7 +4,7 @@ import {
   mockConfig,
   mockPluginConfig,
 } from './implementation/helpers.mock';
-import { coreConfigSchema } from './core-config';
+import {coreConfigSchema} from './core-config';
 
 /*
  - plugin slug: es-lint
@@ -73,7 +73,7 @@ describe('CoreConfig', () => {
     const missingSlug = 'missing-plugin-slug-in-category#groups:auditref';
     cfg.categories.push(
       mockCategory({
-        categorySlug: 'test',
+        categorySlug: 'test-slug',
         auditRefOrGroupRef: [`${missingSlug}`],
       }),
     );

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {Schema, z} from 'zod';
 import { pluginConfigSchema } from './plugin-config';
 import { categoryConfigSchema } from './category-config';
 import { uploadConfigSchema } from './upload-config';
@@ -28,7 +28,7 @@ import {
  *   console.error('Invalid plugin config:', validationResult.error);
  * }
  */
-export const coreConfigSchema = z
+export const unrefinedCoreConfigSchema = z
   .object({
     plugins: z.array(pluginConfigSchema, {
       description:
@@ -45,18 +45,27 @@ export const coreConfigSchema = z
       // categories slugs are unique
       .refine(
         categoryCfg => !getDuplicateSlugCategories(categoryCfg),
-        categoryCfg => ({
-          message: duplicateSlugCategoriesErrorMsg(categoryCfg),
-        }),
+        categoryCfg => ({ message: duplicateSlugCategoriesErrorMsg(categoryCfg) }),
       ),
   })
-  // categories point to existing audit or group refs
-  .refine(
-    coreCfg => !getMissingRefsForCategories(coreCfg),
-    coreCfg => ({
-      message: missingRefsForCategoriesErrorMsg(coreCfg),
-    }),
-  );
+
+export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
+
+/**
+ * Add refinements to coreConfigSchema
+ * workaround for zod issue: https://github.com/colinhacks/zod/issues/454
+ *
+ */
+export function refineCoreConfig(schema: Schema): Schema {
+  return schema
+    // categories point to existing audit or group refs
+    .refine(
+      coreCfg => !getMissingRefsForCategories(coreCfg),
+      coreCfg => ({
+        message: missingRefsForCategoriesErrorMsg(coreCfg),
+      }),
+    );
+}
 
 export type CoreConfigSchema = z.infer<typeof coreConfigSchema>;
 
@@ -91,7 +100,7 @@ function getMissingRefsForCategories(coreCfg) {
   }
   const groupRefsFromCategory = coreCfg.categories.flatMap(
     ({ metrics }) =>
-      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref), // plg#group:perf
+      metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref)
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
     return groups.map(({ slug }) => `${meta.slug}#group:${slug}`);

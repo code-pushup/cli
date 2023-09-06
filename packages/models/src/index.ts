@@ -1,4 +1,4 @@
-export { coreConfigSchema, CoreConfigSchema } from './lib/core-config';
+export { unrefinedCoreConfigSchema, refineCoreConfig, coreConfigSchema, CoreConfigSchema } from './lib/core-config';
 export { uploadConfigSchema, UploadConfigSchema } from './lib/upload-config';
 export { pluginConfigSchema, PluginConfigSchema } from './lib/plugin-config';
 export {
