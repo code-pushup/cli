@@ -27,7 +27,7 @@ describe('categoryConfigSchema', () => {
     const cfg = mockCategory({ auditRefOrGroupRef: [invalidAuditRef] });
 
     expect(() => categoryConfigSchema.parse(cfg)).toThrow(
-      `ref has to follow the patter`,
+      `ref has to follow the pattern`,
     );
   });
 
