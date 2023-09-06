@@ -1,14 +1,16 @@
-import {executeProcess} from './execute-process';
-import {getAsyncProcessRunnerConfig, mockProcessConfig,} from './mock/process-helper.mock';
-import {join} from 'path';
-import {expect} from "vitest";
+import { describe, it, expect, vi } from 'vitest';
+import { executeProcess } from './execute-process';
+import {
+  getAsyncProcessRunnerConfig,
+  mockProcessConfig,
+} from './mock/process-helper.mock';
+import { join } from 'path';
 
 const outFolder = '/output';
 const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-
   it('should work with shell command `ls`', async () => {
     const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
     const { observer } = cfg;
