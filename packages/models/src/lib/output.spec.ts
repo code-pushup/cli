@@ -22,7 +22,7 @@ describe('runnerOutputSchema', () => {
   it('should throw if slugs of audits are invalid', () => {
     const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'slug has to follow the patters',
+      'slug has to follow the pattern',
     );
   });
 

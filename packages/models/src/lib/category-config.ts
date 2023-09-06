@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  auditOrGroupRefSchema,
+  refSchema,
   descriptionSchema,
   slugSchema,
   titleSchema,
@@ -37,7 +37,7 @@ export const categoryConfigSchema = z.object(
       .array(
         z.object(
           {
-            ref: auditOrGroupRefSchema(
+            ref: refSchema(
               "Reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'lhci#group:performance')",
             ),
             weight: weightSchema(),

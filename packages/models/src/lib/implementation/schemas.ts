@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import {
   generalFilePathRegex,
-  refOrGroupRegex,
   refRegex,
   slugRegex,
   unixFilePathRegex,
@@ -31,32 +30,13 @@ export function slugSchema(
 /**
  * Schema for a reference to a plugin's audit in categories (e.g. 'eslint#max-lines')
  */
-export function auditRefSchema(description: string) {
+export function refSchema(description: string) {
   return (
     z
       .string({ description })
       // also validates ``and ` `
       .regex(refRegex, {
         message: 'The ref has to follow the pattern {plugin-slug}#{audit-slug}',
-      })
-      .max(256)
-  );
-}
-
-/**
- * Schema for a reference to a plugin's
- * - audit in categories (e.g. 'eslint#max-lines')
- * - or group (e.g. 'groups:lhci#performance')
- * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
- */
-export function auditOrGroupRefSchema(description: string) {
-  return (
-    z
-      .string({ description })
-      // also validates ``and ` `
-      .regex(refOrGroupRegex, {
-        message:
-          'The ref has to follow the pattern {plugin-slug}#{audit-slug} or {plugin-slug}#group:{audit-slug}',
       })
       .max(256)
   );

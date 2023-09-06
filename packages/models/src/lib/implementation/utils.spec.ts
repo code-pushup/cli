@@ -6,7 +6,6 @@ import {
   slugRegex,
   hasMissingStrings,
   hasDuplicateStrings,
-  refOrGroupRegex,
 } from './utils';
 
 describe('slugRegex', () => {
@@ -65,33 +64,6 @@ describe('refRegex', () => {
     '123-plugin-slug#group:audit:slug-123',
   ])(`should not match invalid ref %p`, ref => {
     expect(ref).not.toMatch(refRegex);
-  });
-});
-
-describe('refOrGroupRegex', () => {
-  // test valid and array of strings against refRegex with it blocks
-  it.each([
-    'pluginslug#auditslug',
-    'plugin-slug#auditslug',
-    '123-plugin#audit-slug-123',
-    // groups
-    'plugin-slug#group:audit-slug',
-    '123-plugin-slug#group:audit-slug-123',
-  ])(`should match valid ref %p`, ref => {
-    expect(ref).toMatch(refOrGroupRegex);
-  });
-
-  // test invalid and array of strings against refRegex with it blocks
-  it.each([
-    '',
-    ' ',
-    'hello #world',
-    '123#world there',
-    'hello-123#World',
-    'hello.123#world',
-    'the-hello:123#world there',
-  ])(`should not match invalid ref %p`, ref => {
-    expect(ref).not.toMatch(refOrGroupRegex);
   });
 });
 
