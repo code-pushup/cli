@@ -9,20 +9,10 @@ export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /**
  * Regular expression to validate a reference to a plugin's:
  * - audit (e.g. 'eslint#max-lines')
- * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
+ * - or group (e.g. lighthouse#group:performance)
  * Also validates ``and ` `
  */
 export const refRegex =
-  /^([a-z0-9:]+(?:-[a-z0-9]*)*)#([a-z0-9]+(?:-[a-z0-9]+)*$)/;
-
-/**
- * Regular expression to validate a reference to a plugin's:
- * - audit (e.g. 'eslint#max-lines')
- * - or audit in RunnerOutput (e.g. 'eslint#max-lines')
- * - or group ref (e.g. plugin-slug#group:basics)
- * Also validates ``and ` `
- */
-export const refOrGroupRegex =
   /^([a-z0-9:]+(?:-[a-z0-9]*)*)#(group:)*([a-z0-9]+(?:-[a-z0-9]+)*$)/;
 
 /**
