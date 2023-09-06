@@ -58,7 +58,7 @@ export function auditOrGroupRefSchema(description: string) {
       // also validates ``and ` `
       .regex(refOrGroupRegex, {
         message:
-          'The ref has to follow the patters {plugin-slug}#{audit-slug} or {plugin-slug}#group:{audit-slug}',
+          'The ref has to follow the pattern {plugin-slug}#{audit-slug} or {plugin-slug}#group:{audit-slug}',
       })
       .max(256)
   );
