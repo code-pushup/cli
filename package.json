@@ -9,7 +9,6 @@
   ],
   "dependencies": {
     "bundle-require": "^4.0.1",
-    "tsc": "^2.0.4",
     "zod": "^3.22.1"
   },
   "devDependencies": {
