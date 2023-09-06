@@ -22,7 +22,7 @@ export function slugSchema(
           'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
       })
       .max(128, {
-        message: 'slug can be may 128 character',
+        message: 'slug can be max 128 characters long',
       })
   );
 }
