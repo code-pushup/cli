@@ -1,5 +1,5 @@
 import { executePlugin, executePlugins } from './execute-plugin';
-import { mockPluginConfig } from './helpers.mock';
+import { mockPluginConfig } from './mock/schema-helper.mock';
 import {
   pluginConfigSchema,
   runnerOutputSchema,

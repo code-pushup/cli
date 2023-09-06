@@ -27,7 +27,6 @@
     "esbuild": "^0.17.17",
     "eslint": "~8.46.0",
     "lighthouse": "^11.0.0",
-    "memfs": "^4.2.1",
     "nx": "16.7.4",
     "prettier": "^2.6.2",
     "type-fest": "^4.3.1",

@@ -1,24 +1,13 @@
-import { executeProcess } from './execute-process';
-import {
-  getAsyncProcessRunnerConfig,
-  mockProcessConfig,
-} from './process-helper.mock';
-import { vol } from 'memfs';
-import { join } from 'path';
-
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
+import {executeProcess} from './execute-process';
+import {getAsyncProcessRunnerConfig, mockProcessConfig,} from './mock/process-helper.mock';
+import {join} from 'path';
+import {expect} from "vitest";
 
 const outFolder = '/output';
 const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  beforeAll(() => {
-    vol.fromJSON({ [outName]: '' }, outFolder);
-  });
 
   it('should work with shell command `ls`', async () => {
     const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
@@ -26,7 +15,7 @@ describe('executeProcess', () => {
     const processResult = await executeProcess(cfg);
     expect(observer?.next).toHaveBeenCalledTimes(1);
     expect(observer?.complete).toHaveBeenCalledTimes(1);
-    expect(processResult.stdout).toContain('..'); // `..` is only listed if the args work
+    expect(processResult.stdout).toContain('..');
   });
 
   it('should work with npx command `node -v`', async () => {
@@ -51,6 +40,7 @@ describe('executeProcess', () => {
     const { observer } = cfg;
     const errorSpy = vi.fn();
     const processResult = await executeProcess(cfg).catch(errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(0);
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('process:complete');
     expect(observer?.next).toHaveBeenCalledTimes(6);
@@ -68,7 +58,7 @@ describe('executeProcess', () => {
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(processResult).toBe(undefined);
     expect(observer?.complete).toHaveBeenCalledTimes(0);
-    expect(observer?.next).toHaveBeenCalledTimes(2); // 1 for next + 1 for the error in the sterr.on and 1 for on 'error'
+    expect(observer?.next).toHaveBeenCalledTimes(2);
     expect(observer?.error).toHaveBeenCalledTimes(1);
   });
 });

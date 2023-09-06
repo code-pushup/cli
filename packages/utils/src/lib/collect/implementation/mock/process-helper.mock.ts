@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { ProcessConfig } from './execute-process';
+import { ProcessConfig } from '../execute-process';
 import { join } from 'path';
 
 const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
