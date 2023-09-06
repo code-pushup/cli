@@ -1,5 +1,5 @@
-import { executeProcess } from './execute-process';
-import { getAsyncProcessRunnerConfig, mockProcessConfig } from './helper.mock';
+import {executeProcess} from './execute-process';
+import {getAsyncProcessRunnerConfig, mockProcessConfig} from './process-helper.mock';
 
 describe('executeProcess', () => {
   it('should work with shell command `ls`', async () => {

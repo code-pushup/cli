@@ -8,29 +8,16 @@
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/utils",
-        "main": "packages/utils/src/index.ts",
-        "tsConfig": "packages/utils/tsconfig.lib.json",
-        "assets": ["packages/utils/*.md"],
+        "outputPath": "dist/packages/models",
+        "main": "packages/models/src/index.ts",
+        "tsConfig": "packages/models/tsconfig.lib.json",
+        "assets": ["packages/models/*.md"],
         "esbuildConfig": "esbuild.config.js"
-      },
-      "configurations": {
-        "watch": {
-          "watch": true
-        }
       }
     },
-    "run": {
-      "command": "npx ./dist/packages/utils run --configPath=./packages/cli-utils/src/lib/read-config.mock.cjs"
-    },
-    "run-node": {
-      "command": "node ./dist/packages/utils/src/bin.js run --configPath=./cpu-config.mock.mjs"
-    },
     "publish": {
-      "command": "node tools/scripts/publish.mjs cli-utils {args.ver} {args.tag}",
-      "dependsOn": [
-        "build"
-      ]
+      "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
+      "dependsOn": ["build"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
@@ -59,8 +46,5 @@
       }
     }
   },
-  "tags": [
-    "scope:utils",
-    "type:app"
-  ]
+  "tags": []
 }

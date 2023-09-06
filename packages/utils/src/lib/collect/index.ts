@@ -1,12 +1,13 @@
 import {
-  coreConfigSchema,
+  unrefinedCoreConfigSchema,
   CoreConfigSchema,
-  runnerOutputSchema,
   globalCliArgsSchema,
   GlobalCliArgsSchema,
+  refineCoreConfig,
+  runnerOutputSchema
 } from '@quality-metrics/models';
-import { executePlugins } from './implementation/execute-plugin';
-import { z } from 'zod';
+import {executePlugins} from './implementation/execute-plugin';
+import {z} from 'zod';
 
 /**
  * Define Zod schema for the RunAndCollectOptions type
@@ -28,12 +29,7 @@ import { z } from 'zod';
  * }
  *
  */
-//console.log(numeric.safeParse("1234")); // => 1234
-z.preprocess(
-  a => parseInt(z.string().parse(a), 10),
-  z.number().positive().max(100),
-);
-export const runAndCollectOptions = z
+export const runAndCollectOptions =  refineCoreConfig(z
   .object({
     parallel: z
       .preprocess(
@@ -44,7 +40,9 @@ export const runAndCollectOptions = z
       .default(1),
   })
   .merge(globalCliArgsSchema)
-  .merge(coreConfigSchema);
+  .merge(unrefinedCoreConfigSchema)
+)
+
 export type RunAndCollectOptions = z.infer<typeof runAndCollectOptions> &
   GlobalCliArgsSchema &
   CoreConfigSchema;

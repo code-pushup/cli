@@ -1,8 +1,4 @@
-import {
-  PluginConfigSchema,
-  runnerOutputSchema,
-  RunnerOutputSchema,
-} from '@quality-metrics/models';
+import {PluginConfigSchema, runnerOutputSchema, RunnerOutputSchema} from '@quality-metrics/models';
 import {join} from 'path';
 import {executeProcess, ProcessConfig} from './execute-process';
 import {readFileSync} from 'fs';
@@ -14,8 +10,12 @@ import {readFileSync} from 'fs';
  */
 export class PluginOutputError extends Error {
   //@TODO add trace of zod parsing error
-  constructor(message: string) {
-    super(`Plugin output ${message}`);
+  constructor(pluginSlug: string, error?: Error) {
+    super(`Plugin output of plugin with slug ${pluginSlug} is invalid. \n Zod Error: ${error?.message}`);
+    if(error) {
+      this.name = error.name;
+      this.stack = error.stack;
+    }
   }
 }
 
@@ -63,11 +63,10 @@ export function executePlugin(
       // read process output from file system and parse it
       .then(() => {
         const outContent = readFileSync(processOutputPath).toString();
-        // @TODO better error message e.g. `Plugin ${cfg.slug} produced wrong output under ${processOutputPath}.` + zod trace
         try {
           return runnerOutputSchema.parse(JSON.parse(outContent));
         } catch (e) {
-          throw new PluginOutputError(cfg.meta.slug);
+          throw new PluginOutputError(cfg.meta.slug, e);
         }
       })
   );

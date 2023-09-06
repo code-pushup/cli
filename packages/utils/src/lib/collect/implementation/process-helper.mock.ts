@@ -1,50 +1,6 @@
-import { ProcessConfig } from './execute-process';
-import { join } from 'path';
-import { pluginConfigSchema } from '@quality-metrics/models';
-
-/**
- * Helps to use/configure the mock plugin in tests.
- *
- * @example
- *
- * // Example data
- * const pluginCfg = mockPlugin({ invalidPlugin: true, invalidRunnerOutput: false });
- *
- * @param opt
- */
-export function mockPlugin(
-  opt: { invalidPlugin?: boolean; invalidRunnerOutput?: boolean } = {
-    invalidPlugin: false,
-    invalidRunnerOutput: false,
-  },
-) {
-  const outputPath = 'out-execute-plugin.json';
-  return  pluginConfigSchema({
-    audits: [],
-    runner: {
-      command: 'bash',
-      args: [
-        '-c',
-        `echo '${JSON.stringify({
-          audits: opt?.invalidPlugin
-            ? ({ invalidPlugin: opt.invalidPlugin } as unknown)
-            : opt?.invalidRunnerOutput
-            ? ''
-            : [],
-          date: new Date().toISOString(),
-          duration: 200,
-        })}' > ${outputPath}`,
-      ],
-      outputPath: outputPath,
-    },
-    groups: [],
-    meta: {
-      slug: 'execute-plugin',
-      name: 'execute plugin',
-      type: 'static-analysis',
-    },
-  });
-}
+import {vi} from 'vitest';
+import {ProcessConfig} from './execute-process';
+import {join} from 'path';
 
 const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
 
