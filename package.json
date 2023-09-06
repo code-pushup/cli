@@ -8,7 +8,9 @@
     "dist/packages/*"
   ],
   "dependencies": {
+    "@nx/nx-darwin-arm64": "^16.8.0",
     "bundle-require": "^4.0.1",
+    "tsc": "^2.0.4",
     "zod": "^3.22.1"
   },
   "devDependencies": {
