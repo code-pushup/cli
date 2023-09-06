@@ -20,7 +20,7 @@ export function slugSchema(
       // also validates ``and ` `
       .regex(slugRegex, {
         message:
-          'The slug has to follow the patters [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
+          'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
       })
       .max(128, {
         message: 'slug can be may 128 character',
