@@ -1,7 +1,7 @@
 /**
  * Regular expression to validate a slug for categories, plugins and audits.
  * - audit (e.g. 'max-lines')
- * - or category in RunnerOutput (e.g. 'performance')
+ * - category (e.g. 'performance')
  * Also validates ``and ` `
  */
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
