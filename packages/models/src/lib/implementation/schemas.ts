@@ -39,7 +39,7 @@ export function refSchema(description: string) {
       .string({ description })
       // also validates ``and ` `
       .regex(refRegex, {
-        message: 'The ref has to follow the patters {plugin-slug}#{audit-slug}',
+        message: 'The ref has to follow the pattern {plugin-slug}#{audit-slug}',
       })
       .max(256)
   );
