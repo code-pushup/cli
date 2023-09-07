@@ -8,6 +8,8 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type HackForCyclicRefs = any;
 /**
  *
  * Define Zod schema for the CategoryConfig type
@@ -61,12 +63,14 @@ export const categoryConfigSchema = z.object(
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
 // helper for validator: categories have unique refs to audits or groups
-export function duplicateRefsInCategoryMetricsErrorMsg(metrics) {
+export function duplicateRefsInCategoryMetricsErrorMsg(
+  metrics: HackForCyclicRefs,
+) {
   const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
   return `In the categories, the following audit or group refs are duplicates: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInCategoryMetrics(metrics) {
+function getDuplicateRefsInCategoryMetrics(metrics: HackForCyclicRefs[]) {
   return hasDuplicateStrings(metrics.map(({ ref }) => ref));
 }

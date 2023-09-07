@@ -3,9 +3,9 @@ import {
   RunnerOutput,
   runnerOutputSchema,
 } from '@quality-metrics/models';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { executeProcess, ProcessConfig } from './execute-process';
-import { readFile } from 'fs/promises';
 
 /**
  * Error thrown when plugin output is invalid.

@@ -34,6 +34,9 @@ const pluginMetadataSchema = z.object(
   },
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type HackForCyclicRefs = any;
+
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(
   {
@@ -95,6 +98,8 @@ export const groupSchema = z.object(
   },
 );
 
+type GroupSchema = z.infer<typeof groupSchema>;
+
 /**
  * Define Zod schema for the PluginConfig type
  *
@@ -135,9 +140,9 @@ export const pluginConfigSchema = z
       })
       .optional()
       .refine(
-        auditMetadata => !getDuplicateSlugsInGroups(auditMetadata),
-        auditMetadata => ({
-          message: duplicateSlugsInGroupsErrorMsg(auditMetadata),
+        groups => !getDuplicateSlugsInGroups(groups),
+        groups => ({
+          message: duplicateSlugsInGroupsErrorMsg(groups),
         }),
       ),
   })
@@ -234,6 +239,8 @@ const auditSchema = z.object(
   { description: 'Audit information' },
 );
 
+type AuditSchema = z.infer<typeof auditSchema>;
+
 /**
  * Define Zod schema for the RunnerOutput type.
  */
@@ -252,49 +259,53 @@ export const runnerOutputSchema = z.object(
 export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(auditMetadata) {
-  const duplicateRefs = getDuplicateSlugsInAudits(auditMetadata);
+function duplicateSlugsInAuditsErrorMsg(audits: AuditSchema[]) {
+  const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(auditMetadata) {
-  return hasDuplicateStrings(auditMetadata.map(({ slug }) => slug));
+function getDuplicateSlugsInAudits(audits: AuditSchema[]) {
+  return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups) {
+function duplicateSlugsInGroupsErrorMsg(groups: GroupSchema[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
-function getDuplicateSlugsInGroups(groups) {
-  return hasDuplicateStrings(groups.map(({ slug }) => slug));
+function getDuplicateSlugsInGroups(groups: GroupSchema[] | undefined) {
+  return Array.isArray(groups)
+    ? hasDuplicateStrings(groups.map(({ slug }) => slug))
+    : false;
 }
 
 // helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits) {
+function duplicateRefsInGroupsErrorMsg(groupAudits: HackForCyclicRefs) {
   const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
   return `In plugin groups the audit refs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInGroups(groupAudits) {
+function getDuplicateRefsInGroups(groupAudits: HackForCyclicRefs[]) {
   return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
 }
 
 // helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(groupCfg) {
-  const missingRefs = getMissingRefsFromGroups(groupCfg);
+function missingRefsFromGroupsErrorMsg(pluginCfg: HackForCyclicRefs) {
+  const missingRefs = getMissingRefsFromGroups(pluginCfg);
   return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }
 
-function getMissingRefsFromGroups(pluginCfg) {
-  if (pluginCfg?.groups.length && pluginCfg?.audits.length) {
+function getMissingRefsFromGroups(pluginCfg: HackForCyclicRefs) {
+  if (pluginCfg?.groups?.length && pluginCfg.audits.length) {
     return hasMissingStrings(
-      pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
-      pluginCfg.audits.map(({ slug }) => slug),
+      pluginCfg.groups.flatMap(({ audits }: HackForCyclicRefs) =>
+        audits.map(({ ref }: HackForCyclicRefs) => ref),
+      ),
+      pluginCfg.audits.map(({ slug }: HackForCyclicRefs) => slug),
     );
   }
   return false;

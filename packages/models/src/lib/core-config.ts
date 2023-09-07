@@ -1,6 +1,6 @@
 import { Schema, z } from 'zod';
 import { pluginConfigSchema } from './plugin-config';
-import { categoryConfigSchema } from './category-config';
+import { CategoryConfig, categoryConfigSchema } from './category-config';
 import { uploadConfigSchema } from './upload-config';
 import { persistConfigSchema } from './persist-config';
 import {
@@ -70,10 +70,10 @@ export function refineCoreConfig(schema: Schema): Schema {
   );
 }
 
-export type CoreConfig = z.infer<typeof coreConfigSchema>;
+export type CoreConfig = z.infer<typeof unrefinedCoreConfigSchema>;
 
 // helper for validator: categories point to existing audit or group refs
-function missingRefsForCategoriesErrorMsg(coreCfg) {
+function missingRefsForCategoriesErrorMsg(coreCfg: CoreConfig) {
   const missingRefs = getMissingRefsForCategories(coreCfg);
   return `In the categories, the following plugin refs do not exist in the provided plugins: ${errorItems(
     missingRefs,
@@ -84,7 +84,7 @@ function isGroupRef(ref: string): boolean {
   return ref.includes('group:');
 }
 
-function getMissingRefsForCategories(coreCfg) {
+function getMissingRefsForCategories(coreCfg: CoreConfig) {
   const missingRefs = [];
   const auditRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
     metrics.filter(({ ref }) => !isGroupRef(ref)).map(({ ref }) => ref),
@@ -105,7 +105,9 @@ function getMissingRefsForCategories(coreCfg) {
     metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
-    return groups.map(({ slug }) => `${meta.slug}#group:${slug}`);
+    return Array.isArray(groups)
+      ? groups.map(({ slug }) => `${meta.slug}#group:${slug}`)
+      : [];
   });
   const missingGroupRefs = hasMissingStrings(
     groupRefsFromCategory,
@@ -119,13 +121,13 @@ function getMissingRefsForCategories(coreCfg) {
 }
 
 // helper for validator: categories slugs are unique
-function duplicateSlugCategoriesErrorMsg(categoryCfg) {
-  const duplicateStringSlugs = getDuplicateSlugCategories(categoryCfg);
+function duplicateSlugCategoriesErrorMsg(categories: CategoryConfig[]) {
+  const duplicateStringSlugs = getDuplicateSlugCategories(categories);
   return `In the categories, the following slugs are duplicated: ${errorItems(
     duplicateStringSlugs,
   )}`;
 }
 
-function getDuplicateSlugCategories(categoryCfg) {
-  return hasDuplicateStrings(categoryCfg.map(({ slug }) => slug));
+function getDuplicateSlugCategories(categories: CategoryConfig[]) {
+  return hasDuplicateStrings(categories.map(({ slug }) => slug));
 }
