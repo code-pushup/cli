@@ -31,7 +31,7 @@ export function yargsCli(
   },
 ): Argv<CoreConfig> {
   const { usageMessage, scriptName } = cfg;
-  let { commands, options, middlewares, /*demandCommand*/ } = cfg;
+  let { commands, options, middlewares /*demandCommand*/ } = cfg;
   // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!'];
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
@@ -43,8 +43,8 @@ export function yargsCli(
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
-    .options(options)
-    //.demandCommand(...demandCommand);
+    .options(options);
+  //.demandCommand(...demandCommand);
 
   // usage message
   if (usageMessage) {

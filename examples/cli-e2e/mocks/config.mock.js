@@ -5,7 +5,7 @@ export default {
   persist: { outputPath: 'cli-config-out.json' },
   categories: [],
   plugins: [
-     eslintPlugin({ config: '.eslintrc.json' }),
-     lighthousePlugin({ config: '.lighthouserc.json' }),
+    eslintPlugin({ config: '.eslintrc.json' }),
+    lighthousePlugin({ config: '.lighthouserc.json' }),
   ],
 };
