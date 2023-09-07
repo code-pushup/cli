@@ -12,7 +12,7 @@ const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  if (os.platform() === 'win32') {
+  if (os.platform() !== 'win32') {
     it('should work with shell command `ls`', async () => {
       const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
       const { observer } = cfg;
