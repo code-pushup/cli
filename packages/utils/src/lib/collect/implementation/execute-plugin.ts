@@ -67,8 +67,10 @@ export function executePlugin(
       observer,
     })
       // read process output from file system and parse it
-      .then(() => {
-        const outContent = readFileSync(processOutputPath).toString();
+      .then(() => readFile(processOutputPath))
+      .then((buffer) => {
+        const outContent = buffer.toString();
+
         try {
           return runnerOutputSchema.parse(JSON.parse(outContent));
         } catch (e) {
