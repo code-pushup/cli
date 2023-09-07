@@ -54,7 +54,6 @@ describe('executePlugins', () => {
         mockPluginConfig({ pluginSlug: 'plugin-slug-2', auditSlug: 'audit-2' }),
       ),
     ];
-    // console.log('plugins', plugins[0].audits[0]);
     const errorSpy = vi.fn();
     const pluginResult = await executePlugins(plugins).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(0);
