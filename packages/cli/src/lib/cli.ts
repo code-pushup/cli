@@ -2,13 +2,14 @@ import yargs, {Argv, CommandModule, MiddlewareFunction, Options, ParserConfigura
 import chalk from 'chalk';
 
 /**
- * returns configurable yargs cli
- * @example
- * // bootstrap yargs; format arguments
- * yargsCli().parse(hideBin(process.argv));
+ * returns configurable yargs cli for code-pushup
  *
+ * @example
+ * yargsCli(hideBin(process.argv))
+ *   // bootstrap CLI; format arguments
+ *   .argv;
  */
-export function yargsCli<T>(cfg: {
+export function yargsCli<T>(argv: string[], cfg: {
   usageMessage?: string;
   scriptName?: string;
   commands?: CommandModule[];
@@ -23,18 +24,22 @@ export function yargsCli<T>(cfg: {
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
   options = options || {};
-  const cli = yargs();
+  const cli = yargs(argv);
 
   // setup yargs
   cli
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
-    .options(options);
-  //.demandCommand(1, 'Minimum 1 command!')
+    .options(options)
+   .demandCommand(1, 'Minimum 1 command!')
 
-  usageMessage ? cli.usage(chalk.bold(usageMessage)) : void 0;
-  scriptName ? cli.scriptName(scriptName) : void 0;
+  if(usageMessage) {
+    cli.usage(chalk.bold(usageMessage))
+  }
+  if(scriptName) {
+    cli.scriptName(scriptName)
+  }
 
   // add middlewares
   middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) =>
@@ -45,5 +50,5 @@ export function yargsCli<T>(cfg: {
   commands.forEach(commandObj => cli.command(commandObj));
 
   // return CLI object
-  return cli;
+  return cli as Argv<T>;
 }

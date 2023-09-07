@@ -18,8 +18,8 @@ describe('applyConfigMiddleware', () => {
 
     await adoptedHandler({ configPath: configPathMjs });
     expect(calledWith.length).toBe(1);
-    expect(calledWith[0]?.configPath).toContain('.mjs');
-    expect(calledWith[0]?.persist.outputPath).toContain('mjs-');
+    expect(calledWith[0].configPath).toContain('.mjs');
+    expect(calledWith[0].persist.outputPath).toContain('mjs-');
   });
 
   it('should load valid config `read-config.mock.cjs`', async () => {
@@ -31,8 +31,8 @@ describe('applyConfigMiddleware', () => {
 
     await adoptedHandler({ configPath: configPathCjs });
     expect(calledWith.length).toBe(1);
-    expect(calledWith[0]?.configPath).toContain('.cjs');
-    expect(calledWith[0]?.persist.outputPath).toContain('cjs-');
+    expect(calledWith[0].configPath).toContain('.cjs');
+    expect(calledWith[0].persist.outputPath).toContain('cjs-');
   });
 
   it('should load valid config `read-config.mock.js`', async () => {
@@ -44,8 +44,8 @@ describe('applyConfigMiddleware', () => {
     });
     await adoptedHandler({ configPath: configPathJs });
     expect(calledWith.length).toBe(1);
-    expect(calledWith[0]?.configPath).toContain('.js');
-    expect(calledWith[0]?.persist.outputPath).toContain('js-');
+    expect(calledWith[0].configPath).toContain('.js');
+    expect(calledWith[0].persist.outputPath).toContain('js-');
   });
 
   it('should throws with invalid configPath', async () => {

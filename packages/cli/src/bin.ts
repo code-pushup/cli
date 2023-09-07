@@ -5,7 +5,10 @@ import { yargsGlobalOptionsDefinition } from './lib/options';
 import { middlewares } from './lib/middlewares';
 import { commands } from './lib/commands';
 
-yargsCli({
+yargsCli(
+  // hide first 2 args from process
+  hideBin(process.argv),
+  {
   usageMessage: 'CPU CLI',
   scriptName: 'cpu',
   options: yargsGlobalOptionsDefinition(),
@@ -13,4 +16,4 @@ yargsCli({
   commands
 })
   // bootstrap yargs; format arguments
-  .parseAsync(hideBin(process.argv));
+  .argv;
