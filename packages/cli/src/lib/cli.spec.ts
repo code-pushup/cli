@@ -3,7 +3,7 @@ import { yargsCli } from './cli';
 import { join } from 'path';
 import { yargsGlobalOptionsDefinition } from './options';
 import { middlewares } from './middlewares';
-import { CommandBase } from '../index';
+import { CommandBase } from './implementation/base-command-config';
 
 const withDirName = (path: string) => join(__dirname, path);
 const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
