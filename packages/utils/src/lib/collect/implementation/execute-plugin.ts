@@ -109,7 +109,8 @@ export async function executePlugins(
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const runnerOutput = await executePlugin(pluginCfg);
-    outputs.audits.concat(runnerOutput.audits);
-    return outputs;
+    return {
+       audits: outputs.audits.concat(runnerOutput.audits)
+    };
   }, Promise.resolve({ audits: [] } as RunnerOutputSchema));
 }
