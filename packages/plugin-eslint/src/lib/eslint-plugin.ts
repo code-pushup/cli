@@ -1,3 +1,4 @@
+import * as eslint from 'eslint';
 import { PluginConfig, RunnerOutput } from '@quality-metrics/models';
 
 type ESLintPluginConfig = {
@@ -6,6 +7,8 @@ type ESLintPluginConfig = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function eslintPlugin({ config }: ESLintPluginConfig): PluginConfig {
+  // This line is here to keep errors related to imports and engines
+  eslint
   return {
     audits: [],
     runner: {
