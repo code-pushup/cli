@@ -33,8 +33,8 @@ let outputPath = process.argv[5] || './out-async-runner.json';
         console.log('process:update');
       }
     }, interval);
-  }).then(() => {
-    console.log('process:complete');
-    writeFileSync(outputPath, JSON.stringify({ audits: ['dummy-result'] }));
   });
+
+  console.log('process:complete');
+  writeFileSync(outputPath, JSON.stringify({ audits: ['dummy-result'] }));
 })();
