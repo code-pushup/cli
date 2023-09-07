@@ -1,7 +1,7 @@
-import { configMiddleware } from './implemetation/config-middleware';
+import { configMiddleware } from './implementation/config-middleware';
 import { MiddlewareFunction } from 'yargs';
 
 export const middlewares: {
   middlewareFunction: MiddlewareFunction;
   applyBeforeValidation?: boolean;
-}[] = [{ middlewareFunction: configMiddleware as any }];
+}[] = [{ middlewareFunction: configMiddleware }];

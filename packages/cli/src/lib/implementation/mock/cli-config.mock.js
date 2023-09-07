@@ -1,5 +1,6 @@
 module.exports = {
   persist: { outputPath: 'cli-config-out.json' },
+  categories: [],
   plugins: [
     {
       audits: [],
@@ -13,7 +14,6 @@ module.exports = {
         ],
         outputPath: 'cli-config-out.json',
       },
-      groups: [],
       meta: {
         slug: 'execute-plugin',
         name: 'execute plugin',
@@ -21,5 +21,4 @@ module.exports = {
       },
     },
   ],
-  categories: [],
 };

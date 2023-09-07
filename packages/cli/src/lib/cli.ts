@@ -1,26 +1,40 @@
-import yargs, {Argv, CommandModule, MiddlewareFunction, Options, ParserConfigurationOptions,} from 'yargs';
+import yargs, {
+  Argv,
+  CommandModule,
+  MiddlewareFunction,
+  Options,
+  ParserConfigurationOptions,
+} from 'yargs';
 import chalk from 'chalk';
+import { CoreConfig } from '@quality-metrics/models';
 
 /**
- * returns configurable yargs cli for code-pushup
+ * returns configurable yargs CLI for code-pushup
  *
  * @example
  * yargsCli(hideBin(process.argv))
  *   // bootstrap CLI; format arguments
  *   .argv;
  */
-export function yargsCli<T>(argv: string[], cfg: {
-  usageMessage?: string;
-  scriptName?: string;
-  commands?: CommandModule[];
-  options?: { [key: string]: Options };
-  middlewares?: {
-    middlewareFunction: MiddlewareFunction;
-    applyBeforeValidation?: boolean;
-  }[];
-}): Argv<T> {
+export function yargsCli(
+  argv: string[],
+  cfg: {
+    usageMessage?: string;
+    scriptName?: string;
+    commands?: CommandModule[];
+    demandCommand?: [number, string];
+    options?: { [key: string]: Options };
+    middlewares?: {
+      middlewareFunction: MiddlewareFunction;
+      applyBeforeValidation?: boolean;
+    }[];
+  },
+): Argv<CoreConfig> {
   const { usageMessage, scriptName } = cfg;
-  let { commands, options, middlewares } = cfg;
+  let { commands, options, middlewares, demandCommand } = cfg;
+  demandCommand = Array.isArray(demandCommand)
+    ? demandCommand
+    : [1, 'Minimum 1 command!'];
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
   options = options || {};
@@ -32,13 +46,16 @@ export function yargsCli<T>(argv: string[], cfg: {
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
     .options(options)
-   .demandCommand(1, 'Minimum 1 command!')
+    .demandCommand(...demandCommand);
 
-  if(usageMessage) {
-    cli.usage(chalk.bold(usageMessage))
+  // usage message
+  if (usageMessage) {
+    cli.usage(chalk.bold(usageMessage));
   }
-  if(scriptName) {
-    cli.scriptName(scriptName)
+
+  // script name
+  if (scriptName) {
+    cli.scriptName(scriptName);
   }
 
   // add middlewares
@@ -50,5 +67,5 @@ export function yargsCli<T>(argv: string[], cfg: {
   commands.forEach(commandObj => cli.command(commandObj));
 
   // return CLI object
-  return cli as Argv<T>;
+  return cli as unknown as Argv<CoreConfig>;
 }
