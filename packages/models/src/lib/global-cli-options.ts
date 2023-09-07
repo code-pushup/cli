@@ -40,4 +40,4 @@ export const globalCliArgsSchema = z.object({
     .default('code-pushup.config.js'),
 });
 
-export type GlobalCliArgsSchema = z.infer<typeof globalCliArgsSchema>;
+export type GlobalCliArgs = z.infer<typeof globalCliArgsSchema>;
