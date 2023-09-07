@@ -1,1 +1,1 @@
-export { collect, collectOptions, CollectOptions } from './lib/collect/index';
+export { collect, CollectOptions } from './lib/collect/index';
