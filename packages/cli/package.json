@@ -1,7 +1,6 @@
 {
   "name": "@quality-metrics/cli",
   "version": "0.0.1",
-  "type": "module",
   "dependencies": {
     "bundle-require": "^4.0.1"
   }
