@@ -8,7 +8,11 @@
     "dist/packages/*"
   ],
   "dependencies": {
+    "@types/yargs": "^17.0.24",
+    "@types/yargs-parser": "^21.0.0",
     "bundle-require": "^4.0.1",
+    "chalk": "^5.3.0",
+    "yargs": "^17.7.2",
     "zod": "^3.22.1"
   },
   "devDependencies": {

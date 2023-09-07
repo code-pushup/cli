@@ -1,11 +1,6 @@
-import { pathToFileURL } from 'url';
-import { cli } from './lib/cli';
+import { coreConfigSchema, globalCliArgsSchema } from '@quality-metrics/models';
+import { z } from 'zod';
 
-export { cli };
-
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  if (!process.argv[2]) {
-    throw new Error('Missing config file path');
-  }
-  cli(process.argv[2]).then(console.log).catch(console.error);
-}
+export { yargsCli } from './lib/cli';
+export const baseCommandSchema = globalCliArgsSchema.merge(coreConfigSchema);
+export type BaseCommandSchema = z.infer<typeof baseCommandSchema>;
