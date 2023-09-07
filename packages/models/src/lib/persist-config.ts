@@ -25,4 +25,4 @@ export const persistConfigSchema = z.object({
   outputPath: generalFilePathSchema('Artifacts folder'),
 });
 
-export type PersistConfigSchema = z.infer<typeof persistConfigSchema>;
+export type PersistConfig = z.infer<typeof persistConfigSchema>;

@@ -73,7 +73,7 @@ describe('CoreConfig', () => {
     const missingSlug = 'missing-plugin-slug-in-category#groups:auditref';
     cfg.categories.push(
       mockCategory({
-        categorySlug: 'test',
+        categorySlug: 'test-slug',
         auditRefOrGroupRef: [`${missingSlug}`],
       }),
     );

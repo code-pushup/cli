@@ -1,0 +1,7 @@
+{
+  "name": "@quality-metrics/utils",
+  "version": "0.0.1",
+  "dependencies": {
+    "@quality-metrics/models": ">0.0.1"
+  }
+}

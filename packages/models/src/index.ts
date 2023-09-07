@@ -1,18 +1,21 @@
-export { coreConfigSchema, CoreConfigSchema } from './lib/core-config';
-export { uploadConfigSchema, UploadConfigSchema } from './lib/upload-config';
-export { pluginConfigSchema, PluginConfigSchema } from './lib/plugin-config';
 export {
+  unrefinedCoreConfigSchema,
+  refineCoreConfig,
+  coreConfigSchema,
+  CoreConfig,
+} from './lib/core-config';
+export { uploadConfigSchema, UploadConfig } from './lib/upload-config';
+export {
+  pluginConfigSchema,
+  PluginConfig,
+  RunnerOutput,
   runnerOutputSchema,
-  RunnerOutputSchema,
+} from './lib/plugin-config';
+export {
   runnerOutputAuditRefsPresentInPluginConfigs,
-  PluginsOutputSchema,
-} from './lib/output';
-export { persistConfigSchema, PersistConfigSchema } from './lib/persist-config';
-export {
-  categoryConfigSchema,
-  CategoryConfigSchema,
-} from './lib/category-config';
-export {
-  globalCliArgsSchema,
-  GlobalCliArgsSchema,
-} from './lib/global-cli-options';
+  reportSchema,
+  Report,
+} from './lib/report';
+export { persistConfigSchema, PersistConfig } from './lib/persist-config';
+export { categoryConfigSchema, CategoryConfig } from './lib/category-config';
+export { globalCliArgsSchema, GlobalCliArgs } from './lib/global-cli-options';

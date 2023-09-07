@@ -58,7 +58,7 @@ export const categoryConfigSchema = z.object(
   },
 );
 
-export type CategoryConfigSchema = z.infer<typeof categoryConfigSchema>;
+export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
 // helper for validator: categories have unique refs to audits or groups
 export function duplicateRefsInCategoryMetricsErrorMsg(metrics) {
