@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { bundleRequire } from 'bundle-require';
 
 import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
-import {CommandBase, commandBaseSchema} from "./base-command-config";
+import { CommandBase, commandBaseSchema } from './base-command-config';
 
 export class ConfigParseError extends Error {
   constructor(configPath: string) {

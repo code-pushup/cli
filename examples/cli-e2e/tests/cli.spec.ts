@@ -9,8 +9,11 @@ describe('cli', () => {
   });
 
   it('should load .js config file', async () => {
-    cli(['help', '--configPath=/examples/cli-e2e/mocks/config.mock.js', '--verbose'])
-      .argv;
+    cli([
+      'help',
+      '--configPath=/examples/cli-e2e/mocks/config.mock.js',
+      '--verbose',
+    ]).argv;
     await expect(
       cli(['--configPath=/examples/cli-e2e/mocks/config.mock.js']).argv,
     ).resolves.toEqual({
