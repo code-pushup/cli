@@ -47,7 +47,7 @@ export class PluginOutputError extends Error {
  *  @example
  *  // error handling
  *  try {
- *  await executeProcess(cfg);
+ *  await executePlugin(cfg);
  *  } catch (e) {
  *  console.log(e.message); // Plugin output is invalid
  *  }
