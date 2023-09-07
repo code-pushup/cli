@@ -103,8 +103,8 @@ export async function runAndCollect(
       duration: performance.measure('startExecutePlugins', 'stopExecutePlugins')
         .duration,
     });
-    return Promise.resolve(processResult);
+    return processResult;
   } else {
-    return Promise.reject(new Error('No plugins registered'));
+    throw new Error('No plugins registered');
   }
 }
