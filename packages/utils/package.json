@@ -2,7 +2,6 @@
   "name": "@quality-metrics/utils",
   "version": "0.0.1",
   "dependencies": {
-    "zod": "^3.22.1",
     "@quality-metrics/models": ">0.0.1"
   }
 }
