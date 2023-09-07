@@ -6,7 +6,7 @@ type ESLintPluginConfig = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function eslintPlugin({ config }: ESLintPluginConfig): PluginConfig {
+export function eslintPlugin( _: ESLintPluginConfig): PluginConfig {
   // This line is here to keep errors related to imports and engines
   eslint;
   return {
@@ -19,8 +19,7 @@ export function eslintPlugin({ config }: ESLintPluginConfig): PluginConfig {
           audits: [
             {
               slug: 'no-any',
-              value: 0,
-              displayValue: 'config: ' + JSON.stringify(config),
+              value: 0
             },
           ],
         } satisfies RunnerOutput)}' > out.json`,

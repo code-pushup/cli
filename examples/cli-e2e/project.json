@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "examples/cli-e2e/src",
   "projectType": "application",
+  "implicitDependencies": ["cli"],
   "targets": {
     "e2e": {
       "executor": "@nx/vite:test",

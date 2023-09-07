@@ -21,7 +21,7 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = { parallel: number } & GlobalCliArgs & CoreConfig;
+export type CollectOptions = GlobalCliArgs & CoreConfig;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
