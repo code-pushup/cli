@@ -34,6 +34,7 @@ const pluginMetadataSchema = z.object(
   },
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HackForCyclicRefs = any;
 
 // Define Zod schema for the RunnerConfig type

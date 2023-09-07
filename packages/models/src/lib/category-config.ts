@@ -8,6 +8,7 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HackForCyclicRefs = any;
 /**
  *
