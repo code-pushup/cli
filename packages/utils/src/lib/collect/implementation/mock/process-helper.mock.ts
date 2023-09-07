@@ -18,11 +18,13 @@ export function getAsyncProcessRunnerConfig(
   } = { throwError: false },
 ) {
   const outputPath = cfg?.outputPath || './out-async-runner.json';
-  const args = [asyncProcessPath];
-  cfg?.interval ? args.push(cfg?.interval + '') : args.push('10');
-  cfg?.runs ? args.push(cfg?.runs + '') : args.push('4');
-  cfg?.throwError ? args.push('1') : args.push('0');
-  args.push(outputPath);
+  const args = [
+    asyncProcessPath,
+    cfg?.interval ? cfg.interval + '' : '10',
+    cfg?.runs ? cfg.runs + '' : '4',
+    cfg?.throwError ? '1' : '0',
+    outputPath,
+  ];
   return { command: 'node', args, outputPath };
 }
 
