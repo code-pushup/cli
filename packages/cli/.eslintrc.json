@@ -21,7 +21,7 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["vite", "@nx/vite"]
+            "ignoredDependencies": ["vite", "vitest", "@nx/vite"]
           }
         ]
       }

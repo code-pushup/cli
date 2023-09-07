@@ -5,22 +5,26 @@ import {
   mockProcessConfig,
 } from './mock/process-helper.mock';
 import { join } from 'path';
+import * as os from "os";
 
 const outFolder = '';
 const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  it('should work with shell command `ls`', async () => {
-    const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
-    const { observer } = cfg;
-    const processResult = await executeProcess(cfg);
-    expect(observer?.next).toHaveBeenCalledTimes(1);
-    expect(observer?.complete).toHaveBeenCalledTimes(1);
-    expect(processResult.stdout).toContain('..');
-  });
 
-  it('should work with npx command `node -v`', async () => {
+  if(os.platform() === 'win32') {
+    it('should work with shell command `ls`', async () => {
+      const cfg = mockProcessConfig({command: `ls`, args: ['-a']});
+      const {observer} = cfg;
+      const processResult = await executeProcess(cfg);
+      expect(observer?.next).toHaveBeenCalledTimes(1);
+      expect(observer?.complete).toHaveBeenCalledTimes(1);
+      expect(processResult.stdout).toContain('..');
+    });
+  }
+
+  it('should work with node command `node -v`', async () => {
     const cfg = mockProcessConfig({ command: `node`, args: ['-v'] });
     const processResult = await executeProcess(cfg);
     expect(processResult.stdout).toContain('v');
@@ -35,7 +39,7 @@ describe('executeProcess', () => {
     expect(processResult.stdout).toContain('Options');
   });
 
-  it('should work with npx command `node custom-script.js`', async () => {
+  it('should work with script `node custom-script.js`', async () => {
     const cfg = mockProcessConfig(
       getAsyncProcessRunnerConfig({ interval: 10, outputPath }),
     );

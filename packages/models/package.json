@@ -1,10 +1,10 @@
 {
   "name": "@quality-metrics/models",
   "version": "0.0.1",
-  "dependencies": {
-    "bundle-require": "^4.0.1"
-  },
   "type": "module",
   "main": "./index.js",
-  "types": "./src/index.d.ts"
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "zod": "^3.22.1"
+  }
 }

@@ -29,4 +29,4 @@ export const uploadConfigSchema = z.object({
   }),
 });
 
-export type UploadConfigSchema = z.infer<typeof uploadConfigSchema>;
+export type UploadConfig = z.infer<typeof uploadConfigSchema>;

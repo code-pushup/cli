@@ -70,7 +70,7 @@ export function refineCoreConfig(schema: Schema): Schema {
   );
 }
 
-export type CoreConfigSchema = z.infer<typeof coreConfigSchema>;
+export type CoreConfig = z.infer<typeof coreConfigSchema>;
 
 // helper for validator: categories point to existing audit or group refs
 function missingRefsForCategoriesErrorMsg(coreCfg) {

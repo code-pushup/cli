@@ -12,6 +12,8 @@ export type ProcessResult = {
   stdout: string;
   stderr: string;
   code: number | null;
+  date: string;
+  duration: number;
 };
 
 /**
@@ -130,7 +132,8 @@ export type ProcessObserver = {
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { observer } = cfg;
   const { next, error, complete } = observer || {};
-
+  const date = new Date().toISOString();
+  const start = performance.now();
   return new Promise((resolve, reject) => {
     const process = spawn(cfg.command, cfg.args);
     let stdout = '';
@@ -150,11 +153,13 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     });
 
     process.on('close', code => {
+      const stop = performance.now();
+      const timings = {date, duration: Math.floor(stop - start)}
       if (code === 0) {
         complete?.();
-        resolve({ code, stdout, stderr });
+        resolve({ code, stdout, stderr, ...timings });
       } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr });
+        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
         error?.(errorMsg);
         reject(errorMsg);
       }

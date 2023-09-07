@@ -1,14 +1,14 @@
 import {
-  CategoryConfigSchema,
-  PluginConfigSchema,
-  RunnerOutputSchema,
+  CategoryConfig,
+  PluginConfig,
+  RunnerOutput,
 } from '@quality-metrics/models';
 
 export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
-}): PluginConfigSchema {
+}): PluginConfig {
   const { groupSlug } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || 'mock-plugin-slug';
@@ -39,7 +39,7 @@ export function mockPluginConfig(opt?: {
             slug: `${slug}`,
             value: parseFloat('0.' + idx),
           })),
-        } satisfies RunnerOutputSchema)}' > ${outputPath}`,
+        } satisfies RunnerOutput)}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
@@ -52,7 +52,7 @@ export function mockPluginConfig(opt?: {
 
 export function mockAuditConfig(opt?: {
   auditSlug?: string;
-}): PluginConfigSchema['audits'][0] {
+}): PluginConfig['audits'][0] {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-slug';
 
@@ -68,7 +68,7 @@ export function mockAuditConfig(opt?: {
 export function mockGroupConfig(opt?: {
   groupSlug?: string;
   auditSlug?: string | string[];
-}): PluginConfigSchema['groups'][0] {
+}): PluginConfig['groups'][0] {
   let { groupSlug, auditSlug } = opt || {};
   groupSlug = groupSlug || 'mock-group-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
@@ -86,7 +86,7 @@ export function mockGroupConfig(opt?: {
 export function mockCategory(opt?: {
   categorySlug?: string;
   auditRefOrGroupRef?: string | string[];
-}): CategoryConfigSchema {
+}): CategoryConfig {
   let { auditRefOrGroupRef, categorySlug } = opt || {};
   categorySlug = categorySlug || 'mock-category-slug';
   auditRefOrGroupRef = auditRefOrGroupRef || 'mock-plugin-slug#mock-audit-slug';

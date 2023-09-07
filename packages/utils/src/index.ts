@@ -1,5 +1,5 @@
 export {
-  runAndCollect,
-  runAndCollectOptions,
-  RunAndCollectOptions,
+  collect,
+  collectOptions,
+  CollectOptions,
 } from './lib/collect/index';

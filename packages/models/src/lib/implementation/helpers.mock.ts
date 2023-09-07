@@ -1,15 +1,14 @@
-import { PluginConfigSchema } from '../plugin-config';
-import { RunnerOutputSchema } from '../output';
-import { CoreConfigSchema } from '../core-config';
-import { CategoryConfigSchema } from '../category-config';
-import { UploadConfigSchema } from '../upload-config';
-import { PersistConfigSchema } from '../persist-config';
+import { PluginConfig, RunnerOutput } from '../plugin-config';
+import { CoreConfig } from '../core-config';
+import { CategoryConfig } from '../category-config';
+import { UploadConfig } from '../upload-config';
+import { PersistConfig } from '../persist-config';
 
 export function mockConfig(opt?: {
   pluginSlug?: string | string[];
   auditSlug?: string | string[];
   groupSlug?: string | string[];
-}): CoreConfigSchema {
+}): CoreConfig {
   let { pluginSlug, auditSlug, groupSlug } = opt || {};
   pluginSlug = pluginSlug || 'mock-plugin-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
@@ -27,7 +26,7 @@ export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
-}): PluginConfigSchema {
+}): PluginConfig {
   const { groupSlug } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || 'mock-plugin-slug';
@@ -58,7 +57,7 @@ export function mockPluginConfig(opt?: {
             slug: `${pluginSlug}#${slug}`,
             value: parseFloat('0.' + idx),
           })),
-        } satisfies RunnerOutputSchema)}' > ${outputPath}`,
+        } satisfies RunnerOutput)}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
@@ -71,7 +70,7 @@ export function mockPluginConfig(opt?: {
 
 export function mockAuditConfig(opt?: {
   auditSlug?: string;
-}): PluginConfigSchema['audits'][0] {
+}): PluginConfig['audits'][0] {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-slug';
 
@@ -85,7 +84,7 @@ export function mockAuditConfig(opt?: {
 }
 export function mockMetric(opt?: {
   auditRef?: string;
-}): CategoryConfigSchema['metrics'][0] {
+}): CategoryConfig['metrics'][0] {
   const { auditRef } = opt || {};
   const ref = auditRef || 'mock-plugin-slug#mock-audit-slug';
 
@@ -98,7 +97,7 @@ export function mockMetric(opt?: {
 export function mockGroupConfig(opt?: {
   groupSlug?: string;
   auditSlug?: string | string[];
-}): PluginConfigSchema['groups'][0] {
+}): PluginConfig['groups'][0] {
   let { groupSlug, auditSlug } = opt || {};
   groupSlug = groupSlug || 'mock-group-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
@@ -116,7 +115,7 @@ export function mockGroupConfig(opt?: {
 export function mockCategory(opt?: {
   categorySlug?: string;
   auditRefOrGroupRef?: string | string[];
-}): CategoryConfigSchema {
+}): CategoryConfig {
   let { auditRefOrGroupRef, categorySlug } = opt || {};
   categorySlug = categorySlug || 'mock-category-slug';
   auditRefOrGroupRef = auditRefOrGroupRef || 'mock-plugin-slug#mock-audit-slug';
@@ -134,8 +133,8 @@ export function mockCategory(opt?: {
 }
 
 export function mockUploadConfig(
-  opt?: Partial<UploadConfigSchema>,
-): UploadConfigSchema {
+  opt?: Partial<UploadConfig>,
+): UploadConfig {
   return {
     apiKey: 'm0ck-API-k3y',
     server: 'http://test.server.io',
@@ -143,8 +142,8 @@ export function mockUploadConfig(
   };
 }
 export function mockPersistConfig(
-  opt?: Partial<PersistConfigSchema>,
-): PersistConfigSchema {
+  opt?: Partial<PersistConfig>,
+): PersistConfig {
   return {
     outputPath: 'mock-output-path.json',
     ...opt,
@@ -153,7 +152,7 @@ export function mockPersistConfig(
 
 export function mockRunnerOutput(opt?: {
   auditSlug: string | string[];
-}): RunnerOutputSchema {
+}): RunnerOutput {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
   const audits = Array.isArray(auditSlug)

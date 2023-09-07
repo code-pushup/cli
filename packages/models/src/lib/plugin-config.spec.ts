@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   mockGroupConfig,
-  mockPluginConfig,
+  mockPluginConfig, mockRunnerOutput,
 } from './implementation/helpers.mock';
-import { pluginConfigSchema, groupSchema } from './plugin-config';
+import {pluginConfigSchema, groupSchema, runnerOutputSchema} from './plugin-config';
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {
@@ -82,3 +82,30 @@ describe('pluginConfigSchema', () => {
     );
   });
 });
+
+/*
+ RunnerOutput
+ - each audit result should contain a valid slug of some audit provided during initialization
+   - this is always checked within the context of the given plugin
+  */
+describe('runnerOutputSchema', () => {
+  it('should pass if output audits are valid', () => {
+    const out = mockRunnerOutput();
+    expect(() => runnerOutputSchema.parse(out)).not.toThrow();
+  });
+
+  it('should throw if slugs of audits are invalid', () => {
+    const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
+    expect(() => runnerOutputSchema.parse(out)).toThrow(
+      'slug has to follow the pattern',
+    );
+  });
+
+  it('should throw if slugs of audits are duplicated', () => {
+    const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
+    expect(() => runnerOutputSchema.parse(out)).toThrow(
+      'In plugin audits the slugs are not unique',
+    );
+  });
+});
+
