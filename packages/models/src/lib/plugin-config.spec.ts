@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   mockGroupConfig,
-  mockPluginConfig, mockRunnerOutput,
+  mockPluginConfig,
+  mockRunnerOutput,
 } from './implementation/helpers.mock';
-import {pluginConfigSchema, groupSchema, runnerOutputSchema} from './plugin-config';
+import {
+  pluginConfigSchema,
+  groupSchema,
+  runnerOutputSchema,
+} from './plugin-config';
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {
@@ -108,4 +113,3 @@ describe('runnerOutputSchema', () => {
     );
   });
 });
-

@@ -5,18 +5,17 @@ import {
   mockProcessConfig,
 } from './mock/process-helper.mock';
 import { join } from 'path';
-import * as os from "os";
+import * as os from 'os';
 
 const outFolder = '';
 const outName = 'out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-
-  if(os.platform() === 'win32') {
+  if (os.platform() === 'win32') {
     it('should work with shell command `ls`', async () => {
-      const cfg = mockProcessConfig({command: `ls`, args: ['-a']});
-      const {observer} = cfg;
+      const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
+      const { observer } = cfg;
       const processResult = await executeProcess(cfg);
       expect(observer?.next).toHaveBeenCalledTimes(1);
       expect(observer?.complete).toHaveBeenCalledTimes(1);

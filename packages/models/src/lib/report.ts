@@ -1,6 +1,10 @@
-import {z} from 'zod';
-import {PluginConfig, RunnerOutput, runnerOutputSchema} from './plugin-config';
-import {hasMissingStrings,} from './implementation/utils';
+import { z } from 'zod';
+import {
+  PluginConfig,
+  RunnerOutput,
+  runnerOutputSchema,
+} from './plugin-config';
+import { hasMissingStrings } from './implementation/utils';
 
 /**
  * Define Zod schema for the CollectOptions type
@@ -25,9 +29,9 @@ import {hasMissingStrings,} from './implementation/utils';
 export const reportSchema = runnerOutputSchema.merge(
   z.object(
     {
-      version: z.string({description: 'NPM version of the CLI'}),
-      date: z.string({description: 'Start date and time of the collect run'}),
-      duration: z.number({description: 'Duration of the collect run in ms'}),
+      version: z.string({ description: 'NPM version of the CLI' }),
+      date: z.string({ description: 'Start date and time of the collect run' }),
+      duration: z.number({ description: 'Duration of the collect run in ms' }),
     },
     {
       description:
@@ -35,9 +39,7 @@ export const reportSchema = runnerOutputSchema.merge(
     },
   ),
 );
-export type Report = z.infer<
-  typeof reportSchema
->;
+export type Report = z.infer<typeof reportSchema>;
 
 /**
  *

@@ -2,9 +2,11 @@ import { z } from 'zod';
 import {
   descriptionSchema,
   docsUrlSchema,
-  generalFilePathSchema, positiveIntSchema,
+  generalFilePathSchema,
+  positiveIntSchema,
   slugSchema,
-  titleSchema, unixFilePathSchema,
+  titleSchema,
+  unixFilePathSchema,
   weightSchema,
 } from './implementation/schemas';
 import {
@@ -148,8 +150,6 @@ export const pluginConfigSchema = z
   );
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
-
-
 
 /**
  * Define Zod schema for the SourceFileLocation type.

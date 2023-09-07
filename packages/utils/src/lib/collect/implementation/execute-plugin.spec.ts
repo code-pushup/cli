@@ -1,6 +1,6 @@
-import {describe, it, expect, vi} from 'vitest';
-import {executePlugin, executePlugins} from './execute-plugin';
-import {mockPluginConfig} from './mock/schema-helper.mock';
+import { describe, it, expect, vi } from 'vitest';
+import { executePlugin, executePlugins } from './execute-plugin';
+import { mockPluginConfig } from './mock/schema-helper.mock';
 import {
   pluginConfigSchema,
   runnerOutputSchema,
@@ -23,7 +23,7 @@ describe('executePlugin', () => {
   });
 
   it('should throws with invalid plugin', async () => {
-    const cfg = mockPluginConfig({auditSlug: '-invalid-audit-slug'});
+    const cfg = mockPluginConfig({ auditSlug: '-invalid-audit-slug' });
     const errorSpy = vi.fn();
     const pluginResult = await executePlugin(cfg).catch(errorSpy);
     expect(pluginResult).toBe(undefined);
@@ -31,7 +31,7 @@ describe('executePlugin', () => {
   });
 
   it('should throw if invalid runnerOutput is produced', async () => {
-    const cfg = mockPluginConfig({auditSlug: '-invalid-audit-slug'});
+    const cfg = mockPluginConfig({ auditSlug: '-invalid-audit-slug' });
 
     let error: Error;
     const pluginResult = await executePlugin(cfg).catch(e => {
@@ -48,10 +48,10 @@ describe('executePlugins', () => {
   it('should work with valid plugins', async () => {
     const plugins = [
       pluginConfigSchema.parse(
-        mockPluginConfig({pluginSlug: 'plugin-slug-1'}),
+        mockPluginConfig({ pluginSlug: 'plugin-slug-1' }),
       ),
       pluginConfigSchema.parse(
-        mockPluginConfig({pluginSlug: 'plugin-slug-2', auditSlug: 'audit-2'}),
+        mockPluginConfig({ pluginSlug: 'plugin-slug-2', auditSlug: 'audit-2' }),
       ),
     ];
     const errorSpy = vi.fn();
@@ -61,14 +61,14 @@ describe('executePlugins', () => {
     console.log(pluginResult[1]);
     expect(pluginResult[0].date.endsWith('Z')).toBeTruthy();
     expect(pluginResult[0].duration).toMatch(/^\d+$/);
-    expect(pluginResult[0].audits[0].slug).toEqual("mock-audit-slug");
-    expect(pluginResult[1].audits[0].slug).toEqual("audit-2");
+    expect(pluginResult[0].audits[0].slug).toEqual('mock-audit-slug');
+    expect(pluginResult[1].audits[0].slug).toEqual('audit-2');
     expect(() => runnerOutputSchema.parse(pluginResult[0])).not.toThrow();
     expect(() => runnerOutputSchema.parse(pluginResult[1])).not.toThrow();
   });
 
   it('should throws with invalid plugins', async () => {
-    const plugins = [mockPluginConfig({auditSlug: '-invalid-slug'})];
+    const plugins = [mockPluginConfig({ auditSlug: '-invalid-slug' })];
     const errorSpy = vi.fn();
     const pluginResult = await executePlugins(plugins).catch(errorSpy);
     expect(pluginResult).toBe(undefined);

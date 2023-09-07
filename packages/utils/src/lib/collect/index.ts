@@ -1,6 +1,10 @@
-import {CoreConfig, GlobalCliArgs, reportSchema, Report} from '@quality-metrics/models';
-import {executePlugins} from './implementation/execute-plugin';
-
+import {
+  CoreConfig,
+  GlobalCliArgs,
+  reportSchema,
+  Report,
+} from '@quality-metrics/models';
+import { executePlugins } from './implementation/execute-plugin';
 
 /**
  * Error thrown when collect output is invalid.
@@ -17,19 +21,14 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = { parallel: number } &
-  GlobalCliArgs &
-  CoreConfig;
-
+export type CollectOptions = { parallel: number } & GlobalCliArgs & CoreConfig;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
-export async function collect(
-  options: CollectOptions,
-): Promise<Report> {
-  const {plugins} = options;
+export async function collect(options: CollectOptions): Promise<Report> {
+  const { plugins } = options;
 
   if (!plugins?.length) {
     throw new Error('No plugins registered');
@@ -46,9 +45,8 @@ export async function collect(
       date,
       duration: performance.measure('startExecutePlugins', 'stopExecutePlugins')
         .duration,
-    })
+    });
   } catch (error) {
-    throw new CollectOutputError(error)
+    throw new CollectOutputError(error);
   }
-
 }

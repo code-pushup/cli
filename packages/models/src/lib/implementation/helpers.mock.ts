@@ -132,18 +132,14 @@ export function mockCategory(opt?: {
   };
 }
 
-export function mockUploadConfig(
-  opt?: Partial<UploadConfig>,
-): UploadConfig {
+export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
   return {
     apiKey: 'm0ck-API-k3y',
     server: 'http://test.server.io',
     ...opt,
   };
 }
-export function mockPersistConfig(
-  opt?: Partial<PersistConfig>,
-): PersistConfig {
+export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   return {
     outputPath: 'mock-output-path.json',
     ...opt,

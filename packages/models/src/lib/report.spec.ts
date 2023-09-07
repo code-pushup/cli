@@ -1,6 +1,9 @@
-import {describe, expect, it} from 'vitest';
-import {mockPluginConfig, mockRunnerOutput,} from './implementation/helpers.mock';
-import {runnerOutputAuditRefsPresentInPluginConfigs} from "./report";
+import { describe, expect, it } from 'vitest';
+import {
+  mockPluginConfig,
+  mockRunnerOutput,
+} from './implementation/helpers.mock';
+import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {
   it('should pass if output audits are valid', () => {

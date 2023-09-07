@@ -4,19 +4,18 @@ export {
   coreConfigSchema,
   CoreConfig,
 } from './lib/core-config';
-export {uploadConfigSchema, UploadConfig} from './lib/upload-config';
-export {pluginConfigSchema, PluginConfig, RunnerOutput, runnerOutputSchema} from './lib/plugin-config';
+export { uploadConfigSchema, UploadConfig } from './lib/upload-config';
+export {
+  pluginConfigSchema,
+  PluginConfig,
+  RunnerOutput,
+  runnerOutputSchema,
+} from './lib/plugin-config';
 export {
   runnerOutputAuditRefsPresentInPluginConfigs,
   reportSchema,
-  Report
+  Report,
 } from './lib/report';
-export {persistConfigSchema, PersistConfig} from './lib/persist-config';
-export {
-  categoryConfigSchema,
-  CategoryConfig,
-} from './lib/category-config';
-export {
-  globalCliArgsSchema,
-  GlobalCliArgs,
-} from './lib/global-cli-options';
+export { persistConfigSchema, PersistConfig } from './lib/persist-config';
+export { categoryConfigSchema, CategoryConfig } from './lib/category-config';
+export { globalCliArgsSchema, GlobalCliArgs } from './lib/global-cli-options';

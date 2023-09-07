@@ -1,7 +1,11 @@
-import {PluginConfig, RunnerOutput, runnerOutputSchema,} from '@quality-metrics/models';
-import {join} from 'path';
-import {executeProcess, ProcessConfig} from './execute-process';
-import {readFile} from 'fs/promises';
+import {
+  PluginConfig,
+  RunnerOutput,
+  runnerOutputSchema,
+} from '@quality-metrics/models';
+import { join } from 'path';
+import { executeProcess, ProcessConfig } from './execute-process';
+import { readFile } from 'fs/promises';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -18,9 +22,9 @@ export class PluginOutputError extends Error {
   }
 }
 
-export type PluginOutputSchema = RunnerOutput  & {
-  date: string,
-  duration: number
+export type PluginOutputSchema = RunnerOutput & {
+  date: string;
+  duration: number;
 };
 
 /**
@@ -61,12 +65,14 @@ export async function executePlugin(
 
   try {
     // read process output from file system and parse it
-    const runnerOutput = runnerOutputSchema.parse(JSON.parse((await readFile(processOutputPath)).toString()));
+    const runnerOutput = runnerOutputSchema.parse(
+      JSON.parse((await readFile(processOutputPath)).toString()),
+    );
 
     return {
       date: processResult.date,
       duration: processResult.duration,
-      ...runnerOutput
+      ...runnerOutput,
     };
   } catch (e) {
     throw new PluginOutputError(cfg.meta.slug, e);
@@ -101,4 +107,3 @@ export async function executePlugins(
     return outputs.concat(pluginOutput);
   }, Promise.resolve([] as PluginOutputSchema[]));
 }
-
