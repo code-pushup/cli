@@ -82,7 +82,6 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
     slug: auditSlug,
     title: 'audit title',
     description: 'audit description',
-    label: 'mock audit label',
     docsUrl: 'http://www.my-docs.dev',
   };
 }
