@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   descriptionSchema,
   docsUrlSchema,
-  generalFilePathSchema,
+  generalFilePathSchema, packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
@@ -18,7 +18,8 @@ import {
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
-export const pluginMetadataSchema = z.object(
+export const pluginMetadataSchema = packageVersionSchema({optional: true})
+  .merge(z.object(
   {
     slug: slugSchema(),
     name: z
@@ -34,7 +35,7 @@ export const pluginMetadataSchema = z.object(
   {
     description: 'Plugin metadata',
   },
-);
+));
 
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(
@@ -54,11 +55,6 @@ const runnerConfigSchema = z.object(
 export const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
-    label: z
-      .string({
-        description: 'Abbreviated name',
-      })
-      .max(128),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
     docsUrl: docsUrlSchema('Link to documentation (rationale)'),
@@ -138,27 +134,6 @@ export const pluginConfigSchema = z
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
-/**
- * Define Zod schema for the SourceFileLocation type.
- *
- * @example
- *
- * // Example data for the RunnerOutput type
- * const runnerOutputData = {
- *   audits: [
- *     // ... populate with example audit data ...
- *   ],
- * };
- *
- * // Validate the data against the schema
- * const validationResult = runnerOutputSchema.safeParse(runnerOutputData);
- *
- * if (validationResult.success) {
- *   console.log('Valid runner output:', validationResult.data);
- * } else {
- *   console.error('Invalid runner output:', validationResult.error);
- * }
- */
 const sourceFileLocationSchema = z.object(
   {
     file: unixFilePathSchema('Relative path to source file in Git repo'),

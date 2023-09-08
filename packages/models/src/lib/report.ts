@@ -7,6 +7,7 @@ import {
   auditResultSchema,
   pluginMetadataSchema,
 } from './plugin-config';
+import {packageVersionSchema} from "./implementation/schemas";
 
 export type PluginOutput = RunnerOutput & {
   slug: string;
@@ -25,16 +26,14 @@ export const pluginReportSchema = z.object({
 });
 export type PluginReport = z.infer<typeof pluginReportSchema>;
 
-export const reportSchema = z.object(
+export const reportSchema = packageVersionSchema({versionDescription: 'NPM version of the CLI'}).merge(z.object(
   {
-    package: z.string({ description: 'NPM package name' }),
-    version: z.string({ description: 'NPM version of the CLI' }),
     date: z.string({ description: 'Start date and time of the collect run' }),
     duration: z.number({ description: 'Duration of the collect run in ms' }),
     plugins: z.array(pluginReportSchema),
   },
   { description: 'Collect output data.' },
-);
+));
 
 export type Report = z.infer<typeof reportSchema>;
 
