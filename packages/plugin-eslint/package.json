@@ -2,6 +2,7 @@
   "name": "@quality-metrics/eslint-plugin",
   "version": "0.0.1",
   "dependencies": {
-    "eslint": "~8.46.0"
+    "eslint": "~8.46.0",
+    "@quality-metrics/models": ">=0.0.1"
   }
 }

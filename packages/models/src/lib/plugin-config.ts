@@ -13,6 +13,7 @@ import {
   hasMissingStrings,
   hasDuplicateStrings,
   errorItems,
+  exists,
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
@@ -64,6 +65,7 @@ const auditMetadataSchema = z.object(
   { description: 'List of scorable metrics for the given plugin' },
 );
 
+type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 // Define Zod schema for the `Group` type
 export const groupSchema = z.object(
   {
@@ -94,6 +96,8 @@ export const groupSchema = z.object(
       'e.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
   },
 );
+
+type Group = z.infer<typeof groupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -135,9 +139,9 @@ export const pluginConfigSchema = z
       })
       .optional()
       .refine(
-        auditMetadata => !getDuplicateSlugsInGroups(auditMetadata),
-        auditMetadata => ({
-          message: duplicateSlugsInGroupsErrorMsg(auditMetadata),
+        groups => !getDuplicateSlugsInGroups(groups),
+        groups => ({
+          message: duplicateSlugsInGroupsErrorMsg(groups),
         }),
       ),
   })
@@ -234,6 +238,8 @@ const auditSchema = z.object(
   { description: 'Audit information' },
 );
 
+type Audit = z.infer<typeof auditSchema>;
+
 /**
  * Define Zod schema for the RunnerOutput type.
  */
@@ -252,49 +258,58 @@ export const runnerOutputSchema = z.object(
 export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(auditMetadata) {
-  const duplicateRefs = getDuplicateSlugsInAudits(auditMetadata);
+function duplicateSlugsInAuditsErrorMsg(audits: Audit[]) {
+  const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(auditMetadata) {
-  return hasDuplicateStrings(auditMetadata.map(({ slug }) => slug));
+function getDuplicateSlugsInAudits(audits: Audit[]) {
+  return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups) {
+function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
-function getDuplicateSlugsInGroups(groups) {
-  return hasDuplicateStrings(groups.map(({ slug }) => slug));
+function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
+  return Array.isArray(groups)
+    ? hasDuplicateStrings(groups.map(({ slug }) => slug))
+    : false;
 }
 
+type RefsList = { ref?: string }[];
 // helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits) {
+function duplicateRefsInGroupsErrorMsg(groupAudits: RefsList) {
   const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
   return `In plugin groups the audit refs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInGroups(groupAudits) {
-  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
+function getDuplicateRefsInGroups(groupAudits: RefsList) {
+  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref).filter(exists));
 }
+type PluginCfg = {
+  audits?: AuditMetadata[];
+  groups?: Group[];
+};
 
 // helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(groupCfg) {
-  const missingRefs = getMissingRefsFromGroups(groupCfg);
+function missingRefsFromGroupsErrorMsg(pluginCfg: PluginCfg) {
+  const missingRefs = getMissingRefsFromGroups(pluginCfg);
   return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }
 
-function getMissingRefsFromGroups(pluginCfg) {
-  if (pluginCfg?.groups.length && pluginCfg?.audits.length) {
+function getMissingRefsFromGroups(pluginCfg: PluginCfg) {
+  if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
+    const groups = pluginCfg?.groups || [];
+    const audits = pluginCfg?.audits || [];
     return hasMissingStrings(
-      pluginCfg.groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
-      pluginCfg.audits.map(({ slug }) => slug),
+      groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+      audits.map(({ slug }) => slug),
     );
   }
   return false;

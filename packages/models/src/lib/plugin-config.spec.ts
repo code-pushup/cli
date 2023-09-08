@@ -5,8 +5,8 @@ import {
   mockRunnerOutput,
 } from './implementation/helpers.mock';
 import {
-  pluginConfigSchema,
   groupSchema,
+  pluginConfigSchema,
   runnerOutputSchema,
 } from './plugin-config';
 
@@ -21,7 +21,7 @@ describe('pluginConfigSchema', () => {
     const cfg = mockPluginConfig({ pluginSlug: invalidCategorySlug });
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patter`,
+      `slug has to follow the pattern`,
     );
   });
 
