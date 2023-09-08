@@ -10,6 +10,12 @@ export {
   PluginConfig,
   RunnerOutput,
   runnerOutputSchema,
+  AuditMetadata,
+  IssueSchema,
+  issueSchema,
+  auditMetadataSchema,
+  Group,
+  groupSchema
 } from './lib/plugin-config';
 export {
   runnerOutputAuditRefsPresentInPluginConfigs,

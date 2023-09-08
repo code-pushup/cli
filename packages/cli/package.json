@@ -1,6 +1,7 @@
 {
   "name": "@quality-metrics/cli",
   "version": "0.0.1",
+  "bin": "src/bin.js",
   "dependencies": {
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",

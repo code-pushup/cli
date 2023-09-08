@@ -22,7 +22,7 @@ export class PluginOutputError extends Error {
   }
 }
 
-export type PluginOutputSchema = RunnerOutput & {
+export type PluginOutput = RunnerOutput & {
   date: string;
   duration: number;
 };
@@ -52,7 +52,7 @@ export type PluginOutputSchema = RunnerOutput & {
 export async function executePlugin(
   cfg: PluginConfig,
   observer?: ProcessConfig['observer'],
-): Promise<PluginOutputSchema> {
+): Promise<PluginOutput> {
   const command = cfg.runner.command.toString() || '';
   const args = cfg.runner.args || [];
   const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
@@ -100,10 +100,10 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
-): Promise<PluginOutputSchema[]> {
+): Promise<PluginOutput[]> {
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const pluginOutput = await executePlugin(pluginCfg);
     return outputs.concat(pluginOutput);
-  }, Promise.resolve([] as PluginOutputSchema[]));
+  }, Promise.resolve([] as PluginOutput[]));
 }

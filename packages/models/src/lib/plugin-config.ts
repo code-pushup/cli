@@ -28,6 +28,12 @@ const pluginMetadataSchema = z.object(
       description: 'Icon from VSCode Material Icons extension',
     }),
     docsUrl: docsUrlSchema('Plugin documentation site'),
+    version: z
+      .string({
+        description: 'version of the plugin',
+      })
+      .max(128)
+      .optional(),
   },
   {
     description: 'Plugin metadata',
@@ -52,20 +58,16 @@ const runnerConfigSchema = z.object(
 );
 
 // Define Zod schema for the AuditMetadata type
-const auditMetadataSchema = z.object(
+export const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
-    label: z
-      .string({
-        description: 'Abbreviated name',
-      })
-      .max(128),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
     docsUrl: docsUrlSchema('Link to documentation (rationale)'),
   },
   { description: 'List of scorable metrics for the given plugin' },
 );
+export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 
 // Define Zod schema for the `Group` type
 export const groupSchema = z.object(
@@ -98,7 +100,7 @@ export const groupSchema = z.object(
   },
 );
 
-type GroupSchema = z.infer<typeof groupSchema>;
+export type Group = z.infer<typeof groupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -198,7 +200,7 @@ const sourceFileLocationSchema = z.object(
 /**
  * Define Zod schema for the Issue type.
  */
-const issueSchema = z.object(
+export const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
     severity: z.enum(['info', 'warning', 'error'], {
@@ -206,10 +208,14 @@ const issueSchema = z.object(
     }),
     // "Reference to source code"
     source: sourceFileLocationSchema.optional(),
+    // log of the error
+    log: z.string({
+      description: "Log of any kind related to the issue"
+    }).optional()
   },
   { description: 'Issue information' },
 );
-
+export type IssueSchema = z.infer<typeof issueSchema>;
 /**
  * Define Zod schema for the Audit type.
  */
@@ -239,7 +245,7 @@ const auditSchema = z.object(
   { description: 'Audit information' },
 );
 
-type AuditSchema = z.infer<typeof auditSchema>;
+type Audit = z.infer<typeof auditSchema>;
 
 /**
  * Define Zod schema for the RunnerOutput type.
@@ -259,22 +265,22 @@ export const runnerOutputSchema = z.object(
 export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditSchema[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: Audit[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: AuditSchema[]) {
+function getDuplicateSlugsInAudits(audits: Audit[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: GroupSchema[] | undefined) {
+function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
-function getDuplicateSlugsInGroups(groups: GroupSchema[] | undefined) {
+function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
   return Array.isArray(groups)
     ? hasDuplicateStrings(groups.map(({ slug }) => slug))
     : false;
