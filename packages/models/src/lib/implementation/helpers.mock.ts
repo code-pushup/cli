@@ -1,8 +1,13 @@
-import { PluginConfig, RunnerOutput } from '../plugin-config';
-import { CoreConfig } from '../core-config';
 import { CategoryConfig } from '../category-config';
-import { UploadConfig } from '../upload-config';
+import { CoreConfig } from '../core-config';
 import { PersistConfig } from '../persist-config';
+import {
+  AuditGroup,
+  AuditMetadata,
+  PluginConfig,
+  RunnerOutput,
+} from '../plugin-config';
+import { UploadConfig } from '../upload-config';
 
 export function mockConfig(opt?: {
   pluginSlug?: string | string[];
@@ -38,7 +43,7 @@ export function mockPluginConfig(opt?: {
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
     : [mockAuditConfig({ auditSlug })];
 
-  let groups = [];
+  let groups: AuditGroup[] = [];
   if (addGroups) {
     groups = Array.isArray(groupSlug)
       ? groupSlug.map(slug => mockGroupConfig({ groupSlug: slug }))
@@ -68,9 +73,7 @@ export function mockPluginConfig(opt?: {
   };
 }
 
-export function mockAuditConfig(opt?: {
-  auditSlug?: string;
-}): PluginConfig['audits'][0] {
+export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-slug';
 
@@ -82,14 +85,18 @@ export function mockAuditConfig(opt?: {
     docsUrl: 'http://www.my-docs.dev',
   };
 }
-export function mockMetric(opt?: {
-  auditRef?: string;
-}): CategoryConfig['metrics'][0] {
-  const { auditRef } = opt || {};
-  const ref = auditRef || 'mock-plugin-slug#mock-audit-slug';
+
+export function mockAuditRef(opt?: {
+  pluginSlug?: string;
+  auditSlug?: string;
+}): CategoryConfig['refs'][0] {
+  const { auditSlug = 'mock-audit-slug', pluginSlug = 'mock-plugin-slug' } =
+    opt || {};
 
   return {
-    ref,
+    type: 'audit',
+    slug: auditSlug,
+    plugin: pluginSlug,
     weight: 0,
   };
 }
@@ -97,38 +104,42 @@ export function mockMetric(opt?: {
 export function mockGroupConfig(opt?: {
   groupSlug?: string;
   auditSlug?: string | string[];
-}): PluginConfig['groups'][0] {
+}): AuditGroup {
   let { groupSlug, auditSlug } = opt || {};
   groupSlug = groupSlug || 'mock-group-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
-  const audits = Array.isArray(auditSlug)
-    ? auditSlug.map(slug => ({ ref: slug, weight: 0 }))
-    : [{ ref: auditSlug, weight: 0 }];
+  const refs = Array.isArray(auditSlug)
+    ? auditSlug.map(slug => ({ slug, weight: 0 }))
+    : [{ slug: auditSlug, weight: 0 }];
   return {
     slug: groupSlug,
     title: 'group title',
     description: 'group description',
-    audits: audits,
+    refs,
   };
 }
 
+type WeightlessRef = Omit<CategoryConfig['refs'][0], 'weight'>;
+
 export function mockCategory(opt?: {
   categorySlug?: string;
-  auditRefOrGroupRef?: string | string[];
+  auditRefOrGroupRef?: WeightlessRef | WeightlessRef[];
 }): CategoryConfig {
   let { auditRefOrGroupRef, categorySlug } = opt || {};
   categorySlug = categorySlug || 'mock-category-slug';
-  auditRefOrGroupRef = auditRefOrGroupRef || 'mock-plugin-slug#mock-audit-slug';
+  auditRefOrGroupRef = auditRefOrGroupRef || mockAuditRef();
 
-  const metrics = Array.isArray(auditRefOrGroupRef)
-    ? auditRefOrGroupRef.map(ref => ({ ref: ref, weight: 0 }))
-    : [{ ref: auditRefOrGroupRef, weight: 0 }];
+  const refs = (
+    Array.isArray(auditRefOrGroupRef)
+      ? auditRefOrGroupRef
+      : [auditRefOrGroupRef]
+  ).map(ref => ({ ...ref, weight: 0 }));
 
   return {
     slug: categorySlug,
     title: 'Mock category title',
     description: 'mock description',
-    metrics,
+    refs,
   };
 }
 

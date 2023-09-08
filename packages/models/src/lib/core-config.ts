@@ -1,13 +1,13 @@
 import { Schema, z } from 'zod';
-import { pluginConfigSchema } from './plugin-config';
 import { CategoryConfig, categoryConfigSchema } from './category-config';
-import { uploadConfigSchema } from './upload-config';
-import { persistConfigSchema } from './persist-config';
 import {
-  hasMissingStrings,
-  hasDuplicateStrings,
   errorItems,
+  hasDuplicateStrings,
+  hasMissingStrings,
 } from './implementation/utils';
+import { persistConfigSchema } from './persist-config';
+import { pluginConfigSchema } from './plugin-config';
+import { uploadConfigSchema } from './upload-config';
 
 /**
  * Define Zod schema for the CoreConfig type
@@ -80,18 +80,16 @@ function missingRefsForCategoriesErrorMsg(coreCfg: CoreConfig) {
   )}`;
 }
 
-function isGroupRef(ref: string): boolean {
-  return ref.includes('group:');
-}
-
 function getMissingRefsForCategories(coreCfg: CoreConfig) {
-  const missingRefs = [];
-  const auditRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
-    metrics.filter(({ ref }) => !isGroupRef(ref)).map(({ ref }) => ref),
+  const missingRefs: string[] = [];
+  const auditRefsFromCategory = coreCfg.categories.flatMap(({ refs }) =>
+    refs
+      .filter(({ type }) => type === 'audit')
+      .map(({ plugin, slug }) => `${plugin}/${slug}`),
   );
   const auditRefsFromPlugins = coreCfg.plugins.flatMap(({ audits, meta }) => {
     const pluginSlug = meta.slug;
-    return audits.map(({ slug }) => `${pluginSlug}#${slug}`);
+    return audits.map(({ slug }) => `${pluginSlug}/${slug}`);
   });
   const missingAuditRefs = hasMissingStrings(
     auditRefsFromCategory,
@@ -101,12 +99,14 @@ function getMissingRefsForCategories(coreCfg: CoreConfig) {
   if (Array.isArray(missingAuditRefs) && missingAuditRefs.length > 0) {
     missingRefs.push(...missingAuditRefs);
   }
-  const groupRefsFromCategory = coreCfg.categories.flatMap(({ metrics }) =>
-    metrics.filter(({ ref }) => isGroupRef(ref)).map(({ ref }) => ref),
+  const groupRefsFromCategory = coreCfg.categories.flatMap(({ refs }) =>
+    refs
+      .filter(({ type }) => type === 'group')
+      .map(({ plugin, slug }) => `${plugin}/${slug} (group)`),
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
     return Array.isArray(groups)
-      ? groups.map(({ slug }) => `${meta.slug}#group:${slug}`)
+      ? groups.map(({ slug }) => `${meta.slug}/${slug} (group)`)
       : [];
   });
   const missingGroupRefs = hasMissingStrings(

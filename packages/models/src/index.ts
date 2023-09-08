@@ -8,13 +8,13 @@ export {
 export { GlobalCliArgs, globalCliArgsSchema } from './lib/global-cli-options';
 export { PersistConfig, persistConfigSchema } from './lib/persist-config';
 export {
+  AuditGroup,
   AuditMetadata,
-  Group,
   Issue,
   PluginConfig,
   RunnerOutput,
+  auditGroupSchema,
   auditMetadataSchema,
-  groupSchema,
   issueSchema,
   pluginConfigSchema,
   runnerOutputSchema,

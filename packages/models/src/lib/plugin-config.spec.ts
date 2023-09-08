@@ -5,8 +5,8 @@ import {
   mockRunnerOutput,
 } from './implementation/helpers.mock';
 import {
+  auditGroupSchema,
   pluginConfigSchema,
-  groupSchema,
   runnerOutputSchema,
 } from './plugin-config';
 
@@ -79,10 +79,10 @@ describe('pluginConfigSchema', () => {
 
   it('should throw if a group has duplicate audit refs', () => {
     const auditSlug = 'no-any';
-    // @TODO use pluginConfigSchema instead of groupSchema
+    // @TODO use pluginConfigSchema instead of auditGroupSchema
     const cfg = mockGroupConfig({ auditSlug: [auditSlug, auditSlug] });
 
-    expect(() => groupSchema.parse(cfg)).toThrow(
+    expect(() => auditGroupSchema.parse(cfg)).toThrow(
       'In plugin groups the audit refs are not unique',
     );
   });

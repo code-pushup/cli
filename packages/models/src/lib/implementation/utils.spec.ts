@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
-
 import {
   generalFilePathRegex,
-  refRegex,
-  slugRegex,
-  hasMissingStrings,
   hasDuplicateStrings,
+  hasMissingStrings,
+  slugRegex,
 } from './utils';
 
 describe('slugRegex', () => {
@@ -36,34 +34,6 @@ describe('slugRegex', () => {
     '123--456',
   ])(`should not match invalid slugs %p`, invalidSlugs => {
     expect(invalidSlugs).not.toMatch(slugRegex);
-  });
-});
-
-describe('refRegex', () => {
-  // test valid and array of strings against refRegex with it blocks
-  it.each([
-    'pluginslug#auditslug',
-    'plugin-slug#auditslug',
-    '123-plugin#audit-slug-123',
-  ])(`should match valid ref %p`, ref => {
-    expect(ref).toMatch(refRegex);
-  });
-
-  // test invalid and array of strings against refRegex with it blocks
-  it.each([
-    '',
-    ' ',
-    'pluginslug #auditslug',
-    '123#audit slug',
-    '123#audit-Slug',
-    'pluginslug.123#auditslug',
-    'plugin-slug:123#audit slug',
-    // groups
-    'plugin-slug#:group#audit-slug',
-    '123-plugin-slug#audit:slug-123',
-    '123-plugin-slug#group:audit:slug-123',
-  ])(`should not match invalid ref %p`, ref => {
-    expect(ref).not.toMatch(refRegex);
   });
 });
 

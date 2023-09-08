@@ -4,10 +4,11 @@ import {
   docsUrlSchema,
   generalFilePathSchema,
   positiveIntSchema,
+  scorableSchema,
   slugSchema,
   titleSchema,
   unixFilePathSchema,
-  weightSchema,
+  weightedRefSchema,
 } from './implementation/schemas';
 import {
   errorItems,
@@ -66,38 +67,20 @@ export const auditMetadataSchema = z.object(
 );
 
 export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
+
 // Define Zod schema for the `Group` type
-export const groupSchema = z.object(
-  {
-    slug: slugSchema('Human-readable unique ID .e.g. "performance"'),
-    title: titleSchema('Display name'),
-    description: descriptionSchema('Description (Markdown)'),
-    audits: z
-      .array(
-        z.object({
-          ref: slugSchema(
-            "Reference slug to an audit within plugin (e.g. 'max-lines')",
-          ),
-          weight: weightSchema(),
-        }),
-        { description: 'Weighted references to plugin-specific audits' },
-      )
-      // group refs are unique
-      .refine(
-        groupAudits => !getDuplicateRefsInGroups(groupAudits),
-        groupAudits => ({
-          message: duplicateRefsInGroupsErrorMsg(groupAudits),
-        }),
-      ),
-  },
-  {
-    description:
-      'A group aggregates a set of audits into a single score which can be referenced from a category. ' +
-      'e.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
-  },
+export const auditGroupSchema = scorableSchema(
+  'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
+    'E.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
+  weightedRefSchema(
+    'Weighted references to audits',
+    "Reference slug to an audit within this plugin (e.g. 'max-lines')",
+  ),
+  getDuplicateRefsInGroups,
+  duplicateRefsInGroupsErrorMsg,
 );
 
-export type Group = z.infer<typeof groupSchema>;
+export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -134,7 +117,7 @@ export const pluginConfigSchema = z
         }),
       ),
     groups: z
-      .array(groupSchema, {
+      .array(auditGroupSchema, {
         description: 'List of groups',
       })
       .optional()
@@ -269,17 +252,18 @@ function getDuplicateSlugsInAudits(audits: AuditResult[]) {
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
+function duplicateSlugsInGroupsErrorMsg(groups: AuditGroup[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
-function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
+function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
   return Array.isArray(groups)
     ? hasDuplicateStrings(groups.map(({ slug }) => slug))
     : false;
 }
 
-type RefsList = { ref?: string }[];
+type RefsList = { slug?: string }[];
+
 // helper for validator: group refs are unique
 function duplicateRefsInGroupsErrorMsg(groupAudits: RefsList) {
   const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
@@ -288,11 +272,13 @@ function duplicateRefsInGroupsErrorMsg(groupAudits: RefsList) {
   )}`;
 }
 function getDuplicateRefsInGroups(groupAudits: RefsList) {
-  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref).filter(exists));
+  return hasDuplicateStrings(
+    groupAudits.map(({ slug: ref }) => ref).filter(exists),
+  );
 }
 type PluginCfg = {
   audits?: AuditMetadata[];
-  groups?: Group[];
+  groups?: AuditGroup[];
 };
 
 // helper for validator: every listed group ref points to an audit within the plugin
@@ -308,7 +294,7 @@ function getMissingRefsFromGroups(pluginCfg: PluginCfg) {
     const groups = pluginCfg?.groups || [];
     const audits = pluginCfg?.audits || [];
     return hasMissingStrings(
-      groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+      groups.flatMap(({ refs: audits }) => audits.map(({ slug: ref }) => ref)),
       audits.map(({ slug }) => slug),
     );
   }
