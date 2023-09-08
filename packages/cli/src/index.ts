@@ -5,11 +5,10 @@ import { commands } from './lib/commands';
 
 export const cli = (args: string[]) =>
   yargsCli(
-    // hide first 2 args from process
     args,
     {
-      usageMessage: 'CPU CLI',
-      scriptName: 'cpu',
+      usageMessage: 'Code PushUp CLI',
+      scriptName: 'code-pushup',
       options: yargsGlobalOptionsDefinition(),
       middlewares,
       commands,

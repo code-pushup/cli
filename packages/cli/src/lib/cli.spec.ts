@@ -11,7 +11,7 @@ const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
 const options = yargsGlobalOptionsDefinition();
 const demandCommand: [number, string] = [0, 'no command required'];
 
-describe('cli', () => {
+describe('CLI arguments parsing', () => {
   it('options should provide correct defaults', async () => {
     const args: string[] = [];
     const parsedArgv: CommandBase = yargsCli(args, {

@@ -14,7 +14,7 @@ export function yargsGlobalOptionsDefinition(): Record<string, Options> {
       default: false,
     },
     configPath: {
-      describe: 'Path the the config file. e.g. code-pushup.config.js',
+      describe: 'Path the the config file, e.g. code-pushup.config.js',
       type: 'string',
       default: 'code-pushup.config.js',
     },

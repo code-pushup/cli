@@ -98,7 +98,7 @@ export const groupSchema = z.object(
   },
 );
 
-type GroupSchema = z.infer<typeof groupSchema>;
+type Group = z.infer<typeof groupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -239,7 +239,7 @@ const auditSchema = z.object(
   { description: 'Audit information' },
 );
 
-type AuditSchema = z.infer<typeof auditSchema>;
+type Audit = z.infer<typeof auditSchema>;
 
 /**
  * Define Zod schema for the RunnerOutput type.

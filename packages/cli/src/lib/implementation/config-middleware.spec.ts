@@ -5,21 +5,21 @@ import { expect } from 'vitest';
 const withDirName = (path: string) => join(__dirname, path);
 
 describe('applyConfigMiddleware', () => {
-  it('should load valid config `read-config.mock.mjs`', async () => {
+  it('should load valid .mjs config', async () => {
     const configPathMjs = withDirName('mock/config-middleware-config.mock.mjs');
     const config = await configMiddleware({ configPath: configPathMjs });
     expect(config.configPath).toContain('.mjs');
     expect(config.persist.outputPath).toContain('mjs-');
   });
 
-  it('should load valid config `read-config.mock.cjs`', async () => {
+  it('should load valid .cjs config', async () => {
     const configPathCjs = withDirName('mock/config-middleware-config.mock.cjs');
     const config = await configMiddleware({ configPath: configPathCjs });
     expect(config.configPath).toContain('.cjs');
     expect(config.persist.outputPath).toContain('cjs-');
   });
 
-  it('should load valid config `read-config.mock.js`', async () => {
+  it('should load valid .js config', async () => {
     const configPathJs = withDirName('mock/config-middleware-config.mock.js');
     const config = await configMiddleware({ configPath: configPathJs });
     expect(config.configPath).toContain('.js');
