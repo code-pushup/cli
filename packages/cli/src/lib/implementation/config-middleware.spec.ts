@@ -1,26 +1,32 @@
-import { join } from 'path';
-import { configMiddleware, ConfigParseError } from './config-middleware';
-import { expect } from 'vitest';
+import {join} from 'path';
+import {configMiddleware, ConfigParseError} from './config-middleware';
+import {expect} from 'vitest';
+import {getDirname} from './utils';
+
+const __dirname = getDirname(import.meta.url);
 
 const withDirName = (path: string) => join(__dirname, path);
+const configPath = (ext: string) =>
+  `${withDirName('mock/config-middleware-config.mock.')}${ext}`;
 
 describe('applyConfigMiddleware', () => {
-  it('should load valid config `read-config.mock.mjs`', async () => {
-    const configPathMjs = withDirName('mock/config-middleware-config.mock.mjs');
+  it('should load valid .mjs config', async () => {
+    const configPathMjs = configPath('mjs');
+    console.log('configPathMjs: ', configPathMjs);
     const config = await configMiddleware({ configPath: configPathMjs });
     expect(config.configPath).toContain('.mjs');
     expect(config.persist.outputPath).toContain('mjs-');
   });
 
-  it('should load valid config `read-config.mock.cjs`', async () => {
-    const configPathCjs = withDirName('mock/config-middleware-config.mock.cjs');
+  it('should load valid .cjs config', async () => {
+    const configPathCjs = configPath('cjs');
     const config = await configMiddleware({ configPath: configPathCjs });
     expect(config.configPath).toContain('.cjs');
     expect(config.persist.outputPath).toContain('cjs-');
   });
 
-  it('should load valid config `read-config.mock.js`', async () => {
-    const configPathJs = withDirName('mock/config-middleware-config.mock.js');
+  it('should load valid .js config', async () => {
+    const configPathJs = configPath('js');
     const config = await configMiddleware({ configPath: configPathJs });
     expect(config.configPath).toContain('.js');
     expect(config.persist.outputPath).toContain('js-');

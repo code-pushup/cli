@@ -1,17 +1,19 @@
-import { describe, expect, it } from 'vitest';
-import { yargsCli } from './cli';
-import { join } from 'path';
-import { yargsGlobalOptionsDefinition } from './options';
-import { middlewares } from './middlewares';
-import { CommandBase } from './implementation/base-command-config';
+import {describe, expect, it} from 'vitest';
+import {yargsCli} from './cli';
+import {join} from 'path';
+import {yargsGlobalOptionsDefinition} from './options';
+import {middlewares} from './middlewares';
+import {CommandBase} from './implementation/base-command-config';
+import {getDirname} from './implementation/utils';
 
+const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
 const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
 
 const options = yargsGlobalOptionsDefinition();
 const demandCommand: [number, string] = [0, 'no command required'];
 
-describe('cli', () => {
+describe('CLI arguments parsing', () => {
   it('options should provide correct defaults', async () => {
     const args: string[] = [];
     const parsedArgv: CommandBase = yargsCli(args, {

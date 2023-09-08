@@ -13,6 +13,7 @@ import {
   hasMissingStrings,
   hasDuplicateStrings,
   errorItems,
+  exists,
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
@@ -28,20 +29,11 @@ const pluginMetadataSchema = z.object(
       description: 'Icon from VSCode Material Icons extension',
     }),
     docsUrl: docsUrlSchema('Plugin documentation site'),
-    version: z
-      .string({
-        description: 'version of the plugin',
-      })
-      .max(128)
-      .optional(),
   },
   {
     description: 'Plugin metadata',
   },
 );
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type HackForCyclicRefs = any;
 
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(
@@ -58,17 +50,22 @@ const runnerConfigSchema = z.object(
 );
 
 // Define Zod schema for the AuditMetadata type
-export const auditMetadataSchema = z.object(
+const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
+    label: z
+      .string({
+        description: 'Abbreviated name',
+      })
+      .max(128),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
     docsUrl: docsUrlSchema('Link to documentation (rationale)'),
   },
   { description: 'List of scorable metrics for the given plugin' },
 );
-export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 
+type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 // Define Zod schema for the `Group` type
 export const groupSchema = z.object(
   {
@@ -100,7 +97,7 @@ export const groupSchema = z.object(
   },
 );
 
-export type Group = z.infer<typeof groupSchema>;
+type Group = z.infer<typeof groupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -200,7 +197,7 @@ const sourceFileLocationSchema = z.object(
 /**
  * Define Zod schema for the Issue type.
  */
-export const issueSchema = z.object(
+const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
     severity: z.enum(['info', 'warning', 'error'], {
@@ -208,16 +205,10 @@ export const issueSchema = z.object(
     }),
     // "Reference to source code"
     source: sourceFileLocationSchema.optional(),
-    // log of the error
-    log: z
-      .string({
-        description: 'Log of any kind related to the issue',
-      })
-      .optional(),
   },
   { description: 'Issue information' },
 );
-export type IssueSchema = z.infer<typeof issueSchema>;
+
 /**
  * Define Zod schema for the Audit type.
  */
@@ -288,32 +279,37 @@ function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
     : false;
 }
 
+type RefsList = { ref?: string }[];
 // helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits: HackForCyclicRefs) {
+function duplicateRefsInGroupsErrorMsg(groupAudits: RefsList) {
   const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
   return `In plugin groups the audit refs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInGroups(groupAudits: HackForCyclicRefs[]) {
-  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
+function getDuplicateRefsInGroups(groupAudits: RefsList) {
+  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref).filter(exists));
 }
+type PluginCfg = {
+  audits?: AuditMetadata[];
+  groups?: Group[];
+};
 
 // helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(pluginCfg: HackForCyclicRefs) {
+function missingRefsFromGroupsErrorMsg(pluginCfg: PluginCfg) {
   const missingRefs = getMissingRefsFromGroups(pluginCfg);
   return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }
 
-function getMissingRefsFromGroups(pluginCfg: HackForCyclicRefs) {
-  if (pluginCfg?.groups?.length && pluginCfg.audits.length) {
+function getMissingRefsFromGroups(pluginCfg: PluginCfg) {
+  if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
+    const groups = pluginCfg?.groups || [];
+    const audits = pluginCfg?.audits || [];
     return hasMissingStrings(
-      pluginCfg.groups.flatMap(({ audits }: HackForCyclicRefs) =>
-        audits.map(({ ref }: HackForCyclicRefs) => ref),
-      ),
-      pluginCfg.audits.map(({ slug }: HackForCyclicRefs) => slug),
+      groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+      audits.map(({ slug }) => slug),
     );
   }
   return false;

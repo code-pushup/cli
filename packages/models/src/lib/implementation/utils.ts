@@ -66,3 +66,7 @@ export function errorItems(
   const paredItems = items ? items : [];
   return transform(paredItems);
 }
+
+export function exists<T>(value: T): value is NonNullable<T> {
+  return value != null;
+}
