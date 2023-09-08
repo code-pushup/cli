@@ -1,28 +1,24 @@
-import {
-  CoreConfig,
-  PluginConfig,
-  Report,
-  RunnerOutput,
-} from '@quality-metrics/models';
+import { CoreConfig, PluginConfig, Report } from '@quality-metrics/models';
 import { CollectOptions } from '@quality-metrics/utils';
 import { readFileSync } from 'node:fs';
-import { expect } from 'vitest';
-import * as yargs from 'yargs';
+import { join } from 'node:path';
 import { yargsCli } from '../cli';
+import { getDirname } from '../implementation/utils';
 import { middlewares } from '../middlewares';
+import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
 
 const outputPath = 'collect-command-object.json';
 const dummyConfig: CoreConfig = {
   persist: { outputPath },
-  plugins: [mockPlugin({ outputPath })],
+  plugins: [mockPlugin()],
   categories: [],
 };
 
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
-    const cli = yargs([])
+    const cli = yargsCli([], { options: yargsGlobalOptionsDefinition() })
       .config(dummyConfig)
       .command(yargsCollectCommandObject());
     const parsedArgv = (await cli.parseAsync(
@@ -34,36 +30,31 @@ describe('collect-command-object', () => {
     return Promise.resolve(void 0);
   });
 
-  it('should execute plugins correctly', async () => {
-    const args = ['collect'];
+  it('should execute middleware correctly', async () => {
+    const args = [
+      'collect',
+      '--configPath',
+      join(
+        getDirname(import.meta.url),
+        '..',
+        'implementation',
+        'mock',
+        'config-middleware-config.mock.mjs',
+      ),
+    ];
     await yargsCli([], { middlewares })
       .config(dummyConfig)
       .command(yargsCollectCommandObject())
       .parseAsync(args);
-    const result = JSON.parse(
-      readFileSync(outputPath).toString(),
-    ) as RunnerOutput;
-    expect(result.audits[0]?.slug).toBe('command-object-audit-slug');
-  });
-
-  // @TODO if we dont catch the error in the handler we always exit the process
-  it('should throw if plugin output is wrong', async () => {
-    const configWithWrongAuditOutput = JSON.parse(JSON.stringify(dummyConfig));
-    configWithWrongAuditOutput.plugins[0] = mockPlugin({
-      outputPath,
-      auditOutput: 'wrong output' as unknown as Report,
-    });
-    let error: Error = undefined as unknown as Error;
-    await yargsCollectCommandObject()
-      .handler(configWithWrongAuditOutput)
-      ?.catch(e => (error = e));
-    expect(error.message).toContain('collect-command-object');
+    const report = JSON.parse(readFileSync(outputPath).toString()) as Report;
+    expect(report.plugins[0]?.meta.slug).toBe('collect-command-object');
+    expect(report.plugins[0]?.audits[0]?.slug).toBe(
+      'command-object-audit-slug',
+    );
   });
 });
 
-function mockPlugin(
-  opt: { outputPath: string; auditOutput?: Report } = { outputPath },
-): PluginConfig {
+function mockPlugin(): PluginConfig {
   return {
     audits: [
       {

@@ -60,15 +60,25 @@ export function yargsCli(
   }
 
   // add middlewares
-  middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) =>
+  middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) => {
     cli.middleware(
       logErrorBeforeThrow(middlewareFunction),
       applyBeforeValidation,
-    ),
-  );
+    );
+  });
 
   // add commands
-  commands.forEach(commandObj => cli.command(commandObj));
+  commands.forEach(commandObj => {
+    cli.command({
+      ...commandObj,
+      ...(commandObj.handler && {
+        handler: logErrorBeforeThrow(commandObj.handler),
+      }),
+      ...(typeof commandObj.builder === 'function' && {
+        builder: logErrorBeforeThrow(commandObj.builder),
+      }),
+    });
+  });
 
   // return CLI object
   return cli as unknown as Argv<CoreConfig>;

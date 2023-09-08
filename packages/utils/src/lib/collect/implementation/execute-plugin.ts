@@ -1,11 +1,11 @@
 import {
   PluginConfig,
-  RunnerOutput,
+  PluginOutput,
   runnerOutputSchema,
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { executeProcess, ProcessConfig } from './execute-process';
+import { ProcessConfig, executeProcess } from './execute-process';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -21,11 +21,6 @@ export class PluginOutputError extends Error {
     }
   }
 }
-
-export type PluginOutput = RunnerOutput & {
-  date: string;
-  duration: number;
-};
 
 /**
  * Execute a plugin.
@@ -70,6 +65,7 @@ export async function executePlugin(
     );
 
     return {
+      slug: cfg.meta.slug,
       date: processResult.date,
       duration: processResult.duration,
       ...runnerOutput,

@@ -10,14 +10,14 @@ import {
   weightSchema,
 } from './implementation/schemas';
 import {
-  hasMissingStrings,
-  hasDuplicateStrings,
   errorItems,
   exists,
+  hasDuplicateStrings,
+  hasMissingStrings,
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
-const pluginMetadataSchema = z.object(
+export const pluginMetadataSchema = z.object(
   {
     slug: slugSchema(),
     name: z
@@ -208,11 +208,11 @@ export const issueSchema = z.object(
   },
   { description: 'Issue information' },
 );
-export type Issue = z.infer<typeof issueSchema>
+export type Issue = z.infer<typeof issueSchema>;
 /**
  * Define Zod schema for the Audit type.
  */
-const auditSchema = z.object(
+export const auditResultSchema = z.object(
   {
     slug: slugSchema('References audit metadata'),
     displayValue: z
@@ -238,7 +238,7 @@ const auditSchema = z.object(
   { description: 'Audit information' },
 );
 
-type Audit = z.infer<typeof auditSchema>;
+export type AuditResult = z.infer<typeof auditResultSchema>;
 
 /**
  * Define Zod schema for the RunnerOutput type.
@@ -246,7 +246,7 @@ type Audit = z.infer<typeof auditSchema>;
 export const runnerOutputSchema = z.object(
   {
     audits: z
-      .array(auditSchema, { description: 'List of audits' })
+      .array(auditResultSchema, { description: 'List of audits' })
       // audit slugs are unique
       .refine(
         audits => !getDuplicateSlugsInAudits(audits),
@@ -258,13 +258,13 @@ export const runnerOutputSchema = z.object(
 export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: Audit[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: AuditResult[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: Audit[]) {
+function getDuplicateSlugsInAudits(audits: AuditResult[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
