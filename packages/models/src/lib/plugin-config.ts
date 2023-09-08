@@ -13,6 +13,7 @@ import {
   hasMissingStrings,
   hasDuplicateStrings,
   errorItems,
+  exists,
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
@@ -33,9 +34,6 @@ const pluginMetadataSchema = z.object(
     description: 'Plugin metadata',
   },
 );
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type HackForCyclicRefs = any;
 
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(
@@ -67,6 +65,7 @@ const auditMetadataSchema = z.object(
   { description: 'List of scorable metrics for the given plugin' },
 );
 
+type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 // Define Zod schema for the `Group` type
 export const groupSchema = z.object(
   {
@@ -259,53 +258,58 @@ export const runnerOutputSchema = z.object(
 export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditSchema[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: Audit[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: AuditSchema[]) {
+function getDuplicateSlugsInAudits(audits: Audit[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: GroupSchema[] | undefined) {
+function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
-function getDuplicateSlugsInGroups(groups: GroupSchema[] | undefined) {
+function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
   return Array.isArray(groups)
     ? hasDuplicateStrings(groups.map(({ slug }) => slug))
     : false;
 }
 
+type RefsList = { ref?: string }[];
 // helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits: HackForCyclicRefs) {
+function duplicateRefsInGroupsErrorMsg(groupAudits: RefsList) {
   const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
   return `In plugin groups the audit refs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInGroups(groupAudits: HackForCyclicRefs[]) {
-  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref));
+function getDuplicateRefsInGroups(groupAudits: RefsList) {
+  return hasDuplicateStrings(groupAudits.map(({ ref }) => ref).filter(exists));
 }
+type PluginCfg = {
+  audits?: AuditMetadata[];
+  groups?: Group[];
+};
 
 // helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(pluginCfg: HackForCyclicRefs) {
+function missingRefsFromGroupsErrorMsg(pluginCfg: PluginCfg) {
   const missingRefs = getMissingRefsFromGroups(pluginCfg);
   return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }
 
-function getMissingRefsFromGroups(pluginCfg: HackForCyclicRefs) {
-  if (pluginCfg?.groups?.length && pluginCfg.audits.length) {
+function getMissingRefsFromGroups(pluginCfg: PluginCfg) {
+  if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
+    const groups = pluginCfg?.groups || [];
+    const audits = pluginCfg?.audits || [];
     return hasMissingStrings(
-      pluginCfg.groups.flatMap(({ audits }: HackForCyclicRefs) =>
-        audits.map(({ ref }: HackForCyclicRefs) => ref),
-      ),
-      pluginCfg.audits.map(({ slug }: HackForCyclicRefs) => slug),
+      groups.flatMap(({ audits }) => audits.map(({ ref }) => ref)),
+      audits.map(({ slug }) => slug),
     );
   }
   return false;

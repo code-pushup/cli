@@ -74,7 +74,8 @@ export async function executePlugin(
       duration: processResult.duration,
       ...runnerOutput,
     };
-  } catch (e) {
+  } catch (error) {
+    const e = error as Error;
     throw new PluginOutputError(cfg.meta.slug, e);
   }
 }

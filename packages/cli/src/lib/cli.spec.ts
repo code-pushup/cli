@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import { yargsCli } from './cli';
-import { join } from 'path';
-import { yargsGlobalOptionsDefinition } from './options';
-import { middlewares } from './middlewares';
-import { CommandBase } from './implementation/base-command-config';
+import {describe, expect, it} from 'vitest';
+import {yargsCli} from './cli';
+import {join} from 'path';
+import {yargsGlobalOptionsDefinition} from './options';
+import {middlewares} from './middlewares';
+import {CommandBase} from './implementation/base-command-config';
+import {getDirname} from './implementation/utils';
 
+const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
 const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
 

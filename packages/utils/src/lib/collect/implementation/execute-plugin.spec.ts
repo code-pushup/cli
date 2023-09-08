@@ -33,7 +33,7 @@ describe('executePlugin', () => {
   it('should throw if invalid runnerOutput is produced', async () => {
     const cfg = mockPluginConfig({ auditSlug: '-invalid-audit-slug' });
 
-    let error: Error;
+    let error: Error = new Error();
     const pluginResult = await executePlugin(cfg).catch(e => {
       error = e;
     });
