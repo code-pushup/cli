@@ -2,7 +2,8 @@ import { z } from 'zod';
 import {
   descriptionSchema,
   docsUrlSchema,
-  generalFilePathSchema, packageVersionSchema,
+  generalFilePathSchema,
+  packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
@@ -18,24 +19,27 @@ import {
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
-export const pluginMetadataSchema = packageVersionSchema({optional: true})
-  .merge(z.object(
-  {
-    slug: slugSchema(),
-    name: z
-      .string({
-        description: 'Display name',
-      })
-      .max(128),
-    icon: z.union([z.unknown(), z.string()], {
-      description: 'Icon from VSCode Material Icons extension',
-    }),
-    docsUrl: docsUrlSchema('Plugin documentation site'),
-  },
-  {
-    description: 'Plugin metadata',
-  },
-));
+export const pluginMetadataSchema = packageVersionSchema({
+  optional: true,
+}).merge(
+  z.object(
+    {
+      slug: slugSchema(),
+      name: z
+        .string({
+          description: 'Display name',
+        })
+        .max(128),
+      icon: z.union([z.unknown(), z.string()], {
+        description: 'Icon from VSCode Material Icons extension',
+      }),
+      docsUrl: docsUrlSchema('Plugin documentation site'),
+    },
+    {
+      description: 'Plugin metadata',
+    },
+  ),
+);
 
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(

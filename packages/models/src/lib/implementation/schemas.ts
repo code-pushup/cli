@@ -1,5 +1,5 @@
-import {z} from 'zod';
-import {generalFilePathRegex, slugRegex, unixFilePathRegex} from './utils';
+import { z } from 'zod';
+import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
 /**
  * Schema for a slug of a categories, plugins or audits.
@@ -10,7 +10,7 @@ export function slugSchema(
 ) {
   return (
     z
-      .string({description})
+      .string({ description })
       // also validates ``and ` `
       .regex(slugRegex, {
         message:
@@ -27,7 +27,7 @@ export function slugSchema(
  * @param description
  */
 export function descriptionSchema(description: string) {
-  return z.string({description}).max(65536).optional();
+  return z.string({ description }).max(65536).optional();
 }
 
 /**
@@ -43,7 +43,7 @@ export function docsUrlSchema(description = 'Documentation site') {
  * @param description
  */
 export function urlSchema(description: string) {
-  return z.string({description}).url();
+  return z.string({ description }).url();
 }
 
 /**
@@ -51,7 +51,7 @@ export function urlSchema(description: string) {
  * @param description
  */
 export function titleSchema(description: string) {
-  return z.string({description}).max(128);
+  return z.string({ description }).max(128);
 }
 
 /**
@@ -59,7 +59,7 @@ export function titleSchema(description: string) {
  * @param description
  */
 export function generalFilePathSchema(description: string) {
-  return z.string({description}).regex(generalFilePathRegex, {
+  return z.string({ description }).regex(generalFilePathRegex, {
     message: 'path is invalid',
   });
 }
@@ -79,7 +79,7 @@ export function weightSchema(
  * @param description
  */
 export function positiveIntSchema(description: string) {
-  return z.number({description}).int().nonnegative();
+  return z.number({ description }).int().nonnegative();
 }
 
 /**
@@ -87,24 +87,24 @@ export function positiveIntSchema(description: string) {
  * @param description
  */
 export function unixFilePathSchema(description: string) {
-  return z.string({description}).regex(unixFilePathRegex);
+  return z.string({ description }).regex(unixFilePathRegex);
 }
 
 export function packageVersionSchema(options?: {
-  versionDescription?: string,
-  optional?: boolean
+  versionDescription?: string;
+  optional?: boolean;
 }) {
-  let {versionDescription, optional} = options || {};
+  let { versionDescription, optional } = options || {};
   versionDescription = versionDescription || 'NPM version of the package';
   optional = !!optional;
-  const packageSchema = z.string({description: 'NPM package name'});
-  const versionSchema = z.string({description: versionDescription});
+  const packageSchema = z.string({ description: 'NPM package name' });
+  const versionSchema = z.string({ description: versionDescription });
   return z.object(
     {
       package: optional ? packageSchema.optional() : packageSchema,
       version: optional ? versionSchema.optional() : versionSchema,
     },
-    {description: 'NPM package name and version of a published package'},
+    { description: 'NPM package name and version of a published package' },
   );
 }
 
@@ -117,7 +117,7 @@ export function weightedRefSchema(
       slug: slugSchema(slugDescription),
       weight: weightSchema('Weight used to calculate score'),
     },
-    {description},
+    { description },
   );
 }
 
@@ -142,6 +142,6 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
           }),
         ),
     },
-    {description},
+    { description },
   );
 }
