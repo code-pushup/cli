@@ -1,7 +1,7 @@
 import {
   CoreConfig,
   GlobalCliArgs,
-  reportSchema,
+  PluginReport,
   Report,
 } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
@@ -21,7 +21,7 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = { parallel: number } & GlobalCliArgs & CoreConfig;
+export type CollectOptions = GlobalCliArgs & CoreConfig;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
@@ -39,15 +39,40 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const runnerOutputs = await executePlugins(plugins);
   performance.mark('stopExecutePlugins');
 
-  try {
-    return reportSchema.parse({
-      ...runnerOutputs,
-      date,
-      duration: performance.measure('startExecutePlugins', 'stopExecutePlugins')
-        .duration,
-    });
-  } catch (error) {
-    const e = error as Error;
-    throw new CollectOutputError(e.message);
-  }
+  return {
+    package: '@quality-metrics/cli', // TODO: read from package.json
+    version: '0.0.1', // TODO: read from package.json
+    date,
+    duration: performance.measure('startExecutePlugins', 'stopExecutePlugins')
+      .duration,
+    plugins: runnerOutputs.map((pluginOutput): PluginReport => {
+      const pluginConfig = plugins.find(
+        plugin => plugin.meta.slug === pluginOutput.slug,
+      );
+      // shouldn't happen, validation checks it
+      if (!pluginConfig) {
+        throw new Error(
+          `Plugin config not found for slug ${pluginOutput.slug}`,
+        );
+      }
+      return {
+        date: pluginOutput.date,
+        duration: pluginOutput.duration,
+        meta: pluginConfig.meta,
+        audits: pluginOutput.audits.map(audit => {
+          const auditMetadata = pluginConfig.audits.find(
+            ({ slug }) => slug === audit.slug,
+          );
+          // shouldn't happen, validation checks it
+          if (!auditMetadata) {
+            throw new Error(`Audit metadata not found for slug ${audit.slug}`);
+          }
+          return {
+            ...auditMetadata,
+            ...audit,
+          };
+        }),
+      };
+    }),
+  };
 }

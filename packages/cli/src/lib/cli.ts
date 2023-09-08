@@ -1,3 +1,5 @@
+import { CoreConfig } from '@quality-metrics/models';
+import chalk from 'chalk';
 import yargs, {
   Argv,
   CommandModule,
@@ -5,8 +7,7 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
-import chalk from 'chalk';
-import { CoreConfig } from '@quality-metrics/models';
+import { logErrorBeforeThrow } from './implementation/utils';
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -40,6 +41,8 @@ export function yargsCli(
 
   // setup yargs
   cli
+    .help()
+    .alias('h', 'help')
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
@@ -57,12 +60,25 @@ export function yargsCli(
   }
 
   // add middlewares
-  middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) =>
-    cli.middleware(middlewareFunction, applyBeforeValidation),
-  );
+  middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) => {
+    cli.middleware(
+      logErrorBeforeThrow(middlewareFunction),
+      applyBeforeValidation,
+    );
+  });
 
   // add commands
-  commands.forEach(commandObj => cli.command(commandObj));
+  commands.forEach(commandObj => {
+    cli.command({
+      ...commandObj,
+      ...(commandObj.handler && {
+        handler: logErrorBeforeThrow(commandObj.handler),
+      }),
+      ...(typeof commandObj.builder === 'function' && {
+        builder: logErrorBeforeThrow(commandObj.builder),
+      }),
+    });
+  });
 
   // return CLI object
   return cli as unknown as Argv<CoreConfig>;

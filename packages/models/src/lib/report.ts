@@ -1,44 +1,41 @@
 import { z } from 'zod';
+import { hasMissingStrings } from './implementation/utils';
 import {
   PluginConfig,
   RunnerOutput,
-  runnerOutputSchema,
+  auditMetadataSchema,
+  auditResultSchema,
+  pluginMetadataSchema,
 } from './plugin-config';
-import { hasMissingStrings } from './implementation/utils';
 
-/**
- * Define Zod schema for the CollectOptions type
- *
- * @example
- *
- * // Example data
- * const raw = {
- *   ...
- * };
- *
- * // Validate the data against the schema
- * const validationResult = collectOptions.safeParse(raw);
- *
- * if (validationResult.success) {
- *   console.log('Valid config:', validationResult.data);
- * } else {
- *   console.error('Invalid config:', validationResult.error);
- * }
- *
- */
-export const reportSchema = runnerOutputSchema.merge(
-  z.object(
-    {
-      version: z.string({ description: 'NPM version of the CLI' }),
-      date: z.string({ description: 'Start date and time of the collect run' }),
-      duration: z.number({ description: 'Duration of the collect run in ms' }),
-    },
-    {
-      description:
-        'Collect output data. JSON formatted output emitted by the given plugins.',
-    },
-  ),
+export type PluginOutput = RunnerOutput & {
+  slug: string;
+  date: string;
+  duration: number;
+};
+
+export const auditReportSchema = auditMetadataSchema.merge(auditResultSchema);
+export type AuditReport = z.infer<typeof auditReportSchema>;
+
+export const pluginReportSchema = z.object({
+  date: z.string({ description: 'Start date and time of plugin run' }),
+  duration: z.number({ description: 'Duration of the plugin run in ms' }),
+  meta: pluginMetadataSchema,
+  audits: z.array(auditReportSchema),
+});
+export type PluginReport = z.infer<typeof pluginReportSchema>;
+
+export const reportSchema = z.object(
+  {
+    package: z.string({ description: 'NPM package name' }),
+    version: z.string({ description: 'NPM version of the CLI' }),
+    date: z.string({ description: 'Start date and time of the collect run' }),
+    duration: z.number({ description: 'Duration of the collect run in ms' }),
+    plugins: z.array(pluginReportSchema),
+  },
+  { description: 'Collect output data.' },
 );
+
 export type Report = z.infer<typeof reportSchema>;
 
 /**

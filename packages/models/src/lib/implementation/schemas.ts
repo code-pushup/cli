@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  generalFilePathRegex,
-  refRegex,
-  slugRegex,
-  unixFilePathRegex,
-} from './utils';
+import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
 /**
  * Schema for a slug of a categories, plugins or audits.
@@ -24,21 +19,6 @@ export function slugSchema(
       .max(128, {
         message: 'slug can be max 128 characters long',
       })
-  );
-}
-
-/**
- * Schema for a reference to a plugin's audit in categories (e.g. 'eslint#max-lines')
- */
-export function refSchema(description: string) {
-  return (
-    z
-      .string({ description })
-      // also validates ``and ` `
-      .regex(refRegex, {
-        message: 'The ref has to follow the pattern {plugin-slug}#{audit-slug}',
-      })
-      .max(256)
   );
 }
 
@@ -107,4 +87,42 @@ export function positiveIntSchema(description: string) {
  */
 export function unixFilePathSchema(description: string) {
   return z.string({ description }).regex(unixFilePathRegex);
+}
+
+export function weightedRefSchema(
+  description: string,
+  slugDescription: string,
+) {
+  return z.object(
+    {
+      slug: slugSchema(slugDescription),
+      weight: weightSchema('Weight used to calculate score'),
+    },
+    { description },
+  );
+}
+
+export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
+  description: string,
+  refSchema: T,
+  duplicateCheckFn: (metrics: z.infer<T>[]) => false | string[],
+  duplicateMessageFn: (metrics: z.infer<T>[]) => string,
+) {
+  return z.object(
+    {
+      slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
+      title: titleSchema('Display name'),
+      description: descriptionSchema('Optional description in Markdown format'),
+      refs: z
+        .array(refSchema)
+        // refs are unique
+        .refine(
+          refs => !duplicateCheckFn(refs),
+          refs => ({
+            message: duplicateMessageFn(refs),
+          }),
+        ),
+    },
+    { description },
+  );
 }

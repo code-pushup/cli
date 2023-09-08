@@ -1,68 +1,35 @@
 import { z } from 'zod';
 import {
-  refSchema,
-  descriptionSchema,
+  scorableSchema,
   slugSchema,
-  titleSchema,
-  weightSchema,
+  weightedRefSchema,
 } from './implementation/schemas';
-import {
-  errorItems,
-  hasDuplicateStrings,
-  exists,
-} from './implementation/utils';
+import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
 type RefsList = {
-  ref?: string;
+  type?: string;
+  slug?: string;
+  plugin?: string;
 }[];
-/**
- *
- * Define Zod schema for the CategoryConfig type
- *
- * @example
- *
- * // Example data for the CategoryConfig type
- * const data = {
- *  // ...
- * };
- *
- * // Validate the data against the schema
- * const validationResult = categoryConfigSchema.safeParse(data);
- *
- * if (validationResult.success) {
- *   console.log('Valid category config:', validationResult.data);
- * } else {
- *   console.error('Invalid category config:', validationResult.error);
- * }
- */
-export const categoryConfigSchema = z.object(
-  {
-    slug: slugSchema(),
-    title: titleSchema('Display name for the category '),
-    description: descriptionSchema('Optional description in Markdown format'),
-    metrics: z
-      .array(
-        z.object(
-          {
-            ref: refSchema(
-              "Reference to a plugin's audit (e.g. 'eslint#max-lines') or group (e.g. 'lhci#group:performance')",
-            ),
-            weight: weightSchema(),
-          },
-          { description: 'Array of metrics associated with the category' },
-        ),
-      )
-      // metrics have unique refs to audits or groups within a category
-      .refine(
-        metrics => !getDuplicateRefsInCategoryMetrics(metrics),
-        metrics => ({
-          message: duplicateRefsInCategoryMetricsErrorMsg(metrics),
-        }),
+
+export const categoryConfigSchema = scorableSchema(
+  'Category with a score calculated from audits and groups from various plugins',
+  weightedRefSchema(
+    'Weighted references to audits and/or groups for the category',
+    'Slug of an audit or group (depending on `type`)',
+  ).merge(
+    z.object({
+      type: z.enum(['audit', 'group'], {
+        description:
+          'Discrimant for reference kind, affects where `slug` is looked up',
+      }),
+      plugin: slugSchema(
+        'Plugin slug (plugin should contain referenced audit or group)',
       ),
-  },
-  {
-    description: 'Weighted references to plugin-specific audits/categories',
-  },
+    }),
+  ),
+  getDuplicateRefsInCategoryMetrics,
+  duplicateRefsInCategoryMetricsErrorMsg,
 );
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
@@ -75,5 +42,7 @@ export function duplicateRefsInCategoryMetricsErrorMsg(metrics: RefsList) {
   )}`;
 }
 function getDuplicateRefsInCategoryMetrics(metrics: RefsList) {
-  return hasDuplicateStrings(metrics.map(({ ref }) => ref).filter(exists));
+  return hasDuplicateStrings(
+    metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
+  );
 }

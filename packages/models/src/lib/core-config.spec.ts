@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { coreConfigSchema } from './core-config';
 import {
   mockCategory,
   mockConfig,
   mockPluginConfig,
 } from './implementation/helpers.mock';
-import { coreConfigSchema } from './core-config';
 
 /*
  - plugin slug: es-lint
@@ -20,7 +20,12 @@ describe('CoreConfig', () => {
   it('should parse if configuration is valid', () => {
     const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     cfg.categories.push(
-      mockCategory({ auditRefOrGroupRef: ['test#a', 'test#b'] }),
+      mockCategory({
+        auditRefOrGroupRef: [
+          { type: 'audit', plugin: 'test', slug: 'a' },
+          { type: 'audit', plugin: 'test', slug: 'b' },
+        ],
+      }),
     );
     expect(() => coreConfigSchema.parse(cfg)).not.toThrow();
   });
@@ -32,7 +37,12 @@ describe('CoreConfig', () => {
       mockPluginConfig({ pluginSlug, auditSlug: 'lcp', groupSlug: 'perf' }),
     ];
     cfg.categories = [
-      mockCategory({ auditRefOrGroupRef: ['plg#lcp', 'plg#group:perf'] }),
+      mockCategory({
+        auditRefOrGroupRef: [
+          { plugin: 'plg', slug: 'lcp', type: 'audit' },
+          { plugin: 'plg', slug: 'perf', type: 'group' },
+        ],
+      }),
     ];
     // In the categories, the following plugin refs do not exist in the provided plugins: test#group:group-slug
     expect(() => coreConfigSchema.parse(cfg)).not.toThrow();
@@ -42,8 +52,14 @@ describe('CoreConfig', () => {
     const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     const duplicatedSlug = 'test';
     cfg.categories.push(
-      mockCategory({ categorySlug: 'test', auditRefOrGroupRef: ['test#a'] }),
-      mockCategory({ categorySlug: 'test', auditRefOrGroupRef: ['test#b'] }),
+      mockCategory({
+        categorySlug: 'test',
+        auditRefOrGroupRef: [{ type: 'audit', plugin: 'test', slug: 'a' }],
+      }),
+      mockCategory({
+        categorySlug: 'test',
+        auditRefOrGroupRef: [{ type: 'audit', plugin: 'test', slug: 'b' }],
+      }),
     );
     expect(() => coreConfigSchema.parse(cfg)).toThrow(
       `In the categories, the following slugs are duplicated: ${duplicatedSlug}`,
@@ -52,15 +68,20 @@ describe('CoreConfig', () => {
 
   it('should throw if ref in a category does not exist in audits', () => {
     const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
-    const missingSlug = 'missing-plugin-slug-in-category#auditref';
     cfg.categories.push(
       mockCategory({
         categorySlug: 'test',
-        auditRefOrGroupRef: [`${missingSlug}`],
+        auditRefOrGroupRef: [
+          {
+            type: 'audit',
+            plugin: 'missing-plugin-slug-in-category',
+            slug: 'auditref',
+          },
+        ],
       }),
     );
     expect(() => coreConfigSchema.parse(cfg)).toThrow(
-      `In the categories, the following plugin refs do not exist in the provided plugins: ${missingSlug}`,
+      `In the categories, the following plugin refs do not exist in the provided plugins: missing-plugin-slug-in-category/auditref`,
     );
   });
 
@@ -68,17 +89,22 @@ describe('CoreConfig', () => {
     const cfg = mockConfig({
       pluginSlug: 'test',
       auditSlug: ['a', 'b'],
-      groupSlug: 'test#a',
+      groupSlug: 'a',
     });
-    const missingSlug = 'missing-plugin-slug-in-category#groups:auditref';
     cfg.categories.push(
       mockCategory({
         categorySlug: 'test-slug',
-        auditRefOrGroupRef: [`${missingSlug}`],
+        auditRefOrGroupRef: [
+          {
+            type: 'group',
+            plugin: 'missing-plugin-slug-in-category',
+            slug: 'groupref',
+          },
+        ],
       }),
     );
     expect(() => coreConfigSchema.parse(cfg)).toThrow(
-      `In the categories, the following plugin refs do not exist in the provided plugins: ${missingSlug}`,
+      `In the categories, the following plugin refs do not exist in the provided plugins: missing-plugin-slug-in-category/groupref (group)`,
     );
   });
 });

@@ -1,11 +1,11 @@
 import {
   PluginConfig,
-  RunnerOutput,
+  PluginOutput,
   runnerOutputSchema,
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { executeProcess, ProcessConfig } from './execute-process';
+import { ProcessConfig, executeProcess } from './execute-process';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -21,11 +21,6 @@ export class PluginOutputError extends Error {
     }
   }
 }
-
-export type PluginOutputSchema = RunnerOutput & {
-  date: string;
-  duration: number;
-};
 
 /**
  * Execute a plugin.
@@ -52,7 +47,7 @@ export type PluginOutputSchema = RunnerOutput & {
 export async function executePlugin(
   cfg: PluginConfig,
   observer?: ProcessConfig['observer'],
-): Promise<PluginOutputSchema> {
+): Promise<PluginOutput> {
   const command = cfg.runner.command.toString() || '';
   const args = cfg.runner.args || [];
   const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
@@ -70,6 +65,7 @@ export async function executePlugin(
     );
 
     return {
+      slug: cfg.meta.slug,
       date: processResult.date,
       duration: processResult.duration,
       ...runnerOutput,
@@ -101,10 +97,10 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
-): Promise<PluginOutputSchema[]> {
+): Promise<PluginOutput[]> {
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const pluginOutput = await executePlugin(pluginCfg);
     return outputs.concat(pluginOutput);
-  }, Promise.resolve([] as PluginOutputSchema[]));
+  }, Promise.resolve([] as PluginOutput[]));
 }

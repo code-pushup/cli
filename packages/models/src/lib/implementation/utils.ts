@@ -7,15 +7,6 @@
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
- * Regular expression to validate a reference to a plugin's:
- * - audit (e.g. 'eslint#max-lines')
- * - or group (e.g. lighthouse#group:performance)
- * Also validates ``and ` `
- */
-export const refRegex =
-  /^([a-z0-9:]+(?:-[a-z0-9]*)*)#(group:)*([a-z0-9]+(?:-[a-z0-9]+)*$)/;
-
-/**
  * Regular expression to validate filenames for Windows and UNIX
  **/
 export const generalFilePathRegex =

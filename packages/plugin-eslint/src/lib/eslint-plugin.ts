@@ -1,12 +1,12 @@
-import * as eslint from 'eslint';
 import { PluginConfig, RunnerOutput } from '@quality-metrics/models';
+import * as eslint from 'eslint';
 
 type ESLintPluginConfig = {
   config: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function eslintPlugin({ config }: ESLintPluginConfig): PluginConfig {
+export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
   // This line is here to keep errors related to imports and engines
   eslint;
   return {
@@ -20,7 +20,6 @@ export function eslintPlugin({ config }: ESLintPluginConfig): PluginConfig {
             {
               slug: 'no-any',
               value: 0,
-              displayValue: 'config: ' + JSON.stringify(config),
             },
           ],
         } satisfies RunnerOutput)}' > out.json`,

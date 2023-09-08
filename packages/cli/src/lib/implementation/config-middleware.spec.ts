@@ -1,6 +1,6 @@
 import { join } from 'path';
-import { configMiddleware, ConfigParseError } from './config-middleware';
 import { expect } from 'vitest';
+import { configMiddleware, ConfigParseError } from './config-middleware';
 import { getDirname } from './utils';
 
 const __dirname = getDirname(import.meta.url);

@@ -1,5 +1,5 @@
-import { existsSync } from 'node:fs';
 import { bundleRequire } from 'bundle-require';
+import { stat } from 'fs/promises';
 
 import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
 import { CommandBase, commandBaseSchema } from './base-command-config';
@@ -15,7 +15,12 @@ export async function configMiddleware<T = unknown>(
 ): Promise<CommandBase> {
   const globalCfg: GlobalCliArgs = globalCliArgsSchema.parse(processArgs);
   const { configPath } = globalCfg;
-  if (!existsSync(configPath)) {
+  try {
+    const stats = await stat(configPath);
+    if (!stats.isFile) {
+      throw new ConfigParseError(configPath);
+    }
+  } catch (err) {
     throw new ConfigParseError(configPath);
   }
 
