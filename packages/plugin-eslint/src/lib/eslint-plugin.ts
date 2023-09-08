@@ -1,5 +1,5 @@
-import * as eslint from 'eslint';
 import { PluginConfig, RunnerOutput } from '@quality-metrics/models';
+import * as eslint from 'eslint';
 
 type ESLintPluginConfig = {
   config: string;

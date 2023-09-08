@@ -1,10 +1,10 @@
-import {describe, expect, it} from 'vitest';
-import {yargsCli} from './cli';
-import {join} from 'path';
-import {yargsGlobalOptionsDefinition} from './options';
-import {middlewares} from './middlewares';
-import {CommandBase} from './implementation/base-command-config';
-import {getDirname} from './implementation/utils';
+import { join } from 'path';
+import { describe, expect, it } from 'vitest';
+import { yargsCli } from './cli';
+import { CommandBase } from './implementation/base-command-config';
+import { getDirname } from './implementation/utils';
+import { middlewares } from './middlewares';
+import { yargsGlobalOptionsDefinition } from './options';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);

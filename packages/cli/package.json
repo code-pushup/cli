@@ -1,13 +1,14 @@
 {
   "name": "@quality-metrics/cli",
   "version": "0.0.1",
-  "bin": "src/bin.js",
+  "bin": {
+    "code-pushup": "src/bin.js"
+  },
   "dependencies": {
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",
     "yargs": "^17.7.2",
     "zod": "^3.22.1",
-    "@quality-metrics/models": ">=0.0.1",
-    "@quality-metrics/utils": ">=0.0.1"
+    "@quality-metrics/models": "^0.0.1"
   }
 }

@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  generalFilePathRegex,
-  refRegex,
-  slugRegex,
-  unixFilePathRegex,
-} from './utils';
+import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
 /**
  * Schema for a slug of a categories, plugins or audits.
@@ -24,21 +19,6 @@ export function slugSchema(
       .max(128, {
         message: 'slug can be max 128 characters long',
       })
-  );
-}
-
-/**
- * Schema for a reference to a plugin's audit in categories (e.g. 'eslint#max-lines')
- */
-export function refSchema(description: string) {
-  return (
-    z
-      .string({ description })
-      // also validates ``and ` `
-      .regex(refRegex, {
-        message: 'The ref has to follow the pattern {plugin-slug}#{audit-slug}',
-      })
-      .max(256)
   );
 }
 
