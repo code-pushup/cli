@@ -29,7 +29,7 @@ import { hasMissingStrings } from './implementation/utils';
 export const reportSchema = runnerOutputSchema.merge(
   z.object(
     {
-      version: z.string({ description: 'NPM version of the CLI' }),
+      version: z.string({ description: 'NPM version of the CLI' }).optional(),
       date: z.string({ description: 'Start date and time of the collect run' }),
       duration: z.number({ description: 'Duration of the collect run in ms' }),
     },

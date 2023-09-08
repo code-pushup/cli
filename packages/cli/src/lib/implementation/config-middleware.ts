@@ -1,5 +1,5 @@
-import { existsSync } from 'node:fs';
 import { bundleRequire } from 'bundle-require';
+import { existsSync } from 'node:fs';
 
 import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
 import { CommandBase, commandBaseSchema } from './base-command-config';
@@ -16,6 +16,7 @@ export async function configMiddleware<T = unknown>(
   const globalCfg: GlobalCliArgs = globalCliArgsSchema.parse(processArgs);
   const { configPath } = globalCfg;
   if (!existsSync(configPath)) {
+    console.log('error');
     throw new ConfigParseError(configPath);
   }
 
