@@ -23,6 +23,7 @@
         "packages/plugin-lighthouse/src/index.ts"
       ],
       "@quality-metrics/models": ["packages/models/src/index.ts"],
+      "@quality-metrics/models/testing": ["packages/models/test/index.ts"],
       "@quality-metrics/utils": ["packages/utils/src/index.ts"]
     }
   },
