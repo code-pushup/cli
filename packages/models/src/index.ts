@@ -11,7 +11,7 @@ export {
   RunnerOutput,
   runnerOutputSchema,
   AuditMetadata,
-  IssueSchema,
+  Issue,
   issueSchema,
   auditMetadataSchema,
   Group,

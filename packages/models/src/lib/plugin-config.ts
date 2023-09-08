@@ -50,7 +50,7 @@ const runnerConfigSchema = z.object(
 );
 
 // Define Zod schema for the AuditMetadata type
-const auditMetadataSchema = z.object(
+export const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
     label: z
@@ -65,7 +65,7 @@ const auditMetadataSchema = z.object(
   { description: 'List of scorable metrics for the given plugin' },
 );
 
-type AuditMetadata = z.infer<typeof auditMetadataSchema>;
+export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 // Define Zod schema for the `Group` type
 export const groupSchema = z.object(
   {
@@ -97,7 +97,7 @@ export const groupSchema = z.object(
   },
 );
 
-type Group = z.infer<typeof groupSchema>;
+export type Group = z.infer<typeof groupSchema>;
 
 /**
  * Define Zod schema for the PluginConfig type
@@ -197,7 +197,7 @@ const sourceFileLocationSchema = z.object(
 /**
  * Define Zod schema for the Issue type.
  */
-const issueSchema = z.object(
+export const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
     severity: z.enum(['info', 'warning', 'error'], {
@@ -208,7 +208,7 @@ const issueSchema = z.object(
   },
   { description: 'Issue information' },
 );
-
+export type Issue = z.infer<typeof issueSchema>
 /**
  * Define Zod schema for the Audit type.
  */

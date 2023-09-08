@@ -47,7 +47,8 @@ export async function collect(options: CollectOptions): Promise<Report> {
         .duration,
     });
   } catch (error) {
+    console.log('error: ', error);
     const e = error as Error;
-    throw new CollectOutputError(e.message);
+    // throw new CollectOutputError(e.message);
   }
 }

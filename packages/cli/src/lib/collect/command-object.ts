@@ -5,12 +5,16 @@ import { Report } from '@quality-metrics/models';
 
 export function yargsCollectCommandObject() {
   const handler = async (args: CollectOptions): Promise<void> => {
+
+    console.log('audits:: ', args.plugins?.[0]?.audits);
+    console.log('runner:: ', args.plugins?.[0]?.runner);
+
     let collectOutput: Report = {} as Report;
-    try {
+ try {
       collectOutput = await collect(args);
     } catch (e) {
-      console.log((e as Error).message); // @TODO discuss DX for errors
-      throw new Error((e as Error).message);
+      console.error((e as Error).message); // @TODO discuss DX for errors
+     // throw new Error((e as Error).message);
     }
 
     try {
@@ -19,10 +23,10 @@ export function yargsCollectCommandObject() {
         persist.outputPath,
         JSON.stringify(collectOutput as unknown),
       );
-      // process.exit(0); // @TODO think about process.exit usage and benefits
+     // process.exit(0); // @TODO think about process.exit usage and benefits
     } catch (e) {
-      console.log((e as Error).message); // @TODO discuss DX for errors
-      throw new Error((e as Error).message);
+      console.error((e as Error).message); // @TODO discuss DX for errors
+     // throw new Error((e as Error).message);
     }
   };
 
