@@ -209,9 +209,11 @@ export const issueSchema = z.object(
     // "Reference to source code"
     source: sourceFileLocationSchema.optional(),
     // log of the error
-    log: z.string({
-      description: "Log of any kind related to the issue"
-    }).optional()
+    log: z
+      .string({
+        description: 'Log of any kind related to the issue',
+      })
+      .optional(),
   },
   { description: 'Issue information' },
 );

@@ -15,7 +15,7 @@ export {
   issueSchema,
   auditMetadataSchema,
   Group,
-  groupSchema
+  groupSchema,
 } from './lib/plugin-config';
 export {
   runnerOutputAuditRefsPresentInPluginConfigs,
