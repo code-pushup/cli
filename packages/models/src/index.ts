@@ -13,6 +13,7 @@ export {
   Issue,
   PluginConfig,
   RunnerOutput,
+  AuditResult,
   auditGroupSchema,
   auditMetadataSchema,
   issueSchema,
@@ -23,6 +24,7 @@ export {
   PluginOutput,
   PluginReport,
   Report,
+  reportSchema,
   runnerOutputAuditRefsPresentInPluginConfigs,
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';

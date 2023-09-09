@@ -1,8 +1,20 @@
 import {
+  AuditGroup,
   CategoryConfig,
+  CoreConfig,
+  PersistConfig,
   PluginConfig,
+  Report,
   RunnerOutput,
 } from '@quality-metrics/models';
+
+const __pluginSlug__ = 'mock-plugin-slug';
+const __auditSlug__ = 'mock-audit-slug';
+const __groupSlug__ = 'mock-group-slug';
+const __categorySlug__ = 'mock-category-slug';
+const __outputPath__ = 'out-execute-plugin.json';
+const randWeight = () => Math.floor(Math.random() * 10);
+const randDuration = () => Math.floor(Math.random() * 1000);
 
 export function mockPluginConfig(opt?: {
   pluginSlug?: string;
@@ -11,16 +23,16 @@ export function mockPluginConfig(opt?: {
 }): PluginConfig {
   const { groupSlug } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
-  pluginSlug = pluginSlug || 'mock-plugin-slug';
-  auditSlug = auditSlug || 'mock-audit-slug';
+  pluginSlug = pluginSlug || __pluginSlug__;
+  auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const outputPath = 'out-execute-plugin.json';
+  const outputPath = __outputPath__;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
     : [mockAuditConfig({ auditSlug })];
 
-  let groups = [];
+  let groups: AuditGroup[] = [];
   if (addGroups) {
     groups = Array.isArray(groupSlug)
       ? groupSlug.map(slug => mockGroupConfig({ groupSlug: slug }))
@@ -38,6 +50,7 @@ export function mockPluginConfig(opt?: {
           audits: audits.map(({ slug }, idx) => ({
             slug: `${slug}`,
             value: parseFloat('0.' + idx),
+            score: Math.random(),
           })),
         } satisfies RunnerOutput)}' > ${outputPath}`,
       ],
@@ -54,7 +67,7 @@ export function mockAuditConfig(opt?: {
   auditSlug?: string;
 }): PluginConfig['audits'][0] {
   let { auditSlug } = opt || {};
-  auditSlug = auditSlug || 'mock-audit-slug';
+  auditSlug = auditSlug || __auditSlug__;
 
   return {
     slug: auditSlug,
@@ -65,40 +78,126 @@ export function mockAuditConfig(opt?: {
   };
 }
 
+export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
+  let { outputPath, format } = opt || {};
+  outputPath = outputPath || __outputPath__;
+  format = format || [];
+  return {
+    outputPath,
+    format,
+  };
+}
+
 export function mockGroupConfig(opt?: {
   groupSlug?: string;
   auditSlug?: string | string[];
-}): PluginConfig['groups'][0] {
+}): AuditGroup {
   let { groupSlug, auditSlug } = opt || {};
-  groupSlug = groupSlug || 'mock-group-slug';
-  auditSlug = auditSlug || 'mock-audit-slug';
-  const audits = Array.isArray(auditSlug)
-    ? auditSlug.map(slug => ({ ref: slug, weight: 0 }))
-    : [{ ref: auditSlug, weight: 0 }];
+  groupSlug = groupSlug || __groupSlug__;
+  auditSlug = auditSlug || __auditSlug__;
   return {
     slug: groupSlug,
     title: 'group title',
     description: 'group description',
-    audits: audits,
+    refs: Array.isArray(auditSlug)
+      ? auditSlug.map(slug => ({
+          slug,
+          weight: randWeight(),
+        }))
+      : [
+          {
+            slug: auditSlug,
+            weight: randWeight(),
+          },
+        ],
   };
 }
 
 export function mockCategory(opt?: {
   categorySlug?: string;
-  auditRefOrGroupRef?: string | string[];
+  pluginSlug?: string;
+  auditSlug?: string | string[];
 }): CategoryConfig {
-  let { auditRefOrGroupRef, categorySlug } = opt || {};
-  categorySlug = categorySlug || 'mock-category-slug';
-  auditRefOrGroupRef = auditRefOrGroupRef || 'mock-plugin-slug#mock-audit-slug';
-
-  const metrics = Array.isArray(auditRefOrGroupRef)
-    ? auditRefOrGroupRef.map(ref => ({ ref: ref, weight: 0 }))
-    : [{ ref: auditRefOrGroupRef, weight: 0 }];
-
+  let { categorySlug, auditSlug, pluginSlug } = opt || {};
+  auditSlug = auditSlug || __auditSlug__;
+  pluginSlug = pluginSlug || __pluginSlug__;
+  categorySlug = categorySlug || __categorySlug__;
   return {
     slug: categorySlug,
-    title: 'Mock category title',
-    description: 'mock description',
-    metrics,
+    title: `${categorySlug
+      .split('-')
+      .map(word => word.slice(0, 1).toUpperCase() + word.slice(1))
+      .join(' ')}`,
+    description: `This is the category description of ${categorySlug}. Enjoy dummy text and data to the full.`,
+    refs: Array.isArray(auditSlug)
+      ? auditSlug.map(slug => ({
+          slug,
+          type: 'audit',
+          weight: randWeight(),
+          plugin: pluginSlug + '',
+        }))
+      : [
+          {
+            slug: auditSlug,
+            type: 'audit',
+            weight: randWeight(),
+            plugin: pluginSlug + '',
+          },
+        ],
+  };
+}
+
+export function mockReport(): Report {
+  return {
+    package: 'mock-package',
+    version: '0.0.0',
+    date: new Date().toDateString(),
+    duration: randDuration(),
+    plugins: [
+      {
+        date: new Date().toDateString(),
+        duration: randDuration(),
+        meta: {
+          slug: __pluginSlug__,
+          docsUrl: '',
+          name: 'mock plugin',
+          icon: '',
+        },
+        audits: [
+          {
+            slug: __auditSlug__,
+            docsUrl: '',
+            value: 23,
+            score: 0.3,
+            title: 'Mock Plugin',
+            label: '',
+          },
+        ],
+      },
+    ],
+  };
+}
+
+export function mockConfig(opt?: {
+  outputPath?: string;
+  categorySlug?: string | string[];
+  pluginSlug?: string | string[];
+  auditSlug?: string | string[];
+  groupSlug?: string | string[];
+}): CoreConfig {
+  const { outputPath, pluginSlug, auditSlug, groupSlug, categorySlug } =
+    opt || {};
+  return {
+    persist: mockPersistConfig({ outputPath }),
+    plugins: Array.isArray(pluginSlug)
+      ? pluginSlug.map(slug =>
+          mockPluginConfig({ pluginSlug: slug, auditSlug }),
+        )
+      : [mockPluginConfig({ pluginSlug, auditSlug, groupSlug })],
+    categories: Array.isArray(categorySlug)
+      ? categorySlug.map(slug =>
+          mockCategory({ categorySlug: slug, auditSlug }),
+        )
+      : [mockCategory({ categorySlug, auditSlug })],
   };
 }
