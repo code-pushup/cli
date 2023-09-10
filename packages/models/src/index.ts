@@ -24,6 +24,7 @@ export {
   PluginOutput,
   PluginReport,
   Report,
+  AuditReport,
   reportSchema,
   runnerOutputAuditRefsPresentInPluginConfigs,
 } from './lib/report';

@@ -4,8 +4,10 @@ import {
   CoreConfig,
   PersistConfig,
   PluginConfig,
+  PluginReport,
   Report,
   RunnerOutput,
+  AuditResult,
 } from '@quality-metrics/models';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -30,7 +32,7 @@ export function mockPluginConfig(opt?: {
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
-    : [mockAuditConfig({ auditSlug })];
+    : [mockAuditConfig({ auditSlug: pluginSlug + '/' + auditSlug })];
 
   let groups: AuditGroup[] = [];
   if (addGroups) {
@@ -147,34 +149,51 @@ export function mockCategory(opt?: {
   };
 }
 
-export function mockReport(): Report {
+export function mockReport(opt?: {
+  auditSlug?: string | string[];
+  pluginSlug?: string;
+}): Report {
+  let { auditSlug, pluginSlug } = opt || {};
+  auditSlug = auditSlug || __auditSlug__;
+  pluginSlug = pluginSlug || __pluginSlug__;
   return {
     package: 'mock-package',
     version: '0.0.0',
     date: new Date().toDateString(),
     duration: randDuration(),
-    plugins: [
-      {
-        date: new Date().toDateString(),
-        duration: randDuration(),
-        meta: {
-          slug: __pluginSlug__,
-          docsUrl: '',
-          name: 'mock plugin',
-          icon: '',
-        },
-        audits: [
-          {
-            slug: __auditSlug__,
-            docsUrl: '',
-            value: 23,
-            score: 0.3,
-            title: 'Mock Plugin',
-            label: '',
-          },
-        ],
-      },
-    ],
+    plugins: [mockPluginReport({ auditSlug, pluginSlug })],
+  };
+}
+
+export function mockPluginReport(opt?: {
+  pluginSlug: string;
+  auditSlug: string | string[];
+}): PluginReport {
+  let { auditSlug, pluginSlug } = opt || {};
+  auditSlug = auditSlug || __auditSlug__;
+  pluginSlug = pluginSlug || __pluginSlug__;
+  return {
+    date: new Date().toDateString(),
+    duration: randDuration(),
+    meta: {
+      slug: pluginSlug,
+      docsUrl: '',
+      name: 'Mock plugin Name',
+      icon: '',
+    },
+    audits: Array.isArray(auditSlug)
+      ? auditSlug.map(a => mockAuditResult({ auditSlug: a }))
+      : ([mockAuditResult({ auditSlug })] as any),
+  };
+}
+
+export function mockAuditResult(opt?: { auditSlug: string }): AuditResult {
+  let { auditSlug } = opt || {};
+  auditSlug = auditSlug || __auditSlug__;
+  return {
+    slug: auditSlug,
+    value: Math.floor(Math.random() * 100),
+    score: Math.round(Math.random()),
   };
 }
 

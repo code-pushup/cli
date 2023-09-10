@@ -11,4 +11,8 @@ export {
   CollectOptions,
   CollectOutputError,
 } from './lib/collect/index';
-export { persistReport } from './lib/collect/implementation/persist';
+export {
+  persistReport,
+  PersistDirError,
+  PersistError,
+} from './lib/collect/implementation/persist';
