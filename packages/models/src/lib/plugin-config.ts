@@ -138,115 +138,14 @@ export const pluginConfigSchema = z
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
-/**
- * Define Zod schema for the SourceFileLocation type.
- *
- * @example
- *
- * // Example data for the RunnerOutput type
- * const runnerOutputData = {
- *   audits: [
- *     // ... populate with example audit data ...
- *   ],
- * };
- *
- * // Validate the data against the schema
- * const validationResult = runnerOutputSchema.safeParse(runnerOutputData);
- *
- * if (validationResult.success) {
- *   console.log('Valid runner output:', validationResult.data);
- * } else {
- *   console.error('Invalid runner output:', validationResult.error);
- * }
- */
-const sourceFileLocationSchema = z.object(
-  {
-    file: unixFilePathSchema('Relative path to source file in Git repo'),
-    position: z
-      .object(
-        {
-          startLine: positiveIntSchema('Start line'),
-          startColumn: positiveIntSchema('Start column').optional(),
-          endLine: positiveIntSchema('End line').optional(),
-          endColumn: positiveIntSchema('End column').optional(),
-        },
-        { description: 'Location in file' },
-      )
-      .optional(),
-  },
-  { description: 'Source file location' },
-);
-
-/**
- * Define Zod schema for the Issue type.
- */
-export const issueSchema = z.object(
-  {
-    message: z.string({ description: 'Descriptive error message' }).max(128),
-    severity: z.enum(['info', 'warning', 'error'], {
-      description: 'Severity level',
-    }),
-    // "Reference to source code"
-    source: sourceFileLocationSchema.optional(),
-  },
-  { description: 'Issue information' },
-);
-export type Issue = z.infer<typeof issueSchema>;
-/**
- * Define Zod schema for the Audit type.
- */
-export const auditResultSchema = z.object(
-  {
-    slug: slugSchema('References audit metadata'),
-    displayValue: z
-      .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
-      .optional(),
-    value: positiveIntSchema('Raw numeric value'),
-    score: z
-      .number({
-        description: 'Value between 0 and 1',
-      })
-      .min(0)
-      .max(1),
-    details: z
-      .object(
-        {
-          issues: z.array(issueSchema, { description: 'List of findings' }),
-        },
-        { description: 'Detailed information' },
-      )
-      .optional(),
-  },
-  { description: 'Audit information' },
-);
-
-export type AuditResult = z.infer<typeof auditResultSchema>;
-
-/**
- * Define Zod schema for the RunnerOutput type.
- */
-export const runnerOutputSchema = z.object(
-  {
-    audits: z
-      .array(auditResultSchema, { description: 'List of audits' })
-      // audit slugs are unique
-      .refine(
-        audits => !getDuplicateSlugsInAudits(audits),
-        audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
-      ),
-  },
-  { description: 'JSON formatted output emitted by the runner.' },
-);
-export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
-
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditResult[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: AuditMetadata[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: AuditResult[]) {
+function getDuplicateSlugsInAudits(audits: AuditMetadata[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 

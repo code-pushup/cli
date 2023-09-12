@@ -7,7 +7,7 @@ import {
   PluginReport,
   Report,
   RunnerOutput,
-  AuditResult,
+  AuditReport,
 } from '@quality-metrics/models';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -177,23 +177,25 @@ export function mockPluginReport(opt?: {
     duration: randDuration(),
     meta: {
       slug: pluginSlug,
-      docsUrl: '',
+      docsUrl: `http://plugin.io/docs/${pluginSlug}`,
       name: 'Mock plugin Name',
-      icon: '',
+      icon: 'socket',
     },
     audits: Array.isArray(auditSlug)
-      ? auditSlug.map(a => mockAuditResult({ auditSlug: a }))
-      : ([mockAuditResult({ auditSlug })] as any),
+      ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
+      : ([mockAuditReport({ auditSlug })] as any),
   };
 }
 
-export function mockAuditResult(opt?: { auditSlug: string }): AuditResult {
+export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
   return {
     slug: auditSlug,
     value: Math.floor(Math.random() * 100),
     score: Math.round(Math.random()),
+    label: auditSlug,
+    title: auditSlug,
   };
 }
 

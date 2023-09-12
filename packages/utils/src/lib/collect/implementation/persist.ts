@@ -2,7 +2,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CoreConfig, Report } from '@quality-metrics/models';
-import { reportToConsole } from './report-to-console';
+import { reportToStdout } from './report-to-stdout';
 import { reportToMd } from './report-to-md';
 
 export class PersistDirError extends Error {
@@ -32,7 +32,7 @@ export async function persistReport(report: Report, config: CoreConfig) {
   }
 
   if (format.includes('stdout')) {
-    reportToConsole(report, config);
+    reportToStdout(report, config);
   }
 
   // collect physical format outputs

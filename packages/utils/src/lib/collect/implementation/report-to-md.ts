@@ -1,8 +1,8 @@
 import {
-  AuditResult,
   CoreConfig,
   PluginReport,
   Report,
+  AuditReport,
 } from '@quality-metrics/models';
 import { headline } from './md/headline';
 import { calcRefs, reportHeadlineText } from './report';
@@ -11,21 +11,31 @@ import { style } from './md/font-style';
 import { link } from './md/link';
 import { li } from './md/list';
 import { table } from './md/table';
+import { details } from './md/details';
 
 export function reportToMd(report: Report, config: CoreConfig): string {
   const { date, duration, package: packageName, version, plugins } = report;
 
+  // headline
   let md =
     headline(`${reportHeadlineText} - ${packageName}@${version})`) + NEW_LINE;
+  // meta
   md +=
-    `Date: ${new Date(date).toLocaleTimeString()} (${duration}ms)` +
+    `_Version: ${version}` +
+    `_Date: ${new Date(date).toLocaleTimeString()} (${duration}ms)_` +
+    `_Plugins: ${config.plugins?.length} Audits: ${config.plugins?.reduce(
+      (sum, { audits }) => sum + audits.length,
+      0,
+    )}_` +
     NEW_LINE +
     NEW_LINE;
+  // overview
   md += categoriesToScoreTableMd(report, config) + NEW_LINE + NEW_LINE;
+  // details
   md += categoriesToCategoryAuditListMd(report, config) + NEW_LINE;
-
-  md += plugins.map(pluginReportToMd).join(NEW_LINE + NEW_LINE);
-
+  // md += plugins.map(pluginReportToMd).join(NEW_LINE + NEW_LINE);
+  // footer
+  md += 'Code Pushup Cloud ID: [123abc456def]()';
   return md;
 }
 
@@ -33,8 +43,8 @@ function categoriesToScoreTableMd(report: Report, config: CoreConfig): string {
   let md = '';
 
   const tablee = [];
-  tablee.push(config.categories.map(({ slug }) => slug));
-  tablee.push(config.categories.flatMap(({ refs, slug }) => calcRefs(refs)));
+  tablee.push(config.categories.map(({ title }) => title));
+  tablee.push(config.categories.flatMap(({ refs }) => calcRefs(refs)));
   md += table(tablee);
 
   return md;
@@ -45,15 +55,23 @@ function categoriesToCategoryAuditListMd(
   config: CoreConfig,
 ): string {
   let md = '';
-  config.categories.forEach(category => {
-    const { title, refs, slug } = category;
-    md += headline(title, 2) + NEW_LINE;
+  const { categories, plugins } = config;
+  categories.forEach(category => {
+    const { title, refs } = category;
+    md += style(`${title} ${calcRefs(category.refs)}`) + NEW_LINE;
+
     md +=
       refs
-        .map(
-          ({ slug: slugg, plugin, weight, type }) =>
-            `${plugin}#${slugg} (${weight})`,
-        )
+        .map(({ slug: auditSlug, weight, plugin }) => {
+          const description =
+            plugins
+              .find(({ meta }) => meta.slug === plugin)
+              ?.audits.find(({ slug }) => slug === auditSlug)?.description ||
+            '';
+          return li(
+            details(`${auditSlug} (${weight})`, `Description:  ${description}`),
+          );
+        })
         .join(NEW_LINE) +
       NEW_LINE +
       NEW_LINE;
@@ -61,17 +79,7 @@ function categoriesToCategoryAuditListMd(
   return md;
 }
 
-function pluginReportToMd(plugin: PluginReport): string {
-  const slugWithDocsLink = ({ docsUrl, name }: PluginReport['meta']) =>
-    docsUrl ? link(name, docsUrl) : name;
-
-  let md = headline(slugWithDocsLink(plugin.meta)) + NEW_LINE;
-  md += plugin.audits.map(auditResultToMd).join(NEW_LINE + NEW_LINE);
-
-  return md;
-}
-
-function auditResultToMd(audit: AuditResult): string {
+function auditReportToMd(audit: AuditReport): string {
   const displayValue = audit?.displayValue || audit.value.toString();
   return li(audit.slug + style(displayValue)) + NEW_LINE;
 }

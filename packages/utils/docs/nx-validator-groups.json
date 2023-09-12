@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "use-nx-tooling",
+    "description": "Nx Tooling compliance checks",
+    "title": "Use Nx Tooling",
+    "refs": [
+      {
+        "slug": "check-version-mismatch",
+        "weight": 0
+      },
+      {
+        "slug": "use-nx-cloud",
+        "weight": 0
+      },
+      {
+        "slug": "check-gulp-usage",
+        "weight": 0
+      }
+    ]
+  },
+  {
+    "slug": "use-quality-tooling",
+    "description": "Eslint, tsconfig, Prettier, ... Tooling compliance checks",
+    "title": "Use Quality Tooling",
+    "refs": [
+      {
+        "slug": "check-eslint-config",
+        "weight": 0
+      },
+      {
+        "slug": "check-prettier-config",
+        "weight": 0
+      }
+    ]
+  },
+  {
+    "slug": "normalize-typescript-config",
+    "description": "Ensure that all typescript configurations are following the Nx standards",
+    "title": "Normalize Typescript configuration",
+    "refs": [
+      {
+        "slug": "check-root-tsconfig-base",
+        "weight": 0
+      },
+      {
+        "slug": "check-tsconfig-paths",
+        "weight": 0
+      }
+    ]
+  },
+  {
+    "slug": "use-workspace-layout",
+    "description": "Folder structure, project.json files, ... validate the workspace layout",
+    "title": "Use Workspace Layout",
+    "refs": [
+      {
+        "slug": "use-project-json",
+        "weight": 0
+      }
+    ]
+  }
+]

@@ -6,7 +6,7 @@ import { calcRefs, reportHeadlineText } from './report';
 // used to distinguish from normal (debug) logs
 const print = console.log;
 
-export function reportToConsole(report: Report, config: CoreConfig): void {
+export function reportToStdout(report: Report, config: CoreConfig): void {
   const { date, duration, package: packageName, version } = report;
   print(`${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`);
   print(
