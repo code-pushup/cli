@@ -85,8 +85,8 @@ export async function collect(options: CollectOptions): Promise<Report> {
 }
 
 export class ReadPackageJsonError extends Error {
-  constructor(outputPath: string) {
-    super(`outPath: ${outputPath} is no directory`);
+  constructor(message: string) {
+    super(`error reading package.json: ${message}`);
   }
 }
 
