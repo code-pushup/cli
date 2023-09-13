@@ -44,7 +44,7 @@ describe('report-to-md', () => {
     expect(logs).toContain('Plugins');
     expect(logs).toContain('Audits');
     // overview section
-    expect(logs).toContain('| Performance |');
+    expect(logs).toContain('Category|Score|Audits');
     // details section
     expect(logs).toContain('**Performance ** (4/4)');
     expect(logs).toContain('<details>');

@@ -1,85 +1,76 @@
-import {
-  CoreConfig,
-  PluginReport,
-  Report,
-  AuditReport,
-} from '@quality-metrics/models';
-import { headline } from './md/headline';
-import { calcRefs, reportHeadlineText } from './report';
-import { NEW_LINE } from './md/constants';
-import { style } from './md/font-style';
-import { link } from './md/link';
-import { li } from './md/list';
-import { table } from './md/table';
-import { details } from './md/details';
+import {CoreConfig, Report} from '@quality-metrics/models';
+import {NEW_LINE, headline, style, li, table, details} from './md/';
+import {countWeightedRefs, sumRefs, reportHeadlineText} from './report';
 
 export function reportToMd(report: Report, config: CoreConfig): string {
-  const { date, duration, package: packageName, version, plugins } = report;
+  // header section
+  let md = reportToHeaderSection() + NEW_LINE;
 
-  // headline
-  let md =
-    headline(`${reportHeadlineText} - ${packageName}@${version})`) + NEW_LINE;
-  // meta
-  md +=
-    `_Version: ${version}` +
-    `_Date: ${new Date(date).toLocaleTimeString()} (${duration}ms)_` +
-    `_Plugins: ${config.plugins?.length} Audits: ${config.plugins?.reduce(
-      (sum, { audits }) => sum + audits.length,
-      0,
-    )}_` +
-    NEW_LINE +
-    NEW_LINE;
-  // overview
-  md += categoriesToScoreTableMd(report, config) + NEW_LINE + NEW_LINE;
-  // details
-  md += categoriesToCategoryAuditListMd(report, config) + NEW_LINE;
-  // md += plugins.map(pluginReportToMd).join(NEW_LINE + NEW_LINE);
-  // footer
-  md += 'Code Pushup Cloud ID: [123abc456def]()';
+  // meta section
+  md += reportToMetaSection(report, config) + NEW_LINE + NEW_LINE;
+
+  // overview section
+  md += reportToOverviewSection(report, config) + NEW_LINE + NEW_LINE;
+
+  // details section
+  md += reportToDetailSection(report, config) + NEW_LINE;
+
+  // footer section
+  md += 'Made with ❤️ by [code-pushup.dev](code-pushup.dev)';
   return md;
 }
 
-function categoriesToScoreTableMd(report: Report, config: CoreConfig): string {
-  let md = '';
-
-  const tablee = [];
-  tablee.push(config.categories.map(({ title }) => title));
-  tablee.push(config.categories.flatMap(({ refs }) => calcRefs(refs)));
-  md += table(tablee);
-
-  return md;
+function reportToHeaderSection(): string {
+  return headline(reportHeadlineText) + NEW_LINE
 }
 
-function categoriesToCategoryAuditListMd(
+function reportToMetaSection(report: Report, config: CoreConfig): string {
+  const {date, duration, version, packageName} = report;
+  const {plugins} = config;
+  return `---` + NEW_LINE +
+    `_Package Name: ${packageName}_` + NEW_LINE +
+    `_Version: ${version}_` + NEW_LINE +
+    `_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_` + NEW_LINE +
+    `_Date: ${new Date(date).toString()}_` + NEW_LINE +
+    `_Duration: (${duration}ms)_` + NEW_LINE +
+    `_Plugins: ${plugins?.length}_` + NEW_LINE +
+    `_Audits: ${plugins?.reduce((sum, {audits}) => sum + audits.length, 0,)}_` + NEW_LINE +
+    `---` + NEW_LINE;
+}
+
+function reportToOverviewSection(report: Report, config: CoreConfig): string {
+  const {categories} = config;
+  const tableContent: string[][] = [
+    ['Category', 'Score', 'Audits'],
+    ...categories.map(({title, refs}) => ([title, sumRefs(refs).toString(), refs.length.toString() + '/' + countWeightedRefs(refs)]))
+  ];
+  return table(tableContent);
+}
+
+function reportToDetailSection(
   report: Report,
   config: CoreConfig,
 ): string {
   let md = '';
-  const { categories, plugins } = config;
+  const {categories, plugins} = config;
+
   categories.forEach(category => {
-    const { title, refs } = category;
-    md += style(`${title} ${calcRefs(category.refs)}`) + NEW_LINE;
+    const {title, refs} = category;
 
-    md +=
-      refs
-        .map(({ slug: auditSlug, weight, plugin }) => {
-          const description =
-            plugins
-              .find(({ meta }) => meta.slug === plugin)
-              ?.audits.find(({ slug }) => slug === auditSlug)?.description ||
-            '';
-          return li(
-            details(`${auditSlug} (${weight})`, `Description:  ${description}`),
-          );
-        })
-        .join(NEW_LINE) +
-      NEW_LINE +
-      NEW_LINE;
+    md += style(`${title} ${sumRefs(refs)}`) + NEW_LINE;
+
+    md += refs
+      .map(({slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug}) => {
+        const description =
+          plugins
+            .find(({meta}) => meta.slug === pluginSlug)
+            ?.audits.find(({slug: auditSlugInPluginAudits}) => auditSlugInPluginAudits === auditSlugInCategoryRefs)?.description || '';
+        return li(
+          details(`${auditSlugInCategoryRefs} (${weight})`, `Description:  ${description}`),
+        );
+      })
+      .join(NEW_LINE) + NEW_LINE;
   });
-  return md;
-}
 
-function auditReportToMd(audit: AuditReport): string {
-  const displayValue = audit?.displayValue || audit.value.toString();
-  return li(audit.slug + style(displayValue)) + NEW_LINE;
+  return md;
 }

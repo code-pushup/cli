@@ -157,7 +157,7 @@ export function mockReport(opt?: {
   auditSlug = auditSlug || __auditSlug__;
   pluginSlug = pluginSlug || __pluginSlug__;
   return {
-    package: 'mock-package',
+    packageName: 'mock-package',
     version: '0.0.0',
     date: new Date().toDateString(),
     duration: randDuration(),

@@ -136,7 +136,7 @@ export type PluginReport = z.infer<typeof pluginReportSchema>;
 
 export const reportSchema = z.object(
   {
-    package: z.string({ description: 'NPM package name' }),
+    packageName: z.string({ description: 'NPM package name' }),
     version: z.string({ description: 'NPM version of the CLI' }),
     date: z.string({ description: 'Start date and time of the collect run' }),
     duration: z.number({ description: 'Duration of the collect run in ms' }),

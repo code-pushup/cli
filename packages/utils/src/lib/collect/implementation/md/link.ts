@@ -1,5 +1,3 @@
-export type Order = 'unordered' | 'checkbox';
-
 /**
  * \# {text} // hierarchy set to 1
  *

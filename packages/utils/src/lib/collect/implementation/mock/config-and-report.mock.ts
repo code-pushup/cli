@@ -13,7 +13,6 @@ export const nxValidatorsPlugin: () => PluginConfig = () => ({
     outputPath: 'nx-validators-plugin-runner-output.json',
   },
   meta: {
-    // package and version optional
     slug: 'nx-validators',
     name: 'NxValidatorsPlugin',
     docsUrl: `https://github.com/BioPhoton/nx-validators/tree/main/README.md`,
