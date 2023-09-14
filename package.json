@@ -17,13 +17,16 @@
     "zod": "^3.22.1"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/config-nx-scopes": "^17.6.4",
     "@nx/esbuild": "16.7.4",
     "@nx/eslint-plugin": "16.7.4",
     "@nx/js": "16.7.4",
     "@nx/plugin": "16.7.4",
     "@nx/vite": "16.7.4",
     "@nx/workspace": "16.7.4",
+    "@types/chalk": "^2.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "18.7.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
