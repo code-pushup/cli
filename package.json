@@ -2,7 +2,9 @@
   "name": "@quality-metrics-cli/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky install"
+  },
   "private": true,
   "workspaces": [
     "dist/packages/*"
@@ -35,6 +37,7 @@
     "@vitest/ui": "~0.32.0",
     "esbuild": "^0.17.17",
     "eslint": "~8.46.0",
+    "husky": "^8.0.0",
     "lighthouse": "^11.0.0",
     "nx": "16.7.4",
     "prettier": "^2.6.2",
