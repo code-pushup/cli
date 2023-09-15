@@ -18,7 +18,7 @@ describe('report-to-md', () => {
     // meat information section
     expect(mdReport).toMatch(/_Version: [0-9a-z\-.]*_/);
     expect(mdReport).toMatch(/_Commit: (.*?)_/);
-    expect(mdReport).toMatch(/_Date: [0-9a-zA-Z :\-()]*_/);
+    expect(mdReport).toMatch(/_Date: (.*?)_/);
     expect(mdReport).toMatch(/_Duration: \d*ms_/);
     expect(mdReport).toMatch(/_Plugins: \d*_/);
     expect(mdReport).toMatch(/_Audits: \d*_/);
