@@ -11,8 +11,9 @@ export function details(
   content: string,
   cfg: { open: boolean } = { open: false },
 ): string {
-  return `<details${cfg.open ? ' open' : ''}>${NEW_LINE}
-<summary>${title}</summary>${NEW_LINE}
-${content}${NEW_LINE}
-</details>${NEW_LINE}`;
+  return `<details${cfg.open ? ' open' : ''}>
+<summary>${title}</summary>
+${content}
+</details>
+`;
 }
