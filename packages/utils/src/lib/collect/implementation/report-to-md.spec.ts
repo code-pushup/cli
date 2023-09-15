@@ -27,8 +27,6 @@ describe('report-to-md', () => {
     expect(mdReport).toMatch(/|Performance|(.*?)/);
     // details section
     expect(mdReport).toMatch(/\*\*Performance \d*\*\*/);
-    expect(mdReport).toMatch(/\*\*A11y \d*\*\*/);
-    expect(mdReport).toMatch(/\*\*Seo \d*\*\*/);
     expect(mdReport).toMatch(
       /<summary>audit title \(\d\) (execute plugin)<\/summary>/,
     );

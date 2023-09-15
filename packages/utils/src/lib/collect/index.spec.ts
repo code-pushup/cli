@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { mockConfig } from './implementation/mock/schema-helper.mock';
-import { collect, CollectOptions, readPackageJson } from '../collect/index';
+import { collect, CollectOptions } from '../collect/index';
 import { reportSchema } from '@quality-metrics/models';
+import {readPackageJson} from "./implementation/utils";
 
 const baseOptions: CollectOptions = {
   ...mockConfig(),

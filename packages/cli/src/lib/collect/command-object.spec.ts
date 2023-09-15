@@ -25,7 +25,6 @@ describe('collect-command-object', () => {
     const args = ['collect', '--verbose', '--configPath', ''];
     const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })
       .config(dummyConfig)
-
       .command(command);
     const parsedArgv = (await cli.argv) as unknown as CollectOptions;
     const { persist } = parsedArgv;

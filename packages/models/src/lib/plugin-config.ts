@@ -51,12 +51,12 @@ const runnerConfigSchema = z.object(
 // Define Zod schema for the AuditMetadata type
 export const auditMetadataSchema = z.object(
   {
-    slug: slugSchema('ID (unique within plugin)'),
+    slug: slugSchema('Audit slug (unique within plugin)'),
     label: z
       .string({
         description: 'Abbreviated name',
       })
-      .max(128),
+      .max(256),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
     docsUrl: docsUrlSchema('Link to documentation (rationale)'),

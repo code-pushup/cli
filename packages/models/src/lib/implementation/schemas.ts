@@ -51,7 +51,7 @@ export function urlSchema(description: string) {
  * @param description
  */
 export function titleSchema(description: string) {
-  return z.string({ description }).max(128);
+  return z.string({ description }).max(256);
 }
 
 /**
@@ -110,7 +110,7 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 ) {
   return z.object(
     {
-      slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
+      slug: slugSchema('Group slug, (unique within group or category)'),
       title: titleSchema('Display name'),
       description: descriptionSchema('Optional description in Markdown format'),
       refs: z

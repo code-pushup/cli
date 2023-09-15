@@ -1,13 +1,6 @@
-import {
-  CoreConfig,
-  GlobalCliArgs,
-  PluginReport,
-  Report,
-} from '@quality-metrics/models';
-import { executePlugins } from './implementation/execute-plugin';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { readFileSync } from 'fs';
+import {CoreConfig, GlobalCliArgs, PluginReport, Report,} from '@quality-metrics/models';
+import {executePlugins} from './implementation/execute-plugin';
+import {readPackageJson} from "./implementation/utils";
 
 /**
  * Error thrown when collect output is invalid.
@@ -82,30 +75,4 @@ export async function collect(options: CollectOptions): Promise<Report> {
       };
     }),
   };
-}
-
-export class ReadPackageJsonError extends Error {
-  constructor(message: string) {
-    super(`error reading package.json: ${message}`);
-  }
-}
-
-export async function readPackageJson() {
-  try {
-    const filepath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '..',
-      '..',
-      '..',
-      '..',
-      'cli',
-      'package.json',
-    );
-    return JSON.parse(readFileSync(filepath).toString()) as {
-      name: string;
-      version: string;
-    };
-  } catch (e) {
-    throw new ReadPackageJsonError((e as { message: string }).message);
-  }
 }

@@ -1,12 +1,9 @@
 import { afterEach, beforeEach, describe } from 'vitest';
-import {
-  dummyConfig,
-  dummyReport,
-  nxValidatorsOnlyConfig,
-  nxValidatorsOnlyReport,
-} from './mock/config-and-report.mock';
+
 import { mockConsole, unmockConsole } from './mock/helper.mock';
 import { reportToStdout } from './report-to-stdout';
+import {dummyConfig, dummyReport} from "./mock/config-and-report-dummy.mock";
+import {nxValidatorsOnlyConfig, nxValidatorsOnlyReport} from "./mock/config-and-report-nx-validators.mock";
 
 let logs: string[] = [];
 
@@ -38,8 +35,6 @@ describe('report-to-stdout', () => {
     expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
     // details section
     expect(logs.find(log => log.match(/Performance \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/A11y \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Seo \d*/))).toBeTruthy();
     expect(logs.find(log => log.match(/- audit title \(\d\)/))).toBeTruthy();
     // footer
     expect(
