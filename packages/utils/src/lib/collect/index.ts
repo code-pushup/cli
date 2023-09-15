@@ -1,6 +1,11 @@
-import {CoreConfig, GlobalCliArgs, PluginReport, Report,} from '@quality-metrics/models';
-import {executePlugins} from './implementation/execute-plugin';
-import {readPackageJson} from "./implementation/utils";
+import {
+  CoreConfig,
+  GlobalCliArgs,
+  PluginReport,
+  Report,
+} from '@quality-metrics/models';
+import { executePlugins } from './implementation/execute-plugin';
+import { readPackageJson } from './implementation/utils';
 
 /**
  * Error thrown when collect output is invalid.

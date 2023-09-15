@@ -1,7 +1,7 @@
 import { CategoryConfig } from '@quality-metrics/models';
-import {dirname, join} from "path";
-import {fileURLToPath} from "url";
-import {readFileSync} from "fs";
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { readFileSync } from 'fs';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
@@ -16,7 +16,6 @@ export function countWeightedRefs(refs: CategoryConfig['refs']) {
     .filter(({ weight }) => weight > 0)
     .reduce((sum, { weight }) => sum + weight, refs.length);
 }
-
 
 export class ReadPackageJsonError extends Error {
   constructor(message: string) {
@@ -44,9 +43,8 @@ export async function readPackageJson() {
       version: string;
     };
   } catch (e) {
-    const _e = (e as { message: string });
-    console.warn(_e.message)
+    const _e = e as { message: string };
+    console.warn(_e.message);
     throw new ReadPackageJsonError(_e.message);
   }
 }
-

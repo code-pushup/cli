@@ -2,8 +2,11 @@ import { afterEach, beforeEach, describe } from 'vitest';
 
 import { mockConsole, unmockConsole } from './mock/helper.mock';
 import { reportToStdout } from './report-to-stdout';
-import {dummyConfig, dummyReport} from "./mock/config-and-report-dummy.mock";
-import {nxValidatorsOnlyConfig, nxValidatorsOnlyReport} from "./mock/config-and-report-nx-validators.mock";
+import { dummyConfig, dummyReport } from './mock/config-and-report-dummy.mock';
+import {
+  nxValidatorsOnlyConfig,
+  nxValidatorsOnlyReport,
+} from './mock/config-and-report-nx-validators.mock';
 
 let logs: string[] = [];
 
