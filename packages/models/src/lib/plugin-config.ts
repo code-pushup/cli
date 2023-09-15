@@ -162,7 +162,7 @@ const sourceFileLocationSchema = z.object(
 export const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
-    severity: z.enum(['success', 'warning', 'error', 'info'], {
+    severity: z.enum(['info', 'warning', 'error'], {
       description: 'Severity level',
     }),
     // "Reference to source code"
