@@ -1,5 +1,4 @@
 export * from './details';
-export * from './code';
 export * from './headline';
 export * from './table';
 export * from './constants';

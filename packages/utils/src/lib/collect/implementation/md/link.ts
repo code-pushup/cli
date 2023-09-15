@@ -3,6 +3,6 @@
  *
  * \## {text} // hierarchy set to 2
  */
-export function link(text: string, href: string): string {
-  return `[${text}](${href})`;
+export function link(href: string, text?: string): string {
+  return `[${text||href}](${href})`;
 }

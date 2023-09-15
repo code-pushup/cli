@@ -1,5 +1,5 @@
 const stylesMap = {
-  i: '*', // italic
+  i: '_', // italic
   b: '**', // bold
   s: '~', // strike through
 } as const;

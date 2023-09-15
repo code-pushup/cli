@@ -6,7 +6,7 @@ import {
   mockReport,
 } from './schema-helper.mock';
 
-export const nxValidatorsPlugin: () => PluginConfig = () => ({
+export const nxValidatorsPlugin: () => Required<PluginConfig> = () => ({
   runner: {
     command: 'bun',
     args: ['--help'],
@@ -231,13 +231,12 @@ export const nxValidatorsPlugin: () => PluginConfig = () => ({
 
 export const nxValidatorsOnlyConfig = mockConfig();
 nxValidatorsOnlyConfig.plugins = [nxValidatorsPlugin()];
-nxValidatorsOnlyConfig.categories = [
-  mockCategory({
-    categorySlug: 'nx-quality',
-    pluginSlug: 'nx-validators',
-    auditSlug: nxValidatorsPlugin().audits.map(({ slug }) => slug),
-  }),
-];
+nxValidatorsOnlyConfig.categories = nxValidatorsPlugin().groups?.map(({ slug, refs }) => mockCategory({
+    categorySlug: slug,
+    pluginSlug: nxValidatorsPlugin().meta.slug,
+    auditSlug: refs.map(({slug: auditSlug}) => auditSlug),
+  }))
+;
 
 export const nxValidatorsOnlyReport = mockReport();
 

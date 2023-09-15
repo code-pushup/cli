@@ -1,3 +1,5 @@
+import {NEW_LINE} from "./constants";
+
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
   ['l', ':--'],
@@ -16,8 +18,11 @@ export function table(
   data: (string | number)[][],
   align?: Alignment[],
 ): string {
+  if(data.length === 0) {
+    throw new Error("Data can't be empty");
+  }
   align = align || data[0]?.map(() => 'c');
   const _data = data.map(arr => '|' + arr.join('|') + '|');
-  const secondRow = align?.map(s => alignString.get(s)).join('|');
-  return _data.shift() + '\n' + secondRow + '\n' + _data.join('\n');
+  const secondRow = '|'+align?.map(s => alignString.get(s)).join('|') + '|';
+  return _data.shift() + NEW_LINE + secondRow + NEW_LINE + _data.join(NEW_LINE);
 }
