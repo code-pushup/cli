@@ -4,11 +4,8 @@ import {
   mockPluginConfig,
   mockRunnerOutput,
 } from './implementation/helpers.mock';
-import {
-  auditGroupSchema,
-  pluginConfigSchema,
-} from './plugin-config';
-import {runnerOutputSchema} from "./report";
+import { auditGroupSchema, pluginConfigSchema } from './plugin-config';
+import { runnerOutputSchema } from './report';
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {

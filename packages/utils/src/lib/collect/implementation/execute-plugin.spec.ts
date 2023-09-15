@@ -11,9 +11,9 @@ describe('executePlugin', () => {
     const cfg = pluginConfigSchema.parse(mockPluginConfig());
     const expectedResult = [
       {
-        "slug": "mock-audit-slug",
-        "score": 0,
-        "value": 0,
+        slug: 'mock-audit-slug',
+        score: 0,
+        value: 0,
       },
     ];
     const errorSpy = vi.fn();

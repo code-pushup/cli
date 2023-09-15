@@ -1,4 +1,4 @@
-import {CoreConfig, coreConfigSchema, PluginConfig, Report} from '@quality-metrics/models';
+import {CoreConfig, PluginConfig, Report,} from '@quality-metrics/models';
 import {CollectOptions} from '@quality-metrics/utils';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -8,11 +8,10 @@ import {middlewares} from '../middlewares';
 import {yargsGlobalOptionsDefinition} from '../options';
 import {yargsCollectCommandObject} from './command-object';
 
-
 const command = {
   ...yargsCollectCommandObject(),
-  handler: logErrorBeforeThrow(yargsCollectCommandObject().handler)
-}
+  handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
+};
 
 const outputPath = 'collect-command-object.json';
 const dummyConfig: CoreConfig = {
@@ -22,7 +21,6 @@ const dummyConfig: CoreConfig = {
 };
 
 describe('collect-command-object', () => {
-
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
     const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })

@@ -5,8 +5,6 @@ import { CommandBase } from './implementation/base-command-config';
 import { getDirname } from './implementation/utils';
 import { middlewares } from './middlewares';
 import { yargsGlobalOptionsDefinition } from './options';
-import {CollectOptions} from "@quality-metrics/utils";
-import {cli} from "../index";
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
@@ -54,13 +52,3 @@ describe('CLI arguments parsing', () => {
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');
   });
 });
-
-describe('collect command', () => {
-  it('should parse arguments correctly', async () => {
-    const args = ['collect', '--verbose', '--configPath', validConfigPath];
-    const parsedArgv = (await cli(args).argv) as unknown as CollectOptions;
-    const {persist} = parsedArgv;
-    const {outputPath: outPath} = persist;
- //   expect(outPath).toBe(outputPath);
-  });
-})
