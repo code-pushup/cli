@@ -183,7 +183,7 @@ export function mockPluginReport(opt?: {
     },
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
-      : ([mockAuditReport({ auditSlug })] as any),
+      : [mockAuditReport({ auditSlug })],
   };
 }
 
@@ -192,6 +192,7 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   auditSlug = auditSlug || __auditSlug__;
   return {
     slug: auditSlug,
+    displayValue: 'mocked value',
     value: Math.floor(Math.random() * 100),
     score: Math.round(Math.random()),
     label: auditSlug,

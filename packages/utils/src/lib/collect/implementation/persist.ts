@@ -4,6 +4,7 @@ import { join } from 'path';
 import { CoreConfig, Report } from '@quality-metrics/models';
 import { reportToStdout } from './report-to-stdout';
 import { reportToMd } from './report-to-md';
+import { NEW_LINE } from './md';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
@@ -27,7 +28,8 @@ export async function persistReport(report: Report, config: CoreConfig) {
     try {
       mkdirSync(outputPath, { recursive: true });
     } catch (e) {
-      throw new PersistDirError(outputPath);
+      console.warn(e);
+      throw new PersistDirError(outputPath + NEW_LINE + (e as Error).stack);
     }
   }
 
@@ -38,9 +40,8 @@ export async function persistReport(report: Report, config: CoreConfig) {
   // collect physical format outputs
   const results: { format: string; out: string }[] = [];
 
-  if (format.includes('json')) {
-    results.push({ format: 'json', out: JSON.stringify(report, null, 2) });
-  }
+  // JSON for at is always persisted
+  results.push({ format: 'json', out: JSON.stringify(report, null, 2) });
 
   if (format.includes('md')) {
     results.push({ format: 'md', out: reportToMd(report, config) });

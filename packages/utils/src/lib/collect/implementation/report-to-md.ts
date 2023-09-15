@@ -83,19 +83,45 @@ function reportToDetailSection(report: Report, config: CoreConfig): string {
       refs
         .map(
           ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
-            const audit = plugins
-              .find(({ meta }) => meta.slug === pluginSlug)
-              ?.audits.find(
-                ({ slug: auditSlugInPluginAudits }) =>
-                  auditSlugInPluginAudits === auditSlugInCategoryRefs,
-              );
+            const plugin = plugins.find(({ meta }) => meta.slug === pluginSlug);
 
-            if (audit) {
-              let content = `${audit.description}` + NEW_LINE;
-              if (audit.docsUrl) {
-                content += link(audit.docsUrl, 'Documentation') + NEW_LINE;
+            if (!plugin) {
+              // this should never happen
+              throw new Error(
+                `plugin ${pluginSlug} not present in config.plugins`,
+              );
+            }
+
+            const pluginAudit = plugin?.audits.find(
+              ({ slug: auditSlugInPluginAudits }) =>
+                auditSlugInPluginAudits === auditSlugInCategoryRefs,
+            );
+
+            if (pluginAudit !== undefined) {
+              let content = ``;
+              const reportAudit = report.plugins
+                .find(p => p.meta.slug === pluginSlug)
+                ?.audits.find(a => a.slug === pluginAudit.slug);
+
+              if (!reportAudit) {
+                // this should never happen
+                throw new Error(
+                  `audit ${pluginAudit.slug} not present in result.plugins[${pluginSlug}].audits`,
+                );
               }
-              return li(details(`${audit.title} (${weight})`, content));
+
+              content += `${reportAudit?.displayValue}` + NEW_LINE;
+              content += `${pluginAudit?.description}` + NEW_LINE;
+              if (pluginAudit?.docsUrl) {
+                content +=
+                  link(pluginAudit?.docsUrl + '', 'Documentation') + NEW_LINE;
+              }
+              return li(
+                details(
+                  `${pluginAudit?.title} (${weight}) ${plugin?.meta.name}`,
+                  content,
+                ),
+              );
             } else {
               // this should never happen
               throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
