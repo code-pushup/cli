@@ -22,27 +22,6 @@ export type PluginOutput = RunnerOutput & {
   duration: number;
 };
 
-/**
- * Define Zod schema for the SourceFileLocation type.
- *
- * @example
- *
- * // Example data for the RunnerOutput type
- * const runnerOutputData = {
- *   audits: [
- *     // ... populate with example audit data ...
- *   ],
- * };
- *
- * // Validate the data against the schema
- * const validationResult = runnerOutputSchema.safeParse(runnerOutputData);
- *
- * if (validationResult.success) {
- *   console.log('Valid runner output:', validationResult.data);
- * } else {
- *   console.error('Invalid runner output:', validationResult.error);
- * }
- */
 const sourceFileLocationSchema = z.object(
   {
     file: unixFilePathSchema('Relative path to source file in Git repo'),

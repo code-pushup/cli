@@ -9,25 +9,6 @@ import { persistConfigSchema } from './persist-config';
 import { pluginConfigSchema } from './plugin-config';
 import { uploadConfigSchema } from './upload-config';
 
-/**
- * Define Zod schema for the CoreConfig type
- *
- * @example
- *
- * // Example data for the CoreConfig type
- * const data = {
- *   // ... populate with example data ...
- * };
- *
- * // Validate the data against the schema
- * const validationResult = coreConfigSchema.safeParse(data);
- *
- * if (validationResult.success) {
- *   console.log('Valid plugin config:', validationResult.data);
- * } else {
- *   console.error('Invalid plugin config:', validationResult.error);
- * }
- */
 export const unrefinedCoreConfigSchema = z.object({
   plugins: z.array(pluginConfigSchema, {
     description:

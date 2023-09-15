@@ -20,6 +20,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
             {
               slug: 'largest-contentful-paint',
               value: 0,
+              score: 0
             },
           ],
         } satisfies RunnerOutput)}' > out.json`,

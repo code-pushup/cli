@@ -20,6 +20,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
             {
               slug: 'no-any',
               value: 0,
+              score: 0,
             },
           ],
         } satisfies RunnerOutput)}' > out.json`,

@@ -1,10 +1,14 @@
-import {describe} from 'vitest';
-import {dummyConfig, dummyReport, nxValidatorsOnlyConfig, nxValidatorsOnlyReport,} from './mock/config-and-report.mock';
-import {reportToMd} from './report-to-md';
+import { describe } from 'vitest';
+import {
+  dummyConfig,
+  dummyReport,
+  nxValidatorsOnlyConfig,
+  nxValidatorsOnlyReport,
+} from './mock/config-and-report.mock';
+import { reportToMd } from './report-to-md';
 
 describe('report-to-md', () => {
-
-  it('Should contain all sections when using dummy report', () => {
+  it('should contain all sections when using dummy report', () => {
     const mdReport = reportToMd(dummyReport, dummyConfig);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
@@ -24,10 +28,12 @@ describe('report-to-md', () => {
     expect(mdReport).toMatch(/\*\*Seo \d*\*\*/);
     expect(mdReport).toMatch(/<summary>audit title \(\d\)<\/summary>/);
     // footer
-    expect(mdReport).toContain('Made with ❤️ by [code-pushup.dev](code-pushup.dev)');
+    expect(mdReport).toContain(
+      'Made with ❤️ by [code-pushup.dev](code-pushup.dev)',
+    );
   });
 
-  it('Should contain all sections when using nx-validators report', () => {
+  it('should contain all sections when using nx-validators report', () => {
     const mdReport = reportToMd(nxValidatorsOnlyReport, nxValidatorsOnlyConfig);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
@@ -44,8 +50,12 @@ describe('report-to-md', () => {
     expect(mdReport).toContain('**Use Quality Tooling');
     expect(mdReport).toContain('**Normalize Typescript Config');
     expect(mdReport).toContain('**Use Workspace Layout');
-    expect(mdReport).toMatch(/<summary>Check Version Mismatch \(\d\)<\/summary>/);
+    expect(mdReport).toMatch(
+      /<summary>Check Version Mismatch \(\d\)<\/summary>/,
+    );
     // footer
-    expect(mdReport).toContain('Made with ❤️ by [code-pushup.dev](code-pushup.dev)');
+    expect(mdReport).toContain(
+      'Made with ❤️ by [code-pushup.dev](code-pushup.dev)',
+    );
   });
 });

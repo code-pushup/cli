@@ -7,8 +7,8 @@ import {
 import {
   auditGroupSchema,
   pluginConfigSchema,
-  runnerOutputSchema,
 } from './plugin-config';
+import {runnerOutputSchema} from "./report";
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {
@@ -109,7 +109,7 @@ describe('runnerOutputSchema', () => {
   it('should throw if slugs of audits are duplicated', () => {
     const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'In plugin audits the slugs are not unique',
+      'In the report audits the slugs are not unique: a',
     );
   });
 });

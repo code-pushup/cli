@@ -27,7 +27,7 @@ describe('table function', () => {
 
   it('should handle empty data', () => {
     const data: (string | number)[][] = [];
-    expect(() => table(data)).toThrow('Data can\'t be empty')
+    expect(() => table(data)).toThrow("Data can't be empty");
   });
 
   it('should handle single row data', () => {

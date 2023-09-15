@@ -1,12 +1,16 @@
-import {describe} from "vitest";
-import {coreConfigSchema, pluginConfigSchema, reportSchema} from "@quality-metrics/models";
+import { describe } from 'vitest';
+import {
+  coreConfigSchema,
+  pluginConfigSchema,
+  reportSchema,
+} from '@quality-metrics/models';
 import {
   dummyConfig,
   dummyReport,
   nxValidatorsOnlyConfig,
   nxValidatorsOnlyReport,
-  nxValidatorsPlugin
-} from "./config-and-report.mock";
+  nxValidatorsPlugin,
+} from './config-and-report.mock';
 
 // @NOTICE ATM the data structure changes a lot so this test is a temporarily check to see if the dummy data are correct
 describe('dummy data', () => {

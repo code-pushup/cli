@@ -231,12 +231,14 @@ export const nxValidatorsPlugin: () => Required<PluginConfig> = () => ({
 
 export const nxValidatorsOnlyConfig = mockConfig();
 nxValidatorsOnlyConfig.plugins = [nxValidatorsPlugin()];
-nxValidatorsOnlyConfig.categories = nxValidatorsPlugin().groups?.map(({ slug, refs }) => mockCategory({
-    categorySlug: slug,
-    pluginSlug: nxValidatorsPlugin().meta.slug,
-    auditSlug: refs.map(({slug: auditSlug}) => auditSlug),
-  }))
-;
+nxValidatorsOnlyConfig.categories = nxValidatorsPlugin().groups?.map(
+  ({ slug, refs }) =>
+    mockCategory({
+      categorySlug: slug,
+      pluginSlug: nxValidatorsPlugin().meta.slug,
+      auditSlug: refs.map(({ slug: auditSlug }) => auditSlug),
+    }),
+);
 
 export const nxValidatorsOnlyReport = mockReport();
 

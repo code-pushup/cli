@@ -3,11 +3,9 @@ import {
   descriptionSchema,
   docsUrlSchema,
   generalFilePathSchema,
-  positiveIntSchema,
   scorableSchema,
   slugSchema,
   titleSchema,
-  unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
 import {
@@ -82,25 +80,6 @@ export const auditGroupSchema = scorableSchema(
 
 export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
-/**
- * Define Zod schema for the PluginConfig type
- *
- * @example
- *
- * // Example data for the PluginConfig type
- * const data = {
- *   // ...
- * };
- *
- * // Validate the data against the schema
- * const validationResult = pluginConfigSchema.safeParse(data);
- *
- * if (validationResult.success) {
- *   console.log('Valid plugin config:', validationResult.data);
- * } else {
- *   console.error('Invalid plugin config:', validationResult.error);
- * }
- */
 export const pluginConfigSchema = z
   .object({
     meta: pluginMetadataSchema,

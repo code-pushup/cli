@@ -1,19 +1,16 @@
-import {coreConfigSchema, pluginConfigSchema, reportSchema,} from '@quality-metrics/models';
-import {afterEach, beforeEach, describe} from 'vitest';
+import { afterEach, beforeEach, describe } from 'vitest';
 import {
   dummyConfig,
   dummyReport,
   nxValidatorsOnlyConfig,
   nxValidatorsOnlyReport,
-  nxValidatorsPlugin,
 } from './mock/config-and-report.mock';
-import {reportToStdout} from "./report-to-stdout";
-import {mockConsole, unmockConsole} from "./mock/helper.mock";
+import { mockConsole, unmockConsole } from './mock/helper.mock';
+import { reportToStdout } from './report-to-stdout';
 
-let logs = [];
+let logs: string[] = [];
 
 describe('report-to-md', () => {
-
   beforeEach(async () => {
     logs = [];
     mockConsole(msg => logs.push(msg));
@@ -23,32 +20,64 @@ describe('report-to-md', () => {
     unmockConsole();
   });
 
-  // @NOTICE ATM the data structure changes a lot so this test is a temporarily check to see if the dummy data are correct
-  it('test data is valid for report-to-md', () => {
-    // dummy report
-    expect(() => coreConfigSchema.parse(dummyConfig)).not.toThrow();
-    expect(() => reportSchema.parse(dummyReport)).not.toThrow();
-    // nx validators
-    expect(() => pluginConfigSchema.parse(nxValidatorsPlugin())).not.toThrow();
-    expect(() => coreConfigSchema.parse(nxValidatorsOnlyConfig)).not.toThrow();
-    expect(() => reportSchema.parse(nxValidatorsOnlyReport)).not.toThrow();
-  });
-
-  it('Should contain all sections', () => {
+  it('should contain all sections when using dummy report', () => {
     reportToStdout(dummyReport, dummyConfig);
     // headline
-    expect(logs).toContain('Code Pushup Report');
+    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
     // meat information section
-    expect(logs).toContain('Version');
-    expect(logs).toContain('Date');
-    expect(logs).toContain('Plugins');
-    expect(logs).toContain('Audits');
+    expect(logs.find(log => log.match(/Version: [0-9a-z\-.]*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Commit: (.*?)/))).toBeTruthy();
+    expect(
+      logs.find(log => log.match(/Date: [0-9a-zA-Z :\-()]*/)),
+    ).toBeTruthy();
+    expect(logs.find(log => log.match(/Duration: \d*ms/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Plugins: \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
     // overview section
-    expect(logs).toContain('Category|Score|Audits');
+    expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
+    expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
     // details section
-    expect(logs).toContain('**Performance ** (4/4)');
-    expect(logs).toContain('<details>');
+    expect(logs.find(log => log.match(/Performance \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/A11y \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Seo \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/- audit title \(\d\)/))).toBeTruthy();
     // footer
-    expect(logs).toContain('Code Pushup Cloud ID: [');
+    expect(
+      logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),
+    ).toBeTruthy();
+  });
+
+  it('should contain all sections when using nx-validators report', () => {
+    reportToStdout(nxValidatorsOnlyReport, nxValidatorsOnlyConfig);
+    // headline
+    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
+    // meat information section
+    expect(logs.find(log => log.match(/Version: [0-9a-z\-.]*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Commit: (.*?)/))).toBeTruthy();
+    expect(
+      logs.find(log => log.match(/Date: [0-9a-zA-Z :\-()]*/)),
+    ).toBeTruthy();
+    expect(logs.find(log => log.match(/Duration: \d*ms/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Plugins: \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
+    // overview section
+    expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
+    expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
+    // details section
+    expect(logs.find(log => log.match(/Use Nx Tooling \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Use Quality Tooling \d*/))).toBeTruthy();
+    expect(
+      logs.find(log => log.match(/Normalize Typescript Config \d*/)),
+    ).toBeTruthy();
+    expect(
+      logs.find(log => log.match(/Use Workspace Layout \d*/)),
+    ).toBeTruthy();
+    expect(
+      logs.find(log => log.match(/- Check Version Mismatch \(\d\)/)),
+    ).toBeTruthy();
+    // footer
+    expect(
+      logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),
+    ).toBeTruthy();
   });
 });
