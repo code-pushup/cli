@@ -9,11 +9,7 @@ export function yargsCollectCommandObject() {
     const report = await collect(config);
 
     const { persist } = config;
-    persistReport({
-      ...persist,
-      report,
-      config,
-    });
+    await persistReport(report, config);
 
     await writeFile(persist.outputPath, JSON.stringify(report, null, 2));
   };

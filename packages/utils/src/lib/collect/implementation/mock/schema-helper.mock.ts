@@ -32,7 +32,7 @@ export function mockPluginConfig(opt?: {
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
-    : [mockAuditConfig({ auditSlug: pluginSlug + '/' + auditSlug })];
+    : [mockAuditConfig({ auditSlug: auditSlug })];
 
   let groups: AuditGroup[] = [];
   if (addGroups) {
@@ -51,8 +51,8 @@ export function mockPluginConfig(opt?: {
         `echo '${JSON.stringify({
           audits: audits.map(({ slug }, idx) => ({
             slug: `${slug}`,
-            value: parseFloat('0.' + idx),
-            score: Math.random(),
+            value: idx,
+            score: parseFloat('0.' + idx),
           })),
         } satisfies RunnerOutput)}' > ${outputPath}`,
       ],
@@ -212,7 +212,7 @@ export function mockConfig(opt?: {
     persist: mockPersistConfig({ outputPath }),
     plugins: Array.isArray(pluginSlug)
       ? pluginSlug.map(slug =>
-          mockPluginConfig({ pluginSlug: slug, auditSlug }),
+          mockPluginConfig({ pluginSlug: slug, auditSlug, groupSlug }),
         )
       : [mockPluginConfig({ pluginSlug, auditSlug, groupSlug })],
     categories: Array.isArray(categorySlug)

@@ -11,13 +11,14 @@ describe('executePlugin', () => {
     const cfg = pluginConfigSchema.parse(mockPluginConfig());
     const expectedResult = [
       {
-        slug: 'mock-audit-slug',
-        value: 0,
+        "slug": "mock-audit-slug",
+        "score": 0,
+        "value": 0,
       },
     ];
     const errorSpy = vi.fn();
     const pluginResult = await executePlugin(cfg).catch(errorSpy);
-    expect(pluginResult.audits).toEqual(expectedResult);
+    expect(pluginResult?.audits).toEqual(expectedResult);
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(() => runnerOutputSchema.parse(pluginResult)).not.toThrow();
   });

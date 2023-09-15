@@ -15,7 +15,7 @@ describe('collect', () => {
     const report = await collect(baseOptions);
     //
     const expectedPackageJson = await readPackageJson();
-    expect(report.package).toBe(expectedPackageJson.name);
+    expect(report.packageName).toBe(expectedPackageJson.name);
     expect(report.version).toBe(expectedPackageJson.version);
     expect(() => reportSchema.parse(report)).not.toThrow();
   });
@@ -24,6 +24,6 @@ describe('collect', () => {
 describe('readPackageJson', () => {
   it('should read package json form @quality-metrics/cli`', async () => {
     const expectedPackageJson = await readPackageJson();
-    expect(expectedPackageJson).toBe('@quality-metrics/cli');
+    expect(expectedPackageJson.name).toBe('@quality-metrics/cli');
   });
 });

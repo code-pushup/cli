@@ -10,7 +10,7 @@ import { reportToStdout } from './report-to-stdout';
 
 let logs: string[] = [];
 
-describe('report-to-md', () => {
+describe('report-to-stdout', () => {
   beforeEach(async () => {
     logs = [];
     mockConsole(msg => logs.push(msg));
