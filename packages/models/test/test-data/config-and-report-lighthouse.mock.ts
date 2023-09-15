@@ -1,5 +1,5 @@
 import { PluginConfig } from '@quality-metrics/models';
-import { mockConfig, mockReport } from './schema-helper.mock';
+import { mockConfig, mockReport } from '../schema.mock';
 
 export const lighthousePlugin: () => Required<PluginConfig> = () => ({
   runner: {

@@ -1,9 +1,5 @@
-import {
-  mockCategory,
-  mockConfig,
-  mockPluginConfig,
-  mockReport,
-} from './schema-helper.mock';
+import {mockCategory, mockConfig, mockPluginConfig, mockReport} from "../schema.mock";
+
 
 const pluginSlug = ['plg-0', 'plg-1', 'plg-2'];
 const auditSlug0 = ['0a', '0b', '0c', '0d'];

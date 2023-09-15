@@ -1,5 +1,5 @@
 import { PluginConfig } from '@quality-metrics/models';
-import { mockCategory, mockConfig, mockReport } from './schema-helper.mock';
+import { mockCategory, mockConfig, mockReport } from '../schema.mock';
 
 export const nxValidatorsPlugin: () => Required<PluginConfig> = () => ({
   runner: {

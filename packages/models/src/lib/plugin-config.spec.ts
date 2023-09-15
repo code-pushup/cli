@@ -2,10 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   mockGroupConfig,
   mockPluginConfig,
-  mockRunnerOutput,
-} from './implementation/helpers.mock';
-import { auditGroupSchema, pluginConfigSchema } from './plugin-config';
-import { runnerOutputSchema } from './report';
+  mockRunnerOutput
+} from '../../test/index';
+import {auditGroupSchema, pluginConfigSchema, runnerOutputSchema} from './plugin-config';
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {
@@ -38,7 +37,7 @@ describe('pluginConfigSchema', () => {
     });
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `In plugin audits the slugs are not unique`,
+      `In the report audits the slugs are not unique`,
     );
   });
 
@@ -99,7 +98,7 @@ describe('runnerOutputSchema', () => {
   it('should throw if slugs of audits are invalid', () => {
     const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'slug has to follow the pattern',
+      'The slug has to follow the pattern',
     );
   });
 

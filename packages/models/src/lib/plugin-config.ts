@@ -120,7 +120,7 @@ export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 // helper for validator: audit slugs are unique
 function duplicateSlugsInAuditsErrorMsg(audits: AuditMetadata[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
-  return `In plugin audits the slugs are not unique: ${errorItems(
+  return `In the report audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }

@@ -21,7 +21,7 @@ export const categoryConfigSchema = scorableSchema(
     z.object({
       type: z.enum(['audit', 'group'], {
         description:
-          'Discrimant for reference kind, affects where `slug` is looked up',
+          'Discriminant for reference kind, affects where `slug` is looked up',
       }),
       plugin: slugSchema(
         'Plugin slug (plugin should contain referenced audit or group)',

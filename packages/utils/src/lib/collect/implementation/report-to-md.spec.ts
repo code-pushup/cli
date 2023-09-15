@@ -3,12 +3,10 @@ import { reportToMd } from './report-to-md';
 import {
   lighthouseConfig,
   lighthouseReport,
-} from './mock/config-and-report-lighthouse.mock';
-import { dummyConfig, dummyReport } from './mock/config-and-report-dummy.mock';
-import {
+  dummyConfig, dummyReport,
   nxValidatorsOnlyConfig,
   nxValidatorsOnlyReport,
-} from './mock/config-and-report-nx-validators.mock';
+} from '@quality-metrics/models/testing';
 
 describe('report-to-md', () => {
   it('should contain all sections when using dummy report', () => {

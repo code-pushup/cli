@@ -15,15 +15,15 @@ export {
   auditGroupSchema,
   auditMetadataSchema,
   pluginConfigSchema,
+  Issue,
+  RunnerOutput,
+  issueSchema,
+  runnerOutputSchema,
 } from './lib/plugin-config';
 export {
   PluginOutput,
   PluginReport,
   Report,
   AuditReport,
-  Issue,
-  RunnerOutput,
   reportSchema,
-  issueSchema,
-  runnerOutputSchema,
 } from './lib/report';

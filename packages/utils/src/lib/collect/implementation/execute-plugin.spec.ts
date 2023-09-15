@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { executePlugin, executePlugins } from './execute-plugin';
-import { mockPluginConfig } from './mock/schema-helper.mock';
 import {
   pluginConfigSchema,
   runnerOutputSchema,
 } from '@quality-metrics/models';
+import {mockPluginConfig} from "@quality-metrics/models/testing";
 
 describe('executePlugin', () => {
   it('should work with valid plugin', async () => {
