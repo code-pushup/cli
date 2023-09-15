@@ -1,5 +1,3 @@
-import { NEW_LINE } from './constants';
-
 /**
  * <details {open}>
  *   <summary>{title}</summary>
