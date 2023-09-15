@@ -48,7 +48,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
   );
 
   return {
-    package: name,
+    packageName: name,
     version,
     date,
     duration,
