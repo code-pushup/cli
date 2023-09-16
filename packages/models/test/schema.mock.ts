@@ -8,7 +8,7 @@ import {
   Report,
   RunnerOutput,
   AuditReport,
-  UploadConfig
+  UploadConfig,
 } from '../src/index';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -103,15 +103,15 @@ export function mockGroupConfig(opt?: {
     description: 'group description',
     refs: Array.isArray(auditSlug)
       ? auditSlug.map(slug => ({
-        slug,
-        weight: randWeight(),
-      }))
-      : [
-        {
-          slug: auditSlug,
+          slug,
           weight: randWeight(),
-        },
-      ],
+        }))
+      : [
+          {
+            slug: auditSlug,
+            weight: randWeight(),
+          },
+        ],
   };
 }
 
@@ -122,37 +122,47 @@ export function mockCategory(opt?: {
   groupSlug?: string | string[];
 }): CategoryConfig {
   let { categorySlug, auditSlug, pluginSlug, groupSlug } = opt || {};
+  const addAudits = !!auditSlug;
   auditSlug = auditSlug || __auditSlug__;
+  const addGroups = !!groupSlug;
   groupSlug = groupSlug || __groupSlug__;
   pluginSlug = pluginSlug || __pluginSlug__;
   categorySlug = categorySlug || __categorySlug__;
 
-  const categoryAuditRefs: CategoryConfig['refs'] = Array.isArray(auditSlug)
-    ? auditSlug.map(slug => ({
-      slug,
-      type: 'audit' as const,
-      weight: randWeight(),
-      plugin: pluginSlug + '',
-    }))
-    : [
-      {
-        slug: auditSlug,
-        type: 'audit' as const,
-        weight: randWeight(),
-        plugin: pluginSlug + '',
-      },
-    ];
-  const categoryGroupRefs: CategoryConfig['refs'] = Array.isArray(groupSlug) ? groupSlug.map(slug => ({
-    slug,
-    type: 'group',
-    weight: randWeight(),
-    plugin: pluginSlug + '',
-  })) : [{
-    slug: groupSlug,
-    type: 'group',
-    weight: randWeight(),
-    plugin: pluginSlug + '',
-  }]
+  const categoryAuditRefs: CategoryConfig['refs'] = addAudits
+    ? Array.isArray(auditSlug)
+      ? auditSlug.map(slug => ({
+          slug,
+          type: 'audit' as const,
+          weight: randWeight(),
+          plugin: pluginSlug + '',
+        }))
+      : [
+          {
+            slug: auditSlug,
+            type: 'audit' as const,
+            weight: randWeight(),
+            plugin: pluginSlug + '',
+          },
+        ]
+    : [];
+  const categoryGroupRefs: CategoryConfig['refs'] = addGroups
+    ? Array.isArray(groupSlug)
+      ? groupSlug.map(slug => ({
+          slug,
+          type: 'group',
+          weight: randWeight(),
+          plugin: pluginSlug + '',
+        }))
+      : [
+          {
+            slug: groupSlug,
+            type: 'group',
+            weight: randWeight(),
+            plugin: pluginSlug + '',
+          },
+        ]
+    : [];
 
   return {
     slug: categorySlug,
@@ -223,22 +233,21 @@ export function mockConfig(opt?: {
   groupSlug?: string | string[];
 }): CoreConfig {
   const { outputPath, pluginSlug, auditSlug, groupSlug, categorySlug } =
-  opt || {};
+    opt || {};
   return {
     persist: mockPersistConfig({ outputPath }),
     plugins: Array.isArray(pluginSlug)
       ? pluginSlug.map(slug =>
-        mockPluginConfig({ pluginSlug: slug, auditSlug, groupSlug }),
-      )
+          mockPluginConfig({ pluginSlug: slug, auditSlug, groupSlug }),
+        )
       : [mockPluginConfig({ pluginSlug, auditSlug, groupSlug })],
     categories: Array.isArray(categorySlug)
       ? categorySlug.map(slug =>
-        mockCategory({ categorySlug: slug, auditSlug, groupSlug }),
-      )
+          mockCategory({ categorySlug: slug, auditSlug, groupSlug }),
+        )
       : [mockCategory({ categorySlug, auditSlug, groupSlug })],
   };
 }
-
 
 export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
   return {
@@ -255,19 +264,19 @@ export function mockRunnerOutput(opt?: {
   auditSlug = auditSlug || 'mock-audit-output-slug';
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map((slug, idx) => ({
-      slug,
-      value: idx,
-      displayValue: '',
-      score: 0,
-    }))
-    : [
-      {
-        slug: auditSlug,
-        value: 12,
+        slug,
+        value: idx,
         displayValue: '',
         score: 0,
-      },
-    ];
+      }))
+    : [
+        {
+          slug: auditSlug,
+          value: 12,
+          displayValue: '',
+          score: 0,
+        },
+      ];
 
   return {
     audits,

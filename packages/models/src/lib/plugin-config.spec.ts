@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   mockGroupConfig,
   mockPluginConfig,
-  mockRunnerOutput
+  mockRunnerOutput,
 } from '../../test/index';
-import {auditGroupSchema, pluginConfigSchema, runnerOutputSchema} from './plugin-config';
+import {
+  auditGroupSchema,
+  pluginConfigSchema,
+  runnerOutputSchema,
+} from './plugin-config';
 
 describe('pluginConfigSchema', () => {
   it('should parse if configuration is valid', () => {

@@ -1,10 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import { coreConfigSchema, pluginConfigSchema, reportSchema } from '../src';
 import {
-  coreConfigSchema,
-  pluginConfigSchema,
-  reportSchema,
-} from '../src';
-import { dummyConfig, dummyReport } from './test-data/config-and-report-dummy.mock';
+  dummyConfig,
+  dummyReport,
+} from './test-data/config-and-report-dummy.mock';
 import {
   nxValidatorsOnlyConfig,
   nxValidatorsOnlyReport,

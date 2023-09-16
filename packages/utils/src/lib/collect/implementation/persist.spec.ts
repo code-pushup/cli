@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { persistReport } from './persist';
-import { mockPersistConfig } from './mock/schema-helper.mock';
 import { readFileSync, unlinkSync } from 'fs';
 import { Report } from '@quality-metrics/models';
 import { mockConsole, unmockConsole } from './mock/helper.mock';
-import { dummyConfig, dummyReport } from './mock/config-and-report-dummy.mock';
+import {
+  dummyConfig,
+  dummyReport,
+  mockPersistConfig,
+} from '@quality-metrics/models/testing';
 
 const outputPath = 'out';
 

@@ -83,11 +83,11 @@ function getMissingRefsForCategories(coreCfg: CoreConfig) {
   const groupRefsFromCategory = coreCfg.categories.flatMap(({ refs }) =>
     refs
       .filter(({ type }) => type === 'group')
-      .map(({ plugin, slug }) => `${plugin}/${slug} (group)`),
+      .map(({ plugin, slug }) => `${plugin}#${slug} (group)`),
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(({ groups, meta }) => {
     return Array.isArray(groups)
-      ? groups.map(({ slug }) => `${meta.slug}/${slug} (group)`)
+      ? groups.map(({ slug }) => `${meta.slug}#${slug} (group)`)
       : [];
   });
   const missingGroupRefs = hasMissingStrings(

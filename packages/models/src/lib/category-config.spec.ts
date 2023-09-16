@@ -5,29 +5,24 @@ import { mockCategory } from '../../test';
 describe('categoryConfigSchema', () => {
   it('should parse if configuration with audit refs is valid', () => {
     const cfg = mockCategory({
-      auditRefOrGroupRef: [
-        { type: 'audit', plugin: 'test', slug: 'a' },
-        { type: 'audit', plugin: 'test', slug: 'b' },
-      ],
+      pluginSlug: 'test',
+      auditSlug: 'a',
     });
     expect(() => categoryConfigSchema.parse(cfg)).not.toThrow();
   });
 
   it('should parse if configuration with group refs is valid', () => {
     const cfg = mockCategory({
-      auditRefOrGroupRef: [{ type: 'group', plugin: 'es-lint', slug: 'base' }],
+      pluginSlug: 'test',
+      groupSlug: 'g',
     });
     expect(() => categoryConfigSchema.parse(cfg)).not.toThrow();
   });
 
   it('should throw if duplicate refs to audits or groups in metrics are given', () => {
-    const duplicatedSlug = {
-      type: 'audit' as const,
-      plugin: 'test',
-      slug: 'a',
-    };
+    const duplicatedSlug = 'a';
     const cfg = mockCategory({
-      auditRefOrGroupRef: [duplicatedSlug, duplicatedSlug],
+      auditSlug: [duplicatedSlug, duplicatedSlug],
     });
     expect(() => categoryConfigSchema.parse(cfg)).toThrow(
       'the following audit or group refs are duplicates',

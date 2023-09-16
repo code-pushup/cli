@@ -3,7 +3,8 @@ import { reportToMd } from './report-to-md';
 import {
   lighthouseConfig,
   lighthouseReport,
-  dummyConfig, dummyReport,
+  dummyConfig,
+  dummyReport,
   nxValidatorsOnlyConfig,
   nxValidatorsOnlyReport,
 } from '@quality-metrics/models/testing';

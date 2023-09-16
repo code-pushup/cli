@@ -4,7 +4,7 @@ import {
   pluginConfigSchema,
   runnerOutputSchema,
 } from '@quality-metrics/models';
-import {mockPluginConfig} from "@quality-metrics/models/testing";
+import { mockPluginConfig } from '@quality-metrics/models/testing';
 
 describe('executePlugin', () => {
   it('should work with valid plugin', async () => {

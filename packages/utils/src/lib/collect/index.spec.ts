@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { collect, CollectOptions } from '../collect/index';
 import { reportSchema } from '@quality-metrics/models';
 import { readPackageJson } from './implementation/utils';
-import {mockConfig} from "@quality-metrics/models/testing";
+import { mockConfig } from '@quality-metrics/models/testing';
 
 const baseOptions: CollectOptions = {
   ...mockConfig(),
