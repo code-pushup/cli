@@ -237,7 +237,6 @@ function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 
-
 type _RefsList = { slug?: string }[];
 
 // helper for validator: group refs are unique
