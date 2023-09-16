@@ -4,7 +4,7 @@ import { yargsCollectCommandObject } from './collect/command-object';
 export const commands: CommandModule[] = [
   {
     ...yargsCollectCommandObject(),
-    command: '*'
+    command: '*',
   },
-  yargsCollectCommandObject()
+  yargsCollectCommandObject(),
 ];
