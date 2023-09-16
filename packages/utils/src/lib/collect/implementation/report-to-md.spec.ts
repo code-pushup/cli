@@ -27,7 +27,7 @@ describe('report-to-md', () => {
     // details section
     expect(mdReport).toMatch(/\*\*Performance \d*\*\*/);
     expect(mdReport).toMatch(
-      /<summary>audit title \(\d\) (execute plugin)<\/summary>/,
+      /<summary>0a title \(\d\) (execute plugin)<\/summary>/,
     );
     // footer
     expect(mdReport).toContain(

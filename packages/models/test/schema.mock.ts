@@ -1,5 +1,6 @@
 import {
   AuditGroup,
+  AuditMetadata,
   CategoryConfig,
   CoreConfig,
   PersistConfig,
@@ -69,14 +70,13 @@ export function mockPluginConfig(opt?: {
 
 export function mockAuditConfig(opt?: {
   auditSlug?: string;
-}): PluginConfig['audits'][0] {
+}): AuditMetadata {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
 
   return {
     slug: auditSlug,
     title: auditSlug+' title',
-    label: auditSlug+' label',
     description: 'audit description',
     docsUrl: 'http://www.my-docs.dev',
   };

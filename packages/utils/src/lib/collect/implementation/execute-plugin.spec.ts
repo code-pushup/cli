@@ -51,8 +51,6 @@ describe('executePlugins', () => {
     const errorSpy = vi.fn();
     const pluginResult = await executePlugins(plugins).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(0);
-    console.log(pluginResult[0]);
-    console.log(pluginResult[1]);
     expect(pluginResult[0].date.endsWith('Z')).toBeTruthy();
     expect(pluginResult[0].duration).toMatch(/^\d+$/);
     expect(pluginResult[0].audits[0].slug).toEqual('mock-audit-slug');

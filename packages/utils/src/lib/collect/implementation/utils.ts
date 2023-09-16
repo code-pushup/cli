@@ -36,8 +36,6 @@ export async function readPackageJson() {
       'cli',
       'package.json',
     );
-    console.log('load ' + filepath);
-
     return JSON.parse(readFileSync(filepath).toString()) as {
       name: string;
       version: string;
