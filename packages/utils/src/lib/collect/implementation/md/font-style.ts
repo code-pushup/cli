@@ -9,7 +9,7 @@ export type FontStyle = keyof typeof stylesMap;
 /**
  * **{text}** // default is bold
  *
- * *{text}* // italic - styles set to `['i']`
+ * _{text}_ // italic - styles set to `['i']`
  *
  * ~**{text}**~ // bold & stroke-through - styles set to `['b','s']`
  */
