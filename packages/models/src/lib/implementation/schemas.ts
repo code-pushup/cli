@@ -101,7 +101,7 @@ export function packageVersionSchema(options?: {
   const versionSchema = z.string({ description: versionDescription });
   return z.object(
     {
-      package: optional ? packageSchema.optional() : packageSchema,
+      packageName: optional ? packageSchema.optional() : packageSchema,
       version: optional ? versionSchema.optional() : versionSchema,
     },
     { description: 'NPM package name and version of a published package' },
