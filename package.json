@@ -2,7 +2,10 @@
   "name": "@quality-metrics-cli/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky install",
+    "commit": "git-cz"
+  },
   "private": true,
   "workspaces": [
     "dist/packages/*"
@@ -17,21 +20,28 @@
     "zod": "^3.22.1"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/config-nx-scopes": "^17.6.4",
+    "@commitlint/cz-commitlint": "^17.7.1",
     "@nx/esbuild": "16.7.4",
     "@nx/eslint-plugin": "16.7.4",
     "@nx/js": "16.7.4",
     "@nx/plugin": "16.7.4",
     "@nx/vite": "16.7.4",
     "@nx/workspace": "16.7.4",
+    "@types/chalk": "^2.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "18.7.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vitest/coverage-c8": "~0.32.0",
     "@vitest/ui": "~0.32.0",
+    "commitizen": "^4.3.0",
     "esbuild": "^0.17.17",
     "eslint": "~8.46.0",
+    "husky": "^8.0.0",
+    "inquirer": "^8.2.6",
     "lighthouse": "^11.0.0",
     "nx": "16.7.4",
     "prettier": "^2.6.2",
@@ -40,5 +50,10 @@
     "verdaccio": "^5.0.4",
     "vite": "~4.3.9",
     "vitest": "~0.32.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
   }
 }
