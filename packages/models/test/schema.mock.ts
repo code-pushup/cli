@@ -63,20 +63,18 @@ export function mockPluginConfig(opt?: {
     },
     meta: {
       slug: pluginSlug,
-      name: 'execute plugin'
+      name: 'execute plugin',
     },
   };
 }
 
-export function mockAuditConfig(opt?: {
-  auditSlug?: string;
-}): AuditMetadata {
+export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
 
   return {
     slug: auditSlug,
-    title: auditSlug+' title',
+    title: auditSlug + ' title',
     description: 'audit description',
     docsUrl: 'http://www.my-docs.dev',
   };

@@ -19,11 +19,6 @@ export {
   Issue,
   PluginRunnerOutput,
   issueSchema,
-  pluginRunnerOutputSchema
+  pluginRunnerOutputSchema,
 } from './lib/plugin-config';
-export {
-  PluginReport,
-  AuditReport,
-  Report,
-  reportSchema,
-} from './lib/report';
+export { PluginReport, AuditReport, Report, reportSchema } from './lib/report';
