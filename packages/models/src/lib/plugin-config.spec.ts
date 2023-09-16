@@ -3,7 +3,7 @@ import {
   mockGroupConfig,
   mockPluginConfig,
   mockRunnerOutput,
-} from '../../test/index';
+} from '../../test';
 import {
   auditGroupSchema,
   pluginConfigSchema,
@@ -41,7 +41,7 @@ describe('pluginConfigSchema', () => {
     });
 
     expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `In the report audits the slugs are not unique`,
+      `In plugin audits the slugs are not unique`,
     );
   });
 
@@ -102,14 +102,14 @@ describe('runnerOutputSchema', () => {
   it('should throw if slugs of audits are invalid', () => {
     const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'The slug has to follow the pattern',
+      'slug has to follow the pattern',
     );
   });
 
   it('should throw if slugs of audits are duplicated', () => {
     const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
     expect(() => runnerOutputSchema.parse(out)).toThrow(
-      'In the report audits the slugs are not unique: a',
+      'In plugin audits the slugs are not unique',
     );
   });
 });

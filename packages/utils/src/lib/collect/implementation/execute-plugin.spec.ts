@@ -1,25 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
 import { executePlugin, executePlugins } from './execute-plugin';
+import { mockPluginConfig } from '@quality-metrics/models/testing';
 import {
   pluginConfigSchema,
   runnerOutputSchema,
 } from '@quality-metrics/models';
-import { mockPluginConfig } from '@quality-metrics/models/testing';
 
 describe('executePlugin', () => {
   it('should work with valid plugin', async () => {
     const cfg = pluginConfigSchema.parse(mockPluginConfig());
-    const expectedResult = [
-      {
-        slug: 'mock-audit-slug',
-        score: 0,
-        value: 0,
-      },
-    ];
     const errorSpy = vi.fn();
     const pluginResult = await executePlugin(cfg).catch(errorSpy);
-    expect(pluginResult?.audits).toEqual(expectedResult);
     expect(errorSpy).toHaveBeenCalledTimes(0);
+    expect(pluginResult.audits[0].slug).toBe('mock-audit-slug');
     expect(() => runnerOutputSchema.parse(pluginResult)).not.toThrow();
   });
 

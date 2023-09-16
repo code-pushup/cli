@@ -51,7 +51,7 @@ export function urlSchema(description: string) {
  * @param description
  */
 export function titleSchema(description: string) {
-  return z.string({ description }).max(256);
+  return z.string({ description }).max(128);
 }
 
 /**
@@ -101,7 +101,7 @@ export function packageVersionSchema(options?: {
   const versionSchema = z.string({ description: versionDescription });
   return z.object(
     {
-      packageName: optional ? packageSchema.optional() : packageSchema,
+      package: optional ? packageSchema.optional() : packageSchema,
       version: optional ? versionSchema.optional() : versionSchema,
     },
     { description: 'NPM package name and version of a published package' },
@@ -129,7 +129,7 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 ) {
   return z.object(
     {
-      slug: slugSchema('Group slug, (unique within group or category)'),
+      slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
       title: titleSchema('Display name'),
       description: descriptionSchema('Optional description in Markdown format'),
       refs: z
