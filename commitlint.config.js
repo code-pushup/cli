@@ -8,11 +8,12 @@ const configuration = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'scope-enum': async ctx => {
-      const scopes = await getProjects(
+      const projects = await getProjects(
         ctx,
         ({ name, projectType, tags }) =>
           projectType === 'library' || projectType === 'application',
       );
+      const scopes = [...projects, 'tools', 'workflows', 'testing'].sort();
       return [RuleConfigSeverity.Error, 'always', scopes];
     },
   },
