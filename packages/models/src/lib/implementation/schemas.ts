@@ -81,12 +81,31 @@ export function weightSchema(
 export function positiveIntSchema(description: string) {
   return z.number({ description }).int().nonnegative();
 }
+
 /**
  * Schema for a unixFilePath
  * @param description
  */
 export function unixFilePathSchema(description: string) {
   return z.string({ description }).regex(unixFilePathRegex);
+}
+
+export function packageVersionSchema(options?: {
+  versionDescription?: string;
+  optional?: boolean;
+}) {
+  let { versionDescription, optional } = options || {};
+  versionDescription = versionDescription || 'NPM version of the package';
+  optional = !!optional;
+  const packageSchema = z.string({ description: 'NPM package name' });
+  const versionSchema = z.string({ description: versionDescription });
+  return z.object(
+    {
+      package: optional ? packageSchema.optional() : packageSchema,
+      version: optional ? versionSchema.optional() : versionSchema,
+    },
+    { description: 'NPM package name and version of a published package' },
+  );
 }
 
 export function weightedRefSchema(
