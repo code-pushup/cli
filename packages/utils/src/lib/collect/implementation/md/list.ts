@@ -5,5 +5,5 @@ export type Order = 'unordered' | 'checkbox';
  */
 export function li(text: string, order: Order = 'unordered'): string {
   const style = order === 'unordered' ? '-' : '- [ ]';
-  return `${style}  ${text}`;
+  return `${style} ${text}`;
 }
