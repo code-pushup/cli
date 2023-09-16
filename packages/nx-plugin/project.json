@@ -36,6 +36,10 @@
         ]
       }
     },
+    "exec": {
+      "command": "nx g ./dist/packages/nx-plugin:init",
+      "dependsOn": ["build"]
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
