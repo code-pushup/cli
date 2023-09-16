@@ -1,3 +1,7 @@
+/**
+ * This file will get referenced under `main` in the `package.json` file
+ * and maintains exports of logic and types.
+ */
 import { yargsCli } from './lib/cli';
 import { yargsGlobalOptionsDefinition } from './lib/options';
 import { middlewares } from './lib/middlewares';
