@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe } from 'vitest';
-
 import { mockConsole, unmockConsole } from './mock/helper.mock';
 import { reportToStdout } from './report-to-stdout';
 import {
