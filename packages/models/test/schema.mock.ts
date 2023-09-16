@@ -7,7 +7,7 @@ import {
   PluginConfig,
   PluginReport,
   Report,
-  RunnerOutput,
+  PluginRunnerOutput,
   AuditReport,
   UploadConfig,
 } from '../src/index';
@@ -57,7 +57,7 @@ export function mockPluginConfig(opt?: {
             value: idx,
             score: parseFloat('0.' + idx),
           })),
-        } satisfies RunnerOutput)}' > ${outputPath}`,
+        } satisfies PluginRunnerOutput)}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
@@ -261,7 +261,7 @@ export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
 
 export function mockRunnerOutput(opt?: {
   auditSlug: string | string[];
-}): RunnerOutput {
+}): PluginRunnerOutput {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
   const audits = Array.isArray(auditSlug)

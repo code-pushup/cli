@@ -174,7 +174,7 @@ export type Issue = z.infer<typeof issueSchema>;
 /**
  * Define Zod schema for the Audit type.
  */
-export const auditResultSchema = z.object(
+export const auditOutputSchema = z.object(
   {
     slug: slugSchema('References audit metadata'),
     displayValue: z
@@ -200,15 +200,21 @@ export const auditResultSchema = z.object(
   { description: 'Audit information' },
 );
 
-export type AuditResult = z.infer<typeof auditResultSchema>;
+export type AuditOutput = z.infer<typeof auditOutputSchema>;
+
+export type PluginOutput = PluginRunnerOutput & {
+  slug: string;
+  date: string;
+  duration: number;
+};
 
 /**
  * Define Zod schema for the RunnerOutput type.
  */
-export const runnerOutputSchema = z.object(
+export const pluginRunnerOutputSchema = z.object(
   {
     audits: z
-      .array(auditResultSchema, { description: 'List of audits' })
+      .array(auditOutputSchema, { description: 'List of audits' })
       // audit slugs are unique
       .refine(
         audits => !getDuplicateSlugsInAudits(audits),
@@ -217,16 +223,16 @@ export const runnerOutputSchema = z.object(
   },
   { description: 'JSON formatted output emitted by the runner.' },
 );
-export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
+export type PluginRunnerOutput = z.infer<typeof pluginRunnerOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditResult[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: AuditResult[]) {
+function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 

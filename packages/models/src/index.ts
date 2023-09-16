@@ -12,18 +12,18 @@ export {
   AuditGroup,
   AuditMetadata,
   PluginConfig,
-  AuditReport,
+  PluginOutput,
   auditGroupSchema,
   auditMetadataSchema,
   pluginConfigSchema,
   Issue,
-  RunnerOutput,
-  PluginOutput,
+  PluginRunnerOutput,
   issueSchema,
-  runnerOutputSchema
+  pluginRunnerOutputSchema
 } from './lib/plugin-config';
 export {
   PluginReport,
+  AuditReport,
   Report,
   reportSchema,
 } from './lib/report';

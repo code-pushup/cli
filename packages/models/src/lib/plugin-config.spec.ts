@@ -7,7 +7,7 @@ import {
 import {
   auditGroupSchema,
   pluginConfigSchema,
-  runnerOutputSchema,
+  pluginRunnerOutputSchema,
 } from './plugin-config';
 
 describe('pluginConfigSchema', () => {
@@ -96,19 +96,19 @@ describe('pluginConfigSchema', () => {
 describe('runnerOutputSchema', () => {
   it('should pass if output audits are valid', () => {
     const out = mockRunnerOutput();
-    expect(() => runnerOutputSchema.parse(out)).not.toThrow();
+    expect(() => pluginRunnerOutputSchema.parse(out)).not.toThrow();
   });
 
   it('should throw if slugs of audits are invalid', () => {
     const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
-    expect(() => runnerOutputSchema.parse(out)).toThrow(
+    expect(() => pluginRunnerOutputSchema.parse(out)).toThrow(
       'slug has to follow the pattern',
     );
   });
 
   it('should throw if slugs of audits are duplicated', () => {
     const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
-    expect(() => runnerOutputSchema.parse(out)).toThrow(
+    expect(() => pluginRunnerOutputSchema.parse(out)).toThrow(
       'In plugin audits the slugs are not unique',
     );
   });

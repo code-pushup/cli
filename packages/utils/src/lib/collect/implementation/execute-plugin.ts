@@ -1,7 +1,7 @@
 import {
   PluginConfig,
   PluginOutput,
-  runnerOutputSchema,
+  pluginRunnerOutputSchema,
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -28,8 +28,8 @@ export class PluginOutputError extends Error {
  * @public
  * @param cfg - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
- * @returns {Promise<RunnerOutput>} - runner output
- * @throws {PluginOutputError} - if plugin output is invalid
+ * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
+ * @throws {PluginOutputError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -60,7 +60,7 @@ export async function executePlugin(
 
   try {
     // read process output from file system and parse it
-    const runnerOutput = runnerOutputSchema.parse(
+    const runnerOutput = pluginRunnerOutputSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
 
@@ -80,7 +80,7 @@ export async function executePlugin(
  * Execute multiple plugins and aggregates their output.
  * @public
  * @param plugins - array of {@link PluginConfig} objects
- * @returns {Promise<RunnerOutput>} - runner output
+ * @returns {Promise<AuditOutput[]>} - runner output
  *
  * @example
  * // plugin execution
