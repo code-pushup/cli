@@ -2,10 +2,10 @@ import { z } from 'zod';
 import {
   descriptionSchema,
   docsUrlSchema,
-  generalFilePathSchema,
+  generalFilePathSchema, positiveIntSchema,
   scorableSchema,
   slugSchema,
-  titleSchema,
+  titleSchema, unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
 import {
@@ -34,6 +34,25 @@ export const pluginMetadataSchema = z.object(
   },
 );
 
+const sourceFileLocationSchema = z.object(
+  {
+    file: unixFilePathSchema('Relative path to source file in Git repo'),
+    position: z
+      .object(
+        {
+          startLine: positiveIntSchema('Start line'),
+          startColumn: positiveIntSchema('Start column').optional(),
+          endLine: positiveIntSchema('End line').optional(),
+          endColumn: positiveIntSchema('End column').optional(),
+        },
+        { description: 'Location in file' },
+      )
+      .optional(),
+  },
+  { description: 'Source file location' },
+);
+
+
 // Define Zod schema for the RunnerConfig type
 const runnerConfigSchema = z.object(
   {
@@ -47,6 +66,74 @@ const runnerConfigSchema = z.object(
     description: 'How to execute runner',
   },
 );
+
+/**
+ * Define Zod schema for the Issue type.
+ */
+export const issueSchema = z.object(
+  {
+    message: z.string({ description: 'Descriptive error message' }).max(128),
+    severity: z.enum(['info', 'warning', 'error'], {
+      description: 'Severity level',
+    }),
+    // "Reference to source code"
+    source: sourceFileLocationSchema.optional(),
+  },
+  { description: 'Issue information' },
+);
+export type Issue = z.infer<typeof issueSchema>;
+/**
+ * Define Zod schema for the Audit type.
+ */
+export const auditResultSchema = z.object(
+  {
+    slug: slugSchema('References audit metadata'),
+    displayValue: z
+      .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
+      .optional(),
+    value: positiveIntSchema('Raw numeric value'),
+    score: z
+      .number({
+        description: 'Value between 0 and 1',
+      })
+      .min(0)
+      .max(1),
+    details: z
+      .object(
+        {
+          issues: z.array(issueSchema, { description: 'List of findings' }),
+        },
+        { description: 'Detailed information' },
+      )
+      .optional(),
+  },
+  { description: 'Audit information' },
+);
+
+
+
+/**
+ * Define Zod schema for the RunnerOutput type.
+ */
+export const runnerOutputSchema = z.object(
+  {
+    audits: z
+      .array(auditResultSchema, { description: 'List of audits' })
+      // audit slugs are unique
+      .refine(
+
+        audits => !getDuplicateSlugsInAudits(audits),
+        audits => ({
+          message: duplicateSlugsInAuditsErrorMsg(audits),
+        }),
+      ),
+  },
+  { description: 'JSON formatted output emitted by the runner.' },
+);
+
+export type RunnerOutput = z.infer<typeof runnerOutputSchema>;
+
+
 
 // Define Zod schema for the AuditMetadata type
 export const auditMetadataSchema = z.object(
@@ -65,6 +152,11 @@ export const auditMetadataSchema = z.object(
 );
 
 export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
+
+
+export const auditReportSchema = auditResultSchema.merge(auditMetadataSchema);
+export type AuditReport = z.infer<typeof auditReportSchema>;
+
 
 // Define Zod schema for the `Group` type
 export const auditGroupSchema = scorableSchema(
@@ -115,16 +207,23 @@ export const pluginConfigSchema = z
     }),
   );
 
+export type PluginOutput = RunnerOutput & {
+  slug: string;
+  date: string;
+  duration: number;
+};
+
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditMetadata[]) {
+type _Audit = {slug: string};
+function duplicateSlugsInAuditsErrorMsg(audits: _Audit[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In the report audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateSlugsInAudits(audits: AuditMetadata[]) {
+function getDuplicateSlugsInAudits(audits: _Audit[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 

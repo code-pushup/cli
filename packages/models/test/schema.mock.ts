@@ -52,6 +52,7 @@ export function mockPluginConfig(opt?: {
         `echo '${JSON.stringify({
           audits: audits.map(({ slug }, idx) => ({
             slug: `${slug}`,
+            label: '',
             value: idx,
             score: parseFloat('0.' + idx),
           })),
@@ -61,7 +62,7 @@ export function mockPluginConfig(opt?: {
     },
     meta: {
       slug: pluginSlug,
-      name: 'execute plugin',
+      name: 'execute plugin'
     },
   };
 }
@@ -74,7 +75,8 @@ export function mockAuditConfig(opt?: {
 
   return {
     slug: auditSlug,
-    title: 'audit title',
+    title: auditSlug+' title',
+    label: auditSlug+' label',
     description: 'audit description',
     docsUrl: 'http://www.my-docs.dev',
   };

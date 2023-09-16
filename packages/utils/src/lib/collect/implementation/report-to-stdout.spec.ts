@@ -39,7 +39,7 @@ describe('report-to-stdout', () => {
     expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
     // details section
     expect(logs.find(log => log.match(/Performance \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/- audit title \(\d\)/))).toBeTruthy();
+    expect(logs.find(log => log.match(/- 0a title \(\d\)/))).toBeTruthy();
     // footer
     expect(
       logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),

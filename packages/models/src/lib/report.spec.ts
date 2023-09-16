@@ -4,17 +4,17 @@ import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {
   it('should pass if output audits are valid', () => {
-    const plugin = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
-    const out = mockRunnerOutput({ auditSlug: 'test#a' });
-    expect(runnerOutputAuditRefsPresentInPluginConfigs(out, plugin)).toBe(
+    const pluginCfg = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
+    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#a' });
+    expect(runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg)).toBe(
       false,
     );
   });
 
   it('should throw if output audits are not in config', () => {
-    const plugin = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
-    const out = mockRunnerOutput({ auditSlug: 'test#b' });
-    expect(runnerOutputAuditRefsPresentInPluginConfigs(out, plugin)).toEqual([
+    const pluginCfg = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
+    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#b' });
+    expect(runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg)).toEqual([
       'test#b',
     ]);
   });
