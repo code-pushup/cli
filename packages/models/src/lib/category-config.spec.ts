@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { categoryConfigSchema } from './category-config';
-import { mockCategory } from './implementation/helpers.mock';
+import { mockCategory } from '../../test';
 
 describe('categoryConfigSchema', () => {
   it('should parse if configuration with audit refs is valid', () => {

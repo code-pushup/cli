@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mockPersistConfig } from './implementation/helpers.mock';
+import { mockPersistConfig } from '../../test';
 import { persistConfigSchema } from './persist-config';
 
 describe('persistConfigSchema', () => {

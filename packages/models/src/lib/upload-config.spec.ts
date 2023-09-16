@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mockUploadConfig } from './implementation/helpers.mock';
+import { mockUploadConfig } from '../../test';
 import { uploadConfigSchema } from './upload-config';
 
 describe('uploadConfigSchema', () => {

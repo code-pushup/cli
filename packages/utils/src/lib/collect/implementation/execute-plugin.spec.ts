@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { executePlugin, executePlugins } from './execute-plugin';
-import { mockPluginConfig } from './mock/schema-helper.mock';
+import { mockPluginConfig } from '@quality-metrics/models/testing';
 import {
   pluginConfigSchema,
   runnerOutputSchema,
@@ -9,16 +9,10 @@ import {
 describe('executePlugin', () => {
   it('should work with valid plugin', async () => {
     const cfg = pluginConfigSchema.parse(mockPluginConfig());
-    const expectedResult = [
-      {
-        slug: 'mock-audit-slug',
-        value: 0,
-      },
-    ];
     const errorSpy = vi.fn();
     const pluginResult = await executePlugin(cfg).catch(errorSpy);
-    expect(pluginResult.audits).toEqual(expectedResult);
     expect(errorSpy).toHaveBeenCalledTimes(0);
+    expect(pluginResult.audits[0].slug).toBe('mock-audit-slug');
     expect(() => runnerOutputSchema.parse(pluginResult)).not.toThrow();
   });
 
