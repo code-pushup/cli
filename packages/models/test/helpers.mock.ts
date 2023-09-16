@@ -1,13 +1,13 @@
-import { CategoryConfig } from '../category-config';
-import { CoreConfig } from '../core-config';
-import { PersistConfig } from '../persist-config';
+import { CategoryConfig } from '../src/lib/category-config';
+import { CoreConfig } from '../src/lib/core-config';
+import { PersistConfig } from '../src/lib/persist-config';
 import {
   AuditGroup,
   AuditMetadata,
   PluginConfig,
   RunnerOutput,
-} from '../plugin-config';
-import { UploadConfig } from '../upload-config';
+} from '../src/lib/plugin-config';
+import { UploadConfig } from '../src/lib/upload-config';
 
 export function mockConfig(opt?: {
   pluginSlug?: string | string[];
@@ -31,13 +31,14 @@ export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
+  outputPath?: string;
 }): PluginConfig {
   const { groupSlug } = opt || {};
-  let { pluginSlug, auditSlug } = opt || {};
+  let { pluginSlug, auditSlug, outputPath } = opt || {};
   pluginSlug = pluginSlug || 'mock-plugin-slug';
   auditSlug = auditSlug || 'mock-audit-slug';
   const addGroups = groupSlug !== undefined;
-  const outputPath = 'out-execute-plugin.json';
+  outputPath = outputPath || 'out-execute-plugin.json';
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -59,7 +60,7 @@ export function mockPluginConfig(opt?: {
         '-c',
         `echo '${JSON.stringify({
           audits: audits.map(({ slug }, idx) => ({
-            slug: `${pluginSlug}#${slug}`,
+            slug: `${slug}`,
             value: parseFloat('0.' + idx),
           })),
         } satisfies RunnerOutput)}' > ${outputPath}`,
@@ -81,7 +82,6 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
     slug: auditSlug,
     title: 'audit title',
     description: 'audit description',
-    label: 'mock audit label',
     docsUrl: 'http://www.my-docs.dev',
   };
 }

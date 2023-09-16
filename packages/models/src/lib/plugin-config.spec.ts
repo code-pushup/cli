@@ -3,7 +3,7 @@ import {
   mockGroupConfig,
   mockPluginConfig,
   mockRunnerOutput,
-} from './implementation/helpers.mock';
+} from '../../test';
 import {
   auditGroupSchema,
   pluginConfigSchema,

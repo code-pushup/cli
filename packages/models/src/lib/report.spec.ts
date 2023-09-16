@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  mockPluginConfig,
-  mockRunnerOutput,
-} from './implementation/helpers.mock';
+import { mockPluginConfig, mockRunnerOutput } from '../../test';
 import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {

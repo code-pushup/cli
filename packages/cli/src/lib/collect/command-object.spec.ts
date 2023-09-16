@@ -61,7 +61,6 @@ function mockPlugin(): PluginConfig {
         slug: 'command-object-audit-slug',
         title: 'audit title',
         description: 'audit description',
-        label: 'mock audit label',
         docsUrl: 'http://www.my-docs.dev',
       },
     ],

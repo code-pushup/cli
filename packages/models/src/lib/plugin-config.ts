@@ -3,6 +3,7 @@ import {
   descriptionSchema,
   docsUrlSchema,
   generalFilePathSchema,
+  packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
@@ -18,22 +19,26 @@ import {
 } from './implementation/utils';
 
 // Define Zod schema for the PluginMetadata type
-export const pluginMetadataSchema = z.object(
-  {
-    slug: slugSchema(),
-    name: z
-      .string({
-        description: 'Display name',
-      })
-      .max(128),
-    icon: z.union([z.unknown(), z.string()], {
-      description: 'Icon from VSCode Material Icons extension',
-    }),
-    docsUrl: docsUrlSchema('Plugin documentation site'),
-  },
-  {
-    description: 'Plugin metadata',
-  },
+export const pluginMetadataSchema = packageVersionSchema({
+  optional: true,
+}).merge(
+  z.object(
+    {
+      slug: slugSchema(),
+      name: z
+        .string({
+          description: 'Display name',
+        })
+        .max(128),
+      icon: z.union([z.unknown(), z.string()], {
+        description: 'Icon from VSCode Material Icons extension',
+      }),
+      docsUrl: docsUrlSchema('Plugin documentation site'),
+    },
+    {
+      description: 'Plugin metadata',
+    },
+  ),
 );
 
 // Define Zod schema for the RunnerConfig type
@@ -54,11 +59,6 @@ const runnerConfigSchema = z.object(
 export const auditMetadataSchema = z.object(
   {
     slug: slugSchema('ID (unique within plugin)'),
-    label: z
-      .string({
-        description: 'Abbreviated name',
-      })
-      .max(128),
     title: titleSchema('Descriptive name'),
     description: descriptionSchema('Description (Markdown)'),
     docsUrl: docsUrlSchema('Link to documentation (rationale)'),
@@ -138,27 +138,6 @@ export const pluginConfigSchema = z
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
-/**
- * Define Zod schema for the SourceFileLocation type.
- *
- * @example
- *
- * // Example data for the RunnerOutput type
- * const runnerOutputData = {
- *   audits: [
- *     // ... populate with example audit data ...
- *   ],
- * };
- *
- * // Validate the data against the schema
- * const validationResult = runnerOutputSchema.safeParse(runnerOutputData);
- *
- * if (validationResult.success) {
- *   console.log('Valid runner output:', validationResult.data);
- * } else {
- *   console.error('Invalid runner output:', validationResult.error);
- * }
- */
 const sourceFileLocationSchema = z.object(
   {
     file: unixFilePathSchema('Relative path to source file in Git repo'),
