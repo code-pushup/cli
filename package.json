@@ -14,7 +14,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
-    "@nx/devkit": "16.7.4",
+    "@nx/devkit": "16.8.1",
     "@swc/helpers": "~0.5.0",
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",
