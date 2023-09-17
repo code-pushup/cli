@@ -49,7 +49,7 @@ function moveToDevDependencies(tree: Tree) {
   });
 }
 
-export function createCodePushupConfig(tree: Tree) {
+function updateNxJsonConfig(tree: Tree) {
   const nxJson: NxJsonConfiguration = readNxJson(tree) as NxJsonConfiguration;
 
   const targetName = 'code-pushup';
@@ -71,14 +71,13 @@ export function createCodePushupConfig(tree: Tree) {
 export async function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
   if (!schema.skipPackageJson) {
     moveToDevDependencies(tree);
-    createCodePushupConfig(tree);
   }
+  updateNxJsonConfig(tree);
 
   const tasks = [];
-
-  tasks.push();
-
-  tasks.push(checkDependenciesInstalled(tree));
+  if (!schema.skipPackageJson) {
+    tasks.push(checkDependenciesInstalled(tree));
+  }
   return runTasksInSerial(...tasks);
 }
 

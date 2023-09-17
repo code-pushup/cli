@@ -1,9 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { readNxJson, Tree } from '@nx/devkit';
+import { readNxJson, readJson, Tree } from '@nx/devkit';
 
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
+type PackageJson = {
+  devDependencies: Record<string, string>;
+};
+
+const cpuTargetName = 'code-pushup';
+
+const devDependencyNames = [
+  '@quality-metrics/cli',
+  '@quality-metrics/models',
+  '@quality-metrics/nx-plugin',
+  '@quality-metrics/utils',
+];
 
 describe('init generator', () => {
   let tree: Tree;
@@ -14,20 +26,38 @@ describe('init generator', () => {
   });
 
   it('should run successfully', async () => {
-    expect(Object.keys(readNxJson(tree)?.targetDefaults || {})).not.toContain(
-      'code-pushup',
-    );
-    expect(
-      readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations || {},
-    ).not.toContain('code-pushup');
     await initGenerator(tree, options);
-    expect(Object.keys(readNxJson(tree)?.targetDefaults || {})).toContain(
-      'code-pushup',
-    );
-    expect(
+    // nx.json
+    const targetDefaults = readNxJson(tree)?.targetDefaults || {};
+    expect(Object.keys(targetDefaults)).toContain(cpuTargetName);
+    const cacheableOperations =
       readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations || {},
-    ).toContain('code-pushup');
+        ?.cacheableOperations || {};
+    expect(cacheableOperations).toContain(cpuTargetName);
+    // package.json
+    const pkgJson = readJson<PackageJson>(tree, 'package.json');
+    expect(
+      Object.keys(pkgJson.devDependencies).filter(dep =>
+        devDependencyNames.includes(dep),
+      ).length,
+    ).toBe(devDependencyNames.length);
+  });
+
+  it('should skip packageJson', async () => {
+    await initGenerator(tree, { ...options, skipPackageJson: true });
+    // nx.json
+    const targetDefaults = readNxJson(tree)?.targetDefaults || {};
+    expect(Object.keys(targetDefaults)).toContain(cpuTargetName);
+    const cacheableOperations =
+      readNxJson(tree)?.tasksRunnerOptions?.default?.options
+        ?.cacheableOperations || {};
+    expect(cacheableOperations).toContain(cpuTargetName);
+    // package.json
+    const pkgJson = readJson<PackageJson>(tree, 'package.json');
+    expect(
+      Object.keys(pkgJson.devDependencies).filter(dep =>
+        devDependencyNames.includes(dep),
+      ).length,
+    ).toBe(0);
   });
 });

@@ -1,15 +1,20 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-export const cpuNxPluginVersion = JSON.parse(
-  readFileSync(join(__dirname, '../../package.json')).toString(),
+const workspaceRoot = join(__dirname, '../../');
+const projectsFolder = join(__dirname, '../../../');
+
+export const cpuNxPluginVersion = loadPackageJson(workspaceRoot).version;
+export const cpuModelVersion = loadPackageJson(
+  join(projectsFolder, 'cli'),
 ).version;
-export const cpuModelVersion = JSON.parse(
-  readFileSync(join(__dirname, '../../../cli/package.json')).toString(),
+export const cpuUtilsVersion = loadPackageJson(
+  join(projectsFolder, 'utils'),
 ).version;
-export const cpuUtilsVersion = JSON.parse(
-  readFileSync(join(__dirname, '../../../utils/package.json')).toString(),
+export const cpuCliVersion = loadPackageJson(
+  join(projectsFolder, 'models'),
 ).version;
-export const cpuCliVersion = JSON.parse(
-  readFileSync(join(__dirname, '../../../models/package.json')).toString(),
-).version;
+
+function loadPackageJson(folderPath: string) {
+  return JSON.parse(readFileSync(join(folderPath, 'package.json')).toString());
+}
