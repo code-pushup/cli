@@ -3,10 +3,15 @@ import { CollectOptions } from '@quality-metrics/utils';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { yargsCli } from '../cli';
-import { getDirname } from '../implementation/utils';
+import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
+
+const command = {
+  ...yargsCollectCommandObject(),
+  handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
+};
 
 const outputPath = 'collect-command-object.json';
 const dummyConfig: CoreConfig = {
@@ -18,12 +23,10 @@ const dummyConfig: CoreConfig = {
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
-    const cli = yargsCli([], { options: yargsGlobalOptionsDefinition() })
+    const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })
       .config(dummyConfig)
-      .command(yargsCollectCommandObject());
-    const parsedArgv = (await cli.parseAsync(
-      args,
-    )) as unknown as CollectOptions;
+      .command(command);
+    const parsedArgv = (await cli.argv) as unknown as CollectOptions;
     const { persist } = parsedArgv;
     const { outputPath: outPath } = persist;
     expect(outPath).toBe(outputPath);
@@ -44,7 +47,7 @@ describe('collect-command-object', () => {
     ];
     await yargsCli([], { middlewares })
       .config(dummyConfig)
-      .command(yargsCollectCommandObject())
+      .command(command)
       .parseAsync(args);
     const report = JSON.parse(readFileSync(outputPath).toString()) as Report;
     expect(report.plugins[0]?.meta.slug).toBe('collect-command-object');

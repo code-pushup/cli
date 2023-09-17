@@ -1,4 +1,4 @@
-import { PluginConfig, RunnerOutput } from '@quality-metrics/models';
+import { PluginConfig, PluginRunnerOutput } from '@quality-metrics/models';
 import * as eslint from 'eslint';
 
 type ESLintPluginConfig = {
@@ -20,9 +20,10 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
             {
               slug: 'no-any',
               value: 0,
+              score: 0,
             },
           ],
-        } satisfies RunnerOutput)}' > out.json`,
+        } satisfies PluginRunnerOutput)}' > out.json`,
       ],
       outputPath: 'out.json',
     },
