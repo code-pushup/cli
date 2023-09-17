@@ -1,7 +1,6 @@
 import {
   addDependenciesToPackageJson,
   convertNxGenerator,
-  logger,
   readJson,
   readNxJson,
   runTasksInSerial,
@@ -9,25 +8,42 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
-import { initGenerator as viteInitGenerator } from '@nx/vite';
 
 import { InitGeneratorSchema } from './schema';
-import {NxJsonConfiguration} from "nx/src/config/nx-json";
+import { NxJsonConfiguration } from 'nx/src/config/nx-json';
+import {
+  cpuCliVersion,
+  cpuModelVersion,
+  cpuUtilsVersion,
+  cpuNxPluginVersion,
+} from '../../utils/versions';
 
-function checkDependenciesInstalled(host: Tree, schema: InitGeneratorSchema) {
+function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson(host, 'package.json');
-  const devDependencies = {};
+  const devDependencies: Record<string, string> = {};
   const dependencies = {};
   packageJson.dependencies = packageJson.dependencies || {};
   packageJson.devDependencies = packageJson.devDependencies || {};
+
+  // base deps
+  devDependencies['@quality-metrics/nx-plugin'] = cpuNxPluginVersion;
+  devDependencies['@quality-metrics/models'] = cpuModelVersion;
+  devDependencies['@quality-metrics/utils'] = cpuUtilsVersion;
+  devDependencies['@quality-metrics/cli'] = cpuCliVersion;
 
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }
 
 function moveToDevDependencies(tree: Tree) {
-  updateJson(tree, 'package.json', (packageJson) => {
+  updateJson(tree, 'package.json', packageJson => {
     packageJson.dependencies = packageJson.dependencies || {};
     packageJson.devDependencies = packageJson.devDependencies || {};
+
+    if (packageJson.dependencies['@quality-metrics/nx-plugin']) {
+      packageJson.devDependencies['@quality-metrics/nx-plugin'] =
+        packageJson.dependencies['@quality-metrics/nx-plugin'];
+      delete packageJson.dependencies['@quality-metrics/nx-plugin'];
+    }
 
     return packageJson;
   });
@@ -36,37 +52,33 @@ function moveToDevDependencies(tree: Tree) {
 export function createCodePushupConfig(tree: Tree) {
   const nxJson: NxJsonConfiguration = readNxJson(tree) as NxJsonConfiguration;
 
+  const targetName = 'code-pushup';
+
   nxJson.targetDefaults ??= {};
-  nxJson.namedInputs ??= {};
+  nxJson.targetDefaults[targetName] = {
+    inputs: ['default', '^production'],
+  };
 
-  const productionFileSet = nxJson.namedInputs.production;
-  if (productionFileSet) {
-    productionFileSet.push(
-      '!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)',
-      '!{projectRoot}/tsconfig.spec.json'
-    );
-
-    nxJson.namedInputs.production = Array.from(new Set(productionFileSet));
+  const cacheableOperations =
+    nxJson?.tasksRunnerOptions?.default?.options?.cacheableOperations;
+  if (cacheableOperations) {
+    cacheableOperations.push(targetName);
   }
 
   updateNxJson(tree, nxJson);
 }
 
 export async function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
-  logger.info('code pushup initGenerator');
-  moveToDevDependencies(tree);
-  createCodePushupConfig(tree);
+  if (!schema.skipPackageJson) {
+    moveToDevDependencies(tree);
+    createCodePushupConfig(tree);
+  }
+
   const tasks = [];
 
-  tasks.push(
-    await viteInitGenerator(tree, {
-      ...schema,
-      testEnvironment: 'node',
-      uiFramework: 'none'
-    })
-  );
+  tasks.push();
 
-  tasks.push(checkDependenciesInstalled(tree, schema));
+  tasks.push(checkDependenciesInstalled(tree));
   return runTasksInSerial(...tasks);
 }
 

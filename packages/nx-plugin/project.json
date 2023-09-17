@@ -36,7 +36,7 @@
         ]
       }
     },
-    "exec": {
+    "exec:init": {
       "command": "nx g ./dist/packages/nx-plugin:init",
       "dependsOn": ["build"]
     },
@@ -52,17 +52,11 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
-        "jestConfig": "packages/nx-plugin/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/models"
       }
     }
   },
