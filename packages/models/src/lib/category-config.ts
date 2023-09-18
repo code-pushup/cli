@@ -6,7 +6,7 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
-type RefsList = {
+type _RefsList = {
   type?: string;
   slug?: string;
   plugin?: string;
@@ -21,7 +21,7 @@ export const categoryConfigSchema = scorableSchema(
     z.object({
       type: z.enum(['audit', 'group'], {
         description:
-          'Discrimant for reference kind, affects where `slug` is looked up',
+          'Discriminant for reference kind, affects where `slug` is looked up',
       }),
       plugin: slugSchema(
         'Plugin slug (plugin should contain referenced audit or group)',
@@ -35,13 +35,13 @@ export const categoryConfigSchema = scorableSchema(
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
 // helper for validator: categories have unique refs to audits or groups
-export function duplicateRefsInCategoryMetricsErrorMsg(metrics: RefsList) {
+export function duplicateRefsInCategoryMetricsErrorMsg(metrics: _RefsList) {
   const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
   return `In the categories, the following audit or group refs are duplicates: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInCategoryMetrics(metrics: RefsList) {
+function getDuplicateRefsInCategoryMetrics(metrics: _RefsList) {
   return hasDuplicateStrings(
     metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
   );

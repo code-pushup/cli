@@ -2,20 +2,14 @@ import { z } from 'zod';
 import { hasMissingStrings } from './implementation/utils';
 import {
   PluginConfig,
-  RunnerOutput,
+  PluginRunnerOutput,
   auditMetadataSchema,
-  auditResultSchema,
+  auditOutputSchema,
   pluginMetadataSchema,
 } from './plugin-config';
 import { packageVersionSchema } from './implementation/schemas';
 
-export type PluginOutput = RunnerOutput & {
-  slug: string;
-  date: string;
-  duration: number;
-};
-
-export const auditReportSchema = auditMetadataSchema.merge(auditResultSchema);
+export const auditReportSchema = auditMetadataSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
 export const pluginReportSchema = z.object({
@@ -47,7 +41,7 @@ export type Report = z.infer<typeof reportSchema>;
  *
  */
 export function runnerOutputAuditRefsPresentInPluginConfigs(
-  out: RunnerOutput,
+  out: PluginRunnerOutput,
   cfg: PluginConfig,
 ): string[] | false {
   const outRefs = out.audits.map(({ slug }) => slug);

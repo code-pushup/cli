@@ -1,13 +1,17 @@
-import { collect, CollectOptions } from '@quality-metrics/utils';
+import { collect, CollectOptions, persistReport } from '@quality-metrics/utils';
 import { writeFile } from 'fs/promises';
 import { CommandModule } from 'yargs';
 
 export function yargsCollectCommandObject() {
-  const handler = async (args: CollectOptions): Promise<void> => {
-    const collectOutput = await collect(args);
+  const handler = async (
+    config: CollectOptions & { format: string },
+  ): Promise<void> => {
+    const report = await collect(config);
 
-    const { persist } = args;
-    await writeFile(persist.outputPath, JSON.stringify(collectOutput, null, 2));
+    const { persist } = config;
+    await persistReport(report, config);
+
+    await writeFile(persist.outputPath, JSON.stringify(report, null, 2));
   };
 
   return {

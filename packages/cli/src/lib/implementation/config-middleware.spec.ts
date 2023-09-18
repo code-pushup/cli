@@ -12,7 +12,6 @@ const configPath = (ext: string) =>
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
     const configPathMjs = configPath('mjs');
-    console.log('configPathMjs: ', configPathMjs);
     const config = await configMiddleware({ configPath: configPathMjs });
     expect(config.configPath).toContain('.mjs');
     expect(config.persist.outputPath).toContain('mjs-');

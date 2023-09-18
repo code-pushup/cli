@@ -5,6 +5,7 @@ import {
   Report,
 } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
+import { readPackageJson } from './implementation/utils';
 
 /**
  * Error thrown when collect output is invalid.
@@ -28,6 +29,7 @@ export type CollectOptions = GlobalCliArgs & CoreConfig;
  * @param options
  */
 export async function collect(options: CollectOptions): Promise<Report> {
+  const { version, name } = await readPackageJson();
   const { plugins } = options;
 
   if (!plugins?.length) {
@@ -38,13 +40,16 @@ export async function collect(options: CollectOptions): Promise<Report> {
   performance.mark('startExecutePlugins');
   const runnerOutputs = await executePlugins(plugins);
   performance.mark('stopExecutePlugins');
+  const { duration } = performance.measure(
+    'startExecutePlugins',
+    'stopExecutePlugins',
+  );
 
   return {
-    package: '@quality-metrics/cli', // TODO: read from package.json
-    version: '0.0.1', // TODO: read from package.json
+    packageName: name,
+    version,
     date,
-    duration: performance.measure('startExecutePlugins', 'stopExecutePlugins')
-      .duration,
+    duration,
     plugins: runnerOutputs.map((pluginOutput): PluginReport => {
       const pluginConfig = plugins.find(
         plugin => plugin.meta.slug === pluginOutput.slug,

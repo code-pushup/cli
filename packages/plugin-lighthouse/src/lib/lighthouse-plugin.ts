@@ -1,5 +1,5 @@
 import { defaultConfig } from 'lighthouse';
-import { PluginConfig, RunnerOutput } from '@quality-metrics/models';
+import { PluginConfig, PluginRunnerOutput } from '@quality-metrics/models';
 
 type LighthousePluginConfig = {
   config: string;
@@ -20,9 +20,10 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
             {
               slug: 'largest-contentful-paint',
               value: 0,
+              score: 0,
             },
           ],
-        } satisfies RunnerOutput)}' > out.json`,
+        } satisfies PluginRunnerOutput)}' > out.json`,
       ],
       outputPath: 'out.json',
     },
