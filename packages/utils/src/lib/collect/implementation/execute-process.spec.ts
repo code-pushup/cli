@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { executeProcess } from './execute-process';
+import { executeProcess, objectToCliArgs } from './execute-process';
 import {
   getAsyncProcessRunnerConfig,
   mockProcessConfig,
@@ -64,5 +64,49 @@ describe('executeProcess', () => {
     expect(observer?.complete).toHaveBeenCalledTimes(0);
     expect(observer?.next).toHaveBeenCalledTimes(2);
     expect(observer?.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('objectToCliArgs', () => {
+  it('should handle the "_" argument as script', () => {
+    const params = { _: 'bin.js' };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['bin.js']);
+  });
+
+  it('should handle string arguments', () => {
+    const params = { name: 'Juanita' };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['--name="Juanita"']);
+  });
+
+  it('should handle number arguments', () => {
+    const params = { parallel: 5 };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['--parallel=5']);
+  });
+
+  it('should handle boolean arguments', () => {
+    const params = { interactive: true };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['--interactive']);
+  });
+
+  it('should handle negated boolean arguments', () => {
+    const params = { interactive: false };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['--no-interactive']);
+  });
+
+  it('should handle array of string arguments', () => {
+    const params = { format: ['json', 'md'] };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['--format="json"', '--format="md"']);
+  });
+
+  it('should throw error for unsupported type', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const params = { unsupported: undefined as any };
+    expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
   });
 });
