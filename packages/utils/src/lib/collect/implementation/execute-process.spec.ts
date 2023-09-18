@@ -68,6 +68,12 @@ describe('executeProcess', () => {
 });
 
 describe('objectToCliArgs', () => {
+  it('should handle the "_" argument as script', () => {
+    const params = { _: 'bin.js' };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['bin.js']);
+  });
+
   it('should handle string arguments', () => {
     const params = { name: 'Juanita' };
     const result = objectToCliArgs(params);

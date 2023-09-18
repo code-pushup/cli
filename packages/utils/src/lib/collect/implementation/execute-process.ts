@@ -172,6 +172,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
  *
  * @example
  * const args = objectToProcessArgs({
+ *   _: 'index.js', // index.js
  *   name: 'Juanita', // --name=Juanita
  *   interactive: false, // --no-interactive
  *   parallel: 5, // --parallel=5
@@ -179,9 +180,13 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
  * });
  */
 export function objectToCliArgs(
-  params: Record<string, number | string | boolean | string[]>,
+  params: Record<string, number | string | boolean | string[]> | { _: string },
 ): string[] {
   return Object.entries(params).flatMap(([key, value]) => {
+    if (key === '_') {
+      return [value.toString()];
+    }
+
     if (Array.isArray(value)) {
       return value.map(v => `--${key}="${v}"`);
     }
