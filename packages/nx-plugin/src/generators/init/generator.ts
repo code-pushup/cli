@@ -7,7 +7,7 @@ import {
   Tree,
   updateJson,
   updateNxJson,
-  NxJsonConfiguration
+  NxJsonConfiguration,
 } from '@nx/devkit';
 
 import { InitGeneratorSchema } from './schema';
