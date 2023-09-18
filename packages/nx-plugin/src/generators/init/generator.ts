@@ -7,10 +7,11 @@ import {
   Tree,
   updateJson,
   updateNxJson,
+  NxJsonConfiguration
 } from '@nx/devkit';
 
 import { InitGeneratorSchema } from './schema';
-import { NxJsonConfiguration } from 'nx/src/config/nx-json';
+
 import {
   cpuCliVersion,
   cpuModelVersion,
