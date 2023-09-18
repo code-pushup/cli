@@ -4,8 +4,8 @@ export {
   ProcessResult,
   ProcessObserver,
   ProcessError,
+  objectToCliArgs,
 } from './lib/collect/implementation/execute-process';
-
 export {
   collect,
   CollectOptions,
