@@ -105,6 +105,7 @@ describe('objectToCliArgs', () => {
   });
 
   it('should throw error for unsupported type', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const params = { unsupported: undefined as any };
     expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
   });
