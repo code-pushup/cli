@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { hasMissingStrings } from './implementation/utils';
 import {
   PluginConfig,
-  PluginRunnerOutput,
+  AuditOutputs,
   auditMetadataSchema,
   auditOutputSchema,
   pluginMetadataSchema,
@@ -41,10 +41,10 @@ export type Report = z.infer<typeof reportSchema>;
  *
  */
 export function runnerOutputAuditRefsPresentInPluginConfigs(
-  out: PluginRunnerOutput,
+  audits: AuditOutputs,
   cfg: PluginConfig,
 ): string[] | false {
-  const outRefs = out.audits.map(({ slug }) => slug);
+  const outRefs = audits.map(({ slug }) => slug);
   const pluginRef = cfg.audits.map(({ slug }) => cfg.meta.slug + '#' + slug);
   return hasMissingStrings(outRefs, pluginRef);
 }

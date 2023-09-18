@@ -17,8 +17,8 @@ export {
   auditMetadataSchema,
   pluginConfigSchema,
   Issue,
-  PluginRunnerOutput,
+  AuditOutputs,
   issueSchema,
-  pluginRunnerOutputSchema,
+  auditOutputsSchema,
 } from './lib/plugin-config';
 export { PluginReport, AuditReport, Report, reportSchema } from './lib/report';

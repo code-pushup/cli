@@ -1,6 +1,18 @@
 import { z } from 'zod';
 import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
+
+/**
+ * Schema for execution meta date
+ * @param description
+ */
+export function executionMetaSchema(description: string) {
+  return z.object({
+    date: z.string(),
+    duration: z.number()
+  })
+}
+
 /**
  * Schema for a slug of a categories, plugins or audits.
  * @param description

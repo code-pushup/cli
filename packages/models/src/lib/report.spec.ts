@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mockPluginConfig, mockRunnerOutput } from '../../test';
+import { mockPluginConfig, mockAuditOutputs } from '../../test';
 import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {
@@ -8,7 +8,7 @@ describe('RunnerOutput', () => {
       pluginSlug: 'test',
       auditSlug: ['a'],
     });
-    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#a' });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#a' });
     expect(
       runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
     ).toBe(false);
@@ -19,7 +19,7 @@ describe('RunnerOutput', () => {
       pluginSlug: 'test',
       auditSlug: ['a'],
     });
-    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#b' });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#b' });
     expect(
       runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
     ).toEqual(['test#b']);

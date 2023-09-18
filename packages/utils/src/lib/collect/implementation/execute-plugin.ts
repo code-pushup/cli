@@ -1,7 +1,7 @@
 import {
   PluginConfig,
   PluginOutput,
-  pluginRunnerOutputSchema,
+  auditOutputsSchema,
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -60,7 +60,7 @@ export async function executePlugin(
 
   try {
     // read process output from file system and parse it
-    const runnerOutput = pluginRunnerOutputSchema.parse(
+    const auditOutputs = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
 
@@ -68,7 +68,7 @@ export async function executePlugin(
       slug: cfg.meta.slug,
       date: processResult.date,
       duration: processResult.duration,
-      ...runnerOutput,
+      audits: auditOutputs,
     };
   } catch (error) {
     const e = error as Error;

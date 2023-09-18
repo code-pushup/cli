@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   mockGroupConfig,
   mockPluginConfig,
-  mockRunnerOutput,
+  mockAuditOutputs,
 } from '../../test';
 import {
   auditGroupSchema,
   pluginConfigSchema,
-  pluginRunnerOutputSchema,
+  auditOutputsSchema,
 } from './plugin-config';
 
 describe('pluginConfigSchema', () => {
@@ -93,22 +93,22 @@ describe('pluginConfigSchema', () => {
  - each audit result should contain a valid slug of some audit provided during initialization
    - this is always checked within the context of the given plugin
   */
-describe('runnerOutputSchema', () => {
+describe('auditOutputSchema', () => {
   it('should pass if output audits are valid', () => {
-    const out = mockRunnerOutput();
-    expect(() => pluginRunnerOutputSchema.parse(out)).not.toThrow();
+    const out = mockAuditOutputs();
+    expect(() => auditOutputsSchema.parse(out)).not.toThrow();
   });
 
   it('should throw if slugs of audits are invalid', () => {
-    const out = mockRunnerOutput({ auditSlug: '-invalid-audit-slug' });
-    expect(() => pluginRunnerOutputSchema.parse(out)).toThrow(
+    const out = mockAuditOutputs({ auditSlug: '-invalid-audit-slug' });
+    expect(() => auditOutputsSchema.parse(out)).toThrow(
       'slug has to follow the pattern',
     );
   });
 
   it('should throw if slugs of audits are duplicated', () => {
-    const out = mockRunnerOutput({ auditSlug: ['a', 'a'] });
-    expect(() => pluginRunnerOutputSchema.parse(out)).toThrow(
+    const out = mockAuditOutputs({ auditSlug: ['a', 'a'] });
+    expect(() => auditOutputsSchema.parse(out)).toThrow(
       'In plugin audits the slugs are not unique',
     );
   });

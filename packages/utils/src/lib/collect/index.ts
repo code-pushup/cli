@@ -38,7 +38,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
 
   const date = new Date().toISOString();
   performance.mark('startExecutePlugins');
-  const runnerOutputs = await executePlugins(plugins);
+  const auditOutputs = await executePlugins(plugins);
   performance.mark('stopExecutePlugins');
   const { duration } = performance.measure(
     'startExecutePlugins',
@@ -50,7 +50,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
     version,
     date,
     duration,
-    plugins: runnerOutputs.map((pluginOutput): PluginReport => {
+    plugins: auditOutputs.map((pluginOutput): PluginReport => {
       const pluginConfig = plugins.find(
         plugin => plugin.meta.slug === pluginOutput.slug,
       );

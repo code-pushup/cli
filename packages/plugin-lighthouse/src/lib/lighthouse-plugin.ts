@@ -1,5 +1,5 @@
 import { defaultConfig } from 'lighthouse';
-import { PluginConfig, PluginRunnerOutput } from '@quality-metrics/models';
+import { PluginConfig, AuditOutputs } from '@quality-metrics/models';
 
 type LighthousePluginConfig = {
   config: string;
@@ -15,15 +15,13 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       command: 'bash',
       args: [
         '-c',
-        `echo '${JSON.stringify({
-          audits: [
+        `echo '${JSON.stringify([
             {
               slug: 'largest-contentful-paint',
               value: 0,
               score: 0,
             },
-          ],
-        } satisfies PluginRunnerOutput)}' > out.json`,
+          ] satisfies AuditOutputs)}' > out.json`,
       ],
       outputPath: 'out.json',
     },
