@@ -27,7 +27,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
     },
     meta: {
       slug: 'eslint',
-      name: 'execute plugin',
+      title: 'execute plugin',
     },
   };
 }

@@ -118,7 +118,7 @@ function reportToDetailSection(report: Report, config: CoreConfig): string {
               }
               return li(
                 details(
-                  `${pluginAudit?.title} (${weight}) ${plugin?.meta.name}`,
+                  `${pluginAudit?.title} (${weight}) ${plugin?.meta.title}`,
                   content,
                 ),
               );

@@ -1,4 +1,4 @@
-import { PluginConfig } from '@quality-metrics/models';
+import { PluginConfig } from '../../src/index';
 import { mockConfig, mockReport } from '../schema.mock';
 
 export const lighthousePlugin: () => Required<PluginConfig> = () => ({
@@ -9,7 +9,7 @@ export const lighthousePlugin: () => Required<PluginConfig> = () => ({
   },
   meta: {
     slug: 'lighthouse',
-    name: 'lighthouse',
+    title: 'lighthouse',
     docsUrl: `https://github.com/GoogleChrome/lighthouse/tree/main/README.md`,
   },
   groups: [],

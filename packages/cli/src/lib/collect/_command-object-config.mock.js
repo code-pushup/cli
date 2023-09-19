@@ -1,5 +1,5 @@
 module.exports = {
-  persist: {outputPath: 'command-object-config-out.json'},
+  persist: { outputPath: 'command-object-config-out.json' },
   plugins: [
     {
       audits: [
@@ -16,20 +16,19 @@ module.exports = {
         args: [
           '-c',
           `echo '${JSON.stringify([
-              {
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}' > command-object-config-out.json`,
+            {
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])}' > command-object-config-out.json`,
         ],
         outputPath: 'command-object-config-out.json',
       },
       groups: [],
       meta: {
         slug: 'command-object-plugin',
-        name: 'command-object plugin',
+        title: 'command-object plugin',
       },
     },
   ],

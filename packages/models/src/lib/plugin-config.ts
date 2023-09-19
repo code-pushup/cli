@@ -1,14 +1,12 @@
 import { z } from 'zod';
 import {
-  descriptionSchema,
-  docsUrlSchema,
   executionMetaSchema,
   generalFilePathSchema,
+  metaSchema,
   packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
-  titleSchema,
   unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
@@ -21,25 +19,23 @@ import {
 
 export const pluginMetadataSchema = packageVersionSchema({
   optional: true,
-}).merge(
-  z.object(
-    {
-      slug: slugSchema('References plugin. ID (unique within core config)'),
-      name: z
-        .string({
-          description: 'Display name',
-        })
-        .max(128),
+})
+  .merge(
+    metaSchema({
+      slugDescription: 'References plugin. ID (unique within core config)',
+      titleDescription: 'Descriptive name',
+      descriptionDescription: 'Description (markdown)',
+      docsUrlDescription: 'Plugin documentation site',
+      description: 'Plugin metadata',
+    }),
+  )
+  .merge(
+    z.object({
       icon: z.union([z.unknown(), z.string()], {
         description: 'Icon from VSCode Material Icons extension',
       }),
-      docsUrl: docsUrlSchema('Plugin documentation site'),
-    },
-    {
-      description: 'Plugin metadata',
-    },
-  ),
-);
+    }),
+  );
 
 const runnerConfigSchema = z.object(
   {
@@ -54,15 +50,13 @@ const runnerConfigSchema = z.object(
   },
 );
 
-export const auditMetadataSchema = z.object(
-  {
-    slug: slugSchema('ID (unique within plugin)'),
-    title: titleSchema('Descriptive name'),
-    description: descriptionSchema('Description (markdown)'),
-    docsUrl: docsUrlSchema('Link to documentation (rationale)'),
-  },
-  { description: 'List of scorable metrics for the given plugin' },
-);
+export const auditMetadataSchema = metaSchema({
+  slugDescription: 'ID (unique within plugin)',
+  titleDescription: 'Descriptive name',
+  descriptionDescription: 'Description (markdown)',
+  docsUrlDescription: 'Link to documentation (rationale)',
+  description: 'List of scorable metrics for the given plugin',
+});
 
 export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
 

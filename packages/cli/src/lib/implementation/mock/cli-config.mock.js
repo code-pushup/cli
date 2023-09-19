@@ -16,7 +16,7 @@ module.exports = {
       },
       meta: {
         slug: 'execute-plugin',
-        name: 'execute plugin',
+        title: 'execute plugin',
       },
     },
   ],

@@ -1,4 +1,4 @@
-import { PluginConfig } from '@quality-metrics/models';
+import { PluginConfig } from '../../src/index';
 import { mockCategory, mockConfig, mockReport } from '../schema.mock';
 
 export const nxValidatorsPlugin: () => Required<PluginConfig> = () => ({
@@ -9,7 +9,7 @@ export const nxValidatorsPlugin: () => Required<PluginConfig> = () => ({
   },
   meta: {
     slug: 'nx-validators',
-    name: 'NxValidatorsPlugin',
+    title: 'NxValidatorsPlugin',
     docsUrl: `https://github.com/BioPhoton/nx-validators/tree/main/README.md`,
   },
   groups: [

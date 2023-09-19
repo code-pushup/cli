@@ -3,7 +3,6 @@ import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
 /**
  * Schema for execution meta date
- * @param description
  */
 export function executionMetaSchema(
   options: {
@@ -45,7 +44,7 @@ export function slugSchema(
  * Schema for a general description property
  * @param description
  */
-export function descriptionSchema(description: string) {
+export function descriptionSchema(description = 'Description (markdown)') {
   return z.string({ description }).max(65536).optional();
 }
 
@@ -69,8 +68,33 @@ export function urlSchema(description: string) {
  * Schema for a title of a plugin, category and audit
  * @param description
  */
-export function titleSchema(description: string) {
-  return z.string({ description }).max(128);
+export function titleSchema(description = 'Descriptive name') {
+  return z.string({ description }).max(256);
+}
+
+export function metaSchema(options?: {
+  slugDescription?: string;
+  titleDescription?: string;
+  descriptionDescription?: string;
+  docsUrlDescription?: string;
+  description?: string;
+}) {
+  const {
+    slugDescription,
+    descriptionDescription,
+    titleDescription,
+    docsUrlDescription,
+    description,
+  } = options || {};
+  return z.object(
+    {
+      slug: slugSchema(slugDescription),
+      title: titleSchema(titleDescription),
+      description: descriptionSchema(descriptionDescription),
+      docsUrl: docsUrlSchema(docsUrlDescription),
+    },
+    { description },
+  );
 }
 
 /**

@@ -63,7 +63,7 @@ export function mockPluginConfig(opt?: {
     },
     meta: {
       slug: pluginSlug,
-      name: 'execute plugin',
+      title: 'execute plugin',
     },
   };
 }
@@ -204,7 +204,7 @@ export function mockPluginReport(opt?: {
     meta: {
       slug: pluginSlug,
       docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-      name: 'Mock plugin Name',
+      title: 'Mock plugin Name',
       icon: 'socket',
     },
     audits: Array.isArray(auditSlug)
