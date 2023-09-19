@@ -1,25 +1,21 @@
-import { CoreConfig, Report } from '@quality-metrics/models';
-import { CollectOptions } from '@quality-metrics/utils';
-import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { yargsCli } from '../cli';
+import { readFileSync } from 'node:fs';
+import { Report } from '@quality-metrics/models';
+import { dummyConfig, mockPluginConfig } from '@quality-metrics/models/testing';
+import { CollectOptions } from '@quality-metrics/utils';
 import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
+import { yargsCli } from '../cli';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
-import { mockPluginConfig } from '@quality-metrics/models/testing';
 
 const command = {
   ...yargsCollectCommandObject(),
   handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
 };
 
-const outputPath = 'collect-command-object.json';
-const dummyConfig: CoreConfig = {
-  persist: { outputPath },
-  plugins: [mockPluginConfig()],
-  categories: [],
-};
+const outputPath = 'out';
+const reportPath = (format = 'json') => join(outputPath, 'report.' + format);
 
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
@@ -50,7 +46,7 @@ describe('collect-command-object', () => {
       .config(dummyConfig)
       .command(command)
       .parseAsync(args);
-    const report = JSON.parse(readFileSync(outputPath).toString()) as Report;
+    const report = JSON.parse(readFileSync(reportPath()).toString()) as Report;
     expect(report.plugins[0]?.meta.slug).toBe('collect-command-object');
     expect(report.plugins[0]?.audits[0]?.slug).toBe(
       'command-object-audit-slug',

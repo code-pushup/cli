@@ -16,7 +16,7 @@ const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
-const __outputPath__ = 'out-execute-plugin.json';
+const __pluginOutputPath__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
@@ -30,7 +30,7 @@ export function mockPluginConfig(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const outputPath = __outputPath__;
+  const pluginOutputPath = __pluginOutputPath__;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -53,13 +53,12 @@ export function mockPluginConfig(opt?: {
         `echo '${JSON.stringify(
           audits.map(({ slug }, idx) => ({
             slug: `${slug}`,
-            label: '',
             value: idx,
             score: parseFloat('0.' + idx),
           })) satisfies AuditOutputs,
-        )}' > ${outputPath}`,
+        )}' > ${pluginOutputPath}`,
       ],
-      outputPath: outputPath,
+      outputPath: pluginOutputPath,
     },
     meta: {
       slug: pluginSlug,
@@ -82,7 +81,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputPath, format } = opt || {};
-  outputPath = outputPath || __outputPath__;
+  outputPath = outputPath || __pluginOutputPath__;
   format = format || [];
   return {
     outputPath,

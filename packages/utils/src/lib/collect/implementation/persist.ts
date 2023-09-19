@@ -47,15 +47,19 @@ export async function persistReport(report: Report, config: CoreConfig) {
     results.push({ format: 'md', out: reportToMd(report, config) });
   }
 
-  // write format outputs
+  // write format outputs to file system
   return Promise.allSettled(
     results.map(({ format, out }) => {
-      const filePath = join(`${outputPath}.${format}`);
-      return writeFile(filePath, out)
-        .then(() => filePath)
-        .catch(() => {
-          throw new PersistError(filePath);
-        });
+      const reportPath = join(`${outputPath}/report.${format}`);
+
+      return (
+        writeFile(reportPath, out)
+          // return reportPath instead of void
+          .then(() => reportPath)
+          .catch(() => {
+            throw new PersistError(reportPath);
+          })
+      );
     }),
   );
 }
