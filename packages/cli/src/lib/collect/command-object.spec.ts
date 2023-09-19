@@ -1,13 +1,13 @@
-import {join} from 'node:path';
-import {readFileSync} from 'node:fs';
-import {Report} from '@quality-metrics/models';
-import {dummyConfig} from '@quality-metrics/models/testing';
-import {CollectOptions} from '@quality-metrics/utils';
-import {getDirname, logErrorBeforeThrow} from '../implementation/utils';
-import {yargsCli} from '../cli';
-import {middlewares} from '../middlewares';
-import {yargsGlobalOptionsDefinition} from '../options';
-import {yargsCollectCommandObject} from './command-object';
+import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { Report } from '@quality-metrics/models';
+import { dummyConfig } from '@quality-metrics/models/testing';
+import { CollectOptions } from '@quality-metrics/utils';
+import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
+import { yargsCli } from '../cli';
+import { middlewares } from '../middlewares';
+import { yargsGlobalOptionsDefinition } from '../options';
+import { yargsCollectCommandObject } from './command-object';
 
 const command = {
   ...yargsCollectCommandObject(),
@@ -15,7 +15,8 @@ const command = {
 };
 
 const outputPath = 'out';
-const reportPath = (format = 'json') => join(outputPath, 'report.' + format);
+const reportPath = (format: 'json' | 'md' = 'json') =>
+  join(outputPath, 'report.' + format);
 
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
@@ -27,7 +28,6 @@ describe('collect-command-object', () => {
     const { persist } = parsedArgv;
     const { outputPath: outPath } = persist;
     expect(outPath).toBe(outputPath);
-    return Promise.resolve(void 0);
   });
 
   it('should execute middleware correctly', async () => {

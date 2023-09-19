@@ -4,17 +4,16 @@ import { join } from 'path';
 import { CoreConfig, Report } from '@quality-metrics/models';
 import { reportToStdout } from './report-to-stdout';
 import { reportToMd } from './report-to-md';
-import { NEW_LINE } from './md';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
-    super(`outPath: ${outputPath} is no directory`);
+    super(`outPath: ${outputPath} is no directory.`);
   }
 }
 
 export class PersistError extends Error {
-  constructor(fileName: string) {
-    super(`fileName: ${fileName} could not be saved`);
+  constructor(reportPath: string) {
+    super(`fileName: ${reportPath} could not be saved.`);
   }
 }
 
@@ -24,39 +23,40 @@ export async function persistReport(report: Report, config: CoreConfig) {
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
 
-  if (!existsSync(outputPath)) {
-    try {
-      mkdirSync(outputPath, { recursive: true });
-    } catch (e) {
-      console.warn(e);
-      throw new PersistDirError(outputPath + NEW_LINE + (e as Error).stack);
-    }
-  }
-
   if (format.includes('stdout')) {
     reportToStdout(report, config);
   }
 
   // collect physical format outputs
-  const results: { format: string; out: string }[] = [];
-
-  // JSON for at is always persisted
-  results.push({ format: 'json', out: JSON.stringify(report, null, 2) });
+  const results: { format: string; content: string }[] = [
+    // JSON is always persisted
+    { format: 'json', content: JSON.stringify(report, null, 2) },
+  ];
 
   if (format.includes('md')) {
-    results.push({ format: 'md', out: reportToMd(report, config) });
+    results.push({ format: 'md', content: reportToMd(report, config) });
+  }
+
+  if (!existsSync(outputPath)) {
+    try {
+      mkdirSync(outputPath, { recursive: true });
+    } catch (e) {
+      console.warn(e);
+      throw new PersistDirError(outputPath);
+    }
   }
 
   // write format outputs to file system
   return Promise.allSettled(
-    results.map(({ format, out }) => {
-      const reportPath = join(`${outputPath}/report.${format}`);
+    results.map(({ format, content }) => {
+      const reportPath = join(outputPath, `report.${format}`);
 
       return (
-        writeFile(reportPath, out)
+        writeFile(reportPath, content)
           // return reportPath instead of void
           .then(() => reportPath)
-          .catch(() => {
+          .catch(e => {
+            console.warn(e);
             throw new PersistError(reportPath);
           })
       );
