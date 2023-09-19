@@ -48,6 +48,6 @@ describe('collect-command-object', () => {
       .parseAsync(args);
     const report = JSON.parse(readFileSync(reportPath()).toString()) as Report;
     expect(report.plugins[0]?.meta.slug).toBe('plg-0');
-    expect(report.plugins[0]?.audits[0]?.slug).toBe('plg-0');
+    expect(report.plugins[0]?.audits[0]?.slug).toBe('0a');
   });
 });
