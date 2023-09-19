@@ -1,4 +1,4 @@
-import { CoreConfig, PluginConfig, Report } from '@quality-metrics/models';
+import { CoreConfig, Report } from '@quality-metrics/models';
 import { CollectOptions } from '@quality-metrics/utils';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -7,6 +7,7 @@ import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
+import { mockPluginConfig } from '@quality-metrics/models/testing';
 
 const command = {
   ...yargsCollectCommandObject(),
@@ -16,7 +17,7 @@ const command = {
 const outputPath = 'collect-command-object.json';
 const dummyConfig: CoreConfig = {
   persist: { outputPath },
-  plugins: [mockPlugin()],
+  plugins: [mockPluginConfig()],
   categories: [],
 };
 
@@ -56,37 +57,3 @@ describe('collect-command-object', () => {
     );
   });
 });
-
-function mockPlugin(): PluginConfig {
-  return {
-    audits: [
-      {
-        slug: 'command-object-audit-slug',
-        title: 'audit title',
-        description: 'audit description',
-        docsUrl: 'http://www.my-docs.dev',
-      },
-    ],
-    runner: {
-      command: 'bash',
-      args: [
-        '-c',
-        `echo '${JSON.stringify({
-          audits: [
-            {
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ],
-        })}' > ${outputPath}`,
-      ],
-      outputPath,
-    },
-    groups: [],
-    meta: {
-      slug: 'collect-command-object',
-      name: 'collect command object',
-    },
-  } satisfies PluginConfig;
-}
