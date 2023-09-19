@@ -50,12 +50,14 @@ export function mockPluginConfig(opt?: {
       command: 'bash',
       args: [
         '-c',
-        `echo '${JSON.stringify(audits.map(({ slug }, idx) => ({
-          slug: `${slug}`,
-          label: '',
-          value: idx,
-          score: parseFloat('0.' + idx),
-        })) satisfies AuditOutputs)}' > ${outputPath}`,
+        `echo '${JSON.stringify(
+          audits.map(({ slug }, idx) => ({
+            slug: `${slug}`,
+            label: '',
+            value: idx,
+            score: parseFloat('0.' + idx),
+          })) satisfies AuditOutputs,
+        )}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },

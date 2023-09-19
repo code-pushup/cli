@@ -16,12 +16,12 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       args: [
         '-c',
         `echo '${JSON.stringify([
-            {
-              slug: 'largest-contentful-paint',
-              value: 0,
-              score: 0,
-            },
-          ] satisfies AuditOutputs)}' > out.json`,
+          {
+            slug: 'largest-contentful-paint',
+            value: 0,
+            score: 0,
+          },
+        ] satisfies AuditOutputs)}' > out.json`,
       ],
       outputPath: 'out.json',
     },

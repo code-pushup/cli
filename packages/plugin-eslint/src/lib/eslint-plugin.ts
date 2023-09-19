@@ -16,12 +16,12 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
       args: [
         '-c',
         `echo '${JSON.stringify([
-            {
-              slug: 'no-any',
-              value: 0,
-              score: 0,
-            },
-          ] satisfies AuditOutputs)}' > out.json`,
+          {
+            slug: 'no-any',
+            value: 0,
+            score: 0,
+          },
+        ] satisfies AuditOutputs)}' > out.json`,
       ],
       outputPath: 'out.json',
     },

@@ -55,8 +55,12 @@ describe('executePlugins', () => {
     expect(pluginResult[0].duration).toMatch(/^\d+$/);
     expect(pluginResult[0].audits[0].slug).toEqual('mock-audit-slug');
     expect(pluginResult[1].audits[0].slug).toEqual('audit-2');
-    expect(() => auditOutputsSchema.parse(pluginResult[0].audits)).not.toThrow();
-    expect(() => auditOutputsSchema.parse(pluginResult[1].audits)).not.toThrow();
+    expect(() =>
+      auditOutputsSchema.parse(pluginResult[0].audits),
+    ).not.toThrow();
+    expect(() =>
+      auditOutputsSchema.parse(pluginResult[1].audits),
+    ).not.toThrow();
   });
 
   it('should throws with invalid plugins', async () => {

@@ -17,15 +17,13 @@ module.exports = {
         args: [
           '-c',
           `echo '${JSON.stringify(
-            runnerOutputSchema.parse({
-              audits: [
-                {
-                  slug: 'command-object-audit-slug',
-                  value: 0,
-                  score: 0,
-                },
-              ],
-            }),
+            runnerOutputSchema.parse([
+              {
+                slug: 'command-object-audit-slug',
+                value: 0,
+                score: 0,
+              },
+            ]),
           )}' > command-object-config-out.json`,
         ],
         outputPath: 'command-object-config-out.json',
