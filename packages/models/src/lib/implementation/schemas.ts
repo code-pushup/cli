@@ -1,16 +1,23 @@
 import { z } from 'zod';
 import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
 
-
 /**
  * Schema for execution meta date
  * @param description
  */
-export function executionMetaSchema(description: string) {
+export function executionMetaSchema(
+  options: {
+    descriptionDate: string;
+    descriptionDuration: string;
+  } = {
+    descriptionDate: 'Execution start date and time',
+    descriptionDuration: 'Execution duration',
+  },
+) {
   return z.object({
-    date: z.string(),
-    duration: z.number()
-  })
+    date: z.string({ description: options.descriptionDate }),
+    duration: z.number({ description: options.descriptionDuration }),
+  });
 }
 
 /**
