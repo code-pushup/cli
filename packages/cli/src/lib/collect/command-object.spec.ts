@@ -1,13 +1,13 @@
-import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
-import { Report } from '@quality-metrics/models';
-import { dummyConfig, mockPluginConfig } from '@quality-metrics/models/testing';
-import { CollectOptions } from '@quality-metrics/utils';
-import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
-import { yargsCli } from '../cli';
-import { middlewares } from '../middlewares';
-import { yargsGlobalOptionsDefinition } from '../options';
-import { yargsCollectCommandObject } from './command-object';
+import {join} from 'node:path';
+import {readFileSync} from 'node:fs';
+import {Report} from '@quality-metrics/models';
+import {dummyConfig} from '@quality-metrics/models/testing';
+import {CollectOptions} from '@quality-metrics/utils';
+import {getDirname, logErrorBeforeThrow} from '../implementation/utils';
+import {yargsCli} from '../cli';
+import {middlewares} from '../middlewares';
+import {yargsGlobalOptionsDefinition} from '../options';
+import {yargsCollectCommandObject} from './command-object';
 
 const command = {
   ...yargsCollectCommandObject(),
