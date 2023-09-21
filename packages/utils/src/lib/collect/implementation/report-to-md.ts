@@ -83,7 +83,7 @@ function reportToDetailSection(report: Report, config: CoreConfig): string {
       refs
         .map(
           ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
-            const plugin = plugins.find(({ meta }) => meta.slug === pluginSlug);
+            const plugin = plugins.find(({ slug }) => slug === pluginSlug);
 
             if (!plugin) {
               // this should never happen
@@ -100,7 +100,7 @@ function reportToDetailSection(report: Report, config: CoreConfig): string {
             if (pluginAudit !== undefined) {
               let content = ``;
               const reportAudit = report.plugins
-                .find(p => p.meta.slug === pluginSlug)
+                .find(p => p.slug === pluginSlug)
                 ?.audits.find(a => a.slug === pluginAudit.slug);
 
               if (!reportAudit) {
@@ -118,7 +118,7 @@ function reportToDetailSection(report: Report, config: CoreConfig): string {
               }
               return li(
                 details(
-                  `${pluginAudit?.title} (${weight}) ${plugin?.meta.title}`,
+                  `${pluginAudit?.title} (${weight}) ${plugin?.title}`,
                   content,
                 ),
               );

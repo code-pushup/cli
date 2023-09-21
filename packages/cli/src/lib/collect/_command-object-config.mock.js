@@ -26,10 +26,8 @@ module.exports = {
         outputPath: 'command-object-config-out.json',
       },
       groups: [],
-      meta: {
-        slug: 'command-object-plugin',
-        title: 'command-object plugin',
-      },
+      slug: 'command-object-plugin',
+      title: 'command-object plugin',
     },
   ],
   categories: [],

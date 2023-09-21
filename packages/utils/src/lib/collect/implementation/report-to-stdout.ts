@@ -91,7 +91,7 @@ function reportToDetailSection(report: Report, config: CoreConfig): void {
     refs.forEach(
       ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
         const audit = plugins
-          .find(({ meta }) => meta.slug === pluginSlug)
+          .find(({ slug }) => slug === pluginSlug)
           ?.audits.find(
             ({ slug: auditSlugInPluginAudits }) =>
               auditSlugInPluginAudits === auditSlugInCategoryRefs,

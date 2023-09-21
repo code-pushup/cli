@@ -52,7 +52,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
     duration,
     plugins: auditOutputs.map((pluginOutput): PluginReport => {
       const pluginConfig = plugins.find(
-        plugin => plugin.meta.slug === pluginOutput.slug,
+        plugin => plugin.slug === pluginOutput.slug,
       );
       // shouldn't happen, validation checks it
       if (!pluginConfig) {
@@ -63,7 +63,11 @@ export async function collect(options: CollectOptions): Promise<Report> {
       return {
         date: pluginOutput.date,
         duration: pluginOutput.duration,
-        meta: pluginConfig.meta,
+        slug: pluginOutput.slug,
+        icon: 'pluginConfig.icon',
+        description: pluginConfig.description,
+        title: pluginConfig.title,
+        docsUrl: pluginConfig.docsUrl,
         audits: pluginOutput.audits.map(audit => {
           const auditMetadata = pluginConfig.audits.find(
             ({ slug }) => slug === audit.slug,
@@ -77,7 +81,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
             ...audit,
           };
         }),
-      };
+      } satisfies PluginReport;
     }),
   };
 }

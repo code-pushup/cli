@@ -65,14 +65,14 @@ export async function executePlugin(
     );
 
     return {
-      slug: cfg.meta.slug,
+      slug: cfg.slug,
       date: processResult.date,
       duration: processResult.duration,
       audits: auditOutputs,
     };
   } catch (error) {
     const e = error as Error;
-    throw new PluginOutputError(cfg.meta.slug, e);
+    throw new PluginOutputError(cfg.slug, e);
   }
 }
 

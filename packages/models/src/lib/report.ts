@@ -6,10 +6,13 @@ import {
   auditSchema,
   auditOutputSchema,
   pluginMetadataSchema,
+  pluginConfigSchema,
 } from './plugin-config';
 import {
   executionMetaSchema,
+  metaSchema,
   packageVersionSchema,
+  slugSchema,
 } from './implementation/schemas';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
@@ -18,12 +21,15 @@ export type AuditReport = z.infer<typeof auditReportSchema>;
 export const pluginReportSchema = executionMetaSchema({
   descriptionDate: 'Start date and time of plugin run',
   descriptionDuration: 'Duration of the plugin run in ms',
-}).merge(
-  z.object({
-    meta: pluginMetadataSchema,
-    audits: z.array(auditReportSchema),
-  }),
-);
+})
+  .merge(metaSchema())
+  .merge(
+    z.object({
+      slug: slugSchema(),
+      icon: z.string().optional(),
+      audits: z.array(auditReportSchema),
+    }),
+  );
 export type PluginReport = z.infer<typeof pluginReportSchema>;
 
 export const reportSchema = packageVersionSchema({
@@ -51,6 +57,6 @@ export function auditOutputsRefsPresentInPluginConfigs(
   cfg: PluginConfig,
 ): string[] | false {
   const outRefs = audits.map(({ slug }) => slug);
-  const pluginRef = cfg.audits.map(({ slug }) => cfg.meta.slug + '#' + slug);
+  const pluginRef = cfg.audits.map(({ slug }) => cfg.slug + '#' + slug);
   return hasMissingStrings(outRefs, pluginRef);
 }

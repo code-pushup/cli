@@ -15,21 +15,21 @@ describe('cli', () => {
   it('should load .js config file', async () => {
     const argv = await cli(['--configPath', configFile('js'), '--verbose'])
       .argv;
-    expect(argv.plugins[0].meta.slug).toEqual('eslint');
-    expect(argv.plugins[1].meta.slug).toEqual('lighthouse');
+    expect(argv.plugins[0].slug).toEqual('eslint');
+    expect(argv.plugins[1].slug).toEqual('lighthouse');
   });
 
   it('should load .mjs config file', async () => {
     const argv = await cli(['--configPath', configFile('mjs'), '--verbose'])
       .argv;
-    expect(argv.plugins[0].meta.slug).toEqual('eslint');
-    expect(argv.plugins[1].meta.slug).toEqual('lighthouse');
+    expect(argv.plugins[0].slug).toEqual('eslint');
+    expect(argv.plugins[1].slug).toEqual('lighthouse');
   });
 
   it('should load .ts config file', async () => {
     const argv = await cli(['--configPath', configFile('ts'), '--verbose'])
       .argv;
-    expect(argv.plugins[0].meta.slug).toEqual('eslint');
-    expect(argv.plugins[1].meta.slug).toEqual('lighthouse');
+    expect(argv.plugins[0].slug).toEqual('eslint');
+    expect(argv.plugins[1].slug).toEqual('lighthouse');
   });
 });

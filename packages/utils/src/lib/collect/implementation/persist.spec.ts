@@ -70,7 +70,7 @@ describe('persistReport', () => {
       persist: mockPersistConfig({ outputPath, format: ['json'] }),
     });
     const jsonReport: Report = readReport();
-    expect(jsonReport.plugins?.[0]?.meta.slug).toBe('plg-0');
+    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
     expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
     //
     expect(console.log).toHaveBeenCalledTimes(0);
@@ -102,7 +102,7 @@ describe('persistReport', () => {
 
     //
     const jsonReport: Report = readReport();
-    expect(jsonReport.plugins?.[0]?.meta.slug).toBe('plg-0');
+    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
     expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
     //
     const mdReport = readFileSync(reportPath('md')).toString();

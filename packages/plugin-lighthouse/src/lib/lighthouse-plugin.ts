@@ -25,9 +25,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       ],
       outputPath: 'out.json',
     },
-    meta: {
-      slug: 'lighthouse',
-      title: 'ChromeDevTools Lighthouse',
-    },
+    slug: 'lighthouse',
+    title: 'ChromeDevTools Lighthouse',
   };
 }

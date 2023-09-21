@@ -25,9 +25,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
       ],
       outputPath: 'out.json',
     },
-    meta: {
-      slug: 'eslint',
-      title: 'execute plugin',
-    },
+    slug: 'eslint',
+    title: 'execute plugin',
   };
 }

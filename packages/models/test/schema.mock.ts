@@ -201,12 +201,10 @@ export function mockPluginReport(opt?: {
   return {
     date: new Date().toDateString(),
     duration: randDuration(),
-    meta: {
-      slug: pluginSlug,
-      docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-      title: 'Mock plugin Name',
-      icon: 'socket',
-    },
+    slug: pluginSlug,
+    docsUrl: `http://plugin.io/docs/${pluginSlug}`,
+    title: 'Mock plugin Name',
+    icon: 'socket',
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
