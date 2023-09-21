@@ -5,8 +5,6 @@ import {
   AuditOutputs,
   auditSchema,
   auditOutputSchema,
-  pluginMetadataSchema,
-  pluginConfigSchema,
 } from './plugin-config';
 import {
   executionMetaSchema,
