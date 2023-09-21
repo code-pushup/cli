@@ -18,6 +18,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         `echo '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
+            title: 'Largest Contentful Paint',
             value: 0,
             score: 0,
           },

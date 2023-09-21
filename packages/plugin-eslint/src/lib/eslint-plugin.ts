@@ -18,6 +18,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
         `echo '${JSON.stringify([
           {
             slug: 'no-any',
+            title: 'No any type',
             value: 0,
             score: 0,
           },

@@ -53,6 +53,7 @@ export function mockPluginConfig(opt?: {
         `echo '${JSON.stringify(
           audits.map(({ slug }, idx) => ({
             slug: `${slug}`,
+            title: 'Title of ' + slug,
             value: idx,
             score: parseFloat('0.' + idx),
           })) satisfies AuditOutputs,
@@ -263,6 +264,7 @@ export function mockAuditOutputs(opt?: {
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map((slug, idx) => ({
         slug,
+        title: 'Title of ' + slug,
         value: idx,
         displayValue: '',
         score: 0,
@@ -270,6 +272,7 @@ export function mockAuditOutputs(opt?: {
     : [
         {
           slug: auditSlug,
+          title: 'Title of ' + auditSlug,
           value: 12,
           displayValue: '',
           score: 0,

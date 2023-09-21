@@ -11,6 +11,7 @@ export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export {
   AuditGroup,
   Audit,
+  AuditOutput,
   PluginConfig,
   PluginOutput,
   auditGroupSchema,

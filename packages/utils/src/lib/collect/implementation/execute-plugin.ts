@@ -69,7 +69,7 @@ export async function executePlugin(
       date: processResult.date,
       duration: processResult.duration,
       audits: auditOutputs,
-    };
+    } satisfies PluginOutput;
   } catch (error) {
     const e = error as Error;
     throw new PluginOutputError(cfg.slug, e);
