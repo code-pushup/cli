@@ -86,7 +86,6 @@ export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
 export const pluginConfigSchema = z
   .object({
-    meta: pluginMetadataSchema,
     runner: runnerConfigSchema,
     audits: z
       .array(auditSchema, {
@@ -111,6 +110,7 @@ export const pluginConfigSchema = z
         }),
       ),
   })
+  .merge(pluginMetadataSchema)
   // every listed group ref points to an audit within the plugin
   .refine(
     pluginCfg => !getMissingRefsFromGroups(pluginCfg),

@@ -60,10 +60,10 @@ export function mockPluginConfig(opt?: {
       ],
       outputPath: pluginOutputPath,
     },
-    meta: {
-      slug: pluginSlug,
-      title: 'execute plugin',
-    },
+    slug: pluginSlug,
+    title: 'execute plugin',
+    description: 'Plugin description for ' + pluginSlug,
+    docsUrl: 'https://my-plugin.docs.dev?' + pluginSlug,
   };
 }
 
