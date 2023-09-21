@@ -5,7 +5,7 @@ import {
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { ProcessConfig, executeProcess } from './execute-process';
+import {executeProcess, ProcessObserver} from './execute-process';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -46,33 +46,36 @@ export class PluginOutputError extends Error {
  */
 export async function executePlugin(
   cfg: PluginConfig,
-  observer?: ProcessConfig['observer'],
+  observer?: ProcessObserver,
 ): Promise<PluginOutput> {
-  const command = cfg.runner.command.toString() || '';
-  const args = cfg.runner.args || [];
-  const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
+  const {slug, title, description, docsUrl, runner} = cfg;
+  const {args, command } = runner;
 
-  const processResult = await executeProcess({
+  const {duration, date} = await executeProcess({
     command,
     args,
     observer,
   });
 
   try {
+    const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
     // read process output from file system and parse it
-    const auditOutputs = auditOutputsSchema.parse(
+    const audits = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
 
     return {
-      slug: cfg.slug,
-      date: processResult.date,
-      duration: processResult.duration,
-      audits: auditOutputs,
+      slug,
+      title,
+      description,
+      docsUrl,
+      date,
+      duration,
+      audits,
     } satisfies PluginOutput;
   } catch (error) {
     const e = error as Error;
-    throw new PluginOutputError(cfg.slug, e);
+    throw new PluginOutputError(slug, e);
   }
 }
 
@@ -95,9 +98,7 @@ export async function executePlugin(
  * }
  *
  */
-export async function executePlugins(
-  plugins: PluginConfig[],
-): Promise<PluginOutput[]> {
+export async function executePlugins(plugins: PluginConfig[]): Promise<PluginOutput[]> {
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const pluginOutput = await executePlugin(pluginCfg);

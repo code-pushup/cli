@@ -237,16 +237,13 @@ export const auditOutputsSchema = z
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
-export const pluginOutputSchema = executionMetaSchema().merge(
+export const pluginOutputSchema = executionMetaSchema()
+  .merge(metaSchema()) // @TODO create reusable meta info for audit, plugin, category
+  .merge(
   z.object(
     {
       slug: slugSchema('Plugin slug'),
       audits: auditOutputsSchema
-        // audit slugs are unique
-        .refine(
-          audits => !getDuplicateSlugsInAudits(audits),
-          audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
-        ),
     },
     {
       description:

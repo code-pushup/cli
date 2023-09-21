@@ -46,7 +46,7 @@ export async function persistReport(report: Report, config: CoreConfig) {
     }
   }
 
-  // write format outputs to file system
+  // write relevant format outputs to file system
   return Promise.allSettled(
     results.map(({ format, content }) => {
       const reportPath = join(outputPath, `report.${format}`);
