@@ -73,14 +73,12 @@ export function titleSchema(description = 'Descriptive name') {
 }
 
 export function metaSchema(options?: {
-  slugDescription?: string;
   titleDescription?: string;
   descriptionDescription?: string;
   docsUrlDescription?: string;
   description?: string;
 }) {
   const {
-    slugDescription,
     descriptionDescription,
     titleDescription,
     docsUrlDescription,
@@ -88,7 +86,6 @@ export function metaSchema(options?: {
   } = options || {};
   return z.object(
     {
-      slug: slugSchema(slugDescription),
       title: titleSchema(titleDescription),
       description: descriptionSchema(descriptionDescription),
       docsUrl: docsUrlSchema(docsUrlDescription),
@@ -173,8 +170,6 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   return z.object(
     {
       slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
-      title: titleSchema('Display name'),
-      description: descriptionSchema('Optional description in Markdown format'),
       refs: z
         .array(refSchema)
         // refs are unique

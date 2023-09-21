@@ -1,6 +1,6 @@
 import {
   AuditGroup,
-  AuditMetadata,
+  Audit,
   CategoryConfig,
   CoreConfig,
   PersistConfig,
@@ -67,7 +67,7 @@ export function mockPluginConfig(opt?: {
   };
 }
 
-export function mockAuditConfig(opt?: { auditSlug?: string }): AuditMetadata {
+export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
 
@@ -100,6 +100,7 @@ export function mockGroupConfig(opt?: {
     slug: groupSlug,
     title: 'group title',
     description: 'group description',
+    docsUrl: 'https://my-group.docs.dev?' + groupSlug,
     refs: Array.isArray(auditSlug)
       ? auditSlug.map(slug => ({
           slug,

@@ -3,7 +3,7 @@ import { hasMissingStrings } from './implementation/utils';
 import {
   PluginConfig,
   AuditOutputs,
-  auditMetadataSchema,
+  auditSchema,
   auditOutputSchema,
   pluginMetadataSchema,
 } from './plugin-config';
@@ -12,7 +12,7 @@ import {
   packageVersionSchema,
 } from './implementation/schemas';
 
-export const auditReportSchema = auditMetadataSchema.merge(auditOutputSchema);
+export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
 export const pluginReportSchema = executionMetaSchema({

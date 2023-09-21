@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  metaSchema,
   scorableSchema,
   slugSchema,
   weightedRefSchema,
@@ -30,6 +31,13 @@ export const categoryConfigSchema = scorableSchema(
   ),
   getDuplicateRefsInCategoryMetrics,
   duplicateRefsInCategoryMetricsErrorMsg,
+).merge(
+  metaSchema({
+    titleDescription: 'Category Title',
+    docsUrlDescription: 'Category docs RUL',
+    descriptionDescription: 'Category description',
+    description: 'Meta info for category',
+  }),
 );
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;

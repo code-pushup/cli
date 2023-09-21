@@ -22,7 +22,6 @@ export const pluginMetadataSchema = packageVersionSchema({
 })
   .merge(
     metaSchema({
-      slugDescription: 'References plugin. ID (unique within core config)',
       titleDescription: 'Descriptive name',
       descriptionDescription: 'Description (markdown)',
       docsUrlDescription: 'Plugin documentation site',
@@ -31,6 +30,7 @@ export const pluginMetadataSchema = packageVersionSchema({
   )
   .merge(
     z.object({
+      slug: slugSchema('References plugin. ID (unique within core config)'),
       icon: z.union([z.unknown(), z.string()], {
         description: 'Icon from VSCode Material Icons extension',
       }),
@@ -50,15 +50,20 @@ const runnerConfigSchema = z.object(
   },
 );
 
-export const auditMetadataSchema = metaSchema({
-  slugDescription: 'ID (unique within plugin)',
-  titleDescription: 'Descriptive name',
-  descriptionDescription: 'Description (markdown)',
-  docsUrlDescription: 'Link to documentation (rationale)',
-  description: 'List of scorable metrics for the given plugin',
-});
+export const auditSchema = z
+  .object({
+    slug: slugSchema('ID (unique within plugin)'),
+  })
+  .merge(
+    metaSchema({
+      titleDescription: 'Descriptive name',
+      descriptionDescription: 'Description (markdown)',
+      docsUrlDescription: 'Link to documentation (rationale)',
+      description: 'List of scorable metrics for the given plugin',
+    }),
+  );
 
-export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
+export type Audit = z.infer<typeof auditSchema>;
 
 export const auditGroupSchema = scorableSchema(
   'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
@@ -69,6 +74,13 @@ export const auditGroupSchema = scorableSchema(
   ),
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
+).merge(
+  metaSchema({
+    titleDescription: 'Descriptive name for the group',
+    descriptionDescription: 'Description of the group (markdown)',
+    docsUrlDescription: 'Group documentation site',
+    description: 'Group metadata',
+  }),
 );
 export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
@@ -77,7 +89,7 @@ export const pluginConfigSchema = z
     meta: pluginMetadataSchema,
     runner: runnerConfigSchema,
     audits: z
-      .array(auditMetadataSchema, {
+      .array(auditSchema, {
         description: 'List of audits maintained in a plugin',
       })
       // audit slugs are unique
@@ -122,7 +134,7 @@ function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
 }
 
 type _PluginCfg = {
-  audits?: AuditMetadata[];
+  audits?: Audit[];
   groups?: AuditGroup[];
 };
 
