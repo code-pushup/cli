@@ -15,4 +15,5 @@ export {
   persistReport,
   PersistDirError,
   PersistError,
+  logPersistedResults
 } from './lib/collect/implementation/persist';
