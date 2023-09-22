@@ -4,7 +4,6 @@
   "dependencies": {
     "@quality-metrics/models": "^0.0.1",
     "chalk": "^5.3.0",
-    "cliui": "^8.0.1",
-    "type-fest": "^4.3.1"
+    "cliui": "^8.0.1"
   }
 }
