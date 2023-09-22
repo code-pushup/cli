@@ -11,6 +11,7 @@ import {
   executionMetaSchema,
   packageVersionSchema,
 } from './implementation/schemas';
+import { categoryConfigSchema } from './category-config';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
@@ -41,6 +42,7 @@ export const reportSchema = packageVersionSchema({
   .merge(
     z.object(
       {
+        categories: z.array(categoryConfigSchema),
         plugins: z.array(pluginReportSchema),
       },
       { description: 'Collect output data' },

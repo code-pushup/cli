@@ -53,12 +53,7 @@ export function mockPluginConfig(opt?: {
       args: [
         '-c',
         `echo '${JSON.stringify(
-          audits.map(({ slug }, idx) => ({
-            slug: `${slug}`,
-            title: 'Title of ' + slug,
-            value: idx,
-            score: parseFloat('0.' + idx),
-          })) satisfies AuditOutputs,
+          audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
         )}' > ${pluginOutputPath}`,
       ],
       outputPath: pluginOutputPath,
@@ -191,6 +186,7 @@ export function mockReport(opt?: {
     version: '0.0.0',
     date: new Date().toDateString(),
     duration: randDuration(),
+    categories: [mockCategory({ pluginSlug, auditSlug })],
     plugins: [mockPluginReport({ auditSlug, pluginSlug })],
   };
 }
@@ -206,10 +202,12 @@ export function mockPluginReport(opt?: {
     date: new Date().toDateString(),
     duration: randDuration(),
     slug: pluginSlug,
-    title: 'Mock plugin Name',
+    title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
     icon: 'socket',
+    version: '0.0.1',
+    packageName: '@' + pluginSlug,
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],

@@ -7,8 +7,6 @@ import {
   PluginReport,
   Report,
   AuditReport,
-  PluginOutput,
-  AuditOutput,
 } from '@quality-metrics/models';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -49,26 +47,19 @@ export function mockPluginConfig(opt?: {
       command: 'bash',
       args: [
         '-c',
-        `echo '${JSON.stringify({
-          slug: `${pluginSlug}`,
-          duration: 4,
-          date: new Date().toString(),
-          // title: 'Title of ' + pluginSlug,
-          audits: audits.map(
-            ({ slug }, idx) =>
-              ({
-                slug: `${slug}`,
-                title: 'Title of ' + slug,
-                value: idx,
-                score: parseFloat('0.' + idx),
-              } satisfies AuditOutput),
+        `echo '${JSON.stringify(
+          audits.map(
+            ({ slug }) =>
+              mockAuditReport({ auditSlug: slug }) satisfies AuditReport,
           ),
-        } satisfies PluginOutput)}' > ${outputPath}`,
+        )}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
     slug: pluginSlug,
-    title: 'execute plugin',
+    title: 'execute plugin ' + pluginSlug,
+    docsUrl: 'https://plugin.dev?' + pluginSlug,
+    description: 'my plugin description of ' + pluginSlug,
   };
 }
 
@@ -167,6 +158,9 @@ export function mockReport(opt?: {
     version: '0.0.0',
     date: new Date().toDateString(),
     duration: randDuration(),
+    categories: [
+      mockCategory({ pluginSlug, auditSlug, categorySlug: 'test-category' }),
+    ],
     plugins: [mockPluginReport({ auditSlug, pluginSlug })],
   };
 }

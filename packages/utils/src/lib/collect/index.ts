@@ -30,7 +30,7 @@ export type CollectOptions = GlobalCliArgs & CoreConfig;
  */
 export async function collect(options: CollectOptions): Promise<Report> {
   const { version, name } = await readPackageJson();
-  const { plugins } = options;
+  const { plugins, categories } = options;
 
   if (!plugins?.length) {
     throw new Error('No plugins registered');
@@ -55,6 +55,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
     version,
     date,
     duration: Date.now() - start,
+    categories,
     plugins: pluginOutputs,
   };
 }
