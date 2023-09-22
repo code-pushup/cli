@@ -1,6 +1,6 @@
 import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
-import { readPackageJson } from './implementation/utils';
+import { calcDuration, readPackageJson } from './implementation/utils';
 
 /**
  * Error thrown when collect output is invalid.
@@ -32,14 +32,14 @@ export async function collect(options: CollectOptions): Promise<Report> {
   }
 
   const date = new Date().toISOString();
-  const start = Date.now();
+  const start = performance.now();
   const pluginOutputs = await executePlugins(plugins);
 
   return {
     packageName: name,
     version,
     date,
-    duration: Date.now() - start,
+    duration: calcDuration(start),
     categories,
     plugins: pluginOutputs,
   };

@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import { calcDuration } from './utils';
 
 /**
  * Represents the process result.
@@ -153,8 +154,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     });
 
     process.on('close', code => {
-      const stop = performance.now();
-      const timings = { date, duration: Math.floor(stop - start) };
+      const timings = { date, duration: calcDuration(start) };
       if (code === 0) {
         complete?.();
         resolve({ code, stdout, stderr, ...timings });
