@@ -1,30 +1,29 @@
 import { z } from 'zod';
 import { hasMissingStrings } from './implementation/utils';
 import {
-  PluginConfig,
   AuditOutputs,
-  auditSchema,
   auditOutputSchema,
+  auditSchema,
+  PluginConfig,
+  pluginSchema,
 } from './plugin-config';
 import {
   executionMetaSchema,
-  metaSchema,
   packageVersionSchema,
-  slugSchema,
 } from './implementation/schemas';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
-export const pluginReportSchema = executionMetaSchema({
-  descriptionDate: 'Start date and time of plugin run',
-  descriptionDuration: 'Duration of the plugin run in ms',
-})
-  .merge(metaSchema())
+export const pluginReportSchema = pluginSchema
+  .merge(
+    executionMetaSchema({
+      descriptionDate: 'Start date and time of plugin run',
+      descriptionDuration: 'Duration of the plugin run in ms',
+    }),
+  )
   .merge(
     z.object({
-      slug: slugSchema(),
-      icon: z.string().optional(),
       audits: z.array(auditReportSchema),
     }),
   );
