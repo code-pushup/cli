@@ -1,4 +1,4 @@
-import { CoreConfig, Report } from '@quality-metrics/models';
+import { Report } from '@quality-metrics/models';
 import { NEW_LINE, headline, style, li, table, details, link } from './md/';
 import {
   countWeightedRefs,
@@ -7,18 +7,18 @@ import {
   reportOverviewTableHeaders,
 } from './utils';
 
-export function reportToMd(report: Report, config: CoreConfig): string {
+export function reportToMd(report: Report): string {
   // header section
   let md = reportToHeaderSection() + NEW_LINE;
 
   // meta section
-  md += reportToMetaSection(report, config) + NEW_LINE + NEW_LINE;
+  md += reportToMetaSection(report) + NEW_LINE + NEW_LINE;
 
   // overview section
-  md += reportToOverviewSection(report, config) + NEW_LINE + NEW_LINE;
+  md += reportToOverviewSection(report) + NEW_LINE + NEW_LINE;
 
   // details section
-  md += reportToDetailSection(report, config) + NEW_LINE;
+  md += reportToDetailSection(report) + NEW_LINE;
 
   // footer section
   md += 'Made with ❤️ by [code-pushup.dev](code-pushup.dev)';
@@ -29,9 +29,8 @@ function reportToHeaderSection(): string {
   return headline(reportHeadlineText) + NEW_LINE;
 }
 
-function reportToMetaSection(report: Report, config: CoreConfig): string {
-  const { date, duration, version, packageName } = report;
-  const { plugins } = config;
+function reportToMetaSection(report: Report): string {
+  const { date, duration, version, packageName, plugins } = report;
   return (
     `---` +
     NEW_LINE +
@@ -57,8 +56,8 @@ function reportToMetaSection(report: Report, config: CoreConfig): string {
   );
 }
 
-function reportToOverviewSection(report: Report, config: CoreConfig): string {
-  const { categories } = config;
+function reportToOverviewSection(report: Report): string {
+  const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs }) => [
@@ -70,9 +69,9 @@ function reportToOverviewSection(report: Report, config: CoreConfig): string {
   return table(tableContent);
 }
 
-function reportToDetailSection(report: Report, config: CoreConfig): string {
+function reportToDetailSection(report: Report): string {
   let md = '';
-  const { categories, plugins } = config;
+  const { categories, plugins } = report;
 
   categories.forEach(category => {
     const { title, refs } = category;

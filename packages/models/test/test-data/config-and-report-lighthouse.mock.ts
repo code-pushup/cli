@@ -1788,3 +1788,5 @@ export const lighthouseReport = mockReport({
   pluginSlug: 'lighthouse',
   auditSlug: lighthouseConfig?.plugins?.[0]?.audits.map(a => a.slug),
 });
+
+lighthouseReport.categories = lighthouseConfig.categories;

@@ -1,17 +1,14 @@
 import { describe } from 'vitest';
 import { reportToMd } from './report-to-md';
 import {
-  lighthouseConfig,
-  lighthouseReport,
-  dummyConfig,
   dummyReport,
-  nxValidatorsOnlyConfig,
+  lighthouseReport,
   nxValidatorsOnlyReport,
 } from '@quality-metrics/models/testing';
 
 describe('report-to-md', () => {
   it('should contain all sections when using dummy report', () => {
-    const mdReport = reportToMd(dummyReport, dummyConfig);
+    const mdReport = reportToMd(dummyReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -27,7 +24,7 @@ describe('report-to-md', () => {
     // details section
     expect(mdReport).toMatch(/\*\*Performance \d*\*\*/);
     expect(mdReport).toMatch(
-      /<summary>0a title \(\d\) (execute plugin)<\/summary>/,
+      /<summary>Title of 0a \(\d\) (Title of plg-0)<\/summary>/,
     );
     // footer
     expect(mdReport).toContain(
@@ -36,7 +33,7 @@ describe('report-to-md', () => {
   });
 
   it('should contain all sections when using nx-validators report', () => {
-    const mdReport = reportToMd(nxValidatorsOnlyReport, nxValidatorsOnlyConfig);
+    const mdReport = reportToMd(nxValidatorsOnlyReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -53,7 +50,7 @@ describe('report-to-md', () => {
     expect(mdReport).toContain('**Normalize Typescript Config');
     expect(mdReport).toContain('**Use Workspace Layout');
     expect(mdReport).toMatch(
-      /<summary>Check Version Mismatch \(\d\) NxValidatorsPlugin<\/summary>/,
+      /<summary>Title of check-version-mismatch \(\d\) Title of nx-validators<\/summary>/,
     );
     // footer
     expect(mdReport).toContain(
@@ -62,7 +59,7 @@ describe('report-to-md', () => {
   });
 
   it('should contain all sections when using light report', () => {
-    const mdReport = reportToMd(lighthouseReport, lighthouseConfig);
+    const mdReport = reportToMd(lighthouseReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -79,7 +76,9 @@ describe('report-to-md', () => {
     expect(mdReport).toContain('**Best Practices');
     expect(mdReport).toContain('**SEO');
     expect(mdReport).toContain('**PWA');
-    expect(mdReport).toContain('<summary>Time to Interactive');
+    expect(mdReport).toMatch(
+      /<summary>Title of is-on-https \(\d\) Title of lighthouse<\/summary>/,
+    );
     // footer
     expect(mdReport).toContain(
       'Made with ❤️ by [code-pushup.dev](code-pushup.dev)',

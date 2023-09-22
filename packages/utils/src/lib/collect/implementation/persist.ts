@@ -24,7 +24,7 @@ export async function persistReport(report: Report, config: CoreConfig) {
   format = format && format.length !== 0 ? format : ['stdout'];
 
   if (format.includes('stdout')) {
-    reportToStdout(report, config);
+    reportToStdout(report);
   }
 
   // collect physical format outputs
@@ -34,7 +34,7 @@ export async function persistReport(report: Report, config: CoreConfig) {
   ];
 
   if (format.includes('md')) {
-    results.push({ format: 'md', content: reportToMd(report, config) });
+    results.push({ format: 'md', content: reportToMd(report) });
   }
 
   if (!existsSync(outputPath)) {

@@ -1,4 +1,4 @@
-import { CoreConfig, Report } from '@quality-metrics/models';
+import { Report } from '@quality-metrics/models';
 import chalk from 'chalk';
 import cliui from 'cliui';
 import {
@@ -9,15 +9,15 @@ import {
 } from './utils';
 import { NEW_LINE } from './md';
 
-const ui = cliui({ width: 60 });
+const ui = cliui({ width: 60 }); // @TODO check display width
 
-export function reportToStdout(report: Report, config: CoreConfig): void {
+export function reportToStdout(report: Report): void {
   reportToHeaderSection(report);
-  reportToMetaSection(report, config);
+  reportToMetaSection(report);
   console.log(NEW_LINE);
-  reportToOverviewSection(report, config);
+  reportToOverviewSection(report);
   console.log(NEW_LINE);
-  reportToDetailSection(report, config);
+  reportToDetailSection(report);
   console.log(NEW_LINE);
   console.log('Made with ❤️ by code-pushup.dev');
 }
@@ -27,9 +27,8 @@ function reportToHeaderSection(report: Report): void {
   console.log(`${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`);
 }
 
-function reportToMetaSection(report: Report, config: CoreConfig): void {
-  const { date, duration, version, packageName } = report;
-  const { plugins } = config;
+function reportToMetaSection(report: Report): void {
+  const { date, duration, version, packageName, plugins } = report;
   const _print = (text: string) => console.log(chalk.italic(chalk.gray(text)));
 
   _print(`---`);
@@ -47,7 +46,7 @@ function reportToMetaSection(report: Report, config: CoreConfig): void {
   _print(`---`);
 }
 
-function reportToOverviewSection(report: Report, config: CoreConfig): void {
+function reportToOverviewSection(report: Report): void {
   const base = {
     width: 20,
     padding: [0, 1, 0, 1],
@@ -57,7 +56,7 @@ function reportToOverviewSection(report: Report, config: CoreConfig): void {
   ui.div(...reportOverviewTableHeaders.map(text => ({ text, ...base })));
 
   // table content
-  config.categories.forEach(({ title, refs }) => {
+  report.categories.forEach(({ title, refs }) => {
     const score = sumRefs(refs).toString();
     const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
 
@@ -80,8 +79,8 @@ function reportToOverviewSection(report: Report, config: CoreConfig): void {
   console.log(ui.toString());
 }
 
-function reportToDetailSection(report: Report, config: CoreConfig): void {
-  const { categories, plugins } = config;
+function reportToDetailSection(report: Report): void {
+  const { categories, plugins } = report;
 
   categories.forEach(category => {
     const { title, refs } = category;

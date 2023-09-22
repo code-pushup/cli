@@ -39,3 +39,4 @@ export const dummyReport = mockReport({
   pluginSlug: pluginSlug[0],
   auditSlug: auditSlug0,
 });
+dummyReport.categories = dummyConfig.categories;
