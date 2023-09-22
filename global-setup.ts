@@ -1,9 +1,7 @@
 import { mkdir, rm } from 'fs/promises';
 
 export async function setup() {
-  await mkdir('tmp', { recursive: true });
-}
-
-export async function teardown() {
+  // ensure clean tmp/ directory
   await rm('tmp', { recursive: true, force: true });
+  await mkdir('tmp', { recursive: true });
 }
