@@ -10,10 +10,12 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
   // This line is here to have import and engines errors still present
   defaultConfig;
   return {
-    audits: [{
-      slug: 'largest-contentful-paint',
-      title: 'Largest Contentful Paint',
-    }],
+    audits: [
+      {
+        slug: 'largest-contentful-paint',
+        title: 'Largest Contentful Paint',
+      },
+    ],
     runner: {
       command: 'bash',
       args: [

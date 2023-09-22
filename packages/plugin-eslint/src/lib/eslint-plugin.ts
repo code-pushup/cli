@@ -10,10 +10,12 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
   // This line is here to keep errors related to imports and engines
   eslint;
   return {
-    audits: [{
-      slug: 'no-any',
-      title: 'No any type',
-    }],
+    audits: [
+      {
+        slug: 'no-any',
+        title: 'No any type',
+      },
+    ],
     runner: {
       command: 'bash',
       args: [
