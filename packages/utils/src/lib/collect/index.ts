@@ -2,7 +2,6 @@ import {
   CoreConfig,
   GlobalCliArgs,
   Report,
-  pluginOutputSchema,
 } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
 import { readPackageJson } from './implementation/utils';
@@ -39,16 +38,6 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const date = new Date().toISOString();
   const start = Date.now();
   const pluginOutputs = await executePlugins(plugins);
-
-  pluginOutputs.forEach(p => {
-    try {
-      // @TODO consider moving this check to the CLI and still persist valid plugin outputs.
-      // This helps while debugging as you can check the invalid output after the error
-      pluginOutputSchema.parse(p);
-    } catch (e) {
-      // throw new CollectOutputError(p.slug, e as Error);
-    }
-  });
 
   return {
     packageName: name,
