@@ -1,11 +1,6 @@
-import {
-  collect,
-  CollectOptions,
-  CollectOutputError,
-  persistReport,
-} from '@quality-metrics/utils';
-import { CommandModule } from 'yargs';
-import { pluginOutputSchema } from '@quality-metrics/models';
+import {collect, CollectOptions, CollectOutputError, persistReport, logPersistedResults} from '@quality-metrics/utils';
+import {CommandModule} from 'yargs';
+import {pluginOutputSchema} from '@quality-metrics/models';
 
 export function yargsCollectCommandObject() {
   const handler = async (
@@ -13,7 +8,9 @@ export function yargsCollectCommandObject() {
   ): Promise<void> => {
     const report = await collect(config);
 
-    await persistReport(report, config);
+    const persistResults = await persistReport(report, config);
+
+    logPersistedResults(persistResults);
 
     // validate report
     report.plugins.forEach(plugin => {

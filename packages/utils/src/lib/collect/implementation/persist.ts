@@ -1,9 +1,11 @@
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, statSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CoreConfig, Report } from '@quality-metrics/models';
 import { reportToStdout } from './report-to-stdout';
 import { reportToMd } from './report-to-md';
+import {formatBytes} from "./utils";
+import chalk from "chalk";
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
@@ -17,7 +19,9 @@ export class PersistError extends Error {
   }
 }
 
-export async function persistReport(report: Report, config: CoreConfig) {
+export type PersistResult = PromiseSettledResult<readonly [string, number]>[];
+
+export async function persistReport(report: Report, config: CoreConfig): Promise<PersistResult> {
   const { persist } = config;
   const outputPath = persist.outputPath;
   let { format } = persist;
@@ -54,7 +58,10 @@ export async function persistReport(report: Report, config: CoreConfig) {
       return (
         writeFile(reportPath, content)
           // return reportPath instead of void
-          .then(() => reportPath)
+          .then(() => {
+            const stats = statSync(reportPath)
+            return [reportPath, stats.size] as const;
+          })
           .catch(e => {
             console.warn(e);
             throw new PersistError(reportPath);
@@ -62,4 +69,14 @@ export async function persistReport(report: Report, config: CoreConfig) {
       );
     }),
   );
+}
+
+export function logPersistedResults(persistResult: PersistResult) {
+  console.log(`Generated reports successfully: `)
+  for(const result of persistResult) {
+    if(result.status === "fulfilled") {
+      const [fileName, size] = result.value
+      console.log(`- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`)
+    }
+  }
 }
