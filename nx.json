@@ -38,6 +38,8 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s"
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vite.config.[jt]s"
     ],
     "sharedGlobals": []
   },
