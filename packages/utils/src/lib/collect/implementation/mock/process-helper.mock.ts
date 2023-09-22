@@ -17,7 +17,7 @@ export function getAsyncProcessRunnerConfig(
     outputPath?: string;
   } = { throwError: false },
 ) {
-  const outputPath = cfg?.outputPath || './out-async-runner.json';
+  const outputPath = cfg?.outputPath || './tmp/out-async-runner.json';
   const args = [
     asyncProcessPath,
     cfg?.interval ? cfg.interval + '' : '10',
