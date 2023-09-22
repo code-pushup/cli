@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 import { describe, expect } from 'vitest';
-import { calcDuration, countWeightedRefs, sumRefs } from './utils';
+import { calcDuration, formatBytes, countWeightedRefs, sumRefs } from './utils';
 import { CategoryConfig } from '@quality-metrics/models';
 
 describe('calcDuration', () => {
@@ -59,9 +58,8 @@ describe('sumRefs', () => {
       },
     ];
     expect(sumRefs(refs)).toBe(11);
-=======
-import { describe, expect, it } from 'vitest';
-import { formatBytes } from './utils';
+  });
+});
 
 describe('formatBytes', () => {
   it('should log file sizes in Bytes`', async () => {
@@ -106,6 +104,5 @@ describe('formatBytes', () => {
 
   it('should log file sizes of 0 if no size is given`', async () => {
     expect(formatBytes(0)).toBe('0 Bytes');
->>>>>>> ef7c8bb (feat(utils): test filesize logging)
   });
 });
