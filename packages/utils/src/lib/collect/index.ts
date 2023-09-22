@@ -1,5 +1,4 @@
 import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
-import type { PackageJson } from 'type-fest';
 import { executePlugins } from './implementation/execute-plugin';
 import { calcDuration } from './implementation/utils';
 
@@ -19,6 +18,11 @@ export class CollectOutputError extends Error {
 }
 
 export type CollectOptions = GlobalCliArgs & CoreConfig;
+
+type PackageJson = {
+  name?: string;
+  version?: string;
+};
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
