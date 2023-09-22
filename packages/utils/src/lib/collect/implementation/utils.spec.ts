@@ -1,6 +1,6 @@
-import {describe, expect} from 'vitest';
-import {calcDuration, countWeightedRefs, sumRefs} from './utils';
-import {CategoryConfig} from '@quality-metrics/models';
+import { describe, expect } from 'vitest';
+import { calcDuration, countWeightedRefs, sumRefs } from './utils';
+import { CategoryConfig } from '@quality-metrics/models';
 
 describe('calcDuration', () => {
   it('should calc the duration correctly if start and stop are given', () => {
