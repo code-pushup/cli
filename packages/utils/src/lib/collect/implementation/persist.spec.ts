@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { persistReport } from './persist';
+import { logPersistedResults, persistReport } from './persist';
 import { readFileSync, unlinkSync } from 'fs';
 import { Report } from '@quality-metrics/models';
 import { mockConsole, unmockConsole } from './mock/helper.mock';
@@ -132,5 +132,26 @@ describe('persistReport', () => {
 
   it('should throw PersistError`', async () => {
     // @TODO
+  });
+});
+
+describe('logPersistedResults', () => {
+  beforeEach(async () => {
+    logs = [];
+    mockConsole(msg => logs.push(msg));
+  });
+  afterEach(() => {
+    logs = [];
+    unmockConsole();
+  });
+
+  it('should log report sizes correctly`', async () => {
+    logPersistedResults([
+      { status: 'fulfilled', value: ['out.json', 10000] },
+      { status: 'rejected', reason: 'fail' },
+    ]);
+    expect(logs.length).toBe(2);
+    expect(logs).toContain('Generated reports successfully: ');
+    expect(logs).toContain('- [1mout.json[22m ([90m9.77 KB[39m)');
   });
 });
