@@ -5,7 +5,7 @@ import {
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import {executeProcess, ProcessObserver} from './execute-process';
+import { executeProcess, ProcessObserver } from './execute-process';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -48,10 +48,10 @@ export async function executePlugin(
   cfg: PluginConfig,
   observer?: ProcessObserver,
 ): Promise<PluginOutput> {
-  const {slug, title, description, docsUrl, runner} = cfg;
-  const {args, command } = runner;
+  const { slug, title, description, docsUrl, runner } = cfg;
+  const { args, command } = runner;
 
-  const {duration, date} = await executeProcess({
+  const { duration, date } = await executeProcess({
     command,
     args,
     observer,
@@ -98,7 +98,9 @@ export async function executePlugin(
  * }
  *
  */
-export async function executePlugins(plugins: PluginConfig[]): Promise<PluginOutput[]> {
+export async function executePlugins(
+  plugins: PluginConfig[],
+): Promise<PluginOutput[]> {
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const pluginOutput = await executePlugin(pluginCfg);

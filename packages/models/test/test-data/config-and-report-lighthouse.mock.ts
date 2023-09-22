@@ -1,5 +1,5 @@
 import { PluginConfig } from '../../src/index';
-import { mockConfig, mockReport } from '../schema.mock';
+import { mockCoreConfig, mockReport } from '../schema.mock';
 
 export const lighthousePlugin: () => PluginConfig = () =>
   ({
@@ -938,7 +938,7 @@ export const lighthousePlugin: () => PluginConfig = () =>
     ],
   } satisfies PluginConfig);
 
-export const lighthouseConfig = mockConfig();
+export const lighthouseConfig = mockCoreConfig();
 lighthouseConfig.plugins = [lighthousePlugin()];
 lighthouseConfig.categories = [
   {

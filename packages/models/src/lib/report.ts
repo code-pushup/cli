@@ -32,16 +32,21 @@ export type PluginReport = z.infer<typeof pluginReportSchema>;
 
 export const reportSchema = packageVersionSchema({
   versionDescription: 'NPM version of the CLI',
-}).merge(
-  z.object(
-    {
-      date: z.string({ description: 'Start date and time of the collect run' }),
-      duration: z.number({ description: 'Duration of the collect run in ms' }),
-      plugins: z.array(pluginReportSchema),
-    },
-    { description: 'Collect output data.' },
-  ),
-);
+})
+  .merge(
+    executionMetaSchema({
+      descriptionDate: 'Start date and time of the collect run',
+      descriptionDuration: 'Duration of the collect run in ms',
+    }),
+  )
+  .merge(
+    z.object(
+      {
+        plugins: z.array(pluginReportSchema),
+      },
+      { description: 'Collect output data' },
+    ),
+  );
 
 export type Report = z.infer<typeof reportSchema>;
 

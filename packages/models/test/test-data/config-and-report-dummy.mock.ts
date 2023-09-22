@@ -1,6 +1,6 @@
 import {
   mockCategory,
-  mockConfig,
+  mockCoreConfig,
   mockPluginConfig,
   mockReport,
 } from '../schema.mock';
@@ -10,7 +10,7 @@ const auditSlug0 = ['0a', '0b', '0c', '0d'];
 const auditSlug1 = ['1a', '1b', '1c'];
 const auditSlug2 = ['2a', '2b', '2c', '2d', '2e'];
 
-export const dummyConfig = mockConfig({ outputPath: 'out' });
+export const dummyConfig = mockCoreConfig({ outputPath: 'out' });
 dummyConfig.plugins = [
   mockPluginConfig({ pluginSlug: pluginSlug[0], auditSlug: auditSlug0 }),
   mockPluginConfig({ pluginSlug: pluginSlug[1], auditSlug: auditSlug1 }),

@@ -10,7 +10,7 @@ export function executionMetaSchema(
     descriptionDuration: string;
   } = {
     descriptionDate: 'Execution start date and time',
-    descriptionDuration: 'Execution duration',
+    descriptionDuration: 'Execution duration in ms',
   },
 ) {
   return z.object({
@@ -26,18 +26,15 @@ export function executionMetaSchema(
 export function slugSchema(
   description = 'Unique ID (human-readable, URL-safe)',
 ) {
-  return (
-    z
-      .string({ description })
-      // also validates ``and ` `
-      .regex(slugRegex, {
-        message:
-          'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
-      })
-      .max(128, {
-        message: 'slug can be max 128 characters long',
-      })
-  );
+  return z
+    .string({ description })
+    .regex(slugRegex, {
+      message:
+        'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
+    })
+    .max(128, {
+      message: 'slug can be max 128 characters long',
+    });
 }
 
 /**

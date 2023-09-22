@@ -10,6 +10,8 @@ import {
   AuditOutputs,
   AuditReport,
   UploadConfig,
+  AuditOutput,
+  Issue,
 } from '../src/index';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -77,7 +79,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
     title: auditSlug + ' title',
     description: 'audit description',
     docsUrl: 'http://www.my-docs.dev',
-  };
+  } satisfies Required<Audit>;
 }
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
@@ -87,7 +89,7 @@ export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   return {
     outputPath,
     format,
-  };
+  } satisfies Required<PersistConfig>;
 }
 
 export function mockGroupConfig(opt?: {
@@ -113,7 +115,7 @@ export function mockGroupConfig(opt?: {
             weight: randWeight(),
           },
         ],
-  };
+  } satisfies Required<AuditGroup>;
 }
 
 export function mockCategory(opt?: {
@@ -172,8 +174,9 @@ export function mockCategory(opt?: {
       .map(word => word.slice(0, 1).toUpperCase() + word.slice(1))
       .join(' ')}`,
     description: `This is the category description of ${categorySlug}. Enjoy dummy text and data to the full.`,
+    docsUrl: 'https://category.dev?' + categorySlug,
     refs: categoryAuditRefs.concat(categoryGroupRefs),
-  };
+  } satisfies Required<CategoryConfig>;
 }
 
 export function mockReport(opt?: {
@@ -203,28 +206,25 @@ export function mockPluginReport(opt?: {
     date: new Date().toDateString(),
     duration: randDuration(),
     slug: pluginSlug,
-    docsUrl: `http://plugin.io/docs/${pluginSlug}`,
     title: 'Mock plugin Name',
+    description: 'Plugin description of ' + pluginSlug,
+    docsUrl: `http://plugin.io/docs/${pluginSlug}`,
     icon: 'socket',
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
-  };
+  } satisfies Required<PluginReport>;
 }
 
 export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
   return {
-    slug: auditSlug,
-    displayValue: 'mocked value',
-    value: Math.floor(Math.random() * 100),
-    score: Math.round(Math.random()),
-    title: auditSlug,
-  };
+    ...(mockAuditOutput({ auditSlug }) as Required<AuditOutput>),
+  } satisfies Required<AuditReport>;
 }
 
-export function mockConfig(opt?: {
+export function mockCoreConfig(opt?: {
   outputPath?: string;
   categorySlug?: string | string[];
   pluginSlug?: string | string[];
@@ -235,6 +235,7 @@ export function mockConfig(opt?: {
     opt || {};
   return {
     persist: mockPersistConfig({ outputPath }),
+    upload: mockUploadConfig(),
     plugins: Array.isArray(pluginSlug)
       ? pluginSlug.map(slug =>
           mockPluginConfig({ pluginSlug: slug, auditSlug, groupSlug }),
@@ -245,7 +246,7 @@ export function mockConfig(opt?: {
           mockCategory({ categorySlug: slug, auditSlug, groupSlug }),
         )
       : [mockCategory({ categorySlug, auditSlug, groupSlug })],
-  };
+  } satisfies Required<CoreConfig>;
 }
 
 export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
@@ -261,23 +262,40 @@ export function mockAuditOutputs(opt?: {
 }): AuditOutputs {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
-  const audits = Array.isArray(auditSlug)
-    ? auditSlug.map((slug, idx) => ({
-        slug,
-        title: 'Title of ' + slug,
-        value: idx,
-        displayValue: '',
-        score: 0,
-      }))
-    : [
-        {
-          slug: auditSlug,
-          title: 'Title of ' + auditSlug,
-          value: 12,
-          displayValue: '',
-          score: 0,
-        },
-      ];
+  return Array.isArray(auditSlug)
+    ? auditSlug.map((slug, idx) => mockAuditOutput({ auditSlug: slug }))
+    : [mockAuditOutput({ auditSlug })];
+}
 
-  return audits;
+export function mockAuditOutput(opt?: { auditSlug: string }): AuditOutput {
+  let { auditSlug } = opt || {};
+  auditSlug = auditSlug || 'mock-audit-output-slug';
+  return {
+    slug: auditSlug,
+    title: 'Title of ' + auditSlug,
+    description: 'Description of ' + auditSlug,
+    docsUrl: 'https://audit.dev?' + auditSlug,
+    details: {
+      issues: [mockIssueOutput()],
+    },
+    value: 12,
+    displayValue: '',
+    score: 0,
+  } satisfies Required<AuditOutput>;
+}
+
+export function mockIssueOutput(): Issue {
+  return {
+    severity: 'error',
+    message: '',
+    source: {
+      file: 'the-file.ts',
+      position: {
+        startLine: 1,
+        startColumn: 2,
+        endLine: 3,
+        endColumn: 4,
+      },
+    },
+  } satisfies Required<Issue>;
 }

@@ -17,7 +17,7 @@ import {
   hasMissingStrings,
 } from './implementation/utils';
 
-export const pluginMetadataSchema = packageVersionSchema({
+export const pluginSchema = packageVersionSchema({
   optional: true,
 })
   .merge(
@@ -110,7 +110,7 @@ export const pluginConfigSchema = z
         }),
       ),
   })
-  .merge(pluginMetadataSchema)
+  .merge(pluginSchema)
   // every listed group ref points to an audit within the plugin
   .refine(
     pluginCfg => !getMissingRefsFromGroups(pluginCfg),
@@ -190,10 +190,9 @@ export const issueSchema = z.object(
 );
 export type Issue = z.infer<typeof issueSchema>;
 
-export const auditOutputSchema = z
-  .object(
+export const auditOutputSchema = auditSchema.merge(
+  z.object(
     {
-      slug: slugSchema('References audit. ID (unique within pluginOutput)'),
       displayValue: z
         .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
         .optional(),
@@ -215,14 +214,8 @@ export const auditOutputSchema = z
         .optional(),
     },
     { description: 'Audit information' },
-  )
-  .merge(
-    metaSchema({
-      titleDescription: 'Audit title',
-      descriptionDescription: 'Audit description',
-      docsUrlDescription: 'Audit docs URL',
-    }),
-  );
+  ),
+);
 export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
 export const auditOutputsSchema = z
@@ -237,20 +230,19 @@ export const auditOutputsSchema = z
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
-export const pluginOutputSchema = executionMetaSchema()
-  .merge(metaSchema()) // @TODO create reusable meta info for audit, plugin, category
+export const pluginOutputSchema = pluginSchema
+  .merge(executionMetaSchema()) // @TODO create reusable meta info for audit, plugin, category
   .merge(
-  z.object(
-    {
-      slug: slugSchema('Plugin slug'),
-      audits: auditOutputsSchema
-    },
-    {
-      description:
-        'List of JSON formatted audit output emitted by the runner process of a plugin',
-    },
-  ),
-);
+    z.object(
+      {
+        audits: auditOutputsSchema,
+      },
+      {
+        description:
+          'List of JSON formatted audit output emitted by the runner process of a plugin',
+      },
+    ),
+  );
 
 export type PluginOutput = z.infer<typeof pluginOutputSchema>;
 

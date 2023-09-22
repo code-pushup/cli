@@ -1,5 +1,5 @@
 import { PluginConfig } from '../../src/index';
-import { mockCategory, mockConfig, mockReport } from '../schema.mock';
+import { mockCategory, mockCoreConfig, mockReport } from '../schema.mock';
 
 export const nxValidatorsPlugin: () => PluginConfig = (): PluginConfig =>
   ({
@@ -207,7 +207,7 @@ export const nxValidatorsPlugin: () => PluginConfig = (): PluginConfig =>
     ],
   } satisfies PluginConfig);
 
-export const nxValidatorsOnlyConfig = mockConfig();
+export const nxValidatorsOnlyConfig = mockCoreConfig();
 nxValidatorsOnlyConfig.plugins = [nxValidatorsPlugin()];
 nxValidatorsOnlyConfig.categories = nxValidatorsPlugin().groups?.map(
   ({ slug, refs }) =>
