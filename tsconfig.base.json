@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "@quality-metrics-cli/nx-plugin": ["packages/nx-plugin/src/index.ts"],
       "@quality-metrics/cli": ["packages/cli/src/index.ts"],

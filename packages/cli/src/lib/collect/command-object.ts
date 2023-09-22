@@ -1,3 +1,4 @@
+import { pluginOutputSchema } from '@quality-metrics/models';
 import {
   collect,
   CollectOptions,
@@ -5,13 +6,13 @@ import {
   persistReport,
 } from '@quality-metrics/utils';
 import { CommandModule } from 'yargs';
-import { pluginOutputSchema } from '@quality-metrics/models';
+import * as packageJson from '../../../package.json';
 
 export function yargsCollectCommandObject() {
   const handler = async (
     config: CollectOptions & { format: string },
   ): Promise<void> => {
-    const report = await collect(config);
+    const report = await collect({ ...config, packageJson });
 
     await persistReport(report, config);
 

@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { collect, CollectOptions } from '../collect/index';
 import { reportSchema } from '@quality-metrics/models';
 import { mockCoreConfig } from '@quality-metrics/models/testing';
-import { readPackageJson } from './implementation/utils';
+import type { PackageJson } from 'type-fest';
+import { describe, expect, it } from 'vitest';
+import { CollectOptions, collect } from '../collect/';
 
 const baseOptions: CollectOptions = {
   ...mockCoreConfig(),
@@ -13,21 +13,13 @@ const baseOptions: CollectOptions = {
 
 describe('collect', () => {
   it('should execute with valid options`', async () => {
-    const report = await collect(baseOptions);
-    //
-    const expectedPackageJson = await readPackageJson();
-    expect(report.packageName).toBe(expectedPackageJson.name);
-    expect(report.version).toBe(expectedPackageJson.version);
+    const packageJson: PackageJson = {
+      name: '@code-pushup/cli',
+      version: '0.1.0',
+    };
+    const report = await collect({ ...baseOptions, packageJson });
+    expect(report.packageName).toBe(packageJson.name);
+    expect(report.version).toBe(packageJson.version);
     expect(() => reportSchema.parse(report)).not.toThrow();
-  });
-  it('should throw with invalid pluginOutput`', async () => {
-    // @TODO CollectOutputError
-  });
-});
-
-describe('readPackageJson', () => {
-  it('should read package json form @quality-metrics/cli`', async () => {
-    const expectedPackageJson = await readPackageJson();
-    expect(expectedPackageJson.name).toBe('@quality-metrics/cli');
   });
 });

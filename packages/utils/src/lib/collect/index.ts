@@ -1,6 +1,7 @@
 import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
+import type { PackageJson } from 'type-fest';
 import { executePlugins } from './implementation/execute-plugin';
-import { calcDuration, readPackageJson } from './implementation/utils';
+import { calcDuration } from './implementation/utils';
 
 /**
  * Error thrown when collect output is invalid.
@@ -23,8 +24,10 @@ export type CollectOptions = GlobalCliArgs & CoreConfig;
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
-export async function collect(options: CollectOptions): Promise<Report> {
-  const { version, name } = await readPackageJson();
+export async function collect(
+  options: CollectOptions & { packageJson: PackageJson },
+): Promise<Report> {
+  const { version, name } = options.packageJson;
   const { plugins, categories } = options;
 
   if (!plugins?.length) {
