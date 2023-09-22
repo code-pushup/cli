@@ -1,8 +1,8 @@
 import {
   CoreConfig,
   GlobalCliArgs,
-  PluginReport,
   Report,
+  pluginOutputSchema,
 } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
 import { readPackageJson } from './implementation/utils';
@@ -13,7 +13,7 @@ import { readPackageJson } from './implementation/utils';
 export class CollectOutputError extends Error {
   constructor(pluginSlug: string, error?: Error) {
     super(
-      `Runner output from collect command is invalid. \n Zod Error: ${error?.message}`,
+      `PluginOutput ${pluginSlug} from collect command is invalid. \n Zod Error: ${error?.message}`,
     );
     if (error) {
       this.name = error.name;
@@ -37,51 +37,24 @@ export async function collect(options: CollectOptions): Promise<Report> {
   }
 
   const date = new Date().toISOString();
-  performance.mark('startExecutePlugins');
-  const auditOutputs = await executePlugins(plugins);
-  performance.mark('stopExecutePlugins');
-  const { duration } = performance.measure(
-    'startExecutePlugins',
-    'stopExecutePlugins',
-  );
+  const start = Date.now();
+  const pluginOutputs = await executePlugins(plugins);
+
+  pluginOutputs.forEach(p => {
+    try {
+      // @TODO consider moving this check to the CLI and still persist valid plugin outputs.
+      // This helps while debugging as you can check the invalid output after the error
+      pluginOutputSchema.parse(p);
+    } catch (e) {
+      // throw new CollectOutputError(p.slug, e as Error);
+    }
+  });
 
   return {
     packageName: name,
     version,
     date,
-    duration,
-    plugins: auditOutputs.map((pluginOutput): PluginReport => {
-      const pluginConfig = plugins.find(
-        plugin => plugin.slug === pluginOutput.slug,
-      );
-      // shouldn't happen, validation checks it
-      if (!pluginConfig) {
-        throw new Error(
-          `Plugin config not found for slug ${pluginOutput.slug}`,
-        );
-      }
-      return {
-        date: pluginOutput.date,
-        duration: pluginOutput.duration,
-        slug: pluginOutput.slug,
-        icon: 'pluginConfig.icon',
-        description: pluginConfig.description,
-        title: pluginConfig.title,
-        docsUrl: pluginConfig.docsUrl,
-        audits: pluginOutput.audits.map(audit => {
-          const auditMetadata = pluginConfig.audits.find(
-            ({ slug }) => slug === audit.slug,
-          );
-          // shouldn't happen, validation checks it
-          if (!auditMetadata) {
-            throw new Error(`Audit metadata not found for slug ${audit.slug}`);
-          }
-          return {
-            ...auditMetadata,
-            ...audit,
-          };
-        }),
-      } satisfies PluginReport;
-    }),
+    duration: Date.now() - start,
+    plugins: pluginOutputs,
   };
 }

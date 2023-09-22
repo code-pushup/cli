@@ -14,6 +14,7 @@ export {
   AuditOutput,
   PluginConfig,
   PluginOutput,
+  pluginOutputSchema,
   auditGroupSchema,
   auditSchema,
   pluginConfigSchema,

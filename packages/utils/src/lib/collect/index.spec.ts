@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { collect, CollectOptions } from '../collect/index';
 import { reportSchema } from '@quality-metrics/models';
-import { readPackageJson } from './implementation/utils';
 import { mockCoreConfig } from '@quality-metrics/models/testing';
+import { readPackageJson } from './implementation/utils';
 
 const baseOptions: CollectOptions = {
   ...mockCoreConfig(),
@@ -19,6 +19,9 @@ describe('collect', () => {
     expect(report.packageName).toBe(expectedPackageJson.name);
     expect(report.version).toBe(expectedPackageJson.version);
     expect(() => reportSchema.parse(report)).not.toThrow();
+  });
+  it('should throw with invalid pluginOutput`', async () => {
+    // @TODO CollectOutputError
   });
 });
 
