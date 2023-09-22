@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { coreConfigSchema } from './core-config';
-import { mockCategory, mockConfig, mockPluginConfig } from '../../test';
+import { mockCategory, mockCoreConfig, mockPluginConfig } from '../../test';
 
 /*
  - plugin slug: es-lint
@@ -14,7 +14,7 @@ import { mockCategory, mockConfig, mockPluginConfig } from '../../test';
   */
 describe('CoreConfig', () => {
   it('should parse if configuration is valid', () => {
-    const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
+    const cfg = mockCoreConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     cfg.categories = [
       mockCategory({
         pluginSlug: 'test',
@@ -26,7 +26,7 @@ describe('CoreConfig', () => {
 
   it('should parse if configuration and groups are valid', () => {
     const pluginSlug = 'plg';
-    const cfg = mockConfig();
+    const cfg = mockCoreConfig();
     cfg.plugins = [
       mockPluginConfig({ pluginSlug, auditSlug: 'lcp', groupSlug: 'perf' }),
     ];
@@ -42,7 +42,7 @@ describe('CoreConfig', () => {
   });
 
   it('should throw if the category slugs are not unique', () => {
-    const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
+    const cfg = mockCoreConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     const duplicatedSlug = 'test';
     cfg.categories.push(
       mockCategory({
@@ -60,7 +60,7 @@ describe('CoreConfig', () => {
   });
 
   it('should throw if ref in a category does not exist in audits', () => {
-    const cfg = mockConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
+    const cfg = mockCoreConfig({ pluginSlug: 'test', auditSlug: ['a', 'b'] });
     cfg.categories = [
       mockCategory({
         pluginSlug: 'test',
@@ -74,7 +74,7 @@ describe('CoreConfig', () => {
   });
 
   it('should throw if ref in a category does not exist in groups', () => {
-    const cfg = mockConfig({
+    const cfg = mockCoreConfig({
       pluginSlug: 'test',
       auditSlug: ['a', 'b'],
       groupSlug: 'a',

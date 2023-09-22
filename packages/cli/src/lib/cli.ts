@@ -33,7 +33,7 @@ export function yargsCli(
 ): Argv<CoreConfig> {
   const { usageMessage, scriptName } = cfg;
   let { commands, options, middlewares /*demandCommand*/ } = cfg;
-  // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!'];
+  // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!']; @TODO implement when commands are present
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
   options = options || {};

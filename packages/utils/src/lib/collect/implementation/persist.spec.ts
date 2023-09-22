@@ -3,6 +3,7 @@ import { persistReport } from './persist';
 import { readFileSync, unlinkSync } from 'fs';
 import { Report } from '@quality-metrics/models';
 import { mockConsole, unmockConsole } from './mock/helper.mock';
+import { join } from 'path';
 import {
   dummyConfig,
   dummyReport,
@@ -10,19 +11,28 @@ import {
 } from '@quality-metrics/models/testing';
 
 const outputPath = 'out';
+const reportPath = (format = 'json') => join(outputPath, 'report.' + format);
+const readReport = (format = 'json') => {
+  const reportContent = readFileSync(reportPath(format)).toString();
+  if (format === 'json') {
+    return JSON.parse(reportContent);
+  } else {
+    return reportContent;
+  }
+};
 
 let logs: string[] = [];
 
 describe('persistReport', () => {
   beforeEach(async () => {
     try {
-      unlinkSync(outputPath + '.json');
+      unlinkSync(reportPath());
     } catch (_) {
       void 0;
     }
 
     try {
-      unlinkSync(outputPath + '.md');
+      unlinkSync(reportPath('md'));
     } catch (_) {
       void 0;
     }
@@ -38,12 +48,8 @@ describe('persistReport', () => {
     await persistReport(dummyReport, dummyConfig);
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
 
-    expect(() => readFileSync(outputPath + '.json')).not.toThrow(
-      'no such file or directory',
-    );
-    expect(() => readFileSync(outputPath + '.md')).toThrow(
-      'no such file or directory',
-    );
+    expect(() => readReport()).not.toThrow();
+    expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
   it('should log to console when format is stdout`', async () => {
@@ -54,12 +60,8 @@ describe('persistReport', () => {
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
 
     //
-    expect(() => readFileSync(outputPath + '.json')).not.toThrow(
-      'no such file or directory',
-    );
-    expect(() => readFileSync(outputPath + '.md')).toThrow(
-      'no such file or directory',
-    );
+    expect(() => readReport()).not.toThrow('no such file or directory');
+    expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
   it('should persist json format`', async () => {
@@ -67,16 +69,12 @@ describe('persistReport', () => {
       ...dummyConfig,
       persist: mockPersistConfig({ outputPath, format: ['json'] }),
     });
-    const jsonReport: Report = JSON.parse(
-      readFileSync(outputPath + '.json').toString(),
-    );
-    expect(jsonReport.plugins?.[0]?.meta.slug).toBe('plg-0');
+    const jsonReport: Report = readReport();
+    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
     expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
     //
     expect(console.log).toHaveBeenCalledTimes(0);
-    expect(() => readFileSync(outputPath + '.md')).toThrow(
-      'no such file or directory',
-    );
+    expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
   it('should persist md format`', async () => {
@@ -84,11 +82,11 @@ describe('persistReport', () => {
       ...dummyConfig,
       persist: mockPersistConfig({ outputPath, format: ['md'] }),
     });
-    const mdReport = readFileSync(outputPath + '.md').toString();
+    const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain('# Code Pushup Report');
     //
     expect(console.log).toHaveBeenCalledTimes(0);
-    expect(() => readFileSync(outputPath + '.json')).not.toThrow(
+    expect(() => readFileSync(reportPath())).not.toThrow(
       'no such file or directory',
     );
   });
@@ -103,13 +101,11 @@ describe('persistReport', () => {
     });
 
     //
-    const jsonReport: Report = JSON.parse(
-      readFileSync(outputPath + '.json').toString(),
-    );
-    expect(jsonReport.plugins?.[0]?.meta.slug).toBe('plg-0');
+    const jsonReport: Report = readReport();
+    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
     expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
     //
-    const mdReport = readFileSync(outputPath + '.md').toString();
+    const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain('# Code Pushup Report');
     //
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
@@ -121,11 +117,11 @@ describe('persistReport', () => {
       persist: mockPersistConfig({ outputPath, format: ['md', 'stdout'] }),
     });
     //
-    expect(() => readFileSync(outputPath + '.json')).not.toThrow(
+    expect(() => readFileSync(reportPath())).not.toThrow(
       'no such file or directory',
     );
     //
-    const mdReport = readFileSync(outputPath + '.md').toString();
+    const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain('# Code Pushup Report');
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
   });

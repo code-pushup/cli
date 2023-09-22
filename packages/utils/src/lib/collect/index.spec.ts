@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { collect, CollectOptions } from '../collect/index';
 import { reportSchema } from '@quality-metrics/models';
+import { mockCoreConfig } from '@quality-metrics/models/testing';
 import { readPackageJson } from './implementation/utils';
-import { mockConfig } from '@quality-metrics/models/testing';
 
 const baseOptions: CollectOptions = {
-  ...mockConfig(),
+  ...mockCoreConfig(),
   configPath: '',
   interactive: true,
   verbose: false,
@@ -19,6 +19,9 @@ describe('collect', () => {
     expect(report.packageName).toBe(expectedPackageJson.name);
     expect(report.version).toBe(expectedPackageJson.version);
     expect(() => reportSchema.parse(report)).not.toThrow();
+  });
+  it('should throw with invalid pluginOutput`', async () => {
+    // @TODO CollectOutputError
   });
 });
 

@@ -3,7 +3,7 @@ import { executePlugin, executePlugins } from './execute-plugin';
 import { mockPluginConfig } from '@quality-metrics/models/testing';
 import {
   pluginConfigSchema,
-  pluginRunnerOutputSchema,
+  auditOutputsSchema,
 } from '@quality-metrics/models';
 
 describe('executePlugin', () => {
@@ -13,7 +13,7 @@ describe('executePlugin', () => {
     const pluginResult = await executePlugin(cfg).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(pluginResult.audits[0].slug).toBe('mock-audit-slug');
-    expect(() => pluginRunnerOutputSchema.parse(pluginResult)).not.toThrow();
+    expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
   it('should throws with invalid plugin', async () => {
@@ -55,8 +55,12 @@ describe('executePlugins', () => {
     expect(pluginResult[0].duration).toMatch(/^\d+$/);
     expect(pluginResult[0].audits[0].slug).toEqual('mock-audit-slug');
     expect(pluginResult[1].audits[0].slug).toEqual('audit-2');
-    expect(() => pluginRunnerOutputSchema.parse(pluginResult[0])).not.toThrow();
-    expect(() => pluginRunnerOutputSchema.parse(pluginResult[1])).not.toThrow();
+    expect(() =>
+      auditOutputsSchema.parse(pluginResult[0].audits),
+    ).not.toThrow();
+    expect(() =>
+      auditOutputsSchema.parse(pluginResult[1].audits),
+    ).not.toThrow();
   });
 
   it('should throws with invalid plugins', async () => {
