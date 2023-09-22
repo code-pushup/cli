@@ -52,6 +52,9 @@
     "vite": "~4.3.9",
     "vitest": "~0.32.0"
   },
+  "optionalDependencies": {
+    "@nx/nx-linux-x64-gnu": "16.7.4"
+  },
   "config": {
     "commitizen": {
       "path": "@commitlint/cz-commitlint"

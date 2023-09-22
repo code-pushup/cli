@@ -1,4 +1,3 @@
-const { runnerOutputSchema } = require('@quality-metrics/models');
 module.exports = {
   persist: { outputPath: 'command-object-config-out.json' },
   plugins: [
@@ -16,25 +15,19 @@ module.exports = {
         command: 'bash',
         args: [
           '-c',
-          `echo '${JSON.stringify(
-            runnerOutputSchema.parse({
-              audits: [
-                {
-                  slug: 'command-object-audit-slug',
-                  value: 0,
-                  score: 0,
-                },
-              ],
-            }),
-          )}' > command-object-config-out.json`,
+          `echo '${JSON.stringify([
+            {
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])}' > command-object-config-out.json`,
         ],
         outputPath: 'command-object-config-out.json',
       },
       groups: [],
-      meta: {
-        slug: 'command-object-plugin',
-        name: 'command-object plugin',
-      },
+      slug: 'command-object-plugin',
+      title: 'command-object plugin',
     },
   ],
   categories: [],

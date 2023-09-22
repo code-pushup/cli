@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { mockPluginConfig, mockRunnerOutput } from '../../test';
-import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
+import { mockPluginConfig, mockAuditOutputs } from '../../test';
+import { auditOutputsRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {
   it('should pass if output audits are valid', () => {
@@ -8,9 +8,9 @@ describe('RunnerOutput', () => {
       pluginSlug: 'test',
       auditSlug: ['a'],
     });
-    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#a' });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#a' });
     expect(
-      runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
+      auditOutputsRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
     ).toBe(false);
   });
 
@@ -19,9 +19,9 @@ describe('RunnerOutput', () => {
       pluginSlug: 'test',
       auditSlug: ['a'],
     });
-    const runnerOutput = mockRunnerOutput({ auditSlug: 'test#b' });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#b' });
     expect(
-      runnerOutputAuditRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
+      auditOutputsRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
     ).toEqual(['test#b']);
   });
 });

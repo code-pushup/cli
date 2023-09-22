@@ -6,7 +6,6 @@ import {
   PluginConfig,
   PluginReport,
   Report,
-  RunnerOutput,
   AuditReport,
 } from '@quality-metrics/models';
 
@@ -48,20 +47,19 @@ export function mockPluginConfig(opt?: {
       command: 'bash',
       args: [
         '-c',
-        `echo '${JSON.stringify({
-          audits: audits.map(({ slug }, idx) => ({
-            slug: `${slug}`,
-            value: idx,
-            score: parseFloat('0.' + idx),
-          })),
-        } satisfies RunnerOutput)}' > ${outputPath}`,
+        `echo '${JSON.stringify(
+          audits.map(
+            ({ slug }) =>
+              mockAuditReport({ auditSlug: slug }) satisfies AuditReport,
+          ),
+        )}' > ${outputPath}`,
       ],
       outputPath: outputPath,
     },
-    meta: {
-      slug: pluginSlug,
-      name: 'execute plugin',
-    },
+    slug: pluginSlug,
+    title: 'execute plugin ' + pluginSlug,
+    docsUrl: 'https://plugin.dev?' + pluginSlug,
+    description: 'my plugin description of ' + pluginSlug,
   };
 }
 
@@ -75,7 +73,6 @@ export function mockAuditConfig(opt?: {
     slug: auditSlug,
     title: 'audit title',
     description: 'audit description',
-    label: 'mock audit label',
     docsUrl: 'http://www.my-docs.dev',
   };
 }
@@ -161,6 +158,9 @@ export function mockReport(opt?: {
     version: '0.0.0',
     date: new Date().toDateString(),
     duration: randDuration(),
+    categories: [
+      mockCategory({ pluginSlug, auditSlug, categorySlug: 'test-category' }),
+    ],
     plugins: [mockPluginReport({ auditSlug, pluginSlug })],
   };
 }
@@ -175,12 +175,10 @@ export function mockPluginReport(opt?: {
   return {
     date: new Date().toDateString(),
     duration: randDuration(),
-    meta: {
-      slug: pluginSlug,
-      docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-      name: 'Mock plugin Name',
-      icon: 'socket',
-    },
+    slug: pluginSlug,
+    docsUrl: `http://plugin.io/docs/${pluginSlug}`,
+    title: 'Mock plugin Name',
+    icon: 'socket',
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
@@ -195,7 +193,6 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
     displayValue: 'mocked value',
     value: Math.floor(Math.random() * 100),
     score: Math.round(Math.random()),
-    label: auditSlug,
     title: auditSlug,
   };
 }

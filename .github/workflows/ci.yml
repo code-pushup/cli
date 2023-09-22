@@ -2,6 +2,9 @@ name: CI
 
 on: push
 
+env:
+  NX_NON_NATIVE_HASHER: true
+
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -74,7 +77,7 @@ jobs:
         uses: nrwl/nx-set-shas@v3
       - name: Install dependencies
         run: npm ci
-      - name: Test affected projects
+      - name: Unit test affected projects
         run: npx nx affected:test --parallel=3
 
   e2e:
@@ -94,7 +97,7 @@ jobs:
         uses: nrwl/nx-set-shas@v3
       - name: Install dependencies
         run: npm ci
-      - name: Test affected projects
+      - name: E2E test affected projects
         run: npx nx affected:e2e --parallel=3
 
   build:

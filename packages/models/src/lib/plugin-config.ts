@@ -1,13 +1,12 @@
 import { z } from 'zod';
 import {
-  descriptionSchema,
-  docsUrlSchema,
+  executionMetaSchema,
   generalFilePathSchema,
+  metaSchema,
   packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
-  titleSchema,
   unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
@@ -18,27 +17,25 @@ import {
   hasMissingStrings,
 } from './implementation/utils';
 
-export const pluginMetadataSchema = packageVersionSchema({
+export const pluginSchema = packageVersionSchema({
   optional: true,
-}).merge(
-  z.object(
-    {
-      slug: slugSchema(),
-      name: z
-        .string({
-          description: 'Display name',
-        })
-        .max(128),
+})
+  .merge(
+    metaSchema({
+      titleDescription: 'Descriptive name',
+      descriptionDescription: 'Description (markdown)',
+      docsUrlDescription: 'Plugin documentation site',
+      description: 'Plugin metadata',
+    }),
+  )
+  .merge(
+    z.object({
+      slug: slugSchema('References plugin. ID (unique within core config)'),
       icon: z.union([z.unknown(), z.string()], {
         description: 'Icon from VSCode Material Icons extension',
       }),
-      docsUrl: docsUrlSchema('Plugin documentation site'),
-    },
-    {
-      description: 'Plugin metadata',
-    },
-  ),
-);
+    }),
+  );
 
 const runnerConfigSchema = z.object(
   {
@@ -53,17 +50,20 @@ const runnerConfigSchema = z.object(
   },
 );
 
-export const auditMetadataSchema = z.object(
-  {
+export const auditSchema = z
+  .object({
     slug: slugSchema('ID (unique within plugin)'),
-    title: titleSchema('Descriptive name'),
-    description: descriptionSchema('Description (markdown)'),
-    docsUrl: docsUrlSchema('Link to documentation (rationale)'),
-  },
-  { description: 'List of scorable metrics for the given plugin' },
-);
+  })
+  .merge(
+    metaSchema({
+      titleDescription: 'Descriptive name',
+      descriptionDescription: 'Description (markdown)',
+      docsUrlDescription: 'Link to documentation (rationale)',
+      description: 'List of scorable metrics for the given plugin',
+    }),
+  );
 
-export type AuditMetadata = z.infer<typeof auditMetadataSchema>;
+export type Audit = z.infer<typeof auditSchema>;
 
 export const auditGroupSchema = scorableSchema(
   'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
@@ -74,15 +74,21 @@ export const auditGroupSchema = scorableSchema(
   ),
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
+).merge(
+  metaSchema({
+    titleDescription: 'Descriptive name for the group',
+    descriptionDescription: 'Description of the group (markdown)',
+    docsUrlDescription: 'Group documentation site',
+    description: 'Group metadata',
+  }),
 );
 export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
 export const pluginConfigSchema = z
   .object({
-    meta: pluginMetadataSchema,
     runner: runnerConfigSchema,
     audits: z
-      .array(auditMetadataSchema, {
+      .array(auditSchema, {
         description: 'List of audits maintained in a plugin',
       })
       // audit slugs are unique
@@ -104,6 +110,7 @@ export const pluginConfigSchema = z
         }),
       ),
   })
+  .merge(pluginSchema)
   // every listed group ref points to an audit within the plugin
   .refine(
     pluginCfg => !getMissingRefsFromGroups(pluginCfg),
@@ -119,6 +126,7 @@ function duplicateSlugsInGroupsErrorMsg(groups: AuditGroup[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
+
 function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
   return Array.isArray(groups)
     ? hasDuplicateStrings(groups.map(({ slug }) => slug))
@@ -126,9 +134,10 @@ function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
 }
 
 type _PluginCfg = {
-  audits?: AuditMetadata[];
+  audits?: Audit[];
   groups?: AuditGroup[];
 };
+
 // helper for validator: every listed group ref points to an audit within the plugin
 function missingRefsFromGroupsErrorMsg(pluginCfg: _PluginCfg) {
   const missingRefs = getMissingRefsFromGroups(pluginCfg);
@@ -136,6 +145,7 @@ function missingRefsFromGroupsErrorMsg(pluginCfg: _PluginCfg) {
     missingRefs,
   )}`;
 }
+
 function getMissingRefsFromGroups(pluginCfg: _PluginCfg) {
   if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
     const groups = pluginCfg?.groups || [];
@@ -180,51 +190,61 @@ export const issueSchema = z.object(
 );
 export type Issue = z.infer<typeof issueSchema>;
 
-export const auditOutputSchema = z.object(
-  {
-    slug: slugSchema('References audit metadata'),
-    displayValue: z
-      .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
-      .optional(),
-    value: positiveIntSchema('Raw numeric value').optional(),
-    score: z
-      .number({
-        description: 'Value between 0 and 1',
-      })
-      .min(0)
-      .max(1)
-      .optional(),
-    details: z
-      .object(
-        {
-          issues: z.array(issueSchema, { description: 'List of findings' }),
-        },
-        { description: 'Detailed information' },
-      )
-      .optional(),
-  },
-  { description: 'Audit information' },
+export const auditOutputSchema = auditSchema.merge(
+  z.object(
+    {
+      displayValue: z
+        .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
+        .optional(),
+      value: positiveIntSchema('Raw numeric value').optional(),
+      score: z
+        .number({
+          description: 'Value between 0 and 1',
+        })
+        .min(0)
+        .max(1)
+        .optional(),
+      details: z
+        .object(
+          {
+            issues: z.array(issueSchema, { description: 'List of findings' }),
+          },
+          { description: 'Detailed information' },
+        )
+        .optional(),
+    },
+    { description: 'Audit information' },
+  ),
 );
 export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
-export type PluginOutput = PluginRunnerOutput & {
-  slug: string;
-  date: string;
-  duration: number;
-};
-export const pluginRunnerOutputSchema = z.object(
-  {
-    audits: z
-      .array(auditOutputSchema, { description: 'List of audits' })
-      // audit slugs are unique
-      .refine(
-        audits => !getDuplicateSlugsInAudits(audits),
-        audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
-      ),
-  },
-  { description: 'JSON formatted output emitted by the runner.' },
-);
-export type PluginRunnerOutput = z.infer<typeof pluginRunnerOutputSchema>;
+export const auditOutputsSchema = z
+  .array(auditOutputSchema, {
+    description:
+      'List of JSON formatted audit output emitted by the runner process of a plugin',
+  })
+  // audit slugs are unique
+  .refine(
+    audits => !getDuplicateSlugsInAudits(audits),
+    audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
+  );
+export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
+
+export const pluginOutputSchema = pluginSchema
+  .merge(executionMetaSchema()) // @TODO create reusable meta info for audit, plugin, category
+  .merge(
+    z.object(
+      {
+        audits: auditOutputsSchema,
+      },
+      {
+        description:
+          'List of JSON formatted audit output emitted by the runner process of a plugin',
+      },
+    ),
+  );
+
+export type PluginOutput = z.infer<typeof pluginOutputSchema>;
 
 // helper for validator: audit slugs are unique
 function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
@@ -233,6 +253,7 @@ function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
     duplicateRefs,
   )}`;
 }
+
 function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
@@ -246,6 +267,7 @@ function duplicateRefsInGroupsErrorMsg(groupAudits: _RefsList) {
     duplicateRefs,
   )}`;
 }
+
 function getDuplicateRefsInGroups(groupAudits: _RefsList) {
   return hasDuplicateStrings(
     groupAudits.map(({ slug: ref }) => ref).filter(exists),

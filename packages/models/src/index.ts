@@ -10,15 +10,17 @@ export { PersistConfig, persistConfigSchema } from './lib/persist-config';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export {
   AuditGroup,
-  AuditMetadata,
+  Audit,
+  AuditOutput,
   PluginConfig,
   PluginOutput,
+  pluginOutputSchema,
   auditGroupSchema,
-  auditMetadataSchema,
+  auditSchema,
   pluginConfigSchema,
   Issue,
-  PluginRunnerOutput,
+  AuditOutputs,
   issueSchema,
-  pluginRunnerOutputSchema,
+  auditOutputsSchema,
 } from './lib/plugin-config';
 export { PluginReport, AuditReport, Report, reportSchema } from './lib/report';
