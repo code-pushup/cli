@@ -1,13 +1,29 @@
-import { collect, CollectOptions } from '@quality-metrics/utils';
-import { writeFile } from 'fs/promises';
+import {
+  collect,
+  CollectOptions,
+  CollectOutputError,
+  persistReport,
+} from '@quality-metrics/utils';
 import { CommandModule } from 'yargs';
+import { pluginOutputSchema } from '@quality-metrics/models';
 
 export function yargsCollectCommandObject() {
-  const handler = async (args: CollectOptions): Promise<void> => {
-    const collectOutput = await collect(args);
+  const handler = async (
+    config: CollectOptions & { format: string },
+  ): Promise<void> => {
+    const report = await collect(config);
 
-    const { persist } = args;
-    await writeFile(persist.outputPath, JSON.stringify(collectOutput, null, 2));
+    await persistReport(report, config);
+
+    // validate report
+    report.plugins.forEach(plugin => {
+      try {
+        // Running checks after persisting helps while debugging as you can check the invalid output after the error
+        pluginOutputSchema.parse(plugin);
+      } catch (e) {
+        throw new CollectOutputError(plugin.slug, e as Error);
+      }
+    });
   };
 
   return {

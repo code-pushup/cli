@@ -46,7 +46,7 @@ describe('CLI arguments parsing', () => {
     const args: string[] = ['--configPath', validConfigPath];
     const parsedArgv: CommandBase = await yargsCli(args, {
       demandCommand,
-      middlewares: middlewares,
+      middlewares,
     }).argv;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');

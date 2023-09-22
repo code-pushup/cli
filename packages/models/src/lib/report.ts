@@ -1,56 +1,66 @@
 import { z } from 'zod';
 import { hasMissingStrings } from './implementation/utils';
 import {
+  AuditOutputs,
+  auditOutputSchema,
+  auditSchema,
   PluginConfig,
-  RunnerOutput,
-  auditMetadataSchema,
-  auditResultSchema,
-  pluginMetadataSchema,
+  pluginSchema,
 } from './plugin-config';
-import { packageVersionSchema } from './implementation/schemas';
+import {
+  executionMetaSchema,
+  packageVersionSchema,
+} from './implementation/schemas';
+import { categoryConfigSchema } from './category-config';
 
-export type PluginOutput = RunnerOutput & {
-  slug: string;
-  date: string;
-  duration: number;
-};
-
-export const auditReportSchema = auditMetadataSchema.merge(auditResultSchema);
+export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
-export const pluginReportSchema = z.object({
-  date: z.string({ description: 'Start date and time of plugin run' }),
-  duration: z.number({ description: 'Duration of the plugin run in ms' }),
-  meta: pluginMetadataSchema,
-  audits: z.array(auditReportSchema),
-});
+export const pluginReportSchema = pluginSchema
+  .merge(
+    executionMetaSchema({
+      descriptionDate: 'Start date and time of plugin run',
+      descriptionDuration: 'Duration of the plugin run in ms',
+    }),
+  )
+  .merge(
+    z.object({
+      audits: z.array(auditReportSchema),
+    }),
+  );
 export type PluginReport = z.infer<typeof pluginReportSchema>;
 
 export const reportSchema = packageVersionSchema({
   versionDescription: 'NPM version of the CLI',
-}).merge(
-  z.object(
-    {
-      date: z.string({ description: 'Start date and time of the collect run' }),
-      duration: z.number({ description: 'Duration of the collect run in ms' }),
-      plugins: z.array(pluginReportSchema),
-    },
-    { description: 'Collect output data.' },
-  ),
-);
+})
+  .merge(
+    executionMetaSchema({
+      descriptionDate: 'Start date and time of the collect run',
+      descriptionDuration: 'Duration of the collect run in ms',
+    }),
+  )
+  .merge(
+    z.object(
+      {
+        categories: z.array(categoryConfigSchema),
+        plugins: z.array(pluginReportSchema),
+      },
+      { description: 'Collect output data' },
+    ),
+  );
 
 export type Report = z.infer<typeof reportSchema>;
 
 /**
  *
- * Validation function for a plugin runner output inside the CLI. Used immediately after generation of the output to validate the result.
+ * Validation function for a plugins audit outputs inside the CLI. Used immediately after generation of the output to validate the result.
  *
  */
-export function runnerOutputAuditRefsPresentInPluginConfigs(
-  out: RunnerOutput,
+export function auditOutputsRefsPresentInPluginConfigs(
+  audits: AuditOutputs,
   cfg: PluginConfig,
 ): string[] | false {
-  const outRefs = out.audits.map(({ slug }) => slug);
-  const pluginRef = cfg.audits.map(({ slug }) => cfg.meta.slug + '#' + slug);
+  const outRefs = audits.map(({ slug }) => slug);
+  const pluginRef = cfg.audits.map(({ slug }) => cfg.slug + '#' + slug);
   return hasMissingStrings(outRefs, pluginRef);
 }

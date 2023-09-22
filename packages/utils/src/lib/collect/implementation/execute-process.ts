@@ -166,3 +166,43 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     });
   });
 }
+
+/**
+ * Converts an object with different types of values into an array of command-line arguments.
+ *
+ * @example
+ * const args = objectToProcessArgs({
+ *   _: 'index.js', // index.js
+ *   name: 'Juanita', // --name=Juanita
+ *   interactive: false, // --no-interactive
+ *   parallel: 5, // --parallel=5
+ *   formats: ['json', 'md'] // --format=json --format=md
+ * });
+ */
+export function objectToCliArgs(
+  params: Record<string, number | string | boolean | string[]> | { _: string },
+): string[] {
+  return Object.entries(params).flatMap(([key, value]) => {
+    if (key === '_') {
+      return [value.toString()];
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(v => `--${key}="${v}"`);
+    }
+
+    if (typeof value === 'string') {
+      return [`--${key}="${value}"`];
+    }
+
+    if (typeof value === 'number') {
+      return [`--${key}=${value}`];
+    }
+
+    if (typeof value === 'boolean') {
+      return [`--${value ? '' : 'no-'}${key}`];
+    }
+
+    throw new Error(`Unsupported type ${typeof value} for key ${key}`);
+  });
+}

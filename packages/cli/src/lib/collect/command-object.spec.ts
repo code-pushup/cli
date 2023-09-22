@@ -1,33 +1,33 @@
-import { CoreConfig, PluginConfig, Report } from '@quality-metrics/models';
-import { CollectOptions } from '@quality-metrics/utils';
-import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { Report } from '@quality-metrics/models';
+import { dummyConfig } from '@quality-metrics/models/testing';
+import { CollectOptions } from '@quality-metrics/utils';
+import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
 import { yargsCli } from '../cli';
-import { getDirname } from '../implementation/utils';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
 
-const outputPath = 'collect-command-object.json';
-const dummyConfig: CoreConfig = {
-  persist: { outputPath },
-  plugins: [mockPlugin()],
-  categories: [],
+const command = {
+  ...yargsCollectCommandObject(),
+  handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
 };
+
+const outputPath = 'out';
+const reportPath = (format: 'json' | 'md' = 'json') =>
+  join(outputPath, 'report.' + format);
 
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
-    const cli = yargsCli([], { options: yargsGlobalOptionsDefinition() })
+    const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })
       .config(dummyConfig)
-      .command(yargsCollectCommandObject());
-    const parsedArgv = (await cli.parseAsync(
-      args,
-    )) as unknown as CollectOptions;
+      .command(command);
+    const parsedArgv = (await cli.argv) as unknown as CollectOptions;
     const { persist } = parsedArgv;
     const { outputPath: outPath } = persist;
     expect(outPath).toBe(outputPath);
-    return Promise.resolve(void 0);
   });
 
   it('should execute middleware correctly', async () => {
@@ -44,46 +44,10 @@ describe('collect-command-object', () => {
     ];
     await yargsCli([], { middlewares })
       .config(dummyConfig)
-      .command(yargsCollectCommandObject())
+      .command(command)
       .parseAsync(args);
-    const report = JSON.parse(readFileSync(outputPath).toString()) as Report;
-    expect(report.plugins[0]?.meta.slug).toBe('collect-command-object');
-    expect(report.plugins[0]?.audits[0]?.slug).toBe(
-      'command-object-audit-slug',
-    );
+    const report = JSON.parse(readFileSync(reportPath()).toString()) as Report;
+    expect(report.plugins[0]?.slug).toBe('plg-0');
+    expect(report.plugins[0]?.audits[0]?.slug).toBe('0a');
   });
 });
-
-function mockPlugin(): PluginConfig {
-  return {
-    audits: [
-      {
-        slug: 'command-object-audit-slug',
-        title: 'audit title',
-        description: 'audit description',
-        docsUrl: 'http://www.my-docs.dev',
-      },
-    ],
-    runner: {
-      command: 'bash',
-      args: [
-        '-c',
-        `echo '${JSON.stringify({
-          audits: [
-            {
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ],
-        })}' > ${outputPath}`,
-      ],
-      outputPath,
-    },
-    groups: [],
-    meta: {
-      slug: 'collect-command-object',
-      name: 'collect command object',
-    },
-  } satisfies PluginConfig;
-}

@@ -1,21 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { mockPluginConfig, mockRunnerOutput } from '../../test';
-import { runnerOutputAuditRefsPresentInPluginConfigs } from './report';
+import { mockPluginConfig, mockAuditOutputs } from '../../test';
+import { auditOutputsRefsPresentInPluginConfigs } from './report';
 
 describe('RunnerOutput', () => {
   it('should pass if output audits are valid', () => {
-    const plugin = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
-    const out = mockRunnerOutput({ auditSlug: 'test#a' });
-    expect(runnerOutputAuditRefsPresentInPluginConfigs(out, plugin)).toBe(
-      false,
-    );
+    const pluginCfg = mockPluginConfig({
+      pluginSlug: 'test',
+      auditSlug: ['a'],
+    });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#a' });
+    expect(
+      auditOutputsRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
+    ).toBe(false);
   });
 
   it('should throw if output audits are not in config', () => {
-    const plugin = mockPluginConfig({ pluginSlug: 'test', auditSlug: ['a'] });
-    const out = mockRunnerOutput({ auditSlug: 'test#b' });
-    expect(runnerOutputAuditRefsPresentInPluginConfigs(out, plugin)).toEqual([
-      'test#b',
-    ]);
+    const pluginCfg = mockPluginConfig({
+      pluginSlug: 'test',
+      auditSlug: ['a'],
+    });
+    const runnerOutput = mockAuditOutputs({ auditSlug: 'test#b' });
+    expect(
+      auditOutputsRefsPresentInPluginConfigs(runnerOutput, pluginCfg),
+    ).toEqual(['test#b']);
   });
 });

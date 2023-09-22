@@ -1,11 +1,11 @@
 import {
   PluginConfig,
   PluginOutput,
-  runnerOutputSchema,
+  auditOutputsSchema,
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { ProcessConfig, executeProcess } from './execute-process';
+import { executeProcess, ProcessObserver } from './execute-process';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -28,8 +28,8 @@ export class PluginOutputError extends Error {
  * @public
  * @param cfg - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
- * @returns {Promise<RunnerOutput>} - runner output
- * @throws {PluginOutputError} - if plugin output is invalid
+ * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
+ * @throws {PluginOutputError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -46,33 +46,36 @@ export class PluginOutputError extends Error {
  */
 export async function executePlugin(
   cfg: PluginConfig,
-  observer?: ProcessConfig['observer'],
+  observer?: ProcessObserver,
 ): Promise<PluginOutput> {
-  const command = cfg.runner.command.toString() || '';
-  const args = cfg.runner.args || [];
-  const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
+  const { slug, title, description, docsUrl } = cfg;
+  const { args, command } = cfg.runner;
 
-  const processResult = await executeProcess({
+  const { duration, date } = await executeProcess({
     command,
     args,
     observer,
   });
 
   try {
+    const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
     // read process output from file system and parse it
-    const runnerOutput = runnerOutputSchema.parse(
+    const audits = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
 
     return {
-      slug: cfg.meta.slug,
-      date: processResult.date,
-      duration: processResult.duration,
-      ...runnerOutput,
+      slug,
+      title,
+      description,
+      docsUrl,
+      date,
+      duration,
+      audits,
     };
   } catch (error) {
     const e = error as Error;
-    throw new PluginOutputError(cfg.meta.slug, e);
+    throw new PluginOutputError(slug, e);
   }
 }
 
@@ -80,7 +83,7 @@ export async function executePlugin(
  * Execute multiple plugins and aggregates their output.
  * @public
  * @param plugins - array of {@link PluginConfig} objects
- * @returns {Promise<RunnerOutput>} - runner output
+ * @returns {Promise<AuditOutput[]>} - runner output
  *
  * @example
  * // plugin execution

@@ -14,10 +14,8 @@ module.exports = {
         ],
         outputPath: 'cli-config-out.json',
       },
-      meta: {
-        slug: 'execute-plugin',
-        name: 'execute plugin',
-      },
+      slug: 'execute-plugin',
+      title: 'execute plugin',
     },
   ],
 };
