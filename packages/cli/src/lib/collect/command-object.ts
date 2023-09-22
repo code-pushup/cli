@@ -1,6 +1,11 @@
-import {collect, CollectOptions, CollectOutputError, persistReport} from '@quality-metrics/utils';
+import {
+  collect,
+  CollectOptions,
+  CollectOutputError,
+  persistReport,
+} from '@quality-metrics/utils';
 import { CommandModule } from 'yargs';
-import {pluginOutputSchema} from "@quality-metrics/models";
+import { pluginOutputSchema } from '@quality-metrics/models';
 
 export function yargsCollectCommandObject() {
   const handler = async (

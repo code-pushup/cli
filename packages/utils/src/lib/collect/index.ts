@@ -1,8 +1,4 @@
-import {
-  CoreConfig,
-  GlobalCliArgs,
-  Report,
-} from '@quality-metrics/models';
+import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
 import { executePlugins } from './implementation/execute-plugin';
 import { readPackageJson } from './implementation/utils';
 
