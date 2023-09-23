@@ -61,10 +61,8 @@ export async function persistReport(
       return (
         writeFile(reportPath, content)
           // return reportPath instead of void
-          .then(() => {
-            const stats = statSync(reportPath);
-            return [reportPath, stats.size] as const;
-          })
+          .then(() => stat(reportPath))
+          .then(stats => [reportPath, stats.size] as const)
           .catch(e => {
             console.warn(e);
             throw new PersistError(reportPath);
