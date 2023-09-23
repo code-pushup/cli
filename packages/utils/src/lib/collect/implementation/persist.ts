@@ -84,4 +84,10 @@ export function logPersistedResults(persistResult: PersistResult) {
       );
     }
   }
+  console.log(`Generated reports failed: `);
+  for (const result of persistResult) {
+    if (result.status === 'rejected') {
+      console.log(`- ${chalk.bold(result.reason)}`);
+    }
+  }
 }
