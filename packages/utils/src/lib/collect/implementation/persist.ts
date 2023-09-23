@@ -75,19 +75,28 @@ export async function persistReport(
 }
 
 export function logPersistedResults(persistResult: PersistResult) {
-  console.log(`Generated reports successfully: `);
-  for (const result of persistResult) {
-    if (result.status === 'fulfilled') {
-      const [fileName, size] = result.value;
+  const succeededPersitedResults = persistResult.filter(
+    result => result.status === 'fulfilled',
+  );
+
+  if (succeededPersitedResults.length) {
+    console.log(`Generated reports successfully: `);
+    succeededPersitedResults.forEach(res => {
+      const [fileName, size] = res.value;
       console.log(
         `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
       );
-    }
+    });
   }
-  console.log(`Generated reports failed: `);
-  for (const result of persistResult) {
-    if (result.status === 'rejected') {
+
+  const failedPersitedResults = persistResult.filter(
+    result => result.status === 'rejected',
+  );
+
+  if (failedPersitedResults.length) {
+    console.log(`Generated reports failed: `);
+    failedPersitedResults.forEach(result => {
       console.log(`- ${chalk.bold(result.reason)}`);
-    }
+    });
   }
 }
