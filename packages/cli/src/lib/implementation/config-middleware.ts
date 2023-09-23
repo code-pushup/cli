@@ -1,8 +1,8 @@
 import { bundleRequire } from 'bundle-require';
 import { stat } from 'fs/promises';
 
-import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
 import { CommandBase, commandBaseSchema } from './base-command-config';
+import { globalCliArgsSchema, GlobalCliArgs } from '../options';
 
 export class ConfigParseError extends Error {
   constructor(configPath: string) {

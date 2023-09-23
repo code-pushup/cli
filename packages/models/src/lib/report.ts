@@ -1,8 +1,11 @@
 import { z } from 'zod';
-import { hasMissingStrings } from './implementation/utils';
 import {
-  AuditOutputs,
-  auditOutputSchema,
+  duplicateSlugsInAuditsErrorMsg,
+  getDuplicateSlugsInAudits,
+  hasMissingStrings,
+} from './implementation/utils';
+import {
+  Audit,
   auditSchema,
   PluginConfig,
   pluginSchema,
@@ -10,8 +13,87 @@ import {
 import {
   executionMetaSchema,
   packageVersionSchema,
+  positiveIntSchema,
+  scoreSchema,
+  unixFilePathSchema,
 } from './implementation/schemas';
 import { categoryConfigSchema } from './category-config';
+
+const sourceFileLocationSchema = z.object(
+  {
+    file: unixFilePathSchema('Relative path to source file in Git repo'),
+    position: z
+      .object(
+        {
+          startLine: positiveIntSchema('Start line'),
+          startColumn: positiveIntSchema('Start column').optional(),
+          endLine: positiveIntSchema('End line').optional(),
+          endColumn: positiveIntSchema('End column').optional(),
+        },
+        { description: 'Location in file' },
+      )
+      .optional(),
+  },
+  { description: 'Source file location' },
+);
+
+export const issueSchema = z.object(
+  {
+    message: z.string({ description: 'Descriptive error message' }).max(128),
+    severity: z.enum(['info', 'warning', 'error'], {
+      description: 'Severity level',
+    }),
+    source: sourceFileLocationSchema.optional(),
+  },
+  { description: 'Issue information' },
+);
+export type Issue = z.infer<typeof issueSchema>;
+
+export const auditOutputSchema = auditSchema.merge(
+  z.object(
+    {
+      displayValue: z
+        .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
+        .optional(),
+      value: positiveIntSchema('Raw numeric value').optional(),
+      score: scoreSchema().optional(),
+      details: z
+        .object(
+          {
+            issues: z.array(issueSchema, { description: 'List of findings' }),
+          },
+          { description: 'Detailed information' },
+        )
+        .optional(),
+    },
+    { description: 'Audit information' },
+  ),
+);
+export type AuditOutput = z.infer<typeof auditOutputSchema>;
+
+export const pluginOutputSchema = pluginSchema
+  .merge(executionMetaSchema()) // @TODO create reusable meta info for audit, plugin, category
+  .merge(
+    z.object(
+      {
+        audits: z
+          .array(auditOutputSchema, {
+            description:
+              'List of JSON formatted audit output emitted by the runner process of a plugin',
+          })
+          // audit slugs are unique
+          .refine(
+            audits => !getDuplicateSlugsInAudits(audits),
+            audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
+          ),
+      },
+      {
+        description:
+          'List of JSON formatted audit output emitted by the runner process of a plugin',
+      },
+    ),
+  );
+export type PluginOutput = z.infer<typeof pluginOutputSchema>;
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
@@ -48,7 +130,6 @@ export const reportSchema = packageVersionSchema({
       { description: 'Collect output data' },
     ),
   );
-
 export type Report = z.infer<typeof reportSchema>;
 
 /**
@@ -57,7 +138,7 @@ export type Report = z.infer<typeof reportSchema>;
  *
  */
 export function auditOutputsRefsPresentInPluginConfigs(
-  audits: AuditOutputs,
+  audits: Audit[],
   cfg: PluginConfig,
 ): string[] | false {
   const outRefs = audits.map(({ slug }) => slug);

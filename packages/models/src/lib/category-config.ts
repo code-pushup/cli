@@ -7,12 +7,6 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
-type _RefsList = {
-  type?: string;
-  slug?: string;
-  plugin?: string;
-}[];
-
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',
   weightedRefSchema(
@@ -39,8 +33,13 @@ export const categoryConfigSchema = scorableSchema(
     description: 'Meta info for category',
   }),
 );
-
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
+
+type _RefsList = {
+  type?: string;
+  slug?: string;
+  plugin?: string;
+}[];
 
 // helper for validator: categories have unique refs to audits or groups
 export function duplicateRefsInCategoryMetricsErrorMsg(metrics: _RefsList) {

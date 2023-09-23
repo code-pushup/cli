@@ -120,6 +120,14 @@ export function positiveIntSchema(description: string) {
 }
 
 /**
+ * Schema for a score
+ * @param description
+ */
+export function scoreSchema(description = 'Value between 0 and 1') {
+  return z.number({ description }).min(0).max(1);
+}
+
+/**
  * Schema for a unixFilePath
  * @param description
  */

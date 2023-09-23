@@ -61,3 +61,17 @@ export function errorItems(
 export function exists<T>(value: T): value is NonNullable<T> {
   return value != null;
 }
+
+type _Audit = { slug: string };
+
+// helper for validator: audit slugs are unique
+export function duplicateSlugsInAuditsErrorMsg(audits: _Audit[]) {
+  const duplicateRefs = getDuplicateSlugsInAudits(audits);
+  return `In plugin audits the slugs are not unique: ${errorItems(
+    duplicateRefs,
+  )}`;
+}
+
+export function getDuplicateSlugsInAudits(audits: _Audit[]) {
+  return hasDuplicateStrings(audits.map(({ slug }) => slug));
+}

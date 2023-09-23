@@ -1,5 +1,5 @@
 export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
-export { GlobalCliArgs, globalCliArgsSchema } from './lib/global-cli-options';
+export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {
   CoreConfig,
   coreConfigSchema,
@@ -11,16 +11,19 @@ export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export {
   AuditGroup,
   Audit,
-  AuditOutput,
   PluginConfig,
-  PluginOutput,
-  pluginOutputSchema,
   auditGroupSchema,
   auditSchema,
   pluginConfigSchema,
-  Issue,
-  AuditOutputs,
-  issueSchema,
-  auditOutputsSchema,
 } from './lib/plugin-config';
-export { PluginReport, AuditReport, Report, reportSchema } from './lib/report';
+export {
+  PluginReport,
+  AuditReport,
+  Report,
+  reportSchema,
+  AuditOutput,
+  Issue,
+  PluginOutput,
+  pluginOutputSchema,
+  issueSchema,
+} from './lib/report';
