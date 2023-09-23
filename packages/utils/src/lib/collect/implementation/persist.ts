@@ -1,11 +1,11 @@
-import { existsSync, mkdirSync, statSync } from 'fs';
-import { writeFile } from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
+import { writeFile, stat } from 'fs/promises';
 import { join } from 'path';
+import chalk from 'chalk';
 import { CoreConfig, Report } from '@quality-metrics/models';
+import { formatBytes } from './utils';
 import { reportToStdout } from './report-to-stdout';
 import { reportToMd } from './report-to-md';
-import { formatBytes } from './utils';
-import chalk from 'chalk';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
@@ -74,7 +74,8 @@ export async function persistReport(
 
 export function logPersistedResults(persistResult: PersistResult) {
   const succeededPersistedResults = persistResult.filter(
-    (result): result is PromiseFulfilledResult<[string, number]> => result.status === 'fulfilled',
+    (result): result is PromiseFulfilledResult<[string, number]> =>
+      result.status === 'fulfilled',
   );
 
   if (succeededPersistedResults.length) {
@@ -87,7 +88,7 @@ export function logPersistedResults(persistResult: PersistResult) {
     });
   }
 
-  const failedPersistedResults = persistRe as PromiseRejectedResult)sult.filter(
+  const failedPersistedResults = persistResult.filter(
     (result): result is PromiseRejectedResult => result.status === 'rejected',
   );
 

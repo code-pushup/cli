@@ -63,11 +63,11 @@ describe('sumRefs', () => {
 
 describe('formatBytes', () => {
   it('should log file sizes in Bytes`', async () => {
-    expect(formatBytes(1000)).toBe('1000 Bytes');
+    expect(formatBytes(1000)).toBe('1000 B');
   });
 
   it('should log file sizes in KB`', async () => {
-    expect(formatBytes(10000)).toBe('9.77 KB');
+    expect(formatBytes(10000)).toBe('9.77 kB');
   });
 
   it('should log file sizes in MB`', async () => {
@@ -99,10 +99,10 @@ describe('formatBytes', () => {
   });
 
   it('should log file sizes correctly with correct decimal`', async () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 KB');
+    expect(formatBytes(10000, 1)).toBe('9.8 kB');
   });
 
   it('should log file sizes of 0 if no size is given`', async () => {
-    expect(formatBytes(0)).toBe('0 Bytes');
+    expect(formatBytes(0)).toBe('0 B');
   });
 });
