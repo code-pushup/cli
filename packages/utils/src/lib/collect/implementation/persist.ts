@@ -75,29 +75,28 @@ export async function persistReport(
 }
 
 export function logPersistedResults(persistResult: PersistResult) {
-  const succeededPersitedResults = persistResult.filter(
-    result => result.status === 'fulfilled',
+  const succeededPersistedResults = persistResult.filter(
+    (result): result is PromiseFulfilledResult<[string, number]> => result.status === 'fulfilled',
   );
 
-  if (succeededPersitedResults.length) {
+  if (succeededPersistedResults.length) {
     console.log(`Generated reports successfully: `);
-    succeededPersitedResults.forEach(res => {
-      const [fileName, size] = (res as PromiseFulfilledResult<[string, number]>)
-        .value;
+    succeededPersistedResults.forEach(res => {
+      const [fileName, size] = res.value;
       console.log(
         `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
       );
     });
   }
 
-  const failedPersitedResults = persistResult.filter(
-    result => result.status === 'rejected',
+  const failedPersistedResults = persistRe as PromiseRejectedResult)sult.filter(
+    (result): result is PromiseRejectedResult => result.status === 'rejected',
   );
 
-  if (failedPersitedResults.length) {
+  if (failedPersistedResults.length) {
     console.log(`Generated reports failed: `);
-    failedPersitedResults.forEach(result => {
-      console.log(`- ${chalk.bold((result as PromiseRejectedResult).reason)}`);
+    failedPersistedResults.forEach(result => {
+      console.log(`- ${chalk.bold(result.reason)}`);
     });
   }
 }
