@@ -21,7 +21,7 @@
       ]
     },
     "test": {
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
     },
     "e2e": {
       "dependsOn": ["^build"],
@@ -34,8 +34,11 @@
       "default",
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/test-setup.[jt]s",
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vite.config.[jt]s"
     ],
     "sharedGlobals": []
