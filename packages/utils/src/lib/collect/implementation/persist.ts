@@ -82,7 +82,8 @@ export function logPersistedResults(persistResult: PersistResult) {
   if (succeededPersitedResults.length) {
     console.log(`Generated reports successfully: `);
     succeededPersitedResults.forEach(res => {
-      const [fileName, size] = res.value;
+      const [fileName, size] = (res as PromiseFulfilledResult<[string, number]>)
+        .value;
       console.log(
         `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
       );
@@ -96,7 +97,7 @@ export function logPersistedResults(persistResult: PersistResult) {
   if (failedPersitedResults.length) {
     console.log(`Generated reports failed: `);
     failedPersitedResults.forEach(result => {
-      console.log(`- ${chalk.bold(result.reason)}`);
+      console.log(`- ${chalk.bold((result as PromiseRejectedResult).reason)}`);
     });
   }
 }
