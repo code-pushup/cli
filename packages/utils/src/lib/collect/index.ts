@@ -19,19 +19,13 @@ export class CollectOutputError extends Error {
 
 export type CollectOptions = GlobalCliArgs & CoreConfig;
 
-type PackageJson = {
-  name?: string;
-  version?: string;
-};
-
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
 export async function collect(
-  options: CollectOptions & { packageJson: PackageJson },
-): Promise<Report> {
-  const { version, name } = options.packageJson;
+  options: CollectOptions,
+): Promise<Omit<Report, 'packageName' | 'version'>> {
   const { plugins, categories } = options;
 
   if (!plugins?.length) {
@@ -43,8 +37,6 @@ export async function collect(
   const pluginOutputs = await executePlugins(plugins);
 
   return {
-    packageName: name,
-    version,
     date,
     duration: calcDuration(start),
     categories,
