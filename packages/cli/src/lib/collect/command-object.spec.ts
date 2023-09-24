@@ -14,7 +14,7 @@ const command = {
   handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
 };
 
-const outputPath = 'out';
+const outputPath = 'tmp';
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputPath, 'report.' + format);
 
