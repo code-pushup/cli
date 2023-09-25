@@ -1,10 +1,10 @@
-import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { Report } from '@quality-metrics/models';
 import { dummyConfig } from '@quality-metrics/models/testing';
 import { CollectOptions } from '@quality-metrics/utils';
-import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { yargsCli } from '../cli';
+import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../options';
 import { yargsCollectCommandObject } from './command-object';
@@ -14,7 +14,7 @@ const command = {
   handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
 };
 
-const outputPath = 'out';
+const outputPath = 'tmp';
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputPath, 'report.' + format);
 

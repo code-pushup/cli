@@ -2,8 +2,8 @@
   "name": "@quality-metrics/utils",
   "version": "0.0.1",
   "dependencies": {
+    "@quality-metrics/models": "^0.0.1",
     "chalk": "^5.3.0",
-    "cliui": "^8.0.1",
-    "@quality-metrics/models": "^0.0.1"
+    "cliui": "^8.0.1"
   }
 }

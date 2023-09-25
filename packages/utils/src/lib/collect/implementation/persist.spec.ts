@@ -2,15 +2,15 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { logPersistedResults, persistReport } from './persist';
 import { readFileSync, unlinkSync } from 'fs';
 import { Report } from '@quality-metrics/models';
-import { mockConsole, unmockConsole } from './mock/helper.mock';
-import { join } from 'path';
 import {
   dummyConfig,
   dummyReport,
   mockPersistConfig,
 } from '@quality-metrics/models/testing';
+import { join } from 'path';
+import { mockConsole, unmockConsole } from './mock/helper.mock';
 
-const outputPath = 'out';
+const outputPath = 'tmp';
 const reportPath = (format = 'json') => join(outputPath, 'report.' + format);
 const readReport = (format = 'json') => {
   const reportContent = readFileSync(reportPath(format)).toString();

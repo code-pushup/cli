@@ -1,24 +1,23 @@
 import {
-  AuditGroup,
   Audit,
+  AuditGroup,
+  AuditOutput,
+  AuditReport,
   CategoryConfig,
   CoreConfig,
+  Issue,
   PersistConfig,
   PluginConfig,
   PluginReport,
   Report,
-  AuditOutputs,
-  AuditReport,
   UploadConfig,
-  AuditOutput,
-  Issue,
-} from '../src/index';
+} from '../src/';
 
 const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
-const __pluginOutputPath__ = 'out-execute-plugin.json';
+const __outputFile__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
@@ -32,7 +31,7 @@ export function mockPluginConfig(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const pluginOutputPath = __pluginOutputPath__;
+  const pluginOutputPath = `tmp/${+new Date()}-${__outputFile__}`;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -79,7 +78,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputPath, format } = opt || {};
-  outputPath = outputPath || __pluginOutputPath__;
+  outputPath = outputPath || __outputFile__;
   format = format || [];
   return {
     outputPath,

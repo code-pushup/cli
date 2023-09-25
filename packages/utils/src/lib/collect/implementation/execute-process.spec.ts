@@ -8,7 +8,7 @@ import { join } from 'path';
 import * as os from 'os';
 
 const outFolder = '';
-const outName = 'out-async-runner.json';
+const outName = 'tmp/out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
