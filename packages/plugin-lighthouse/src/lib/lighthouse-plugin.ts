@@ -20,7 +20,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       command: 'node',
       args: [
         '-e',
-        `require('fs').writeFileSync('out.json', '${JSON.stringify([
+        `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
             title: 'Largest Contentful Paint',
@@ -29,7 +29,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
           },
         ] satisfies AuditOutputs)}')`,
       ],
-      outputPath: 'out.json',
+      outputPath: 'tmp/out.json',
     },
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',

@@ -3,7 +3,7 @@ import eslintPlugin from '../../../dist/packages/plugin-eslint';
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputPath: 'cli-config-out.json' },
+  persist: { outputPath: 'tmp/cli-config-out.json' },
   categories: [],
   plugins: [
     eslintPlugin({ config: '.eslintrc.json' }),

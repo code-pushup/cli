@@ -15,7 +15,7 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('command-object-config-out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('tmp/command-object-config-out.json', '${JSON.stringify(
             [
               {
                 slug: 'command-object-audit-slug',
@@ -25,7 +25,7 @@ module.exports = {
             ],
           )}')`,
         ],
-        outputPath: 'command-object-config-out.json',
+        outputPath: 'tmp/command-object-config-out.json',
       },
       groups: [],
       slug: 'command-object-plugin',

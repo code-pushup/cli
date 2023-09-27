@@ -78,7 +78,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputPath, format } = opt || {};
-  outputPath = outputPath || __outputFile__;
+  outputPath = outputPath || `tmp/${__outputFile__}`;
   format = format || [];
   return {
     outputPath,

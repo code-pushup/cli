@@ -20,7 +20,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
       command: 'node',
       args: [
         '-e',
-        `require('fs').writeFileSync('out.json', '${JSON.stringify([
+        `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'no-any',
             title: 'No any type',
@@ -29,7 +29,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
           },
         ] satisfies AuditOutputs)}')`,
       ],
-      outputPath: 'out.json',
+      outputPath: 'tmp/out.json',
     },
     slug: 'eslint',
     title: 'execute plugin',
