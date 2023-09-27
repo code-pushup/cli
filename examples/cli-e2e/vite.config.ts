@@ -20,5 +20,6 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    globalSetup: ['global-setup.ts'],
   },
 });
