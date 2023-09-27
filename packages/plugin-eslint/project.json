@@ -31,7 +31,7 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["coverage/packages/plugin-eslint"],
+      "outputs": ["{workspaceRoot}/coverage/packages/plugin-eslint"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/plugin-eslint"

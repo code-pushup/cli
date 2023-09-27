@@ -27,7 +27,7 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["coverage/packages/plugin-lighthouse"],
+      "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse"
