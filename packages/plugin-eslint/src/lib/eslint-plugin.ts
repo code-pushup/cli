@@ -1,4 +1,4 @@
-import { PluginConfig, AuditOutputs } from '@quality-metrics/models';
+import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
 import * as eslint from 'eslint';
 
 type ESLintPluginConfig = {
@@ -17,17 +17,17 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
       },
     ],
     runner: {
-      command: 'bash',
+      command: 'node',
       args: [
-        '-c',
-        `echo '${JSON.stringify([
+        '-e',
+        `require('fs').writeFileSync('out.json', '${JSON.stringify([
           {
             slug: 'no-any',
             title: 'No any type',
             value: 0,
             score: 0,
           },
-        ] satisfies AuditOutputs)}' > out.json`,
+        ] satisfies AuditOutputs)}')`,
       ],
       outputPath: 'out.json',
     },

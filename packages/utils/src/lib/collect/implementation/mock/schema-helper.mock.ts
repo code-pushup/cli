@@ -1,12 +1,12 @@
 import {
   AuditGroup,
+  AuditReport,
   CategoryConfig,
   CoreConfig,
   PersistConfig,
   PluginConfig,
   PluginReport,
   Report,
-  AuditReport,
 } from '@quality-metrics/models';
 
 const __pluginSlug__ = 'mock-plugin-slug';
@@ -44,15 +44,15 @@ export function mockPluginConfig(opt?: {
     audits,
     groups,
     runner: {
-      command: 'bash',
+      command: 'node',
       args: [
-        '-c',
-        `echo '${JSON.stringify(
+        '-e',
+        `require('fs').writeFileSync('${outputPath}', '${JSON.stringify(
           audits.map(
             ({ slug }) =>
               mockAuditReport({ auditSlug: slug }) satisfies AuditReport,
           ),
-        )}' > ${outputPath}`,
+        )}')`,
       ],
       outputPath: outputPath,
     },
