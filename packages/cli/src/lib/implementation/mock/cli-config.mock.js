@@ -5,12 +5,12 @@ module.exports = {
     {
       audits: [],
       runner: {
-        command: 'bash',
+        command: 'node',
         args: [
-          '-c',
-          `echo '${JSON.stringify({
-            audits: [],
-          })}' > cli-config-out.json`,
+          '-e',
+          `require('fs').writeFileSync('cli-config-out.json', '${JSON.stringify(
+            { audits: [] },
+          )}')`,
         ],
         outputPath: 'cli-config-out.json',
       },

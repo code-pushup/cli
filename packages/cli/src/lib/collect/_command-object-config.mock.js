@@ -12,16 +12,18 @@ module.exports = {
         },
       ],
       runner: {
-        command: 'bash',
+        command: 'node',
         args: [
-          '-c',
-          `echo '${JSON.stringify([
-            {
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ])}' > command-object-config-out.json`,
+          '-e',
+          `require('fs').writeFileSync('command-object-config-out.json', '${JSON.stringify(
+            [
+              {
+                slug: 'command-object-audit-slug',
+                value: 0,
+                score: 0,
+              },
+            ],
+          )}')`,
         ],
         outputPath: 'command-object-config-out.json',
       },

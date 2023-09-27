@@ -48,12 +48,12 @@ export function mockPluginConfig(opt?: {
     audits,
     groups,
     runner: {
-      command: 'bash',
+      command: 'node',
       args: [
-        '-c',
-        `echo '${JSON.stringify(
+        '-e',
+        `require('fs').writeFileSync('${pluginOutputPath}', '${JSON.stringify(
           audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
-        )}' > ${pluginOutputPath}`,
+        )}')`,
       ],
       outputPath: pluginOutputPath,
     },

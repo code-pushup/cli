@@ -1,6 +1,6 @@
+import { join } from 'path';
 import { vi } from 'vitest';
 import { ProcessConfig } from '../execute-process';
-import { join } from 'path';
 
 const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
 
@@ -40,14 +40,14 @@ export function getSyncProcessRunnerConfig(
   } = { throwError: false },
 ) {
   return {
-    command: 'bash',
+    command: 'node',
     args: [
-      '-c',
-      `echo '${JSON.stringify({
+      '-e',
+      `require('fs').writeFileSync('${cfg.outputPath}', '${JSON.stringify({
         audits: cfg.throwError
           ? ({ throwError: cfg.throwError } as unknown)
           : [],
-      })}' > ${cfg.outputPath}`,
+      })}')`,
     ],
     outputPath: cfg.outputPath,
   };
