@@ -7,9 +7,6 @@
     "commit": "git-cz"
   },
   "private": true,
-  "workspaces": [
-    "dist/packages/*"
-  ],
   "engine": {
     "node": ">=18.16"
   },
