@@ -42,6 +42,7 @@
     "husky": "^8.0.0",
     "inquirer": "^8.2.6",
     "lighthouse": "^11.0.0",
+    "memfs": "^4.5.0",
     "nx": "16.7.4",
     "prettier": "^2.6.2",
     "type-fest": "^4.3.1",

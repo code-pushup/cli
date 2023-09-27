@@ -18,11 +18,13 @@ const outputPath = 'tmp';
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputPath, 'report.' + format);
 
+const config = dummyConfig();
+
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
     const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })
-      .config(dummyConfig)
+      .config(config)
       .command(command);
     const parsedArgv = (await cli.argv) as unknown as CollectOptions;
     const { persist } = parsedArgv;
@@ -43,7 +45,7 @@ describe('collect-command-object', () => {
       ),
     ];
     await yargsCli([], { middlewares })
-      .config(dummyConfig)
+      .config(config)
       .command(command)
       .parseAsync(args);
     const report = JSON.parse(readFileSync(reportPath()).toString()) as Report;
