@@ -1,16 +1,16 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { logPersistedResults, persistReport } from './persist';
+import { readFileSync, unlinkSync } from 'fs';
 import { Report } from '@quality-metrics/models';
 import {
-  MEMFS_VOLUME,
   dummyConfig,
   dummyReport,
+  MEMFS_VOLUME,
   mockPersistConfig,
 } from '@quality-metrics/models/testing';
-import { readFileSync, unlinkSync } from 'fs';
 import { vol } from 'memfs';
 import { join } from 'path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mockConsole, unmockConsole } from './mock/helper.mock';
-import { persistReport } from './persist';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
@@ -35,10 +35,9 @@ const readReport = (format: 'json' | 'md') => {
 };
 
 const config = dummyConfig(MEMFS_VOLUME);
+let logs: string[] = [];
 
 describe('persistReport', () => {
-  let logs: string[] = [];
-
   beforeEach(async () => {
     vol.reset();
     vol.fromJSON(
@@ -142,4 +141,55 @@ describe('persistReport', () => {
 
   // TODO: should throw PersistDirError
   // TODO: should throw PersistError
+});
+
+describe('logPersistedResults', () => {
+  beforeEach(async () => {
+    vol.reset();
+    vol.fromJSON(
+      {
+        [reportPath('json')]: '',
+        [reportPath('md')]: '',
+      },
+      MEMFS_VOLUME,
+    );
+    unlinkSync(reportPath('json'));
+    unlinkSync(reportPath('md'));
+
+    logs = [];
+    mockConsole(msg => logs.push(msg));
+  });
+
+  afterEach(() => {
+    logs = [];
+    unmockConsole();
+  });
+
+  it('should log report sizes correctly`', async () => {
+    logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10000] }]);
+    expect(logs.length).toBe(2);
+    expect(logs).toContain('Generated reports successfully: ');
+    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
+  });
+
+  it('should log fails correctly`', async () => {
+    logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
+    expect(logs.length).toBe(2);
+
+    expect(logs).toContain('Generated reports failed: ');
+    expect(logs).toContain('- [1mfail[22m');
+  });
+
+  it('should log report sizes and fails correctly`', async () => {
+    logPersistedResults([
+      { status: 'fulfilled', value: ['out.json', 10000] },
+      { status: 'rejected', reason: 'fail' },
+    ]);
+    expect(logs.length).toBe(4);
+    expect(logs).toContain('Generated reports successfully: ');
+    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
+
+    expect(logs).toContain('Generated reports failed: ');
+    expect(logs).toContain('- [1mfail[22m');
+  });
 });
