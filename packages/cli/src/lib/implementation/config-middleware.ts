@@ -1,8 +1,7 @@
-import { bundleRequire } from 'bundle-require';
-import { stat } from 'fs/promises';
-
-import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
-import { CommandBase, commandBaseSchema } from './base-command-config';
+import {bundleRequire} from 'bundle-require';
+import {stat} from 'fs/promises';
+import {GlobalOptions, globalOptionsSchema} from "../model";
+import {CommandBase, commandBaseSchema} from "./model";
 
 export class ConfigParseError extends Error {
   constructor(configPath: string) {
@@ -13,7 +12,7 @@ export class ConfigParseError extends Error {
 export async function configMiddleware<T = unknown>(
   processArgs: T,
 ): Promise<CommandBase> {
-  const globalCfg: GlobalCliArgs = globalCliArgsSchema.parse(processArgs);
+  const globalCfg: GlobalOptions = globalOptionsSchema.parse(processArgs);
   const { configPath } = globalCfg;
   try {
     const stats = await stat(configPath);
