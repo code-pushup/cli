@@ -4,6 +4,7 @@ import {
   CollectOptions,
   CollectOutputError,
   persistReport,
+  logPersistedResults,
 } from '@quality-metrics/utils';
 import { CommandModule } from 'yargs';
 import * as packageJson from '../../../package.json';
@@ -19,7 +20,9 @@ export function yargsCollectCommandObject() {
       version: packageJson.version,
     };
 
-    await persistReport(report, config);
+    const persistResults = await persistReport(report, config);
+
+    logPersistedResults(persistResults);
 
     // validate report
     report.plugins.forEach(plugin => {
