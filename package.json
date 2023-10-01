@@ -52,8 +52,10 @@
     "vitest": "~0.32.0"
   },
   "optionalDependencies": {
-    "@nx/nx-linux-x64-gnu": "16.7.4",
-    "@nx/nx-darwin-arm64": "^16.9.1"
+    "@esbuild/darwin-arm64": "^0.19.4",
+    "@nx/nx-darwin-arm64": "^16.9.1",
+    "@nx/nx-darwin-x64": "^16.9.1",
+    "@nx/nx-linux-x64-gnu": "16.7.4"
   },
   "config": {
     "commitizen": {
