@@ -1,8 +1,9 @@
-import eslintPlugin from '@quality-metrics/eslint-plugin';
-import lighthousePlugin from '@quality-metrics/lighthouse-plugin';
+// TODO: import plugins using NPM package names using local registry: https://github.com/flowup/quality-metrics-cli/issues/33
+import eslintPlugin from '../../../dist/packages/plugin-eslint';
+import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputPath: 'cli-config-out.json' },
+  persist: { outputPath: 'tmp/cli-config-out.json' },
   categories: [],
   plugins: [
     eslintPlugin({ config: '.eslintrc.json' }),

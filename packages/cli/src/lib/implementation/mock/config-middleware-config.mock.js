@@ -1,5 +1,5 @@
 module.exports = {
-  persist: { outputPath: 'js-out.json' },
+  persist: { outputPath: 'tmp/js-out.json' },
   plugins: [],
   categories: [],
 };

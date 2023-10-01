@@ -48,12 +48,12 @@ export function mockPluginConfig(opt?: {
     audits,
     groups,
     runner: {
-      command: 'bash',
+      command: 'node',
       args: [
-        '-c',
-        `echo '${JSON.stringify(
+        '-e',
+        `require('fs').writeFileSync('${pluginOutputPath}', '${JSON.stringify(
           audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
-        )}' > ${pluginOutputPath}`,
+        )}')`,
       ],
       outputPath: pluginOutputPath,
     },
@@ -78,7 +78,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputPath, format } = opt || {};
-  outputPath = outputPath || __outputFile__;
+  outputPath = outputPath || `tmp/${__outputFile__}`;
   format = format || [];
   return {
     outputPath,

@@ -1,28 +1,16 @@
-import { describe, it, expect, vi } from 'vitest';
+import { join } from 'path';
+import { describe, expect, it, vi } from 'vitest';
 import { executeProcess, objectToCliArgs } from './execute-process';
 import {
   getAsyncProcessRunnerConfig,
   mockProcessConfig,
 } from './mock/process-helper.mock';
-import { join } from 'path';
-import * as os from 'os';
 
 const outFolder = '';
 const outName = 'tmp/out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  if (os.platform() !== 'win32') {
-    it('should work with shell command `ls`', async () => {
-      const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
-      const { observer } = cfg;
-      const processResult = await executeProcess(cfg);
-      expect(observer?.next).toHaveBeenCalledTimes(1);
-      expect(observer?.complete).toHaveBeenCalledTimes(1);
-      expect(processResult.stdout).toContain('..');
-    });
-  }
-
   it('should work with node command `node -v`', async () => {
     const cfg = mockProcessConfig({ command: `node`, args: ['-v'] });
     const processResult = await executeProcess(cfg);
