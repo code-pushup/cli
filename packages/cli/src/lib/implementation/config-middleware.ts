@@ -1,7 +1,7 @@
-import {bundleRequire} from 'bundle-require';
-import {stat} from 'fs/promises';
-import {GlobalOptions, globalOptionsSchema} from "../model";
-import {CommandBase, commandBaseSchema} from "./model";
+import { bundleRequire } from 'bundle-require';
+import { stat } from 'fs/promises';
+import { GlobalOptions, globalOptionsSchema } from '../model';
+import { CommandBase, commandBaseSchema } from './model';
 
 export class ConfigParseError extends Error {
   constructor(configPath: string) {

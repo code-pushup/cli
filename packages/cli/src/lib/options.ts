@@ -1,6 +1,5 @@
-import {yargsGlobalOptionsDefinition} from "./implementation/global-options";
-
+import { yargsGlobalOptionsDefinition } from './implementation/global-options';
 
 export const options = {
-  ...yargsGlobalOptionsDefinition()
+  ...yargsGlobalOptionsDefinition(),
 };

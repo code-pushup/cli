@@ -1,7 +1,10 @@
-import {GlobalOptions} from "../model";
-import {Options} from "yargs";
+import { GlobalOptions } from '../model';
+import { Options } from 'yargs';
 
-export function yargsGlobalOptionsDefinition(): Record<keyof GlobalOptions, Options> {
+export function yargsGlobalOptionsDefinition(): Record<
+  keyof GlobalOptions,
+  Options
+> {
   return {
     interactive: {
       describe: 'When false disables interactive input prompts for options.',

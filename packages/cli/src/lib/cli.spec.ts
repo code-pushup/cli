@@ -4,7 +4,7 @@ import { yargsCli } from './cli';
 import { getDirname } from './implementation/utils';
 import { middlewares } from './middlewares';
 import { options as defaultOptions } from './options';
-import {CommandBase} from "./implementation/model";
+import { CommandBase } from './implementation/model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
