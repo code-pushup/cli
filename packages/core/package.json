@@ -1,0 +1,7 @@
+{
+  "name": "@quality-metrics-cli/core",
+  "version": "0.0.1",
+  "dependencies": {},
+  "type": "commonjs",
+  "main": "./index.cjs"
+}
