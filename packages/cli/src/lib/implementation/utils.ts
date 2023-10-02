@@ -1,10 +1,4 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-export const getDirname = (import_meta_url: string) =>
-  dirname(fileURLToPath(import_meta_url));
-
-// log error and flush stdout so that Yargs doesn't supress it
+// log error and flush stdout so that Yargs doesn't suppress it
 // related issue: https://github.com/yargs/yargs/issues/2118
 export function logErrorBeforeThrow<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
