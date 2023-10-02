@@ -40,7 +40,7 @@ describe('executeProcess', () => {
     expect(observer?.complete).toHaveBeenCalledTimes(1);
   });
 
-  it('should work with async script `node custom-script.js` that throws an error', async () => {
+  it('should work with async script `node custom-script.js --arg` that throws an error', async () => {
     const cfg = mockProcessConfig(
       getAsyncProcessRunnerConfig({ interval: 10, runs: 1, throwError: true }),
     );
