@@ -9,3 +9,4 @@ export {
 export { calcDuration, formatBytes } from './lib/collect/implementation/utils';
 export { reportToStdout } from './lib/collect/implementation/report-to-stdout';
 export { reportToMd } from './lib/collect/implementation/report-to-md';
+export { importModule } from './lib/collect/implementation/load-file';

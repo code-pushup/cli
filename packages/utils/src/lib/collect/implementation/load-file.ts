@@ -1,6 +1,5 @@
 import { bundleRequire, Options } from 'bundle-require';
 
-// @TODO [73] move into utils
 export async function importModule<T = unknown>(
   options: Options,
   parse?: (d: unknown) => T,
