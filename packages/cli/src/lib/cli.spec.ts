@@ -1,11 +1,11 @@
-import {join} from 'path';
-import {describe, expect, it} from 'vitest';
-import {yargsCli} from './cli';
-import {middlewares} from './middlewares';
-import {options as defaultOptions} from './options';
-import {getDirname} from './implementation/helper.mock';
-import {CollectOptions} from "@quality-metrics/core";
-import {GlobalOptions as CliGlobalOptions} from "./model";
+import { join } from 'path';
+import { describe, expect, it } from 'vitest';
+import { yargsCli } from './cli';
+import { middlewares } from './middlewares';
+import { options as defaultOptions } from './options';
+import { getDirname } from './implementation/helper.mock';
+import { CollectOptions } from '@quality-metrics/core';
+import { GlobalOptions as CliGlobalOptions } from './model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
