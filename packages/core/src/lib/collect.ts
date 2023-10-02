@@ -1,21 +1,6 @@
 import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
-import { executePlugins } from './implementation/execute-plugin';
-import { calcDuration } from './implementation/utils';
-
-/**
- * Error thrown when collect output is invalid.
- */
-export class CollectOutputError extends Error {
-  constructor(pluginSlug: string, error?: Error) {
-    super(
-      `PluginOutput ${pluginSlug} from collect command is invalid. \n Zod Error: ${error?.message}`,
-    );
-    if (error) {
-      this.name = error.name;
-      this.stack = error.stack;
-    }
-  }
-}
+import { calcDuration } from '@quality-metrics/utils';
+import { executePlugins } from './execute-plugin';
 
 export type CollectOptions = GlobalCliArgs & CoreConfig;
 

@@ -1,7 +1,7 @@
 import { reportSchema } from '@quality-metrics/models';
 import { mockCoreConfig } from '@quality-metrics/models/testing';
 import { describe, expect, it } from 'vitest';
-import { CollectOptions, collect } from '../collect/';
+import { CollectOptions, collect } from './collect';
 
 const baseOptions: CollectOptions = {
   ...mockCoreConfig(),

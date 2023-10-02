@@ -10,6 +10,6 @@
     "yargs": "^17.7.2",
     "zod": "^3.22.1",
     "@quality-metrics/models": "^0.0.1",
-    "@quality-metrics/utils": "^0.0.1"
+    "@quality-metrics-cli/core": "latest"
   }
 }

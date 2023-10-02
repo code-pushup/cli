@@ -3,5 +3,10 @@
   "version": "0.0.1",
   "dependencies": {},
   "type": "commonjs",
-  "main": "./index.cjs"
+  "main": "./index.cjs",
+  "peerDependencies": {
+    "chalk": "5.3.0",
+    "@quality-metrics/models": "latest",
+    "@quality-metrics/utils": "latest"
+  }
 }

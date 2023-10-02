@@ -3,9 +3,11 @@ import { writeFile, stat } from 'fs/promises';
 import { join } from 'path';
 import chalk from 'chalk';
 import { CoreConfig, Report } from '@quality-metrics/models';
-import { formatBytes } from './utils';
-import { reportToStdout } from './report-to-stdout';
-import { reportToMd } from './report-to-md';
+import {
+  formatBytes,
+  reportToStdout,
+  reportToMd,
+} from '@quality-metrics/utils';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
