@@ -8,7 +8,7 @@ import {
 import { pluginOutputSchema, Report } from '@quality-metrics/models';
 import * as packageJson from '../../../package.json';
 
-// @TODO move into core
+// @TODO [73] move into core
 export async function collectAndPersistReports(
   config: CollectOptions,
 ): Promise<void> {
