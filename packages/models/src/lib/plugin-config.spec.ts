@@ -79,7 +79,6 @@ describe('pluginConfigSchema', () => {
 
   it('should throw if a group has duplicate audit refs', () => {
     const auditSlug = 'no-any';
-    // @TODO use pluginConfigSchema instead of auditGroupSchema
     const cfg = mockGroupConfig({ auditSlug: [auditSlug, auditSlug] });
 
     expect(() => auditGroupSchema.parse(cfg)).toThrow(

@@ -1,10 +1,11 @@
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import { yargsCli } from './cli';
-import { getDirname } from './implementation/utils';
 import { middlewares } from './middlewares';
 import { options as defaultOptions } from './options';
-import { CommandBase } from './implementation/model';
+import { CollectOptions } from '@quality-metrics/utils';
+import { GlobalOptions } from './model';
+import { getDirname } from './implementation/helper.mock';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
@@ -16,10 +17,10 @@ const demandCommand: [number, string] = [0, 'no command required'];
 describe('CLI arguments parsing', () => {
   it('options should provide correct defaults', async () => {
     const args: string[] = [];
-    const parsedArgv: CommandBase = yargsCli(args, {
+    const parsedArgv = yargsCli(args, {
       options,
       demandCommand,
-    }).argv;
+    }).argv as unknown as GlobalOptions;
     expect(parsedArgv.configPath).toContain('code-pushup.config.js');
     expect(parsedArgv.verbose).toBe(false);
     expect(parsedArgv.interactive).toBe(true);
@@ -33,10 +34,10 @@ describe('CLI arguments parsing', () => {
       validConfigPath,
     ];
 
-    const parsedArgv: CommandBase = yargsCli(args, {
+    const parsedArgv = yargsCli(args, {
       options,
       demandCommand,
-    }).argv;
+    }).argv as unknown as GlobalOptions & CollectOptions;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.interactive).toBe(false);
@@ -44,10 +45,10 @@ describe('CLI arguments parsing', () => {
 
   it('middleware should use config correctly', async () => {
     const args: string[] = ['--configPath', validConfigPath];
-    const parsedArgv: CommandBase = await yargsCli(args, {
+    const parsedArgv = (await yargsCli(args, {
       demandCommand,
       middlewares,
-    }).argv;
+    }).argv) as unknown as GlobalOptions & CollectOptions;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');
   });
