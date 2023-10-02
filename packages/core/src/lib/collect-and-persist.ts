@@ -1,7 +1,8 @@
-import {collect, CollectOptions} from "./collect";
+import { collect, CollectOptions } from './collect';
+import { name, version } from '../../package.json';
 
-import {pluginOutputSchema, Report} from "@quality-metrics/models";
-import {logPersistedResults, persistReport} from "./persist";
+import { pluginOutputSchema, Report } from '@quality-metrics/models';
+import { logPersistedResults, persistReport } from './persist';
 
 export async function collectAndPersistReports(
   config: CollectOptions,
@@ -9,8 +10,8 @@ export async function collectAndPersistReports(
   const collectReport = await collect(config);
   const report: Report = {
     ...collectReport,
-    packageName: packageJson.name,
-    version: packageJson.version,
+    packageName: name,
+    version: version,
   };
 
   const persistResults = await persistReport(report, config);
