@@ -1,4 +1,4 @@
-import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
+import { GlobalOptions, globalOptionsSchema } from '../model';
 import { readCodePushupConfig } from './read-code-pushup-config';
 
 export class ConfigParseError extends Error {
@@ -8,7 +8,7 @@ export class ConfigParseError extends Error {
 }
 
 export async function configMiddleware<T = unknown>(processArgs: T) {
-  const globalOptions: GlobalCliArgs = globalCliArgsSchema.parse(processArgs);
+  const globalOptions: GlobalOptions = globalOptionsSchema.parse(processArgs);
   const importedRc = await readCodePushupConfig(globalOptions.configPath);
   return {
     ...importedRc,
