@@ -1,0 +1,11 @@
+{
+  "name": "@quality-metrics-cli/core",
+  "version": "0.0.1",
+  "dependencies": {
+    "@quality-metrics/models": "*",
+    "@quality-metrics/utils": "*",
+    "chalk": "^5.3.0"
+  },
+  "type": "commonjs",
+  "main": "./index.cjs"
+}

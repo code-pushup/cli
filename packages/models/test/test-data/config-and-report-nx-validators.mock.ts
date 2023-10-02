@@ -6,7 +6,7 @@ export const nxValidatorsPlugin: () => PluginConfig = (): PluginConfig =>
     runner: {
       command: 'bun',
       args: ['--help'],
-      outputPath: 'nx-validators-plugin-runner-output.json',
+      outputPath: 'tmp/nx-validators-plugin-runner-output.json',
     },
     slug: 'nx-validators',
     title: 'NxValidatorsPlugin',

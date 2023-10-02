@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { expect } from 'vitest';
 import { configMiddleware, ConfigParseError } from './config-middleware';
-import { getDirname } from './utils';
+import { getDirname } from './helper.mock';
 
 const __dirname = getDirname(import.meta.url);
 

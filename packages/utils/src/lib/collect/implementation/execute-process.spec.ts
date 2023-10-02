@@ -1,28 +1,16 @@
-import { describe, it, expect, vi } from 'vitest';
+import { join } from 'path';
+import { describe, expect, it, vi } from 'vitest';
 import { executeProcess, objectToCliArgs } from './execute-process';
 import {
   getAsyncProcessRunnerConfig,
   mockProcessConfig,
 } from './mock/process-helper.mock';
-import { join } from 'path';
-import * as os from 'os';
 
 const outFolder = '';
-const outName = 'out-async-runner.json';
+const outName = 'tmp/out-async-runner.json';
 const outputPath = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  if (os.platform() !== 'win32') {
-    it('should work with shell command `ls`', async () => {
-      const cfg = mockProcessConfig({ command: `ls`, args: ['-a'] });
-      const { observer } = cfg;
-      const processResult = await executeProcess(cfg);
-      expect(observer?.next).toHaveBeenCalledTimes(1);
-      expect(observer?.complete).toHaveBeenCalledTimes(1);
-      expect(processResult.stdout).toContain('..');
-    });
-  }
-
   it('should work with node command `node -v`', async () => {
     const cfg = mockProcessConfig({ command: `node`, args: ['-v'] });
     const processResult = await executeProcess(cfg);
@@ -52,7 +40,7 @@ describe('executeProcess', () => {
     expect(observer?.complete).toHaveBeenCalledTimes(1);
   });
 
-  it('should work with async script `node custom-script.js` that throws an error', async () => {
+  it('should work with async script `node custom-script.js --arg` that throws an error', async () => {
     const cfg = mockProcessConfig(
       getAsyncProcessRunnerConfig({ interval: 10, runs: 1, throwError: true }),
     );
@@ -72,6 +60,21 @@ describe('objectToCliArgs', () => {
     const params = { _: 'bin.js' };
     const result = objectToCliArgs(params);
     expect(result).toEqual(['bin.js']);
+  });
+
+  it('should handle shorthands arguments', () => {
+    const params = {
+      e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
+        {
+          slug: 'largest-contentful-paint',
+          title: 'Largest Contentful Paint',
+          value: 0,
+          score: 0,
+        },
+      ] satisfies AuditOutputs)}')`,
+    };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual([`-e="${params.e}"`]);
   });
 
   it('should handle string arguments', () => {

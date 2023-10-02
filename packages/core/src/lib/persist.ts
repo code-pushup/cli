@@ -1,9 +1,13 @@
 import { existsSync, mkdirSync } from 'fs';
-import { writeFile } from 'fs/promises';
+import { writeFile, stat } from 'fs/promises';
 import { join } from 'path';
+import chalk from 'chalk';
 import { CoreConfig, Report } from '@quality-metrics/models';
-import { reportToStdout } from './report-to-stdout';
-import { reportToMd } from './report-to-md';
+import {
+  formatBytes,
+  reportToStdout,
+  reportToMd,
+} from '@quality-metrics/utils';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
@@ -17,7 +21,12 @@ export class PersistError extends Error {
   }
 }
 
-export async function persistReport(report: Report, config: CoreConfig) {
+export type PersistResult = PromiseSettledResult<readonly [string, number]>[];
+
+export async function persistReport(
+  report: Report,
+  config: CoreConfig,
+): Promise<PersistResult> {
   const { persist } = config;
   const outputPath = persist.outputPath;
   let { format } = persist;
@@ -54,7 +63,8 @@ export async function persistReport(report: Report, config: CoreConfig) {
       return (
         writeFile(reportPath, content)
           // return reportPath instead of void
-          .then(() => reportPath)
+          .then(() => stat(reportPath))
+          .then(stats => [reportPath, stats.size] as const)
           .catch(e => {
             console.warn(e);
             throw new PersistError(reportPath);
@@ -62,4 +72,32 @@ export async function persistReport(report: Report, config: CoreConfig) {
       );
     }),
   );
+}
+
+export function logPersistedResults(persistResult: PersistResult) {
+  const succeededPersistedResults = persistResult.filter(
+    (result): result is PromiseFulfilledResult<[string, number]> =>
+      result.status === 'fulfilled',
+  );
+
+  if (succeededPersistedResults.length) {
+    console.log(`Generated reports successfully: `);
+    succeededPersistedResults.forEach(res => {
+      const [fileName, size] = res.value;
+      console.log(
+        `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
+      );
+    });
+  }
+
+  const failedPersistedResults = persistResult.filter(
+    (result): result is PromiseRejectedResult => result.status === 'rejected',
+  );
+
+  if (failedPersistedResults.length) {
+    console.log(`Generated reports failed: `);
+    failedPersistedResults.forEach(result => {
+      console.log(`- ${chalk.bold(result.reason)}`);
+    });
+  }
 }

@@ -1,8 +1,5 @@
-import { bundleRequire } from 'bundle-require';
-import { stat } from 'fs/promises';
-
-import { GlobalCliArgs, globalCliArgsSchema } from '@quality-metrics/models';
-import { CommandBase, commandBaseSchema } from './base-command-config';
+import { GlobalOptions, globalOptionsSchema } from '@quality-metrics/models';
+import { readCodePushupConfig } from './read-code-pushup-config';
 
 export class ConfigParseError extends Error {
   constructor(configPath: string) {
@@ -10,29 +7,12 @@ export class ConfigParseError extends Error {
   }
 }
 
-export async function configMiddleware<T = unknown>(
-  processArgs: T,
-): Promise<CommandBase> {
-  const globalCfg: GlobalCliArgs = globalCliArgsSchema.parse(processArgs);
-  const { configPath } = globalCfg;
-  try {
-    const stats = await stat(configPath);
-    if (!stats.isFile) {
-      throw new ConfigParseError(configPath);
-    }
-  } catch (err) {
-    throw new ConfigParseError(configPath);
-  }
-
-  const { mod } = await bundleRequire({
-    filepath: globalCfg.configPath,
-    format: 'esm',
-  });
-  const exportedConfig = mod.default || mod;
-
-  return commandBaseSchema.parse({
-    ...globalCfg,
-    ...exportedConfig,
+export async function configMiddleware<T = unknown>(processArgs: T) {
+  const globalOptions: GlobalOptions = globalOptionsSchema.parse(processArgs);
+  const importedRc = await readCodePushupConfig(globalOptions.configPath);
+  return {
+    ...importedRc,
     ...processArgs,
-  });
+    ...globalOptions,
+  };
 }

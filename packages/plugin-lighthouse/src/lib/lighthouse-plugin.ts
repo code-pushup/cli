@@ -1,5 +1,6 @@
+import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
+import { objectToCliArgs } from '@quality-metrics/utils';
 import { defaultConfig } from 'lighthouse';
-import { PluginConfig, AuditOutputs } from '@quality-metrics/models';
 
 type LighthousePluginConfig = {
   config: string;
@@ -17,19 +18,18 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       },
     ],
     runner: {
-      command: 'bash',
-      args: [
-        '-c',
-        `echo '${JSON.stringify([
+      command: 'node',
+      args: objectToCliArgs({
+        e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
             title: 'Largest Contentful Paint',
             value: 0,
             score: 0,
           },
-        ] satisfies AuditOutputs)}' > out.json`,
-      ],
-      outputPath: 'out.json',
+        ] satisfies AuditOutputs)}')`,
+      }),
+      outputPath: 'tmp/out.json',
     },
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',

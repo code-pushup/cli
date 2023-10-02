@@ -1,6 +1,6 @@
-import { CoreConfig, GlobalCliArgs, Report } from '@quality-metrics/models';
-import { executePlugins } from './implementation/execute-plugin';
-import { calcDuration, readPackageJson } from './implementation/utils';
+import { CoreConfig, GlobalOptions, Report } from '@quality-metrics/models';
+import { executePlugins } from './execute-plugin';
+import { calcDuration } from '@quality-metrics/utils';
 
 /**
  * Error thrown when collect output is invalid.
@@ -17,14 +17,15 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = GlobalCliArgs & CoreConfig;
+export type CollectOptions = GlobalOptions & CoreConfig;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
-export async function collect(options: CollectOptions): Promise<Report> {
-  const { version, name } = await readPackageJson();
+export async function collect(
+  options: CollectOptions,
+): Promise<Omit<Report, 'packageName' | 'version'>> {
   const { plugins, categories } = options;
 
   if (!plugins?.length) {
@@ -36,8 +37,6 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const pluginOutputs = await executePlugins(plugins);
 
   return {
-    packageName: name,
-    version,
     date,
     duration: calcDuration(start),
     categories,

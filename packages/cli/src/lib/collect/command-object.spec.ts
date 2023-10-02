@@ -1,28 +1,31 @@
-import { join } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { Report } from '@quality-metrics/models';
 import { dummyConfig } from '@quality-metrics/models/testing';
-import { CollectOptions } from '@quality-metrics/utils';
-import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
+import { CollectOptions } from '@quality-metrics/core';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { yargsCli } from '../cli';
+import { logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
-import { yargsGlobalOptionsDefinition } from '../options';
+import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
 import { yargsCollectCommandObject } from './command-object';
+import { getDirname } from '../implementation/helper.mock';
 
 const command = {
   ...yargsCollectCommandObject(),
   handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
 };
 
-const outputPath = 'out';
+const outputPath = 'tmp';
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputPath, 'report.' + format);
+
+const config = dummyConfig();
 
 describe('collect-command-object', () => {
   it('should parse arguments correctly', async () => {
     const args = ['collect', '--verbose', '--configPath', ''];
     const cli = yargsCli(args, { options: yargsGlobalOptionsDefinition() })
-      .config(dummyConfig)
+      .config(config)
       .command(command);
     const parsedArgv = (await cli.argv) as unknown as CollectOptions;
     const { persist } = parsedArgv;
@@ -43,7 +46,7 @@ describe('collect-command-object', () => {
       ),
     ];
     await yargsCli([], { middlewares })
-      .config(dummyConfig)
+      .config(config)
       .command(command)
       .parseAsync(args);
     const report = JSON.parse(readFileSync(reportPath()).toString()) as Report;

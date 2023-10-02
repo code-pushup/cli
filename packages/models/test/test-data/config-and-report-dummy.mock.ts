@@ -1,3 +1,4 @@
+import { CoreConfig } from '../../src';
 import {
   mockCategory,
   mockCoreConfig,
@@ -10,14 +11,13 @@ const auditSlug0 = ['0a', '0b', '0c', '0d'];
 const auditSlug1 = ['1a', '1b', '1c'];
 const auditSlug2 = ['2a', '2b', '2c', '2d', '2e'];
 
-export const dummyConfig = mockCoreConfig({ outputPath: 'out' });
-dummyConfig.plugins = [
+const dummyPlugins = [
   mockPluginConfig({ pluginSlug: pluginSlug[0], auditSlug: auditSlug0 }),
   mockPluginConfig({ pluginSlug: pluginSlug[1], auditSlug: auditSlug1 }),
   mockPluginConfig({ pluginSlug: pluginSlug[2], auditSlug: auditSlug2 }),
 ];
 
-dummyConfig.categories = [
+const dummyCategories = [
   mockCategory({
     pluginSlug: pluginSlug[0],
     categorySlug: 'performance',
@@ -35,8 +35,14 @@ dummyConfig.categories = [
   }),*/,
 ];
 
+export const dummyConfig = (outputPath = 'tmp'): CoreConfig => ({
+  ...mockCoreConfig({ outputPath }),
+  plugins: dummyPlugins,
+  categories: dummyCategories,
+});
+
 export const dummyReport = mockReport({
   pluginSlug: pluginSlug[0],
   auditSlug: auditSlug0,
 });
-dummyReport.categories = dummyConfig.categories;
+dummyReport.categories = dummyCategories;

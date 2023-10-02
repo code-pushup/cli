@@ -1,13 +1,7 @@
 import { z } from 'zod';
 import { generalFilePathSchema } from './implementation/schemas';
 
-export const globalCliArgsSchema = z.object({
-  interactive: z
-    .boolean({
-      description:
-        'flag if interactivity should be considered. Useful for CI runs.',
-    })
-    .default(true),
+export const globalOptionsSchema = z.object({
   verbose: z
     .boolean({
       description: 'Outputs additional information for a run',
@@ -20,4 +14,4 @@ export const globalCliArgsSchema = z.object({
     .default('code-pushup.config.js'),
 });
 
-export type GlobalCliArgs = z.infer<typeof globalCliArgsSchema>;
+export type GlobalOptions = z.infer<typeof globalOptionsSchema>;

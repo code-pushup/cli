@@ -7,9 +7,6 @@
     "commit": "git-cz"
   },
   "private": true,
-  "workspaces": [
-    "dist/packages/*"
-  ],
   "engine": {
     "node": ">=18.16"
   },
@@ -45,6 +42,7 @@
     "husky": "^8.0.0",
     "inquirer": "^8.2.6",
     "lighthouse": "^11.0.0",
+    "memfs": "^4.5.0",
     "nx": "16.7.4",
     "prettier": "^2.6.2",
     "type-fest": "^4.3.1",
@@ -54,6 +52,9 @@
     "vitest": "~0.32.0"
   },
   "optionalDependencies": {
+    "@esbuild/darwin-arm64": "^0.19.4",
+    "@nx/nx-darwin-arm64": "^16.9.1",
+    "@nx/nx-darwin-x64": "^16.9.1",
     "@nx/nx-linux-x64-gnu": "16.7.4"
   },
   "config": {

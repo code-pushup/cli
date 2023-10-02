@@ -5,7 +5,7 @@ import {
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { executeProcess, ProcessObserver } from './execute-process';
+import { executeProcess, ProcessObserver } from '@quality-metrics/utils';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -26,7 +26,7 @@ export class PluginOutputError extends Error {
  * Execute a plugin.
  *
  * @public
- * @param cfg - {@link ProcessConfig} object with runner and meta
+ * @param pluginConfig - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
  * @throws {PluginOutputError} - if plugin runner output is invalid
@@ -45,11 +45,12 @@ export class PluginOutputError extends Error {
  *  }
  */
 export async function executePlugin(
-  cfg: PluginConfig,
+  pluginConfig: PluginConfig,
   observer?: ProcessObserver,
 ): Promise<PluginOutput> {
-  const { slug, title, description, docsUrl } = cfg;
-  const { args, command } = cfg.runner;
+  const { slug, title, description, docsUrl, version, packageName } =
+    pluginConfig;
+  const { args, command } = pluginConfig.runner;
 
   const { duration, date } = await executeProcess({
     command,
@@ -58,13 +59,18 @@ export async function executePlugin(
   });
 
   try {
-    const processOutputPath = join(process.cwd(), cfg.runner.outputPath);
+    const processOutputPath = join(
+      process.cwd(),
+      pluginConfig.runner.outputPath,
+    );
     // read process output from file system and parse it
     const audits = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
 
     return {
+      version,
+      packageName,
       slug,
       title,
       description,
