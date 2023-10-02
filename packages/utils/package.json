@@ -4,6 +4,7 @@
   "dependencies": {
     "@quality-metrics/models": "*",
     "chalk": "^5.3.0",
-    "cliui": "^8.0.1"
+    "cliui": "^8.0.1",
+    "bundle-require": "^4.0.1"
   }
 }
