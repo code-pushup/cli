@@ -183,24 +183,31 @@ export function objectToCliArgs(
   params: Record<string, number | string | boolean | string[]> | { _: string },
 ): string[] {
   return Object.entries(params).flatMap(([key, value]) => {
+    // process/file/script
     if (key === '_') {
       return [value.toString()];
     }
+    const prefix = key.length === 1 ? '-' : '--';
+    // "-*" arguments (shorthands)
+    if (Array.isArray(value)) {
+      return value.map(v => `${prefix}${key}="${v}"`);
+    }
+    // --* arguments ==========
 
     if (Array.isArray(value)) {
-      return value.map(v => `--${key}="${v}"`);
+      return value.map(v => `${prefix}${key}="${v}"`);
     }
 
     if (typeof value === 'string') {
-      return [`--${key}="${value}"`];
+      return [`${prefix}${key}="${value}"`];
     }
 
     if (typeof value === 'number') {
-      return [`--${key}=${value}`];
+      return [`${prefix}${key}=${value}`];
     }
 
     if (typeof value === 'boolean') {
-      return [`--${value ? '' : 'no-'}${key}`];
+      return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
 
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);

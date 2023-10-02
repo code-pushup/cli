@@ -1,4 +1,5 @@
 import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
+import { objectToCliArgs } from '@quality-metrics/utils';
 import * as eslint from 'eslint';
 
 type ESLintPluginConfig = {
@@ -18,9 +19,8 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
     ],
     runner: {
       command: 'node',
-      args: [
-        '-e',
-        `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
+      args: objectToCliArgs({
+        e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'no-any',
             title: 'No any type',
@@ -28,7 +28,7 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
             score: 0,
           },
         ] satisfies AuditOutputs)}')`,
-      ],
+      }),
       outputPath: 'tmp/out.json',
     },
     slug: 'eslint',

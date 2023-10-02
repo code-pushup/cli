@@ -1,4 +1,5 @@
 import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
+import { objectToCliArgs } from '@quality-metrics/utils';
 import { defaultConfig } from 'lighthouse';
 
 type LighthousePluginConfig = {
@@ -18,9 +19,8 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
     ],
     runner: {
       command: 'node',
-      args: [
-        '-e',
-        `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
+      args: objectToCliArgs({
+        e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
             title: 'Largest Contentful Paint',
@@ -28,7 +28,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
             score: 0,
           },
         ] satisfies AuditOutputs)}')`,
-      ],
+      }),
       outputPath: 'tmp/out.json',
     },
     slug: 'lighthouse',
