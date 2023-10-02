@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { yargsCli } from './cli';
 import { middlewares } from './middlewares';
 import { options as defaultOptions } from './options';
-import { getDirname } from './implementation/helper.mock';
 import { CollectOptions } from '@quality-metrics/core';
-import { GlobalOptions as CliGlobalOptions } from './model';
+import { getDirname } from './implementation/helper.mock';
+import { GlobalOptions } from './model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
@@ -20,7 +20,7 @@ describe('CLI arguments parsing', () => {
     const parsedArgv = yargsCli(args, {
       options,
       demandCommand,
-    }).argv as unknown as CliGlobalOptions & CollectOptions;
+    }).argv as unknown as GlobalOptions;
     expect(parsedArgv.configPath).toContain('code-pushup.config.js');
     expect(parsedArgv.verbose).toBe(false);
     expect(parsedArgv.interactive).toBe(true);
@@ -37,7 +37,7 @@ describe('CLI arguments parsing', () => {
     const parsedArgv = yargsCli(args, {
       options,
       demandCommand,
-    }).argv as unknown as CliGlobalOptions;
+    }).argv as unknown as GlobalOptions & CollectOptions;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.interactive).toBe(false);
@@ -48,7 +48,7 @@ describe('CLI arguments parsing', () => {
     const parsedArgv = (await yargsCli(args, {
       demandCommand,
       middlewares,
-    }).argv) as unknown as CliGlobalOptions & CollectOptions;
+    }).argv) as unknown as GlobalOptions & CollectOptions;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');
   });
