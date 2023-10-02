@@ -1,12 +1,11 @@
 {
   "name": "@quality-metrics-cli/core",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "@quality-metrics/models": "*",
+    "@quality-metrics/utils": "*",
+    "chalk": "^5.3.0"
+  },
   "type": "commonjs",
-  "main": "./index.cjs",
-  "peerDependencies": {
-    "chalk": "5.3.0",
-    "@quality-metrics/models": "latest",
-    "@quality-metrics/utils": "latest"
-  }
+  "main": "./index.cjs"
 }
