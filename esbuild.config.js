@@ -12,9 +12,13 @@ esbuild.build({
         build.onEnd(result => {
           if (result.errors.length > 0) return;
 
-          execSync(
-            `tsc --emitDeclarationOnly --project packages/${project}/tsconfig.lib.json --outDir dist`,
-          );
+          try {
+            execSync(
+              `tsc --emitDeclarationOnly --project packages/${project}/tsconfig.lib.json --outDir dist`,
+            );
+          } catch (err) {
+            console.error(err);
+          }
         });
       },
     },

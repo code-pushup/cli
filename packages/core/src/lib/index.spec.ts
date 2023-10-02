@@ -6,7 +6,6 @@ import { CollectOptions, collect } from './collect';
 const baseOptions: CollectOptions = {
   ...mockCoreConfig(),
   configPath: '',
-  interactive: true,
   verbose: false,
 };
 

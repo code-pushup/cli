@@ -10,6 +10,7 @@ export const nxValidatorsPlugin: () => PluginConfig = (): PluginConfig =>
     },
     slug: 'nx-validators',
     title: 'NxValidatorsPlugin',
+    icon: 'nrwl',
     docsUrl: `https://github.com/BioPhoton/nx-validators/tree/main/README.md`,
     groups: [
       {
