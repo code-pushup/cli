@@ -5,7 +5,7 @@ import {
   CollectOutputError,
   persistReport,
   logPersistedResults,
-} from '@quality-metrics/utils';
+} from '@quality-metrics-cli/core';
 import { CommandModule } from 'yargs';
 import * as packageJson from '../../../package.json';
 

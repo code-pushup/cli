@@ -12,12 +12,9 @@
         "main": "packages/utils/src/index.ts",
         "tsConfig": "packages/utils/tsconfig.lib.json",
         "assets": ["packages/utils/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "generatePackageJson": true,
+        "format": ["cjs"]
       }
-    },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
-      "dependsOn": ["build"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
@@ -31,15 +28,10 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/utils"
       }
     }
   },
