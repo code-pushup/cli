@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { yargsCli } from './cli';
 import { middlewares } from './middlewares';
 import { options as defaultOptions } from './options';
-import { CollectOptions } from '@quality-metrics/utils';
-import { GlobalOptions } from './model';
+import { CollectOptions } from '@quality-metrics/core';
 import { getDirname } from './implementation/helper.mock';
+import { GlobalOptions } from './model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);

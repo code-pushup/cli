@@ -5,7 +5,7 @@ import {
 } from '@quality-metrics/models';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { executeProcess, ProcessObserver } from './execute-process';
+import { executeProcess, ProcessObserver } from '@quality-metrics/utils';
 
 /**
  * Error thrown when plugin output is invalid.

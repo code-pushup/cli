@@ -1,6 +1,6 @@
 import { CoreConfig, GlobalOptions, Report } from '@quality-metrics/models';
-import { executePlugins } from './implementation/execute-plugin';
-import { calcDuration } from './implementation/utils';
+import { executePlugins } from './execute-plugin';
+import { calcDuration } from '@quality-metrics/utils';
 
 /**
  * Error thrown when collect output is invalid.

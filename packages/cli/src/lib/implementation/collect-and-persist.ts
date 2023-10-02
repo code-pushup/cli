@@ -1,10 +1,9 @@
 import {
   collect,
   CollectOptions,
-  CollectOutputError,
   logPersistedResults,
   persistReport,
-} from '@quality-metrics/utils';
+} from '@quality-metrics/core';
 import { pluginOutputSchema, Report } from '@quality-metrics/models';
 import * as packageJson from '../../../package.json';
 
@@ -29,7 +28,7 @@ export async function collectAndPersistReports(
       // Running checks after persisting helps while debugging as you can check the invalid output after the error
       pluginOutputSchema.parse(plugin);
     } catch (e) {
-      throw new CollectOutputError(plugin.slug, e as Error);
+      throw new Error(`${plugin.slug} - ${(e as Error).message}`);
     }
   });
 }

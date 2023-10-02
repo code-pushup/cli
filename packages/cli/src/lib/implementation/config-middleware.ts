@@ -1,4 +1,4 @@
-import { GlobalOptions, globalOptionsSchema } from '../model';
+import { GlobalOptions, globalOptionsSchema } from '@quality-metrics/models';
 import { readCodePushupConfig } from './read-code-pushup-config';
 
 export class ConfigParseError extends Error {
