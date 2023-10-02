@@ -1,9 +1,9 @@
-import { CoreConfig, GlobalOptions } from '@quality-metrics/models';
-import { uploadToPortal, ReportFragment } from '@code-pushup/portal-client';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import {ReportFragment, uploadToPortal} from '@code-pushup/portal-client';
+import {readFileSync} from 'fs';
+import {join} from 'path';
+import {CommandBaseOptions} from "../implementation/model";
 
-export type UploadOptions = GlobalOptions & CoreConfig;
+export type UploadOptions = CommandBaseOptions;
 
 /**
  * Uploads collected audits to the portal

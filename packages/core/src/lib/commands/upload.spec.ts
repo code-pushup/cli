@@ -1,4 +1,6 @@
 import { Mock, vi } from 'vitest';
+import {upload} from "./upload";
+import {CoreConfig, GlobalOptions} from "@quality-metrics/models";
 
 let mockRequest: Mock;
 
@@ -36,6 +38,8 @@ vi.mock('graphql-request', () => ({
 
 describe('uploadToPortal', () => {
   test('should send GraphQL request', async () => {
-    // @TODO
+    const cfg: CoreConfig & GlobalOptions = {
+    } as any
+    upload(cfg)
   });
 });
