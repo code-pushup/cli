@@ -59,6 +59,7 @@ export function mockPluginConfig(opt?: {
     },
     slug: pluginSlug,
     title: 'execute plugin',
+    icon: 'nrwl',
     description: 'Plugin description for ' + pluginSlug,
     docsUrl: 'https://my-plugin.docs.dev?' + pluginSlug,
   };
@@ -204,7 +205,7 @@ export function mockPluginReport(opt?: {
     title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-    icon: 'socket',
+    icon: 'nrwl',
     version: '0.0.1',
     packageName: '@' + pluginSlug,
     audits: Array.isArray(auditSlug)
@@ -256,7 +257,7 @@ export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
 
 export function mockAuditOutputs(opt?: {
   auditSlug: string | string[];
-}): AuditOutputs {
+}): AuditOutput[] {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return Array.isArray(auditSlug)

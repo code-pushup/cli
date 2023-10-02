@@ -10,6 +10,7 @@ export const lighthousePlugin: () => PluginConfig = () =>
     },
     slug: 'lighthouse',
     title: 'lighthouse',
+    icon: 'lighthouse',
     description: '',
     docsUrl: `https://github.com/GoogleChrome/lighthouse/tree/main/README.md`,
     groups: [],
