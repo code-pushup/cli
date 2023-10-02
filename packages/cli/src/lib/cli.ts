@@ -1,4 +1,4 @@
-import { CoreConfig, GlobalCliArgs } from '@quality-metrics/models';
+import { CoreConfig, GlobalOptions } from '@quality-metrics/models';
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -30,7 +30,7 @@ export function yargsCli(
       applyBeforeValidation?: boolean;
     }[];
   },
-): Argv<CoreConfig & GlobalCliArgs> {
+): Argv<CoreConfig & GlobalOptions> {
   const { usageMessage, scriptName } = cfg;
   let { commands, options, middlewares /*demandCommand*/ } = cfg;
   // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!']; @TODO implement when commands are present
@@ -81,5 +81,5 @@ export function yargsCli(
   });
 
   // return CLI object
-  return cli as unknown as Argv<CoreConfig & GlobalCliArgs>;
+  return cli as unknown as Argv<CoreConfig & GlobalOptions>;
 }
