@@ -28,7 +28,7 @@ export async function collectAndPersistReports(
       // Running checks after persisting helps while debugging as you can check the invalid output after the error
       pluginOutputSchema.parse(plugin);
     } catch (e) {
-      throw new Error(plugin.slug + (e as Error).message);
+      throw new Error(`${plugin.slug} - ${(e as Error).message}`);
     }
   });
 }
