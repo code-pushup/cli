@@ -1,16 +1,16 @@
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import { yargsCli } from './cli';
-import { CommandBase } from './implementation/base-command-config';
 import { getDirname } from './implementation/utils';
 import { middlewares } from './middlewares';
-import { yargsGlobalOptionsDefinition } from './options';
+import { options as defaultOptions } from './options';
+import { CommandBase } from './implementation/model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
 const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
 
-const options = yargsGlobalOptionsDefinition();
+const options = defaultOptions;
 const demandCommand: [number, string] = [0, 'no command required'];
 
 describe('CLI arguments parsing', () => {

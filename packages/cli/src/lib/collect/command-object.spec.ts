@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { yargsCli } from '../cli';
 import { getDirname, logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
-import { yargsGlobalOptionsDefinition } from '../options';
+import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
 import { yargsCollectCommandObject } from './command-object';
 
 const command = {

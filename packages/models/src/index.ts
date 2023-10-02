@@ -1,5 +1,5 @@
 export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
-export { GlobalCliArgs, globalCliArgsSchema } from './lib/global-cli-options';
+export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {
   CoreConfig,
   coreConfigSchema,
