@@ -10,7 +10,7 @@ import {
 } from '@quality-metrics/models/testing';
 import { vol } from 'memfs';
 import { join } from 'path';
-import { mockConsole, unmockConsole } from '../../test/console.mock';
+import { mockConsole, unmockConsole } from '../../../test/console.mock';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');

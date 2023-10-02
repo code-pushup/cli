@@ -1,13 +1,9 @@
-import { CoreConfig, GlobalCliArgs } from '@quality-metrics/models';
-import {
-  uploadToPortal,
-  MutationSaveReportArgs,
-  ReportFragment,
-} from '@code-pushup/portal-client';
+import { CoreConfig, GlobalOptions } from '@quality-metrics/models';
+import { uploadToPortal, ReportFragment } from '@code-pushup/portal-client';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-export type UploadOptions = GlobalCliArgs & CoreConfig;
+export type UploadOptions = GlobalOptions & CoreConfig;
 
 /**
  * Uploads collected audits to the portal
@@ -25,7 +21,7 @@ export async function upload(options: UploadOptions): Promise<ReportFragment> {
     readFileSync(join(outputPath, 'report.json')).toString(),
   );
 
-  const data: MutationSaveReportArgs = {
+  const data = {
     ...report,
     organization,
     project,

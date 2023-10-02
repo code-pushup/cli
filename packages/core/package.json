@@ -4,7 +4,8 @@
   "dependencies": {
     "@quality-metrics/models": "*",
     "@quality-metrics/utils": "*",
-    "chalk": "^5.3.0"
+    "chalk": "^5.3.0",
+    "@code-pushup/portal-client": "^0.1.2"
   },
   "type": "commonjs",
   "main": "./index.cjs"

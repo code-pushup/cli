@@ -1,3 +1,6 @@
-export { logPersistedResults, persistReport } from './lib/persist';
-export { executePlugins } from './lib/execute-plugin';
-export { collect, CollectOptions } from './lib/collect';
+export {
+  logPersistedResults,
+  persistReport,
+} from './lib/implementation/persist';
+export { executePlugins } from './lib/implementation/execute-plugin';
+export { collect, CollectOptions } from './lib/commands/collect';

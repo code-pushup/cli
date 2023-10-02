@@ -1,5 +1,5 @@
 import { CoreConfig, GlobalOptions, Report } from '@quality-metrics/models';
-import { executePlugins } from './execute-plugin';
+import { executePlugins } from '../implementation/execute-plugin';
 import { calcDuration } from '@quality-metrics/utils';
 
 /**

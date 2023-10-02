@@ -11,6 +11,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
+    "@code-pushup/portal-client": "^0.1.2",
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",
     "cliui": "^8.0.1",
