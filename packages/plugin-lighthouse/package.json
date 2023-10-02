@@ -2,7 +2,6 @@
   "name": "@quality-metrics/lighthouse-plugin",
   "version": "0.0.1",
   "dependencies": {
-  
     "@quality-metrics/models": "*",
     "@quality-metrics/utils": "*",
     "lighthouse": "^11.0.0"

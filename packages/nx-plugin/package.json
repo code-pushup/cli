@@ -2,7 +2,6 @@
   "name": "@quality-metrics/nx-plugin",
   "version": "0.0.1",
   "dependencies": {
-  
     "@nx/devkit": "^16.8.1",
     "tslib": "2.6.2"
   },
