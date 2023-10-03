@@ -1,5 +1,5 @@
 module.exports = {
-  persist: { outputPath: 'cjs-out.json' },
+  persist: { outputPath: 'tmp/cjs-out.json' },
   plugins: [],
   categories: [],
 };

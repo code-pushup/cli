@@ -33,5 +33,6 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
     },
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',
+    icon: 'lighthouse',
   };
 }
