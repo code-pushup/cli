@@ -204,9 +204,9 @@ export function mockPluginReport(opt?: {
     title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-    icon: 'socket',
+    icon: 'eslint',
     version: '0.0.1',
-    packageName: '@' + pluginSlug,
+    packageName: pluginSlug,
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],

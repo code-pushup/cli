@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { hasMissingStrings } from './implementation/utils';
 import {
+  auditGroupSchema,
   AuditOutputs,
   auditOutputSchema,
   auditSchema,
@@ -26,6 +27,7 @@ export const pluginReportSchema = pluginSchema
   .merge(
     z.object({
       audits: z.array(auditReportSchema),
+      groups: z.array(auditGroupSchema),
     }),
   );
 export type PluginReport = z.infer<typeof pluginReportSchema>;

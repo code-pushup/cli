@@ -196,14 +196,13 @@ export const auditOutputSchema = auditSchema.merge(
       displayValue: z
         .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
         .optional(),
-      value: positiveIntSchema('Raw numeric value').optional(),
+      value: positiveIntSchema('Raw numeric value'),
       score: z
         .number({
           description: 'Value between 0 and 1',
         })
         .min(0)
-        .max(1)
-        .optional(),
+        .max(1),
       details: z
         .object(
           {
