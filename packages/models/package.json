@@ -1,5 +1,5 @@
 {
-  "name": "@quality-metrics/models",
+  "name": "@code-pushup/models",
   "version": "0.0.1",
   "dependencies": {
     "@code-pushup/portal-client": "^0.1.2",

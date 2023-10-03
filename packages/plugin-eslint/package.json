@@ -1,9 +1,9 @@
 {
-  "name": "@quality-metrics/eslint-plugin",
+  "name": "@code-pushup/eslint-plugin",
   "version": "0.0.1",
   "dependencies": {
-    "@quality-metrics/models": "*",
-    "@quality-metrics/utils": "*",
-    "eslint": "~8.46.0"
+    "eslint": "~8.46.0",
+    "@code-pushup/models": "*",
+    "@code-pushup/utils": "*"
   }
 }
