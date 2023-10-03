@@ -1,5 +1,5 @@
 {
-  "name": "@quality-metrics/nx-plugin",
+  "name": "@code-pushup/nx-plugin",
   "version": "0.0.1",
   "dependencies": {
     "@nx/devkit": "^16.8.1",

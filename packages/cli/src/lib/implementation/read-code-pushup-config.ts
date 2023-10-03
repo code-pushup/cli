@@ -1,6 +1,6 @@
 import { CoreConfig, coreConfigSchema } from '@quality-metrics/models';
 import { stat } from 'fs/promises';
-import { importModule } from './load-file';
+import { importModule } from '@quality-metrics/utils';
 import { ConfigParseError } from './config-middleware';
 
 // @TODO [73] move into core
