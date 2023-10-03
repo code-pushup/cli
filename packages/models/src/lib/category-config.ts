@@ -31,14 +31,25 @@ export const categoryConfigSchema = scorableSchema(
   ),
   getDuplicateRefsInCategoryMetrics,
   duplicateRefsInCategoryMetricsErrorMsg,
-).merge(
-  metaSchema({
-    titleDescription: 'Category Title',
-    docsUrlDescription: 'Category docs RUL',
-    descriptionDescription: 'Category description',
-    description: 'Meta info for category',
-  }),
-);
+)
+  .merge(
+    metaSchema({
+      titleDescription: 'Category Title',
+      docsUrlDescription: 'Category docs RUL',
+      descriptionDescription: 'Category description',
+      description: 'Meta info for category',
+    }),
+  )
+  .merge(
+    z.object({
+      isBinary: z
+        .boolean({
+          description:
+            'Is this a binary category (i.e. only a perfect score considered a "pass")?',
+        })
+        .optional(),
+    }),
+  );
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
