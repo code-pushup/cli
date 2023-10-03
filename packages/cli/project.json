@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
+        "main": "packages/cli/src/bin.ts",
         "tsConfig": "packages/cli/tsconfig.lib.json",
         "assets": ["packages/cli/*.md"],
         "esbuildConfig": "esbuild.config.js"
@@ -20,7 +20,7 @@
       "dependsOn": ["build"]
     },
     "exec": {
-      "command": "node dist/packages/cli/index.js",
+      "command": "npx dist/packages/cli",
       "dependsOn": ["build"]
     },
     "lint": {

@@ -27,7 +27,7 @@ export const pluginReportSchema = pluginSchema
   .merge(
     z.object({
       audits: z.array(auditReportSchema),
-      groups: z.array(auditGroupSchema),
+      groups: z.array(auditGroupSchema).optional(),
     }),
   );
 export type PluginReport = z.infer<typeof pluginReportSchema>;

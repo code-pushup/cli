@@ -246,14 +246,14 @@ export const pluginOutputSchema = pluginSchema
 export type PluginOutput = z.infer<typeof pluginOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: { slug: string }[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
 
-function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
+function getDuplicateSlugsInAudits(audits: { slug: string }[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 

@@ -2,6 +2,7 @@ import {
   Audit,
   AuditGroup,
   AuditOutput,
+  AuditOutputs,
   AuditReport,
   CategoryConfig,
   CoreConfig,
@@ -207,6 +208,7 @@ export function mockPluginReport(opt?: {
     icon: 'eslint',
     version: '0.0.1',
     packageName: pluginSlug,
+    groups: [],
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
@@ -271,9 +273,9 @@ export function mockAuditOutput(opt?: { auditSlug: string }): AuditOutput {
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return {
     slug: auditSlug,
-    title: 'Title of ' + auditSlug,
-    description: 'Description of ' + auditSlug,
-    docsUrl: 'https://audit.dev?' + auditSlug,
+    title: 'title' + auditSlug,
+    description: auditSlug + auditSlug,
+    docsUrl: 'mock.io/audit',
     details: {
       issues: [mockIssueOutput()],
     },
