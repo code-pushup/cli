@@ -1,5 +1,5 @@
 {
-  "name": "@quality-metrics/core",
+  "name": "@code-pushup/core",
   "version": "0.0.1",
   "dependencies": {
     "@quality-metrics/models": "*",

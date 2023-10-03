@@ -5,7 +5,8 @@ export {
   ProcessObserver,
   ProcessError,
   objectToCliArgs,
-} from './lib/collect/implementation/execute-process';
-export { calcDuration, formatBytes } from './lib/collect/implementation/utils';
-export { reportToStdout } from './lib/collect/implementation/report-to-stdout';
-export { reportToMd } from './lib/collect/implementation/report-to-md';
+} from './lib/execute-process';
+export { calcDuration, formatBytes } from './lib/utils';
+export { reportToStdout } from './lib/report-to-stdout';
+export { reportToMd } from './lib/report-to-md';
+export { importModule } from './lib/load-file';

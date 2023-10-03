@@ -2,7 +2,6 @@ import {
   Audit,
   AuditGroup,
   AuditOutput,
-  AuditOutputs,
   AuditReport,
   CategoryConfig,
   CoreConfig,
@@ -60,6 +59,7 @@ export function mockPluginConfig(opt?: {
     },
     slug: pluginSlug,
     title: 'execute plugin',
+    icon: 'nrwl',
     description: 'Plugin description for ' + pluginSlug,
     docsUrl: 'https://my-plugin.docs.dev?' + pluginSlug,
   };
@@ -205,7 +205,7 @@ export function mockPluginReport(opt?: {
     title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
-    icon: 'eslint',
+    icon: 'nrwl',
     version: '0.0.1',
     packageName: pluginSlug,
     groups: [],
@@ -260,7 +260,7 @@ export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
 
 export function mockAuditOutputs(opt?: {
   auditSlug: string | string[];
-}): AuditOutputs {
+}): AuditOutput[] {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return Array.isArray(auditSlug)
@@ -273,9 +273,9 @@ export function mockAuditOutput(opt?: { auditSlug: string }): AuditOutput {
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return {
     slug: auditSlug,
-    title: 'title' + auditSlug,
-    description: auditSlug + auditSlug,
-    docsUrl: 'mock.io/audit',
+    title: 'Title of ' + auditSlug,
+    description: 'Description of ' + auditSlug,
+    docsUrl: 'https://audit.dev?' + auditSlug,
     details: {
       issues: [mockIssueOutput()],
     },

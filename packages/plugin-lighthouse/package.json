@@ -1,9 +1,9 @@
 {
-  "name": "@quality-metrics/lighthouse-plugin",
+  "name": "@code-pushup/lighthouse-plugin",
   "version": "0.0.1",
   "dependencies": {
-    "@quality-metrics/models": "*",
-    "@quality-metrics/utils": "*",
-    "lighthouse": "^11.0.0"
+    "lighthouse": "^11.0.0",
+    "@code-pushup/models": "*",
+    "@code-pushup/utils": "*"
   }
 }

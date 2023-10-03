@@ -1,5 +1,5 @@
 export default {
-  persist: { outputPath: 'mjs-out.json' },
+  persist: { outputPath: 'tmp/mjs-out.json' },
   plugins: [],
   categories: [],
 };

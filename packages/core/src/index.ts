@@ -4,3 +4,4 @@ export {
 } from './lib/implementation/persist';
 export { executePlugins } from './lib/implementation/execute-plugin';
 export { collect, CollectOptions } from './lib/commands/collect';
+export { collectAndPersistReports } from './lib/collect-and-persist';

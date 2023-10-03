@@ -1,3 +1,4 @@
+import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import { z } from 'zod';
 import {
   executionMetaSchema,
@@ -17,6 +18,11 @@ import {
   hasMissingStrings,
 } from './implementation/utils';
 
+export const materialIconSchema = z.enum(
+  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
+  { description: 'Icon from VSCode Material Icons extension' },
+);
+
 export const pluginSchema = packageVersionSchema({
   optional: true,
 })
@@ -31,9 +37,7 @@ export const pluginSchema = packageVersionSchema({
   .merge(
     z.object({
       slug: slugSchema('References plugin. ID (unique within core config)'),
-      icon: z.union([z.unknown(), z.string()], {
-        description: 'Icon from VSCode Material Icons extension',
-      }),
+      icon: materialIconSchema,
     }),
   );
 

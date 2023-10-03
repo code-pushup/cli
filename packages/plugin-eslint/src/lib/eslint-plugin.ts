@@ -33,5 +33,6 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
     },
     slug: 'eslint',
     title: 'execute plugin',
+    icon: 'eslint',
   };
 }

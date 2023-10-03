@@ -3,9 +3,9 @@ import {
   PluginOutput,
   auditOutputsSchema,
 } from '@quality-metrics/models';
+import { ProcessObserver, executeProcess } from '@quality-metrics/utils';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { executeProcess, ProcessObserver } from '@quality-metrics/utils';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -48,7 +48,7 @@ export async function executePlugin(
   pluginConfig: PluginConfig,
   observer?: ProcessObserver,
 ): Promise<PluginOutput> {
-  const { slug, title, description, docsUrl, version, packageName } =
+  const { slug, title, icon, description, docsUrl, version, packageName } =
     pluginConfig;
   const { args, command } = pluginConfig.runner;
 
@@ -73,6 +73,7 @@ export async function executePlugin(
       packageName,
       slug,
       title,
+      icon,
       description,
       docsUrl,
       date,

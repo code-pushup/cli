@@ -1,21 +1,17 @@
-import {
-  collect,
-  CollectOptions,
-  logPersistedResults,
-  persistReport,
-} from '@quality-metrics/core';
-import { pluginOutputSchema, Report } from '@quality-metrics/models';
-import * as packageJson from '../../../package.json';
+import { collect, CollectOptions } from './collect';
+import { name, version } from '../../package.json';
 
-// @TODO [73] move into core
+import { pluginOutputSchema, Report } from '@quality-metrics/models';
+import { logPersistedResults, persistReport } from './persist';
+
 export async function collectAndPersistReports(
   config: CollectOptions,
 ): Promise<void> {
   const collectReport = await collect(config);
   const report: Report = {
     ...collectReport,
-    packageName: packageJson.name,
-    version: packageJson.version,
+    packageName: name,
+    version: version,
   };
 
   const persistResults = await persistReport(report, config);

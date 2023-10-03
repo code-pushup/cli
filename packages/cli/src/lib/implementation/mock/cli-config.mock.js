@@ -16,6 +16,7 @@ module.exports = {
       },
       slug: 'execute-plugin',
       title: 'execute plugin',
+      icon: 'javascript',
     },
   ],
 };

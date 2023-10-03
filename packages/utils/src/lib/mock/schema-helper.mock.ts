@@ -178,7 +178,7 @@ export function mockPluginReport(opt?: {
     slug: pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
     title: 'Mock plugin Name',
-    icon: 'socket',
+    icon: 'nrwl',
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
