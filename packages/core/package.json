@@ -1,5 +1,5 @@
 {
-  "name": "@quality-metrics-cli/core",
+  "name": "@quality-metrics/core",
   "version": "0.0.1",
   "dependencies": {
     "@quality-metrics/models": "*",

@@ -1,7 +1,7 @@
-import {Report} from '@quality-metrics/models';
-import {executePlugins} from '../implementation/execute-plugin';
-import {calcDuration} from '@quality-metrics/utils';
-import {CommandBaseOptions} from "../implementation/model";
+import { Report } from '@quality-metrics/models';
+import { executePlugins } from '../implementation/execute-plugin';
+import { calcDuration } from '@quality-metrics/utils';
+import { CommandBaseOptions } from '../implementation/model';
 
 /**
  * Error thrown when collect output is invalid.
@@ -27,7 +27,7 @@ export type CollectOptions = CommandBaseOptions;
 export async function collect(
   options: CollectOptions,
 ): Promise<Omit<Report, 'packageName' | 'version'>> {
-  const {plugins, categories} = options;
+  const { plugins, categories } = options;
 
   if (!plugins?.length) {
     throw new Error('No plugins registered');

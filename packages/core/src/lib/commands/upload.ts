@@ -1,7 +1,7 @@
-import {ReportFragment, uploadToPortal} from '@code-pushup/portal-client';
-import {readFileSync} from 'fs';
-import {join} from 'path';
-import {CommandBaseOptions} from "../implementation/model";
+import { ReportFragment, uploadToPortal } from '@code-pushup/portal-client';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { CommandBaseOptions } from '../implementation/model';
 
 export type UploadOptions = CommandBaseOptions;
 
