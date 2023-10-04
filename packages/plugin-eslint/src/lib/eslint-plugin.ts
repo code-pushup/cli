@@ -1,22 +1,31 @@
 import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
 import { objectToCliArgs } from '@quality-metrics/utils';
-import * as eslint from 'eslint';
+import { ESLint } from 'eslint';
+import { listAudits } from './meta/audits';
 
-type ESLintPluginConfig = {
-  config: string;
+export type ESLintPluginConfig = {
+  eslintrc: string;
+  patterns: string | string[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
-  // This line is here to keep errors related to imports and engines
-  eslint;
+export async function eslintPlugin({
+  eslintrc,
+  patterns,
+}: ESLintPluginConfig): Promise<PluginConfig> {
+  const eslint = new ESLint({
+    useEslintrc: false,
+    baseConfig: { extends: eslintrc },
+  });
+
+  const audits = await listAudits(eslint, patterns);
+
   return {
-    audits: [
-      {
-        slug: 'no-any',
-        title: 'No any type',
-      },
-    ],
+    slug: 'eslint',
+    title: 'ESLint',
+    icon: 'eslint',
+    description: 'Official Code PushUp ESLint plugin',
+    // TODO: docsUrl
+    audits,
     runner: {
       command: 'node',
       args: objectToCliArgs({
@@ -31,8 +40,5 @@ export function eslintPlugin(_: ESLintPluginConfig): PluginConfig {
       }),
       outputPath: 'tmp/out.json',
     },
-    slug: 'eslint',
-    title: 'execute plugin',
-    icon: 'eslint',
   };
 }
