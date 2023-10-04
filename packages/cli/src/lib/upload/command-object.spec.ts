@@ -24,20 +24,19 @@ const command = {
   handler: logErrorBeforeThrow(yargsUploadCommandObject().handler),
 };
 
-const reportPath = (path = 'test', format: 'json' | 'md' = 'json') =>
-  join(MEMFS_VOLUME, 'report.' + format);
+const outputPath = MEMFS_VOLUME;
 
-const config = dummyConfig('test');
+const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
+  join(MEMFS_VOLUME, 'report.' + format);
+const config = dummyConfig(outputPath);
 
 describe('upload-command-object', () => {
   beforeEach(async () => {
     vol.reset();
-    vol.fromJSON(
-      {
+    vol.fromJSON({
         [reportPath()]: JSON.stringify(mockReport()),
       },
-      MEMFS_VOLUME,
-    );
+      MEMFS_VOLUME);
   });
 
   it('should parse arguments correctly', async () => {
@@ -46,6 +45,6 @@ describe('upload-command-object', () => {
       .config(config)
       .command(command);
     const parsedArgv = (await cli.argv) as unknown as CollectOptions;
-    expect(parsedArgv.persist.outputPath).toBe(MEMFS_VOLUME);
+    expect(parsedArgv.persist.outputPath).toBe(outputPath);
   });
 });
