@@ -2,7 +2,7 @@
   "name": "@code-pushup/cli",
   "version": "0.0.1",
   "bin": {
-    "code-pushup": "src/bin.js"
+    "code-pushup": "index.js"
   },
   "dependencies": {
     "@code-pushup/models": "*",

@@ -6,24 +6,22 @@ import { describe, expect, it } from 'vitest';
 import { execSync } from 'child_process';
 
 const configFile = (ext: 'ts' | 'js' | 'mjs') =>
-  join(process.cwd(), `examples/cli-e2e/mocks/config.mock.${ext}`);
+  join(process.cwd(), `examples/cli-e2e/mocks/code-pushup.config.${ext}`);
 
+const execCli = async (args: string[]) => {
+  await execSync('npx ./dist/packages/cli ' + args.join(' '));
+};
 describe('cli', () => {
   it('should load .js config file', async () => {
-    const argv = await execSync(
-      'npx' +
-        [
-          './dist/packages/cli',
-          '--configPath',
-          configFile('js'),
-          '--verbose',
-        ].join(' '),
-    );
+    const argv = await execCli(['--configPath', configFile('js'), '--verbose']);
   });
 
   it('should load .mjs config file', async () => {
-    const argv = await cli(['--configPath', configFile('mjs'), '--verbose'])
-      .argv;
+    const argv = await execCli([
+      '--configPath',
+      configFile('mjs'),
+      '--verbose',
+    ]);
     expect(argv.plugins[0]).toEqual(eslintPlugin({ config: '.eslintrc.json' }));
     expect(argv.plugins[1]).toEqual(
       lighthousePlugin({ config: '.lighthouserc.json' }),
@@ -31,8 +29,7 @@ describe('cli', () => {
   });
 
   it('should load .ts config file', async () => {
-    const argv = await cli(['--configPath', configFile('ts'), '--verbose'])
-      .argv;
+    const argv = await execCli(['--configPath', configFile('ts'), '--verbose']);
     expect(argv.plugins[0]).toEqual(eslintPlugin({ config: '.eslintrc.json' }));
     expect(argv.plugins[1]).toEqual(
       lighthousePlugin({ config: '.lighthouserc.json' }),
