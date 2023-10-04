@@ -1,5 +1,5 @@
-import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
-import { objectToCliArgs } from '@quality-metrics/utils';
+import { PluginConfig } from '@quality-metrics/models';
+import { toArray } from '@quality-metrics/utils';
 import { ESLint } from 'eslint';
 import { listAudits } from './meta/audits';
 
@@ -24,20 +24,17 @@ export async function eslintPlugin({
     title: 'ESLint',
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
-    // TODO: docsUrl
+    // TODO: docsUrl (package README)
     audits,
     runner: {
-      command: 'node',
-      args: objectToCliArgs({
-        e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
-          {
-            slug: 'no-any',
-            title: 'No any type',
-            value: 0,
-            score: 0,
-          },
-        ] satisfies AuditOutputs)}')`,
-      }),
+      command: 'npx',
+      args: [
+        'eslint',
+        `--config=${eslintrc}`,
+        '--format=json',
+        '--output-file=tmp/out.json',
+        ...toArray(patterns),
+      ],
       outputPath: 'tmp/out.json',
     },
   };
