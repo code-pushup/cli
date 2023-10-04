@@ -5,6 +5,7 @@ export {
   ProcessObserver,
   ProcessError,
   objectToCliArgs,
+  CliArgsObject,
 } from './lib/execute-process';
 export { calcDuration, formatBytes } from './lib/utils';
 export { reportToStdout } from './lib/report-to-stdout';

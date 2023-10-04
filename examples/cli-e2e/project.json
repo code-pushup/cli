@@ -6,7 +6,9 @@
   "targets": {
     "e2e": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/examples/cli-e2e"
@@ -14,5 +16,10 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["cli", "plugin-eslint", "plugin-lighthouse"]
+  "implicitDependencies": [
+    "cli",
+    "utils",
+    "plugin-eslint",
+    "plugin-lighthouse"
+  ]
 }
