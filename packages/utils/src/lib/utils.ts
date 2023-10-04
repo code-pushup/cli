@@ -30,3 +30,11 @@ export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);
 }
+
+export function distinct<T extends string | number | boolean>(array: T[]): T[] {
+  return Array.from(new Set(array));
+}
+
+export function toArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}

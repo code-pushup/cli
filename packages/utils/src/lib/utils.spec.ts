@@ -1,6 +1,13 @@
-import { describe, expect } from 'vitest';
-import { calcDuration, formatBytes, countWeightedRefs, sumRefs } from './utils';
 import { CategoryConfig } from '@quality-metrics/models';
+import { describe, expect } from 'vitest';
+import {
+  calcDuration,
+  countWeightedRefs,
+  distinct,
+  formatBytes,
+  sumRefs,
+  toArray,
+} from './utils';
 
 describe('calcDuration', () => {
   it('should calc the duration correctly if start and stop are given', () => {
@@ -104,5 +111,33 @@ describe('formatBytes', () => {
 
   it('should log file sizes of 0 if no size is given`', async () => {
     expect(formatBytes(0)).toBe('0 B');
+  });
+});
+
+describe('distinct', () => {
+  it('should remove duplicate strings from array', () => {
+    expect(
+      distinct([
+        'no-unused-vars',
+        'no-invalid-regexp',
+        'no-unused-vars',
+        'no-invalid-regexp',
+        '@typescript-eslint/no-unused-vars',
+      ]),
+    ).toEqual([
+      'no-unused-vars',
+      'no-invalid-regexp',
+      '@typescript-eslint/no-unused-vars',
+    ]);
+  });
+});
+
+describe('toArray', () => {
+  it('should transform non-array value into array with single value', () => {
+    expect(toArray('src/**/*.ts')).toEqual(['src/**/*.ts']);
+  });
+
+  it('should leave array value unchanged', () => {
+    expect(toArray(['*.ts', '*.js'])).toEqual(['*.ts', '*.js']);
   });
 });
