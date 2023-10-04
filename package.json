@@ -40,6 +40,8 @@
     "commitizen": "^4.3.0",
     "esbuild": "^0.17.17",
     "eslint": "~8.46.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.0",
     "inquirer": "^8.2.6",
     "lighthouse": "^11.0.0",
