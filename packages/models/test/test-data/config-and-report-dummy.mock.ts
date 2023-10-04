@@ -13,8 +13,8 @@ const auditSlug2 = ['2a', '2b', '2c', '2d', '2e'];
 
 const dummyPlugins = [
   mockPluginConfig({ pluginSlug: pluginSlug[0], auditSlug: auditSlug0 }),
-  mockPluginConfig({ pluginSlug: pluginSlug[1], auditSlug: auditSlug1 }),
-  mockPluginConfig({ pluginSlug: pluginSlug[2], auditSlug: auditSlug2 }),
+  /*mockPluginConfig({ pluginSlug: pluginSlug[1], auditSlug: auditSlug1 }),
+  mockPluginConfig({ pluginSlug: pluginSlug[2], auditSlug: auditSlug2 }),*/
 ];
 
 const dummyCategories = [
@@ -32,7 +32,7 @@ const dummyCategories = [
     pluginSlug: pluginSlug[2],
     categorySlug: 'seo',
     auditSlug: auditSlug2,
-  }),*/,
+  }),*/
 ];
 
 export const dummyConfig = (outputPath = 'tmp'): CoreConfig => ({

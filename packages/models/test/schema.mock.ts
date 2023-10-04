@@ -25,13 +25,14 @@ export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
+  outputPath?: string;
 }): PluginConfig {
-  const { groupSlug } = opt || {};
+  const { groupSlug, outputPath } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const pluginOutputPath = `tmp/${+new Date()}-${__outputFile__}`;
+  const pluginOutputPath = `${outputPath || 'tmp'}/${+new Date()}-${__outputFile__}`;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
