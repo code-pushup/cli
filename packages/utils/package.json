@@ -2,9 +2,9 @@
   "name": "@code-pushup/utils",
   "version": "0.0.1",
   "dependencies": {
-    "chalk": "^5.3.0",
-    "cliui": "^8.0.1",
+    "@code-pushup/models": "*",
     "bundle-require": "^4.0.1",
-    "@code-pushup/models": "*"
+    "chalk": "^5.3.0",
+    "cliui": "^8.0.1"
   }
 }

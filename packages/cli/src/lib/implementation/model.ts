@@ -2,7 +2,7 @@ import {
   globalOptionsSchema as coreGlobalOptionsSchema,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-} from '@quality-metrics/models';
+} from '@code-pushup/models';
 import { z } from 'zod';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(

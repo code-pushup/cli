@@ -1,3 +1,3 @@
-# @quality-metrics/cli
+# @code-pushup/cli
 
 TODO: docs

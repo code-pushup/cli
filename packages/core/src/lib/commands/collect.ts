@@ -1,6 +1,6 @@
-import { Report } from '@quality-metrics/models';
+import { Report } from '@code-pushup/models';
 import { executePlugins } from '../implementation/execute-plugin';
-import { calcDuration } from '@quality-metrics/utils';
+import { calcDuration } from '@code-pushup/utils';
 import { CommandBaseOptions } from '../implementation/model';
 
 /**

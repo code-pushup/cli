@@ -1,4 +1,4 @@
-import { Report } from '@quality-metrics/models';
+import { Report } from '@code-pushup/models';
 import { NEW_LINE, headline, style, li, table, details, link } from './md/';
 import {
   countWeightedRefs,

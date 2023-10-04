@@ -1,3 +1,3 @@
-# @quality-metrics/eslint-plugin
+# @code-pushup/eslint-plugin
 
 TODO: docs

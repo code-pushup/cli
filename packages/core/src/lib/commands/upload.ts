@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { CommandBaseOptions } from '../implementation/model';
 import { jsonToGql } from '../implementation/json-to-gql';
-import { reportSchema } from '@quality-metrics/models';
+import { reportSchema } from '@code-pushup/models';
 
 export type UploadOptions = CommandBaseOptions;
 

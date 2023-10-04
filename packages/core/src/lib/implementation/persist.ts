@@ -2,12 +2,8 @@ import { existsSync, mkdirSync } from 'fs';
 import { writeFile, stat } from 'fs/promises';
 import { join } from 'path';
 import chalk from 'chalk';
-import { CoreConfig, Report } from '@quality-metrics/models';
-import {
-  formatBytes,
-  reportToStdout,
-  reportToMd,
-} from '@quality-metrics/utils';
+import { CoreConfig, Report } from '@code-pushup/models';
+import { formatBytes, reportToStdout, reportToMd } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {

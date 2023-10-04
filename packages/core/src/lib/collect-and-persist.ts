@@ -1,8 +1,8 @@
-import { collect, CollectOptions } from './collect';
 import { name, version } from '../../package.json';
 
-import { pluginOutputSchema, Report } from '@quality-metrics/models';
-import { logPersistedResults, persistReport } from './persist';
+import { pluginOutputSchema, Report } from '@code-pushup/models';
+import { collect, CollectOptions } from './commands/collect';
+import { logPersistedResults, persistReport } from './implementation/persist';
 
 export async function collectAndPersistReports(
   config: CollectOptions,

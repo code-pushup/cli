@@ -2,8 +2,8 @@
   "name": "@code-pushup/lighthouse-plugin",
   "version": "0.0.1",
   "dependencies": {
-    "lighthouse": "^11.0.0",
     "@code-pushup/models": "*",
-    "@code-pushup/utils": "*"
+    "@code-pushup/utils": "*",
+    "lighthouse": "^11.0.0"
   }
 }

@@ -1,6 +1,6 @@
-import { cli } from '@quality-metrics/cli';
-import eslintPlugin from '@quality-metrics/eslint-plugin';
-import lighthousePlugin from '@quality-metrics/lighthouse-plugin';
+import { cli } from '@code-pushup/cli';
+import eslintPlugin from '@code-pushup/eslint-plugin';
+import lighthousePlugin from '@code-pushup/lighthouse-plugin';
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import { execSync } from 'child_process';

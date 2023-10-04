@@ -7,7 +7,7 @@ import {
   PluginConfig,
   PluginReport,
   Report,
-} from '@quality-metrics/models';
+} from '@code-pushup/models';
 
 const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';

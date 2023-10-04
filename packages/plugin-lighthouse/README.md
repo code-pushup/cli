@@ -1,3 +1,3 @@
-# @quality-metrics/lighthouse-plugin
+# @code-pushup/lighthouse-plugin
 
 TODO: docs

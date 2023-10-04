@@ -1,5 +1,5 @@
-import { AuditOutputs, PluginConfig } from '@quality-metrics/models';
-import { objectToCliArgs } from '@quality-metrics/utils';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { defaultConfig } from 'lighthouse';
 
 type LighthousePluginConfig = {

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, Mock, vi } from 'vitest';
 import { upload } from './upload';
 import { CommandBaseOptions } from '../implementation/model';
 import { commandBaseOptionsMock } from '../../../test/base.command.mock';
-import { MEMFS_VOLUME, mockReport } from '@quality-metrics/models/testing';
+import { MEMFS_VOLUME, mockReport } from '@code-pushup/models/testing';
 import { join } from 'path';
 import { vol } from 'memfs';
 

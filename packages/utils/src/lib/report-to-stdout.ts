@@ -1,4 +1,4 @@
-import { Report } from '@quality-metrics/models';
+import { Report } from '@code-pushup/models';
 import chalk from 'chalk';
 import cliui from 'cliui';
 import {

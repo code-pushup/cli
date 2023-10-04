@@ -171,6 +171,7 @@ export function mockCategory(opt?: {
     description: `This is the category description of ${categorySlug}. Enjoy dummy text and data to the full.`,
     docsUrl: 'https://category.dev?' + categorySlug,
     refs: categoryAuditRefs.concat(categoryGroupRefs),
+    isBinary: false,
   } satisfies Required<CategoryConfig>;
 }
 

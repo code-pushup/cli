@@ -1,9 +1,9 @@
-import { Report } from '@quality-metrics/models';
-import { dummyConfig } from '@quality-metrics/models/testing';
-import { CollectOptions } from '@quality-metrics/core';
+import { Report } from '@code-pushup/models';
+import { dummyConfig } from '@code-pushup/models/testing';
+import { CollectOptions } from '@code-pushup/core';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { yargsCli } from '../cli';
+import { yargsCli } from '../yargs-cli';
 import { logErrorBeforeThrow } from '../implementation/utils';
 import { middlewares } from '../middlewares';
 import { yargsGlobalOptionsDefinition } from '../implementation/global-options';

@@ -1,3 +1,3 @@
-import { CoreConfig, GlobalOptions } from '@quality-metrics/models';
+import { CoreConfig, GlobalOptions } from '@code-pushup/models';
 
 export type CommandBaseOptions = Omit<GlobalOptions, 'configPath'> & CoreConfig;
