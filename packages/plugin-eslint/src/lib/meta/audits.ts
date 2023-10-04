@@ -1,43 +1,33 @@
 import type { Audit } from '@quality-metrics/models';
-import { distinct, slugify, toArray } from '@quality-metrics/utils';
-import type { ESLint, Linter, Rule } from 'eslint';
+import type { ESLint } from 'eslint';
+import { ruleIdToSlug } from './hash';
+import { RuleData, listRules } from './rules';
 
 export async function listAudits(
   eslint: ESLint,
   patterns: string | string[],
 ): Promise<Audit[]> {
-  const configs = await toArray(patterns).reduce(
-    async (acc, pattern) => [
-      ...(await acc),
-      await eslint.calculateConfigForFile(pattern),
-    ],
-    Promise.resolve<Linter.Config[]>([]),
-  );
-
-  const rulesIds = distinct(
-    configs.flatMap(config => Object.keys(config.rules ?? {})),
-  );
-  const rulesMeta = eslint.getRulesMetaForResults([
-    {
-      messages: rulesIds.map(ruleId => ({ ruleId })),
-      suppressedMessages: [] as Linter.SuppressedLintMessage[],
-    } as ESLint.LintResult,
-  ]);
-
-  return Object.entries(rulesMeta).map(args => ruleToAudit(...args));
+  const rules = await listRules(eslint, patterns);
+  return rules.map(ruleToAudit);
 }
 
-function ruleToAudit(ruleId: string, meta: Rule.RuleMetaData): Audit {
+export function ruleToAudit({ ruleId, meta, options }: RuleData): Audit {
   const name = ruleId.split('/').at(-1) ?? ruleId;
   const plugin =
     name === ruleId ? null : ruleId.slice(0, ruleId.lastIndexOf('/'));
-  // TODO: add custom options hash to slug, copy to description
+
+  const lines: string[] = [
+    `ESLint rule **${name}**${plugin ? `, from _${plugin}_ plugin` : ''}.`,
+    ...(options?.length ? ['Custom options:'] : []),
+    ...(options?.map(option =>
+      ['```json', JSON.stringify(option, null, 2), '```'].join('\n'),
+    ) ?? []),
+  ];
+
   return {
-    slug: slugify(ruleId),
+    slug: ruleIdToSlug(ruleId, options),
     title: meta.docs?.description ?? name,
-    description: `ESLint rule **${name}**${
-      plugin ? `, from _${plugin}_ plugin` : ''
-    }.`,
+    description: lines.join('\n\n'),
     docsUrl: meta.docs?.url,
   };
 }
