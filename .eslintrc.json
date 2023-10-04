@@ -13,8 +13,20 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "shared",
+                "onlyDependOnLibsWithTags": ["shared"]
+              },
+              {
+                "sourceTag": "core",
+                "onlyDependOnLibsWithTags": ["core", "shared"]
+              },
+              {
+                "sourceTag": "plugin",
+                "onlyDependOnLibsWithTags": ["shared"]
+              },
+              {
+                "sourceTag": "tooling",
+                "onlyDependOnLibsWithTags": ["shared"]
               }
             ]
           }
