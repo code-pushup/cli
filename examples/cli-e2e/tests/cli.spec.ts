@@ -7,9 +7,9 @@ const configFile = (ext: 'ts' | 'js' | 'mjs') =>
 
 const execCli = async (argObj: CliArgsObject) => {
   await execSync(
-    'npx ' +
+    'node ' +
       objectToCliArgs({
-        _: './dist/packages/cli',
+        _: './dist/packages/cli/index.js',
         verbose: true,
         ...argObj
       }).join(' ')
