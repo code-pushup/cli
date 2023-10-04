@@ -1,5 +1,5 @@
 import type { Audit } from '@quality-metrics/models';
-import { distinct, toArray } from '@quality-metrics/utils';
+import { distinct, slugify, toArray } from '@quality-metrics/utils';
 import type { ESLint, Linter, Rule } from 'eslint';
 
 export async function listAudits(
@@ -28,9 +28,16 @@ export async function listAudits(
 }
 
 function ruleToAudit(ruleId: string, meta: Rule.RuleMetaData): Audit {
+  const name = ruleId.split('/').at(-1) ?? ruleId;
+  const plugin =
+    name === ruleId ? null : ruleId.slice(0, ruleId.lastIndexOf('/'));
+  // TODO: add custom options hash to slug, copy to description
   return {
-    slug: ruleId, // TODO: slugify
-    title: meta.docs?.description ?? ruleId,
+    slug: slugify(ruleId),
+    title: meta.docs?.description ?? name,
+    description: `ESLint rule **${name}**${
+      plugin ? `, from _${plugin}_ plugin` : ''
+    }.`,
     docsUrl: meta.docs?.url,
   };
 }

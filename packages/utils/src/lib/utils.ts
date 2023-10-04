@@ -38,3 +38,11 @@ export function distinct<T extends string | number | boolean>(array: T[]): T[] {
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
+
+export function slugify(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+|\//g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
