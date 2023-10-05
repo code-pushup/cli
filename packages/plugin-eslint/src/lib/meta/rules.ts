@@ -32,6 +32,7 @@ export async function listRules(
 
   const rulesMap = configs
     .flatMap(config => Object.entries(config.rules ?? {}))
+    .filter(([, ruleEntry]) => ruleEntry != null && !isRuleOff(ruleEntry))
     .reduce<Record<string, Record<string, RuleData>>>(
       (acc, [ruleId, ruleEntry]) => {
         const meta = rulesMeta[ruleId];
@@ -58,4 +59,19 @@ export async function listRules(
     );
 
   return Object.values(rulesMap).flatMap(Object.values);
+}
+
+function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {
+  const level: Linter.RuleLevel = Array.isArray(entry) ? entry[0] : entry;
+
+  switch (level) {
+    case 0:
+    case 'off':
+      return true;
+    case 1:
+    case 2:
+    case 'warn':
+    case 'error':
+      return false;
+  }
 }
