@@ -6,7 +6,7 @@ export default {
   persist: { outputPath: 'tmp/cli-config-out.json' },
   categories: [],
   plugins: [
-    eslintPlugin({ config: '.eslintrc.json' }),
+    await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
     lighthousePlugin({ config: '.lighthouserc.json' }),
   ],
 };

@@ -11,7 +11,9 @@ describe('cli', () => {
   it('should load .js config file', async () => {
     const argv = await cli(['--configPath', configFile('js'), '--verbose'])
       .argv;
-    expect(argv.plugins[0]).toEqual(eslintPlugin({ config: '.eslintrc.json' }));
+    expect(argv.plugins[0]).toEqual(
+      await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
+    );
     expect(argv.plugins[1]).toEqual(
       lighthousePlugin({ config: '.lighthouserc.json' }),
     );
@@ -20,7 +22,9 @@ describe('cli', () => {
   it('should load .mjs config file', async () => {
     const argv = await cli(['--configPath', configFile('mjs'), '--verbose'])
       .argv;
-    expect(argv.plugins[0]).toEqual(eslintPlugin({ config: '.eslintrc.json' }));
+    expect(argv.plugins[0]).toEqual(
+      await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
+    );
     expect(argv.plugins[1]).toEqual(
       lighthousePlugin({ config: '.lighthouserc.json' }),
     );
@@ -29,7 +33,9 @@ describe('cli', () => {
   it('should load .ts config file', async () => {
     const argv = await cli(['--configPath', configFile('ts'), '--verbose'])
       .argv;
-    expect(argv.plugins[0]).toEqual(eslintPlugin({ config: '.eslintrc.json' }));
+    expect(argv.plugins[0]).toEqual(
+      await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
+    );
     expect(argv.plugins[1]).toEqual(
       lighthousePlugin({ config: '.lighthouserc.json' }),
     );
