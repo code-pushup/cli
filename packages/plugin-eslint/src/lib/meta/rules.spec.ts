@@ -39,7 +39,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(48);
+      await expect(listRules(eslint, patterns)).resolves.toHaveLength(47);
     });
 
     it('should include explicitly set built-in rule', async () => {
@@ -105,7 +105,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(95);
+      await expect(listRules(eslint, patterns)).resolves.toHaveLength(69);
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
@@ -147,26 +147,27 @@ describe('listRules', () => {
 
     it('should include built-in rule set implicitly by extending recommended config', async () => {
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+        ruleId: 'no-var',
         meta: {
           docs: {
-            description: 'Disallow unnecessary semicolons',
-            recommended: true,
-            url: 'https://eslint.org/docs/latest/rules/no-extra-semi',
+            description: 'Require `let` or `const` instead of `var`',
+            recommended: false,
+            url: 'https://eslint.org/docs/latest/rules/no-var',
           },
           fixable: 'code',
           messages: {
-            unexpected: 'Unnecessary semicolon.',
+            unexpectedVar: 'Unexpected var, use let or const instead.',
           },
           schema: [],
           type: 'suggestion',
         },
         options: [],
-        ruleId: 'no-extra-semi',
-      } satisfies RuleData);
+      } as RuleData);
     });
 
     it('should include plugin rule set implicitly by extending recommended config', async () => {
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+        ruleId: '@typescript-eslint/no-extra-semi',
         meta: {
           docs: {
             description: 'Disallow unnecessary semicolons',
@@ -184,12 +185,20 @@ describe('listRules', () => {
           type: 'suggestion',
         },
         options: [],
-        ruleId: '@typescript-eslint/no-extra-semi',
       } satisfies RuleData);
+    });
+
+    it('should not include rule which was turned off', async () => {
+      await expect(listRules(eslint, patterns)).resolves.not.toContainEqual(
+        expect.objectContaining({
+          ruleId: 'no-extra-semi',
+        } satisfies Partial<RuleData>),
+      );
     });
 
     it('should include rule added by to root config by project config', async () => {
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+        ruleId: '@nx/dependency-checks',
         meta: {
           docs: {
             description:
@@ -226,7 +235,6 @@ describe('listRules', () => {
           type: 'suggestion',
         },
         options: [],
-        ruleId: '@nx/dependency-checks',
       } satisfies RuleData);
     });
   });
