@@ -5,6 +5,26 @@ import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAudits } from './meta/audits';
 
+/**
+ * Instantiates Code PushUp ESLint plugin for use in core config.
+ *
+ * @example
+ * import eslintPlugin from '@code-pushup/eslint-plugin'
+ *
+ * export default {
+ *   // ... core config ...
+ *   plugins: [
+ *     // ... other plugins ...
+ *     await eslintPlugin({
+ *       eslintrc: '.eslintrc.json',
+ *       patterns: ['src', 'test/*.spec.js']
+ *     })
+ *   ]
+ * }
+ *
+ * @param config Configuration options.
+ * @returns Plugin configuration as a promise.
+ */
 export async function eslintPlugin(
   config: ESLintPluginConfig,
 ): Promise<PluginConfig> {
