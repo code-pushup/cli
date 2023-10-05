@@ -50,7 +50,7 @@ export function descriptionSchema(description = 'Description (markdown)') {
  * @param description
  */
 export function docsUrlSchema(description = 'Documentation site') {
-  return urlSchema(description).optional();
+  return urlSchema(description).optional().or(z.string().max(0)); // allow empty string (no URL validation)
 }
 
 /**
