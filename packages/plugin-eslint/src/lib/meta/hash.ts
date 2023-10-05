@@ -14,6 +14,6 @@ export function ruleIdToSlug(
 
 export function jsonHash(data: unknown, bytes = 8): string {
   return createHash('shake256', { outputLength: bytes })
-    .update(JSON.stringify(data))
+    .update(JSON.stringify(data) ?? 'null')
     .digest('hex');
 }
