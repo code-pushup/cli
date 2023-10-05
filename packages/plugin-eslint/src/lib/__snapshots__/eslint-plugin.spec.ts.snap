@@ -1,6 +1,616 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`eslintPlugin > should initialize ESLint plugin 1`] = `
+exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
+{
+  "audits": [
+    {
+      "description": "ESLint rule **explicit-member-accessibility**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/explicit-member-accessibility",
+      "slug": "typescript-eslint-explicit-member-accessibility",
+      "title": "Require explicit accessibility modifiers on class properties and methods",
+    },
+    {
+      "description": "ESLint rule **explicit-module-boundary-types**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/explicit-module-boundary-types",
+      "slug": "typescript-eslint-explicit-module-boundary-types",
+      "title": "Require explicit return and argument types on exported functions' and classes' public class methods",
+    },
+    {
+      "description": "ESLint rule **explicit-function-return-type**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/explicit-function-return-type",
+      "slug": "typescript-eslint-explicit-function-return-type",
+      "title": "Require explicit return types on functions and class methods",
+    },
+    {
+      "description": "ESLint rule **no-parameter-properties**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-parameter-properties",
+      "slug": "typescript-eslint-no-parameter-properties",
+      "title": "Disallow the use of parameter properties in class constructors",
+    },
+    {
+      "description": "ESLint rule **adjacent-overload-signatures**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/adjacent-overload-signatures",
+      "slug": "typescript-eslint-adjacent-overload-signatures",
+      "title": "Require that function overload signatures be consecutive",
+    },
+    {
+      "description": "ESLint rule **ban-ts-comment**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/ban-ts-comment",
+      "slug": "typescript-eslint-ban-ts-comment",
+      "title": "Disallow \`@ts-<directive>\` comments or require descriptions after directives",
+    },
+    {
+      "description": "ESLint rule **ban-types**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/ban-types",
+      "slug": "typescript-eslint-ban-types",
+      "title": "Disallow certain types",
+    },
+    {
+      "description": "ESLint rule **no-array-constructor**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-array-constructor",
+      "slug": "no-array-constructor",
+      "title": "Disallow \`Array\` constructors",
+    },
+    {
+      "description": "ESLint rule **no-array-constructor**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-array-constructor",
+      "slug": "typescript-eslint-no-array-constructor",
+      "title": "Disallow generic \`Array\` constructors",
+    },
+    {
+      "description": "ESLint rule **no-empty-function**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-empty-function",
+      "slug": "no-empty-function",
+      "title": "Disallow empty functions",
+    },
+    {
+      "description": "ESLint rule **no-empty-function**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-empty-function",
+      "slug": "typescript-eslint-no-empty-function",
+      "title": "Disallow empty functions",
+    },
+    {
+      "description": "ESLint rule **no-empty-interface**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-empty-interface",
+      "slug": "typescript-eslint-no-empty-interface",
+      "title": "Disallow the declaration of empty interfaces",
+    },
+    {
+      "description": "ESLint rule **no-explicit-any**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-explicit-any",
+      "slug": "typescript-eslint-no-explicit-any",
+      "title": "Disallow the \`any\` type",
+    },
+    {
+      "description": "ESLint rule **no-extra-non-null-assertion**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-extra-non-null-assertion",
+      "slug": "typescript-eslint-no-extra-non-null-assertion",
+      "title": "Disallow extra non-null assertions",
+    },
+    {
+      "description": "ESLint rule **no-extra-semi**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-extra-semi",
+      "slug": "no-extra-semi",
+      "title": "Disallow unnecessary semicolons",
+    },
+    {
+      "description": "ESLint rule **no-extra-semi**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-extra-semi",
+      "slug": "typescript-eslint-no-extra-semi",
+      "title": "Disallow unnecessary semicolons",
+    },
+    {
+      "description": "ESLint rule **no-inferrable-types**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-inferrable-types",
+      "slug": "typescript-eslint-no-inferrable-types",
+      "title": "Disallow explicit type declarations for variables or parameters initialized to a number, string, or boolean",
+    },
+    {
+      "description": "ESLint rule **no-loss-of-precision**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-loss-of-precision",
+      "slug": "no-loss-of-precision",
+      "title": "Disallow literal numbers that lose precision",
+    },
+    {
+      "description": "ESLint rule **no-loss-of-precision**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-loss-of-precision",
+      "slug": "typescript-eslint-no-loss-of-precision",
+      "title": "Disallow literal numbers that lose precision",
+    },
+    {
+      "description": "ESLint rule **no-misused-new**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-misused-new",
+      "slug": "typescript-eslint-no-misused-new",
+      "title": "Enforce valid definition of \`new\` and \`constructor\`",
+    },
+    {
+      "description": "ESLint rule **no-namespace**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-namespace",
+      "slug": "typescript-eslint-no-namespace",
+      "title": "Disallow TypeScript namespaces",
+    },
+    {
+      "description": "ESLint rule **no-non-null-asserted-optional-chain**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-non-null-asserted-optional-chain",
+      "slug": "typescript-eslint-no-non-null-asserted-optional-chain",
+      "title": "Disallow non-null assertions after an optional chain expression",
+    },
+    {
+      "description": "ESLint rule **no-non-null-assertion**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-non-null-assertion",
+      "slug": "typescript-eslint-no-non-null-assertion",
+      "title": "Disallow non-null assertions using the \`!\` postfix operator",
+    },
+    {
+      "description": "ESLint rule **no-this-alias**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-this-alias",
+      "slug": "typescript-eslint-no-this-alias",
+      "title": "Disallow aliasing \`this\`",
+    },
+    {
+      "description": "ESLint rule **no-unnecessary-type-constraint**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-unnecessary-type-constraint",
+      "slug": "typescript-eslint-no-unnecessary-type-constraint",
+      "title": "Disallow unnecessary constraints on generic types",
+    },
+    {
+      "description": "ESLint rule **no-unused-vars**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
+      "slug": "no-unused-vars",
+      "title": "Disallow unused variables",
+    },
+    {
+      "description": "ESLint rule **no-unused-vars**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-unused-vars",
+      "slug": "typescript-eslint-no-unused-vars",
+      "title": "Disallow unused variables",
+    },
+    {
+      "description": "ESLint rule **no-var-requires**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-var-requires",
+      "slug": "typescript-eslint-no-var-requires",
+      "title": "Disallow \`require\` statements except in import statements",
+    },
+    {
+      "description": "ESLint rule **prefer-as-const**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/prefer-as-const",
+      "slug": "typescript-eslint-prefer-as-const",
+      "title": "Enforce the use of \`as const\` over literal type",
+    },
+    {
+      "description": "ESLint rule **prefer-namespace-keyword**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/prefer-namespace-keyword",
+      "slug": "typescript-eslint-prefer-namespace-keyword",
+      "title": "Require using \`namespace\` keyword over \`module\` keyword to declare custom TypeScript modules",
+    },
+    {
+      "description": "ESLint rule **triple-slash-reference**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/triple-slash-reference",
+      "slug": "typescript-eslint-triple-slash-reference",
+      "title": "Disallow certain triple slash directives in favor of ES6-style import declarations",
+    },
+    {
+      "description": "ESLint rule **constructor-super**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/constructor-super",
+      "slug": "constructor-super",
+      "title": "Require \`super()\` calls in constructors",
+    },
+    {
+      "description": "ESLint rule **getter-return**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/getter-return",
+      "slug": "getter-return",
+      "title": "Enforce \`return\` statements in getters",
+    },
+    {
+      "description": "ESLint rule **no-const-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-const-assign",
+      "slug": "no-const-assign",
+      "title": "Disallow reassigning \`const\` variables",
+    },
+    {
+      "description": "ESLint rule **no-dupe-args**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-dupe-args",
+      "slug": "no-dupe-args",
+      "title": "Disallow duplicate arguments in \`function\` definitions",
+    },
+    {
+      "description": "ESLint rule **no-dupe-class-members**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-dupe-class-members",
+      "slug": "no-dupe-class-members",
+      "title": "Disallow duplicate class members",
+    },
+    {
+      "description": "ESLint rule **no-dupe-keys**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-dupe-keys",
+      "slug": "no-dupe-keys",
+      "title": "Disallow duplicate keys in object literals",
+    },
+    {
+      "description": "ESLint rule **no-func-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-func-assign",
+      "slug": "no-func-assign",
+      "title": "Disallow reassigning \`function\` declarations",
+    },
+    {
+      "description": "ESLint rule **no-import-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-import-assign",
+      "slug": "no-import-assign",
+      "title": "Disallow assigning to imported bindings",
+    },
+    {
+      "description": "ESLint rule **no-new-symbol**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-new-symbol",
+      "slug": "no-new-symbol",
+      "title": "Disallow \`new\` operators with the \`Symbol\` object",
+    },
+    {
+      "description": "ESLint rule **no-obj-calls**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-obj-calls",
+      "slug": "no-obj-calls",
+      "title": "Disallow calling global object properties as functions",
+    },
+    {
+      "description": "ESLint rule **no-redeclare**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-redeclare",
+      "slug": "no-redeclare",
+      "title": "Disallow variable redeclaration",
+    },
+    {
+      "description": "ESLint rule **no-setter-return**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-setter-return",
+      "slug": "no-setter-return",
+      "title": "Disallow returning values from setters",
+    },
+    {
+      "description": "ESLint rule **no-this-before-super**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-this-before-super",
+      "slug": "no-this-before-super",
+      "title": "Disallow \`this\`/\`super\` before calling \`super()\` in constructors",
+    },
+    {
+      "description": "ESLint rule **no-undef**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
+      "slug": "no-undef",
+      "title": "Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments",
+    },
+    {
+      "description": "ESLint rule **no-unreachable**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unreachable",
+      "slug": "no-unreachable",
+      "title": "Disallow unreachable code after \`return\`, \`throw\`, \`continue\`, and \`break\` statements",
+    },
+    {
+      "description": "ESLint rule **no-unsafe-negation**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-negation",
+      "slug": "no-unsafe-negation",
+      "title": "Disallow negating the left operand of relational operators",
+    },
+    {
+      "description": "ESLint rule **no-var**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-var",
+      "slug": "no-var",
+      "title": "Require \`let\` or \`const\` instead of \`var\`",
+    },
+    {
+      "description": "ESLint rule **prefer-const**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/prefer-const",
+      "slug": "prefer-const",
+      "title": "Require \`const\` declarations for variables that are never reassigned after declared",
+    },
+    {
+      "description": "ESLint rule **prefer-rest-params**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/prefer-rest-params",
+      "slug": "prefer-rest-params",
+      "title": "Require rest parameters instead of \`arguments\`",
+    },
+    {
+      "description": "ESLint rule **prefer-spread**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/prefer-spread",
+      "slug": "prefer-spread",
+      "title": "Require spread operators instead of \`.apply()\`",
+    },
+    {
+      "description": "ESLint rule **valid-typeof**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
+      "slug": "valid-typeof",
+      "title": "Enforce comparing \`typeof\` expressions against valid strings",
+    },
+    {
+      "description": "ESLint rule **for-direction**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/for-direction",
+      "slug": "for-direction",
+      "title": "Enforce \\"for\\" loop update clause moving the counter in the right direction",
+    },
+    {
+      "description": "ESLint rule **no-async-promise-executor**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-async-promise-executor",
+      "slug": "no-async-promise-executor",
+      "title": "Disallow using an async function as a Promise executor",
+    },
+    {
+      "description": "ESLint rule **no-case-declarations**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-case-declarations",
+      "slug": "no-case-declarations",
+      "title": "Disallow lexical declarations in case clauses",
+    },
+    {
+      "description": "ESLint rule **no-class-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-class-assign",
+      "slug": "no-class-assign",
+      "title": "Disallow reassigning class members",
+    },
+    {
+      "description": "ESLint rule **no-compare-neg-zero**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-compare-neg-zero",
+      "slug": "no-compare-neg-zero",
+      "title": "Disallow comparing against -0",
+    },
+    {
+      "description": "ESLint rule **no-cond-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-cond-assign",
+      "slug": "no-cond-assign",
+      "title": "Disallow assignment operators in conditional expressions",
+    },
+    {
+      "description": "ESLint rule **no-constant-condition**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-constant-condition",
+      "slug": "no-constant-condition",
+      "title": "Disallow constant expressions in conditions",
+    },
+    {
+      "description": "ESLint rule **no-control-regex**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-control-regex",
+      "slug": "no-control-regex",
+      "title": "Disallow control characters in regular expressions",
+    },
+    {
+      "description": "ESLint rule **no-debugger**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-debugger",
+      "slug": "no-debugger",
+      "title": "Disallow the use of \`debugger\`",
+    },
+    {
+      "description": "ESLint rule **no-delete-var**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-delete-var",
+      "slug": "no-delete-var",
+      "title": "Disallow deleting variables",
+    },
+    {
+      "description": "ESLint rule **no-dupe-else-if**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-dupe-else-if",
+      "slug": "no-dupe-else-if",
+      "title": "Disallow duplicate conditions in if-else-if chains",
+    },
+    {
+      "description": "ESLint rule **no-duplicate-case**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-duplicate-case",
+      "slug": "no-duplicate-case",
+      "title": "Disallow duplicate case labels",
+    },
+    {
+      "description": "ESLint rule **no-empty**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-empty",
+      "slug": "no-empty",
+      "title": "Disallow empty block statements",
+    },
+    {
+      "description": "ESLint rule **no-empty-character-class**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-empty-character-class",
+      "slug": "no-empty-character-class",
+      "title": "Disallow empty character classes in regular expressions",
+    },
+    {
+      "description": "ESLint rule **no-empty-pattern**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-empty-pattern",
+      "slug": "no-empty-pattern",
+      "title": "Disallow empty destructuring patterns",
+    },
+    {
+      "description": "ESLint rule **no-ex-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-ex-assign",
+      "slug": "no-ex-assign",
+      "title": "Disallow reassigning exceptions in \`catch\` clauses",
+    },
+    {
+      "description": "ESLint rule **no-extra-boolean-cast**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-extra-boolean-cast",
+      "slug": "no-extra-boolean-cast",
+      "title": "Disallow unnecessary boolean casts",
+    },
+    {
+      "description": "ESLint rule **no-fallthrough**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-fallthrough",
+      "slug": "no-fallthrough",
+      "title": "Disallow fallthrough of \`case\` statements",
+    },
+    {
+      "description": "ESLint rule **no-global-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-global-assign",
+      "slug": "no-global-assign",
+      "title": "Disallow assignments to native objects or read-only global variables",
+    },
+    {
+      "description": "ESLint rule **no-inner-declarations**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-inner-declarations",
+      "slug": "no-inner-declarations",
+      "title": "Disallow variable or \`function\` declarations in nested blocks",
+    },
+    {
+      "description": "ESLint rule **no-invalid-regexp**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-invalid-regexp",
+      "slug": "no-invalid-regexp",
+      "title": "Disallow invalid regular expression strings in \`RegExp\` constructors",
+    },
+    {
+      "description": "ESLint rule **no-irregular-whitespace**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-irregular-whitespace",
+      "slug": "no-irregular-whitespace",
+      "title": "Disallow irregular whitespace",
+    },
+    {
+      "description": "ESLint rule **no-misleading-character-class**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-misleading-character-class",
+      "slug": "no-misleading-character-class",
+      "title": "Disallow characters which are made with multiple code points in character class syntax",
+    },
+    {
+      "description": "ESLint rule **no-mixed-spaces-and-tabs**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-mixed-spaces-and-tabs",
+      "slug": "no-mixed-spaces-and-tabs",
+      "title": "Disallow mixed spaces and tabs for indentation",
+    },
+    {
+      "description": "ESLint rule **no-nonoctal-decimal-escape**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-nonoctal-decimal-escape",
+      "slug": "no-nonoctal-decimal-escape",
+      "title": "Disallow \`\\\\8\` and \`\\\\9\` escape sequences in string literals",
+    },
+    {
+      "description": "ESLint rule **no-octal**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-octal",
+      "slug": "no-octal",
+      "title": "Disallow octal literals",
+    },
+    {
+      "description": "ESLint rule **no-prototype-builtins**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-prototype-builtins",
+      "slug": "no-prototype-builtins",
+      "title": "Disallow calling some \`Object.prototype\` methods directly on objects",
+    },
+    {
+      "description": "ESLint rule **no-regex-spaces**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-regex-spaces",
+      "slug": "no-regex-spaces",
+      "title": "Disallow multiple spaces in regular expressions",
+    },
+    {
+      "description": "ESLint rule **no-self-assign**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-self-assign",
+      "slug": "no-self-assign",
+      "title": "Disallow assignments where both sides are exactly the same",
+    },
+    {
+      "description": "ESLint rule **no-shadow-restricted-names**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-shadow-restricted-names",
+      "slug": "no-shadow-restricted-names",
+      "title": "Disallow identifiers from shadowing restricted names",
+    },
+    {
+      "description": "ESLint rule **no-sparse-arrays**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-sparse-arrays",
+      "slug": "no-sparse-arrays",
+      "title": "Disallow sparse arrays",
+    },
+    {
+      "description": "ESLint rule **no-unexpected-multiline**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unexpected-multiline",
+      "slug": "no-unexpected-multiline",
+      "title": "Disallow confusing multiline expressions",
+    },
+    {
+      "description": "ESLint rule **no-unsafe-finally**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-finally",
+      "slug": "no-unsafe-finally",
+      "title": "Disallow control flow statements in \`finally\` blocks",
+    },
+    {
+      "description": "ESLint rule **no-unsafe-optional-chaining**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining",
+      "slug": "no-unsafe-optional-chaining",
+      "title": "Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed",
+    },
+    {
+      "description": "ESLint rule **no-unused-labels**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-labels",
+      "slug": "no-unused-labels",
+      "title": "Disallow unused labels",
+    },
+    {
+      "description": "ESLint rule **no-useless-backreference**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-useless-backreference",
+      "slug": "no-useless-backreference",
+      "title": "Disallow useless backreferences in regular expressions",
+    },
+    {
+      "description": "ESLint rule **no-useless-catch**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-useless-catch",
+      "slug": "no-useless-catch",
+      "title": "Disallow unnecessary \`catch\` clauses",
+    },
+    {
+      "description": "ESLint rule **no-useless-escape**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-useless-escape",
+      "slug": "no-useless-escape",
+      "title": "Disallow unnecessary escape characters",
+    },
+    {
+      "description": "ESLint rule **no-with**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-with",
+      "slug": "no-with",
+      "title": "Disallow \`with\` statements",
+    },
+    {
+      "description": "ESLint rule **require-yield**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/require-yield",
+      "slug": "require-yield",
+      "title": "Require generator functions to contain \`yield\`",
+    },
+    {
+      "description": "ESLint rule **use-isnan**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/use-isnan",
+      "slug": "use-isnan",
+      "title": "Require calls to \`isNaN()\` when checking for \`NaN\`",
+    },
+    {
+      "description": "ESLint rule **enforce-module-boundaries**, from _@nx_ plugin.
+
+Custom options:
+
+\`\`\`json
+{
+  \\"enforceBuildableLibDependency\\": true,
+  \\"allow\\": [],
+  \\"depConstraints\\": [
+    {
+      \\"sourceTag\\": \\"*\\",
+      \\"onlyDependOnLibsWithTags\\": [
+        \\"*\\"
+      ]
+    }
+  ]
+}
+\`\`\`",
+      "docsUrl": "",
+      "slug": "nx-enforce-module-boundaries-9dba9763586d15c6",
+      "title": "Ensure that module boundaries are respected within the monorepo",
+    },
+    {
+      "description": "ESLint rule **dependency-checks**, from _@nx_ plugin.",
+      "docsUrl": "",
+      "slug": "nx-dependency-checks",
+      "title": "Checks dependencies in project's package.json for version mismatches",
+    },
+  ],
+  "description": "Official Code PushUp ESLint plugin",
+  "icon": "eslint",
+  "runner": {
+    "args": [
+      "eslint",
+      "--config=./packages/utils/.eslintrc.json",
+      "--format=json",
+      "--output-file=tmp/out.json",
+      "packages/utils/**/*.ts",
+      "packages/utils/**/*.json",
+    ],
+    "command": "npx",
+    "outputPath": "tmp/out.json",
+  },
+  "slug": "eslint",
+  "title": "ESLint",
+}
+`;
+
+exports[`eslintPlugin > should initialize ESLint plugin for React application 1`] = `
 {
   "audits": [
     {
