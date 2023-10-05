@@ -41,4 +41,11 @@ describe('eslintPlugin', () => {
       }),
     ).resolves.toMatchSnapshot();
   });
+
+  it('should throw when invalid parameters provided', async () => {
+    await expect(
+      // @ts-expect-error simulating invalid non-TS config
+      eslintPlugin({ eslintrc: '.eslintrc.json' }),
+    ).rejects.toThrowError('patterns');
+  });
 });
