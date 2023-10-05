@@ -437,6 +437,7 @@ Custom options:
   ],
   "description": "Official Code PushUp ESLint plugin",
   "icon": "eslint",
+  "packageName": "@code-pushup/eslint-plugin",
   "runner": {
     "args": [
       "eslint",
@@ -451,6 +452,7 @@ Custom options:
   },
   "slug": "eslint",
   "title": "ESLint",
+  "version": "0.0.1",
 }
 `;
 
@@ -742,6 +744,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
   ],
   "description": "Official Code PushUp ESLint plugin",
   "icon": "eslint",
+  "packageName": "@code-pushup/eslint-plugin",
   "runner": {
     "args": [
       "eslint",
@@ -756,5 +759,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
   },
   "slug": "eslint",
   "title": "ESLint",
+  "version": "0.0.1",
 }
 `;
