@@ -18,8 +18,7 @@ jobs:
           node-version: 18
           cache: npm
       - name: Audit production dependencies
-        # remove audit-level filter once patch is available for https://github.com/advisories/GHSA-m95q-7qp3-xv42
-        run: npm audit --omit=dev --omit=optional --audit-level=moderate
+        run: npm audit --omit=dev --omit=optional
 
   format:
     runs-on: ubuntu-latest
