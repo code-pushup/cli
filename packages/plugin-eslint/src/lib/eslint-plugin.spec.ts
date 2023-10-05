@@ -24,19 +24,21 @@ describe('eslintPlugin', () => {
 
   it('should initialize ESLint plugin for React application', async () => {
     cwdSpy.mockReturnValue(join(fixturesDir, 'todos-app'));
-    const plugin = await eslintPlugin({
-      eslintrc: '.eslintrc.js',
-      patterns: ['src/**/*.js', 'src/**/*.jsx'],
-    });
-    expect(plugin).toMatchSnapshot();
+    await expect(
+      eslintPlugin({
+        eslintrc: '.eslintrc.js',
+        patterns: ['src/**/*.js', 'src/**/*.jsx'],
+      }),
+    ).resolves.toMatchSnapshot();
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
     cwdSpy.mockReturnValue(join(fixturesDir, 'nx-monorepo'));
-    const plugin = await eslintPlugin({
-      eslintrc: './packages/utils/.eslintrc.json',
-      patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
-    });
-    expect(plugin).toMatchSnapshot();
+    await expect(
+      eslintPlugin({
+        eslintrc: './packages/utils/.eslintrc.json',
+        patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
+      }),
+    ).resolves.toMatchSnapshot();
   });
 });
