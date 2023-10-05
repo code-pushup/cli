@@ -2,17 +2,14 @@ import { PluginConfig } from '@quality-metrics/models';
 import { toArray } from '@quality-metrics/utils';
 import { ESLint } from 'eslint';
 import { name, version } from '../../package.json';
+import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAudits } from './meta/audits';
 
-export type ESLintPluginConfig = {
-  eslintrc: string;
-  patterns: string | string[];
-};
+export async function eslintPlugin(
+  config: ESLintPluginConfig,
+): Promise<PluginConfig> {
+  const { eslintrc, patterns } = eslintPluginConfigSchema.parse(config);
 
-export async function eslintPlugin({
-  eslintrc,
-  patterns,
-}: ESLintPluginConfig): Promise<PluginConfig> {
   const eslint = new ESLint({
     useEslintrc: false,
     baseConfig: { extends: eslintrc },
