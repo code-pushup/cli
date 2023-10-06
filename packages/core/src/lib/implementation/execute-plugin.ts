@@ -1,6 +1,6 @@
 import {
   PluginConfig,
-  PluginOutput,
+  PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { ProcessObserver, executeProcess } from '@code-pushup/utils';
@@ -13,7 +13,7 @@ import { join } from 'path';
 export class PluginOutputError extends Error {
   constructor(pluginSlug: string, error?: Error) {
     super(
-      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Zod Error: ${error?.message}`,
+      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Error: ${error?.message}`,
     );
     if (error) {
       this.name = error.name;
@@ -47,7 +47,7 @@ export class PluginOutputError extends Error {
 export async function executePlugin(
   pluginConfig: PluginConfig,
   observer?: ProcessObserver,
-): Promise<PluginOutput> {
+): Promise<PluginReport> {
   const { slug, title, icon, description, docsUrl, version, packageName } =
     pluginConfig;
   const { args, command } = pluginConfig.runner;
@@ -64,9 +64,27 @@ export async function executePlugin(
       pluginConfig.runner.outputPath,
     );
     // read process output from file system and parse it
-    const audits = auditOutputsSchema.parse(
+    const auditOutputs = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
     );
+
+    const audits = auditOutputs.map(auditOutput => {
+      const auditMetadata = pluginConfig.audits.find(
+        audit => audit.slug === auditOutput.slug,
+      );
+      if (!auditMetadata) {
+        throw new PluginOutputError(
+          slug,
+          new Error(
+            `Audit metadata not found for slug ${auditOutput.slug} from runner output`,
+          ),
+        );
+      }
+      return {
+        ...auditOutput,
+        ...auditMetadata,
+      };
+    });
 
     return {
       version,
@@ -89,8 +107,8 @@ export async function executePlugin(
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
- * @param plugins - array of {@link PluginConfig} objects
- * @returns {Promise<AuditOutput[]>} - runner output
+ * @param plugins array of {@link PluginConfig} objects
+ * @returns {Promise<PluginReport[]>} plugin report
  *
  * @example
  * // plugin execution
@@ -107,10 +125,10 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
-): Promise<PluginOutput[]> {
+): Promise<PluginReport[]> {
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
-    const pluginOutput = await executePlugin(pluginCfg);
-    return outputs.concat(pluginOutput);
-  }, Promise.resolve([] as PluginOutput[]));
+    const pluginReport = await executePlugin(pluginCfg);
+    return outputs.concat(pluginReport);
+  }, Promise.resolve([] as PluginReport[]));
 }

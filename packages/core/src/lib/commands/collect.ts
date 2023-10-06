@@ -1,6 +1,6 @@
 import { Report } from '@code-pushup/models';
-import { executePlugins } from '../implementation/execute-plugin';
 import { calcDuration } from '@code-pushup/utils';
+import { executePlugins } from '../implementation/execute-plugin';
 import { CommandBaseOptions } from '../implementation/model';
 
 /**
