@@ -3,7 +3,8 @@ import { toArray } from '@code-pushup/utils';
 import { ESLint } from 'eslint';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
-import { listAudits } from './meta/audits';
+import { listAudits } from './meta';
+import { RUNNER_OUTPUT_PATH } from './runner';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -59,10 +60,10 @@ export async function eslintPlugin(
         'eslint',
         `--config=${eslintrc}`,
         '--format=json',
-        '--output-file=tmp/out.json',
+        `--output-file=${RUNNER_OUTPUT_PATH}`,
         ...toArray(patterns),
       ],
-      outputPath: 'tmp/out.json',
+      outputPath: RUNNER_OUTPUT_PATH,
     },
   };
 }
