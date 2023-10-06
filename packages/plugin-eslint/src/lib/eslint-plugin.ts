@@ -1,10 +1,9 @@
 import { PluginConfig } from '@code-pushup/models';
-import { toArray } from '@code-pushup/utils';
 import { ESLint } from 'eslint';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAudits } from './meta';
-import { RUNNER_OUTPUT_PATH } from './runner';
+import { createRunnerConfig } from './runner';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -53,17 +52,7 @@ export async function eslintPlugin(
     // - could be `problem`/`suggestion`/`layout` if based on `meta.type`
     // - `meta.category` (deprecated, but still used by some) could also be a source of groups
 
-    // TODO: implement actual runner which converts results to audits: https://github.com/flowup/quality-metrics-cli/issues/27
-    runner: {
-      command: 'npx',
-      args: [
-        'eslint',
-        `--config=${eslintrc}`,
-        '--format=json',
-        `--output-file=${RUNNER_OUTPUT_PATH}`,
-        ...toArray(patterns),
-      ],
-      outputPath: RUNNER_OUTPUT_PATH,
-    },
+    // TODO: script path
+    runner: createRunnerConfig('bin.js', audits, eslintrc, patterns),
   };
 }

@@ -53,6 +53,8 @@ const runnerConfigSchema = z.object(
   },
 );
 
+export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
+
 export const auditSchema = z
   .object({
     slug: slugSchema('ID (unique within plugin)'),

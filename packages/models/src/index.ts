@@ -24,6 +24,7 @@ export {
   auditSchema,
   issueSchema,
   pluginConfigSchema,
+  RunnerConfig,
 } from './lib/plugin-config';
 export {
   AuditReport,

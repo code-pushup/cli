@@ -1,4 +1,4 @@
-import { CategoryConfig } from '@code-pushup/models';
+import { CategoryConfig, Issue } from '@code-pushup/models';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
@@ -45,4 +45,29 @@ export function slugify(text: string): string {
     .toLowerCase()
     .replace(/\s+|\//g, '-')
     .replace(/[^a-z0-9-]/g, '');
+}
+
+export function objectToEntries<T extends object>(obj: T) {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
+}
+
+export function countOccurrences<T extends PropertyKey>(
+  values: T[],
+): Partial<Record<T, number>> {
+  return values.reduce<Partial<Record<T, number>>>(
+    (acc, value) => ({ ...acc, [value]: (acc[value] ?? 0) + 1 }),
+    {},
+  );
+}
+
+export function compareIssueSeverity(
+  severity1: Issue['severity'],
+  severity2: Issue['severity'],
+): number {
+  const levels: Record<Issue['severity'], number> = {
+    info: 0,
+    warning: 1,
+    error: 2,
+  };
+  return levels[severity1] - levels[severity2];
 }

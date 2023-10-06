@@ -1,7 +1,9 @@
-import { CategoryConfig } from '@code-pushup/models';
+import { CategoryConfig, Issue } from '@code-pushup/models';
 import { describe, expect } from 'vitest';
 import {
   calcDuration,
+  compareIssueSeverity,
+  countOccurrences,
   countWeightedRefs,
   distinct,
   formatBytes,
@@ -153,5 +155,23 @@ describe('slugify', () => {
     ['Code  PushUp ', 'code-pushup'],
   ])('should transform "%s" to valid slug "%s"', (text, slug) => {
     expect(slugify(text)).toBe(slug);
+  });
+});
+
+describe('countOccurrences', () => {
+  it('should return record with counts for each item', () => {
+    expect(
+      countOccurrences(['error', 'warning', 'error', 'error', 'warning']),
+    ).toEqual({ error: 3, warning: 2 });
+  });
+});
+
+describe('compareIssueSeverity', () => {
+  it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
+    expect(
+      (['error', 'info', 'warning'] satisfies Issue['severity'][]).sort(
+        compareIssueSeverity,
+      ),
+    ).toEqual(['info', 'warning', 'error'] satisfies Issue['severity'][]);
   });
 });
