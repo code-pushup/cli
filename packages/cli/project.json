@@ -42,5 +42,5 @@
       }
     }
   },
-  "tags": ["core"]
+  "tags": ["scope:core", "type:app"]
 }
