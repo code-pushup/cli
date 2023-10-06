@@ -23,7 +23,6 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
-            title: 'Largest Contentful Paint',
             value: 0,
             score: 0,
           },
