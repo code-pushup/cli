@@ -13,20 +13,36 @@
             "allow": [],
             "depConstraints": [
               {
-                "sourceTag": "shared",
-                "onlyDependOnLibsWithTags": ["shared"]
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
               },
               {
-                "sourceTag": "core",
-                "onlyDependOnLibsWithTags": ["core", "shared"]
+                "sourceTag": "scope:core",
+                "onlyDependOnLibsWithTags": ["scope:core", "scope:shared"]
               },
               {
-                "sourceTag": "plugin",
-                "onlyDependOnLibsWithTags": ["shared"]
+                "sourceTag": "scope:plugin",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
               },
               {
-                "sourceTag": "tooling",
-                "onlyDependOnLibsWithTags": ["shared"]
+                "sourceTag": "scope:tooling",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
+              },
+              {
+                "sourceTag": "type:e2e",
+                "onlyDependOnLibsWithTags": ["type:app", "type:feature"]
+              },
+              {
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": ["type:feature", "type:util"]
+              },
+              {
+                "sourceTag": "type:feature",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util"]
               }
             ]
           }

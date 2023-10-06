@@ -35,5 +35,5 @@
       }
     }
   },
-  "tags": ["core"]
+  "tags": ["scope:core", "type:feature"]
 }
