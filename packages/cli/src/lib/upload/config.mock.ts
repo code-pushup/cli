@@ -3,8 +3,8 @@ export const cfg = {
   upload: {
     organization: "code-pushup",
     project: "cli",
-    apiKey: process.env.API_KEY,
-    server: process.env.SERVER
+    apiKey: "process.env.API_KEY",
+    server: "process.env.SERVER"
   },
   persist: { outputPath },
   plugins: [

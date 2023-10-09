@@ -4,8 +4,8 @@ import {readCodePushupConfig} from './read-code-pushup-config';
 import {CommandBase} from "./model";
 
 export class ConfigParseError extends Error {
-  constructor(configPath: string) {
-    super(`Config file ${configPath} does not exist`);
+  constructor(configPath: string, err?: Error) {
+    super(`Config file ${configPath} does not exist. ${err && err.message}`);
   }
 }
 

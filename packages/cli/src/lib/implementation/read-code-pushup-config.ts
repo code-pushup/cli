@@ -12,7 +12,7 @@ export async function readCodePushupConfig(filepath: string) {
     }
   } catch (err) {
     console.warn(err);
-    throw new ConfigParseError(filepath);
+    throw new ConfigParseError(filepath, err as Error);
   }
 
   return importModule<CoreConfig>(

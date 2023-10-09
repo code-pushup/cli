@@ -11,22 +11,16 @@ import {objectToCliArgs} from "@code-pushup/utils";
 import {vol} from "memfs";
 import {cfg} from "../upload/config.mock";
 
-const command = {
-  ...yargsCollectCommandObject(),
-  handler: logErrorBeforeThrow(yargsCollectCommandObject().handler),
-};
-
-
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
   return memfs.fs;
 });
 
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
 
 type ENV = {API_KEY: string, SERVER: string};
 const env = process.env as ENV;
