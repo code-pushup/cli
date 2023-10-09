@@ -1,5 +1,12 @@
+const outputPath = 'tmp/command-object-config-out.json';
 module.exports = {
-  persist: { outputPath: 'command-object-config-out.json' },
+  upload: {
+    organisation: "code-pushup",
+    project: "cli",
+    apiKey: process.env.API_KEY,
+    server: process.env.SERVER
+  },
+  persist: { outputPath },
   plugins: [
     {
       audits: [
@@ -15,7 +22,7 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('tmp/command-object-config-out.json', '${JSON.stringify(
+          `require('fs').writeFileSync(${outputPath}, '${JSON.stringify(
             [
               {
                 slug: 'command-object-audit-slug',

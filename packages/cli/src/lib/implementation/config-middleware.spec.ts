@@ -2,6 +2,7 @@ import { join } from 'path';
 import { expect } from 'vitest';
 import { configMiddleware, ConfigParseError } from './config-middleware';
 import { getDirname } from './helper.mock';
+import {yargsCli} from "../yargs-cli";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -13,22 +14,22 @@ describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
     const configPathMjs = configPath('mjs');
     const config = await configMiddleware({ configPath: configPathMjs });
-    expect(config.configPath).toContain('.mjs');
-    expect(config.persist.outputPath).toContain('mjs-');
+    expect(config.upload.project).toContain('mjs');
+    expect(config.persist.outputPath).toContain('tmp');
   });
 
   it('should load valid .cjs config', async () => {
     const configPathCjs = configPath('cjs');
     const config = await configMiddleware({ configPath: configPathCjs });
-    expect(config.configPath).toContain('.cjs');
-    expect(config.persist.outputPath).toContain('cjs-');
+    expect(config.upload.project).toContain('cjs');
+    expect(config.persist.outputPath).toContain('tmp');
   });
 
   it('should load valid .js config', async () => {
     const configPathJs = configPath('js');
     const config = await configMiddleware({ configPath: configPathJs });
-    expect(config.configPath).toContain('.js');
-    expect(config.persist.outputPath).toContain('js-');
+    expect(config.upload.project).toContain('js');
+    expect(config.persist.outputPath).toContain('tmp');
   });
 
   it('should throw with invalid configPath', async () => {
@@ -46,4 +47,20 @@ describe('applyConfigMiddleware', () => {
       new ConfigParseError(defaultConfigPath).message,
     );
   });
+
+
+  it('should work in cli', async () => {
+    const _cli = yargsCli([], {
+      middlewares: [{middlewareFunction: configMiddleware as unknown}],
+      commands: [{
+        command: '*',
+        handler: (args: any) => {
+          console.log('args: ', args);
+        }
+      }]
+    })
+  });
+
+
+
 });

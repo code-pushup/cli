@@ -26,7 +26,7 @@ export function yargsCli(
     demandCommand?: [number, string];
     options?: { [key: string]: Options };
     middlewares?: {
-      middlewareFunction: MiddlewareFunction;
+      middlewareFunction: unknown;
       applyBeforeValidation?: boolean;
     }[];
   },
@@ -62,7 +62,7 @@ export function yargsCli(
   // add middlewares
   middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) => {
     cli.middleware(
-      logErrorBeforeThrow(middlewareFunction),
+      logErrorBeforeThrow(middlewareFunction as MiddlewareFunction),
       applyBeforeValidation,
     );
   });

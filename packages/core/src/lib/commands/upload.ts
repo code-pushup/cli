@@ -1,11 +1,10 @@
 import {ReportFragment, uploadToPortal} from '@code-pushup/portal-client';
 import {readFileSync} from 'fs';
 import {join} from 'path';
-import {CommandBaseOptions} from '../implementation/model';
 import {jsonToGql} from '../implementation/json-to-gql';
-import {reportSchema} from '@code-pushup/models';
+import {CoreConfig, reportSchema} from '@code-pushup/models';
 
-export type UploadOptions = CommandBaseOptions;
+export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 
 /**
  * Uploads collected audits to the portal
@@ -15,6 +14,8 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ): Promise<ReportFragment> {
+  console.log("options: ", options);
+
   if (options?.upload === undefined) {
     throw new Error('upload config needs to be set');
   }

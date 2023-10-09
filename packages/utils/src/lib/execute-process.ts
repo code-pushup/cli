@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { calcDuration } from './utils';
+import {CoreConfig} from "@code-pushup/models";
 
 /**
  * Represents the process result.

@@ -18,6 +18,7 @@ export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
 
 export type GlobalOptions = z.infer<typeof globalOptionsSchema>;
 
+// @TODO this has any type
 export const commandBaseSchema = refineCoreConfig(
   globalOptionsSchema.merge(unrefinedCoreConfigSchema),
 );

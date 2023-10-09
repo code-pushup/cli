@@ -187,7 +187,7 @@ export function mockReport(opt?: {
     packageName: 'mock-package',
     version: '0.0.0',
     date: new Date().toDateString(),
-    duration: randDuration(),
+    duration: 42,
     categories: [mockCategory({ pluginSlug, auditSlug })],
     plugins: [mockPluginReport({ auditSlug, pluginSlug })],
   };
@@ -202,7 +202,7 @@ export function mockPluginReport(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   return {
     date: new Date().toDateString(),
-    duration: randDuration(),
+    duration: 420,
     slug: pluginSlug,
     title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
