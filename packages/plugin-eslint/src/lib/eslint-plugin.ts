@@ -1,5 +1,7 @@
 import { PluginConfig } from '@code-pushup/models';
 import { ESLint } from 'eslint';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAudits } from './meta';
@@ -37,6 +39,11 @@ export async function eslintPlugin(
 
   const audits = await listAudits(eslint, patterns);
 
+  const runnerScriptPath = join(
+    fileURLToPath(dirname(import.meta.url)),
+    'bin.js',
+  );
+
   return {
     slug: 'eslint',
     title: 'ESLint',
@@ -52,7 +59,6 @@ export async function eslintPlugin(
     // - could be `problem`/`suggestion`/`layout` if based on `meta.type`
     // - `meta.category` (deprecated, but still used by some) could also be a source of groups
 
-    // TODO: script path
-    runner: createRunnerConfig('bin.js', audits, eslintrc, patterns),
+    runner: createRunnerConfig(runnerScriptPath, audits, eslintrc, patterns),
   };
 }

@@ -4,13 +4,13 @@ import { writeFile } from 'fs/promises';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 
-const RUNNER_OUTPUT_PATH =
+export const RUNNER_OUTPUT_PATH =
   'node_modules/.code-pushup/eslint/runner-output.json';
 
 const AUDIT_SLUGS_SEP = ',';
 
-export async function executeRunner(): Promise<void> {
-  const [slugs, eslintrc, ...patterns] = process.argv.slice(2);
+export async function executeRunner(argv = process.argv): Promise<void> {
+  const [slugs, eslintrc, ...patterns] = argv.slice(2);
   if (!slugs) {
     throw new Error('Invalid runner args - missing slugs argument');
   }

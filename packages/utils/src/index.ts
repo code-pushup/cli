@@ -20,4 +20,5 @@ export {
   objectToEntries,
   slugify,
   toArray,
+  readJsonFile,
 } from './lib/utils';
