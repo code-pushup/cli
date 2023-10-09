@@ -1,4 +1,5 @@
 import { CategoryConfig, Issue } from '@code-pushup/models';
+import { readFile } from 'fs/promises';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
@@ -70,4 +71,9 @@ export function compareIssueSeverity(
     error: 2,
   };
   return levels[severity1] - levels[severity2];
+}
+
+export async function readJsonFile(path: string): Promise<unknown> {
+  const buffer = await readFile(path);
+  return JSON.parse(buffer.toString());
 }
