@@ -90,7 +90,7 @@ describe('listRules', () => {
     });
   });
 
-  describe('Nx monorepo', () => {
+  describe('Nx monorepo project', () => {
     const nxRootDir = join(fixturesDir, 'nx-monorepo');
     const eslintrc = join(nxRootDir, 'packages/utils/.eslintrc.json');
 
@@ -109,6 +109,7 @@ describe('listRules', () => {
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
+      // set in root .eslintrc.json
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
         ruleId: '@nx/enforce-module-boundaries',
         meta: {
@@ -146,6 +147,7 @@ describe('listRules', () => {
     });
 
     it('should include built-in rule set implicitly by extending recommended config', async () => {
+      // extended via @nx/typescript -> @typescript-eslint/eslint-recommended
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
         ruleId: 'no-var',
         meta: {
@@ -166,6 +168,7 @@ describe('listRules', () => {
     });
 
     it('should include plugin rule set implicitly by extending recommended config', async () => {
+      // extended via @nx/typescript -> @typescript-eslint/recommended
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
         ruleId: '@typescript-eslint/no-extra-semi',
         meta: {
@@ -188,7 +191,8 @@ describe('listRules', () => {
       } satisfies RuleData);
     });
 
-    it('should not include rule which was turned off', async () => {
+    it('should not include rule which was turned off in extended config', async () => {
+      // extended TypeScript config sets "no-extra-semi": "off"
       await expect(listRules(eslint, patterns)).resolves.not.toContainEqual(
         expect.objectContaining({
           ruleId: 'no-extra-semi',
@@ -196,7 +200,8 @@ describe('listRules', () => {
       );
     });
 
-    it('should include rule added by to root config by project config', async () => {
+    it('should include rule added to root config by project config', async () => {
+      // set only in packages/utils/.eslintrc.json
       await expect(listRules(eslint, patterns)).resolves.toContainEqual({
         ruleId: '@nx/dependency-checks',
         meta: {
