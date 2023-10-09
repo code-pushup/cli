@@ -1,5 +1,11 @@
 module.exports = {
-  persist: { outputPath: 'command-object-config-out.json' },
+  upload: {
+    organization: "code-pushup",
+    project: "cli",
+    apiKey: process.env.API_KEY,
+    server: process.env.SERVER
+  },
+  persist: { outputPath: 'test' },
   plugins: [
     {
       audits: [
@@ -15,7 +21,7 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('tmp/command-object-config-out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('/test/command-object-config-out.json', '${JSON.stringify(
             [
               {
                 slug: 'command-object-audit-slug',
@@ -25,11 +31,12 @@ module.exports = {
             ],
           )}')`,
         ],
-        outputPath: 'tmp/command-object-config-out.json',
+        outputPath: '/tmp/command-object-config-out.json',
       },
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
+      icon: 'javascript',
     },
   ],
   categories: [],

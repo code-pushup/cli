@@ -1,7 +1,7 @@
-const outputPath = 'tmp/command-object-config-out.json';
-module.exports = {
+const outputPath = '/test';
+export const cfg = {
   upload: {
-    organisation: "code-pushup",
+    organization: "code-pushup",
     project: "cli",
     apiKey: process.env.API_KEY,
     server: process.env.SERVER
@@ -22,7 +22,7 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync(${outputPath}, '${JSON.stringify(
+          `require('fs').writeFileSync(${outputPath+'out.json'}, '${JSON.stringify(
             [
               {
                 slug: 'command-object-audit-slug',
@@ -32,11 +32,12 @@ module.exports = {
             ],
           )}')`,
         ],
-        outputPath: 'tmp/command-object-config-out.json',
+        outputPath: '/test/command-object-config-out.json',
       },
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
+      icon: 'javascript',
     },
   ],
   categories: [],

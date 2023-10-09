@@ -37,7 +37,7 @@ export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
 
 
 function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
-  const parsedProcessArgs = {} as CommandBase;
+  const parsedProcessArgs = {upload: {}, persist: {}} as CommandBase;
   for (const key in args) {
     const k = key as keyof ArgsCliObj;
     switch (key) {
@@ -47,13 +47,13 @@ function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
       case 'apiKey':
         parsedProcessArgs.upload[k] = args[k];
         break;
-      default:
-        break;
-    }
-    switch (key) {
       case 'outputPath':
       case 'format':
-        parsedProcessArgs.persist[k] = args[k]
+        parsedProcessArgs.persist[k] = args[k];
+        break;
+      default:
+        break;
+
     }
   }
 

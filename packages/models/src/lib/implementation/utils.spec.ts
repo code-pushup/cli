@@ -5,6 +5,7 @@ import {
   hasMissingStrings,
   slugRegex,
 } from './utils';
+import {join} from "path";
 
 describe('slugRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
@@ -37,6 +38,7 @@ describe('slugRegex', () => {
   });
 });
 
+// @TODO delete implementation and tests
 describe('generalFilePathRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
   const validPathsUnix = [
@@ -92,6 +94,7 @@ describe('generalFilePathRegex', () => {
   );
 });
 
+// @TODO delete implementation and tests
 describe('unixFilePathRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
   it.each([

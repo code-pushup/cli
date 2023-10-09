@@ -14,7 +14,7 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ): Promise<ReportFragment> {
-  console.log("options: ", options);
+  console.log("upload options: ", options);
 
   if (options?.upload === undefined) {
     throw new Error('upload config needs to be set');

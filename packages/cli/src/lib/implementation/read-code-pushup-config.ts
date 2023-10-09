@@ -7,10 +7,11 @@ import { ConfigParseError } from './config-middleware';
 export async function readCodePushupConfig(filepath: string) {
   try {
     const stats = await stat(filepath);
-    if (!stats.isFile) {
+    if (!stats.isFile()) {
       throw new ConfigParseError(filepath);
     }
   } catch (err) {
+    console.warn(err);
     throw new ConfigParseError(filepath);
   }
 

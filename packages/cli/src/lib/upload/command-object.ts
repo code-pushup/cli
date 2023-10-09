@@ -5,6 +5,8 @@ export function yargsUploadCommandObject() {
   return {
     command: 'upload',
     describe: 'Upload report results to the portal',
-    handler: upload as unknown as CommandModule['handler'],
+    handler: (parsedProcessArgs) => {
+      upload(parsedProcessArgs as any).then(() => console.log('Upload Succeeded!'));
+    },
   } satisfies CommandModule;
 }

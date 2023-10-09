@@ -96,9 +96,7 @@ export function metaSchema(options?: {
  * @param description
  */
 export function generalFilePathSchema(description: string) {
-  return z.string({ description }).regex(generalFilePathRegex, {
-    message: 'path is invalid',
-  });
+  return z.string({ description }).trim().min(1, {message: 'path is invalid'});
 }
 
 /**
