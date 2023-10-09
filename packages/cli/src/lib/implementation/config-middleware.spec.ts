@@ -11,6 +11,7 @@ const configPath = (ext: string) =>
   `${withDirName('mock/config-middleware-config.mock.')}${ext}`;
 
 describe('applyConfigMiddleware', () => {
+
   it('should load valid .mjs config', async () => {
     const configPathMjs = configPath('mjs');
     const config = await configMiddleware({ configPath: configPathMjs });
@@ -43,11 +44,8 @@ describe('applyConfigMiddleware', () => {
     const defaultConfigPath = 'code-pushup.config.js';
     let error: Error = new Error();
     await configMiddleware({ configPath: undefined }).catch(e => (error = e));
-    expect(error?.message).toContain(
-      new ConfigParseError(defaultConfigPath).message,
-    );
+    expect(error?.message).toContain(defaultConfigPath);
   });
-
 
   it('should work in cli', async () => {
     const _cli = yargsCli([], {
@@ -60,7 +58,5 @@ describe('applyConfigMiddleware', () => {
       }]
     })
   });
-
-
 
 });

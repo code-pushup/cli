@@ -48,7 +48,7 @@ const outputPath = MEMFS_VOLUME;
 
 
 const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
-  join(MEMFS_VOLUME, 'report.' + format);
+  join('report.' + format);
 
 describe('upload-command-object', () => {
   beforeEach(async () => {
@@ -56,8 +56,7 @@ describe('upload-command-object', () => {
     vol.fromJSON({
         [reportPath()]: JSON.stringify(mockReport()),
         ['code-pushup.config.js']: `export default = ${JSON.stringify(cfg)}`,
-      },
-      MEMFS_VOLUME);
+      });
   });
 
   it('should parse arguments correctly', async () => {
