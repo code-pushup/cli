@@ -1,5 +1,5 @@
 {
-  "name": "@quality-metrics-cli/source",
+  "name": "@code-pushup/cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "local-registry": {
