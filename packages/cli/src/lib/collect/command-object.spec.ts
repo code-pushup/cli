@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { yargsUploadCommandObject } from '../upload/command-object';
+import { yargsCollectCommandObject } from './command-object';
 
 const baseArgs = [
   ...objectToCliArgs({
@@ -17,7 +17,7 @@ const cli = (args: string[]) =>
   yargsCli(['collect', ...args], {
     options,
     middlewares,
-    commands: [yargsUploadCommandObject()],
+    commands: [yargsCollectCommandObject()],
   });
 
 describe('collect-command-object', () => {
@@ -32,9 +32,5 @@ describe('collect-command-object', () => {
     const parsedArgv = await cli(args).parseAsync();
     expect(parsedArgv.persist.outputPath).toBe('tmp');
     expect(parsedArgv.persist?.format).toEqual(['md']);
-    expect(parsedArgv.upload?.project).toEqual('cli');
-    expect(parsedArgv.upload?.organization).toBe('code-pushup');
-    expect(parsedArgv.upload?.apiKey).toEqual('dummy-api-key');
-    expect(parsedArgv.upload?.server).toEqual('https://example.com/api');
   });
 });

@@ -68,7 +68,6 @@ describe('upload-command-object', () => {
       }),
     ];
     const parsedArgv = await cli(args).parseAsync();
-    expect(parsedArgv.persist.outputPath).toBe('tmp/');
     expect(parsedArgv.upload?.organization).toBe('code-pushup');
     expect(parsedArgv.upload?.project).toBe('cli');
     expect(parsedArgv.upload?.apiKey).toBe('some-other-api-key');

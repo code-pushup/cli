@@ -49,7 +49,6 @@ describe('yargsCli', () => {
   it('global middleware should use config correctly', async () => {
     const args: string[] = objectToCliArgs({
       configPath: validConfigPath,
-      format: ['md'],
     });
     const parsedArgv = (await yargsCli(args, {
       demandCommand,
@@ -59,15 +58,22 @@ describe('yargsCli', () => {
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');
   });
 
-  it('middleware should lag error', async () => {
-    // @TODO
-  });
-
-  it('command should receive args through middleware', async () => {
-    // @TODO
-  });
-
-  it('command should lag error', async () => {
-    // @TODO
+  it('global options and middleware handle argument overrides correctly', async () => {
+    const args: string[] = objectToCliArgs({
+      configPath: validConfigPath,
+      outputPath: 'tmpp',
+      format: 'md',
+    });
+    const parsedArgv = (await yargsCli(args, {
+      options,
+      demandCommand,
+      middlewares,
+    }).parseAsync()) as unknown as GlobalOptions & CoreConfig;
+    expect(parsedArgv.upload?.project).toContain('cli');
+    expect(parsedArgv.upload?.organization).toContain('code-pushup');
+    expect(parsedArgv.upload?.apiKey).toContain('dummy-api-key');
+    expect(parsedArgv.upload?.server).toContain('https://example.com/api');
+    expect(parsedArgv.persist.outputPath).toContain('tmpp');
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
 });
