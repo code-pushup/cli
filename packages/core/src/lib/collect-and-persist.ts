@@ -14,9 +14,8 @@ export async function collectAndPersistReports(
     version: version,
   };
 
-  await persistReport(report, config)
-    .then(persistResults => logPersistedResults(persistResults))
-    .catch(console.log);
+  const persistResults = await persistReport(report, config);
+  logPersistedResults(persistResults);
 
   // validate report and throw if invalid
   report.plugins.forEach(plugin => {
