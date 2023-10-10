@@ -2,8 +2,8 @@ export default {
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',
-    apiKey: process.env.API_KEY,
-    server: process.env.SERVER,
+    apiKey: 'dummy-api-key',
+    server: 'https://example.com/api',
   },
   persist: { outputPath: 'tmp', format: ['json'] },
   plugins: [],
