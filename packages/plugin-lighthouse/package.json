@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "dependencies": {
     "@code-pushup/models": "*",
-    "@code-pushup/utils": "*",
     "lighthouse": "^11.0.0"
   }
 }
