@@ -8,8 +8,8 @@ import {fileURLToPath} from "url";
 import {yargsCollectCommandObject} from "./command-object";
 
 const baseArgs = [
-  '--verbose',
   ...objectToCliArgs({
+    verbose: true,
     configPath: join(fileURLToPath(dirname(import.meta.url)), 'config.mock.ts'),
   }),
 ];
@@ -39,7 +39,7 @@ describe('collect-command-object', () => {
       }),
     ];
     const parsedArgv = await cli(args).parseAsync();
-    expect(parsedArgv.persist.outputPath).toBe('tmp/');
+   expect(parsedArgv.persist.outputPath).toBe('tmp/');
     expect(parsedArgv.persist?.format).toEqual(['md']);
     expect(parsedArgv.upload?.project).toEqual('cli');
     expect(parsedArgv.upload?.organization).toBe('code-pushup');

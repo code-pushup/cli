@@ -1,4 +1,4 @@
-const outputPath = 'tmp/';
+const outputPath = 'tmp';
 export default {
   upload: {
     organization: 'code-pushup',
@@ -23,7 +23,7 @@ export default {
         args: [
           '-e',
           `require('fs').writeFileSync(${
-            outputPath + 'out.json'
+            outputPath + '/out.json'
           }, '${JSON.stringify([
             {
               slug: 'command-object-audit-slug',
@@ -32,7 +32,7 @@ export default {
             },
           ])}')`,
         ],
-        outputPath: 'tmp/command-object-config-out.json',
+        outputPath: `${outputPath}/out.json`,
       },
       groups: [],
       slug: 'command-object-plugin',
