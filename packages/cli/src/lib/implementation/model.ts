@@ -1,9 +1,12 @@
 import {
-  globalOptionsSchema as coreGlobalOptionsSchema,
-  refineCoreConfig,
-  unrefinedCoreConfigSchema,
+    globalOptionsSchema as coreGlobalOptionsSchema,
+    PersistConfig,
+    refineCoreConfig,
+    unrefinedCoreConfigSchema,
+    UploadConfig,
 } from '@code-pushup/models';
-import { z } from 'zod';
+import {z} from 'zod';
+import {GlobalOptions as CliOptions} from "../model";
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
   z.object({
@@ -23,3 +26,6 @@ export const commandBaseSchema = refineCoreConfig(
   globalOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
+export type ArgsCliObj = Partial<
+    CliOptions & GlobalOptions & UploadConfig & PersistConfig
+>;

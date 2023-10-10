@@ -5,7 +5,7 @@ exports[`uploadToPortal > should work 1`] = `
   "data": {
     "categories": [],
     "commandDuration": 42,
-    "commandStartDate": "Mon Oct 09 2023",
+    "commandStartDate": "Tue Oct 10 2023",
     "commit": "8b130390059a9986fd06f9c9fc2415ad7963da5b",
     "organization": "code-pushup",
     "packageName": "mock-package",
@@ -44,7 +44,7 @@ exports[`uploadToPortal > should work 1`] = `
         "packageName": "mock-plugin-slug",
         "packageVersion": "0.0.1",
         "runnerDuration": 420,
-        "runnerStartDate": "Mon Oct 09 2023",
+        "runnerStartDate": "Tue Oct 10 2023",
         "slug": "mock-plugin-slug",
         "title": "Title of mock-plugin-slug",
       },

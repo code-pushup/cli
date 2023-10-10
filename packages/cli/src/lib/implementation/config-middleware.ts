@@ -1,22 +1,12 @@
-import {
-  GlobalOptions,
-  PersistConfig,
-  UploadConfig,
-  globalOptionsSchema,
-} from '@code-pushup/models';
-import { GlobalOptions as CliOptions } from '../model';
-import { CommandBase } from './model';
-import { readCodePushupConfig } from './read-code-pushup-config';
+import {GlobalOptions, globalOptionsSchema,} from '@code-pushup/models';
+import {ArgsCliObj, CommandBase} from './model';
+import {readCodePushupConfig} from './read-code-pushup-config';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
     super(`Config path ${configPath} is not a file.`);
   }
 }
-
-type ArgsCliObj = Partial<
-  CliOptions & GlobalOptions & UploadConfig & PersistConfig
->;
 
 export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   const args = processArgs as T;
