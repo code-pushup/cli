@@ -1,8 +1,7 @@
 import { join } from 'path';
 import { expect } from 'vitest';
-import { configMiddleware, ConfigPathError } from './config-middleware';
+import { configMiddleware } from './config-middleware';
 import { getDirname } from './helper.mock';
-import { yargsCli } from '../yargs-cli';
 
 const __dirname = getDirname(import.meta.url);
 
@@ -44,19 +43,5 @@ describe('applyConfigMiddleware', () => {
     let error: Error = new Error();
     await configMiddleware({ configPath: undefined }).catch(e => (error = e));
     expect(error?.message).toContain(defaultConfigPath);
-  });
-
-  it('should work in cli', async () => {
-    const _cli = yargsCli([], {
-      middlewares: [{ middlewareFunction: configMiddleware as unknown }],
-      commands: [
-        {
-          command: '*',
-          handler: (args: any) => {
-            console.log('args: ', args);
-          },
-        },
-      ],
-    });
   });
 });

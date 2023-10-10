@@ -24,8 +24,8 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputPath = MEMFS_VOLUME;
-const reportPath = (path = MEMFS_VOLUME, format: 'json' | 'md' = 'json') =>
-  join(outputPath, 'report.' + format);
+const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
+  join(path, 'report.' + format);
 
 describe('uploadToPortal', () => {
   beforeEach(async () => {
