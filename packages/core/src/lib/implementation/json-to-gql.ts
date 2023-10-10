@@ -1,11 +1,10 @@
 import {
+  CategoryConfigRefType,
   IssueSeverity,
   IssueSourceType,
-  CategoryConfigRefType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import { Issue, Report } from '@code-pushup/models';
-import { Scalars } from '@code-pushup/portal-client/portal-client/src/lib/graphql/generated';
+import {Issue, Report} from '@code-pushup/models';
 
 export function jsonToGql(report: Report) {
   return {
