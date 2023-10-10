@@ -64,5 +64,4 @@ describe('yargsCli', () => {
   it('command should lag error', async () => {
     // @TODO
   });
-
 });

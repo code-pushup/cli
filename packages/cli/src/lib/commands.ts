@@ -1,6 +1,6 @@
 import { CommandModule } from 'yargs';
 import { yargsCollectCommandObject } from './collect/command-object';
-import {yargsUploadCommandObject} from "./upload/command-object";
+import { yargsUploadCommandObject } from './upload/command-object';
 
 export const commands: CommandModule[] = [
   {
@@ -8,5 +8,5 @@ export const commands: CommandModule[] = [
     command: '*',
   },
   yargsCollectCommandObject(),
-  yargsUploadCommandObject()
+  yargsUploadCommandObject(),
 ];

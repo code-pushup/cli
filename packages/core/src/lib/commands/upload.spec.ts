@@ -1,12 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import {beforeEach, describe, vi} from 'vitest';
-import {MEMFS_VOLUME, mockPersistConfig, mockReport, mockUploadConfig} from '@code-pushup/models/testing';
-import {join} from 'path';
-import {vol} from 'memfs';
-import {upload} from "@code-pushup/core";
-import {ENV} from "../../../test/types";
-import {ReportFragment} from "@code-pushup/portal-client/portal-client/src/lib/graphql/generated";
-import {PortalUploadArgs} from "@code-pushup/portal-client/portal-client/src/lib/portal-upload";
+import { beforeEach, describe, vi } from 'vitest';
+import {
+  MEMFS_VOLUME,
+  mockPersistConfig,
+  mockReport,
+  mockUploadConfig,
+} from '@code-pushup/models/testing';
+import { join } from 'path';
+import { vol } from 'memfs';
+import { upload } from '@code-pushup/core';
+import { ENV } from '../../../test/types';
+import { ReportFragment } from '@code-pushup/portal-client/portal-client/src/lib/graphql/generated';
+import { PortalUploadArgs } from '@code-pushup/portal-client/portal-client/src/lib/portal-upload';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
@@ -39,7 +44,7 @@ describe('uploadToPortal', () => {
       passedArgs.push(args);
       return Promise.resolve({
         data: args.data,
-      } as unknown as ReportFragment)
+      } as unknown as ReportFragment);
     });
     const env = process.env as ENV;
     const cfg = {
@@ -48,12 +53,13 @@ describe('uploadToPortal', () => {
         server: env.SERVER,
       }),
       persist: mockPersistConfig({
-        outputPath
-      })
+        outputPath,
+      }),
     };
     const result = await upload(cfg, uploadFn);
 
     expect(passedArgs?.[0]?.data.project).toBe('cli');
     expect(result).toMatchSnapshot();
+    // expect(console.log).toHaveBeenCalledWith('Upload Succeeded!'); @TODO
   });
 });

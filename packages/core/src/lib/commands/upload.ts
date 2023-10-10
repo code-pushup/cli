@@ -1,8 +1,8 @@
-import {ReportFragment, uploadToPortal} from '@code-pushup/portal-client';
-import {readFileSync} from 'fs';
-import {join} from 'path';
-import {jsonToGql} from '../implementation/json-to-gql';
-import {CoreConfig, reportSchema} from '@code-pushup/models';
+import { ReportFragment, uploadToPortal } from '@code-pushup/portal-client';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { jsonToGql } from '../implementation/json-to-gql';
+import { CoreConfig, reportSchema } from '@code-pushup/models';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 
@@ -14,14 +14,12 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ): Promise<ReportFragment> {
-  console.log("upload options: ", options);
-
   if (options?.upload === undefined) {
     throw new Error('upload config needs to be set');
   }
 
-  const {apiKey, server, organization, project} = options.upload;
-  const {outputPath} = options.persist;
+  const { apiKey, server, organization, project } = options.upload;
+  const { outputPath } = options.persist;
   const report = reportSchema.parse(
     JSON.parse(readFileSync(join(outputPath, 'report.json')).toString()),
   );
@@ -33,7 +31,7 @@ export async function upload(
     ...jsonToGql(report),
   };
 
-  return uploadFn({apiKey, server, data}).catch(e => {
+  return uploadFn({ apiKey, server, data }).catch(e => {
     throw new Error('upload failed. ' + e.message);
   });
 }

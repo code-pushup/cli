@@ -5,7 +5,7 @@ import {
   hasMissingStrings,
   slugRegex,
 } from './utils';
-import {join} from "path";
+import { join } from 'path';
 
 describe('slugRegex', () => {
   // test valid and array of strings against slugRegex with it blocks

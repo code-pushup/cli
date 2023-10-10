@@ -1,6 +1,6 @@
-import {GlobalOptions, globalOptionsSchema,} from '@code-pushup/models';
-import {ArgsCliObj, CommandBase} from './model';
-import {readCodePushupConfig} from './read-code-pushup-config';
+import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
+import { ArgsCliObj, CommandBase } from './model';
+import { readCodePushupConfig } from './read-code-pushup-config';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {

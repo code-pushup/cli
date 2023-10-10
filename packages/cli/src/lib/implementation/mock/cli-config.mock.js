@@ -1,13 +1,13 @@
 module.exports = {
   upload: {
-    organization: "code-pushup",
-    project: "cli",
+    organization: 'code-pushup',
+    project: 'cli',
     apiKey: process.env.API_KEY,
-    server: process.env.SERVER
+    server: process.env.SERVER,
   },
   persist: {
     outputPath: 'cli-config-out.json',
-    format: ['json']
+    format: ['json'],
   },
   categories: [],
   plugins: [
