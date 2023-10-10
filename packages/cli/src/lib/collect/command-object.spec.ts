@@ -21,9 +21,6 @@ const cli = (args: string[]) =>
   });
 
 describe('collect-command-object', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-  });
 
   it('should override config with CLI arguments', async () => {
     const args = [
