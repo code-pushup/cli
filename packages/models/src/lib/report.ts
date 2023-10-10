@@ -53,6 +53,7 @@ export const reportSchema = packageVersionSchema({
 
 export type Report = z.infer<typeof reportSchema>;
 
+Report
 /**
  *
  * Validation function for a plugins audit outputs inside the CLI. Used immediately after generation of the output to validate the result.

@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { jsonToGql } from '../implementation/json-to-gql';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
+import {  latestHash} from '@code-pushup/utils';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 
@@ -13,7 +14,7 @@ export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
-): Promise<ReportFragment> {
+): Promise<{data: ReportFragment}> {
   if (options?.upload === undefined) {
     throw new Error('upload config needs to be set');
   }
@@ -27,7 +28,7 @@ export async function upload(
   const data = {
     organization,
     project,
-    commit: '8b130390059a9986fd06f9c9fc2415ad7963da5b',
+    commit: await latestHash(),
     ...jsonToGql(report),
   };
 

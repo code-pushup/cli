@@ -1,9 +1,11 @@
 import {
   IssueSeverity,
   IssueSourceType,
+  CategoryConfigRefType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import { Issue, Report } from '@code-pushup/models';
+import {Issue, Report} from '@code-pushup/models';
+import {Scalars} from "@code-pushup/portal-client/portal-client/src/lib/graphql/generated";
 
 export function jsonToGql(report: Report) {
   return {
@@ -40,7 +42,7 @@ export function jsonToGql(report: Report) {
         slug: group.slug,
         title: group.title,
         description: group.description,
-        refs: group.refs.map(ref => ({ slug: ref.slug, weight: ref.weight })),
+        refs: group.refs.map(ref => ({slug: ref.slug, weight: ref.weight})),
       })),
       icon: plugin.icon,
       slug: plugin.slug,
@@ -50,7 +52,17 @@ export function jsonToGql(report: Report) {
       runnerDuration: plugin.duration,
       runnerStartDate: plugin.date,
     })),
-    categories: [], // @TODO
+    categories: report.categories.map(category => ({
+      slug: category.slug,
+      title: category.title,
+      description: category.description,
+      refs: category.refs.map((ref) => ({
+        plugin: ref.plugin,
+        type: ref.type === 'audit' ? CategoryConfigRefType.Audit : CategoryConfigRefType.Group,
+        weight: ref.weight,
+        slug: ref.slug
+      })),
+    })),
   } satisfies Omit<
     SaveReportMutationVariables,
     'organization' | 'project' | 'commit'
