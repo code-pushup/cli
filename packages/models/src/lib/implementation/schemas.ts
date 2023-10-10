@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugRegex, unixFilePathRegex } from './utils';
+import { slugRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -125,7 +125,7 @@ export function positiveIntSchema(description: string) {
  * @param description
  */
 export function unixFilePathSchema(description: string) {
-  return z.string({ description }).regex(unixFilePathRegex);
+  return z.string({ description }).min(1);
 }
 
 export function packageVersionSchema(options?: {

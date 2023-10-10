@@ -7,17 +7,6 @@
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
- * Regular expression to validate filenames for Windows and UNIX
- **/
-export const generalFilePathRegex =
-  /^(?:(?:[A-Za-z]:)?[\\/])?(?:\w[\w .-]*[\\/]?)*$/;
-
-/**
- * Regular expression to validate filenames for UNIX
- **/
-export const unixFilePathRegex = /^(?:(?:[A-Za-z]:)?[/])?(?:\w[\w .-]*[/]?)*$/;
-
-/**
  * helper function to validate string arrays
  *
  * @param strings

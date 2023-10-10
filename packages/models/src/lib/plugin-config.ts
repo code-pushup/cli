@@ -234,7 +234,7 @@ export const auditOutputsSchema = z
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
 export const pluginOutputSchema = pluginSchema
-  .merge(executionMetaSchema()) // @TODO create reusable meta info for audit, plugin, category
+  .merge(executionMetaSchema())
   .merge(
     z.object(
       {
