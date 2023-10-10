@@ -1,0 +1,19 @@
+{
+  "name": "todo-app",
+  "scripts": {
+    "start": "esbuild src/index.jsx --bundle --outdir=www/js --servedir=www",
+    "build": "esbuild src/index.jsx --bundle --outdir=www/js --minify",
+    "lint": "eslint src --ext=js,jsx"
+  },
+  "dependencies": {
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.2",
+    "eslint": "^8.48.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  }
+}

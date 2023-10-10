@@ -38,5 +38,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:plugin", "type:feature"]
 }

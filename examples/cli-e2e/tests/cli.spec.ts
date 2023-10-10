@@ -1,6 +1,6 @@
+import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 
 const configFile = (ext: 'ts' | 'js' | 'mjs') =>
   join(process.cwd(), `examples/cli-e2e/mocks/code-pushup.config.${ext}`);
@@ -11,8 +11,8 @@ const execCli = async (argObj: CliArgsObject) => {
       objectToCliArgs({
         _: './dist/packages/cli/index.js',
         verbose: true,
-        ...argObj
-      }).join(' ')
+        ...argObj,
+      }).join(' '),
   );
 };
 

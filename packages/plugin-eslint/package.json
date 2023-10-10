@@ -4,6 +4,7 @@
   "dependencies": {
     "@code-pushup/utils": "*",
     "eslint": "~8.46.0",
+    "zod": "^3.22.4",
     "@code-pushup/models": "*"
   }
 }
