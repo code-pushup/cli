@@ -6,7 +6,12 @@ export {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from './lib/core-config';
-export { PersistConfig, persistConfigSchema } from './lib/persist-config';
+export {
+  PersistConfig,
+  persistConfigSchema,
+  formatSchema,
+  Format,
+} from './lib/persist-config';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export {
   AuditGroup,

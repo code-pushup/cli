@@ -1,4 +1,4 @@
-import { CoreConfig, GlobalOptions } from '@code-pushup/models';
+import { CoreConfig } from '@code-pushup/models';
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -8,6 +8,7 @@ import yargs, {
   ParserConfigurationOptions,
 } from 'yargs';
 import { logErrorBeforeThrow } from './implementation/utils';
+import { GlobalOptions } from './model';
 
 /**
  * returns configurable yargs CLI for code-pushup

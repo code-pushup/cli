@@ -1,4 +1,5 @@
 import {
+  Format,
   globalOptionsSchema as coreGlobalOptionsSchema,
   PersistConfig,
   refineCoreConfig,
@@ -27,5 +28,10 @@ export const commandBaseSchema = refineCoreConfig(
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
 export type ArgsCliObj = Partial<
-  CliOptions & GlobalOptions & UploadConfig & PersistConfig
+  CliOptions &
+    GlobalOptions &
+    UploadConfig &
+    Omit<PersistConfig, 'format'> & {
+      format: Format | Format[];
+    }
 >;
