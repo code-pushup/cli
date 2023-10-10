@@ -8,7 +8,7 @@ import {
 } from '@code-pushup/models/testing';
 import { join } from 'path';
 import { vol } from 'memfs';
-import { upload } from '@code-pushup/core';
+import { upload } from './upload';
 import { ENV } from '../../../test/types';
 import { ReportFragment } from '@code-pushup/portal-client/portal-client/src/lib/graphql/generated';
 import { PortalUploadArgs } from '@code-pushup/portal-client/portal-client/src/lib/portal-upload';
