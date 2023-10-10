@@ -1,4 +1,4 @@
-import simpleGit from "simple-git";
+import simpleGit from 'simple-git';
 
 export const git = simpleGit();
 
@@ -8,5 +8,4 @@ export async function latestHash() {
     throw new Error('no latest hash present in git history.');
   }
   return log.latest?.hash;
-
 }

@@ -21,7 +21,6 @@ const cli = (args: string[]) =>
   });
 
 describe('collect-command-object', () => {
-
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,

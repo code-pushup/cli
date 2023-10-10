@@ -71,7 +71,7 @@ describe('objectToCliArgs', () => {
           value: 0,
           score: 0,
         },
-      ] satisfies AuditOutputs)}')`,
+      ])}')`,
     };
     const result = objectToCliArgs(params);
     expect(result).toEqual([`-e="${params.e}"`]);
