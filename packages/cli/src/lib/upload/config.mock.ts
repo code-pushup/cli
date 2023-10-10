@@ -22,9 +22,9 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync(${
+          `require('fs').writeFileSync('${
             outputPath + 'out.json'
-          }, '${JSON.stringify([
+          }', '${JSON.stringify([
             {
               slug: 'command-object-audit-slug',
               value: 0,
