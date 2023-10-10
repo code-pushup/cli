@@ -4,7 +4,7 @@ import {
   IssueSourceType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import {Issue, Report} from '@code-pushup/models';
+import { Issue, Report } from '@code-pushup/models';
 
 export function jsonToGql(report: Report) {
   return {
