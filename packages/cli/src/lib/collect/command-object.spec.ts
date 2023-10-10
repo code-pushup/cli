@@ -1,60 +1,50 @@
-import { CollectOptions } from '@code-pushup/core';
-import { yargsCli } from '../yargs-cli';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
-import { yargsUploadCommandObject } from '../upload/command-object';
-import { vi } from 'vitest';
-import { objectToCliArgs } from '@code-pushup/utils';
-import { vol } from 'memfs';
-import { cfg } from '../upload/config.mock';
-import * as process from 'process';
+import {yargsCli} from '../yargs-cli';
+import {middlewares} from '../middlewares';
+import {options} from '../options';
+import {vi} from 'vitest';
+import {objectToCliArgs} from '@code-pushup/utils';
+import {dirname, join} from "path";
+import {fileURLToPath} from "url";
+import {yargsCollectCommandObject} from "./command-object";
 
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-
-type ENV = { API_KEY: string; SERVER: string };
-const env = process.env as ENV;
-
-const cli = (args: Record<string, string>) =>
+const baseArgs = [
+  '--verbose',
+  ...objectToCliArgs({
+    configPath: join(fileURLToPath(dirname(import.meta.url)), 'config.mock.ts'),
+  }),
+];
+const cli = (args: string[]) =>
   yargsCli(
     [
-      'upload',
-      ...objectToCliArgs({
-        verbose: true,
-        apiKey: env.API_KEY,
-        server: env.SERVER,
-        ...args,
-      }),
+      'collect',
+      ...args
     ],
     {
       options,
       middlewares,
-      commands: [yargsUploadCommandObject()],
+      commands: [yargsCollectCommandObject()],
     },
   );
 
 describe('collect-command-object', () => {
   beforeEach(async () => {
-    vol.reset();
-    vol.fromJSON({
-      ['code-pushup.config.js']: `export default = ${JSON.stringify(cfg)}`,
-    });
+    vi.clearAllMocks();
   });
 
-  it('should parse arguments correctly', async () => {
-    const _cli = cli({
-      configPath: process.cwd() + '/packages/cli/lib/collect/config.mock.js',
-    });
-    const parsedArgv = (await _cli.argv) as unknown as CollectOptions;
-    const { persist } = parsedArgv;
-    const { outputPath: outPath } = persist;
-    expect(outPath).toBe('/out.json');
+  it('should override config with CLI arguments', async () => {
+    const args = [
+      ...baseArgs,
+      ...objectToCliArgs({
+        format: "md",
+      }),
+    ];
+    const parsedArgv = await cli(args).parseAsync();
+    expect(parsedArgv.persist.outputPath).toBe('tmp/');
+    expect(parsedArgv.persist?.format).toEqual(['md']);
+    expect(parsedArgv.upload?.project).toEqual('cli');
+    expect(parsedArgv.upload?.organization).toBe('code-pushup');
+    expect(parsedArgv.upload?.apiKey).toEqual('dummy-api-key');
+    expect(parsedArgv.upload?.server).toEqual('https://example.com/api');
   });
+
 });

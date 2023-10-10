@@ -14,6 +14,7 @@ import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
 
+// This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
   const module: typeof import('@code-pushup/portal-client') =
     await vi.importActual('@code-pushup/portal-client');
