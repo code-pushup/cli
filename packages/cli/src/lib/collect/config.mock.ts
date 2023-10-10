@@ -1,4 +1,4 @@
-const outputPath = 'tmp';
+const outputPath = '/tmp';
 export default {
   upload: {
     organization: 'code-pushup',

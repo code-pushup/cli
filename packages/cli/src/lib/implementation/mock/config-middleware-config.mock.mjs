@@ -5,7 +5,7 @@ export default {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: { outputPath: 'tmp', format: ['json'] },
+  persist: { outputPath: '/tmp', format: ['json'] },
   plugins: [],
   categories: [],
 };

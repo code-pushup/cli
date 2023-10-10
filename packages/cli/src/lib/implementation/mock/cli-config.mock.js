@@ -6,7 +6,7 @@ module.exports = {
     server: 'https://example.com/api',
   },
   persist: {
-    outputPath: 'cli-config-out.json',
+    outputPath: '/tmp',
     format: ['json'],
   },
   categories: [],
@@ -17,11 +17,11 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('tmp/cli-config-out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('/tmp/cli-config-out.json', '${JSON.stringify(
             { audits: [] },
           )}')`,
         ],
-        outputPath: 'tmp/cli-config-out.json',
+        outputPath: '/tmp/cli-config-out.json',
       },
       slug: 'execute-plugin',
       title: 'execute plugin',
