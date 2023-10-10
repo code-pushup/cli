@@ -6,13 +6,13 @@ import { ConfigParseError } from './config-middleware';
 // @TODO [73] move into core
 export async function readCodePushupConfig(filepath: string) {
   try {
-    const stats = await stat(filepath);
-    if (!stats.isFile()) {
+    const isFile = (await stat(filepath)).isFile();
+    if (!isFile) {
       throw new ConfigParseError(filepath);
     }
   } catch (err) {
     console.warn(err);
-    throw new ConfigParseError(filepath, err as Error);
+    throw err;
   }
 
   return importModule<CoreConfig>(

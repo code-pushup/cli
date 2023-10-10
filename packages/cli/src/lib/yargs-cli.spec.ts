@@ -6,7 +6,7 @@ import { middlewares } from './middlewares';
 import { GlobalOptions } from './model';
 import { options as defaultOptions } from './options';
 import { CollectOptions } from '@code-pushup/core';
-import {CoreConfig} from "@code-pushup/models";
+import { CoreConfig } from '@code-pushup/models';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
@@ -15,7 +15,7 @@ const validConfigPath = withDirName('implementation/mock/cli-config.mock.js');
 const options = defaultOptions;
 const demandCommand: [number, string] = [0, 'no command required'];
 
-describe('CLI arguments parsing', () => {
+describe('yargsCli', () => {
   it('options should provide correct defaults', async () => {
     const args: string[] = [];
     const parsedArgv = yargsCli(args, {
@@ -43,7 +43,7 @@ describe('CLI arguments parsing', () => {
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.interactive).toBe(false);
   });
-/*
+  /*
   it('middleware should use config correctly', async () => {
     const args: string[] = ['--configPath', validConfigPath];
     const parsedArgv = (await yargsCli(args, {

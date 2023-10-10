@@ -1,32 +1,40 @@
-import {GlobalOptions, globalOptionsSchema, UploadConfig, PersistConfig, CoreConfig} from '@code-pushup/models';
-import {GlobalOptions as CliOptions} from '../model';
-import {readCodePushupConfig} from './read-code-pushup-config';
-import {CommandBase} from "./model";
+import {
+  GlobalOptions,
+  globalOptionsSchema,
+  UploadConfig,
+  PersistConfig,
+  CoreConfig,
+} from '@code-pushup/models';
+import { GlobalOptions as CliOptions } from '../model';
+import { readCodePushupConfig } from './read-code-pushup-config';
+import { CommandBase } from './model';
 
 export class ConfigParseError extends Error {
-  constructor(configPath: string, err?: Error) {
-    super(`Config file ${configPath} does not exist. ${err && err.message}`);
+  constructor(configPath: string) {
+    super(`Config file ${configPath} is not a file.`);
   }
 }
 
-
-type ArgsCliObj = Partial<CliOptions & GlobalOptions & UploadConfig & PersistConfig>;
+type ArgsCliObj = Partial<
+  CliOptions & GlobalOptions & UploadConfig & PersistConfig
+>;
 
 export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   const args = processArgs as T;
-  const {configPath, ...cliOptions}: GlobalOptions = globalOptionsSchema.parse(args);
+  const { configPath, ...cliOptions }: GlobalOptions =
+    globalOptionsSchema.parse(args);
   const importedRc = await readCodePushupConfig(configPath);
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
   const parsedProcessArgs: CommandBase = {
     ...cliOptions,
-    ...importedRc,
+    ...(importedRc || {}),
     upload: {
       ...importedRc.upload,
-      ...cliConfigArgs.upload
+      ...cliConfigArgs.upload,
     },
     persist: {
       ...importedRc.persist,
-      ...cliConfigArgs.persist
+      ...cliConfigArgs.persist,
     },
     plugins: importedRc.plugins,
     categories: importedRc.categories,
@@ -35,9 +43,8 @@ export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   return parsedProcessArgs;
 }
 
-
 function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
-  const parsedProcessArgs = {upload: {}, persist: {}} as CommandBase;
+  const parsedProcessArgs = { upload: {}, persist: {} } as CommandBase;
   for (const key in args) {
     const k = key as keyof ArgsCliObj;
     switch (key) {
@@ -53,7 +60,6 @@ function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
         break;
       default:
         break;
-
     }
   }
 

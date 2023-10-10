@@ -2,7 +2,7 @@ import { join } from 'path';
 import { expect } from 'vitest';
 import { configMiddleware, ConfigParseError } from './config-middleware';
 import { getDirname } from './helper.mock';
-import {yargsCli} from "../yargs-cli";
+import { yargsCli } from '../yargs-cli';
 
 const __dirname = getDirname(import.meta.url);
 
@@ -11,7 +11,6 @@ const configPath = (ext: string) =>
   `${withDirName('mock/config-middleware-config.mock.')}${ext}`;
 
 describe('applyConfigMiddleware', () => {
-
   it('should load valid .mjs config', async () => {
     const configPathMjs = configPath('mjs');
     const config = await configMiddleware({ configPath: configPathMjs });
@@ -37,7 +36,7 @@ describe('applyConfigMiddleware', () => {
     const configPath = 'wrong/path/to/config';
     let error: Error = new Error();
     await configMiddleware({ configPath }).catch(e => (error = e));
-    expect(error?.message).toContain(new ConfigParseError(configPath).message);
+    expect(error?.message).toContain(configPath);
   });
 
   it('should provide default configPath', async () => {
@@ -49,14 +48,15 @@ describe('applyConfigMiddleware', () => {
 
   it('should work in cli', async () => {
     const _cli = yargsCli([], {
-      middlewares: [{middlewareFunction: configMiddleware as unknown}],
-      commands: [{
-        command: '*',
-        handler: (args: any) => {
-          console.log('args: ', args);
-        }
-      }]
-    })
+      middlewares: [{ middlewareFunction: configMiddleware as unknown }],
+      commands: [
+        {
+          command: '*',
+          handler: (args: any) => {
+            console.log('args: ', args);
+          },
+        },
+      ],
+    });
   });
-
 });
