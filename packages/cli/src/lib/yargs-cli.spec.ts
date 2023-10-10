@@ -6,6 +6,8 @@ import { middlewares } from './middlewares';
 import { GlobalOptions } from './model';
 import { options as defaultOptions } from './options';
 import { CoreConfig } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { ArgsCliObj } from './implementation/model';
 
 const __dirname = getDirname(import.meta.url);
 const withDirName = (path: string) => join(__dirname, path);
@@ -15,7 +17,7 @@ const options = defaultOptions;
 const demandCommand: [number, string] = [0, 'no command required'];
 
 describe('yargsCli', () => {
-  it('options should provide correct defaults', async () => {
+  it('global options should provide correct defaults', async () => {
     const args: string[] = [];
     const parsedArgv = yargsCli(args, {
       options,
@@ -26,25 +28,29 @@ describe('yargsCli', () => {
     expect(parsedArgv.interactive).toBe(true);
   });
 
-  it('options should parse correctly', async () => {
-    const args: string[] = [
-      '--verbose',
-      '--no-interactive',
-      '--configPath',
-      validConfigPath,
-    ];
+  it('global options should parse correctly', async () => {
+    const args: string[] = objectToCliArgs({
+      verbose: true,
+      interactive: false,
+      configPath: validConfigPath,
+      format: ['md'],
+    });
 
     const parsedArgv = yargsCli(args, {
       options,
       demandCommand,
-    }).argv as unknown as GlobalOptions & CoreConfig;
+    }).argv as unknown as GlobalOptions & ArgsCliObj;
     expect(parsedArgv.configPath).toContain(validConfigPath);
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.interactive).toBe(false);
+    expect(parsedArgv?.format).toEqual(['md']);
   });
 
-  it('middleware should use config correctly', async () => {
-    const args: string[] = ['--configPath', validConfigPath];
+  it('global middleware should use config correctly', async () => {
+    const args: string[] = objectToCliArgs({
+      configPath: validConfigPath,
+      format: ['md'],
+    });
     const parsedArgv = (await yargsCli(args, {
       demandCommand,
       middlewares,
