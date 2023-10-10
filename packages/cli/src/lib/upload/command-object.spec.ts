@@ -1,14 +1,14 @@
 import { Report } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { objectToCliArgs } from '@code-pushup/utils';
 import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { vi } from 'vitest';
+import { vi, describe, it, beforeEach } from 'vitest';
 import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
@@ -31,7 +31,7 @@ const baseArgs = [
   'upload',
   '--verbose',
   ...objectToCliArgs({
-    configPath: join(fileURLToPath(dirname(import.meta.url)), 'config.mock.ts'),
+    configPath: join(fileURLToPath(dirname(import.meta.url)),'..','..','..','test', 'config.mock.ts'),
   }),
 ];
 const cli = (args: string[]) =>
@@ -92,4 +92,5 @@ describe('upload-command-object', () => {
       },
     } satisfies PortalUploadArgs);
   });
+
 });
