@@ -55,7 +55,7 @@ describe('yargsCli', () => {
       middlewares,
     }).argv) as unknown as GlobalOptions & CoreConfig;
     expect(parsedArgv.upload?.project).toContain('cli');
-    expect(parsedArgv.persist.outputPath).toContain('./tmp');
+    expect(parsedArgv.persist.outputPath).toContain('/tmp');
   });
 
   it('global options and middleware handle argument overrides correctly', async () => {

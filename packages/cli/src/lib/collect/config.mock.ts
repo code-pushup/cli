@@ -1,4 +1,4 @@
-const outputPath = '/tmp';
+const outputPath = 'tmp';
 export default {
   upload: {
     organization: 'code-pushup',
@@ -22,15 +22,16 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync(${
-            outputPath + '/out.json'
-          }, '${JSON.stringify([
-            {
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ])}')`,
+          `require('fs').writeFileSync('${outputPath}/out.json', '${JSON.stringify(
+            [
+              {
+                title: 'dummy-title',
+                slug: 'command-object-audit-slug',
+                value: 0,
+                score: 0,
+              },
+            ],
+          )}')`,
         ],
         outputPath: `${outputPath}/out.json`,
       },
