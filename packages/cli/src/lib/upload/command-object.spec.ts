@@ -1,48 +1,36 @@
-import { MEMFS_VOLUME, mockReport } from '@code-pushup/models/testing';
-import { CollectOptions } from '@code-pushup/core';
-import { yargsCli } from '../yargs-cli';
-import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
-import { yargsUploadCommandObject } from './command-object';
-import { vi } from 'vitest';
-import { join } from 'path';
+import { Report } from '@code-pushup/models';
+import {
+  PortalUploadArgs,
+  ReportFragment,
+  uploadToPortal,
+} from '@code-pushup/portal-client';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { writeFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { vi } from 'vitest';
+import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
 import { middlewares } from '../middlewares';
-import { vol } from 'memfs';
-import { cfg } from './config.mock';
+import { yargsCli } from '../yargs-cli';
+import { yargsUploadCommandObject } from './command-object';
 
 vi.mock('@code-pushup/portal-client', async () => {
   const module: typeof import('@code-pushup/portal-client') =
     await vi.importActual('@code-pushup/portal-client');
+
   return {
     ...module,
-    uploadToPortal: vi.fn(() => {
-      return 'portal-result-mock';
-    }),
+    uploadToPortal: vi.fn(
+      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+    ),
   };
 });
 
-vi.spyOn(process, 'cwd').mockReturnValue('/');
-
-
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
-type ENV = { API_KEY: string; SERVER: string };
-const env = process.env as ENV;
-const args = [
+const baseArgs = [
   'upload',
   '--verbose',
   ...objectToCliArgs({
-    configPath: '/code-pushup.config.js',
-    apiKey: env.API_KEY,
-    server: env.SERVER,
+    configPath: join(fileURLToPath(dirname(import.meta.url)), 'config.mock.ts'),
   }),
 ];
 const cli = (args: string[]) =>
@@ -53,28 +41,55 @@ const cli = (args: string[]) =>
   });
 
 const reportPath = (format: 'json' | 'md' = 'json') =>
-  join('report.' + format);
+  join('tmp', 'report.' + format);
 
 describe('upload-command-object', () => {
+  const dummyReport: Report = {
+    date: new Date().toISOString(),
+    duration: 1000,
+    categories: [],
+    plugins: [],
+    packageName: '@code-pushup/cli',
+    version: '0.1.0',
+  };
+
   beforeEach(async () => {
-    vol.reset();
-    vol.fromJSON({
-      [reportPath()]: JSON.stringify(mockReport()),
-      ['code-pushup.config.js']: `export default ${JSON.stringify(cfg)}`,
-    }, '/');
+    vi.clearAllMocks();
+    await writeFile(reportPath(), JSON.stringify(dummyReport));
   });
 
-  it('should parse arguments correctly', async () => {
-    const _arg = [
-      ...args,
+  it('should override config with CLI arguments', async () => {
+    const args = [
+      ...baseArgs,
       ...objectToCliArgs({
-        apiKey: 'env.API_KEY',
-        server: 'env.SERVER',
+        apiKey: 'some-other-api-key',
+        server: 'https://other-example.com/api',
       }),
     ];
+    const parsedArgv = await cli(args).parseAsync();
+    expect(parsedArgv.persist.outputPath).toBe('tmp/');
+    expect(parsedArgv.upload?.organization).toBe('code-pushup');
+    expect(parsedArgv.upload?.project).toBe('cli');
+    expect(parsedArgv.upload?.apiKey).toBe('some-other-api-key');
+    expect(parsedArgv.upload?.server).toBe('https://other-example.com/api');
+  });
 
-    const _cli = cli(_arg);
-    const parsedArgv = (await _cli.argv) as unknown as CollectOptions;
-    expect(parsedArgv.persist.outputPath).toBe('');
+  it('should call portal-client function with correct parameters', async () => {
+    await cli(baseArgs).parseAsync();
+    expect(uploadToPortal).toHaveBeenCalledWith({
+      apiKey: 'dummy-api-key',
+      server: 'https://example.com/api',
+      data: {
+        commandStartDate: dummyReport.date,
+        commandDuration: 1000,
+        categories: [],
+        plugins: [],
+        packageName: '@code-pushup/cli',
+        packageVersion: '0.1.0',
+        organization: 'code-pushup',
+        project: 'cli',
+        commit: expect.any(String),
+      },
+    } satisfies PortalUploadArgs);
   });
 });

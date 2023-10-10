@@ -1,13 +1,12 @@
 import {
   GlobalOptions,
-  globalOptionsSchema,
-  UploadConfig,
   PersistConfig,
-  CoreConfig,
+  UploadConfig,
+  globalOptionsSchema,
 } from '@code-pushup/models';
 import { GlobalOptions as CliOptions } from '../model';
-import { readCodePushupConfig } from './read-code-pushup-config';
 import { CommandBase } from './model';
+import { readCodePushupConfig } from './read-code-pushup-config';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {

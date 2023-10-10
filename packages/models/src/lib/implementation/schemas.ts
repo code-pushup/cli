@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
+import { slugRegex, unixFilePathRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -96,7 +96,10 @@ export function metaSchema(options?: {
  * @param description
  */
 export function generalFilePathSchema(description: string) {
-  return z.string({ description }).trim().min(1, {message: 'path is invalid'});
+  return z
+    .string({ description })
+    .trim()
+    .min(1, { message: 'path is invalid' });
 }
 
 /**

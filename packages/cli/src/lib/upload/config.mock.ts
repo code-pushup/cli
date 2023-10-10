@@ -1,10 +1,10 @@
-const outputPath = '/tmp';
-export const cfg = {
+const outputPath = 'tmp/';
+export default {
   upload: {
-    organization: "code-pushup",
-    project: "cli",
-    apiKey: "process.env.API_KEY",
-    server: "process.env.SERVER"
+    organization: 'code-pushup',
+    project: 'cli',
+    apiKey: 'dummy-api-key',
+    server: 'https://example.com/api',
   },
   persist: { outputPath },
   plugins: [
@@ -22,17 +22,17 @@ export const cfg = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync(${outputPath+'out.json'}, '${JSON.stringify(
-            [
-              {
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
+          `require('fs').writeFileSync(${
+            outputPath + 'out.json'
+          }, '${JSON.stringify([
+            {
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])}')`,
         ],
-        outputPath: '/test/command-object-config-out.json',
+        outputPath: 'tmp/command-object-config-out.json',
       },
       groups: [],
       slug: 'command-object-plugin',
