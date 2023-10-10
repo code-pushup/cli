@@ -1,4 +1,4 @@
-const outputPath = '/test';
+const outputPath = '/tmp';
 export const cfg = {
   upload: {
     organization: "code-pushup",

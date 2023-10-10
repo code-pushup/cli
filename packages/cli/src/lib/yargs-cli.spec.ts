@@ -5,7 +5,6 @@ import { getDirname } from './implementation/helper.mock';
 import { middlewares } from './middlewares';
 import { GlobalOptions } from './model';
 import { options as defaultOptions } from './options';
-import { CollectOptions } from '@code-pushup/core';
 import { CoreConfig } from '@code-pushup/models';
 
 const __dirname = getDirname(import.meta.url);
@@ -43,7 +42,7 @@ describe('yargsCli', () => {
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.interactive).toBe(false);
   });
-  /*
+
   it('middleware should use config correctly', async () => {
     const args: string[] = ['--configPath', validConfigPath];
     const parsedArgv = (await yargsCli(args, {
@@ -52,5 +51,18 @@ describe('yargsCli', () => {
     }).argv) as unknown as GlobalOptions & CoreConfig;
     expect(parsedArgv.upload?.project).toContain('cli');
     expect(parsedArgv.persist.outputPath).toContain('cli-config-out.json');
-  });*/
+  });
+
+  it('middleware should lag error', async () => {
+    // @TODO
+  });
+
+  it('command should receive args through middleware', async () => {
+    // @TODO
+  });
+
+  it('command should lag error', async () => {
+    // @TODO
+  });
+
 });

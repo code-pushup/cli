@@ -1,4 +1,3 @@
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import { CollectOptions } from '@code-pushup/core';
 import { yargsCli } from '../yargs-cli';
 import { middlewares } from '../middlewares';

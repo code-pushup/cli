@@ -9,9 +9,9 @@ import { GlobalOptions as CliOptions } from '../model';
 import { readCodePushupConfig } from './read-code-pushup-config';
 import { CommandBase } from './model';
 
-export class ConfigParseError extends Error {
+export class ConfigPathError extends Error {
   constructor(configPath: string) {
-    super(`Config file ${configPath} is not a file.`);
+    super(`Config path ${configPath} is not a file.`);
   }
 }
 

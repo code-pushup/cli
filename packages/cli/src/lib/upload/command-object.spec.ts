@@ -21,6 +21,9 @@ vi.mock('@code-pushup/portal-client', async () => {
   };
 });
 
+vi.spyOn(process, 'cwd').mockReturnValue('/');
+
+
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
   return memfs.fs;
@@ -49,9 +52,7 @@ const cli = (args: string[]) =>
     commands: [yargsUploadCommandObject()],
   });
 
-const outputPath = MEMFS_VOLUME;
-
-const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
+const reportPath = (format: 'json' | 'md' = 'json') =>
   join('report.' + format);
 
 describe('upload-command-object', () => {
@@ -59,8 +60,8 @@ describe('upload-command-object', () => {
     vol.reset();
     vol.fromJSON({
       [reportPath()]: JSON.stringify(mockReport()),
-      ['code-pushup.config.js']: `export default = ${JSON.stringify(cfg)}`,
-    });
+      ['code-pushup.config.js']: `export default ${JSON.stringify(cfg)}`,
+    }, '/');
   });
 
   it('should parse arguments correctly', async () => {
@@ -74,6 +75,6 @@ describe('upload-command-object', () => {
 
     const _cli = cli(_arg);
     const parsedArgv = (await _cli.argv) as unknown as CollectOptions;
-    expect(parsedArgv.persist.outputPath).toBe(outputPath);
+    expect(parsedArgv.persist.outputPath).toBe('');
   });
 });

@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { expect } from 'vitest';
-import { configMiddleware, ConfigParseError } from './config-middleware';
+import { configMiddleware, ConfigPathError } from './config-middleware';
 import { getDirname } from './helper.mock';
 import { yargsCli } from '../yargs-cli';
 
