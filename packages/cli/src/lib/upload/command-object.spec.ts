@@ -31,7 +31,14 @@ const baseArgs = [
   'upload',
   '--verbose',
   ...objectToCliArgs({
-    configPath: join(fileURLToPath(dirname(import.meta.url)),'..','..','..','test', 'config.mock.ts'),
+    configPath: join(
+      fileURLToPath(dirname(import.meta.url)),
+      '..',
+      '..',
+      '..',
+      'test',
+      'config.mock.ts',
+    ),
   }),
 ];
 const cli = (args: string[]) =>
@@ -92,5 +99,4 @@ describe('upload-command-object', () => {
       },
     } satisfies PortalUploadArgs);
   });
-
 });

@@ -9,7 +9,14 @@ import { yargsCollectCommandObject } from './command-object';
 const baseArgs = [
   ...objectToCliArgs({
     verbose: true,
-    configPath: join(fileURLToPath(dirname(import.meta.url)),'..','..','..','test', 'config.mock.ts'),
+    configPath: join(
+      fileURLToPath(dirname(import.meta.url)),
+      '..',
+      '..',
+      '..',
+      'test',
+      'config.mock.ts',
+    ),
   }),
 ];
 const cli = (args: string[]) =>
