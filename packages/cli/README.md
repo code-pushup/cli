@@ -1,3 +1,5 @@
 # @code-pushup/cli
 
-TODO: docs
+**TODO:**
+
+- if the `exec` is not working run `--configPath=./packages/cli/code-pushup.config.ts`
