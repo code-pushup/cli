@@ -103,7 +103,7 @@ export function filePathSchema(description: string) {
 }
 
 /**
- * Schema for a unixFilePath
+ * Schema for a weight
  * @param description
  */
 export function weightSchema(
@@ -118,14 +118,6 @@ export function weightSchema(
  */
 export function positiveIntSchema(description: string) {
   return z.number({ description }).int().nonnegative();
-}
-
-/**
- * Schema for a unixFilePath
- * @param description
- */
-export function unixFilePathSchema(description: string) {
-  return z.string({ description }).min(1);
 }
 
 export function packageVersionSchema(options?: {

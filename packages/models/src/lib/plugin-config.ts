@@ -8,7 +8,6 @@ import {
   positiveIntSchema,
   scorableSchema,
   slugSchema,
-  unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
 import {
@@ -166,7 +165,7 @@ function getMissingRefsFromGroups(pluginCfg: _PluginCfg) {
 
 const sourceFileLocationSchema = z.object(
   {
-    file: unixFilePathSchema('Relative path to source file in Git repo'),
+    file: filePathSchema('Relative path to source file in Git repo'),
     position: z
       .object(
         {
