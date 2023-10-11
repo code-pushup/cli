@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generalFilePathSchema } from './implementation/schemas';
+import { filePathSchema } from './implementation/schemas';
 
 export const globalOptionsSchema = z.object({
   verbose: z
@@ -7,7 +7,7 @@ export const globalOptionsSchema = z.object({
       description: 'Outputs additional information for a run',
     })
     .default(false),
-  configPath: generalFilePathSchema(
+  configPath: filePathSchema(
     "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
   )
     .optional()

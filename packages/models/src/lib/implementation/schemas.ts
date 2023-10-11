@@ -95,7 +95,7 @@ export function metaSchema(options?: {
  * Schema for a generalFilePath
  * @param description
  */
-export function generalFilePathSchema(description: string) {
+export function filePathSchema(description: string) {
   return z
     .string({ description })
     .trim()

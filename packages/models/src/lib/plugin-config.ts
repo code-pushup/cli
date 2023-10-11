@@ -2,7 +2,7 @@ import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import { z } from 'zod';
 import {
   executionMetaSchema,
-  generalFilePathSchema,
+  filePathSchema,
   metaSchema,
   packageVersionSchema,
   positiveIntSchema,
@@ -47,7 +47,7 @@ const runnerConfigSchema = z.object(
       description: 'Shell command to execute',
     }),
     args: z.array(z.string({ description: 'Command arguments' })).optional(),
-    outputPath: generalFilePathSchema('Output path'),
+    outputPath: filePathSchema('Output path'),
   },
   {
     description: 'How to execute runner',
