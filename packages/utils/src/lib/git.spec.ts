@@ -4,6 +4,7 @@ import { expect } from 'vitest';
 describe('git', () => {
   it('should log current hash', async () => {
     const hash = await latestHash();
-    expect(hash.length).toBeGreaterThan(0);
+    expect(hash).toHaveLength(40);
+    expect(hash).toMatch(/^[0-9a-f]+$/);
   });
 });
