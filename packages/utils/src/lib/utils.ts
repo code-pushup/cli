@@ -3,9 +3,16 @@ import { CategoryConfig } from '@code-pushup/models';
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
 
-// @TODO replace with real scoring logic
-export function sumRefs(refs: CategoryConfig['refs']) {
-  return refs.reduce((sum, { weight }) => sum + weight, 0);
+export function calculateScore<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): number {
+  const numerator = refs.reduce(
+    (sum, ref) => sum + scoreFn(ref) * ref.weight,
+    0,
+  );
+  const denominator = refs.reduce((sum, ref) => sum + ref.weight, 0);
+  return numerator / denominator;
 }
 
 export function countWeightedRefs(refs: CategoryConfig['refs']) {

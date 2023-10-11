@@ -2,7 +2,7 @@ import { Report } from '@code-pushup/models';
 import { NEW_LINE, headline, style, li, table, details, link } from './md/';
 import {
   countWeightedRefs,
-  sumRefs,
+  calculateScore,
   reportHeadlineText,
   reportOverviewTableHeaders,
 } from './utils';
@@ -62,7 +62,7 @@ function reportToOverviewSection(report: Report): string {
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs }) => [
       title,
-      sumRefs(refs).toString(),
+      calculateScore(refs).toString(),
       refs.length.toString() + '/' + countWeightedRefs(refs),
     ]),
   ];
@@ -76,7 +76,7 @@ function reportToDetailSection(report: Report): string {
   categories.forEach(category => {
     const { title, refs } = category;
 
-    md += style(`${title} ${sumRefs(refs)}`) + NEW_LINE;
+    md += style(`${title} ${calculateScore(refs)}`) + NEW_LINE;
 
     md +=
       refs

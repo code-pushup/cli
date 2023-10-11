@@ -6,7 +6,7 @@ import {
   distinct,
   formatBytes,
   slugify,
-  sumRefs,
+  calculateScore,
   toArray,
 } from './utils';
 
@@ -65,7 +65,7 @@ describe('sumRefs', () => {
         type: 'audit',
       },
     ];
-    expect(sumRefs(refs)).toBe(11);
+    expect(calculateScore(refs)).toBe(11);
   });
 });
 

@@ -5,7 +5,7 @@ import {
   countWeightedRefs,
   reportHeadlineText,
   reportOverviewTableHeaders,
-  sumRefs,
+  calculateScore,
 } from './utils';
 import { NEW_LINE } from './md';
 
@@ -57,7 +57,7 @@ function reportToOverviewSection(report: Report): void {
 
   // table content
   report.categories.forEach(({ title, refs }) => {
-    const score = sumRefs(refs).toString();
+    const score = calculateScore(refs).toString();
     const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
 
     ui.div(
@@ -85,7 +85,7 @@ function reportToDetailSection(report: Report): void {
   categories.forEach(category => {
     const { title, refs } = category;
 
-    console.log(chalk.bold(`${title} ${sumRefs(refs)}`));
+    console.log(chalk.bold(`${title} ${calculateScore(refs)}`));
 
     refs.forEach(
       ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
