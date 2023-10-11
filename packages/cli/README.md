@@ -1,3 +1,5 @@
-# @quality-metrics/cli
+# @code-pushup/cli
 
-TODO: docs
+**TODO:**
+
+- if the `exec` is not working run `npx clear-npx-cache`

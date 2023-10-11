@@ -7,6 +7,12 @@ export const uploadConfigSchema = z.object({
     description:
       'API key with write access to portal (use `process.env` for security)',
   }),
+  organization: z.string({
+    description: 'Organization in code versioning system',
+  }),
+  project: z.string({
+    description: 'Project in code versioning system',
+  }),
 });
 
 export type UploadConfig = z.infer<typeof uploadConfigSchema>;

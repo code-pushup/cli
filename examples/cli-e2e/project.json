@@ -13,5 +13,6 @@
       }
     }
   },
+  "implicitDependencies": ["cli", "plugin-eslint", "plugin-lighthouse"],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }

@@ -1,9 +1,13 @@
 import {
+  Format,
   globalOptionsSchema as coreGlobalOptionsSchema,
+  PersistConfig,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-} from '@quality-metrics/models';
+  UploadConfig,
+} from '@code-pushup/models';
 import { z } from 'zod';
+import { GlobalOptions as CliOptions } from '../model';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
   z.object({
@@ -18,7 +22,16 @@ export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
 
 export type GlobalOptions = z.infer<typeof globalOptionsSchema>;
 
+// @TODO this has any type
 export const commandBaseSchema = refineCoreConfig(
   globalOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
+export type ArgsCliObj = Partial<
+  CliOptions &
+    GlobalOptions &
+    UploadConfig &
+    Omit<PersistConfig, 'format'> & {
+      format: Format | Format[];
+    }
+>;

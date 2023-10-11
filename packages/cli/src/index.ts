@@ -1,17 +1,6 @@
-import { yargsCli } from './lib/cli';
-import { options } from './lib/options';
-import { middlewares } from './lib/middlewares';
-import { commands } from './lib/commands';
+#! /usr/bin/env node
+import { cli } from './lib/cli';
+import { hideBin } from 'yargs/helpers';
 
-export { options } from './lib/options';
-export { middlewares } from './lib/middlewares';
-export { commands } from './lib/commands';
-
-export const cli = (args: string[]) =>
-  yargsCli(args, {
-    usageMessage: 'Code PushUp CLI',
-    scriptName: 'code-pushup',
-    options,
-    middlewares,
-    commands,
-  });
+// bootstrap yargs; format arguments
+cli(hideBin(process.argv)).argv;

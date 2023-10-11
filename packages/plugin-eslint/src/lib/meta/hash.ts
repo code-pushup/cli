@@ -1,4 +1,4 @@
-import { slugify } from '@quality-metrics/utils';
+import { slugify } from '@code-pushup/utils';
 import { createHash } from 'crypto';
 
 export function ruleIdToSlug(

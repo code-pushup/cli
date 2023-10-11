@@ -25,13 +25,16 @@ export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
+  outputPath?: string;
 }): PluginConfig {
-  const { groupSlug } = opt || {};
+  const { groupSlug, outputPath } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const pluginOutputPath = `tmp/${+new Date()}-${__outputFile__}`;
+  const pluginOutputPath = `${
+    outputPath || 'tmp'
+  }/${+new Date()}-${__outputFile__}`;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -171,6 +174,7 @@ export function mockCategory(opt?: {
     description: `This is the category description of ${categorySlug}. Enjoy dummy text and data to the full.`,
     docsUrl: 'https://category.dev?' + categorySlug,
     refs: categoryAuditRefs.concat(categoryGroupRefs),
+    isBinary: false,
   } satisfies Required<CategoryConfig>;
 }
 
@@ -185,7 +189,7 @@ export function mockReport(opt?: {
     packageName: 'mock-package',
     version: '0.0.0',
     date: new Date().toDateString(),
-    duration: randDuration(),
+    duration: 42,
     categories: [mockCategory({ pluginSlug, auditSlug })],
     plugins: [mockPluginReport({ auditSlug, pluginSlug })],
   };
@@ -200,14 +204,15 @@ export function mockPluginReport(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   return {
     date: new Date().toDateString(),
-    duration: randDuration(),
+    duration: 420,
     slug: pluginSlug,
     title: 'Title of ' + pluginSlug,
     description: 'Plugin description of ' + pluginSlug,
     docsUrl: `http://plugin.io/docs/${pluginSlug}`,
     icon: 'nrwl',
     version: '0.0.1',
-    packageName: '@' + pluginSlug,
+    packageName: pluginSlug,
+    groups: [],
     audits: Array.isArray(auditSlug)
       ? auditSlug.map(a => mockAuditReport({ auditSlug: a }))
       : [mockAuditReport({ auditSlug })],
@@ -251,6 +256,8 @@ export function mockUploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
   return {
     apiKey: 'm0ck-API-k3y',
     server: 'http://test.server.io',
+    organization: 'code-pushup',
+    project: 'cli',
     ...opt,
   };
 }

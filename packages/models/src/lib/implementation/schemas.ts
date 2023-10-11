@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generalFilePathRegex, slugRegex, unixFilePathRegex } from './utils';
+import { slugRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -95,14 +95,15 @@ export function metaSchema(options?: {
  * Schema for a generalFilePath
  * @param description
  */
-export function generalFilePathSchema(description: string) {
-  return z.string({ description }).regex(generalFilePathRegex, {
-    message: 'path is invalid',
-  });
+export function filePathSchema(description: string) {
+  return z
+    .string({ description })
+    .trim()
+    .min(1, { message: 'path is invalid' });
 }
 
 /**
- * Schema for a unixFilePath
+ * Schema for a weight
  * @param description
  */
 export function weightSchema(
@@ -117,14 +118,6 @@ export function weightSchema(
  */
 export function positiveIntSchema(description: string) {
   return z.number({ description }).int().nonnegative();
-}
-
-/**
- * Schema for a unixFilePath
- * @param description
- */
-export function unixFilePathSchema(description: string) {
-  return z.string({ description }).regex(unixFilePathRegex);
 }
 
 export function packageVersionSchema(options?: {

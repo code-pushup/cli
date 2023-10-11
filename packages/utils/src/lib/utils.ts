@@ -1,4 +1,4 @@
-import { CategoryConfig } from '@quality-metrics/models';
+import { CategoryConfig } from '@code-pushup/models';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];

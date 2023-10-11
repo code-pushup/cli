@@ -27,10 +27,10 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies || {};
 
   // base deps
-  devDependencies['@quality-metrics/nx-plugin'] = cpuNxPluginVersion;
-  devDependencies['@quality-metrics/models'] = cpuModelVersion;
-  devDependencies['@quality-metrics/utils'] = cpuUtilsVersion;
-  devDependencies['@quality-metrics/cli'] = cpuCliVersion;
+  devDependencies['@code-pushup/nx-plugin'] = cpuNxPluginVersion;
+  devDependencies['@code-pushup/models'] = cpuModelVersion;
+  devDependencies['@code-pushup/utils'] = cpuUtilsVersion;
+  devDependencies['@code-pushup/cli'] = cpuCliVersion;
 
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }
@@ -40,10 +40,10 @@ function moveToDevDependencies(tree: Tree) {
     packageJson.dependencies = packageJson.dependencies || {};
     packageJson.devDependencies = packageJson.devDependencies || {};
 
-    if (packageJson.dependencies['@quality-metrics/nx-plugin']) {
-      packageJson.devDependencies['@quality-metrics/nx-plugin'] =
-        packageJson.dependencies['@quality-metrics/nx-plugin'];
-      delete packageJson.dependencies['@quality-metrics/nx-plugin'];
+    if (packageJson.dependencies['@code-pushup/nx-plugin']) {
+      packageJson.devDependencies['@code-pushup/nx-plugin'] =
+        packageJson.dependencies['@code-pushup/nx-plugin'];
+      delete packageJson.dependencies['@code-pushup/nx-plugin'];
     }
 
     return packageJson;

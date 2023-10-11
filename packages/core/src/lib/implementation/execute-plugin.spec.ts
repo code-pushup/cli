@@ -1,8 +1,5 @@
-import {
-  auditOutputsSchema,
-  pluginConfigSchema,
-} from '@quality-metrics/models';
-import { mockPluginConfig } from '@quality-metrics/models/testing';
+import { auditOutputsSchema, pluginConfigSchema } from '@code-pushup/models';
+import { mockPluginConfig } from '@code-pushup/models/testing';
 import { describe, expect, it } from 'vitest';
 import { executePlugin, executePlugins } from './execute-plugin';
 

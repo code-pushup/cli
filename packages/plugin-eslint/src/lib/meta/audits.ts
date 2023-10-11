@@ -1,4 +1,4 @@
-import type { Audit } from '@quality-metrics/models';
+import type { Audit } from '@code-pushup/models';
 import type { ESLint } from 'eslint';
 import { ruleIdToSlug } from './hash';
 import { RuleData, listRules } from './rules';

@@ -1,4 +1,4 @@
-import { distinct, toArray } from '@quality-metrics/utils';
+import { distinct, toArray } from '@code-pushup/utils';
 import type { ESLint, Linter, Rule } from 'eslint';
 import { jsonHash } from './hash';
 

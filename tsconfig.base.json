@@ -18,16 +18,18 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "paths": {
-      "@quality-metrics/cli": ["packages/cli/src/index.ts"],
-      "@quality-metrics/core": ["packages/core/src/index.ts"],
-      "@quality-metrics/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
-      "@quality-metrics/lighthouse-plugin": [
+      "@code-pushup/cli": ["packages/cli/src/index.ts"],
+      "@code-pushup/cli/testing": ["packages/cli/test/index.ts"],
+      "@code-pushup/core": ["packages/core/src/index.ts"],
+      "@code-pushup/core/testing": ["packages/core/test/index.ts"],
+      "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
+      "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
-      "@quality-metrics/models": ["packages/models/src/index.ts"],
-      "@quality-metrics/models/testing": ["packages/models/test/index.ts"],
-      "@quality-metrics/nx-plugin": ["packages/nx-plugin/src/index.ts"],
-      "@quality-metrics/utils": ["packages/utils/src/index.ts"]
+      "@code-pushup/models": ["packages/models/src/index.ts"],
+      "@code-pushup/models/testing": ["packages/models/test/index.ts"],
+      "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

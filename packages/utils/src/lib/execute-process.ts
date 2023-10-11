@@ -167,6 +167,10 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   });
 }
 
+export type CliArgsObject =
+  | Record<string, number | string | boolean | string[] | undefined | null>
+  | { _: string };
+
 /**
  * Converts an object with different types of values into an array of command-line arguments.
  *
@@ -179,13 +183,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-export function objectToCliArgs(
-  params: Record<string, number | string | boolean | string[]> | { _: string },
-): string[] {
+export function objectToCliArgs(params: CliArgsObject): string[] {
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      return [value.toString()];
+      return [value + ''];
     }
     const prefix = key.length === 1 ? '-' : '--';
     // "-*" arguments (shorthands)

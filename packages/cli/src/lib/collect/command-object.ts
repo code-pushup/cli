@@ -1,5 +1,5 @@
 import { CommandModule } from 'yargs';
-import { collectAndPersistReports } from '@quality-metrics/core';
+import { collectAndPersistReports } from '@code-pushup/core';
 
 export function yargsCollectCommandObject() {
   return {

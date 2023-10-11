@@ -1,16 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { logPersistedResults, persistReport } from './persist';
 import { readFileSync, unlinkSync } from 'fs';
-import { Report } from '@quality-metrics/models';
+import { Report } from '@code-pushup/models';
 import {
   dummyConfig,
   dummyReport,
   MEMFS_VOLUME,
   mockPersistConfig,
-} from '@quality-metrics/models/testing';
+} from '@code-pushup/models/testing';
 import { vol } from 'memfs';
 import { join } from 'path';
-import { mockConsole, unmockConsole } from '../../test/console.mock';
+import { mockConsole, unmockConsole } from '../../../test/console.mock';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');

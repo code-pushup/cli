@@ -1,4 +1,4 @@
-import { CategoryConfig } from '@quality-metrics/models';
+import { CategoryConfig } from '@code-pushup/models';
 import { describe, expect } from 'vitest';
 import {
   calcDuration,

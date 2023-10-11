@@ -1,5 +1,12 @@
-module.exports = {
-  persist: { outputPath: 'command-object-config-out.json' },
+const outputPath = 'tmp';
+export default {
+  upload: {
+    organization: 'code-pushup',
+    project: 'cli',
+    apiKey: 'dummy-api-key',
+    server: 'https://example.com/api',
+  },
+  persist: { outputPath },
   plugins: [
     {
       audits: [
@@ -15,9 +22,10 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('tmp/command-object-config-out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputPath}/out.json', '${JSON.stringify(
             [
               {
+                title: 'dummy-title',
                 slug: 'command-object-audit-slug',
                 value: 0,
                 score: 0,
@@ -25,11 +33,12 @@ module.exports = {
             ],
           )}')`,
         ],
-        outputPath: 'tmp/command-object-config-out.json',
+        outputPath: `${outputPath}/out.json`,
       },
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
+      icon: 'javascript',
     },
   ],
   categories: [],

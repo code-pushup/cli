@@ -1,8 +1,8 @@
-import { collect, CollectOptions } from './collect';
 import { name, version } from '../../package.json';
 
-import { pluginOutputSchema, Report } from '@quality-metrics/models';
-import { logPersistedResults, persistReport } from './persist';
+import { pluginOutputSchema, Report } from '@code-pushup/models';
+import { collect, CollectOptions } from './commands/collect';
+import { logPersistedResults, persistReport } from './implementation/persist';
 
 export async function collectAndPersistReports(
   config: CollectOptions,
@@ -15,16 +15,11 @@ export async function collectAndPersistReports(
   };
 
   const persistResults = await persistReport(report, config);
-
   logPersistedResults(persistResults);
 
-  // validate report
+  // validate report and throw if invalid
   report.plugins.forEach(plugin => {
-    try {
-      // Running checks after persisting helps while debugging as you can check the invalid output after the error
-      pluginOutputSchema.parse(plugin);
-    } catch (e) {
-      throw new Error(`${plugin.slug} - ${(e as Error).message}`);
-    }
+    // Running checks after persisting helps while debugging as you can check the invalid output after the error is thrown
+    pluginOutputSchema.parse(plugin);
   });
 }

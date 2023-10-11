@@ -1,4 +1,4 @@
-import type { Audit } from '@quality-metrics/models';
+import type { Audit } from '@code-pushup/models';
 import { ruleToAudit } from './audits';
 
 describe('ruleToAudit', () => {

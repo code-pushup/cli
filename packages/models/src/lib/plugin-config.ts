@@ -2,13 +2,12 @@ import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import { z } from 'zod';
 import {
   executionMetaSchema,
-  generalFilePathSchema,
+  filePathSchema,
   metaSchema,
   packageVersionSchema,
   positiveIntSchema,
   scorableSchema,
   slugSchema,
-  unixFilePathSchema,
   weightedRefSchema,
 } from './implementation/schemas';
 import {
@@ -47,7 +46,7 @@ const runnerConfigSchema = z.object(
       description: 'Shell command to execute',
     }),
     args: z.array(z.string({ description: 'Command arguments' })).optional(),
-    outputPath: generalFilePathSchema('Output path'),
+    outputPath: filePathSchema('Output path'),
   },
   {
     description: 'How to execute runner',
@@ -166,7 +165,7 @@ function getMissingRefsFromGroups(pluginCfg: _PluginCfg) {
 
 const sourceFileLocationSchema = z.object(
   {
-    file: unixFilePathSchema('Relative path to source file in Git repo'),
+    file: filePathSchema('Relative path to source file in Git repo'),
     position: z
       .object(
         {
@@ -200,14 +199,13 @@ export const auditOutputSchema = auditSchema.merge(
       displayValue: z
         .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
         .optional(),
-      value: positiveIntSchema('Raw numeric value').optional(),
+      value: positiveIntSchema('Raw numeric value'),
       score: z
         .number({
           description: 'Value between 0 and 1',
         })
         .min(0)
-        .max(1)
-        .optional(),
+        .max(1),
       details: z
         .object(
           {
@@ -235,7 +233,7 @@ export const auditOutputsSchema = z
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
 export const pluginOutputSchema = pluginSchema
-  .merge(executionMetaSchema()) // @TODO create reusable meta info for audit, plugin, category
+  .merge(executionMetaSchema())
   .merge(
     z.object(
       {
@@ -251,14 +249,14 @@ export const pluginOutputSchema = pluginSchema
 export type PluginOutput = z.infer<typeof pluginOutputSchema>;
 
 // helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
+function duplicateSlugsInAuditsErrorMsg(audits: { slug: string }[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
   return `In plugin audits the slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
 
-function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
+function getDuplicateSlugsInAudits(audits: { slug: string }[]) {
   return hasDuplicateStrings(audits.map(({ slug }) => slug));
 }
 

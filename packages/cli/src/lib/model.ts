@@ -1,4 +1,4 @@
-import { globalOptionsSchema as coreGlobalOptionsSchema } from '@quality-metrics/models';
+import { globalOptionsSchema as coreGlobalOptionsSchema } from '@code-pushup/models';
 import { z } from 'zod';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(

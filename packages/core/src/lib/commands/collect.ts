@@ -1,6 +1,7 @@
-import { CoreConfig, GlobalOptions, Report } from '@quality-metrics/models';
-import { executePlugins } from './execute-plugin';
-import { calcDuration } from '@quality-metrics/utils';
+import { Report } from '@code-pushup/models';
+import { executePlugins } from '../implementation/execute-plugin';
+import { calcDuration } from '@code-pushup/utils';
+import { CommandBaseOptions } from '../implementation/model';
 
 /**
  * Error thrown when collect output is invalid.
@@ -17,7 +18,7 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = GlobalOptions & CoreConfig;
+export type CollectOptions = CommandBaseOptions;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object

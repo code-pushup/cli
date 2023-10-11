@@ -2,8 +2,8 @@ import {
   PluginConfig,
   PluginOutput,
   auditOutputsSchema,
-} from '@quality-metrics/models';
-import { ProcessObserver, executeProcess } from '@quality-metrics/utils';
+} from '@code-pushup/models';
+import { ProcessObserver, executeProcess } from '@code-pushup/utils';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 

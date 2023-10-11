@@ -5,7 +5,7 @@ Model definitions and validators for the CLI configuration as well as plugin typ
 ## Usage
 
 ```ts
-import { CoreConfigSchema, pluginConfigSchema } from '@quality-metrics/models';
+import { CoreConfigSchema, pluginConfigSchema } from '@code-pushup/models';
 
 export default {
   // ...

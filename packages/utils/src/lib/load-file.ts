@@ -9,6 +9,7 @@ export async function importModule<T = unknown>(
     format: 'esm',
     ...options,
   };
+
   const { mod } = await bundleRequire(options);
   return parse(mod.default || mod);
 }

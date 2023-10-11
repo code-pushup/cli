@@ -11,10 +11,10 @@ type PackageJson = {
 const cpuTargetName = 'code-pushup';
 
 const devDependencyNames = [
-  '@quality-metrics/cli',
-  '@quality-metrics/models',
-  '@quality-metrics/nx-plugin',
-  '@quality-metrics/utils',
+  '@code-pushup/cli',
+  '@code-pushup/models',
+  '@code-pushup/nx-plugin',
+  '@code-pushup/utils',
 ];
 
 describe('init generator', () => {

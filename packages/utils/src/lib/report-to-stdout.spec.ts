@@ -5,7 +5,7 @@ import {
   dummyReport,
   lighthouseReport,
   nxValidatorsOnlyReport,
-} from '@quality-metrics/models/testing';
+} from '@code-pushup/models/testing';
 
 let logs: string[] = [];
 

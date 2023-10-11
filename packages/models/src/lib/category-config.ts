@@ -35,7 +35,7 @@ export const categoryConfigSchema = scorableSchema(
   .merge(
     metaSchema({
       titleDescription: 'Category Title',
-      docsUrlDescription: 'Category docs RUL',
+      docsUrlDescription: 'Category docs URL',
       descriptionDescription: 'Category description',
       description: 'Meta info for category',
     }),

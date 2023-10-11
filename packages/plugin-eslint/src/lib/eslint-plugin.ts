@@ -1,5 +1,5 @@
-import { PluginConfig } from '@quality-metrics/models';
-import { toArray } from '@quality-metrics/utils';
+import { PluginConfig } from '@code-pushup/models';
+import { toArray } from '@code-pushup/utils';
 import { ESLint } from 'eslint';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
