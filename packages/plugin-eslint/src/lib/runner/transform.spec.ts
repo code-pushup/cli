@@ -84,7 +84,6 @@ describe('lintResultsToAudits', () => {
           },
           'src/app/pages/settings.component.ts': {
             'max-lines': [500],
-            '@typescript-eslint/no-explicit-any': [],
           },
           'src/app/app.component.spec.ts': {
             'max-lines': [800],
