@@ -2,6 +2,7 @@ import type { AuditOutput, Issue } from '@code-pushup/models';
 import {
   compareIssueSeverity,
   countOccurrences,
+  formatCount,
   objectToEntries,
 } from '@code-pushup/utils';
 import type { Linter } from 'eslint';
@@ -41,7 +42,7 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
   );
   const summaryText = objectToEntries(severityCounts)
     .sort((a, b) => -compareIssueSeverity(a[0], b[0]))
-    .map(([severity, count]) => `${count} ${severity}s`)
+    .map(([severity, count = 0]) => formatCount(count, severity))
     .join(', ');
   return {
     slug,

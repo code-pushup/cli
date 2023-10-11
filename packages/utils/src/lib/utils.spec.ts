@@ -7,6 +7,8 @@ import {
   countWeightedRefs,
   distinct,
   formatBytes,
+  formatCount,
+  pluralize,
   slugify,
   sumRefs,
   toArray,
@@ -173,5 +175,30 @@ describe('compareIssueSeverity', () => {
         compareIssueSeverity,
       ),
     ).toEqual(['info', 'warning', 'error'] satisfies Issue['severity'][]);
+  });
+});
+
+describe('formatCount', () => {
+  it('should pluralize if count is greater than 1', () => {
+    expect(formatCount(5, 'audit')).toBe('5 audits');
+  });
+
+  it('should not pluralize if count is 1', () => {
+    expect(formatCount(1, 'audit')).toBe('1 audit');
+  });
+
+  it('should pluralize if count is 0', () => {
+    expect(formatCount(0, 'audit')).toBe('0 audits');
+  });
+});
+
+describe('pluralize', () => {
+  it.each([
+    ['warning', 'warnings'],
+    ['error', 'errors'],
+    ['category', 'categories'],
+    ['status', 'statuses'],
+  ])('should pluralize "%s" as "%s"', (singular, plural) => {
+    expect(pluralize(singular)).toBe(plural);
   });
 });

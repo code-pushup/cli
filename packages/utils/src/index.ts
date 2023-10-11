@@ -17,8 +17,10 @@ export {
   countOccurrences,
   distinct,
   formatBytes,
+  formatCount,
   objectToEntries,
+  pluralize,
+  readJsonFile,
   slugify,
   toArray,
-  readJsonFile,
 } from './lib/utils';
