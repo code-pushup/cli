@@ -1,6 +1,7 @@
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
-import { writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
+import { dirname } from 'path';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 
@@ -34,6 +35,7 @@ export async function executeRunner(argv = process.argv): Promise<void> {
       },
   );
 
+  await mkdir(dirname(RUNNER_OUTPUT_PATH), { recursive: true });
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(audits));
 }
 
