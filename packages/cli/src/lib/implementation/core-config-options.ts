@@ -10,8 +10,8 @@ export function yargsCoreConfigOptionsDefinition(): Record<
       describe: 'Format of the report output. e.g. `md`, `json`, `stdout`',
       type: 'array',
     },
-    apyKey: {
-      describe: 'apyKey for the portal',
+    apiKey: {
+      describe: 'apiKey for the portal',
       type: 'string',
     },
   } as unknown as Record<keyof ArgsCliObj, Options>;
