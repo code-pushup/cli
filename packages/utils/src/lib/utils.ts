@@ -77,3 +77,18 @@ export async function readJsonFile(path: string): Promise<unknown> {
   const buffer = await readFile(path);
   return JSON.parse(buffer.toString());
 }
+
+export function formatCount(count: number, name: string) {
+  const text = count === 1 ? name : pluralize(name);
+  return `${count} ${text}`;
+}
+
+export function pluralize(text: string): string {
+  if (text.endsWith('y')) {
+    return text.slice(0, -1) + 'ies';
+  }
+  if (text.endsWith('s')) {
+    return `${text}es`;
+  }
+  return `${text}s`;
+}
