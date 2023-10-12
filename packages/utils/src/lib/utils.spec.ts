@@ -1,5 +1,5 @@
-import { CategoryConfig, Issue } from '@code-pushup/models';
 import { describe, expect } from 'vitest';
+import { CategoryConfig, Issue } from '@code-pushup/models';
 import {
   calcDuration,
   compareIssueSeverity,

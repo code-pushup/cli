@@ -1,11 +1,13 @@
+import { z } from 'zod';
 import {
   Format,
   globalOptionsSchema as coreGlobalOptionsSchema,
   GlobalOptions as CoreGlobalOptions,
   PersistConfig,
+  UploadConfig,
+  globalOptionsSchema as coreGlobalOptionsSchema,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-  UploadConfig,
 } from '@code-pushup/models';
 import { z } from 'zod';
 

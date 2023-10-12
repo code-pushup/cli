@@ -1,5 +1,5 @@
-import type { Audit } from '@code-pushup/models';
 import type { ESLint } from 'eslint';
+import type { Audit } from '@code-pushup/models';
 import { listRules } from './rules';
 import { ruleToAudit } from './transform';
 

@@ -1,4 +1,6 @@
+import { readCodePushupConfig } from '@code-pushup/core';
 import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
+import { ArgsCliObj, CommandBase } from './model';
 import { TerminalArgsObj, CommandBase } from './model';
 import { readCodePushupConfig } from '@code-pushup/core';
 

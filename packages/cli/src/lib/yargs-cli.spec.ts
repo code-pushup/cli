@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { yargsCli } from './yargs-cli';
-import { objectToCliArgs } from '@code-pushup/utils';
 import { Options } from 'yargs';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { yargsCli } from './yargs-cli';
 
 const options: Record<string, Options> = {
   interactive: {

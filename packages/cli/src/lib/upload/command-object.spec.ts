@@ -1,14 +1,14 @@
-import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { writeFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { beforeEach, describe, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Report } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
@@ -75,7 +75,9 @@ describe('upload-command-object', () => {
         server: 'https://other-example.com/api',
       }),
     ];
-    const parsedArgv = (await cli(args).parseAsync()) as UploadOptions;
+    const parsedArgv = (await cli(
+      args,
+    ).parseAsync()) as Required<UploadOptions>;
     expect(parsedArgv.upload.organization).toBe('code-pushup');
     expect(parsedArgv.upload.project).toBe('cli');
     expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');

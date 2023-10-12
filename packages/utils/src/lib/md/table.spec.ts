@@ -1,5 +1,5 @@
 import { NEW_LINE } from './constants';
-import { table, Alignment } from './table';
+import { Alignment, table } from './table';
 
 describe('table function', () => {
   it('should create a table with center alignment by default', () => {

@@ -1,7 +1,7 @@
-import { yargsCli } from './yargs-cli';
-import { options } from './options';
-import { middlewares } from './middlewares';
 import { commands } from './commands';
+import { middlewares } from './middlewares';
+import { options } from './options';
+import { yargsCli } from './yargs-cli';
 
 export { options } from './options';
 export { middlewares } from './middlewares';

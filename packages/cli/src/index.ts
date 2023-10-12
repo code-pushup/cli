@@ -1,6 +1,6 @@
 #! /usr/bin/env node
-import { cli } from './lib/cli';
 import { hideBin } from 'yargs/helpers';
+import { cli } from './lib/cli';
 
 // bootstrap yargs; format arguments
 cli(hideBin(process.argv)).argv;

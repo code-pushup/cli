@@ -1,7 +1,7 @@
-import { PluginConfig } from '@code-pushup/models';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
+import { PluginConfig } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin';
 
 describe('eslintPlugin', () => {
