@@ -4,9 +4,9 @@ import { ArgsCliObj, CommandBase } from './model';
 
 export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   const args = processArgs as T;
-  const { configPath, ...cliOptions }: GlobalOptions =
+  const { config, ...cliOptions }: GlobalOptions =
     globalOptionsSchema.parse(args);
-  const importedRc = await readCodePushupConfig(configPath);
+  const importedRc = await readCodePushupConfig(config);
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
   const parsedProcessArgs: CommandBase = {
     ...cliOptions,

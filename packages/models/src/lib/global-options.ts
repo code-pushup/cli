@@ -7,7 +7,7 @@ export const globalOptionsSchema = z.object({
       description: 'Outputs additional information for a run',
     })
     .default(false),
-  configPath: filePathSchema(
+  config: filePathSchema(
     "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
   )
     .optional()

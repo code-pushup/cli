@@ -20,14 +20,14 @@ const execCli = (argObj: Partial<CliArgsObject>) =>
 
 describe('cli', () => {
   it('should load .js config file', async () => {
-    await execCli({ configPath: configFile('js') });
+    await execCli({ config: configFile('js') });
   });
 
   it('should load .mjs config file', async () => {
-    await execCli({ configPath: configFile('mjs') });
+    await execCli({ config: configFile('mjs') });
   });
 
   it('should load .ts config file', async () => {
-    await execCli({ configPath: configFile('ts') });
+    await execCli({ config: configFile('ts') });
   });
 });
