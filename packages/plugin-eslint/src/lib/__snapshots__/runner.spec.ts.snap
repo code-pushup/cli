@@ -1,0 +1,662 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`executeRunner > should execute ESLint and create audit results for React application 1`] = `
+[
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-cond-assign",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-const-assign",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-debugger",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-invalid-regexp",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-undef",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-unreachable-loop",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-unsafe-negation",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-unsafe-optional-chaining",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "'loading' is assigned a value but never used.",
+          "severity": "warning",
+          "source": {
+            "file": "src/App.jsx",
+            "position": {
+              "endColumn": 18,
+              "endLine": 8,
+              "startColumn": 11,
+              "startLine": 8,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "no-unused-vars",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "use-isnan",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "valid-typeof",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoFilter.jsx",
+            "position": {
+              "endColumn": 2,
+              "endLine": 25,
+              "startColumn": 29,
+              "startLine": 3,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "arrow-body-style",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "camelcase",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "curly",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Expected '===' and instead saw '=='.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 43,
+              "endLine": 41,
+              "startColumn": 41,
+              "startLine": 41,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "eqeqeq",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Arrow function has too many lines (71). Maximum allowed is 50.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 2,
+              "endLine": 73,
+              "startColumn": 25,
+              "startLine": 3,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "max-lines-per-function",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "max-lines",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 17,
+              "endLine": 11,
+              "startColumn": 13,
+              "startLine": 11,
+            },
+          },
+        },
+        {
+          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 21,
+              "endLine": 29,
+              "startColumn": 17,
+              "startLine": 29,
+            },
+          },
+        },
+        {
+          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 17,
+              "endLine": 41,
+              "startColumn": 13,
+              "startLine": 41,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "3 warnings",
+    "score": 0,
+    "slug": "no-shadow",
+    "value": 3,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "no-var",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Expected property shorthand.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 19,
+              "endLine": 19,
+              "startColumn": 7,
+              "startLine": 19,
+            },
+          },
+        },
+        {
+          "message": "Expected property shorthand.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 19,
+              "endLine": 32,
+              "startColumn": 13,
+              "startLine": 32,
+            },
+          },
+        },
+        {
+          "message": "Expected property shorthand.",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 25,
+              "endLine": 33,
+              "startColumn": 13,
+              "startLine": 33,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "3 warnings",
+    "score": 0,
+    "slug": "object-shorthand",
+    "value": 3,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "prefer-arrow-callback",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "'root' is never reassigned. Use 'const' instead.",
+          "severity": "warning",
+          "source": {
+            "file": "src/index.jsx",
+            "position": {
+              "endColumn": 9,
+              "endLine": 5,
+              "startColumn": 5,
+              "startLine": 5,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "prefer-const",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "prefer-object-spread",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "yoda",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing \\"key\\" prop for element in iterator",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoList.jsx",
+            "position": {
+              "endColumn": 12,
+              "endLine": 28,
+              "startColumn": 7,
+              "startLine": 7,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "1 warning",
+    "score": 0,
+    "slug": "react-jsx-key",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "'onCreate' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/CreateTodo.jsx",
+            "position": {
+              "endColumn": 23,
+              "endLine": 15,
+              "startColumn": 15,
+              "startLine": 15,
+            },
+          },
+        },
+        {
+          "message": "'setQuery' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoFilter.jsx",
+            "position": {
+              "endColumn": 25,
+              "endLine": 10,
+              "startColumn": 17,
+              "startLine": 10,
+            },
+          },
+        },
+        {
+          "message": "'setHideComplete' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoFilter.jsx",
+            "position": {
+              "endColumn": 34,
+              "endLine": 18,
+              "startColumn": 19,
+              "startLine": 18,
+            },
+          },
+        },
+        {
+          "message": "'todos' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoList.jsx",
+            "position": {
+              "endColumn": 17,
+              "endLine": 6,
+              "startColumn": 12,
+              "startLine": 6,
+            },
+          },
+        },
+        {
+          "message": "'todos.map' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoList.jsx",
+            "position": {
+              "endColumn": 21,
+              "endLine": 6,
+              "startColumn": 18,
+              "startLine": 6,
+            },
+          },
+        },
+        {
+          "message": "'onEdit' is missing in props validation",
+          "severity": "warning",
+          "source": {
+            "file": "src/components/TodoList.jsx",
+            "position": {
+              "endColumn": 27,
+              "endLine": 13,
+              "startColumn": 21,
+              "startLine": 13,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "6 warnings",
+    "score": 0,
+    "slug": "react-prop-types",
+    "value": 6,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-react-in-jsx-scope",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-hooks-rules-of-hooks",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 31,
+              "endLine": 17,
+              "startColumn": 20,
+              "startLine": 17,
+            },
+          },
+        },
+        {
+          "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
+          "severity": "warning",
+          "source": {
+            "file": "src/hooks/useTodos.js",
+            "position": {
+              "endColumn": 29,
+              "endLine": 40,
+              "startColumn": 18,
+              "startLine": 40,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "2 warnings",
+    "score": 0,
+    "slug": "react-hooks-exhaustive-deps",
+    "value": 2,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-display-name",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-no-comment-textnodes",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-no-duplicate-props",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-no-target-blank",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-no-undef",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-uses-react",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-jsx-uses-vars",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-children-prop",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-danger-with-children",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-deprecated",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-direct-mutation-state",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-find-dom-node",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-is-mounted",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-render-return-value",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-string-refs",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-unescaped-entities",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-no-unknown-property",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "score": 1,
+    "slug": "react-require-render-return",
+    "value": 0,
+  },
+]
+`;

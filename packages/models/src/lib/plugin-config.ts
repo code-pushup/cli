@@ -53,6 +53,8 @@ const runnerConfigSchema = z.object(
   },
 );
 
+export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
+
 export const auditSchema = z
   .object({
     slug: slugSchema('ID (unique within plugin)'),
@@ -193,31 +195,31 @@ export const issueSchema = z.object(
 );
 export type Issue = z.infer<typeof issueSchema>;
 
-export const auditOutputSchema = auditSchema.merge(
-  z.object(
-    {
-      displayValue: z
-        .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
-        .optional(),
-      value: positiveIntSchema('Raw numeric value'),
-      score: z
-        .number({
-          description: 'Value between 0 and 1',
-        })
-        .min(0)
-        .max(1),
-      details: z
-        .object(
-          {
-            issues: z.array(issueSchema, { description: 'List of findings' }),
-          },
-          { description: 'Detailed information' },
-        )
-        .optional(),
-    },
-    { description: 'Audit information' },
-  ),
+export const auditOutputSchema = z.object(
+  {
+    slug: slugSchema('Reference to audit'),
+    displayValue: z
+      .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
+      .optional(),
+    value: positiveIntSchema('Raw numeric value'),
+    score: z
+      .number({
+        description: 'Value between 0 and 1',
+      })
+      .min(0)
+      .max(1),
+    details: z
+      .object(
+        {
+          issues: z.array(issueSchema, { description: 'List of findings' }),
+        },
+        { description: 'Detailed information' },
+      )
+      .optional(),
+  },
+  { description: 'Audit information' },
 );
+
 export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
 export const auditOutputsSchema = z

@@ -13,8 +13,14 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export {
   calcDuration,
-  formatBytes,
-  toArray,
+  compareIssueSeverity,
+  countOccurrences,
   distinct,
+  formatBytes,
+  formatCount,
+  objectToEntries,
+  pluralize,
+  readJsonFile,
   slugify,
+  toArray,
 } from './lib/utils';

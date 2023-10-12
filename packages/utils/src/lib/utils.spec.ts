@@ -1,10 +1,14 @@
-import { CategoryConfig } from '@code-pushup/models';
+import { CategoryConfig, Issue } from '@code-pushup/models';
 import { describe, expect } from 'vitest';
 import {
   calcDuration,
+  compareIssueSeverity,
+  countOccurrences,
   countWeightedRefs,
   distinct,
   formatBytes,
+  formatCount,
+  pluralize,
   slugify,
   sumRefs,
   toArray,
@@ -153,5 +157,48 @@ describe('slugify', () => {
     ['Code  PushUp ', 'code-pushup'],
   ])('should transform "%s" to valid slug "%s"', (text, slug) => {
     expect(slugify(text)).toBe(slug);
+  });
+});
+
+describe('countOccurrences', () => {
+  it('should return record with counts for each item', () => {
+    expect(
+      countOccurrences(['error', 'warning', 'error', 'error', 'warning']),
+    ).toEqual({ error: 3, warning: 2 });
+  });
+});
+
+describe('compareIssueSeverity', () => {
+  it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
+    expect(
+      (['error', 'info', 'warning'] satisfies Issue['severity'][]).sort(
+        compareIssueSeverity,
+      ),
+    ).toEqual(['info', 'warning', 'error'] satisfies Issue['severity'][]);
+  });
+});
+
+describe('formatCount', () => {
+  it('should pluralize if count is greater than 1', () => {
+    expect(formatCount(5, 'audit')).toBe('5 audits');
+  });
+
+  it('should not pluralize if count is 1', () => {
+    expect(formatCount(1, 'audit')).toBe('1 audit');
+  });
+
+  it('should pluralize if count is 0', () => {
+    expect(formatCount(0, 'audit')).toBe('0 audits');
+  });
+});
+
+describe('pluralize', () => {
+  it.each([
+    ['warning', 'warnings'],
+    ['error', 'errors'],
+    ['category', 'categories'],
+    ['status', 'statuses'],
+  ])('should pluralize "%s" as "%s"', (singular, plural) => {
+    expect(pluralize(singular)).toBe(plural);
   });
 });
