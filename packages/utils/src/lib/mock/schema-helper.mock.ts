@@ -13,7 +13,7 @@ const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
-const __outputPath__ = 'tmp/out-execute-plugin.json';
+const __outputFile__ = 'tmp/out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
@@ -27,7 +27,7 @@ export function mockPluginConfig(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const outputDir = __outputPath__;
+  const outputFile = __outputFile__;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -47,14 +47,14 @@ export function mockPluginConfig(opt?: {
       command: 'node',
       args: [
         '-e',
-        `require('fs').writeFileSync('${outputDir}', '${JSON.stringify(
+        `require('fs').writeFileSync('${outputFile}', '${JSON.stringify(
           audits.map(
             ({ slug }) =>
               mockAuditReport({ auditSlug: slug }) satisfies AuditReport,
           ),
         )}')`,
       ],
-      outputFile: outputDir,
+      outputFile,
     },
     slug: pluginSlug,
     title: 'execute plugin ' + pluginSlug,
@@ -79,7 +79,7 @@ export function mockAuditConfig(opt?: {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputDir, format } = opt || {};
-  outputDir = outputDir || __outputPath__;
+  outputDir = outputDir || __outputFile__;
   format = format || [];
   return {
     outputDir,
