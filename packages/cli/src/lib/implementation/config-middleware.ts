@@ -1,8 +1,10 @@
 import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
-import { ArgsCliObj, CommandBase } from './model';
+import { TerminalArgsObj, CommandBase } from './model';
 import { readCodePushupConfig } from '@code-pushup/core';
 
-export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
+export async function configMiddleware<T extends TerminalArgsObj>(
+  processArgs: T,
+) {
   const args = processArgs as T;
   const { configPath, ...cliOptions }: GlobalOptions =
     globalOptionsSchema.parse(args);
@@ -26,10 +28,10 @@ export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   return parsedProcessArgs;
 }
 
-function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
+function readCoreConfigFromCliArgs(args: TerminalArgsObj): CommandBase {
   const parsedProcessArgs = { upload: {}, persist: {} } as CommandBase;
   for (const key in args) {
-    const k = key as keyof ArgsCliObj;
+    const k = key as keyof TerminalArgsObj;
     switch (key) {
       case 'organization':
       case 'project':

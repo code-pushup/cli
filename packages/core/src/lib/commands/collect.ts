@@ -1,4 +1,4 @@
-import { Report } from '@code-pushup/models';
+import { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
 import { executePlugins } from '../implementation/execute-plugin';
 import { CommandBaseOptions } from '../implementation/model';
@@ -18,7 +18,7 @@ export class CollectOutputError extends Error {
   }
 }
 
-export type CollectOptions = CommandBaseOptions;
+export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'>;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object

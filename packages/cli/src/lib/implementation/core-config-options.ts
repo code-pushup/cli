@@ -1,8 +1,8 @@
 import { Options } from 'yargs';
-import { ArgsCliObj } from './model';
+import { TerminalArgsObj } from './model';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
-  keyof ArgsCliObj,
+  keyof TerminalArgsObj,
   Options
 > {
   return {
@@ -14,5 +14,5 @@ export function yargsCoreConfigOptionsDefinition(): Record<
       describe: 'apiKey for the portal',
       type: 'string',
     },
-  } as unknown as Record<keyof ArgsCliObj, Options>;
+  } as unknown as Record<keyof TerminalArgsObj, Options>;
 }
