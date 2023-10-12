@@ -1,5 +1,4 @@
 /// <reference types="vitest" />
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
@@ -7,21 +6,16 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/react-todos-app',
 
   server: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
 
   preview: {
-    port: 4300,
+    port: 3100,
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  plugins: [react()],
 
   test: {
     globals: true,
