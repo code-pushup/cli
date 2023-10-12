@@ -8,10 +8,9 @@ export function yargsUploadCommandObject() {
     command: 'upload',
     describe: 'Upload report results to the portal',
     handler: async <T>(args: ArgumentsCamelCase<T> & CommandBase) => {
-      const _args = args;
       const uploadOptions = {
-        ..._args,
-        upload: uploadConfigSchema.parse(_args.upload),
+        ...args,
+        upload: uploadConfigSchema.parse(args.upload),
       };
       await upload(uploadOptions);
     },

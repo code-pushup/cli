@@ -5,7 +5,7 @@ import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
-import { CollectAndPersistOptions } from '@code-pushup/core';
+import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 
 const baseArgs = [
   ...objectToCliArgs({
@@ -37,7 +37,7 @@ describe('collect-command-object', () => {
     ];
     const parsedArgv = (await cli(
       args,
-    ).parseAsync()) as CollectAndPersistOptions;
+    ).parseAsync()) as CollectAndPersistReportsOptions;
     expect(parsedArgv.persist.outputPath).toBe('tmp');
     expect(parsedArgv.persist.format).toEqual(['md']);
   });

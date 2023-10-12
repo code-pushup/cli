@@ -91,11 +91,11 @@ describe('upload-command-object', () => {
       server: 'https://example.com/api',
       data: {
         commandStartDate: dummyReport.date,
-        commandDuration: expect.any(Number),
+        commandDuration: 1000,
         categories: [],
         plugins: expect.any(Array),
         packageName: '@code-pushup/cli',
-        packageVersion: '0.1.0',
+        packageVersion: '0.0.1',
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),

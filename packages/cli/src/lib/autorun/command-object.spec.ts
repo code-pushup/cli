@@ -58,7 +58,7 @@ describe('autorun-command-object', () => {
     duration: 1000,
     categories: [],
     plugins: [],
-    packageName: '@code-pushup/cli',
+    packageName: '@code-pushup/core',
     version: '0.0.1',
   };
 
@@ -71,6 +71,7 @@ describe('autorun-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
+        format: 'md',
         apiKey: 'some-other-api-key',
         server: 'https://other-example.com/api',
       }),
@@ -92,14 +93,14 @@ describe('autorun-command-object', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: dummyReport.date,
+        commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
         categories: [],
         plugins: expect.any(Array),
-        packageName: '@code-pushup/cli',
-        packageVersion: '0.0.1',
-        organization: 'code-pushup',
+        packageName: dummyReport.packageName,
+        packageVersion: dummyReport.version,
         project: 'cli',
+        organization: 'code-pushup',
         commit: expect.any(String),
       },
     } satisfies PortalUploadArgs);

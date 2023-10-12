@@ -8,7 +8,7 @@ import yargs, {
 } from 'yargs';
 import { CoreConfig } from '@code-pushup/models';
 import { logErrorBeforeThrow } from './implementation/utils';
-import { GlobalOptions } from './model';
+import { GlobalOptions } from './implementation/model';
 
 /**
  * returns configurable yargs CLI for code-pushup

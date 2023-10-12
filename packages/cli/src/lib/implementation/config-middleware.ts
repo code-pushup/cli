@@ -1,8 +1,6 @@
 import { readCodePushupConfig } from '@code-pushup/core';
 import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
-import { ArgsCliObj, CommandBase } from './model';
-import { TerminalArgsObj, CommandBase } from './model';
-import { readCodePushupConfig } from '@code-pushup/core';
+import { CommandBase, TerminalArgsObj } from './model';
 
 export async function configMiddleware<T extends TerminalArgsObj>(
   processArgs: T,
@@ -12,6 +10,7 @@ export async function configMiddleware<T extends TerminalArgsObj>(
     globalOptionsSchema.parse(args);
   const importedRc = await readCodePushupConfig(configPath);
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
+  console.log('importedRc: ', importedRc);
   const parsedProcessArgs: CommandBase = {
     ...cliOptions,
     ...(importedRc || {}),

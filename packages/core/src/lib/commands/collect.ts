@@ -1,32 +1,18 @@
 import { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
 import { executePlugins } from '../implementation/execute-plugin';
-import { CommandBaseOptions } from '../implementation/model';
+import { version, name } from '../../../package.json';
 
-/**
- * Error thrown when collect output is invalid.
- */
-export class CollectOutputError extends Error {
-  constructor(pluginSlug: string, error?: Error) {
-    super(
-      `PluginOutput ${pluginSlug} from collect command is invalid. \n Zod Error: ${error?.message}`,
-    );
-    if (error) {
-      this.name = error.name;
-      this.stack = error.stack;
-    }
-  }
-}
-
-export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'>;
+export type CollectOptions = Pick<
+  CoreConfig,
+  'plugins' | 'categories' | 'upload'
+>;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
-export async function collect(
-  options: CollectOptions,
-): Promise<Omit<Report, 'packageName' | 'version'>> {
+export async function collect(options: CollectOptions): Promise<Report> {
   const { plugins, categories } = options;
 
   if (!plugins?.length) {
@@ -38,6 +24,8 @@ export async function collect(
   const pluginOutputs = await executePlugins(plugins);
 
   return {
+    packageName: name,
+    version,
     date,
     duration: calcDuration(start),
     categories,
