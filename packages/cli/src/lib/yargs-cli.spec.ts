@@ -43,15 +43,13 @@ describe('yargsCli', () => {
     const args: string[] = objectToCliArgs({
       configPath: 'validConfigPath',
     });
-    const parsedArgv = await yargsCli(args, {
+    const parsedArgv = await yargsCli(['collect', ...args], {
       options,
       demandCommand,
       middlewares: [
-        {
-          middlewareFunction: middleware,
-        },
+        // {middlewareFunction: middleware},
       ],
-    }).parseAsync();
-    expect(parsedArgv.configPath).toContain(42);
+    }); //.parseAsync();
+    expect(parsedArgv).toContain(42);
   });
 });

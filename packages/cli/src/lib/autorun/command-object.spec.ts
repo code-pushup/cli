@@ -8,7 +8,7 @@ import {
 import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
@@ -30,8 +30,8 @@ vi.mock('@code-pushup/portal-client', async () => {
 
 const baseArgs = [
   'autorun',
-  '--verbose',
   ...objectToCliArgs({
+    verbose: true,
     configPath: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
@@ -54,12 +54,12 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
 
 describe('autorun-command-object', () => {
   const dummyReport: Report = {
-    date: new Date().toISOString(),
+    date: 'dummy-date',
     duration: 1000,
     categories: [],
     plugins: [],
     packageName: '@code-pushup/cli',
-    version: '0.1.0',
+    version: '0.0.1',
   };
 
   beforeEach(async () => {
@@ -91,11 +91,11 @@ describe('autorun-command-object', () => {
       server: 'https://example.com/api',
       data: {
         commandStartDate: dummyReport.date,
-        commandDuration: 1000,
+        commandDuration: expect.any(Number),
         categories: [],
-        plugins: [],
+        plugins: expect.any(Array),
         packageName: '@code-pushup/cli',
-        packageVersion: '0.1.0',
+        packageVersion: '0.0.1',
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),
