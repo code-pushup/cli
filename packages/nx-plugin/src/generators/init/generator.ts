@@ -1,23 +1,21 @@
 import {
+  NxJsonConfiguration,
+  Tree,
   addDependenciesToPackageJson,
   convertNxGenerator,
   readJson,
   readNxJson,
   runTasksInSerial,
-  Tree,
   updateJson,
   updateNxJson,
-  NxJsonConfiguration,
 } from '@nx/devkit';
-
-import { InitGeneratorSchema } from './schema';
-
 import {
   cpuCliVersion,
   cpuModelVersion,
-  cpuUtilsVersion,
   cpuNxPluginVersion,
+  cpuUtilsVersion,
 } from '../../utils/versions';
+import { InitGeneratorSchema } from './schema';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson(host, 'package.json');

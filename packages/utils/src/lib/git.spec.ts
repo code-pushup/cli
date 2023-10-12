@@ -1,5 +1,5 @@
-import { latestHash } from './git';
 import { expect } from 'vitest';
+import { latestHash } from './git';
 
 describe('git', () => {
   it('should log current hash', async () => {

@@ -1,10 +1,10 @@
 import { Report } from '@code-pushup/models';
-import { NEW_LINE, headline, style, li, table, details, link } from './md/';
+import { NEW_LINE, details, headline, li, link, style, table } from './md/';
 import {
   countWeightedRefs,
-  sumRefs,
   reportHeadlineText,
   reportOverviewTableHeaders,
+  sumRefs,
 } from './utils';
 
 export function reportToMd(report: Report): string {

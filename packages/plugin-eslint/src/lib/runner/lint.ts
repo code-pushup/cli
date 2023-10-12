@@ -1,6 +1,6 @@
-import { distinct, toArray } from '@code-pushup/utils';
 import { ESLint, type Linter } from 'eslint';
 import { sep } from 'path';
+import { distinct, toArray } from '@code-pushup/utils';
 import type { LintResult, LinterOutput, RuleOptionsPerFile } from './types';
 
 export async function lint(

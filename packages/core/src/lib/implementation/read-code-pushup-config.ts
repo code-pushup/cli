@@ -1,6 +1,6 @@
+import { stat } from 'fs/promises';
 import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
 import { importModule } from '@code-pushup/utils';
-import { stat } from 'fs/promises';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {

@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe } from 'vitest';
-import { mockConsole, unmockConsole } from './mock/helper.mock';
-import { reportToStdout } from './report-to-stdout';
 import {
   dummyReport,
   lighthouseReport,
   nxValidatorsOnlyReport,
 } from '@code-pushup/models/testing';
+import { mockConsole, unmockConsole } from './mock/helper.mock';
+import { reportToStdout } from './report-to-stdout';
 
 let logs: string[] = [];
 
