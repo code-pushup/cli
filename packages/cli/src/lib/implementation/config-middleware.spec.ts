@@ -13,21 +13,21 @@ describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
     const configPathMjs = configPath('mjs');
     const config = await configMiddleware({ configPath: configPathMjs });
-    expect(config.upload.project).toContain('mjs');
+    expect(config?.upload?.project).toContain('mjs');
     expect(config.persist.outputPath).toContain('tmp');
   });
 
   it('should load valid .cjs config', async () => {
     const configPathCjs = configPath('cjs');
     const config = await configMiddleware({ configPath: configPathCjs });
-    expect(config.upload.project).toContain('cjs');
+    expect(config?.upload?.project).toContain('cjs');
     expect(config.persist.outputPath).toContain('tmp');
   });
 
   it('should load valid .js config', async () => {
     const configPathJs = configPath('js');
     const config = await configMiddleware({ configPath: configPathJs });
-    expect(config.upload.project).toContain('js');
+    expect(config?.upload?.project).toContain('js');
     expect(config.persist.outputPath).toContain('tmp');
   });
 
