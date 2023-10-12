@@ -1,35 +1,40 @@
-import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
-import { ArgsCliObj, CommandBase } from './model';
 import { readCodePushupConfig } from '@code-pushup/core';
+import { CliArgs, CliOnlyGlobalOptions } from './model';
+import { CoreConfig, GlobalOptions, UploadConfig } from '@code-pushup/models';
 
-export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
-  const args = processArgs as T;
-  const { configPath, ...cliOptions }: GlobalOptions =
-    globalOptionsSchema.parse(args);
-  const importedRc = await readCodePushupConfig(configPath);
+export type ConfigMiddlewareOutput = CoreConfig &
+  GlobalOptions &
+  Omit<CliOnlyGlobalOptions, 'configPath'>;
+export async function configMiddleware<T extends CliArgs>(
+  processArgs: T,
+): Promise<ConfigMiddlewareOutput> {
+  const { configPath, ...cliOptions } = processArgs;
+  const importedRc = await readCodePushupConfig(configPath || '');
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
-  const parsedProcessArgs: CommandBase = {
+
+  return {
     ...cliOptions,
-    ...(importedRc || {}),
+    ...importedRc,
     upload: {
-      ...importedRc.upload,
-      ...cliConfigArgs.upload,
+      ...(importedRc?.upload as UploadConfig),
+      ...cliConfigArgs?.upload,
     },
     persist: {
-      ...importedRc.persist,
-      ...cliConfigArgs.persist,
+      ...importedRc?.persist,
+      ...cliConfigArgs?.persist,
     },
-    plugins: importedRc.plugins,
-    categories: importedRc.categories,
-  };
-
-  return parsedProcessArgs;
+    plugins: importedRc?.plugins,
+    categories: importedRc?.categories,
+  } as unknown as ConfigMiddlewareOutput;
 }
 
-function readCoreConfigFromCliArgs(args: ArgsCliObj): CommandBase {
-  const parsedProcessArgs = { upload: {}, persist: {} } as CommandBase;
+function readCoreConfigFromCliArgs(args: CliArgs) {
+  const parsedProcessArgs = { upload: {}, persist: {} } as {
+    upload: Record<string, unknown>;
+    persist: Record<string, unknown>;
+  };
   for (const key in args) {
-    const k = key as keyof ArgsCliObj;
+    const k = key as keyof Required<CliArgs>;
     switch (key) {
       case 'organization':
       case 'project':

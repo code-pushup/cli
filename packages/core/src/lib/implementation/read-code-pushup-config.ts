@@ -8,7 +8,9 @@ export class ConfigPathError extends Error {
   }
 }
 
-export async function readCodePushupConfig(filepath: string) {
+export async function readCodePushupConfig(
+  filepath: string,
+): Promise<CoreConfig> {
   const isFile = (await stat(filepath)).isFile();
 
   if (!isFile) {

@@ -5,6 +5,7 @@ import { objectToCliArgs } from '@code-pushup/utils';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { yargsCollectCommandObject } from './command-object';
+import { CollectAndPersistOptions } from '@code-pushup/core';
 
 const baseArgs = [
   ...objectToCliArgs({
@@ -34,8 +35,10 @@ describe('collect-command-object', () => {
         format: 'md',
       }),
     ];
-    const parsedArgv = await cli(args).parseAsync();
+    const parsedArgv = (await cli(
+      args,
+    ).parseAsync()) as CollectAndPersistOptions;
     expect(parsedArgv.persist.outputPath).toBe('tmp');
-    expect(parsedArgv.persist?.format).toEqual(['md']);
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
 });

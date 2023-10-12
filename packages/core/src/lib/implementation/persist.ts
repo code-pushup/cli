@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync } from 'fs';
-import { writeFile, stat } from 'fs/promises';
+import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import chalk from 'chalk';
 import { CoreConfig, Report } from '@code-pushup/models';
-import { formatBytes, reportToStdout, reportToMd } from '@code-pushup/utils';
+import { formatBytes, reportToMd, reportToStdout } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
   constructor(outputPath: string) {
@@ -21,7 +21,7 @@ export type PersistResult = PromiseSettledResult<readonly [string, number]>[];
 
 export async function persistReport(
   report: Report,
-  config: CoreConfig,
+  config: Pick<CoreConfig, 'persist'>,
 ): Promise<PersistResult> {
   const { persist } = config;
   const outputPath = persist.outputPath;

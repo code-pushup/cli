@@ -1,37 +1,27 @@
 import {
-  Format,
-  globalOptionsSchema as coreGlobalOptionsSchema,
+  filePathSchema,
+  GlobalOptions,
   PersistConfig,
-  refineCoreConfig,
-  unrefinedCoreConfigSchema,
   UploadConfig,
 } from '@code-pushup/models';
 import { z } from 'zod';
-import { GlobalOptions as CliOptions } from '../model';
 
-export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
-  z.object({
-    interactive: z
-      .boolean({
-        description:
-          'flag if interactivity should be considered. Useful for CI runs.',
-      })
-      .default(true),
-  }),
-);
+const cliOnlyGlobalOptionsSchema = z.object({
+  interactive: z
+    .boolean({
+      description:
+        'flag if interactivity should be considered. Useful for CI runs.',
+    })
+    .default(true),
+  configPath: filePathSchema(
+    "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
+  ).default('code-pushup.config.js'),
+});
+export type CliOnlyGlobalOptions = z.infer<typeof cliOnlyGlobalOptionsSchema>;
 
-export type GlobalOptions = z.infer<typeof globalOptionsSchema>;
-
-// @TODO this has any type
-export const commandBaseSchema = refineCoreConfig(
-  globalOptionsSchema.merge(unrefinedCoreConfigSchema),
-);
-export type CommandBase = z.infer<typeof commandBaseSchema>;
-export type ArgsCliObj = Partial<
-  CliOptions &
-    GlobalOptions &
+export type CliArgs = Partial<
+  GlobalOptions &
+    CliOnlyGlobalOptions &
     UploadConfig &
-    Omit<PersistConfig, 'format'> & {
-      format: Format | Format[];
-    }
+    Omit<PersistConfig, 'format'> & { format: string }
 >;

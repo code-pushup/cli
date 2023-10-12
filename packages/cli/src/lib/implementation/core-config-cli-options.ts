@@ -1,8 +1,8 @@
 import { Options } from 'yargs';
-import { ArgsCliObj } from './model';
+import { BaseOptions } from '@code-pushup/core';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
-  keyof ArgsCliObj,
+  keyof BaseOptions,
   Options
 > {
   return {
@@ -10,9 +10,5 @@ export function yargsCoreConfigOptionsDefinition(): Record<
       describe: 'Format of the report output. e.g. `md`, `json`, `stdout`',
       type: 'array',
     },
-    apiKey: {
-      describe: 'apiKey for the portal',
-      type: 'string',
-    },
-  } as unknown as Record<keyof ArgsCliObj, Options>;
+  } as unknown as Record<keyof BaseOptions, Options>;
 }

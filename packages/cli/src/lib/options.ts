@@ -1,5 +1,5 @@
-import { yargsGlobalOptionsDefinition } from './implementation/global-options';
-import { yargsCoreConfigOptionsDefinition } from './implementation/core-config-options';
+import { yargsGlobalOptionsDefinition } from './implementation/general-cli-options';
+import { yargsCoreConfigOptionsDefinition } from './implementation/core-config-cli-options';
 
 export const options = {
   ...yargsGlobalOptionsDefinition(),

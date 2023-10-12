@@ -1,19 +1,20 @@
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { upload } from '@code-pushup/core';
+import { collectAndPersistReports, upload } from '@code-pushup/core';
 import { ConfigMiddlewareOutput } from '../implementation/config-middleware';
 import { uploadConfigSchema } from '@code-pushup/models';
 
-export function yargsUploadCommandObject() {
+export function yargsAutorunCommandObject() {
   return {
-    command: 'upload',
-    describe: 'Upload report results to the portal',
+    command: 'autorun',
+    describe: 'Autorun executes the collect and upload command after another',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const _args = args as unknown as ConfigMiddlewareOutput;
-      const uploadOptions = {
+      const options = {
         ..._args,
         upload: uploadConfigSchema.parse(_args.upload),
       };
-      await upload(uploadOptions);
+      await collectAndPersistReports(options);
+      await upload(options);
     },
   } satisfies CommandModule;
 }

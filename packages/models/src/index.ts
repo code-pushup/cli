@@ -1,3 +1,5 @@
+export { filePathSchema } from './lib/implementation/schemas';
+
 export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
 export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {

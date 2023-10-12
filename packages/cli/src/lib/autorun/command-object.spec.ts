@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { beforeEach, describe, it, vi } from 'vitest';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './command-object';
+import { yargsAutorunCommandObject } from './command-object';
 import { UploadOptions } from '@code-pushup/core';
 import { options } from '../options';
 
@@ -29,7 +29,7 @@ vi.mock('@code-pushup/portal-client', async () => {
 });
 
 const baseArgs = [
-  'upload',
+  'autorun',
   '--verbose',
   ...objectToCliArgs({
     configPath: join(
@@ -46,13 +46,13 @@ const cli = (args: string[]) =>
   yargsCli(args, {
     options,
     middlewares,
-    commands: [yargsUploadCommandObject()],
+    commands: [yargsAutorunCommandObject()],
   });
 
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join('tmp', 'report.' + format);
 
-describe('upload-command-object', () => {
+describe('autorun-command-object', () => {
   const dummyReport: Report = {
     date: new Date().toISOString(),
     duration: 1000,
@@ -80,6 +80,8 @@ describe('upload-command-object', () => {
     expect(parsedArgv.upload.project).toBe('cli');
     expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
     expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
+    expect(parsedArgv.persist.outputPath).toBe('tmp');
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
 
   it('should call portal-client function with correct parameters', async () => {

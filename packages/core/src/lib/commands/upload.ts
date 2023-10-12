@@ -5,7 +5,7 @@ import { jsonToGql } from '../implementation/json-to-gql';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
 import { latestHash } from '@code-pushup/utils';
 
-export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
+export type UploadOptions = Required<Pick<CoreConfig, 'upload' | 'persist'>>;
 
 /**
  * Uploads collected audits to the portal
