@@ -6,7 +6,7 @@ import {
 } from '@code-pushup/utils';
 
 const configFile = (ext: 'ts' | 'js' | 'mjs') =>
-  join(process.cwd(), `examples/cli-e2e/mocks/code-pushup.config.${ext}`);
+  join(process.cwd(), `e2e/cli-e2e/mocks/code-pushup.config.${ext}`);
 
 const execCli = (argObj: Partial<CliArgsObject>) =>
   executeProcess({
