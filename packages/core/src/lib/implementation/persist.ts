@@ -6,8 +6,8 @@ import { CoreConfig, Report } from '@code-pushup/models';
 import { formatBytes, reportToStdout, reportToMd } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
-  constructor(outputPath: string) {
-    super(`outPath: ${outputPath} is no directory.`);
+  constructor(outputDir: string) {
+    super(`outPath: ${outputDir} is no directory.`);
   }
 }
 
@@ -24,7 +24,7 @@ export async function persistReport(
   config: CoreConfig,
 ): Promise<PersistResult> {
   const { persist } = config;
-  const outputPath = persist.outputPath;
+  const outputDir = persist.outputDir;
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
 
@@ -42,19 +42,19 @@ export async function persistReport(
     results.push({ format: 'md', content: reportToMd(report) });
   }
 
-  if (!existsSync(outputPath)) {
+  if (!existsSync(outputDir)) {
     try {
-      mkdirSync(outputPath, { recursive: true });
+      mkdirSync(outputDir, { recursive: true });
     } catch (e) {
       console.warn(e);
-      throw new PersistDirError(outputPath);
+      throw new PersistDirError(outputDir);
     }
   }
 
   // write relevant format outputs to file system
   return Promise.allSettled(
     results.map(({ format, content }) => {
-      const reportPath = join(outputPath, `report.${format}`);
+      const reportPath = join(outputDir, `report.${format}`);
 
       return (
         writeFile(reportPath, content)

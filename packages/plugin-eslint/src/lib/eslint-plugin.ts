@@ -62,7 +62,7 @@ export async function eslintPlugin(
         '--output-file=tmp/out.json',
         ...toArray(patterns),
       ],
-      outputPath: 'tmp/out.json',
+      outputFile: 'tmp/out.json',
     },
   };
 }

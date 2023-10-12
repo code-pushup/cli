@@ -5,7 +5,7 @@ export const formatSchema = z.enum(['json', 'stdout', 'md']);
 export type Format = z.infer<typeof formatSchema>;
 
 export const persistConfigSchema = z.object({
-  outputPath: filePathSchema('Artifacts folder'),
+  outputDir: filePathSchema('Artifacts folder'),
   format: z.array(formatSchema).default(['stdout']).optional(),
 });
 

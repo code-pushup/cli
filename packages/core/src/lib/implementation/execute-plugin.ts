@@ -61,7 +61,7 @@ export async function executePlugin(
   try {
     const processOutputPath = join(
       process.cwd(),
-      pluginConfig.runner.outputPath,
+      pluginConfig.runner.outputFile,
     );
     // read process output from file system and parse it
     const audits = auditOutputsSchema.parse(
