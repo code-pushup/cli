@@ -1,5 +1,5 @@
 import { pluginReportSchema } from '@code-pushup/models';
-import { collect, CollectOptions } from './commands/collect';
+import { CollectOptions, collect } from './commands/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
 export async function collectAndPersistReports(

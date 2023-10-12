@@ -1,5 +1,5 @@
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import { defaultConfig } from 'lighthouse';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 
 type LighthousePluginConfig = {
   config: string;

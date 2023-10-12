@@ -1,6 +1,6 @@
+import { describe, expect, it } from 'vitest';
 import { reportSchema } from '@code-pushup/models';
 import { mockCoreConfig } from '@code-pushup/models/testing';
-import { describe, expect, it } from 'vitest';
 import { CollectOptions, collect } from './collect';
 
 const baseOptions: CollectOptions = {

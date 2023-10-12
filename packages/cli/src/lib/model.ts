@@ -1,5 +1,5 @@
-import { globalOptionsSchema as coreGlobalOptionsSchema } from '@code-pushup/models';
 import { z } from 'zod';
+import { globalOptionsSchema as coreGlobalOptionsSchema } from '@code-pushup/models';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
   z.object({

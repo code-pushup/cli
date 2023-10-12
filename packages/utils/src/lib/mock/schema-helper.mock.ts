@@ -13,7 +13,8 @@ const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
-const __outputFile__ = 'tmp/out-execute-plugin.json';
+const __outputDir__ = 'tmp';
+const __outputFile__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
@@ -79,7 +80,7 @@ export function mockAuditConfig(opt?: {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputDir, format } = opt || {};
-  outputDir = outputDir || __outputFile__;
+  outputDir = outputDir || __outputDir__;
   format = format || [];
   return {
     outputDir,

@@ -1,11 +1,11 @@
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 import {
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { ProcessObserver, executeProcess } from '@code-pushup/utils';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 
 /**
  * Error thrown when plugin output is invalid.

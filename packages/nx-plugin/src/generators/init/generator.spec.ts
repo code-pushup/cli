@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { Tree, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { readNxJson, readJson, Tree } from '@nx/devkit';
-
+import { describe, expect, it } from 'vitest';
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
+
 type PackageJson = {
   devDependencies: Record<string, string>;
 };

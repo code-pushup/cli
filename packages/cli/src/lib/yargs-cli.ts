@@ -1,4 +1,3 @@
-import { CoreConfig } from '@code-pushup/models';
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -7,6 +6,7 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
+import { CoreConfig } from '@code-pushup/models';
 import { logErrorBeforeThrow } from './implementation/utils';
 import { GlobalOptions } from './model';
 

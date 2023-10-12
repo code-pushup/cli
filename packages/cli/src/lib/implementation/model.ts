@@ -1,12 +1,12 @@
+import { z } from 'zod';
 import {
   Format,
-  globalOptionsSchema as coreGlobalOptionsSchema,
   PersistConfig,
+  UploadConfig,
+  globalOptionsSchema as coreGlobalOptionsSchema,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-  UploadConfig,
 } from '@code-pushup/models';
-import { z } from 'zod';
 import { GlobalOptions as CliOptions } from '../model';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(

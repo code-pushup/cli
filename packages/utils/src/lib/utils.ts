@@ -1,5 +1,5 @@
-import { CategoryConfig, Issue } from '@code-pushup/models';
 import { readFile } from 'fs/promises';
+import { CategoryConfig, Issue } from '@code-pushup/models';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];

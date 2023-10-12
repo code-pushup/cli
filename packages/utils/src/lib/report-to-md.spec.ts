@@ -1,10 +1,10 @@
 import { describe } from 'vitest';
-import { reportToMd } from './report-to-md';
 import {
   dummyReport,
   lighthouseReport,
   nxValidatorsOnlyReport,
 } from '@code-pushup/models/testing';
+import { reportToMd } from './report-to-md';
 
 describe('report-to-md', () => {
   it('should contain all sections when using dummy report', () => {
