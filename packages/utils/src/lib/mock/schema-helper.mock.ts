@@ -14,7 +14,7 @@ const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
 const __outputDir__ = 'tmp';
-const __outputFile__ = 'out-execute-plugin.json';
+const __outputFile__ = `${__outputDir__}/out-execute-plugin.json`;
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
