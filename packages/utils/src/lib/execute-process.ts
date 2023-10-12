@@ -80,6 +80,7 @@ export class ProcessError extends Error {
 export type ProcessConfig = {
   command: string;
   args?: string[];
+  cwd?: string;
   observer?: ProcessObserver;
 };
 
@@ -131,12 +132,12 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer } = cfg;
+  const { observer, cwd } = cfg;
   const { next, error, complete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
   return new Promise((resolve, reject) => {
-    const process = spawn(cfg.command, cfg.args);
+    const process = spawn(cfg.command, cfg.args, { cwd });
     let stdout = '';
     let stderr = '';
 
