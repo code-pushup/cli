@@ -2,13 +2,13 @@
 import { vol } from 'memfs';
 import { join } from 'path';
 import { beforeEach, describe, vi } from 'vitest';
+import { ReportFragment } from '@code-pushup/portal-client';
 import {
   MEMFS_VOLUME,
   mockPersistConfig,
   mockReport,
   mockUploadConfig,
 } from '@code-pushup/models/testing';
-import { ReportFragment } from '@code-pushup/portal-client/portal-client/src/lib/graphql/generated';
 import { upload } from './upload';
 
 // This in needed to mock the API client used inside the upload function
