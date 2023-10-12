@@ -1,9 +1,9 @@
-import { uploadToPortal } from '@code-pushup/portal-client';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { jsonToGql } from '../implementation/json-to-gql';
+import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
 import { latestHash } from '@code-pushup/utils';
+import { jsonToGql } from '../implementation/json-to-gql';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 

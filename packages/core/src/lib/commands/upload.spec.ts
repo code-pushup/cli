@@ -1,4 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import { vol } from 'memfs';
+import { join } from 'path';
 import { beforeEach, describe, vi } from 'vitest';
 import {
   MEMFS_VOLUME,
@@ -6,10 +8,8 @@ import {
   mockReport,
   mockUploadConfig,
 } from '@code-pushup/models/testing';
-import { join } from 'path';
-import { vol } from 'memfs';
-import { upload } from './upload';
 import { ReportFragment } from '@code-pushup/portal-client/portal-client/src/lib/graphql/generated';
+import { upload } from './upload';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {

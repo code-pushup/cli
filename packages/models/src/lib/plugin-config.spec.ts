@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  mockAuditOutputs,
   mockGroupConfig,
   mockPluginConfig,
-  mockAuditOutputs,
 } from '../../test';
 import {
   auditGroupSchema,
-  pluginConfigSchema,
   auditOutputsSchema,
+  pluginConfigSchema,
 } from './plugin-config';
 
 describe('pluginConfigSchema', () => {

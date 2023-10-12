@@ -1,7 +1,7 @@
-import { PluginConfig } from '@code-pushup/models';
 import { ESLint } from 'eslint';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAudits } from './meta';

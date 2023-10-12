@@ -1,5 +1,5 @@
-import { slugify } from '@code-pushup/utils';
 import { createHash } from 'crypto';
+import { slugify } from '@code-pushup/utils';
 
 export function ruleIdToSlug(
   ruleId: string,

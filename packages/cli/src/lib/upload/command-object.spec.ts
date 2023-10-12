@@ -1,14 +1,14 @@
-import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { writeFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { beforeEach, describe, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { vi, describe, it, beforeEach } from 'vitest';
+import { Report } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';

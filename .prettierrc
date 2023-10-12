@@ -1,5 +1,11 @@
 {
   "singleQuote": true,
   "arrowParens": "avoid",
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "importOrder": [
+    "^@code-pushup/portal-client$",
+    "^@code-pushup/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSortSpecifiers": true
 }

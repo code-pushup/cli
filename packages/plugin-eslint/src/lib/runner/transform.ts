@@ -1,3 +1,4 @@
+import type { Linter } from 'eslint';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import {
   compareIssueSeverity,
@@ -5,7 +6,6 @@ import {
   formatCount,
   objectToEntries,
 } from '@code-pushup/utils';
-import type { Linter } from 'eslint';
 import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
 

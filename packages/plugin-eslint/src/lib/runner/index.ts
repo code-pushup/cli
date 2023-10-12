@@ -1,7 +1,7 @@
-import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
-import { toArray } from '@code-pushup/utils';
 import { mkdir, writeFile } from 'fs/promises';
 import { dirname } from 'path';
+import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
+import { toArray } from '@code-pushup/utils';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 

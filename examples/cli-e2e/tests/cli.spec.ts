@@ -1,9 +1,9 @@
+import { join } from 'path';
 import {
   CliArgsObject,
   executeProcess,
   objectToCliArgs,
 } from '@code-pushup/utils';
-import { join } from 'path';
 
 const configFile = (ext: 'ts' | 'js' | 'mjs') =>
   join(process.cwd(), `examples/cli-e2e/mocks/code-pushup.config.${ext}`);

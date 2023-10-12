@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { coreConfigSchema } from './core-config';
 import { mockCategory, mockCoreConfig, mockPluginConfig } from '../../test';
+import { coreConfigSchema } from './core-config';
 
 /*
  - plugin slug: es-lint

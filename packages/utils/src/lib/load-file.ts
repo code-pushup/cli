@@ -1,4 +1,4 @@
-import { bundleRequire, Options } from 'bundle-require';
+import { Options, bundleRequire } from 'bundle-require';
 
 export async function importModule<T = unknown>(
   options: Options,

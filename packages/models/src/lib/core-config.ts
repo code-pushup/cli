@@ -1,12 +1,12 @@
 import { Schema, z } from 'zod';
+import { CategoryConfig, categoryConfigSchema } from './category-config';
 import {
   errorItems,
   hasDuplicateStrings,
   hasMissingStrings,
 } from './implementation/utils';
-import { CategoryConfig, categoryConfigSchema } from './category-config';
-import { pluginConfigSchema } from './plugin-config';
 import { persistConfigSchema } from './persist-config';
+import { pluginConfigSchema } from './plugin-config';
 import { uploadConfigSchema } from './upload-config';
 
 export const unrefinedCoreConfigSchema = z.object({

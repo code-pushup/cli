@@ -1,5 +1,5 @@
-import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import { z } from 'zod';
+import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import {
   executionMetaSchema,
   filePathSchema,
