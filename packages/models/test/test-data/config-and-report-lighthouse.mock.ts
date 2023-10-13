@@ -6,7 +6,7 @@ export const lighthousePlugin: () => PluginConfig = () =>
     runner: {
       command: 'bun',
       args: ['--help'],
-      outputPath: 'tmp/lighthouse-runner-output.json',
+      outputFile: 'tmp/lighthouse-runner-output.json',
     },
     slug: 'lighthouse',
     title: 'lighthouse',

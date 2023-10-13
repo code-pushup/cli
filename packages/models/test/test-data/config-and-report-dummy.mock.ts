@@ -15,7 +15,7 @@ const dummyPlugins = [
   mockPluginConfig({
     pluginSlug: pluginSlug[0],
     auditSlug: auditSlug0,
-    outputPath: 'test',
+    outputDir: 'test',
   }),
   /*mockPluginConfig({ pluginSlug: pluginSlug[1], auditSlug: auditSlug1 }),
   mockPluginConfig({ pluginSlug: pluginSlug[2], auditSlug: auditSlug2 }),*/
@@ -39,8 +39,8 @@ const dummyCategories = [
   }),*/,
 ];
 
-export const dummyConfig = (outputPath = 'tmp'): CoreConfig => ({
-  ...mockCoreConfig({ outputPath }),
+export const dummyConfig = (outputDir = 'tmp'): CoreConfig => ({
+  ...mockCoreConfig({ outputDir }),
   plugins: dummyPlugins,
   categories: dummyCategories,
 });

@@ -28,7 +28,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
           },
         ] satisfies AuditOutputs)}')`,
       ],
-      outputPath: 'tmp/out.json',
+      outputFile: 'tmp/out.json',
     },
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',

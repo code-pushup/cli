@@ -33,8 +33,8 @@ vi.mock('fs/promises', async () => {
   return memfs.fs.promises;
 });
 
-const outputPath = MEMFS_VOLUME;
-const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
+const outputDir = MEMFS_VOLUME;
+const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
   join(path, 'report.' + format);
 
 describe('uploadToPortal', () => {
@@ -55,7 +55,7 @@ describe('uploadToPortal', () => {
         server: 'https://example.com/api',
       }),
       persist: mockPersistConfig({
-        outputPath,
+        outputDir,
       }),
     };
     const result = await upload(cfg);
