@@ -1,5 +1,5 @@
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 const omitVariableData = ({
   date,
@@ -15,7 +15,7 @@ const omitVariableReportData = (report: Report) =>
   });
 
 describe('CLI collect', () => {
-  it('should run ESLint plugin and create report', async () => {
+  it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
       args: ['../../dist/packages/cli', 'collect'],
@@ -29,5 +29,35 @@ describe('CLI collect', () => {
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+  });
+
+  it('should create report.md', async () => {
+    const { code, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['../../dist/packages/cli', 'collect', '--format=md'],
+      cwd: 'examples/react-todos-app',
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+
+    const md = await readTextFile('tmp/react-todos-app/report.md');
+
+    expect(md).toContain('# Code Pushup Report');
+  });
+
+  it('should print report summary to stdout', async () => {
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['../../dist/packages/cli', 'collect', '--format=stdout'],
+      cwd: 'examples/react-todos-app',
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+
+    expect(stdout).toContain('Code Pushup Report');
+    expect(stdout).toContain('Generated reports');
+    expect(stdout).toContain('report.json');
   });
 });
