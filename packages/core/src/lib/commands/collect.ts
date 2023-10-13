@@ -1,5 +1,6 @@
 import { Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
+import { name, version } from '../../../package.json';
 import { executePlugins } from '../implementation/execute-plugin';
 import { CommandBaseOptions } from '../implementation/model';
 
@@ -24,9 +25,7 @@ export type CollectOptions = CommandBaseOptions;
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
-export async function collect(
-  options: CollectOptions,
-): Promise<Omit<Report, 'packageName' | 'version'>> {
+export async function collect(options: CollectOptions): Promise<Report> {
   const { plugins, categories } = options;
 
   if (!plugins?.length) {
@@ -38,6 +37,8 @@ export async function collect(
   const pluginOutputs = await executePlugins(plugins);
 
   return {
+    packageName: name,
+    version,
     date,
     duration: calcDuration(start),
     categories,

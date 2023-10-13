@@ -1,16 +1,11 @@
-import { Report, pluginReportSchema } from '@code-pushup/models';
-import { name, version } from '../../package.json';
+import { pluginReportSchema } from '@code-pushup/models';
 import { CollectOptions, collect } from './commands/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
 export async function collectAndPersistReports(
   config: CollectOptions,
 ): Promise<void> {
-  const report: Report = {
-    packageName: name,
-    version,
-    ...(await collect(config)),
-  };
+  const report = await collect(config);
 
   const persistResults = await persistReport(report, config);
   logPersistedResults(persistResults);
