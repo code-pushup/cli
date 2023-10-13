@@ -40,7 +40,7 @@ function readCoreConfigFromCliArgs(args: TerminalArgsObj): CommandBase {
       case 'apiKey':
         parsedProcessArgs.upload[k] = args[k];
         break;
-      case 'outputPath':
+      case 'outputDir':
       case 'format':
         parsedProcessArgs.persist[k] = args[k];
         break;

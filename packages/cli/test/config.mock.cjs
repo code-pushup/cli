@@ -1,4 +1,4 @@
-const outputPath = 'tmp';
+const outputDir = 'tmp';
 module.exports = {
   upload: {
     organization: 'code-pushup',
@@ -6,7 +6,7 @@ module.exports = {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: { outputPath },
+  persist: { outputDir },
   plugins: [
     {
       audits: [
@@ -21,7 +21,7 @@ module.exports = {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('${outputPath}/out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
             [
               {
                 title: 'dummy-title',
@@ -32,7 +32,7 @@ module.exports = {
             ],
           )}')`,
         ],
-        outputPath: `${outputPath}/out.json`,
+        outputFile: `${outputDir}/out.json`,
       },
       groups: [],
       slug: 'command-object-plugin',

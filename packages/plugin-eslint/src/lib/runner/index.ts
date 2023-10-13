@@ -53,6 +53,6 @@ export function createRunnerConfig(
       eslintrc,
       ...toArray(patterns),
     ],
-    outputPath: RUNNER_OUTPUT_PATH,
+    outputFile: RUNNER_OUTPUT_PATH,
   };
 }

@@ -38,7 +38,7 @@ describe('collect-command-object', () => {
     const parsedArgv = (await cli(
       args,
     ).parseAsync()) as CollectAndPersistReportsOptions;
-    expect(parsedArgv.persist.outputPath).toBe('tmp');
+    expect(parsedArgv.persist.outputDir).toBe('tmp');
     expect(parsedArgv.persist.format).toEqual(['md']);
   });
 });

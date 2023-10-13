@@ -25,15 +25,15 @@ export function mockPluginConfig(opt?: {
   pluginSlug?: string;
   auditSlug?: string | string[];
   groupSlug?: string | string[];
-  outputPath?: string;
+  outputDir?: string;
 }): PluginConfig {
-  const { groupSlug, outputPath } = opt || {};
+  const { groupSlug, outputDir } = opt || {};
   let { pluginSlug, auditSlug } = opt || {};
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
   const pluginOutputPath = `${
-    outputPath || 'tmp'
+    outputDir || 'tmp'
   }/${+new Date()}-${__outputFile__}`;
 
   const audits = Array.isArray(auditSlug)
@@ -58,7 +58,7 @@ export function mockPluginConfig(opt?: {
           audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
         )}')`,
       ],
-      outputPath: pluginOutputPath,
+      outputFile: pluginOutputPath,
     },
     slug: pluginSlug,
     title: 'execute plugin',
@@ -81,11 +81,11 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
 }
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
-  let { outputPath, format } = opt || {};
-  outputPath = outputPath || `tmp/${__outputFile__}`;
+  let { outputDir, format } = opt || {};
+  outputDir = outputDir || `tmp/${__outputFile__}`;
   format = format || [];
   return {
-    outputPath,
+    outputDir,
     format,
   } satisfies Required<PersistConfig>;
 }
@@ -228,16 +228,16 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
 }
 
 export function mockCoreConfig(opt?: {
-  outputPath?: string;
+  outputDir?: string;
   categorySlug?: string | string[];
   pluginSlug?: string | string[];
   auditSlug?: string | string[];
   groupSlug?: string | string[];
 }): CoreConfig {
-  const { outputPath, pluginSlug, auditSlug, groupSlug, categorySlug } =
+  const { outputDir, pluginSlug, auditSlug, groupSlug, categorySlug } =
     opt || {};
   return {
-    persist: mockPersistConfig({ outputPath }),
+    persist: mockPersistConfig({ outputDir }),
     upload: mockUploadConfig(),
     plugins: Array.isArray(pluginSlug)
       ? pluginSlug.map(slug =>

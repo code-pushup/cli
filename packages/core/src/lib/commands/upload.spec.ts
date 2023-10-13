@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import { vol } from 'memfs';
 import { join } from 'path';
 import { beforeEach, describe, vi } from 'vitest';
@@ -19,10 +18,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () =>
-        ({ data: { packageName: 'dummy-package' } } as {
-          data: ReportFragment;
-        }),
+      async () => ({ packageName: 'dummy-package' } as ReportFragment),
     ),
   };
 });
@@ -37,8 +33,8 @@ vi.mock('fs/promises', async () => {
   return memfs.fs.promises;
 });
 
-const outputPath = MEMFS_VOLUME;
-const reportPath = (path = outputPath, format: 'json' | 'md' = 'json') =>
+const outputDir = MEMFS_VOLUME;
+const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
   join(path, 'report.' + format);
 
 describe('uploadToPortal', () => {
@@ -59,11 +55,11 @@ describe('uploadToPortal', () => {
         server: 'https://example.com/api',
       }),
       persist: mockPersistConfig({
-        outputPath,
+        outputDir,
       }),
     };
-    const result = (await upload(cfg)) as unknown as { data: ReportFragment };
+    const result = await upload(cfg);
 
-    expect(result.data.packageName).toBe('dummy-package');
+    expect(result.packageName).toBe('dummy-package');
   });
 });

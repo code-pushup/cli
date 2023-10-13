@@ -20,9 +20,9 @@ export async function upload(
   }
 
   const { apiKey, server, organization, project } = options.upload;
-  const { outputPath } = options.persist;
+  const { outputDir } = options.persist;
   const report = reportSchema.parse(
-    JSON.parse(readFileSync(join(outputPath, 'report.json')).toString()),
+    JSON.parse(readFileSync(join(outputDir, 'report.json')).toString()),
   );
 
   const data = {

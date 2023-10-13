@@ -1,5 +1,5 @@
 import { CommandModule } from 'yargs';
-import { yargsAutorunCommandObject } from "./autorun/command-object";
+import { yargsAutorunCommandObject } from './autorun/command-object';
 import { yargsCollectCommandObject } from './collect/command-object';
 import { yargsUploadCommandObject } from './upload/command-object';
 
