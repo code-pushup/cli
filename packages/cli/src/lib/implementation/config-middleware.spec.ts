@@ -21,14 +21,14 @@ describe('applyConfigMiddleware', () => {
     const configPathCjs = config('cjs');
     const _config = await configMiddleware({ config: configPathCjs });
     expect(_config.upload.project).toContain('cjs');
-    expect(_config.persist.outputPath).toContain('tmp');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .js config', async () => {
     const configPathJs = config('js');
     const _config = await configMiddleware({ config: configPathJs });
     expect(_config.upload.project).toContain('js');
-    expect(_config.persist.outputPath).toContain('tmp');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should throw with invalid config', async () => {

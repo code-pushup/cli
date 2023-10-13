@@ -14,18 +14,18 @@ export function getAsyncProcessRunnerConfig(
     throwError?: boolean;
     interval?: number;
     runs?: number;
-    outputPath?: string;
+    outputFile?: string;
   } = { throwError: false },
 ) {
-  const outputPath = cfg?.outputPath || './tmp/out-async-runner.json';
+  const outputFile = cfg?.outputFile || './tmp/out-async-runner.json';
   const args = [
     asyncProcessPath,
     cfg?.interval ? cfg.interval + '' : '10',
     cfg?.runs ? cfg.runs + '' : '4',
     cfg?.throwError ? '1' : '0',
-    outputPath,
+    outputFile,
   ];
-  return { command: 'node', args, outputPath };
+  return { command: 'node', args, outputFile };
 }
 
 /**
@@ -36,20 +36,20 @@ export function getAsyncProcessRunnerConfig(
 export function getSyncProcessRunnerConfig(
   cfg: Partial<ProcessConfig> & {
     throwError?: boolean;
-    outputPath?: string;
+    outputFile?: string;
   } = { throwError: false },
 ) {
   return {
     command: 'node',
     args: [
       '-e',
-      `require('fs').writeFileSync('${cfg.outputPath}', '${JSON.stringify({
+      `require('fs').writeFileSync('${cfg.outputFile}', '${JSON.stringify({
         audits: cfg.throwError
           ? ({ throwError: cfg.throwError } as unknown)
           : [],
       })}')`,
     ],
-    outputPath: cfg.outputPath,
+    outputFile: cfg.outputFile,
   };
 }
 
@@ -57,7 +57,7 @@ export function mockProcessConfig(
   processConfig: Partial<ProcessConfig>,
 ): ProcessConfig {
   return {
-    ...{ command: 'dummy-string', args: [], outputPath: 'tmp/out.json' },
+    ...{ command: 'dummy-string', args: [], outputFile: 'tmp/out.json' },
     ...processConfig,
     observer: spyObserver(),
   };

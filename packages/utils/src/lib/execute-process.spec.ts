@@ -8,7 +8,7 @@ import {
 
 const outFolder = '';
 const outName = 'tmp/out-async-runner.json';
-const outputPath = join(outFolder, outName);
+const outputFile = join(outFolder, outName);
 
 describe('executeProcess', () => {
   it('should work with node command `node -v`', async () => {
@@ -28,7 +28,7 @@ describe('executeProcess', () => {
 
   it('should work with script `node custom-script.js`', async () => {
     const cfg = mockProcessConfig(
-      getAsyncProcessRunnerConfig({ interval: 10, outputPath }),
+      getAsyncProcessRunnerConfig({ interval: 10, outputFile }),
     );
     const { observer } = cfg;
     const errorSpy = vi.fn();
