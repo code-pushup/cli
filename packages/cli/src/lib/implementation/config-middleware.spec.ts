@@ -14,7 +14,7 @@ describe('applyConfigMiddleware', () => {
     const configPathMjs = config('mjs');
     const _config = await configMiddleware({ config: configPathMjs });
     expect(_config.upload.project).toContain('mjs');
-    expect(_config.persist.outputPath).toContain('tmp');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .cjs config', async () => {
