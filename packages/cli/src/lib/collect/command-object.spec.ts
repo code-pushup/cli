@@ -9,7 +9,7 @@ import { yargsCollectCommandObject } from './command-object';
 const baseArgs = [
   ...objectToCliArgs({
     verbose: true,
-    configPath: join(
+    config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',

@@ -31,7 +31,7 @@ const baseArgs = [
   'upload',
   '--verbose',
   ...objectToCliArgs({
-    configPath: join(
+    config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',
