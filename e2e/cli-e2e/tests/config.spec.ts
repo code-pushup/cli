@@ -5,29 +5,25 @@ import {
   objectToCliArgs,
 } from '@code-pushup/utils';
 
-const configFile = (ext: 'ts' | 'js' | 'mjs') =>
+const extensions = ['js', 'mjs', 'ts'] as const;
+type Extension = (typeof extensions)[number];
+
+const configFile = (ext: Extension) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/code-pushup.config.${ext}`);
 
 const execCli = (argObj: Partial<CliArgsObject>) =>
   executeProcess({
-    command: 'node',
+    command: 'npx',
     args: objectToCliArgs({
-      _: './dist/packages/cli/index.js',
+      _: './dist/packages/cli',
       verbose: true,
       ...argObj,
     }),
   });
 
+// TODO: use print-config command once implemented and check stdout
 describe('CLI config parsing', () => {
-  it('should load .js config file', async () => {
-    await execCli({ config: configFile('js') });
-  });
-
-  it('should load .mjs config file', async () => {
-    await execCli({ config: configFile('mjs') });
-  });
-
-  it('should load .ts config file', async () => {
-    await execCli({ config: configFile('ts') });
+  it.each(extensions)('should load .%s config file', async ext => {
+    await execCli({ config: configFile(ext) });
   });
 });
