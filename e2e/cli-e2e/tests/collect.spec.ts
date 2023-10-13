@@ -16,11 +16,14 @@ const omitVariableReportData = (report: Report) =>
 
 describe('CLI collect', () => {
   it('should run ESLint plugin and create report', async () => {
-    await executeProcess({
+    const { code, stderr } = await executeProcess({
       command: 'npx',
       args: ['../../dist/packages/cli', 'collect'],
       cwd: 'examples/react-todos-app',
     });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/react-todos-app/report.json');
 
