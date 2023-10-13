@@ -83,7 +83,7 @@ describe('autorun-command-object', () => {
     expect(parsedArgv.upload.project).toBe('cli');
     expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
     expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
-    expect(parsedArgv.persist.outputPath).toBe('tmp');
+    expect(parsedArgv.persist.outputDir).toBe('tmp');
     expect(parsedArgv.persist.format).toEqual(['md']);
   });
 
