@@ -2,7 +2,194 @@
 
 exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
 {
-  "categories": [],
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "eslint",
+          "slug": "no-cond-assign",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-const-assign",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-debugger",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-invalid-regexp",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-undef",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-unreachable-loop",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-unsafe-negation",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-unsafe-optional-chaining",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "use-isnan",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "valid-typeof",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "eqeqeq",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "react-jsx-key",
+          "type": "audit",
+          "weight": 2,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "react-prop-types",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "react-react-in-jsx-scope",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "react-hooks-rules-of-hooks",
+          "type": "audit",
+          "weight": 2,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "react-hooks-exhaustive-deps",
+          "type": "audit",
+          "weight": 2,
+        },
+      ],
+      "slug": "bug-prevention",
+      "title": "Bug prevention",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "eslint",
+          "slug": "no-unused-vars",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "arrow-body-style",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "camelcase",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "curly",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "eqeqeq",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "max-lines-per-function",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "max-lines",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "object-shorthand",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "prefer-arrow-callback",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "prefer-const",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "prefer-object-spread",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "yoda",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "no-var",
+          "type": "audit",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-style",
+      "title": "Code style",
+    },
+  ],
   "packageName": "@code-pushup/core",
   "plugins": [
     {
