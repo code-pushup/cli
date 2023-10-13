@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CLI > collect > should run ESLint plugin and create report 1`] = `
+exports[`CLI collect > should run ESLint plugin and create report 1`] = `
 {
   "categories": [],
   "packageName": "@code-pushup/core",
