@@ -6,42 +6,42 @@ import { getDirname } from './helper.mock';
 const __dirname = getDirname(import.meta.url);
 
 const withDirName = (path: string) => join(__dirname, path);
-const configPath = (ext: string) =>
+const config = (ext: string) =>
   `${withDirName('../../../test/config.mock.')}${ext}`;
 
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
-    const configPathMjs = configPath('mjs');
-    const config = await configMiddleware({ configPath: configPathMjs });
-    expect(config.upload.project).toContain('mjs');
-    expect(config.persist.outputDir).toContain('tmp');
+    const configPathMjs = config('mjs');
+    const _config = await configMiddleware({ config: configPathMjs });
+    expect(_config.upload.project).toContain('mjs');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .cjs config', async () => {
-    const configPathCjs = configPath('cjs');
-    const config = await configMiddleware({ configPath: configPathCjs });
-    expect(config.upload.project).toContain('cjs');
-    expect(config.persist.outputDir).toContain('tmp');
+    const configPathCjs = config('cjs');
+    const _config = await configMiddleware({ config: configPathCjs });
+    expect(_config.upload.project).toContain('cjs');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .js config', async () => {
-    const configPathJs = configPath('js');
-    const config = await configMiddleware({ configPath: configPathJs });
-    expect(config.upload.project).toContain('js');
-    expect(config.persist.outputDir).toContain('tmp');
+    const configPathJs = config('js');
+    const _config = await configMiddleware({ config: configPathJs });
+    expect(_config.upload.project).toContain('js');
+    expect(_config.persist.outputDir).toContain('tmp');
   });
 
-  it('should throw with invalid configPath', async () => {
-    const configPath = 'wrong/path/to/config';
+  it('should throw with invalid config', async () => {
+    const config = 'wrong/path/to/config';
     let error: Error = new Error();
-    await configMiddleware({ configPath }).catch(e => (error = e));
-    expect(error?.message).toContain(configPath);
+    await configMiddleware({ config }).catch(e => (error = e));
+    expect(error?.message).toContain(config);
   });
 
-  it('should provide default configPath', async () => {
+  it('should provide default config', async () => {
     const defaultConfigPath = 'code-pushup.config.js';
     let error: Error = new Error();
-    await configMiddleware({ configPath: undefined }).catch(e => (error = e));
+    await configMiddleware({ config: undefined }).catch(e => (error = e));
     expect(error?.message).toContain(defaultConfigPath);
   });
 });

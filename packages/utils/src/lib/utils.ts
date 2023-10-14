@@ -73,9 +73,14 @@ export function compareIssueSeverity(
   return levels[severity1] - levels[severity2];
 }
 
-export async function readJsonFile(path: string): Promise<unknown> {
+export async function readTextFile(path: string): Promise<string> {
   const buffer = await readFile(path);
-  return JSON.parse(buffer.toString());
+  return buffer.toString();
+}
+
+export async function readJsonFile(path: string): Promise<unknown> {
+  const text = await readTextFile(path);
+  return JSON.parse(text);
 }
 
 export function formatCount(count: number, name: string) {

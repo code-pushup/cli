@@ -10,7 +10,7 @@ import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 const baseArgs = [
   ...objectToCliArgs({
     verbose: true,
-    configPath: join(
+    config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',

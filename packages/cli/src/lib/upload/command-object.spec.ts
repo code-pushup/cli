@@ -32,7 +32,7 @@ const baseArgs = [
   'upload',
   ...objectToCliArgs({
     verbose: true,
-    configPath: join(
+    config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',

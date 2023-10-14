@@ -6,9 +6,9 @@ export async function configMiddleware<T extends TerminalArgsObj>(
   processArgs: T,
 ) {
   const args = processArgs as T;
-  const { configPath, ...cliOptions }: GlobalOptions =
+  const { config, ...cliOptions }: GlobalOptions =
     globalOptionsSchema.parse(args);
-  const importedRc = await readCodePushupConfig(configPath);
+  const importedRc = await readCodePushupConfig(config);
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
   console.log('importedRc: ', importedRc);
   const parsedProcessArgs: CommandBase = {

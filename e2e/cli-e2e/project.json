@@ -13,6 +13,11 @@
       }
     }
   },
-  "implicitDependencies": ["cli", "plugin-eslint", "plugin-lighthouse"],
+  "implicitDependencies": [
+    "cli",
+    "plugin-eslint",
+    "plugin-lighthouse",
+    "react-todos-app"
+  ],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }

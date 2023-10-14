@@ -1,5 +1,6 @@
 import { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
+import { name, version } from '../../../package.json';
 import { executePlugins } from '../implementation/execute-plugin';
 import { version, name } from '../../../package.json';
 
