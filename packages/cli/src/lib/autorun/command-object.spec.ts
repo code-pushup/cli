@@ -1,19 +1,13 @@
-import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
-import {
-  PortalUploadArgs,
-  ReportFragment,
-  uploadToPortal,
-} from '@code-pushup/portal-client';
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { middlewares } from '../middlewares';
-import { yargsCli } from '../yargs-cli';
-import { yargsAutorunCommandObject } from './command-object';
-import { UploadOptions } from '@code-pushup/core';
-import { options } from '../options';
+import {objectToCliArgs} from '@code-pushup/utils';
+import {PortalUploadArgs, ReportFragment, uploadToPortal,} from '@code-pushup/portal-client';
+import {dirname, join} from 'path';
+import {fileURLToPath} from 'url';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {middlewares} from '../middlewares';
+import {yargsCli} from '../yargs-cli';
+import {yargsAutorunCommandObject} from './command-object';
+import {UploadOptions} from '@code-pushup/core';
+import {options} from '../options';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -23,7 +17,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+      async () => ({packageName: '@code-pushup/cli'} as ReportFragment),
     ),
   };
 });
@@ -67,13 +61,13 @@ describe('autorun-command-object', () => {
       args,
     ).parseAsync()) as Required<UploadOptions>;
     expect(parsedArgv.upload.organization).toBe('code-pushup');
-    /*   expect(parsedArgv.upload.project).toBe('cli');
-       expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
-       expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
-       expect(parsedArgv.persist.outputDir).toBe('tmp');
-       expect(parsedArgv.persist.format).toEqual(['md']);*/
+    expect(parsedArgv.upload.project).toBe('cli');
+    expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
+    expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
+    expect(parsedArgv.persist.outputDir).toBe('tmp');
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
-  /*
+
   it('should call portal-client function with correct parameters', async () => {
     await cli(baseArgs).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
@@ -91,5 +85,5 @@ describe('autorun-command-object', () => {
         commit: expect.any(String),
       },
     } satisfies PortalUploadArgs);
-  });*/
+  });
 });

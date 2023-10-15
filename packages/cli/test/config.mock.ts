@@ -31,7 +31,7 @@ export default {
                 value: 0,
                 score: 0,
               },
-            ],
+            ]
           )}')`,
         ],
         outputFile: `${outputDir}/out.json`,
