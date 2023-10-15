@@ -16,7 +16,7 @@ const execCli = (argObj: Partial<CliArgsObject>) =>
     command: 'npx',
     args: [
       './dist/packages/cli',
-      'collect',
+      'collect', // @TODO replace with print-config once implemented
       ...objectToCliArgs({
         verbose: true,
         ...argObj,
