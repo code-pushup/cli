@@ -1,11 +1,11 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
-import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 
 const baseArgs = [
   ...objectToCliArgs({

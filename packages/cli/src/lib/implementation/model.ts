@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import {
-  Format,
   GlobalOptions as CoreGlobalOptions,
-  globalOptionsSchema as coreGlobalOptionsSchema,
+  Format,
   PersistConfig,
+  UploadConfig,
+  globalOptionsSchema as coreGlobalOptionsSchema,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-  UploadConfig,
 } from '@code-pushup/models';
 
 export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
