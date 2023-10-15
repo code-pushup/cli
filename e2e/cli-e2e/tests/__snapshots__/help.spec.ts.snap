@@ -9,16 +9,20 @@ Commands:
   code-pushup upload   Upload report results to the portal
 
 Options:
-      --version      Show version number                               [boolean]
-      --interactive  When false disables interactive input prompts for options.
-                                                       [boolean] [default: true]
-      --verbose      When true creates more verbose output. This is helpful when
-                      debugging.                      [boolean] [default: false]
-      --config       Path the the config file, e.g. code-pushup.config.js
-                                     [string] [default: \\"code-pushup.config.js\\"]
-      --format       Format of the report output. e.g. \`md\`, \`json\`, \`stdout\`
-                                                                         [array]
-      --apiKey       apiKey for the portal                              [string]
-  -h, --help         Show help                                         [boolean]
+      --version              Show version number                       [boolean]
+      --interactive          When false disables interactive input prompts for o
+                             ptions.                   [boolean] [default: true]
+      --verbose              When true creates more verbose output. This is help
+                             ful when debugging.      [boolean] [default: false]
+      --config               Path the the config file, e.g. code-pushup.config.j
+                             s       [string] [default: \\"code-pushup.config.js\\"]
+      --persist.outputDir    Directory for the produced reports         [string]
+      --persist.format       Format of the report output. e.g. \`md\`, \`json\`, \`st
+                             dout\`                                       [array]
+      --upload.organization  organization name in your CVS              [string]
+      --upload.project       project name in your CVS                   [string]
+      --upload.server        URL to your portal server                  [string]
+      --upload.apiKey        apiKey for the portal server               [string]
+  -h, --help                 Show help                                 [boolean]
 "
 `;
