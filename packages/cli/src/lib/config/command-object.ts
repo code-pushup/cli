@@ -5,8 +5,7 @@ export function yargsConfigCommandObject() {
     command: 'config',
     describe: 'Print config',
     handler: args => {
-      console.log('Config: ');
-      console.log(args);
+      console.log(JSON.stringify(args, null, 2));
     },
   } satisfies CommandModule;
 }
