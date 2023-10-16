@@ -1,14 +1,16 @@
 import { pluginReportSchema } from '@code-pushup/models';
+import { verboseUtils } from '@code-pushup/utils';
 import { CollectOptions, collect } from './commands/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
 export async function collectAndPersistReports(
-  config: CollectOptions,
+  options: CollectOptions,
 ): Promise<void> {
-  const report = await collect(config);
+  const { exec } = verboseUtils(options.verbose);
+  const report = await collect(options);
 
-  const persistResults = await persistReport(report, config);
-  logPersistedResults(persistResults);
+  const persistResults = await persistReport(report, options);
+  exec(() => logPersistedResults(persistResults));
 
   // validate report and throw if invalid
   report.plugins.forEach(plugin => {

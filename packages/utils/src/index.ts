@@ -1,3 +1,4 @@
+export { verboseUtils } from './lib/verbose-utils';
 export {
   CliArgsObject,
   ProcessConfig,
