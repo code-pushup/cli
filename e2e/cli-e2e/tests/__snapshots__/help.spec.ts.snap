@@ -19,10 +19,10 @@ Options:
       --persist.outputDir    Directory for the produced reports         [string]
       --persist.format       Format of the report output. e.g. \`md\`, \`json\`, \`st
                              dout\`                                       [array]
-      --upload.organization  organization name in your CVS              [string]
-      --upload.project       project name in your CVS                   [string]
+      --upload.organization  Organization slug from portal              [string]
+      --upload.project       Project slug from portal                   [string]
       --upload.server        URL to your portal server                  [string]
-      --upload.apiKey        apiKey for the portal server               [string]
+      --upload.apiKey        API key for the portal server              [string]
   -h, --help                 Show help                                 [boolean]
 "
 `;
