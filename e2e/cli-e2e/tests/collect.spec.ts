@@ -55,7 +55,12 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: ['../../dist/packages/cli', 'collect', '--format=stdout'],
+      args: [
+        '../../dist/packages/cli',
+        'collect',
+        '--verbose',
+        '--format=stdout',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
