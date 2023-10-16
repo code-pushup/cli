@@ -1,4 +1,4 @@
-import {CommandModule} from 'yargs';
+import { CommandModule } from 'yargs';
 
 export function yargsConfigCommandObject() {
   return {
