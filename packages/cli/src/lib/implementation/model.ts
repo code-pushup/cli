@@ -31,4 +31,4 @@ export type CoreConfigCliOptions = {
   'upload.apiKey': string;
   'upload.server': string;
 };
-export type ArgsCliObj = GeneralCliOptions & CoreConfigCliOptions;
+export type ArgsCliObj = Partial<GeneralCliOptions & CoreConfigCliOptions>;
