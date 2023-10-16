@@ -13,13 +13,13 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       describe: 'Format of the report output. e.g. `md`, `json`, `stdout`',
       type: 'array',
     },
-    // update
+    // upload
     'upload.organization': {
-      describe: 'organization name in your CVS',
+      describe: 'Organization slug from portal',
       type: 'string',
     },
     'upload.project': {
-      describe: 'project name in your CVS',
+      describe: 'Project slug from portal',
       type: 'string',
     },
     'upload.server': {
