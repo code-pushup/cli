@@ -1,3 +1,3 @@
-# nx-plugin
+# @code-pushup/nx-plugin
 
 TODO: docs
