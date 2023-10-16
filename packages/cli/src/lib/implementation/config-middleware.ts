@@ -1,16 +1,15 @@
 import { readCodePushupConfig } from '@code-pushup/core';
-import { GlobalOptions, globalOptionsSchema } from '@code-pushup/models';
 import { ArgsCliObj, CommandBase } from './model';
 
 export async function configMiddleware<T extends ArgsCliObj>(processArgs: T) {
   const args = processArgs as T;
-  const { config, ...cliOptions }: GlobalOptions =
-    globalOptionsSchema.parse(args);
-  const importedRc = await readCodePushupConfig(config);
+  const { config, ...cliOptions } = args;
+  const importedRc = await readCodePushupConfig(config as string);
   const cliConfigArgs = readCoreConfigFromCliArgs(processArgs);
   const parsedProcessArgs: CommandBase = {
-    ...cliOptions,
-    ...(importedRc || {}),
+    config,
+    verbose: cliOptions.verbose,
+    interactive: cliOptions.interactive,
     upload: {
       ...importedRc.upload,
       ...cliConfigArgs.upload,

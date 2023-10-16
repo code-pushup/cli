@@ -41,7 +41,7 @@ describe('applyConfigMiddleware', () => {
   it('should provide default config', async () => {
     const defaultConfigPath = 'code-pushup.config.js';
     let error: Error = new Error();
-    await configMiddleware({ config: undefined }).catch(e => (error = e));
+    await configMiddleware({}).catch(e => (error = e));
     expect(error?.message).toContain(defaultConfigPath);
   });
 });

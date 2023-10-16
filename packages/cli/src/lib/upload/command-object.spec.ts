@@ -57,8 +57,8 @@ describe('upload-command-object', () => {
     duration: 1000,
     categories: [],
     plugins: [],
-    packageName: '@code-pushup/cli',
-    version: '0.1.0',
+    packageName: '@code-pushup/core',
+    version: '0.0.1',
   };
 
   beforeEach(async () => {
@@ -91,8 +91,8 @@ describe('upload-command-object', () => {
         commandDuration: 1000,
         categories: [],
         plugins: [],
-        packageName: '@code-pushup/cli',
-        packageVersion: '0.1.0',
+        packageName: dummyReport.packageName,
+        packageVersion: dummyReport.version,
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),

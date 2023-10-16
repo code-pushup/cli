@@ -4,10 +4,10 @@ exports[`CLI help > should print help 1`] = `
 "[1mCode PushUp CLI[22m
 
 Commands:
-  code-pushup          Run Plugins and collect results                 [default]
-  code-pushup collect  Run Plugins and collect results
-  code-pushup upload   Upload report results to the portal
-  code-pushup config   Print config
+  code-pushup               Run Plugins and collect results            [default]
+  code-pushup collect       Run Plugins and collect results
+  code-pushup upload        Upload report results to the portal
+  code-pushup print-config  Print config
 
 Options:
       --version      Show version number                               [boolean]

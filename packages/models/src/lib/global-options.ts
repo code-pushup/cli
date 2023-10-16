@@ -9,9 +9,7 @@ export const globalOptionsSchema = z.object({
     .default(false),
   config: filePathSchema(
     "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
-  )
-    .optional()
-    .default('code-pushup.config.js'),
+  ).default('code-pushup.config.js'),
 });
 
 export type GlobalOptions = z.infer<typeof globalOptionsSchema>;

@@ -27,11 +27,7 @@ export const commandBaseSchema = refineCoreConfig(
   globalOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
-export type ArgsCliObj = Partial<
-  CliOptions &
-    GlobalOptions &
-    UploadConfig &
-    Omit<PersistConfig, 'format'> & {
-      format: Format | Format[];
-    }
->;
+export type ArgsCliObj = Partial<CliOptions> &
+  Partial<GlobalOptions> & {
+    format?: Format | Format[];
+  };
