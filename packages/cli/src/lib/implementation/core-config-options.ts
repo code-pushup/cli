@@ -27,7 +27,7 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       type: 'string',
     },
     'upload.apiKey': {
-      describe: 'apiKey for the portal server',
+      describe: 'API key for the portal server',
       type: 'string',
     } /**/,
   }; //as unknown as Record<keyof ArgsCliObj, Options>;
