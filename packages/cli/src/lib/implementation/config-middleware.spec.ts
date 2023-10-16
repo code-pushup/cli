@@ -32,16 +32,16 @@ describe('applyConfigMiddleware', () => {
   });
 
   it('should throw with invalid config', async () => {
-    const config = 'wrong/path/to/config';
+    const invalidConfig = 'wrong/path/to/config';
     let error: Error = new Error();
-    await configMiddleware({ config }).catch(e => (error = e));
-    expect(error?.message).toContain(config);
+    await configMiddleware({ config: invalidConfig }).catch(e => (error = e));
+    expect(error?.message).toContain(invalidConfig);
   });
 
   it('should provide default config', async () => {
     const defaultConfigPath = 'code-pushup.config.js';
     let error: Error = new Error();
-    await configMiddleware({}).catch(e => (error = e));
+    await configMiddleware({config: defaultConfigPath }).catch(e => (error = e));
     expect(error?.message).toContain(defaultConfigPath);
   });
 });
