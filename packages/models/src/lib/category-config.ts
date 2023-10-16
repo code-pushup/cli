@@ -1,11 +1,15 @@
-import { z } from 'zod';
 import {
   metaSchema,
   scorableSchema,
   slugSchema,
   weightedRefSchema,
 } from './implementation/schemas';
-import { errorItems, hasDuplicateStrings } from './implementation/utils';
+import {
+  CategoryConfigRefType,
+  errorItems,
+  hasDuplicateStrings,
+} from './implementation/utils';
+import { z } from 'zod';
 
 type _RefsList = {
   type?: string;
@@ -20,7 +24,7 @@ export const categoryConfigSchema = scorableSchema(
     'Slug of an audit or group (depending on `type`)',
   ).merge(
     z.object({
-      type: z.enum(['audit', 'group'], {
+      type: z.enum([CategoryConfigRefType.Audit, CategoryConfigRefType.Group], {
         description:
           'Discriminant for reference kind, affects where `slug` is looked up',
       }),

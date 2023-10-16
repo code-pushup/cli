@@ -1,13 +1,14 @@
-import { Report } from '@code-pushup/models';
-import chalk from 'chalk';
-import cliui from 'cliui';
+import { NEW_LINE } from './md';
 import {
   countWeightedRefs,
   reportHeadlineText,
   reportOverviewTableHeaders,
   calculateScore,
+  refToScore,
 } from './utils';
-import { NEW_LINE } from './md';
+import { Report } from '@code-pushup/models';
+import chalk from 'chalk';
+import cliui from 'cliui';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 
@@ -54,10 +55,11 @@ function reportToOverviewSection(report: Report): void {
 
   // table header
   ui.div(...reportOverviewTableHeaders.map(text => ({ text, ...base })));
+  const scoreFn = refToScore(report.plugins, report.categories);
 
   // table content
   report.categories.forEach(({ title, refs }) => {
-    const score = calculateScore(refs).toString();
+    const score = calculateScore(refs, scoreFn).toString();
     const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
 
     ui.div(
@@ -81,11 +83,11 @@ function reportToOverviewSection(report: Report): void {
 
 function reportToDetailSection(report: Report): void {
   const { categories, plugins } = report;
-
+  const scoreFn = refToScore(plugins, categories);
   categories.forEach(category => {
     const { title, refs } = category;
 
-    console.log(chalk.bold(`${title} ${calculateScore(refs)}`));
+    console.log(chalk.bold(`${title} ${calculateScore(refs, scoreFn)}`));
 
     refs.forEach(
       ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {

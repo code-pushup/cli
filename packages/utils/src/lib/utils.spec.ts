@@ -1,14 +1,15 @@
-import { CategoryConfig } from '@code-pushup/models';
-import { describe, expect } from 'vitest';
 import {
   calcDuration,
+  calculateScore,
   countWeightedRefs,
   distinct,
   formatBytes,
+  refToScore,
   slugify,
-  calculateScore,
   toArray,
 } from './utils';
+import { CategoryConfig, CategoryConfigRefType } from '@code-pushup/models';
+import { describe, expect } from 'vitest';
 
 describe('calcDuration', () => {
   it('should calc the duration correctly if start and stop are given', () => {
@@ -30,42 +31,42 @@ describe('countWeightedRefs', () => {
         slug: 'a1',
         weight: 0,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
       {
         slug: 'a2',
         weight: 1,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
     ];
     expect(countWeightedRefs(refs)).toBe(1);
   });
 });
 
-describe('sumRefs', () => {
+describe('calculateScore', () => {
   it('should sum refs correctly', () => {
     const refs: CategoryConfig['refs'] = [
       {
         slug: 'a1',
         weight: 0,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
       {
         slug: 'a2',
         weight: 1,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
       {
         slug: 'a3',
         weight: 10,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
     ];
-    expect(calculateScore(refs)).toBe(11);
+    expect(calculateScore(refs, refToScore([], []))).toBe(11);
   });
 });
 

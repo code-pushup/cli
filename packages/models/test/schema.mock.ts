@@ -12,6 +12,7 @@ import {
   Report,
   UploadConfig,
 } from '../src/';
+import { CategoryConfigRefType } from '@code-pushup/portal-client';
 
 const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
@@ -19,7 +20,6 @@ const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
 const __outputFile__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
-const randDuration = () => Math.floor(Math.random() * 1000);
 
 export function mockPluginConfig(opt?: {
   pluginSlug?: string;
@@ -134,14 +134,14 @@ export function mockCategory(opt?: {
     ? Array.isArray(auditSlug)
       ? auditSlug.map(slug => ({
           slug,
-          type: 'audit' as const,
+          type: CategoryConfigRefType.Audit,
           weight: randWeight(),
           plugin: pluginSlug + '',
         }))
       : [
           {
             slug: auditSlug,
-            type: 'audit' as const,
+            type: CategoryConfigRefType.Audit,
             weight: randWeight(),
             plugin: pluginSlug + '',
           },
@@ -151,14 +151,14 @@ export function mockCategory(opt?: {
     ? Array.isArray(groupSlug)
       ? groupSlug.map(slug => ({
           slug,
-          type: 'group',
+          type: 'Group',
           weight: randWeight(),
           plugin: pluginSlug + '',
         }))
       : [
           {
             slug: groupSlug,
-            type: 'group',
+            type: 'Group',
             weight: randWeight(),
             plugin: pluginSlug + '',
           },

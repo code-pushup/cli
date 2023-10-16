@@ -8,6 +8,7 @@ import {
   PluginReport,
   Report,
 } from '@code-pushup/models';
+import { CategoryConfigRefType } from '@code-pushup/portal-client';
 
 const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
@@ -131,14 +132,14 @@ export function mockCategory(opt?: {
     refs: Array.isArray(auditSlug)
       ? auditSlug.map(slug => ({
           slug,
-          type: 'audit',
+          type: CategoryConfigRefType.Audit,
           weight: randWeight(),
           plugin: pluginSlug + '',
         }))
       : [
           {
             slug: auditSlug,
-            type: 'audit',
+            type: CategoryConfigRefType.Audit,
             weight: randWeight(),
             plugin: pluginSlug + '',
           },

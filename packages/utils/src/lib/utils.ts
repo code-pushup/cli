@@ -1,7 +1,69 @@
-import { CategoryConfig } from '@code-pushup/models';
+import {
+  AuditOutput,
+  CategoryConfig,
+  CategoryConfigRefType,
+  PluginOutput,
+} from '@code-pushup/models';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
+
+/** Weighted reference to audit or group
+ * @TODO reuse model types
+ * */
+export type CategoryConfigRef = {
+  /** Plugin slug */
+  plugin: string;
+  /** Audit or group slug */
+  slug: string;
+  /** Discrimant between audit or group */
+  type: CategoryConfigRefType.Audit | 'Group';
+  /** Multiplier used to calculate category score as weighted average */
+  weight: number;
+};
+
+export class UserInputError extends Error {
+  constructor(message: string) {
+    super('BAD_USER_INPUT ' + message);
+  }
+}
+
+export function refToScore(
+  plugins: PluginOutput[],
+  categoryConfigs: CategoryConfig[],
+) {
+  categoryConfigs;
+  const groups = plugins.map(({ audits }) => audits).flatMap(s => s);
+  const audits = plugins.map(({ audits }) => audits).flatMap(s => s);
+  return (ref: CategoryConfigRef): number => {
+    let scorable: AuditOutput | undefined;
+    switch (ref.type) {
+      case CategoryConfigRefType.Audit:
+        scorable = audits?.find(
+          a => a.slug === ref.slug && a.slug === ref.plugin,
+        );
+        if (!scorable) {
+          throw new UserInputError(
+            `Category has invalid ref - audit with slug ${ref.slug} not found in ${ref.plugin} plugin`,
+          );
+        }
+        return scorable.score;
+
+      case CategoryConfigRefType.Group:
+        scorable = groups.find(
+          g => g.slug === ref.slug && g.slug === ref.plugin,
+        );
+        if (!scorable) {
+          throw new UserInputError(
+            `Category has invalid ref - group with slug ${ref.slug} not found in ${ref.plugin} plugin`,
+          );
+        }
+        return scorable.score;
+      default:
+        throw new Error('should not happen');
+    }
+  };
+}
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

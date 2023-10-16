@@ -1,3 +1,5 @@
+export { CategoryConfigRefType } from './lib/implementation/utils';
+
 export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
 export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {

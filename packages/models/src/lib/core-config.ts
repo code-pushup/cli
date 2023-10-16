@@ -1,13 +1,13 @@
-import { Schema, z } from 'zod';
+import { CategoryConfig, categoryConfigSchema } from './category-config';
 import {
   errorItems,
   hasDuplicateStrings,
   hasMissingStrings,
 } from './implementation/utils';
-import { CategoryConfig, categoryConfigSchema } from './category-config';
-import { pluginConfigSchema } from './plugin-config';
 import { persistConfigSchema } from './persist-config';
+import { pluginConfigSchema } from './plugin-config';
 import { uploadConfigSchema } from './upload-config';
+import { Schema, z } from 'zod';
 
 export const unrefinedCoreConfigSchema = z.object({
   plugins: z.array(pluginConfigSchema, {
@@ -65,7 +65,7 @@ function getMissingRefsForCategories(coreCfg: CoreConfig) {
   const missingRefs: string[] = [];
   const auditRefsFromCategory = coreCfg.categories.flatMap(({ refs }) =>
     refs
-      .filter(({ type }) => type === 'audit')
+      .filter(({ type }) => type === 'Audit')
       .map(({ plugin, slug }) => `${plugin}/${slug}`),
   );
   const auditRefsFromPlugins = coreCfg.plugins.flatMap(
@@ -83,7 +83,7 @@ function getMissingRefsForCategories(coreCfg: CoreConfig) {
   }
   const groupRefsFromCategory = coreCfg.categories.flatMap(({ refs }) =>
     refs
-      .filter(({ type }) => type === 'group')
+      .filter(({ type }) => type === 'Group')
       .map(({ plugin, slug }) => `${plugin}#${slug} (group)`),
   );
   const groupRefsFromPlugins = coreCfg.plugins.flatMap(

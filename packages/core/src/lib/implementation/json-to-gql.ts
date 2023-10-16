@@ -1,10 +1,10 @@
+import { Issue, Report } from '@code-pushup/models';
 import {
   CategoryConfigRefType,
   IssueSeverity,
   IssueSourceType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import { Issue, Report } from '@code-pushup/models';
 
 export function jsonToGql(report: Report) {
   return {
@@ -58,7 +58,7 @@ export function jsonToGql(report: Report) {
       refs: category.refs.map(ref => ({
         plugin: ref.plugin,
         type:
-          ref.type === 'audit'
+          ref.type === 'Audit'
             ? CategoryConfigRefType.Audit
             : CategoryConfigRefType.Group,
         weight: ref.weight,

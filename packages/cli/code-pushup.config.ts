@@ -76,13 +76,13 @@ export default {
       refs: [
         {
           plugin: 'dummy-plugin',
-          type: 'audit',
+          type: 'Group',
           slug: 'dummy-audit-1',
           weight: 1,
         },
         {
           plugin: 'dummy-plugin',
-          type: 'audit',
+          type: CategoryConfigRefType.Audit,
           slug: 'dummy-audit-2',
           weight: 6,
         },
@@ -95,7 +95,7 @@ export default {
       refs: [
         {
           plugin: 'dummy-plugin',
-          type: 'audit',
+          type: CategoryConfigRefType.Audit,
           slug: 'dummy-audit-3',
           weight: 3,
         },

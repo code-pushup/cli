@@ -1,11 +1,12 @@
-import { Report } from '@code-pushup/models';
 import { NEW_LINE, headline, style, li, table, details, link } from './md/';
 import {
   countWeightedRefs,
   calculateScore,
   reportHeadlineText,
   reportOverviewTableHeaders,
+  refToScore,
 } from './utils';
+import { Report } from '@code-pushup/models';
 
 export function reportToMd(report: Report): string {
   // header section
@@ -57,12 +58,13 @@ function reportToMetaSection(report: Report): string {
 }
 
 function reportToOverviewSection(report: Report): string {
-  const { categories } = report;
+  const { categories, plugins } = report;
+  const scoreFn = refToScore(plugins, categories);
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs }) => [
       title,
-      calculateScore(refs).toString(),
+      calculateScore(refs, scoreFn).toString(),
       refs.length.toString() + '/' + countWeightedRefs(refs),
     ]),
   ];
@@ -75,8 +77,8 @@ function reportToDetailSection(report: Report): string {
 
   categories.forEach(category => {
     const { title, refs } = category;
-
-    md += style(`${title} ${calculateScore(refs)}`) + NEW_LINE;
+    const scoreFn = refToScore(plugins, categories);
+    md += style(`${title} ${calculateScore(refs, scoreFn)}`) + NEW_LINE;
 
     md +=
       refs

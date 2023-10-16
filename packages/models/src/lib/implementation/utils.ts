@@ -50,3 +50,10 @@ export function errorItems(
 export function exists<T>(value: T): value is NonNullable<T> {
   return value != null;
 }
+
+export const enum CategoryConfigRefType {
+  /** Reference to audit (via slug) */
+  Audit = 'Audit',
+  /** Reference to group of audits (via slug) */
+  Group = 'Group',
+}
