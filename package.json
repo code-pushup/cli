@@ -25,6 +25,7 @@
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^17.6.4",
     "@commitlint/cz-commitlint": "^17.7.1",
+    "@jscutlery/semver": "^3.4.1",
     "@nx/devkit": "^16.8.1",
     "@nx/esbuild": "16.7.4",
     "@nx/eslint-plugin": "16.7.4",
