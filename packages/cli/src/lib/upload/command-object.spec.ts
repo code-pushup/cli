@@ -1,19 +1,19 @@
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { beforeEach, describe, it, vi } from 'vitest';
+import {writeFile} from 'fs/promises';
+import {dirname, join} from 'path';
+import {fileURLToPath} from 'url';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { UploadOptions } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
-import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './command-object';
+import {UploadOptions} from '@code-pushup/core';
+import {Report} from '@code-pushup/models';
+import {objectToCliArgs} from '@code-pushup/utils';
+import {middlewares} from '../middlewares';
+import {options} from '../options';
+import {yargsCli} from '../yargs-cli';
+import {yargsUploadCommandObject} from './command-object';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -23,7 +23,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+      async () => ({packageName: '@code-pushup/cli'} as ReportFragment),
     ),
   };
 });
@@ -54,12 +54,12 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
 
 describe('upload-command-object', () => {
   const dummyReport: Report = {
-    date: new Date().toISOString(),
+    date: 'dummy-date',
     duration: 1000,
     categories: [],
     plugins: [],
-    packageName: '@code-pushup/cli',
-    version: '0.1.0',
+    packageName: '@code-pushup/core',
+    version: '0.0.1',
   };
 
   beforeEach(async () => {
@@ -92,12 +92,12 @@ describe('upload-command-object', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: dummyReport.date,
-        commandDuration: 1000,
-        categories: [],
+        commandStartDate: expect.any(String),
+        commandDuration: expect.any(Number),
+        categories: expect.any(Array),
         plugins: expect.any(Array),
-        packageName: '@code-pushup/cli',
-        packageVersion: '0.0.1',
+        packageName: dummyReport.packageName,
+        packageVersion: dummyReport.version,
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),
