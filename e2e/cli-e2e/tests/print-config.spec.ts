@@ -74,11 +74,11 @@ describe('print-config', () => {
   it('should parse persist.format from arguments', async () => {
     const { code, stderr, stdout } = await execCli({
       config: configFile('ts'),
-      'persist.format': 'md json stdout',
+      'persist.format': ['md', 'json', 'stdout'],
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
-    expect(args.persist.format).toEqual(['md']);
+    expect(args.persist.format).toEqual(['md', 'json', 'stdout']);
   });
 });
