@@ -8,6 +8,7 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 - **cli:** initial collect command ([#45](https://github.com/flowup/quality-metrics-cli/issues/45)) ([ba048be](https://github.com/flowup/quality-metrics-cli/commit/ba048be5f3e9b4291ae6311051cda89403186795))
 - **cli:** persist login and formatting options ([#47](https://github.com/flowup/quality-metrics-cli/issues/47)) ([6241fd7](https://github.com/flowup/quality-metrics-cli/commit/6241fd7412f33a8d40183b40f8ed7e39e85278dd))
+
 ## 0.1.0 (2023-10-17)
 
 ### Features
