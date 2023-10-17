@@ -1,17 +1,17 @@
-import {dirname, join} from 'path';
-import {fileURLToPath} from 'url';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import {UploadOptions} from '@code-pushup/core';
-import {objectToCliArgs} from '@code-pushup/utils';
-import {middlewares} from '../middlewares';
-import {options} from '../options';
-import {yargsCli} from '../yargs-cli';
-import {yargsAutorunCommandObject} from './command-object';
+import { UploadOptions } from '@code-pushup/core';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { middlewares } from '../middlewares';
+import { options } from '../options';
+import { yargsCli } from '../yargs-cli';
+import { yargsAutorunCommandObject } from './command-object';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -21,7 +21,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () => ({packageName: '@code-pushup/cli'} as ReportFragment),
+      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
     ),
   };
 });
