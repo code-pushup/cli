@@ -4,16 +4,15 @@ exports[`CLI help > should print help 1`] = `
 "[1mCode PushUp CLI[22m
 
 Commands:
-  code-pushup               Run Plugins and collect results            [default]
+  code-pushup               Shortcut for running collect followed by upload
+                                                                       [default]
+  code-pushup autorun       Shortcut for running collect followed by upload
   code-pushup collect       Run Plugins and collect results
   code-pushup upload        Upload report results to the portal
   code-pushup print-config  Print config
-  code-pushup          Shortcut for running collect followed by upload [default]
 
 Options:
       --version              Show version number                       [boolean]
-      --interactive          When false disables interactive input prompts for o
-                             ptions.                   [boolean] [default: true]
       --verbose              When true creates more verbose output. This is help
                              ful when debugging.      [boolean] [default: false]
       --config               Path the the config file, e.g. code-pushup.config.j

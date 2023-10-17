@@ -33,7 +33,6 @@ describe('print-config', () => {
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
-      interactive: true,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.${ext}`),
       upload: {
@@ -56,7 +55,6 @@ describe('print-config', () => {
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
-      interactive: true,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.ts`),
       upload: {
