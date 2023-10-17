@@ -222,7 +222,7 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
   return {
-    ...mockAuditOutput({ auditSlug }),
+    ...(mockAuditOutput({ auditSlug }) as Required<AuditOutput>),
   };
 }
 
@@ -276,6 +276,9 @@ export function mockAuditOutput(opt?: { auditSlug: string }): AuditOutput {
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return {
     slug: auditSlug,
+    title: 'Title of ' + auditSlug,
+    description: 'Description of ' + auditSlug,
+    docsUrl: 'https://audit.dev?' + auditSlug,
     details: {
       issues: [mockIssueOutput()],
     },
