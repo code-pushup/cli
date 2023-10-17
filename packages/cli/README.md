@@ -43,6 +43,10 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 3. Add plugins as per your project needs (e.g. [@code-pushup/eslint-plugin](../plugin-eslint/README.md)).
 
+   ```sh
+   npm install --save-dev @code-pushup/eslint-plugin
+   ```
+
    ```js
    import eslintPlugin from '@code-pushup/eslint-plugin';
 
@@ -81,7 +85,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 5. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
 
-6. View report file(s) in output directory.
+6. View report file(s) in output directory (specified by `persist.outputDir` configuration).
 
 ## Portal integration
 
