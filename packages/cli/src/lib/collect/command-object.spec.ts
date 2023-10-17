@@ -1,5 +1,6 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
@@ -31,11 +32,13 @@ describe('collect-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        format: 'md',
+        'persist.format': 'md',
       }),
     ];
-    const parsedArgv = await cli(args).parseAsync();
+    const parsedArgv = (await cli(
+      args,
+    ).parseAsync()) as CollectAndPersistReportsOptions;
     expect(parsedArgv.persist.outputDir).toBe('tmp');
-    expect(parsedArgv.persist?.format).toEqual(['md']);
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
 });

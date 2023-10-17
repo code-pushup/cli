@@ -1,3 +1,105 @@
 # @code-pushup/eslint-plugin
 
-TODO: docs
+**CodePushUp plugin for detecting problems in source code using ESLint.**
+
+The plugin parses your ESLint configuration and lints targetted files using [ESLint's Node.js API](https://eslint.org/docs/latest/integrate/nodejs-api).
+
+Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calculated from the lint results in the following way:
+
+- the score is a binary "pass" or "fail" - 1 if no errors or warnings are found, otherwise 0
+- the value equals the sum of all errors and warnings
+- individual errors and warnings are mapped to issues in the audit details
+
+## Getting started
+
+1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
+
+2. Install as a dev dependency with your package manager:
+
+   ```sh
+   npm install --save-dev @code-pushup/eslint-plugin
+   ```
+
+   ```sh
+   yarn add --dev @code-pushup/eslint-plugin
+   ```
+
+   ```sh
+   pnpm add --save-dev @code-pushup/eslint-plugin
+   ```
+
+3. Prepare an [ESLint configuration file](https://eslint.org/docs/latest/use/configure/configuration-files) with rules you're interested in measuring.
+
+   Remember that Code PushUp only collects and uploads the results, it doesn't fail if errors are found.
+   So you can be more strict than in most linter setups, the idea is to set aspirational goals and track your progress.
+
+4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
+
+   Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
+
+   ```js
+   import eslintPlugin from '@code-pushup/eslint-plugin';
+
+   export default {
+     // ...
+     plugins: [
+       // ...
+       await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
+     ],
+   };
+   ```
+
+5. (Optional) Reference audits which you wish to include in custom categories (use `npx code-pushup print-config` to list audits).
+
+   Assign weights based on what influence each ESLint rule should have on the overall category score (assign weight 0 to only include as extra info).
+   Note that categories can combine multiple plugins.
+
+   ```js
+   export default {
+     // ...
+     categories: [
+       {
+         slug: 'code-style',
+         title: 'Code style',
+         refs: [
+           {
+             type: 'audit',
+             plugin: 'eslint',
+             slug: 'no-var',
+             weight: 1,
+           },
+           {
+             type: 'audit',
+             plugin: 'eslint',
+             slug: 'prefer-const',
+             weight: 1,
+           },
+           {
+             type: 'audit',
+             plugin: 'eslint',
+             slug: 'react-hooks-rules-of-hooks',
+             weight: 2,
+           },
+           // ...
+         ],
+       },
+       {
+         slug: 'performance',
+         title: 'Performance',
+         refs: [
+           // ... weighted performance audits (e.g. from Lighthouse) ...
+           {
+             type: 'audit',
+             plugin: 'eslint',
+             slug: 'react-jsx-key',
+             weight: 0,
+           },
+           // ...
+         ],
+       },
+       // ...
+     ],
+   };
+   ```
+
+6. Run the CLI with `npx code-pushup` and view or upload report (refer to [CLI docs](../cli/README.md)).

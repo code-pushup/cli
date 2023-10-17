@@ -1,16 +1,11 @@
 import { Options } from 'yargs';
-import { GlobalOptions } from '../model';
+import { GeneralCliOptions } from './model';
 
 export function yargsGlobalOptionsDefinition(): Record<
-  keyof GlobalOptions,
+  keyof GeneralCliOptions,
   Options
 > {
   return {
-    interactive: {
-      describe: 'When false disables interactive input prompts for options.',
-      type: 'boolean',
-      default: true,
-    },
     verbose: {
       describe:
         'When true creates more verbose output. This is helpful when debugging.',
