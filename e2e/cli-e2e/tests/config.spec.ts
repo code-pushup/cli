@@ -14,11 +14,14 @@ const configFile = (ext: Extension) =>
 const execCli = (argObj: Partial<CliArgsObject>) =>
   executeProcess({
     command: 'npx',
-    args: objectToCliArgs({
-      _: './dist/packages/cli',
-      verbose: true,
-      ...argObj,
-    }),
+    args: [
+      './dist/packages/cli',
+      'collect', // @TODO replace with print-config once implemented
+      ...objectToCliArgs({
+        verbose: true,
+        ...argObj,
+      }),
+    ],
   });
 
 // TODO: use print-config command once implemented and check stdout

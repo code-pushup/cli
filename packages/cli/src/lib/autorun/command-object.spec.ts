@@ -1,4 +1,3 @@
-import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,12 +7,11 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './command-object';
+import { yargsAutorunCommandObject } from './command-object';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -29,7 +27,7 @@ vi.mock('@code-pushup/portal-client', async () => {
 });
 
 const baseArgs = [
-  'upload',
+  'autorun',
   ...objectToCliArgs({
     verbose: true,
     config: join(
@@ -46,33 +44,19 @@ const cli = (args: string[]) =>
   yargsCli(args, {
     options,
     middlewares,
-    commands: [yargsUploadCommandObject()],
+    commands: [yargsAutorunCommandObject()],
   });
 
-const reportPath = (format: 'json' | 'md' = 'json') =>
-  join('tmp', 'report.' + format);
-
-describe('upload-command-object', () => {
-  const dummyReport: Report = {
-    date: 'dummy-date',
-    duration: 1000,
-    categories: [],
-    plugins: [],
-    packageName: '@code-pushup/core',
-    version: '0.0.1',
-  };
-
+describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    await writeFile(reportPath(), JSON.stringify(dummyReport));
   });
 
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        //   'upload.organization': 'some-other-organization',
-        //   'upload.project': 'some-other-project',
+        'persist.format': 'md',
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
@@ -84,6 +68,8 @@ describe('upload-command-object', () => {
     expect(parsedArgv.upload.project).toBe('cli');
     expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
     expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
+    expect(parsedArgv.persist.outputDir).toBe('tmp');
+    expect(parsedArgv.persist.format).toEqual(['md']);
   });
 
   it('should call portal-client function with correct parameters', async () => {
@@ -94,12 +80,12 @@ describe('upload-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: expect.any(Array),
+        categories: [],
         plugins: expect.any(Array),
-        packageName: dummyReport.packageName,
-        packageVersion: dummyReport.version,
-        organization: 'code-pushup',
+        packageName: '@code-pushup/core',
+        packageVersion: '0.0.1',
         project: 'cli',
+        organization: 'code-pushup',
         commit: expect.any(String),
       },
     } satisfies PortalUploadArgs);
