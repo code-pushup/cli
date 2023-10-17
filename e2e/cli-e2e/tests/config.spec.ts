@@ -26,7 +26,6 @@ const execCli = (argObj: Partial<CliArgsObject>) =>
     ],
   });
 
-// TODO: use print-config command once implemented and check stdout
 describe('print-config', () => {
   it.each(extensions)('should load .%s config file', async ext => {
     const { code, stderr, stdout } = await execCli({ config: configFile(ext) });

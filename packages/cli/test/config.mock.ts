@@ -1,3 +1,5 @@
+import { CoreConfig } from '@code-pushup/models';
+
 const outputDir = 'tmp';
 export default {
   upload: {
@@ -14,7 +16,6 @@ export default {
           slug: 'command-object-audit-slug',
           title: 'audit title',
           description: 'audit description',
-          label: 'mock audit label',
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
@@ -42,4 +43,4 @@ export default {
     },
   ],
   categories: [],
-};
+} satisfies CoreConfig;

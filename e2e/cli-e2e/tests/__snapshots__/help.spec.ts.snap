@@ -8,6 +8,7 @@ Commands:
   code-pushup collect       Run Plugins and collect results
   code-pushup upload        Upload report results to the portal
   code-pushup print-config  Print config
+  code-pushup          Shortcut for running collect followed by upload [default]
 
 Options:
       --version              Show version number                       [boolean]

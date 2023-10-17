@@ -1,10 +1,20 @@
-import { pluginReportSchema } from '@code-pushup/models';
+import {
+  CoreConfig,
+  GlobalOptions,
+  pluginReportSchema,
+} from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
-import { CollectOptions, collect } from './commands/collect';
+import { collect } from './commands/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
+export type CollectAndPersistReportsOptions = Pick<
+  CoreConfig,
+  'persist' | 'plugins' | 'categories'
+> &
+  GlobalOptions;
+
 export async function collectAndPersistReports(
-  options: CollectOptions,
+  options: CollectAndPersistReportsOptions,
 ): Promise<void> {
   const { exec } = verboseUtils(options.verbose);
   const report = await collect(options);
