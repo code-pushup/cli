@@ -222,7 +222,7 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
   return {
-    ...(mockAuditOutput({ auditSlug })),
+    ...mockAuditOutput({ auditSlug }),
   };
 }
 

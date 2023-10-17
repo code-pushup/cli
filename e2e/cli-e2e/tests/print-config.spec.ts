@@ -1,6 +1,10 @@
-import {join} from 'path';
-import {expect} from 'vitest';
-import {CliArgsObject, executeProcess, objectToCliArgs,} from '@code-pushup/utils';
+import { join } from 'path';
+import { expect } from 'vitest';
+import {
+  CliArgsObject,
+  executeProcess,
+  objectToCliArgs,
+} from '@code-pushup/utils';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 type Extension = (typeof extensions)[number];
@@ -64,5 +68,17 @@ describe('print-config', () => {
       plugins: expect.any(Array),
       categories: [],
     });
+    expect(args.persist.format).toEqual(undefined);
+  });
+
+  it('should parse persist.format from arguments', async () => {
+    const { code, stderr, stdout } = await execCli({
+      config: configFile('ts'),
+      'persist.format': 'md json stdout',
+    });
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+    const args = JSON.parse(stdout);
+    expect(args.persist.format).toEqual(['md']);
   });
 });

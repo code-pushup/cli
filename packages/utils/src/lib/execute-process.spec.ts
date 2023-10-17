@@ -1,10 +1,7 @@
 import { join } from 'path';
 import { describe, expect, it, vi } from 'vitest';
+import { getAsyncProcessRunnerConfig, mockProcessConfig } from '../../test';
 import { executeProcess, objectToCliArgs } from './execute-process';
-import {
-  getAsyncProcessRunnerConfig,
-  mockProcessConfig,
-} from '../../test';
 
 const outFolder = '';
 const outName = 'tmp/out-async-runner.json';
