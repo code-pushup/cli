@@ -31,7 +31,7 @@ describe('collect-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        format: 'md',
+        'persist.format': 'md',
       }),
     ];
     const parsedArgv = await cli(args).parseAsync();

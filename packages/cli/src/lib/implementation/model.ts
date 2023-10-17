@@ -5,9 +5,8 @@ import {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from '@code-pushup/models';
-import { GlobalOptions as CliOptions } from '../model';
 
-export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
+export const generalCliOptionsSchema = coreGlobalOptionsSchema.merge(
   z.object({
     interactive: z
       .boolean({
@@ -17,15 +16,13 @@ export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
       .default(true),
   }),
 );
-
-export type GlobalOptions = z.infer<typeof globalOptionsSchema>;
+export type GeneralCliOptions = z.infer<typeof generalCliOptionsSchema>;
 
 // @TODO this has any type
 export const commandBaseSchema = refineCoreConfig(
-  globalOptionsSchema.merge(unrefinedCoreConfigSchema),
+  generalCliOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
-export type ArgsCliObj = Partial<CliOptions> &
-  Partial<GlobalOptions> & {
-    format?: Format | Format[];
-  };
+export type ArgsCliObj = Partial<GeneralCliOptions> & {
+  format?: Format | Format[];
+};
