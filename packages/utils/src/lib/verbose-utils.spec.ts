@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mockConsole, unmockConsole } from './mock/helper.mock';
+import { mockConsole, unmockConsole } from '../../test';
 import { verboseUtils } from './verbose-utils';
 
 const verboseHelper = verboseUtils(true);

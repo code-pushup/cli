@@ -4,7 +4,7 @@ import {
   lighthouseReport,
   nxValidatorsOnlyReport,
 } from '@code-pushup/models/testing';
-import { mockConsole, unmockConsole } from './mock/helper.mock';
+import { mockConsole, unmockConsole } from '../../test';
 import { reportToStdout } from './report-to-stdout';
 
 let logs: string[] = [];

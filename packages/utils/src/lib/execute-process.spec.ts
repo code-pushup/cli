@@ -4,7 +4,7 @@ import { executeProcess, objectToCliArgs } from './execute-process';
 import {
   getAsyncProcessRunnerConfig,
   mockProcessConfig,
-} from './mock/process-helper.mock';
+} from '../../test';
 
 const outFolder = '';
 const outName = 'tmp/out-async-runner.json';

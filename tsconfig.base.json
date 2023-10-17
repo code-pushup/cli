@@ -29,7 +29,8 @@
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/models/testing": ["packages/models/test/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
-      "@code-pushup/utils": ["packages/utils/src/index.ts"]
+      "@code-pushup/utils": ["packages/utils/src/index.ts"],
+      "@code-pushup/utils/testing": ["packages/utils/test/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
