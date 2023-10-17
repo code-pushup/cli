@@ -10,6 +10,7 @@ import {
 import { Report } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
+import { ArgsCliObj } from '../implementation/model';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
@@ -29,8 +30,8 @@ vi.mock('@code-pushup/portal-client', async () => {
 
 const baseArgs = [
   'upload',
-  '--verbose',
   ...objectToCliArgs({
+    verbose: true,
     config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
@@ -69,9 +70,11 @@ describe('upload-command-object', () => {
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,
-      ...objectToCliArgs({
-        apiKey: 'some-other-api-key',
-        server: 'https://other-example.com/api',
+      ...objectToCliArgs<ArgsCliObj>({
+        //   'upload.organization': 'some-other-organization',
+        //   'upload.project': 'some-other-project',
+        'upload.apiKey': 'some-other-api-key',
+        'upload.server': 'https://other-example.com/api',
       }),
     ];
     const parsedArgv = await cli(args).parseAsync();

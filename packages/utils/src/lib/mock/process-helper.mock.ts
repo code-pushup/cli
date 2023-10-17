@@ -5,7 +5,7 @@ import { ProcessConfig } from '../execute-process';
 const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
 
 /**
- * Helps to get a async process runner config for testing.
+ * Helps to get an async process runner config for testing.
  *
  * @param cfg
  */
@@ -26,31 +26,6 @@ export function getAsyncProcessRunnerConfig(
     outputFile,
   ];
   return { command: 'node', args, outputFile };
-}
-
-/**
- * Helps to get a sync process runner config for testing.
- *
- * @param cfg
- */
-export function getSyncProcessRunnerConfig(
-  cfg: Partial<ProcessConfig> & {
-    throwError?: boolean;
-    outputFile?: string;
-  } = { throwError: false },
-) {
-  return {
-    command: 'node',
-    args: [
-      '-e',
-      `require('fs').writeFileSync('${cfg.outputFile}', '${JSON.stringify({
-        audits: cfg.throwError
-          ? ({ throwError: cfg.throwError } as unknown)
-          : [],
-      })}')`,
-    ],
-    outputFile: cfg.outputFile,
-  };
 }
 
 export function mockProcessConfig(

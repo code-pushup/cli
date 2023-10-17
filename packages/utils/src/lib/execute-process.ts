@@ -168,9 +168,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   });
 }
 
-export type CliArgsObject =
-  | Record<string, number | string | boolean | string[] | undefined | null>
-  | { _: string };
+type ArgumentValue = number | string | boolean | string[];
+export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
+  T extends never
+    ? Record<string, ArgumentValue | undefined> | { _: string }
+    : T;
 
 /**
  * Converts an object with different types of values into an array of command-line arguments.
@@ -184,7 +186,12 @@ export type CliArgsObject =
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-export function objectToCliArgs(params: CliArgsObject): string[] {
+export function objectToCliArgs<
+  T extends object = Record<string, ArgumentValue>,
+>(params?: CliArgsObject<T>): string[] {
+  if (!params) {
+    return [];
+  }
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
@@ -216,3 +223,5 @@ export function objectToCliArgs(params: CliArgsObject): string[] {
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
 }
+
+objectToCliArgs<{ z: number }>({ z: 5 });
