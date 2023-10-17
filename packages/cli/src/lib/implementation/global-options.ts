@@ -6,11 +6,6 @@ export function yargsGlobalOptionsDefinition(): Record<
   Options
 > {
   return {
-    interactive: {
-      describe: 'When false disables interactive input prompts for options.',
-      type: 'boolean',
-      default: true,
-    },
     verbose: {
       describe:
         'When true creates more verbose output. This is helpful when debugging.',

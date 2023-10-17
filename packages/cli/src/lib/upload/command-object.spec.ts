@@ -9,7 +9,7 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -54,7 +54,7 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
 
 describe('upload-command-object', () => {
   const dummyReport: Report = {
-    date: 'dummy-date',
+    date: new Date().toISOString(),
     duration: 1000,
     categories: [],
     plugins: [],
@@ -70,7 +70,7 @@ describe('upload-command-object', () => {
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,
-      ...objectToCliArgs({
+      ...objectToCliArgs<CliArgsObject>({
         //   'upload.organization': 'some-other-organization',
         //   'upload.project': 'some-other-project',
         'upload.apiKey': 'some-other-api-key',
@@ -94,7 +94,7 @@ describe('upload-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: expect.any(Array),
+        categories: [],
         plugins: expect.any(Array),
         packageName: dummyReport.packageName,
         packageVersion: dummyReport.version,
