@@ -23,6 +23,14 @@ export const commandBaseSchema = refineCoreConfig(
   generalCliOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
+export type CoreConfigCliOptions = {
+  'persist.outputDir': string;
+  'persist.format': Format | string;
+  'upload.organization': string;
+  'upload.project': string;
+  'upload.apiKey': string;
+  'upload.server': string;
+};
 export type ArgsCliObj = Partial<GeneralCliOptions> & {
   format?: Format | Format[];
 };

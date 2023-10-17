@@ -8,9 +8,8 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
-import { ArgsCliObj } from '../implementation/model';
 import { middlewares } from '../middlewares';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
@@ -70,7 +69,7 @@ describe('upload-command-object', () => {
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,
-      ...objectToCliArgs<ArgsCliObj>({
+      ...objectToCliArgs<CliArgsObject>({
         //   'upload.organization': 'some-other-organization',
         //   'upload.project': 'some-other-project',
         'upload.apiKey': 'some-other-api-key',
