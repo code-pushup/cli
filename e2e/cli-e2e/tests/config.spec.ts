@@ -49,7 +49,7 @@ describe('print-config', () => {
     });
   });
 
-  it('should load .%s config file and merge cli arguments', async () => {
+  it('should load .ts config file and merge cli arguments', async () => {
     const { code, stderr, stdout } = await execCli({
       config: configFile('ts'),
     });
