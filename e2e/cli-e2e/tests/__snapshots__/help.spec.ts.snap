@@ -4,10 +4,8 @@ exports[`CLI help > should print help 1`] = `
 "[1mCode PushUp CLI[22m
 
 Commands:
-  code-pushup          Autorun executes the collect and upload command after ano
-                       ther                                            [default]
-  code-pushup autorun  Autorun executes the collect and upload command after ano
-                       ther
+  code-pushup          Shortcut for running collect followed by upload [default]
+  code-pushup autorun  Shortcut for running collect followed by upload
   code-pushup collect  Run Plugins and collect results
   code-pushup upload   Upload report results to the portal
 

@@ -6,7 +6,7 @@ import { CommandBase } from '../implementation/model';
 export function yargsAutorunCommandObject() {
   return {
     command: 'autorun',
-    describe: 'Autorun executes the collect and upload command after another',
+    describe: 'Shortcut for running collect followed by upload',
     handler: async <T>(args: ArgumentsCamelCase<T> & CommandBase) => {
       const options = {
         ...args,
