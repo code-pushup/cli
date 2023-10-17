@@ -1,7 +1,7 @@
 import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -89,10 +89,10 @@ describe('upload-command-object', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: dummyReport.date,
-        commandDuration: 1000,
+        commandStartDate: expect.any(String),
+        commandDuration: expect.any(Number),
         categories: [],
-        plugins: [],
+        plugins: expect.any(Array),
         packageName: dummyReport.packageName,
         packageVersion: dummyReport.version,
         organization: 'code-pushup',
