@@ -1,8 +1,8 @@
 import { Options } from 'yargs';
-import { GlobalOptions } from './model';
+import { GeneralCliOptions } from './model';
 
 export function yargsGlobalOptionsDefinition(): Record<
-  keyof GlobalOptions,
+  keyof GeneralCliOptions,
   Options
 > {
   return {

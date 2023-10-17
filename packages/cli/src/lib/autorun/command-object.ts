@@ -1,6 +1,6 @@
-import {ArgumentsCamelCase, CommandModule} from 'yargs';
-import {collectAndPersistReports, upload} from '@code-pushup/core';
-import {CommandBase} from '../implementation/model';
+import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { collectAndPersistReports, upload } from '@code-pushup/core';
+import { CommandBase } from '../implementation/model';
 
 export function yargsAutorunCommandObject() {
   return {

@@ -54,12 +54,12 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
 
 describe('upload-command-object', () => {
   const dummyReport: Report = {
-    date: 'dummy-date',
+    date: new Date().toISOString(),
     duration: 1000,
     categories: [],
     plugins: [],
     packageName: '@code-pushup/cli',
-    version: '0.0.1',
+    version: '0.1.0',
   };
 
   beforeEach(async () => {
@@ -71,8 +71,10 @@ describe('upload-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        apiKey: 'some-other-api-key',
-        server: 'https://other-example.com/api',
+        //   'upload.organization': 'some-other-organization',
+        //   'upload.project': 'some-other-project',
+        'upload.apiKey': 'some-other-api-key',
+        'upload.server': 'https://other-example.com/api',
       }),
     ];
     const parsedArgv = (await cli(

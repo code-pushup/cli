@@ -7,7 +7,7 @@ import yargs, {
   ParserConfigurationOptions,
 } from 'yargs';
 import { CoreConfig } from '@code-pushup/models';
-import { GlobalOptions } from './implementation/model';
+import { GeneralCliOptions } from './implementation/model';
 import { logErrorBeforeThrow } from './implementation/utils';
 
 /**
@@ -31,7 +31,7 @@ export function yargsCli(
       applyBeforeValidation?: boolean;
     }[];
   },
-): Argv<CoreConfig & GlobalOptions> {
+): Argv<CoreConfig & GeneralCliOptions> {
   const { usageMessage, scriptName } = cfg;
   let { commands, options, middlewares /*demandCommand*/ } = cfg;
   // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!']; @TODO implement when commands are present
@@ -82,5 +82,5 @@ export function yargsCli(
   });
 
   // return CLI object
-  return cli as unknown as Argv<CoreConfig & GlobalOptions>;
+  return cli as unknown as Argv<CoreConfig & GeneralCliOptions>;
 }
