@@ -26,6 +26,11 @@
     "e2e": {
       "dependsOn": ["^build"],
       "inputs": ["default", "^production"]
+    },
+    "version": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "executor": "@jscutlery/semver:version"
     }
   },
   "namedInputs": {

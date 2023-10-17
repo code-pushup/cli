@@ -16,6 +16,7 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "version": {},
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
       "dependsOn": ["build"]

@@ -23,9 +23,7 @@
       "command": "npx dist/packages/cli --config=./packages/cli/code-pushup.config.ts",
       "dependsOn": ["build"]
     },
-    "version": {
-      "executor": "@jscutlery/semver:version"
-    },
+    "version": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

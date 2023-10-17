@@ -19,7 +19,6 @@ const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
 const __outputFile__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
-const randDuration = () => Math.floor(Math.random() * 1000);
 
 export function mockPluginConfig(opt?: {
   pluginSlug?: string;
