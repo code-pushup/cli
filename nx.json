@@ -4,14 +4,24 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e", "version"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ]
       }
     }
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "lint": {
       "inputs": [
@@ -21,20 +31,52 @@
       ]
     },
     "test": {
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ]
     },
     "e2e": {
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ]
     },
     "version": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "executor": "@jscutlery/semver:version"
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ],
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "preset": {
+          "name": "conventionalcommits",
+          "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
+          "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
+          "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}",
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "docs", "section": "Documentation" },
+            { "type": "refactor", "section": "Code Refactoring" },
+            { "type": "perf", "section": "Performance Improvements" }
+          ]
+        }
+
+      }
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
