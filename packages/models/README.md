@@ -60,8 +60,7 @@ If you need runtime validation, use the underlying Zod schemas:
 
 ```ts
 import { coreConfigSchema } from '@code-pushup/models';
-import { readJsonFile } from '@code-pushup/utils';
 
-const json = await readJsonFile('code-pushup.config.json');
+const json = JSON.parse(readFileSync('code-pushup.config.json'));
 const config = coreConfigSchema.parse(json); // throws ZodError if invalid
 ```
