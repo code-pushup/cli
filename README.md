@@ -1,6 +1,6 @@
 # Code PushUp CLI
 
-**Quality metrics for web projects, highly configurable.**
+**Quality metrics for your software project. Configure what you want to track using your favourite tools, integrate it in your CI and visualize reports in a beautiful dashboard.**
 
 This monorepo contains code for open-source Code PushUp NPM packages:
 
