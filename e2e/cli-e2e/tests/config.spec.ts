@@ -1,11 +1,6 @@
-import { join } from 'path';
-import { expect } from 'vitest';
-import { PersistConfig, UploadConfig } from '@code-pushup/models';
-import {
-  CliArgsObject,
-  executeProcess,
-  objectToCliArgs,
-} from '@code-pushup/utils';
+import {join} from 'path';
+import {expect} from 'vitest';
+import {CliArgsObject, executeProcess, objectToCliArgs,} from '@code-pushup/utils';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 type Extension = (typeof extensions)[number];

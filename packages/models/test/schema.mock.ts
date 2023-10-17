@@ -19,7 +19,6 @@ const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
 const __outputFile__ = 'out-execute-plugin.json';
 const randWeight = () => Math.floor(Math.random() * 10);
-const randDuration = () => Math.floor(Math.random() * 1000);
 
 export function mockPluginConfig(opt?: {
   pluginSlug?: string;
@@ -223,8 +222,8 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
   let { auditSlug } = opt || {};
   auditSlug = auditSlug || __auditSlug__;
   return {
-    ...(mockAuditOutput({ auditSlug }) as Required<AuditOutput>),
-  } satisfies Required<AuditReport>;
+    ...(mockAuditOutput({ auditSlug })),
+  };
 }
 
 export function mockCoreConfig(opt?: {
@@ -277,9 +276,6 @@ export function mockAuditOutput(opt?: { auditSlug: string }): AuditOutput {
   auditSlug = auditSlug || 'mock-audit-output-slug';
   return {
     slug: auditSlug,
-    title: 'Title of ' + auditSlug,
-    description: 'Description of ' + auditSlug,
-    docsUrl: 'https://audit.dev?' + auditSlug,
     details: {
       issues: [mockIssueOutput()],
     },
