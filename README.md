@@ -61,3 +61,20 @@ Therefore, PRs are merged via one of two strategies:
 
 - rebase - branch cannot contain merge commits ([rebase instead of merge](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)),
 - squash - single commit whose message is the PR title (should be in conventional commit format).
+
+### Project tags
+
+[Nx tags](https://nx.dev/core-features/enforce-module-boundaries) are used to enforce module boundaries in the project graph when linting.
+
+Projects are tagged in two different dimensions - scope and type:
+
+| tag             | description                                                                  | allowed dependencies           |
+| :-------------- | :--------------------------------------------------------------------------- | :----------------------------- |
+| `scope:core`    | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared` |
+| `scope:plugin`  | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                 |
+| `scope:shared`  | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                 |
+| `scope:tooling` | supplementary tooling, e.g. code generation                                  | `scope:shared`                 |
+| `type:app`      | application, e.g. CLI or example web app                                     | `type:feature` or `type:util`  |
+| `type:feature`  | library with business logic for a specific feature                           | `type:util`                    |
+| `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
+| `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
