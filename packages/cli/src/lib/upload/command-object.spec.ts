@@ -1,16 +1,17 @@
-import { Report } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { writeFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { vi, describe, it, beforeEach } from 'vitest';
-import { yargsGlobalOptionsDefinition } from '../implementation/global-options';
+import { UploadOptions } from '@code-pushup/core';
+import { Report } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { middlewares } from '../middlewares';
+import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
 
@@ -29,9 +30,9 @@ vi.mock('@code-pushup/portal-client', async () => {
 
 const baseArgs = [
   'upload',
-  '--verbose',
   ...objectToCliArgs({
-    configPath: join(
+    verbose: true,
+    config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',
@@ -43,7 +44,7 @@ const baseArgs = [
 ];
 const cli = (args: string[]) =>
   yargsCli(args, {
-    options: yargsGlobalOptionsDefinition(),
+    options,
     middlewares,
     commands: [yargsUploadCommandObject()],
   });
@@ -53,12 +54,12 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
 
 describe('upload-command-object', () => {
   const dummyReport: Report = {
-    date: new Date().toISOString(),
+    date: 'dummy-date',
     duration: 1000,
     categories: [],
     plugins: [],
-    packageName: '@code-pushup/cli',
-    version: '0.1.0',
+    packageName: '@code-pushup/core',
+    version: '0.0.1',
   };
 
   beforeEach(async () => {
@@ -70,15 +71,19 @@ describe('upload-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        apiKey: 'some-other-api-key',
-        server: 'https://other-example.com/api',
+        //   'upload.organization': 'some-other-organization',
+        //   'upload.project': 'some-other-project',
+        'upload.apiKey': 'some-other-api-key',
+        'upload.server': 'https://other-example.com/api',
       }),
     ];
-    const parsedArgv = await cli(args).parseAsync();
-    expect(parsedArgv.upload?.organization).toBe('code-pushup');
-    expect(parsedArgv.upload?.project).toBe('cli');
-    expect(parsedArgv.upload?.apiKey).toBe('some-other-api-key');
-    expect(parsedArgv.upload?.server).toBe('https://other-example.com/api');
+    const parsedArgv = (await cli(
+      args,
+    ).parseAsync()) as Required<UploadOptions>;
+    expect(parsedArgv.upload.organization).toBe('code-pushup');
+    expect(parsedArgv.upload.project).toBe('cli');
+    expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
+    expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
   });
 
   it('should call portal-client function with correct parameters', async () => {
@@ -87,12 +92,12 @@ describe('upload-command-object', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: dummyReport.date,
-        commandDuration: 1000,
-        categories: [],
-        plugins: [],
-        packageName: '@code-pushup/cli',
-        packageVersion: '0.1.0',
+        commandStartDate: expect.any(String),
+        commandDuration: expect.any(Number),
+        categories: expect.any(Array),
+        plugins: expect.any(Array),
+        packageName: dummyReport.packageName,
+        packageVersion: dummyReport.version,
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),

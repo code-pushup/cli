@@ -3,7 +3,7 @@
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputPath: 'tmp/cli-config-out.json' },
+  persist: { outputDir: 'tmp' },
   categories: [],
   plugins: [
     // TODO: uncomment once runner is implemented

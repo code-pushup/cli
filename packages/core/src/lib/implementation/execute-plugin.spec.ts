@@ -1,6 +1,6 @@
+import { describe, expect, it } from 'vitest';
 import { auditOutputsSchema, pluginConfigSchema } from '@code-pushup/models';
 import { mockPluginConfig } from '@code-pushup/models/testing';
-import { describe, expect, it } from 'vitest';
 import { executePlugin, executePlugins } from './execute-plugin';
 
 describe('executePlugin', () => {

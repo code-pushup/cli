@@ -80,6 +80,7 @@ export class ProcessError extends Error {
 export type ProcessConfig = {
   command: string;
   args?: string[];
+  cwd?: string;
   observer?: ProcessObserver;
 };
 
@@ -131,12 +132,12 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer } = cfg;
+  const { observer, cwd } = cfg;
   const { next, error, complete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
   return new Promise((resolve, reject) => {
-    const process = spawn(cfg.command, cfg.args);
+    const process = spawn(cfg.command, cfg.args, { cwd });
     let stdout = '';
     let stderr = '';
 
@@ -167,9 +168,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   });
 }
 
-export type CliArgsObject =
-  | Record<string, number | string | boolean | string[] | undefined | null>
-  | { _: string };
+type ArgumentValue = number | string | boolean | string[];
+export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
+  T extends never
+    ? Record<string, ArgumentValue | undefined> | { _: string }
+    : T;
 
 /**
  * Converts an object with different types of values into an array of command-line arguments.
@@ -183,7 +186,12 @@ export type CliArgsObject =
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-export function objectToCliArgs(params: CliArgsObject): string[] {
+export function objectToCliArgs<
+  T extends object = Record<string, ArgumentValue>,
+>(params?: CliArgsObject<T>): string[] {
+  if (!params) {
+    return [];
+  }
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
@@ -215,3 +223,5 @@ export function objectToCliArgs(params: CliArgsObject): string[] {
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
 }
+
+objectToCliArgs<{ z: number }>({ z: 5 });

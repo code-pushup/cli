@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { yargsCli } from './yargs-cli';
-import { objectToCliArgs } from '@code-pushup/utils';
 import { Options } from 'yargs';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { yargsCli } from './yargs-cli';
 
 const options: Record<string, Options> = {
   interactive: {
@@ -14,7 +14,7 @@ const demandCommand: [number, string] = [0, 'no command required'];
 function middleware<T extends Record<string, unknown>>(processArgs: T) {
   return {
     ...processArgs,
-    configPath: '42',
+    config: '42',
   };
 }
 
@@ -41,7 +41,7 @@ describe('yargsCli', () => {
 
   it('global options and middleware handle argument overrides correctly', async () => {
     const args: string[] = objectToCliArgs({
-      configPath: 'validConfigPath',
+      config: 'validConfigPath',
     });
     const parsedArgv = await yargsCli(args, {
       options,
@@ -52,6 +52,6 @@ describe('yargsCli', () => {
         },
       ],
     }).parseAsync();
-    expect(parsedArgv.configPath).toContain(42);
+    expect(parsedArgv.config).toContain(42);
   });
 });

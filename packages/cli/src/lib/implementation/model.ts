@@ -1,15 +1,12 @@
+import { z } from 'zod';
 import {
   Format,
   globalOptionsSchema as coreGlobalOptionsSchema,
-  PersistConfig,
   refineCoreConfig,
   unrefinedCoreConfigSchema,
-  UploadConfig,
 } from '@code-pushup/models';
-import { z } from 'zod';
-import { GlobalOptions as CliOptions } from '../model';
 
-export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
+export const generalCliOptionsSchema = coreGlobalOptionsSchema.merge(
   z.object({
     interactive: z
       .boolean({
@@ -19,19 +16,19 @@ export const globalOptionsSchema = coreGlobalOptionsSchema.merge(
       .default(true),
   }),
 );
-
-export type GlobalOptions = z.infer<typeof globalOptionsSchema>;
+export type GeneralCliOptions = z.infer<typeof generalCliOptionsSchema>;
 
 // @TODO this has any type
 export const commandBaseSchema = refineCoreConfig(
-  globalOptionsSchema.merge(unrefinedCoreConfigSchema),
+  generalCliOptionsSchema.merge(unrefinedCoreConfigSchema),
 );
 export type CommandBase = z.infer<typeof commandBaseSchema>;
-export type ArgsCliObj = Partial<
-  CliOptions &
-    GlobalOptions &
-    UploadConfig &
-    Omit<PersistConfig, 'format'> & {
-      format: Format | Format[];
-    }
->;
+export type CoreConfigCliOptions = {
+  'persist.outputDir': string;
+  'persist.format': Format | string;
+  'upload.organization': string;
+  'upload.project': string;
+  'upload.apiKey': string;
+  'upload.server': string;
+};
+export type ArgsCliObj = Partial<GeneralCliOptions & CoreConfigCliOptions>;

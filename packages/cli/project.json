@@ -20,7 +20,7 @@
       "dependsOn": ["build"]
     },
     "exec": {
-      "command": "npx dist/packages/cli --configPath=./packages/cli/code-pushup.config.ts",
+      "command": "npx dist/packages/cli --config=./packages/cli/code-pushup.config.ts",
       "dependsOn": ["build"]
     },
     "lint": {

@@ -1,13 +1,13 @@
+import { CategoryConfigRefType } from '@code-pushup/models';
 import { PluginConfig } from '../../src/index';
 import { mockCoreConfig, mockReport } from '../schema.mock';
-import { CategoryConfigRefType } from '@code-pushup/models';
 
 export const lighthousePlugin: () => PluginConfig = () =>
   ({
     runner: {
       command: 'bun',
       args: ['--help'],
-      outputPath: 'tmp/lighthouse-runner-output.json',
+      outputFile: 'tmp/lighthouse-runner-output.json',
     },
     slug: 'lighthouse',
     title: 'lighthouse',

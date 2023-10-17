@@ -1,5 +1,5 @@
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import { defaultConfig } from 'lighthouse';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 
 type LighthousePluginConfig = {
   config: string;
@@ -23,13 +23,12 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
           {
             slug: 'largest-contentful-paint',
-            title: 'Largest Contentful Paint',
             value: 0,
             score: 0,
           },
         ] satisfies AuditOutputs)}')`,
       ],
-      outputPath: 'tmp/out.json',
+      outputFile: 'tmp/out.json',
     },
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',

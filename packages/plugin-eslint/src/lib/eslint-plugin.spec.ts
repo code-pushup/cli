@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
+import { PluginConfig } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin';
 
 describe('eslintPlugin', () => {
@@ -14,6 +15,16 @@ describe('eslintPlugin', () => {
 
   let cwdSpy: SpyInstance;
 
+  const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
+    ...plugin,
+    runner: {
+      ...plugin.runner,
+      args: plugin.runner.args?.map(arg =>
+        arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
+      ),
+    },
+  });
+
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd');
   });
@@ -24,22 +35,20 @@ describe('eslintPlugin', () => {
 
   it('should initialize ESLint plugin for React application', async () => {
     cwdSpy.mockReturnValue(join(fixturesDir, 'todos-app'));
-    await expect(
-      eslintPlugin({
-        eslintrc: '.eslintrc.js',
-        patterns: ['src/**/*.js', 'src/**/*.jsx'],
-      }),
-    ).resolves.toMatchSnapshot();
+    const plugin = await eslintPlugin({
+      eslintrc: '.eslintrc.js',
+      patterns: ['src/**/*.js', 'src/**/*.jsx'],
+    });
+    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
     cwdSpy.mockReturnValue(join(fixturesDir, 'nx-monorepo'));
-    await expect(
-      eslintPlugin({
-        eslintrc: './packages/utils/.eslintrc.json',
-        patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
-      }),
-    ).resolves.toMatchSnapshot();
+    const plugin = await eslintPlugin({
+      eslintrc: './packages/utils/.eslintrc.json',
+      patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
+    });
+    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
   });
 
   it('should throw when invalid parameters provided', async () => {

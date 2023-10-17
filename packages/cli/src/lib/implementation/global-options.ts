@@ -1,8 +1,8 @@
-import { GlobalOptions } from '../model';
 import { Options } from 'yargs';
+import { GeneralCliOptions } from './model';
 
 export function yargsGlobalOptionsDefinition(): Record<
-  keyof GlobalOptions,
+  keyof GeneralCliOptions,
   Options
 > {
   return {
@@ -17,7 +17,7 @@ export function yargsGlobalOptionsDefinition(): Record<
       type: 'boolean',
       default: false,
     },
-    configPath: {
+    config: {
       describe: 'Path the the config file, e.g. code-pushup.config.js',
       type: 'string',
       default: 'code-pushup.config.js',

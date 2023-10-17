@@ -1,9 +1,9 @@
 import {
   AuditOutput,
   CategoryConfig,
-  CategoryConfigRefType,
-  PluginOutput,
+  CategoryConfigRefType, Issue,
 } from '@code-pushup/models';
+import {readFile} from "@nx/plugin/testing";
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
@@ -114,4 +114,54 @@ export function slugify(text: string): string {
     .toLowerCase()
     .replace(/\s+|\//g, '-')
     .replace(/[^a-z0-9-]/g, '');
+}
+
+export function objectToEntries<T extends object>(obj: T) {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
+}
+
+export function countOccurrences<T extends PropertyKey>(
+  values: T[],
+): Partial<Record<T, number>> {
+  return values.reduce<Partial<Record<T, number>>>(
+    (acc, value) => ({ ...acc, [value]: (acc[value] ?? 0) + 1 }),
+    {},
+  );
+}
+
+export function compareIssueSeverity(
+  severity1: Issue['severity'],
+  severity2: Issue['severity'],
+): number {
+  const levels: Record<Issue['severity'], number> = {
+    info: 0,
+    warning: 1,
+    error: 2,
+  };
+  return levels[severity1] - levels[severity2];
+}
+
+export async function readTextFile(path: string): Promise<string> {
+  const buffer = await readFile(path);
+  return buffer.toString();
+}
+
+export async function readJsonFile(path: string): Promise<unknown> {
+  const text = await readTextFile(path);
+  return JSON.parse(text);
+}
+
+export function formatCount(count: number, name: string) {
+  const text = count === 1 ? name : pluralize(name);
+  return `${count} ${text}`;
+}
+
+export function pluralize(text: string): string {
+  if (text.endsWith('y')) {
+    return text.slice(0, -1) + 'ies';
+  }
+  if (text.endsWith('s')) {
+    return `${text}es`;
+  }
+  return `${text}s`;
 }

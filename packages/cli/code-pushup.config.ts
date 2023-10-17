@@ -1,4 +1,4 @@
-const outputPath = 'tmp';
+const outputDir = 'tmp';
 
 export default {
   upload: {
@@ -7,7 +7,7 @@ export default {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: { outputPath },
+  persist: { outputDir },
   plugins: [
     {
       slug: 'dummy-plugin',
@@ -41,7 +41,7 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('${outputPath}/dummy-plugin-output.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputDir}/dummy-plugin-output.json', '${JSON.stringify(
             [
               {
                 title: 'Dummy Audit 1',
@@ -64,7 +64,7 @@ export default {
             ],
           )}')`,
         ],
-        outputPath: `${outputPath}/dummy-plugin-output.json`,
+        outputFile: `${outputDir}/dummy-plugin-output.json`,
       },
     },
   ],

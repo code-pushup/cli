@@ -1,3 +1,4 @@
+import { CategoryConfigRefType } from '@code-pushup/portal-client';
 import {
   AuditGroup,
   AuditReport,
@@ -8,13 +9,13 @@ import {
   PluginReport,
   Report,
 } from '@code-pushup/models';
-import { CategoryConfigRefType } from '@code-pushup/portal-client';
 
 const __pluginSlug__ = 'mock-plugin-slug';
 const __auditSlug__ = 'mock-audit-slug';
 const __groupSlug__ = 'mock-group-slug';
 const __categorySlug__ = 'mock-category-slug';
-const __outputPath__ = 'tmp/out-execute-plugin.json';
+const __outputDir__ = 'tmp';
+const __outputFile__ = `${__outputDir__}/out-execute-plugin.json`;
 const randWeight = () => Math.floor(Math.random() * 10);
 const randDuration = () => Math.floor(Math.random() * 1000);
 
@@ -28,7 +29,7 @@ export function mockPluginConfig(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const outputPath = __outputPath__;
+  const outputFile = __outputFile__;
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -48,14 +49,14 @@ export function mockPluginConfig(opt?: {
       command: 'node',
       args: [
         '-e',
-        `require('fs').writeFileSync('${outputPath}', '${JSON.stringify(
+        `require('fs').writeFileSync('${outputFile}', '${JSON.stringify(
           audits.map(
             ({ slug }) =>
               mockAuditReport({ auditSlug: slug }) satisfies AuditReport,
           ),
         )}')`,
       ],
-      outputPath: outputPath,
+      outputFile,
     },
     slug: pluginSlug,
     title: 'execute plugin ' + pluginSlug,
@@ -79,11 +80,11 @@ export function mockAuditConfig(opt?: {
 }
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
-  let { outputPath, format } = opt || {};
-  outputPath = outputPath || __outputPath__;
+  let { outputDir, format } = opt || {};
+  outputDir = outputDir || __outputDir__;
   format = format || [];
   return {
-    outputPath,
+    outputDir,
     format,
   };
 }
@@ -199,16 +200,16 @@ export function mockAuditReport(opt?: { auditSlug: string }): AuditReport {
 }
 
 export function mockConfig(opt?: {
-  outputPath?: string;
+  outputDir?: string;
   categorySlug?: string | string[];
   pluginSlug?: string | string[];
   auditSlug?: string | string[];
   groupSlug?: string | string[];
 }): CoreConfig {
-  const { outputPath, pluginSlug, auditSlug, groupSlug, categorySlug } =
+  const { outputDir, pluginSlug, auditSlug, groupSlug, categorySlug } =
     opt || {};
   return {
-    persist: mockPersistConfig({ outputPath }),
+    persist: mockPersistConfig({ outputDir }),
     plugins: Array.isArray(pluginSlug)
       ? pluginSlug.map(slug =>
           mockPluginConfig({ pluginSlug: slug, auditSlug, groupSlug }),

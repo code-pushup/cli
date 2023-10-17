@@ -1,4 +1,6 @@
-const outputPath = 'tmp';
+import { CoreConfig } from '@code-pushup/models';
+
+const outputDir = 'tmp';
 export default {
   upload: {
     organization: 'code-pushup',
@@ -6,7 +8,7 @@ export default {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: { outputPath },
+  persist: { outputDir },
   plugins: [
     {
       audits: [
@@ -14,7 +16,6 @@ export default {
           slug: 'command-object-audit-slug',
           title: 'audit title',
           description: 'audit description',
-          label: 'mock audit label',
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
@@ -22,7 +23,7 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('${outputPath}/out.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
             [
               {
                 title: 'dummy-title',
@@ -33,7 +34,7 @@ export default {
             ],
           )}')`,
         ],
-        outputPath: `${outputPath}/out.json`,
+        outputFile: `${outputDir}/out.json`,
       },
       groups: [],
       slug: 'command-object-plugin',
@@ -42,4 +43,4 @@ export default {
     },
   ],
   categories: [],
-};
+} satisfies CoreConfig;

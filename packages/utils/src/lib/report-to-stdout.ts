@@ -1,14 +1,14 @@
-import { NEW_LINE } from './md';
-import {
-  countWeightedRefs,
-  reportHeadlineText,
-  reportOverviewTableHeaders,
-  calculateScore,
-  refToScore,
-} from './utils';
-import { Report } from '@code-pushup/models';
 import chalk from 'chalk';
 import cliui from 'cliui';
+import { Report } from '@code-pushup/models';
+import { NEW_LINE } from './md';
+import {
+  calculateScore,
+  countWeightedRefs,
+  refToScore,
+  reportHeadlineText,
+  reportOverviewTableHeaders,
+} from './utils';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 

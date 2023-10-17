@@ -1,4 +1,3 @@
-import { CoreConfig } from '@code-pushup/models';
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -7,8 +6,9 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
+import { CoreConfig } from '@code-pushup/models';
+import { GeneralCliOptions } from './implementation/model';
 import { logErrorBeforeThrow } from './implementation/utils';
-import { GlobalOptions } from './model';
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -31,7 +31,7 @@ export function yargsCli(
       applyBeforeValidation?: boolean;
     }[];
   },
-): Argv<CoreConfig & GlobalOptions> {
+): Argv<CoreConfig & GeneralCliOptions> {
   const { usageMessage, scriptName } = cfg;
   let { commands, options, middlewares /*demandCommand*/ } = cfg;
   // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!']; @TODO implement when commands are present
@@ -82,5 +82,5 @@ export function yargsCli(
   });
 
   // return CLI object
-  return cli as unknown as Argv<CoreConfig & GlobalOptions>;
+  return cli as unknown as Argv<CoreConfig & GeneralCliOptions>;
 }
