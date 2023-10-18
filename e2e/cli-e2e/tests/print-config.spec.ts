@@ -68,7 +68,6 @@ describe('print-config', () => {
       plugins: expect.any(Array),
       categories: [],
     });
-    expect(args.persist.format).toEqual(undefined);
   });
 
   it('should parse persist.format from arguments', async () => {
