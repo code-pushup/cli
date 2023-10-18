@@ -1,6 +1,7 @@
 import { defaultConfig } from 'lighthouse';
 import { join } from 'path';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { createFileWriteRunnerConfig } from '@code-pushup/utils';
 
 type LighthousePluginConfig = {
   config: string;
@@ -17,21 +18,16 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         title: 'Largest Contentful Paint',
       },
     ],
-    runner: {
-      command: 'echo',
-      args: [
-        JSON.stringify([
-          {
-            slug: 'largest-contentful-paint',
-            value: 0,
-            score: 0,
-          },
-        ] satisfies AuditOutputs),
-        '>',
-        join('tmp', 'out.json'),
-      ],
-      outputFile: join('tmp', 'out.json'),
-    },
+    runner: createFileWriteRunnerConfig(
+      [
+        {
+          slug: 'largest-contentful-paint',
+          value: 0,
+          score: 0,
+        },
+      ] satisfies AuditOutputs,
+      join('tmp', 'out.json'),
+    ),
     slug: 'lighthouse',
     title: 'ChromeDevTools Lighthouse',
     icon: 'lighthouse',

@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { createFileWriteRunnerConfig } from '@code-pushup/utils';
 
 const outputDir = 'tmp';
 module.exports = {
@@ -19,22 +19,17 @@ module.exports = {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: {
-        command: 'echo',
-        args: [
-          JSON.stringify([
-            {
-              title: 'dummy-title',
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ]),
-          '>',
-          join(outputDir, 'out.json'),
+      runner: createFileWriteRunnerConfig(
+        [
+          {
+            title: 'dummy-title',
+            slug: 'command-object-audit-slug',
+            value: 0,
+            score: 0,
+          },
         ],
-        outputFile: join(outputDir, 'out.json'),
-      },
+        join(outputDir, 'out.json'),
+      ),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
