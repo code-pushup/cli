@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 const outputDir = 'tmp';
 
 export default {
@@ -38,33 +40,32 @@ export default {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/dummy-plugin-output.json', '${JSON.stringify(
-            [
-              {
-                title: 'Dummy Audit 1',
-                slug: 'dummy-audit-1',
-                value: 420,
-                score: 0.42,
-              },
-              {
-                title: 'Dummy Audit 2',
-                slug: 'dummy-audit-2',
-                value: 80,
-                score: 0,
-              },
-              {
-                title: 'Dummy Audit 3',
-                slug: 'dummy-audit-3',
-                value: 12,
-                score: 0.12,
-              },
-            ],
-          )}')`,
+          JSON.stringify([
+            {
+              title: 'Dummy Audit 1',
+              slug: 'dummy-audit-1',
+              value: 420,
+              score: 0.42,
+            },
+            {
+              title: 'Dummy Audit 2',
+              slug: 'dummy-audit-2',
+              value: 80,
+              score: 0,
+            },
+            {
+              title: 'Dummy Audit 3',
+              slug: 'dummy-audit-3',
+              value: 12,
+              score: 0.12,
+            },
+          ]),
+          '>',
+          join(outputDir, 'dummy-plugin-output.json'),
         ],
-        outputFile: `${outputDir}/dummy-plugin-output.json`,
+        outputFile: join(outputDir, 'dummy-plugin-output.json'),
       },
     },
   ],

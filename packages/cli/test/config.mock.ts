@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { CoreConfig } from '@code-pushup/models';
 
 const outputDir = 'tmp';
@@ -20,21 +21,20 @@ export default {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
-            [
-              {
-                title: 'dummy-title',
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
+          JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ]),
+          '>',
+          join(outputDir, 'out.json'),
         ],
-        outputFile: `${outputDir}/out.json`,
+        outputFile: join(outputDir, 'out.json'),
       },
       groups: [],
       slug: 'command-object-plugin',
