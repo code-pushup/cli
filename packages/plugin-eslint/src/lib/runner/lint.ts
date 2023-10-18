@@ -1,6 +1,5 @@
 import { ESLint, type Linter } from 'eslint';
-import { sep } from 'path';
-import { distinct, toArray } from '@code-pushup/utils';
+import { distinct, toArray, toUnixPath } from '@code-pushup/utils';
 import type { LintResult, LinterOutput, RuleOptionsPerFile } from './types';
 
 export async function lint(
@@ -13,10 +12,11 @@ export async function lint(
   });
 
   const lintResults = await eslint.lintFiles(patterns);
+
   const results = lintResults.map(
     (result): LintResult => ({
       ...result,
-      relativeFilePath: result.filePath.replace(process.cwd() + sep, ''),
+      relativeFilePath: toUnixPath(result.filePath, true),
     }),
   );
 

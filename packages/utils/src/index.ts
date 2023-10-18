@@ -25,4 +25,5 @@ export {
   readTextFile,
   slugify,
   toArray,
+  toUnixPath,
 } from './lib/utils';

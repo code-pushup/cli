@@ -1,38 +1,36 @@
 import { join } from 'path';
 import { expect } from 'vitest';
+import { toUnixPath } from '@code-pushup/utils';
 import { configMiddleware } from './config-middleware';
 import { getDirname } from './helper.mock';
 
-const __dirname = getDirname(import.meta.url);
-
-const withDirName = (path: string) => join(__dirname, path);
-const config = (ext: string) =>
-  `${withDirName('../../../test/config.mock.')}${ext}`;
+const getConfigPath = (ext: string) =>
+  toUnixPath(`${getDirname(import.meta.url)}/../../../test/config.mock.${ext}`);
 
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
-    const configPathMjs = config('mjs');
+    const configPathMjs = getConfigPath('mjs');
     const _config = await configMiddleware({ config: configPathMjs });
-    expect(_config.upload.project).toContain('mjs');
+    expect(_config.upload?.project).toContain('mjs');
     expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .cjs config', async () => {
-    const configPathCjs = config('cjs');
+    const configPathCjs = getConfigPath('cjs');
     const _config = await configMiddleware({ config: configPathCjs });
-    expect(_config.upload.project).toContain('cjs');
+    expect(_config.upload?.project).toContain('cjs');
     expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should load valid .js config', async () => {
-    const configPathJs = config('js');
+    const configPathJs = getConfigPath('js');
     const _config = await configMiddleware({ config: configPathJs });
-    expect(_config.upload.project).toContain('js');
+    expect(_config.upload?.project).toContain('js');
     expect(_config.persist.outputDir).toContain('tmp');
   });
 
   it('should throw with invalid config', async () => {
-    const invalidConfig = 'wrong/path/to/config';
+    const invalidConfig = join('wrong', 'path', 'to', 'config');
     let error: Error = new Error();
     await configMiddleware({ config: invalidConfig }).catch(e => (error = e));
     expect(error?.message).toContain(invalidConfig);

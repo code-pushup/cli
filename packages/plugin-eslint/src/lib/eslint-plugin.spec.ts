@@ -2,6 +2,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
 import { PluginConfig } from '@code-pushup/models';
+import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin';
 
 describe('eslintPlugin', () => {
@@ -20,7 +21,9 @@ describe('eslintPlugin', () => {
     runner: {
       ...plugin.runner,
       args: plugin.runner.args?.map(arg =>
-        arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
+        toUnixPath(
+          arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
+        ),
       ),
     },
   });

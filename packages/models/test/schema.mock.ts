@@ -1,3 +1,4 @@
+import { join } from 'path';
 import {
   Audit,
   AuditGroup,
@@ -31,9 +32,10 @@ export function mockPluginConfig(opt?: {
   pluginSlug = pluginSlug || __pluginSlug__;
   auditSlug = auditSlug || __auditSlug__;
   const addGroups = groupSlug !== undefined;
-  const pluginOutputPath = `${
-    outputDir || 'tmp'
-  }/${+new Date()}-${__outputFile__}`;
+  const pluginOutputPath = join(
+    outputDir || 'tmp',
+    `${+new Date()}-${__outputFile__}`,
+  );
 
   const audits = Array.isArray(auditSlug)
     ? auditSlug.map(slug => mockAuditConfig({ auditSlug: slug }))
@@ -50,12 +52,13 @@ export function mockPluginConfig(opt?: {
     audits,
     groups,
     runner: {
-      command: 'node',
+      command: 'echo',
       args: [
-        '-e',
-        `require('fs').writeFileSync('${pluginOutputPath}', '${JSON.stringify(
+        JSON.stringify(
           audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
-        )}')`,
+        ),
+        '>',
+        pluginOutputPath,
       ],
       outputFile: pluginOutputPath,
     },
