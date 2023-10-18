@@ -48,6 +48,16 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9-]/g, '');
 }
 
+export function toUnixPath(path: string, relative?: boolean): string {
+  const unixPath = path.replace(/\\/g, '/');
+
+  if (relative) {
+    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+  }
+
+  return unixPath;
+}
+
 export function objectToEntries<T extends object>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }

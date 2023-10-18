@@ -12,6 +12,7 @@ import {
   slugify,
   sumRefs,
   toArray,
+  toUnixPath,
 } from './utils';
 
 describe('calcDuration', () => {
@@ -157,6 +158,26 @@ describe('slugify', () => {
     ['Code  PushUp ', 'code-pushup'],
   ])('should transform "%s" to valid slug "%s"', (text, slug) => {
     expect(slugify(text)).toBe(slug);
+  });
+});
+
+describe('toUnixPath', () => {
+  it.each([
+    ['main.ts', 'main.ts'],
+    ['src/main.ts', 'src/main.ts'],
+    ['../../relative/unix/path/index.ts', '../../relative/unix/path/index.ts'],
+    [
+      '..\\..\\relative\\windows\\path\\index.ts',
+      '../../relative/windows/path/index.ts',
+    ],
+  ])('should transform "%s" to valid slug "%s"', (path, unixPath) => {
+    expect(toUnixPath(path)).toBe(unixPath);
+  });
+
+  it('should transform absolute Windows path to relative UNIX path', () => {
+    expect(toUnixPath(`${process.cwd()}\\windows\\path\\config.ts`, true)).toBe(
+      'windows/path/config.ts',
+    );
   });
 });
 
