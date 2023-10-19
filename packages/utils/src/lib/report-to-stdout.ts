@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import cliui from 'cliui';
 import { Report } from '@code-pushup/models';
 import { NEW_LINE } from './md';
+import { ScoredReport } from './scoring';
 import {
   countWeightedRefs,
   reportHeadlineText,
@@ -11,7 +12,7 @@ import {
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 
-export function reportToStdout(report: Report): void {
+export function reportToStdout(report: ScoredReport): void {
   reportToHeaderSection(report);
   reportToMetaSection(report);
   console.log(NEW_LINE);
@@ -22,12 +23,12 @@ export function reportToStdout(report: Report): void {
   console.log('Made with ❤️ by code-pushup.dev');
 }
 
-function reportToHeaderSection(report: Report): void {
+function reportToHeaderSection(report: ScoredReport): void {
   const { packageName, version } = report;
   console.log(`${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`);
 }
 
-function reportToMetaSection(report: Report): void {
+function reportToMetaSection(report: ScoredReport): void {
   const { date, duration, version, packageName, plugins } = report;
   const _print = (text: string) => console.log(chalk.italic(chalk.gray(text)));
 
@@ -46,7 +47,7 @@ function reportToMetaSection(report: Report): void {
   _print(`---`);
 }
 
-function reportToOverviewSection(report: Report): void {
+function reportToOverviewSection(report: ScoredReport): void {
   const base = {
     width: 20,
     padding: [0, 1, 0, 1],
@@ -79,7 +80,7 @@ function reportToOverviewSection(report: Report): void {
   console.log(ui.toString());
 }
 
-function reportToDetailSection(report: Report): void {
+function reportToDetailSection(report: ScoredReport): void {
   const { categories, plugins } = report;
 
   categories.forEach(category => {

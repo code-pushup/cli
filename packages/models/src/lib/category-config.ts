@@ -13,6 +13,14 @@ type _RefsList = {
   plugin?: string;
 }[];
 
+/** What is being referenced in category config */
+export const enum CategoryConfigRefType {
+  /** Reference to audit (via slug) */
+  Audit = 'audit',
+  /** Reference to group of audits (via slug) */
+  Group = 'group',
+}
+
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',
   weightedRefSchema(
@@ -20,7 +28,7 @@ export const categoryConfigSchema = scorableSchema(
     'Slug of an audit or group (depending on `type`)',
   ).merge(
     z.object({
-      type: z.enum(['audit', 'group'], {
+      type: z.enum([CategoryConfigRefType.Audit, CategoryConfigRefType.Group], {
         description:
           'Discriminant for reference kind, affects where `slug` is looked up',
       }),
