@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { createFileWriteRunnerConfig } from '../../utils/src/lib/file-write-runner-config';
+import { createFileWriteRunnerConfig } from '../../utils/src';
 
 const outputDir = 'tmp';
 

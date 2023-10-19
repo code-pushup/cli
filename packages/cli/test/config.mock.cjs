@@ -1,4 +1,5 @@
-import { createFileWriteRunnerConfig } from '@code-pushup/utils';
+import { join } from 'path';
+import { createFileWriteRunnerConfig } from '../../utils/src';
 
 const outputDir = 'tmp';
 module.exports = {
@@ -22,7 +23,6 @@ module.exports = {
       runner: createFileWriteRunnerConfig(
         [
           {
-            title: 'dummy-title',
             slug: 'command-object-audit-slug',
             value: 0,
             score: 0,
