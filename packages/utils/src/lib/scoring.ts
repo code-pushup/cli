@@ -84,8 +84,10 @@ export function calculateScore<T extends { weight: number }>(
 export function scoreReport(report: Report): ScoredReport {
   const scoredPlugins = report.plugins.map(plugin => {
     const { groups, audits } = plugin;
-    const preparedAudits =
-      audits?.map(audit => ({ ...audit, plugin: plugin.slug })) || [];
+    const preparedAudits = audits.map(audit => ({
+      ...audit,
+      plugin: plugin.slug,
+    }));
     const preparedGroups =
       groups?.map(group => ({
         ...group,

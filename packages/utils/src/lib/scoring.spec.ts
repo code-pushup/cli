@@ -45,14 +45,14 @@ describe('scoreReport', () => {
   it('should score valid report', () => {
     const reportA = report();
     const prepared = scoreReport(reportA);
-    // enriched and scored groups
-    expect(prepared.plugins[1]?.groups[0]?.plugin).toBe('lighthouse');
-    expect(prepared.plugins[1]?.groups[0]?.slug).toBe('performance');
-    expect(prepared.plugins[1]?.groups[0]?.score).toBeCloseTo(0.92);
     // enriched audits
     expect(prepared.plugins[1]?.audits[0]?.plugin).toBe('lighthouse');
     expect(prepared.plugins[1]?.audits[0]?.slug).toBe('first-contentful-paint');
     expect(prepared.plugins[1]?.audits[0]?.score).toBeCloseTo(0.76);
+    // enriched and scored groups
+    expect(prepared.plugins[1]?.groups[0]?.plugin).toBe('lighthouse');
+    expect(prepared.plugins[1]?.groups[0]?.slug).toBe('performance');
+    expect(prepared.plugins[1]?.groups[0]?.score).toBeCloseTo(0.92);
     // enriched and scored categories
     expect(prepared.categories[0]?.slug).toBe('performance');
     expect(prepared?.categories?.[0]?.score).toBeCloseTo(0.92);

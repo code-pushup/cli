@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import cliui from 'cliui';
-import { Report } from '@code-pushup/models';
 import { NEW_LINE } from './md';
 import { ScoredReport } from './scoring';
 import {
