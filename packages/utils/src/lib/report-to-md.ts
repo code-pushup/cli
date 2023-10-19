@@ -1,5 +1,5 @@
+import { Report } from '@code-pushup/models';
 import { NEW_LINE, details, headline, li, link, style, table } from './md/';
-import { ScoredReport } from './scoring';
 import {
   countWeightedRefs,
   reportHeadlineText,
@@ -7,7 +7,7 @@ import {
   sumRefs,
 } from './utils';
 
-export function reportToMd(report: ScoredReport): string {
+export function reportToMd(report: Report): string {
   // header section
   let md = reportToHeaderSection() + NEW_LINE;
 
@@ -29,7 +29,7 @@ function reportToHeaderSection(): string {
   return headline(reportHeadlineText) + NEW_LINE;
 }
 
-function reportToMetaSection(report: ScoredReport): string {
+function reportToMetaSection(report: Report): string {
   const { date, duration, version, packageName, plugins } = report;
   return (
     `---` +
@@ -56,7 +56,7 @@ function reportToMetaSection(report: ScoredReport): string {
   );
 }
 
-function reportToOverviewSection(report: ScoredReport): string {
+function reportToOverviewSection(report: Report): string {
   const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
@@ -69,7 +69,7 @@ function reportToOverviewSection(report: ScoredReport): string {
   return table(tableContent);
 }
 
-function reportToDetailSection(report: ScoredReport): string {
+function reportToDetailSection(report: Report): string {
   let md = '';
   const { categories, plugins } = report;
 
