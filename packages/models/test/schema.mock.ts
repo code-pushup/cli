@@ -1,5 +1,5 @@
+import { platform } from 'os';
 import { join } from 'path';
-import { createFileWriteRunnerConfig } from '@code-pushup/utils';
 import {
   Audit,
   AuditGroup,
@@ -49,14 +49,24 @@ export function mockPluginConfig(opt?: {
       : [mockGroupConfig({ groupSlug, auditSlug })];
   }
 
-  const auditsOutput = audits.map(({ slug }) =>
-    mockAuditOutput({ auditSlug: slug }),
+  const auditsJsonOutput = JSON.stringify(
+    audits.map(({ slug }) => mockAuditOutput({ auditSlug: slug })),
   );
 
   return {
     audits,
     groups,
-    runner: createFileWriteRunnerConfig(auditsOutput, pluginOutputPath),
+    runner: {
+      command: 'echo',
+      args: [
+        platform() === 'win32'
+          ? auditsJsonOutput
+          : "'" + auditsJsonOutput + "'",
+        '>',
+        pluginOutputPath,
+      ],
+      outputFile: pluginOutputPath,
+    },
     slug: pluginSlug,
     title: 'execute plugin',
     icon: 'nrwl',

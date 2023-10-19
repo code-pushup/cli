@@ -13,7 +13,7 @@ export async function configMiddleware<
     config,
     verbose: cliOptions.verbose,
     upload: {
-      ...importedRc?.upload,
+      ...importedRc.upload,
       ...cliOptions?.upload,
     },
     persist: {

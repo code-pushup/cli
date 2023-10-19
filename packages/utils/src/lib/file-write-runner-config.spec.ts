@@ -1,3 +1,4 @@
+import { platform } from 'os';
 import { join } from 'path';
 import { describe, it } from 'vitest';
 import { createFileWriteRunnerConfig } from './file-write-runner-config';
@@ -20,12 +21,17 @@ describe('file-write-runner-config', () => {
       },
     ];
 
+    const osAuditOutput =
+      platform() === 'win32'
+        ? JSON.stringify(audits)
+        : "'" + JSON.stringify(audits) + "'";
+
     const filePath = join(process.cwd(), 'tmp/report.json');
     const unixFilePath = toUnixPath(filePath);
 
     expect(createFileWriteRunnerConfig(audits, filePath)).toStrictEqual({
       command: 'echo',
-      args: ['"' + JSON.stringify(audits) + '"', '>', unixFilePath],
+      args: [osAuditOutput, '>', unixFilePath],
       outputFile: unixFilePath,
     });
   });
