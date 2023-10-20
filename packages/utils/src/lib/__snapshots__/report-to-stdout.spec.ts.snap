@@ -6,7 +6,7 @@ exports[`report-to-stdout > should contain all sections when using the fixture r
 [3m[90mPackage Name: @code-pushup/core[39m[23m
 [3m[90mVersion: 0.1.0[39m[23m
 [3m[90mCommit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9[39m[23m
-[3m[90mDate: Wed Oct 18 2023 09:49:45 GMT+0200 (Central European Summer Time)[39m[23m
+[3m[90mDate: 2023-10-18T07:49:45.506Z[39m[23m
 [3m[90mDuration: 1652ms[39m[23m
 [3m[90mPlugins: 2[39m[23m
 [3m[90mAudits: 52[39m[23m

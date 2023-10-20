@@ -40,9 +40,9 @@ function reportToMetaSection(report: Report): string {
     NEW_LINE +
     `_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_` +
     NEW_LINE +
-    `_Date: ${new Date(date).toString()}_` +
+    `_Date: ${date}_` +
     NEW_LINE +
-    `_Duration: ${duration}ms_` +
+    `_Duration: ${duration} ms_` +
     NEW_LINE +
     `_Plugins: ${plugins?.length}_` +
     NEW_LINE +

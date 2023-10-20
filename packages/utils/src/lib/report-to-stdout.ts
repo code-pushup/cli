@@ -37,7 +37,7 @@ function reportToMetaSection(report: Report): void {
   _print(
     `Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9`,
   );
-  _print(`Date: ${new Date(date).toString()}`);
+  _print(`Date: ${date}`);
   _print(`Duration: ${duration}ms`);
   _print(`Plugins: ${plugins?.length}`);
   _print(

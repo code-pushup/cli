@@ -6,8 +6,8 @@ exports[`report-to-md > should contain all sections when using the fixture repor
 _Package Name: @code-pushup/core_
 _Version: 0.1.0_
 _Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_
-_Date: Wed Oct 18 2023 09:49:45 GMT+0200 (Central European Summer Time)_
-_Duration: 1652ms_
+_Date: 2023-10-18T07:49:45.506Z_
+_Duration: 1652 ms_
 _Plugins: 2_
 _Audits: 52_
 ---
@@ -271,8 +271,8 @@ Made with ❤️ by [code-pushup.dev](code-pushup.dev) 1`] = `
 _Package Name: @code-pushup/core_
 _Version: 0.1.0_
 _Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_
-_Date: Wed Oct 18 2023 09:49:45 GMT+0200 (Central European Summer Time)_
-_Duration: 1652ms_
+_Date: 2023-10-18T07:49:45.506Z_
+_Duration: 1652 ms_
 _Plugins: 2_
 _Audits: 52_
 ---
