@@ -3,8 +3,8 @@ export {
   persistReport,
 } from './lib/implementation/persist';
 export { executePlugins } from './lib/implementation/execute-plugin';
-export { collect, CollectOptions } from './lib/commands/collect';
-export { upload, UploadOptions } from './lib/commands/upload';
+export { collect, CollectOptions } from './lib/collect';
+export { upload, UploadOptions } from './lib/upload';
 export {
   collectAndPersistReports,
   CollectAndPersistReportsOptions,

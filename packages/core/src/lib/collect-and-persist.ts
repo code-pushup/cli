@@ -4,7 +4,7 @@ import {
   pluginReportSchema,
 } from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
-import { collect } from './commands/collect';
+import { collect } from './collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
 export type CollectAndPersistReportsOptions = Pick<
