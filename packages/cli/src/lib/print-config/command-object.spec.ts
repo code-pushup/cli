@@ -15,9 +15,11 @@ const baseArgs = [
       '..',
       '..',
       '..',
+      '..',
+      'models',
       'test',
       'fixtures',
-      'config.mock.ts',
+      'code-pushup.config.mock.ts',
     ),
   }),
 ];

@@ -6,7 +6,9 @@ import { configMiddleware } from './config-middleware';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const withDirName = (path: string) => join(__dirname, path);
 const config = (ext: string) =>
-  `${withDirName('../../../test/fixtures/config.mock.')}${ext}`;
+  `${withDirName(
+    '../../../../models/test/fixtures/code-pushup.config.mock.',
+  )}${ext}`;
 
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
