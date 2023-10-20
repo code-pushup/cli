@@ -1,6 +1,6 @@
 import { AuditReport } from '../../src';
 
-export const LIGHTHOUSE_AUDITS_MAP: Record<string, AuditReport> = {
+export const LIGHTHOUSE_AUDIT_REPORTS_MAP: Record<string, AuditReport> = {
   'first-contentful-paint': {
     slug: 'first-contentful-paint',
     title: 'First Contentful Paint',

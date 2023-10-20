@@ -1,4 +1,4 @@
-import { CoreConfig } from '../../src';
+import { CoreConfig, UploadConfig } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
@@ -16,5 +16,3 @@ export function config(outputDir = 'tmp'): CoreConfig {
     plugins: [eslintPluginConfig(outputDir), lighthousePluginConfig(outputDir)],
   };
 }
-
-export default config();

@@ -1,4 +1,4 @@
-import { CoreConfig } from '@code-pushup/models';
+import { CoreConfig } from '../../src';
 
 const outputDir = 'tmp';
 export default {

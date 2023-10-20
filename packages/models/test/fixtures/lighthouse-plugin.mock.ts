@@ -1,7 +1,34 @@
-import type { PluginReport } from '../../src';
+import type { AuditGroup, PluginReport } from '../../src';
 import { Audit, PluginConfig } from '../../src';
-import { LIGHTHOUSE_AUDITS_MAP } from './lighthouse-audits.mock';
+import { LIGHTHOUSE_AUDIT_REPORTS_MAP } from './lighthouse-audits.mock';
 import { runnerConfig } from './runner.mock';
+
+const PLUGIN_GROUP_PERFORMANCE: AuditGroup = {
+  slug: 'performance',
+  title: 'Performance',
+  refs: [
+    {
+      slug: 'first-contentful-paint',
+      weight: 10,
+    },
+    {
+      slug: 'largest-contentful-paint',
+      weight: 25,
+    },
+    {
+      slug: 'speed-index',
+      weight: 10,
+    },
+    {
+      slug: 'total-blocking-time',
+      weight: 30,
+    },
+    {
+      slug: 'cumulative-layout-shift',
+      weight: 25,
+    },
+  ],
+};
 
 const lighthousePluginMeta: Omit<PluginConfig, 'audits' | 'runner'> = {
   slug: 'lighthouse',
@@ -12,7 +39,7 @@ const lighthousePluginMeta: Omit<PluginConfig, 'audits' | 'runner'> = {
 };
 
 export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
-  const audits = Object.values(LIGHTHOUSE_AUDITS_MAP).map(
+  const audits = Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP).map(
     ({ slug, description, title, docsUrl }) =>
       ({
         slug,
@@ -23,8 +50,12 @@ export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...lighthousePluginMeta,
-    runner: runnerConfig(audits, `${outputDir}/out.json`),
+    runner: runnerConfig(
+      Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP),
+      `${outputDir}/lighthouse-out.json`,
+    ),
     audits,
+    groups: [PLUGIN_GROUP_PERFORMANCE],
   };
 }
 
@@ -33,34 +64,7 @@ export function lighthousePluginReport(): PluginReport {
     ...lighthousePluginMeta,
     date: '2023-10-18T07:49:45.899Z',
     duration: 1234,
-    groups: [
-      {
-        slug: 'performance',
-        title: 'Performance',
-        refs: [
-          {
-            slug: 'first-contentful-paint',
-            weight: 10,
-          },
-          {
-            slug: 'largest-contentful-paint',
-            weight: 25,
-          },
-          {
-            slug: 'speed-index',
-            weight: 10,
-          },
-          {
-            slug: 'total-blocking-time',
-            weight: 30,
-          },
-          {
-            slug: 'cumulative-layout-shift',
-            weight: 25,
-          },
-        ],
-      },
-    ],
-    audits: Object.values(LIGHTHOUSE_AUDITS_MAP),
+    audits: Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP),
+    groups: [PLUGIN_GROUP_PERFORMANCE],
   };
 }

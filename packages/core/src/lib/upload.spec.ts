@@ -4,9 +4,9 @@ import { beforeEach, describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import {
   MEMFS_VOLUME,
-  mockPersistConfig,
-  mockReport,
-  mockUploadConfig,
+  persistConfig,
+  report,
+  uploadConfig,
 } from '@code-pushup/models/testing';
 import { upload } from './upload';
 
@@ -42,7 +42,7 @@ describe('uploadToPortal', () => {
     vol.reset();
     vol.fromJSON(
       {
-        [reportPath()]: JSON.stringify(mockReport()),
+        [reportPath()]: JSON.stringify(report()),
       },
       MEMFS_VOLUME,
     );
@@ -50,13 +50,11 @@ describe('uploadToPortal', () => {
 
   test('should work', async () => {
     const cfg = {
-      upload: mockUploadConfig({
+      upload: uploadConfig({
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',
       }),
-      persist: mockPersistConfig({
-        outputDir,
-      }),
+      persist: persistConfig(outputDir),
     };
     const result = await upload(cfg);
 

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
-import { mockCoreConfig } from '@code-pushup/models/testing';
+import { config } from '@code-pushup/models/testing';
 import { CollectOptions, collect } from './collect';
 
 const baseOptions: CollectOptions = {
-  ...(mockCoreConfig() as Required<CoreConfig>),
+  ...(config() as Required<CoreConfig>),
   verbose: false,
 };
 

@@ -85,7 +85,7 @@ export async function executePlugin(
         ...auditMetadata,
       };
     });
-
+    // @TODO only include given values otherwise the typing is bad
     return {
       version,
       packageName,
