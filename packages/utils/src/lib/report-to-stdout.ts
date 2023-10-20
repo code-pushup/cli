@@ -105,7 +105,7 @@ function reportToDetailSection(report: Report): void {
           console.log(`  ${content}`);
         } else {
           // this should never happen
-          throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
+          console.error(`No audit found for ${auditSlugInCategoryRefs}`);
         }
       },
     );

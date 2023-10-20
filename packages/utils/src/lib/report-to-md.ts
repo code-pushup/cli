@@ -123,7 +123,7 @@ function reportToDetailSection(report: Report): string {
               );
             } else {
               // this should never happen
-              throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
+              console.error(`No audit found for ${auditSlugInCategoryRefs}`);
             }
           },
         )
