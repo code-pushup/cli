@@ -1,6 +1,6 @@
 import type { AuditReport } from '../../src';
 
-export const ESLINT_AUDITS_MAP = {
+export const ESLINT_AUDITS_MAP: Record<string, AuditReport> = {
   'no-cond-assign': {
     slug: 'no-cond-assign',
     value: 0,
@@ -838,4 +838,4 @@ export const ESLINT_AUDITS_MAP = {
     docsUrl:
       'https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md',
   },
-} satisfies Record<string, AuditReport>;
+};
