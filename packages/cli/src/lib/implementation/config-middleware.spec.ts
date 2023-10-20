@@ -1,13 +1,12 @@
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { expect } from 'vitest';
 import { configMiddleware } from './config-middleware';
-import { getDirname } from './helper.mock';
 
-const __dirname = getDirname(import.meta.url);
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const withDirName = (path: string) => join(__dirname, path);
 const config = (ext: string) =>
-  `${withDirName('../../../test/fixtures/config.mock.')}${ext}`;
+  `${withDirName("../../../test/'fixtures/config.mock.")}${ext}`;
 
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
