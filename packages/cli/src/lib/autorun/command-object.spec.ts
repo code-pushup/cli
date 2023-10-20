@@ -36,6 +36,7 @@ const baseArgs = [
       '..',
       '..',
       'test',
+      'fixtures',
       'config.mock.ts',
     ),
   }),

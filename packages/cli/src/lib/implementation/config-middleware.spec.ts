@@ -7,7 +7,7 @@ const __dirname = getDirname(import.meta.url);
 
 const withDirName = (path: string) => join(__dirname, path);
 const config = (ext: string) =>
-  `${withDirName('../../../test/config.mock.')}${ext}`;
+  `${withDirName('../../../test/fixtures/config.mock.')}${ext}`;
 
 describe('applyConfigMiddleware', () => {
   it('should load valid .mjs config', async () => {
