@@ -3,7 +3,7 @@ import { Audit, PluginConfig } from '../../src';
 import { LIGHTHOUSE_AUDITS_MAP } from './lighthouse-audits.mock';
 import { runnerConfig } from './runner.mock';
 
-const lighthousePluginMeta: Omit<PluginConfig, 'audits'> = {
+const lighthousePluginMeta: Omit<PluginConfig, 'audits' | 'runner'> = {
   slug: 'lighthouse',
   title: 'Lighthouse',
   icon: 'lighthouse',
@@ -11,7 +11,7 @@ const lighthousePluginMeta: Omit<PluginConfig, 'audits'> = {
   version: '0.1.0',
 };
 
-export function lighthousePluginConfig(): PluginConfig {
+export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
   const audits = Object.values(LIGHTHOUSE_AUDITS_MAP).map(
     ({ slug, description, title, docsUrl }) =>
       ({
@@ -23,7 +23,7 @@ export function lighthousePluginConfig(): PluginConfig {
   );
   return {
     ...lighthousePluginMeta,
-    runner: runnerConfig(audits),
+    runner: runnerConfig(audits, `${outputDir}/out.json`),
     audits,
   };
 }

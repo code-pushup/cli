@@ -1,7 +1,7 @@
-import { AuditReport, RunnerConfig } from '../../src';
+import { Audit, RunnerConfig } from '../../src';
 
 export function runnerConfig(
-  audits: AuditReport[],
+  audits: Audit[],
   outputFile = 'tmp/out.json',
 ): RunnerConfig {
   return {

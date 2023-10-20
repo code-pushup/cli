@@ -3,9 +3,7 @@ import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
 
-export function config(): CoreConfig {
-  const outputDir = 'tmp';
-
+export function config(outputDir = 'tmp'): CoreConfig {
   return {
     persist: { outputDir },
     upload: {
@@ -15,7 +13,7 @@ export function config(): CoreConfig {
       server: 'https://example.com/api',
     },
     categories: categoryConfigs(),
-    plugins: [eslintPluginConfig(), lighthousePluginConfig()],
+    plugins: [eslintPluginConfig(outputDir), lighthousePluginConfig(outputDir)],
   };
 }
 

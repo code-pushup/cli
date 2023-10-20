@@ -7,7 +7,7 @@ import type {
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
 import { runnerConfig } from './runner.mock';
 
-const eslintMeta: Omit<PluginConfig, 'audits'> = {
+const eslintMeta: Omit<PluginConfig, 'audits' | 'runner'> = {
   slug: 'eslint',
   title: 'ESLint',
   icon: 'eslint',
@@ -16,7 +16,7 @@ const eslintMeta: Omit<PluginConfig, 'audits'> = {
   version: '0.1.0',
 };
 
-export function eslintPluginConfig(): PluginConfig {
+export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
   const audits = Object.values(ESLINT_AUDITS_MAP).map(
     ({ slug, description, title, docsUrl }) =>
       ({
@@ -28,7 +28,7 @@ export function eslintPluginConfig(): PluginConfig {
   );
   return {
     ...eslintMeta,
-    runner: runnerConfig(audits),
+    runner: runnerConfig(audits, `${outputDir}/out.json`),
     audits,
   };
 }

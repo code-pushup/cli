@@ -124,6 +124,7 @@ function reportToDetailSection(report: Report): string {
             } else {
               // this should never happen
               console.error(`No audit found for ${auditSlugInCategoryRefs}`);
+              return '';
             }
           },
         )

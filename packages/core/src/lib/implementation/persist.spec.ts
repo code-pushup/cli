@@ -5,9 +5,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
-  dummyConfig,
-  dummyReport,
+  config,
   mockPersistConfig,
+  report,
 } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../../test/console.mock';
 import { logPersistedResults, persistReport } from './persist';
@@ -34,34 +34,45 @@ const readReport = (format: 'json' | 'md') => {
   }
 };
 
-const config = dummyConfig(MEMFS_VOLUME);
+const dummyReport = report();
+const dummyConfig = config(MEMFS_VOLUME);
 let logs: string[] = [];
+
+const resetFiles = async () => {
+  vol.reset();
+  vol.fromJSON(
+    {
+      [reportPath('json')]: '',
+      [reportPath('md')]: '',
+    },
+    MEMFS_VOLUME,
+  );
+  unlinkSync(reportPath('json'));
+  unlinkSync(reportPath('md'));
+};
+const setupConsole = async () => {
+  logs = [];
+  mockConsole(msg => logs.push(msg));
+};
+const teardownConsole = async () => {
+  logs = [];
+  unmockConsole();
+};
 
 describe('persistReport', () => {
   beforeEach(async () => {
-    vol.reset();
-    vol.fromJSON(
-      {
-        [reportPath('json')]: '',
-        [reportPath('md')]: '',
-      },
-      MEMFS_VOLUME,
-    );
-    unlinkSync(reportPath('json'));
-    unlinkSync(reportPath('md'));
-
-    logs = [];
-    mockConsole(msg => logs.push(msg));
+    resetFiles();
+    setupConsole();
   });
 
   afterEach(() => {
-    logs = [];
-    unmockConsole();
+    teardownConsole();
   });
 
   it('should stdout as format by default`', async () => {
-    await persistReport(dummyReport, config);
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
+    await persistReport(dummyReport, dummyConfig);
+    const logReport = logs.join('\n');
+    expect(logReport).toMatchSnapshot();
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -69,10 +80,11 @@ describe('persistReport', () => {
 
   it('should log to console when format is stdout`', async () => {
     await persistReport(dummyReport, {
-      ...config,
+      ...dummyConfig,
       persist: mockPersistConfig({ outputDir, format: ['stdout'] }),
     });
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
+    const logReport = logs.join('\n');
+    expect(logReport).toMatchSnapshot();
 
     expect(() => readReport('json')).not.toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -80,12 +92,11 @@ describe('persistReport', () => {
 
   it('should persist json format`', async () => {
     await persistReport(dummyReport, {
-      ...config,
+      ...dummyConfig,
       persist: mockPersistConfig({ outputDir, format: ['json'] }),
     });
     const jsonReport: Report = readReport('json');
-    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
-    expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
+    expect(jsonReport).toMatchSnapshot();
 
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -93,11 +104,11 @@ describe('persistReport', () => {
 
   it('should persist md format`', async () => {
     await persistReport(dummyReport, {
-      ...config,
+      ...dummyConfig,
       persist: mockPersistConfig({ outputDir, format: ['md'] }),
     });
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('# Code Pushup Report');
+    expect(mdReport).toMatchSnapshot();
 
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
@@ -107,7 +118,7 @@ describe('persistReport', () => {
 
   it('should persist all formats`', async () => {
     await persistReport(dummyReport, {
-      ...config,
+      ...dummyConfig,
       persist: mockPersistConfig({
         outputDir,
         format: ['json', 'md', 'stdout'],
@@ -115,18 +126,18 @@ describe('persistReport', () => {
     });
 
     const jsonReport: Report = readReport('json');
-    expect(jsonReport.plugins?.[0]?.slug).toBe('plg-0');
-    expect(jsonReport.plugins?.[0]?.audits[0]?.slug).toBe('0a');
+    expect(jsonReport).toMatchSnapshot();
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('# Code Pushup Report');
+    expect(mdReport).toMatchSnapshot();
 
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
+    const logReport = logs.join('\n');
+    expect(logReport).toMatchSnapshot();
   });
 
   it('should persist some formats`', async () => {
     await persistReport(dummyReport, {
-      ...config,
+      ...dummyConfig,
       persist: mockPersistConfig({ outputDir, format: ['md', 'stdout'] }),
     });
 
@@ -135,8 +146,10 @@ describe('persistReport', () => {
     );
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('# Code Pushup Report');
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
+    expect(mdReport).toMatchSnapshot();
+
+    const logReport = logs.join('\n');
+    expect(logReport).toMatchSnapshot();
   });
 
   // TODO: should throw PersistDirError
@@ -145,24 +158,12 @@ describe('persistReport', () => {
 
 describe('logPersistedResults', () => {
   beforeEach(async () => {
-    vol.reset();
-    vol.fromJSON(
-      {
-        [reportPath('json')]: '',
-        [reportPath('md')]: '',
-      },
-      MEMFS_VOLUME,
-    );
-    unlinkSync(reportPath('json'));
-    unlinkSync(reportPath('md'));
-
-    logs = [];
-    mockConsole(msg => logs.push(msg));
+    resetFiles();
+    setupConsole();
   });
 
   afterEach(() => {
-    logs = [];
-    unmockConsole();
+    teardownConsole();
   });
 
   it('should log report sizes correctly`', async () => {
