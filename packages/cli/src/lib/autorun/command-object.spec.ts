@@ -1,6 +1,6 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -8,6 +8,7 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -53,6 +54,9 @@ const cli = (args: string[]) =>
 describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+  });
+  afterEach(() => {
+    cleanFolderPutGitKeep();
   });
 
   it('should override config with CLI arguments', async () => {

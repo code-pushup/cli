@@ -10,6 +10,7 @@ import {
 import { UploadOptions } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -52,8 +53,7 @@ const cli = (args: string[]) =>
     commands: [yargsUploadCommandObject()],
   });
 
-const reportPath = (format: 'json' | 'md' = 'json') =>
-  join('tmp', 'report.' + format);
+const reportFile = (format: 'json' | 'md' = 'json') => 'report.' + format;
 
 describe('upload-command-object', () => {
   const dummyReport: Report = {
@@ -67,7 +67,13 @@ describe('upload-command-object', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    await writeFile(reportPath(), JSON.stringify(dummyReport));
+    cleanFolderPutGitKeep('tmp', {
+      [reportFile()]: JSON.stringify(dummyReport),
+    });
+  });
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    cleanFolderPutGitKeep();
   });
 
   it('should override config with CLI arguments', async () => {

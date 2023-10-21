@@ -18,7 +18,9 @@ export function config(outputDir = 'tmp'): CoreConfig {
   };
 }
 
-export function minimalConfig(outputDir = 'tmp'): CoreConfig {
+export function minimalConfig(
+  outputDir = 'tmp',
+): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
   return {
@@ -46,6 +48,7 @@ export function minimalConfig(outputDir = 'tmp'): CoreConfig {
     plugins: [
       pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
         slug: PLUGIN_1_SLUG,
+        outputDir,
       }),
     ],
   };

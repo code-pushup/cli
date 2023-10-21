@@ -1,7 +1,9 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { afterEach } from 'vitest';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -31,6 +33,10 @@ const cli = (args: string[]) =>
   });
 
 describe('collect-command-object', () => {
+  afterEach(() => {
+    cleanFolderPutGitKeep();
+  });
+
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,

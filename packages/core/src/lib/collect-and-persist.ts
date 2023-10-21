@@ -11,7 +11,7 @@ export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
   'persist' | 'plugins' | 'categories'
 > &
-  GlobalOptions;
+  Omit<GlobalOptions, 'config'>;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
