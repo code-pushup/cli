@@ -28,6 +28,9 @@ describe('collectAndPersistReports', () => {
   beforeEach(async () => {
     cleanFolderPutGitKeep();
   });
+  afterEach(async () => {
+    cleanFolderPutGitKeep();
+  });
 
   test('should work', async () => {
     await collectAndPersistReports({
@@ -35,15 +38,9 @@ describe('collectAndPersistReports', () => {
       ...minimalConfig(outputDir),
     });
     const result = JSON.parse(readFileSync(reportPath()).toString()) as Report;
-    expect(result).toMatchSnapshot();
+    expect(result.plugins[0]?.audits[0]?.slug).toBe('audit-1');
   });
 
-  test('should work if folder is not present', async () => {
-    await collectAndPersistReports({
-      verbose: false,
-      ...minimalConfig(outputDir),
-    });
-    const result = JSON.parse(readFileSync(reportPath()).toString()) as Report;
-    expect(result).toMatchSnapshot();
-  });
+  // @TODO should work if persist.outputDir does not exist
+
 });

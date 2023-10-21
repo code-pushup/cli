@@ -16,8 +16,8 @@ exports[`collectAndPersistReports > should work 1`] = `
       "title": "Category 1",
     },
   ],
-  "date": "2023-10-21T15:54:56.659Z",
-  "duration": 155,
+  "date": "2023-10-21T16:54:45.585Z",
+  "duration": 41,
   "packageName": "@code-pushup/core",
   "plugins": [
     {
@@ -35,58 +35,10 @@ exports[`collectAndPersistReports > should work 1`] = `
           "value": 0,
         },
       ],
-      "date": "2023-10-21T15:54:56.659Z",
+      "date": "2023-10-21T16:54:45.585Z",
       "description": "Plugin description",
       "docsUrl": "https://my-plugin.docs.dev?1",
-      "duration": 150,
-      "icon": "nrwl",
-      "slug": "plugin-1",
-      "title": "Plugin Title",
-    },
-  ],
-  "version": "0.0.1",
-}
-`;
-
-exports[`collectAndPersistReports > should work if folder is not present 1`] = `
-{
-  "categories": [
-    {
-      "refs": [
-        {
-          "plugin": "plugin-1",
-          "slug": "audit-1",
-          "type": "audit",
-          "weight": 1,
-        },
-      ],
-      "slug": "category-1",
-      "title": "Category 1",
-    },
-  ],
-  "date": "2023-10-21T16:13:16.713Z",
-  "duration": 38,
-  "packageName": "@code-pushup/core",
-  "plugins": [
-    {
-      "audits": [
-        {
-          "description": "audit description",
-          "details": {
-            "issues": [],
-          },
-          "displayValue": "0x",
-          "docsUrl": "http://www.my-docs.dev",
-          "score": 0,
-          "slug": "audit-1",
-          "title": "Audit Title",
-          "value": 0,
-        },
-      ],
-      "date": "2023-10-21T16:13:16.713Z",
-      "description": "Plugin description",
-      "docsUrl": "https://my-plugin.docs.dev?1",
-      "duration": 37,
+      "duration": 38,
       "icon": "nrwl",
       "slug": "plugin-1",
       "title": "Plugin Title",

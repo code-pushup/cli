@@ -15,6 +15,7 @@ import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
+import {report} from "@code-pushup/models/testing";
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -54,26 +55,17 @@ const cli = (args: string[]) =>
   });
 
 const reportFile = (format: 'json' | 'md' = 'json') => 'report.' + format;
+const dummyReport = report();
 
 describe('upload-command-object', () => {
-  const dummyReport: Report = {
-    date: new Date().toISOString(),
-    duration: 1000,
-    categories: [],
-    plugins: [],
-    packageName: '@code-pushup/core',
-    version: '0.0.1',
-  };
-
   beforeEach(async () => {
     vi.clearAllMocks();
     cleanFolderPutGitKeep('tmp', {
       [reportFile()]: JSON.stringify(dummyReport),
     });
   });
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    cleanFolderPutGitKeep();
+  afterEach(async () => {
+    cleanFolderPutGitKeep('tmp');
   });
 
   it('should override config with CLI arguments', async () => {
@@ -103,7 +95,7 @@ describe('upload-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: [],
+        categories: expect.any(Array),
         plugins: expect.any(Array),
         packageName: dummyReport.packageName,
         packageVersion: dummyReport.version,

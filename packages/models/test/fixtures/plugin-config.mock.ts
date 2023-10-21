@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { Audit, AuditOutputs, AuditReport, PluginConfig } from '../../src';
+import { Audit, AuditReport, PluginConfig } from '../../src';
 import { runnerConfig } from './runner.mock';
 
 export function pluginConfig(
@@ -22,11 +22,10 @@ export function pluginConfig(
 
 export function auditConfig(opt?: Partial<Audit>): Audit {
   return {
-    slug: 'mock-audit-slug',
-    title: 'Audit Title',
-    description: 'audit description',
-    docsUrl: 'http://www.my-docs.dev',
-    ...opt,
+    slug: opt?.slug || 'mock-audit-slug',
+    title: opt?.title || 'Audit Title',
+    description: opt?.description || 'audit description',
+    docsUrl: opt?.docsUrl || 'http://www.my-docs.dev'
   } satisfies Required<Audit>;
 }
 
@@ -42,6 +41,6 @@ export function auditReport(opt?: Partial<AuditReport>): AuditReport {
     },
     value: 0,
     displayValue: '0x',
-    ...opt,
+    ...(opt || {}),
   } satisfies AuditReport;
 }

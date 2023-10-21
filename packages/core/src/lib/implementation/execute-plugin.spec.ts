@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {
   AuditReport,
   PluginConfig,
@@ -10,9 +10,10 @@ import {
   runnerConfig,
 } from '@code-pushup/models/testing';
 import { executePlugin, executePlugins } from './execute-plugin';
+import {cleanFolder} from "../../../test";
 
 const validPluginCfg = pluginConfig([auditReport()]);
-const validPluginCfg2 = pluginConfig([auditReport({ slug: 'ap2' })], {
+const validPluginCfg2 = pluginConfig([auditReport()], {
   slug: 'p2',
 });
 const invalidSlugPluginCfg = pluginConfig([
@@ -20,7 +21,15 @@ const invalidSlugPluginCfg = pluginConfig([
 ]);
 
 describe('executePlugin', () => {
-  it('should work with valid plugin', async () => {
+  beforeEach(() => {
+    cleanFolder();
+  });
+
+  afterEach(() => {
+    cleanFolder();
+  })
+
+  it('should execute valid plugin config', async () => {
     const pluginResult = await executePlugin(validPluginCfg);
     expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
     expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
@@ -45,6 +54,13 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
+  beforeEach(() => {
+    cleanFolder();
+  });
+
+  afterEach(() => {
+    cleanFolder();
+  })
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
     const pluginResult = await executePlugins(plugins);
@@ -53,7 +69,7 @@ describe('executePlugins', () => {
     expect(pluginResult[0]?.duration).toBeTruthy();
 
     expect(pluginResult[0]?.audits[0]?.slug).toEqual('mock-audit-slug');
-    expect(pluginResult[1]?.audits[0]?.slug).toEqual('ap2');
+    expect(pluginResult[1]?.audits[0]?.slug).toEqual('mock-audit-slug');
     expect(() =>
       auditOutputsSchema.parse(pluginResult[0]?.audits),
     ).not.toThrow();

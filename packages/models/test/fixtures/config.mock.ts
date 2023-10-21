@@ -23,7 +23,7 @@ export function minimalConfig(
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
-  return {
+  return JSON.parse(JSON.stringify({
     persist: { outputDir },
     upload: {
       organization: 'code-pushup',
@@ -51,5 +51,5 @@ export function minimalConfig(
         outputDir,
       }),
     ],
-  };
+  } satisfies Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>>));
 }

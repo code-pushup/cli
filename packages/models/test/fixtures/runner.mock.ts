@@ -2,7 +2,7 @@ import { AuditReport, RunnerConfig } from '../../src';
 
 export function runnerConfig(
   audits: AuditReport[],
-  outputFile = 'tmp/eslint-out.json',
+  outputFile = 'tmp/out.json',
 ): RunnerConfig {
   return {
     command: 'node',
