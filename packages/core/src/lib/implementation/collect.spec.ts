@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, reportSchema } from '@code-pushup/models';
-import { config } from '@code-pushup/models/testing';
+import { reportSchema } from '@code-pushup/models';
+import { minimalConfig } from '@code-pushup/models/testing';
 import { CollectOptions, collect } from './collect';
 
 const baseOptions: CollectOptions = {
-  ...(config() as Required<CoreConfig>),
+  ...minimalConfig(),
   verbose: false,
 };
 

@@ -1,7 +1,7 @@
-import { Audit, RunnerConfig } from '../../src';
+import { AuditReport, RunnerConfig } from '../../src';
 
 export function runnerConfig(
-  audits: Audit[],
+  audits: AuditReport[],
   outputFile = 'tmp/eslint-out.json',
 ): RunnerConfig {
   return {

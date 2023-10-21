@@ -9,7 +9,7 @@ describe('persistConfigSchema', () => {
   });
 
   it('should throw if outputDir is invalid', () => {
-    const persistConfigMock = persistConfig(' ');
+    const persistConfigMock = persistConfig({ outputDir: ' ' });
 
     expect(() => persistConfigSchema.parse(persistConfigMock)).toThrow(
       `path is invalid`,

@@ -48,10 +48,17 @@ export async function executePlugin(
   pluginConfig: PluginConfig,
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
-  const { slug, title, icon, description, docsUrl, version, packageName } =
-    pluginConfig;
+  const {
+    slug,
+    title,
+    icon,
+    description,
+    docsUrl,
+    version,
+    packageName,
+    groups,
+  } = pluginConfig;
   const { args, command } = pluginConfig.runner;
-
   const { duration, date } = await executeProcess({
     command,
     args,
@@ -85,19 +92,29 @@ export async function executePlugin(
         ...auditMetadata,
       };
     });
-    // @TODO only include given values otherwise the typing is bad
-    return {
+
+    const pluginReport: PluginReport = {
       version,
       packageName,
-      slug,
       title,
+      slug,
       icon,
-      description,
-      docsUrl,
       date,
       duration,
       audits,
     };
+
+    if (description) {
+      pluginReport.description = description;
+    }
+    if (docsUrl) {
+      pluginReport.docsUrl = docsUrl;
+    }
+    if (groups) {
+      pluginReport.groups = groups;
+    }
+
+    return pluginReport;
   } catch (error) {
     const e = error as Error;
     throw new PluginOutputError(slug, e);

@@ -1,7 +1,7 @@
 import { readFileSync, unlinkSync } from 'fs';
 import { vol } from 'memfs';
 import { join } from 'path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -12,11 +12,11 @@ import {
 import { mockConsole, unmockConsole } from '../../../test/console.mock';
 import { logPersistedResults, persistReport } from './persist';
 
+// Mock file system API's
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
   return memfs.fs;
 });
-
 vi.mock('fs/promises', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
   return memfs.fs.promises;
@@ -79,8 +79,7 @@ describe('persistReport', () => {
   });
 
   it('should log to console when format is stdout`', async () => {
-    const persist = persistConfig(outputDir);
-    persist.format = ['stdout'];
+    const persist = persistConfig({ outputDir, format: ['stdout'] });
 
     await persistReport(dummyReport, {
       ...dummyConfig,
@@ -94,8 +93,7 @@ describe('persistReport', () => {
   });
 
   it('should persist json format`', async () => {
-    const persist = persistConfig(outputDir);
-    persist.format = ['json'];
+    const persist = persistConfig({ outputDir, format: ['json'] });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
@@ -108,8 +106,7 @@ describe('persistReport', () => {
   });
 
   it('should persist md format`', async () => {
-    const persist = dummyConfig.persist;
-    persist.format = ['md'];
+    const persist = persistConfig({ outputDir, format: ['md'] });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
@@ -124,8 +121,10 @@ describe('persistReport', () => {
   });
 
   it('should persist all formats`', async () => {
-    const persist = persistConfig(outputDir);
-    persist.format = ['json', 'md', 'stdout'];
+    const persist = persistConfig({
+      outputDir,
+      format: ['json', 'md', 'stdout'],
+    });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
@@ -142,8 +141,7 @@ describe('persistReport', () => {
   });
 
   it('should persist some formats`', async () => {
-    const persist = persistConfig(outputDir);
-    persist.format = ['md', 'stdout'];
+    const persist = persistConfig({ outputDir, format: ['md', 'stdout'] });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
@@ -160,13 +158,12 @@ describe('persistReport', () => {
     expect(logReport).toMatchSnapshot();
   });
 
-  // TODO: should throw PersistDirError
-  // TODO: should throw PersistError
+  // @TODO: should throw PersistDirError
+  // @TODO: should throw PersistError
 });
 
 describe('logPersistedResults', () => {
   beforeEach(async () => {
-    resetFiles();
     setupConsole();
   });
 

@@ -54,7 +54,7 @@ describe('uploadToPortal', () => {
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',
       }),
-      persist: persistConfig(outputDir),
+      persist: persistConfig({ outputDir }),
     };
     const result = await upload(cfg);
 
