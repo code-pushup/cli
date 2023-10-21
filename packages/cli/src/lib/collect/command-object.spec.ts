@@ -33,6 +33,9 @@ const cli = (args: string[]) =>
   });
 
 describe('collect-command-object', () => {
+  beforeEach(() => {
+    cleanFolderPutGitKeep();
+  });
   afterEach(() => {
     cleanFolderPutGitKeep();
   });

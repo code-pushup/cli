@@ -1,21 +1,15 @@
-import { writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  PortalUploadArgs,
-  ReportFragment,
-  uploadToPortal,
-} from '@code-pushup/portal-client';
-import { UploadOptions } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
-import { report } from '@code-pushup/models/testing';
-import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
-import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './command-object';
+import {dirname, join} from 'path';
+import {fileURLToPath} from 'url';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {PortalUploadArgs, ReportFragment, uploadToPortal,} from '@code-pushup/portal-client';
+import {UploadOptions} from '@code-pushup/core';
+import {report} from '@code-pushup/models/testing';
+import {CliArgsObject, objectToCliArgs} from '@code-pushup/utils';
+import {cleanFolderPutGitKeep} from '../../../test';
+import {middlewares} from '../middlewares';
+import {options} from '../options';
+import {yargsCli} from '../yargs-cli';
+import {yargsUploadCommandObject} from './command-object';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {

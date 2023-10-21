@@ -54,6 +54,7 @@ const cli = (args: string[]) =>
 describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    cleanFolderPutGitKeep();
   });
   afterEach(() => {
     cleanFolderPutGitKeep();
