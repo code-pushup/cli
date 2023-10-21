@@ -59,6 +59,7 @@ const teardownConsole = async () => {
   unmockConsole();
 };
 
+// @TODO refactor away from snapshots in favour of disc space and readability
 describe('persistReport', () => {
   beforeEach(async () => {
     resetFiles();
