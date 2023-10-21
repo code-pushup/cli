@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { config, report } from '../../test';
+import { config } from '../../test';
 import { auditGroupSchema, pluginConfigSchema } from './plugin-config';
 
 describe('auditGroupSchema', () => {

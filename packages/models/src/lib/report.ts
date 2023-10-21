@@ -4,10 +4,7 @@ import {
   executionMetaSchema,
   packageVersionSchema,
 } from './implementation/schemas';
-import { hasMissingStrings } from './implementation/utils';
 import {
-  AuditOutputs,
-  PluginConfig,
   auditGroupSchema,
   auditOutputSchema,
   auditSchema,
