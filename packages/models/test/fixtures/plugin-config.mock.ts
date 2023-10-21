@@ -25,7 +25,7 @@ export function auditConfig(opt?: Partial<Audit>): Audit {
     slug: opt?.slug || 'mock-audit-slug',
     title: opt?.title || 'Audit Title',
     description: opt?.description || 'audit description',
-    docsUrl: opt?.docsUrl || 'http://www.my-docs.dev'
+    docsUrl: opt?.docsUrl || 'http://www.my-docs.dev',
   } satisfies Required<Audit>;
 }
 

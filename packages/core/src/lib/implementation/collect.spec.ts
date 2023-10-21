@@ -1,8 +1,8 @@
-import {beforeEach, describe, expect, it} from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { reportSchema } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
+import { cleanFolder } from '../../../test';
 import { CollectOptions, collect } from './collect';
-import {cleanFolder} from "../../../test";
 
 const baseOptions: CollectOptions = {
   ...minimalConfig(),
@@ -16,7 +16,7 @@ describe('collect', () => {
 
   afterEach(() => {
     cleanFolder();
-  })
+  });
   it('should execute with valid options', async () => {
     const report = await collect(baseOptions);
     expect(() =>

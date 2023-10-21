@@ -9,13 +9,13 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
+import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { cleanFolderPutGitKeep } from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
-import {report} from "@code-pushup/models/testing";
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {

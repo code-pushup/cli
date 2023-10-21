@@ -42,5 +42,4 @@ describe('collectAndPersistReports', () => {
   });
 
   // @TODO should work if persist.outputDir does not exist
-
 });

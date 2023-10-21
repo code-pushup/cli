@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, it} from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   AuditReport,
   PluginConfig,
@@ -9,8 +9,8 @@ import {
   pluginConfig,
   runnerConfig,
 } from '@code-pushup/models/testing';
+import { cleanFolder } from '../../../test';
 import { executePlugin, executePlugins } from './execute-plugin';
-import {cleanFolder} from "../../../test";
 
 const validPluginCfg = pluginConfig([auditReport()]);
 const validPluginCfg2 = pluginConfig([auditReport()], {
@@ -27,7 +27,7 @@ describe('executePlugin', () => {
 
   afterEach(() => {
     cleanFolder();
-  })
+  });
 
   it('should execute valid plugin config', async () => {
     const pluginResult = await executePlugin(validPluginCfg);
@@ -60,7 +60,7 @@ describe('executePlugins', () => {
 
   afterEach(() => {
     cleanFolder();
-  })
+  });
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
     const pluginResult = await executePlugins(plugins);
