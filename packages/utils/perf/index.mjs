@@ -1,7 +1,9 @@
 import Benchmark from 'benchmark';
 import { scoreReport } from './implementations/base.mjs';
+import { scoreReportOptimized0 } from './implementations/optimized0.mjs';
 import { scoreReportOptimized1 } from './implementations/optimized1.mjs';
 import { scoreReportOptimized2 } from './implementations/optimized2.mjs';
+import { toStringBench } from './utils.mjs';
 
 const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
   process.argv
@@ -22,7 +24,7 @@ const PROCESS_ARGUMENT_NUM_GROUPS_P2 = parseInt(
     .pop() || '0',
 );
 
-const suite = new Benchmark.Suite();
+const suite = new Benchmark.Suite('report-scoring');
 
 const AUDIT_PREFIX = 'a-';
 const GROUP_PREFIX = 'g:';
@@ -54,6 +56,7 @@ const listeners = {
 
 // Add tests
 suite.add('scoreReport', _scoreReport);
+suite.add('scoreReportOptimized0', _scoreReportOptimized0);
 suite.add('scoreReportOptimized1', _scoreReportOptimized1);
 suite.add('scoreReportOptimized2', _scoreReportOptimized2);
 
@@ -83,7 +86,6 @@ console.log(' ');
 let start = performance.now();
 const result = suite.run();
 
-console.log('');
 console.log(
   'Total Duration: ',
   ((performance.now() - start) / 1000).toFixed(2) + ' sec',
@@ -95,9 +97,14 @@ function _scoreReport() {
   scoreReport(minimalReport());
 }
 
+function _scoreReportOptimized0() {
+  scoreReportOptimized0(minimalReport());
+}
+
 function _scoreReportOptimized1() {
   scoreReportOptimized1(minimalReport());
 }
+
 function _scoreReportOptimized2() {
   scoreReportOptimized2(minimalReport());
 }

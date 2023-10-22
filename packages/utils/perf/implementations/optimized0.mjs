@@ -16,7 +16,7 @@ function categoryRefToScore(audits, groups) {
     let group;
 
     switch (ref.type) {
-      case CategoryConfigRefType.Audit:
+      case 'audit':
         audit = audits.find(
           a => a.slug === ref.slug && a.plugin === ref.plugin,
         );
@@ -27,7 +27,7 @@ function categoryRefToScore(audits, groups) {
         }
         return audit.score;
 
-      case CategoryConfigRefType.Group:
+      case 'group':
         group = groups.find(
           g => g.slug === ref.slug && g.plugin === ref.plugin,
         );
@@ -52,7 +52,7 @@ export function calculateScore(refs, scoreFn) {
   return numerator / denominator;
 }
 
-export function scoreReport(report) {
+export function scoreReportOptimized0(report) {
   const scoredPlugins = report.plugins.map(plugin => {
     const { groups, audits } = plugin;
     const preparedAudits = audits.map(audit => ({
@@ -73,7 +73,6 @@ export function scoreReport(report) {
     };
   });
 
-  // @TODO intro dict to avoid multiple find calls in the scoreFn
   const allScoredAudits = scoredPlugins.flatMap(({ audits }) => audits);
   const allScoredGroups = scoredPlugins.flatMap(({ groups }) => groups);
 
