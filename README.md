@@ -25,6 +25,12 @@ Make sure to install dependencies:
 npm install
 ```
 
+#### Special Targets
+
+The repository includes a couple of common optional targets:
+
+- `perf` - runs micro benchmarks of a project e.g. `nx perf utils` or `nx affected -t perf`
+
 ### Development
 
 Refer to docs on [how to run tasks in Nx](https://nx.dev/core-features/run-tasks).

@@ -3,7 +3,6 @@ import { scoreReport } from './implementations/base.mjs';
 import { scoreReportOptimized0 } from './implementations/optimized0.mjs';
 import { scoreReportOptimized1 } from './implementations/optimized1.mjs';
 import { scoreReportOptimized2 } from './implementations/optimized2.mjs';
-import { toStringBench } from './utils.mjs';
 
 const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
   process.argv
