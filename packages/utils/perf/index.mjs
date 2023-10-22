@@ -1,6 +1,7 @@
 import Benchmark from 'benchmark';
 import { scoreReport } from './implementations/base.mjs';
 import { scoreReportOptimized1 } from './implementations/optimized1.mjs';
+import { scoreReportOptimized2 } from './implementations/optimized2.mjs';
 
 const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
   process.argv
@@ -53,7 +54,8 @@ const listeners = {
 
 // Add tests
 suite.add('scoreReport', _scoreReport);
-suite.add('scoreReportOptimized', _scoreReportOptimized);
+suite.add('scoreReportOptimized1', _scoreReportOptimized1);
+suite.add('scoreReportOptimized2', _scoreReportOptimized2);
 
 // ==================
 
@@ -79,7 +81,7 @@ console.log('Start benchmark...');
 console.log(' ');
 
 let start = performance.now();
-suite.run();
+const result = suite.run();
 
 console.log('');
 console.log(
@@ -93,8 +95,11 @@ function _scoreReport() {
   scoreReport(minimalReport());
 }
 
-function _scoreReportOptimized() {
+function _scoreReportOptimized1() {
   scoreReportOptimized1(minimalReport());
+}
+function _scoreReportOptimized2() {
+  scoreReportOptimized2(minimalReport());
 }
 
 // ==============================================================
