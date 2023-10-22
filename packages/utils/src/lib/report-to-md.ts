@@ -4,7 +4,6 @@ import {
   countWeightedRefs,
   reportHeadlineText,
   reportOverviewTableHeaders,
-  sumRefs,
 } from './utils';
 
 export function reportToMd(report: ScoredReport): string {
@@ -60,9 +59,9 @@ function reportToOverviewSection(report: ScoredReport): string {
   const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
-    ...categories.map(({ title, refs }) => [
+    ...categories.map(({ title, refs, score }) => [
       title,
-      sumRefs(refs).toString(),
+      score.toString(),
       refs.length.toString() + '/' + countWeightedRefs(refs),
     ]),
   ];
@@ -74,9 +73,9 @@ function reportToDetailSection(report: ScoredReport): string {
   const { categories, plugins } = report;
 
   categories.forEach(category => {
-    const { title, refs } = category;
+    const { title, refs, score } = category;
 
-    md += style(`${title} ${sumRefs(refs)}`) + NEW_LINE;
+    md += style(`${title} ${score}`) + NEW_LINE;
 
     md +=
       refs

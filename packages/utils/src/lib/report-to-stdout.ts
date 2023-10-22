@@ -6,7 +6,6 @@ import {
   countWeightedRefs,
   reportHeadlineText,
   reportOverviewTableHeaders,
-  sumRefs,
 } from './utils';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
@@ -56,8 +55,7 @@ function reportToOverviewSection(report: ScoredReport): void {
   ui.div(...reportOverviewTableHeaders.map(text => ({ text, ...base })));
 
   // table content
-  report.categories.forEach(({ title, refs }) => {
-    const score = sumRefs(refs).toString();
+  report.categories.forEach(({ title, refs, score }) => {
     const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
 
     ui.div(
@@ -66,7 +64,7 @@ function reportToOverviewSection(report: ScoredReport): void {
         ...base,
       },
       {
-        text: score,
+        text: score.toString(),
         ...base,
       },
       {
@@ -83,9 +81,9 @@ function reportToDetailSection(report: ScoredReport): void {
   const { categories, plugins } = report;
 
   categories.forEach(category => {
-    const { title, refs } = category;
+    const { title, refs, score } = category;
 
-    console.log(chalk.bold(`${title} ${sumRefs(refs)}`));
+    console.log(chalk.bold(`${title} ${score}`));
 
     refs.forEach(
       ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {

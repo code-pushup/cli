@@ -36,9 +36,9 @@ describe('report-to-stdout', () => {
     expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
     // overview section
     expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
+    expect(logs.find(log => log.match(/|Performance|0|4\/17|/))).toBeTruthy();
     // details section
-    expect(logs.find(log => log.match(/Performance \d*/))).toBeTruthy();
+    expect(logs.find(log => log.match(/Performance 0/))).toBeTruthy();
     expect(logs.find(log => log.match(/- Title of 0a \(\d\)/))).toBeTruthy();
     // footer
     expect(

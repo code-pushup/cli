@@ -11,6 +11,7 @@ describe('report-to-md', () => {
   it('should contain all sections when using dummy report', () => {
     const scoredReport = scoreReport(dummyReport);
     const mdReport = reportToMd(scoredReport);
+
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -22,9 +23,9 @@ describe('report-to-md', () => {
     expect(mdReport).toMatch(/_Audits: \d*_/);
     // overview section
     expect(mdReport).toContain('|Category|Score|Audits|');
-    expect(mdReport).toMatch(/|Performance|(.*?)/);
+    expect(mdReport).toMatch(/|Performance|0|4\/17|/);
     // details section
-    expect(mdReport).toMatch(/\*\*Performance \d*\*\*/);
+    expect(mdReport).toMatch(/\*\*Performance 0\*\*/);
     expect(mdReport).toMatch(
       /<summary>Title of 0a \(\d\) (Title of plg-0)<\/summary>/,
     );

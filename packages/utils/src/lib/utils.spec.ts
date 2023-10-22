@@ -1,5 +1,5 @@
-import { describe, expect } from 'vitest';
-import { CategoryConfig, Issue } from '@code-pushup/models';
+import {describe, expect} from 'vitest';
+import {CategoryConfig, CategoryConfigRefType, Issue} from '@code-pushup/models';
 import {
   calcDuration,
   compareIssueSeverity,
@@ -10,7 +10,6 @@ import {
   formatCount,
   pluralize,
   slugify,
-  sumRefs,
   toArray,
 } from './utils';
 
@@ -34,42 +33,16 @@ describe('countWeightedRefs', () => {
         slug: 'a1',
         weight: 0,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
       {
         slug: 'a2',
         weight: 1,
         plugin: 'a',
-        type: 'audit',
+        type: CategoryConfigRefType.Audit,
       },
     ];
     expect(countWeightedRefs(refs)).toBe(1);
-  });
-});
-
-describe('sumRefs', () => {
-  it('should sum refs correctly', () => {
-    const refs: CategoryConfig['refs'] = [
-      {
-        slug: 'a1',
-        weight: 0,
-        plugin: 'a',
-        type: 'audit',
-      },
-      {
-        slug: 'a2',
-        weight: 1,
-        plugin: 'a',
-        type: 'audit',
-      },
-      {
-        slug: 'a3',
-        weight: 10,
-        plugin: 'a',
-        type: 'audit',
-      },
-    ];
-    expect(sumRefs(refs)).toBe(11);
   });
 });
 
