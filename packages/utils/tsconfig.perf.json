@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "types": ["node"],
+    "module": "es6"
+  },
+  "include": ["perf/**/*.ts"],
+  "exclude": []
+}

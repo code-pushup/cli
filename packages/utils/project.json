@@ -29,6 +29,10 @@
         ]
       }
     },
+    "perf": {
+      "command": "npx node ./packages/utils/perf/index.mjs",
+      "dependsOn": ["lint"]
+    },
     "test": {
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
