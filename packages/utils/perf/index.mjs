@@ -46,6 +46,7 @@ const listeners = {
   },
   complete: function () {
     if (typeof this?.filter === 'function') {
+      console.log(' ');
       console.log('Fastest is ' + this?.filter('fastest').map('name'));
     }
   },
@@ -70,13 +71,13 @@ Object.entries(listeners).forEach(([name, fn]) => {
 
 console.info('You can adjust the number of runs with the following arguments:');
 console.info(
-  `numAudits1 - Number of audits in plugin 1. --numAudits1=${NUM_AUDITS_P1}`,
+  `numAudits1      Number of audits in plugin 1.       --numAudits1=${NUM_AUDITS_P1}`,
 );
 console.info(
-  `numAudits2 - Number of audits in plugin 2.  --numAudits2=${NUM_AUDITS_P2}`,
+  `numAudits2      Number of audits in plugin 2.       --numAudits2=${NUM_AUDITS_P2}`,
 );
 console.info(
-  `numGroupRefs2 - Number of groups refs in plugin 2.  --numGroupRefs2=${NUM_GROUPS_P2}`,
+  `numGroupRefs2   Number of groups refs in plugin 2.  --numGroupRefs2=${NUM_GROUPS_P2}`,
 );
 console.log(' ');
 console.log('Start benchmark...');
