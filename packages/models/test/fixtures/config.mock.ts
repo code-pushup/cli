@@ -1,6 +1,6 @@
 import { CoreConfig } from '../../src';
 import { categoryConfigs } from './categories.mock';
-import { eslintAuditRef, eslintPluginConfig } from './eslint-plugin.mock';
+import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
 import { auditReport, pluginConfig } from './plugin-config.mock';
 
