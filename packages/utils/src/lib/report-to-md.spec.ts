@@ -5,10 +5,12 @@ import {
   nxValidatorsOnlyReport,
 } from '@code-pushup/models/testing';
 import { reportToMd } from './report-to-md';
+import { scoreReport } from './scoring';
 
 describe('report-to-md', () => {
   it('should contain all sections when using dummy report', () => {
-    const mdReport = reportToMd(dummyReport);
+    const scoredReport = scoreReport(dummyReport);
+    const mdReport = reportToMd(scoredReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -33,7 +35,8 @@ describe('report-to-md', () => {
   });
 
   it('should contain all sections when using nx-validators report', () => {
-    const mdReport = reportToMd(nxValidatorsOnlyReport);
+    const scoredReport = scoreReport(nxValidatorsOnlyReport);
+    const mdReport = reportToMd(scoredReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section
@@ -59,7 +62,8 @@ describe('report-to-md', () => {
   });
 
   it('should contain all sections when using light report', () => {
-    const mdReport = reportToMd(lighthouseReport);
+    const scoredReport = scoreReport(lighthouseReport);
+    const mdReport = reportToMd(scoredReport);
     // headline
     expect(mdReport).toContain('Code Pushup Report');
     // meat information section

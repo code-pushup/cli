@@ -44,21 +44,24 @@ describe('calculateScore', () => {
 describe('scoreReport', () => {
   it('should score valid report', () => {
     const reportA = report();
-    const prepared = scoreReport(reportA);
+    const scoredReport = scoreReport(reportA);
+
     // enriched audits
-    expect(prepared.plugins[1]?.audits[0]?.plugin).toBe('lighthouse');
-    expect(prepared.plugins[1]?.audits[0]?.slug).toBe('first-contentful-paint');
-    expect(prepared.plugins[1]?.audits[0]?.score).toBeCloseTo(0.76);
+    expect(scoredReport.plugins[1]?.audits[0]?.plugin).toBe('lighthouse');
+    expect(scoredReport.plugins[1]?.audits[0]?.slug).toBe(
+      'first-contentful-paint',
+    );
+    expect(scoredReport.plugins[1]?.audits[0]?.score).toBeCloseTo(0.76);
     // enriched and scored groups
-    expect(prepared.plugins[1]?.groups[0]?.plugin).toBe('lighthouse');
-    expect(prepared.plugins[1]?.groups[0]?.slug).toBe('performance');
-    expect(prepared.plugins[1]?.groups[0]?.score).toBeCloseTo(0.92);
+    expect(scoredReport.plugins[1]?.groups[0]?.plugin).toBe('lighthouse');
+    expect(scoredReport.plugins[1]?.groups[0]?.slug).toBe('performance');
+    expect(scoredReport.plugins[1]?.groups[0]?.score).toBeCloseTo(0.92);
     // enriched and scored categories
-    expect(prepared.categories[0]?.slug).toBe('performance');
-    expect(prepared?.categories?.[0]?.score).toBeCloseTo(0.92);
-    expect(prepared.categories[1]?.slug).toBe('bug-prevention');
-    expect(prepared?.categories?.[1]?.score).toBeCloseTo(0.68);
-    expect(prepared.categories[2]?.slug).toBe('code-style');
-    expect(prepared?.categories?.[2]?.score).toBeCloseTo(0.54);
+    expect(scoredReport.categories[0]?.slug).toBe('performance');
+    expect(scoredReport?.categories?.[0]?.score).toBeCloseTo(0.92);
+    expect(scoredReport.categories[1]?.slug).toBe('bug-prevention');
+    expect(scoredReport?.categories?.[1]?.score).toBeCloseTo(0.68);
+    expect(scoredReport.categories[2]?.slug).toBe('code-style');
+    expect(scoredReport?.categories?.[2]?.score).toBeCloseTo(0.54);
   });
 });

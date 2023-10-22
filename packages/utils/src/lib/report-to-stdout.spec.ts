@@ -6,6 +6,7 @@ import {
 } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test';
 import { reportToStdout } from './report-to-stdout';
+import { scoreReport } from './scoring';
 
 let logs: string[] = [];
 
@@ -20,7 +21,8 @@ describe('report-to-stdout', () => {
   });
 
   it('should contain all sections when using dummy report', () => {
-    reportToStdout(dummyReport);
+    const scoredReport = scoreReport(dummyReport);
+    reportToStdout(scoredReport);
     // headline
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
     // meat information section
@@ -45,7 +47,9 @@ describe('report-to-stdout', () => {
   });
 
   it('should contain all sections when using nx-validators report', () => {
-    reportToStdout(nxValidatorsOnlyReport);
+    const scoredReport = scoreReport(nxValidatorsOnlyReport);
+    reportToStdout(scoredReport);
+
     // headline
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
     // meat information section
@@ -79,7 +83,8 @@ describe('report-to-stdout', () => {
   });
 
   it('should contain all sections when using lighthouse report', () => {
-    reportToStdout(lighthouseReport);
+    const scoredReport = scoreReport(lighthouseReport);
+    reportToStdout(scoredReport);
     // headline
     expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
     // meat information section
