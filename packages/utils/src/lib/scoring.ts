@@ -38,12 +38,9 @@ function categoryRefToScore(
   groups: EnrichedScoredAuditGroup[],
 ): (ref: CategoryConfig['refs'][0]) => number {
   return (ref: CategoryConfig['refs'][0]): number => {
-    let audit;
-    let group;
-
     switch (ref.type) {
       case CategoryConfigRefType.Audit:
-        audit = audits.find(
+        const audit = audits.find(
           a => a.slug === ref.slug && a.plugin === ref.plugin,
         );
         if (!audit) {
@@ -54,7 +51,7 @@ function categoryRefToScore(
         return audit.score;
 
       case CategoryConfigRefType.Group:
-        group = groups.find(
+        const group = groups.find(
           g => g.slug === ref.slug && g.plugin === ref.plugin,
         );
         if (!group) {
