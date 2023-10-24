@@ -9,18 +9,20 @@ export type ProgressOptions = AddOptions;
 export function getProgress(
   taskName: string,
   options: ProgressOptions = { type: 'percentage', percentage: 0 },
-) {
+): MultiProgressBars {
   // Initialize mpb
   if (!mpb) {
     mpb = new MultiProgressBars({
       initMessage: '',
-      anchor: 'top',
-      persist: true,
       border: true,
     });
   }
-  // Add tasks
-  mpb.addTask(taskName, options);
 
+  if (mpb.getIndex(taskName) === undefined) {
+    // Add tasks
+    mpb.addTask(taskName, options);
+  }
+
+  // Return Singleton
   return mpb;
 }

@@ -1,40 +1,21 @@
 import chalk from 'chalk';
-import { describe, it, vi } from 'vitest';
-import { getAsyncProcessRunnerConfig } from '../../test';
-import { ProcessConfig, executeProcess } from './execute-process';
+import { describe, expect, it } from 'vitest';
 import { getProgress } from './progress';
 
-describe('progress1', () => {
-  it('should update progress', async () => {
+describe('progress', () => {
+  it('should return singleton', async () => {
     const p = 'test-progress';
     const progress = getProgress(p, {
       type: 'percentage',
       percentage: 0,
       barTransformFn: chalk.yellow as any,
     });
-    const runs = 10;
-    let cfg: ProcessConfig = getAsyncProcessRunnerConfig({
-      interval: 1000,
-      runs,
-      outputFile: 'out.json',
+    const progress2 = getProgress(p, {
+      type: 'percentage',
+      percentage: 0,
+      barTransformFn: chalk.yellow as any,
     });
-    cfg = {
-      ...cfg,
-      observer: {
-        next: () => {
-          progress.incrementTask(p, {
-            percentage: 0.1,
-            barTransformFn: chalk.yellow as any,
-          });
-        },
-        complete: () =>
-          progress.updateTask(p, {
-            percentage: 1,
-            barTransformFn: chalk.gray as any,
-          }),
-      },
-    };
-    const errorSpy = vi.fn();
-    await executeProcess(cfg);
+
+    expect(progress === progress2).toBe(true);
   });
-}, 20000);
+});
