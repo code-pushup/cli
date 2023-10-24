@@ -1,14 +1,4 @@
 import { describe, expect } from 'vitest';
-import { CategoryConfig, Issue } from '@code-pushup/models';
-import {
-  calcDuration,
-  compareIssueSeverity,
-  countWeightedRefs,
-  formatBytes,
-  formatCount,
-  slugify,
-  sumRefs,
-} from './report';
 import { countOccurrences, distinct, pluralize, toArray } from './utils';
 
 describe('pluralize', () => {

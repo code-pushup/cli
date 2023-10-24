@@ -9,7 +9,6 @@ import {
   slugify,
   sumRefs,
 } from './report';
-import { countOccurrences, distinct, pluralize, toArray } from './utils';
 
 describe('slugify', () => {
   it.each([
