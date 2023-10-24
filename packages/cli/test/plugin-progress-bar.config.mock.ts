@@ -1,9 +1,10 @@
-import {PluginConfig} from "@code-pushup/models";
+import { PluginConfig } from '@code-pushup/models';
 
 const outputDir = 'tmp';
 
 const pluginSlug = (id: string): string => 'async-plugin-' + id;
-const auditSlug = (pId: string, aId: string): string => pluginSlug(pId) + '-a' + aId;
+const auditSlug = (pId: string, aId: string): string =>
+  pluginSlug(pId) + '-a' + aId;
 const pluginTitle = (end: string): string => 'Async Plugin ' + end;
 const auditTitle = (end: string): string => 'Async Audit ' + end;
 const asyncPlugin = (pId: string, duration = 1000): PluginConfig => {
@@ -13,21 +14,26 @@ const asyncPlugin = (pId: string, duration = 1000): PluginConfig => {
     slug: pluginSlug(pId),
     title: pluginTitle(pId),
     icon: 'javascript',
-    audits: [
-      {slug: auditSlug(pId, aId), title: auditTitle(aId)}
-    ],
+    audits: [{ slug: auditSlug(pId, aId), title: auditTitle(aId) }],
     runner: {
       command: 'node',
       args: [
         '-e',
         `setTimeout(() => require('fs').writeFileSync('${outputFile}', '${JSON.stringify(
-          [{slug: auditSlug(pId, aId), title: auditTitle(aId), value: 0, score: 0}]
+          [
+            {
+              slug: auditSlug(pId, aId),
+              title: auditTitle(aId),
+              value: 0,
+              score: 0,
+            },
+          ],
         )}'), ${duration});`,
       ],
       outputFile,
     },
-  }
-}
+  };
+};
 
 export default {
   upload: {
@@ -36,8 +42,8 @@ export default {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: {outputDir},
-  plugins: new Array(100).fill(0).map((_, idx) => asyncPlugin(idx + '', 100)),
+  persist: { outputDir },
+  plugins: new Array(10).fill(0).map((_, idx) => asyncPlugin(idx + '', 1000)),
   categories: [
     {
       slug: 'category-1',

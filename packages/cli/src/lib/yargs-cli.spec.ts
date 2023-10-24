@@ -4,10 +4,10 @@ import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from './yargs-cli';
 
 const options: Record<string, Options> = {
-  interactive: {
-    describe: 'When false disables interactive input prompts for options.',
+  verbose: {
+    describe: 'more info.',
     type: 'boolean',
-    default: true,
+    default: false,
   },
 };
 const demandCommand: [number, string] = [0, 'no command required'];
@@ -24,24 +24,26 @@ describe('yargsCli', () => {
     const parsedArgv = await yargsCli(args, {
       options,
     }).parseAsync();
-    expect(parsedArgv.interactive).toBe(true);
+    expect(parsedArgv.verbose).toBe(false);
   });
 
   it('global options should parse correctly', async () => {
     const args: string[] = objectToCliArgs({
-      interactive: false,
+      verbose: true,
     });
 
     const parsedArgv = await yargsCli(args, {
       options,
       demandCommand,
     }).parseAsync();
-    expect(parsedArgv.interactive).toBe(false);
+    expect(parsedArgv.verbose).toBe(true);
   });
 
   it('global options and middleware handle argument overrides correctly', async () => {
     const args: string[] = objectToCliArgs({
       config: 'validConfigPath',
+      verbose: true,
+      format: ['md'],
     });
     const parsedArgv = await yargsCli(args, {
       options,

@@ -75,8 +75,8 @@ export default {
       audits: [
         {
           slug: 'async-1-dummy-audit-1',
-          title: 'Dummy Audit 1'
-        }
+          title: 'Dummy Audit 1',
+        },
       ],
       runner: {
         command: 'node',
@@ -89,7 +89,7 @@ export default {
                 slug: 'async-1-dummy-audit-1',
                 value: 420,
                 score: 0.42,
-              }
+              },
             ],
           )}'), 3000);`,
         ],

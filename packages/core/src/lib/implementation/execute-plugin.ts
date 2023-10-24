@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
@@ -5,7 +6,11 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import {ProcessObserver, executeProcess, getProgress} from '@code-pushup/utils';
+import {
+  ProcessObserver,
+  executeProcess,
+  getProgress,
+} from '@code-pushup/utils';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -126,12 +131,25 @@ export async function executePlugin(
 export async function executePlugins(
   plugins: PluginConfig[],
 ): Promise<PluginReport[]> {
-  const progressName = 'Execute Plugins';
+  const progressName = 'Run Plugins';
   const progressBar = getProgress(progressName);
-  return await plugins.reduce(async (acc, pluginCfg) => {
+
+  const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
+    progressBar.updateTask(progressName, {
+      message: 'Executing  ' + chalk.bold(pluginCfg.title),
+      barTransformFn: s => chalk.green(s),
+    });
     const pluginReport = await executePlugin(pluginCfg);
-    progressBar.incrementTask(progressName, {percentage: 1/plugins.length});
+    progressBar.incrementTask(progressName, {
+      percentage: 1 / plugins.length,
+      barTransformFn: s => chalk.gray(s),
+      message: chalk.green(chalk.bold('Done running plugins')),
+    });
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
+
+  progressBar.close();
+
+  return pluginsResult;
 }

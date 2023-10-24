@@ -3,7 +3,7 @@ import { CoreConfig, GlobalOptions } from '@code-pushup/models';
 import { GeneralCliOptions } from './model';
 
 export async function configMiddleware<
-  T extends GeneralCliOptions & CoreConfig,
+  T extends Partial<GeneralCliOptions & CoreConfig>,
 >(processArgs: T) {
   const args = processArgs as T;
   const { config, ...cliOptions } = args as GeneralCliOptions &
