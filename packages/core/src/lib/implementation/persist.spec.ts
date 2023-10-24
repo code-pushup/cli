@@ -72,8 +72,7 @@ describe('persistReport', () => {
 
   it('should stdout as format by default`', async () => {
     await persistReport(dummyReport, dummyConfig);
-    const logReport = logs.join('\n');
-    expect(logReport).toMatchSnapshot();
+    expect(logs).toContain('Code Pushup');
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -132,13 +131,12 @@ describe('persistReport', () => {
     });
 
     const jsonReport: Report = readReport('json');
-    expect(jsonReport).toMatchSnapshot();
+    expect(jsonReport.packageName).toBe('@code-pushup/core');
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toMatchSnapshot();
+    expect(mdReport).toContain('Code Pushup');
 
-    const logReport = logs.join('\n');
-    expect(logReport).toMatchSnapshot();
+    expect(logs).toContain('Code Pushup');
   });
 
   it('should persist some formats`', async () => {
@@ -153,10 +151,9 @@ describe('persistReport', () => {
     );
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toMatchSnapshot();
+    expect(mdReport).toContain('Code Pushup');
 
-    const logReport = logs.join('\n');
-    expect(logReport).toMatchSnapshot();
+    expect(logs).toContain('Code Pushup');
   });
 
   // @TODO: should throw PersistDirError

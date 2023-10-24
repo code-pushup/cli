@@ -96,9 +96,10 @@ export async function executePlugin(
     const pluginReport: PluginReport = {
       version,
       packageName,
-      title,
       slug,
+      title,
       icon,
+      ...(description && {}),
       date,
       duration,
       audits,
