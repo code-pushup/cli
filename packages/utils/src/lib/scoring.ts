@@ -40,6 +40,7 @@ function categoryRefToScore(
   return (ref: CategoryConfig['refs'][0]): number => {
     switch (ref.type) {
       case CategoryConfigRefType.Audit:
+        // eslint-disable-next-line no-case-declarations
         const audit = audits.find(
           a => a.slug === ref.slug && a.plugin === ref.plugin,
         );
@@ -51,6 +52,7 @@ function categoryRefToScore(
         return audit.score;
 
       case CategoryConfigRefType.Group:
+        // eslint-disable-next-line no-case-declarations
         const group = groups.find(
           g => g.slug === ref.slug && g.plugin === ref.plugin,
         );
