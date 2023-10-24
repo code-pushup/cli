@@ -19,10 +19,10 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   categories: ScoredCategoryConfig[];
 };
 
-function groupRefToScore<T extends { weight: number; slug: string }>(
+function groupRefToScore(
   audits: AuditReport[],
-): (ref: T) => number {
-  return (ref: T): number => {
+): (ref: AuditGroup['refs'][0]) => number {
+  return (ref) => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
       throw new Error(
