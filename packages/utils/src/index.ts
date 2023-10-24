@@ -10,6 +10,7 @@ export {
 } from './lib/execute-process';
 export { git, latestHash } from './lib/git';
 export { importEsmModule } from './lib/load-file';
+export { FOOTER_PREFIX, CODE_PUSHUP_DOMAIN } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export {

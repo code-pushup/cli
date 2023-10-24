@@ -36,11 +36,11 @@ export function auditReport(opt?: Partial<AuditReport>): AuditReport {
     description: 'audit description',
     docsUrl: 'http://www.my-docs.dev',
     score: 0,
+    value: 0,
+    displayValue: '0x',
     details: {
       issues: [],
     },
-    value: 0,
-    displayValue: '0x',
     ...(opt || {}),
   } satisfies AuditReport;
 }

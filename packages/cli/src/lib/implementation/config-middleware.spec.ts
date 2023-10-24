@@ -7,7 +7,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const withDirName = (path: string) => join(__dirname, path);
 const config = (ext: string) =>
   `${withDirName(
-    join('..', '..', '..', '..', 'models', 'test', 'fixtures', 'code-pushup.config.mock.',
+    join(
+      '..',
+      '..',
+      '..',
+      '..',
+      'models',
+      'test',
+      'fixtures',
+      'code-pushup.config.mock.',
+    ),
   )}${ext}`;
 
 describe('applyConfigMiddleware', () => {

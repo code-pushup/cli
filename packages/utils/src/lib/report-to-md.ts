@@ -1,5 +1,6 @@
 import { Report } from '@code-pushup/models';
 import { NEW_LINE, details, headline, li, link, style, table } from './md/';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from './report';
 import {
   countWeightedRefs,
   reportHeadlineText,
@@ -21,7 +22,7 @@ export function reportToMd(report: Report): string {
   md += reportToDetailSection(report) + NEW_LINE;
 
   // footer section
-  md += 'Made with ❤️ by [code-pushup.dev](code-pushup.dev)';
+  md += `${FOOTER_PREFIX} ${link(CODE_PUSHUP_DOMAIN)}`;
   return md;
 }
 

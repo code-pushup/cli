@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import cliui from 'cliui';
 import { Report } from '@code-pushup/models';
 import { NEW_LINE } from './md';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from './report';
 import {
   countWeightedRefs,
   reportHeadlineText,
@@ -14,12 +15,12 @@ const ui = cliui({ width: 60 }); // @TODO check display width
 export function reportToStdout(report: Report): void {
   reportToHeaderSection(report);
   reportToMetaSection(report);
-  console.log(NEW_LINE);
+  console.log(NEW_LINE); // @TODO just use '' and \n does only work in markdown
   reportToOverviewSection(report);
   console.log(NEW_LINE);
   reportToDetailSection(report);
   console.log(NEW_LINE);
-  console.log('Made with ❤️ by code-pushup.dev');
+  console.log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 }
 
 function reportToHeaderSection(report: Report): void {

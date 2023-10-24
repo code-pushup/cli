@@ -9,6 +9,7 @@ import {
   persistConfig,
   report,
 } from '@code-pushup/models/testing';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test/console.mock';
 import { logPersistedResults, persistReport } from './persist';
 
@@ -72,7 +73,7 @@ describe('persistReport', () => {
 
   it('should stdout as format by default`', async () => {
     await persistReport(dummyReport, dummyConfig);
-    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
+    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -85,7 +86,7 @@ describe('persistReport', () => {
       ...dummyConfig,
       persist,
     });
-    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
+    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 
     expect(() => readReport('json')).not.toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -111,7 +112,9 @@ describe('persistReport', () => {
       persist,
     });
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
+    expect(mdReport).toContain(
+      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+    );
 
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
@@ -133,9 +136,11 @@ describe('persistReport', () => {
     expect(jsonReport.packageName).toBe('@code-pushup/core');
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
+    expect(mdReport).toContain(
+      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+    );
 
-    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
+    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
   });
 
   it('should persist some formats`', async () => {
@@ -150,9 +155,11 @@ describe('persistReport', () => {
     );
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
+    expect(mdReport).toContain(
+      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+    );
 
-    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
+    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
   });
 
   // @TODO: should throw PersistDirError
