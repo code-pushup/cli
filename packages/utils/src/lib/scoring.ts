@@ -22,7 +22,7 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
 function groupRefToScore(
   audits: AuditReport[],
 ): (ref: AuditGroup['refs'][0]) => number {
-  return (ref) => {
+  return ref => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
       throw new Error(
