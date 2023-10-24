@@ -28,7 +28,7 @@ export const categoryConfigSchema = scorableSchema(
     'Slug of an audit or group (depending on `type`)',
   ).merge(
     z.object({
-      type: z.enum([CategoryConfigRefType.Audit, CategoryConfigRefType.Group], {
+      type: z.enum(['audit', 'group'], {
         description:
           'Discriminant for reference kind, affects where `slug` is looked up',
       }),
