@@ -1,12 +1,12 @@
 import { Report } from '@code-pushup/models';
 import { NEW_LINE, details, headline, li, link, style, table } from './md/';
-import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from './report';
 import {
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
   countWeightedRefs,
-  reportHeadlineText,
-  reportOverviewTableHeaders,
   sumRefs,
-} from './utils';
+} from './report';
+import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
 export function reportToMd(report: Report): string {
   // header section

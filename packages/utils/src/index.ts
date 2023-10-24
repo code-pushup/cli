@@ -14,16 +14,16 @@ export { FOOTER_PREFIX, CODE_PUSHUP_DOMAIN } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export {
-  calcDuration,
-  compareIssueSeverity,
   countOccurrences,
   distinct,
-  formatBytes,
-  formatCount,
   objectToEntries,
   pluralize,
   readJsonFile,
   readTextFile,
-  slugify,
   toArray,
 } from './lib/utils';
+export { formatBytes } from './lib/report';
+export { slugify } from './lib/report';
+export { calcDuration } from './lib/report';
+export { formatCount } from './lib/report';
+export { compareIssueSeverity } from './lib/report';
