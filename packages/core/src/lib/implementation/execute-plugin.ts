@@ -5,7 +5,7 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { ProcessObserver, executeProcess } from '@code-pushup/utils';
+import {ProcessObserver, executeProcess, getProgress} from '@code-pushup/utils';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -126,9 +126,12 @@ export async function executePlugin(
 export async function executePlugins(
   plugins: PluginConfig[],
 ): Promise<PluginReport[]> {
+  const progressName = 'Execute Plugins';
+  const progressBar = getProgress(progressName);
   return await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
     const pluginReport = await executePlugin(pluginCfg);
+    progressBar.incrementTask(progressName, {percentage: 1/plugins.length});
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
 }

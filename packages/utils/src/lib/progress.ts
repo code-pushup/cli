@@ -5,14 +5,15 @@ import { AddOptions, MultiProgressBars } from 'multi-progress-bars';
 // Initialize mpb
 let mpb: MultiProgressBars;
 
+export type ProgressOptions = AddOptions;
 export function getProgress(
   taskName: string,
-  options: AddOptions = { type: 'percentage' },
+  options: ProgressOptions = { type: 'percentage', percentage: 0 },
 ) {
   // Initialize mpb
   if (!mpb) {
     mpb = new MultiProgressBars({
-      initMessage: ' $ Example Fullstack Build ',
+      initMessage: '',
       anchor: 'top',
       persist: true,
       border: true,
@@ -20,8 +21,6 @@ export function getProgress(
   }
   // Add tasks
   mpb.addTask(taskName, options);
-  // Wait for all tasks to finish
-  mpb.promise;
 
   return mpb;
 }

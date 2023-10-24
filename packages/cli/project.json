@@ -20,7 +20,7 @@
       "dependsOn": ["build"]
     },
     "execute": {
-      "command": "npx dist/packages/cli --config=./packages/cli/code-pushup.config.ts",
+      "command": "npx dist/packages/cli --config=./packages/cli/test/progress-bar-test.config.mock.ts",
       "dependsOn": ["build"]
     },
     "lint": {
