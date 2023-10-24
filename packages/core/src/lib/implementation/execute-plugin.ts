@@ -99,22 +99,13 @@ export async function executePlugin(
       slug,
       title,
       icon,
-      ...(description && {}),
       date,
       duration,
       audits,
+      ...(description && { description }),
+      ...(docsUrl && { docsUrl }),
+      ...(groups && { groups }),
     };
-
-    if (description) {
-      pluginReport.description = description;
-    }
-    if (docsUrl) {
-      pluginReport.docsUrl = docsUrl;
-    }
-    if (groups) {
-      pluginReport.groups = groups;
-    }
-
     return pluginReport;
   } catch (error) {
     const e = error as Error;
