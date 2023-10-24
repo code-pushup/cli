@@ -78,7 +78,7 @@ describe('pluginConfigSchema', () => {
     pluginConfig.groups = groups;
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `slug has to follow the patter`,
+      `slug has to follow the pattern`,
     );
   });
 });
