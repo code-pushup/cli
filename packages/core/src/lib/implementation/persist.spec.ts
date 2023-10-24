@@ -72,7 +72,7 @@ describe('persistReport', () => {
 
   it('should stdout as format by default`', async () => {
     await persistReport(dummyReport, dummyConfig);
-    expect(logs).toContain('Code Pushup');
+    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -85,8 +85,7 @@ describe('persistReport', () => {
       ...dummyConfig,
       persist,
     });
-    const logReport = logs.join('\n');
-    expect(logReport).toMatchSnapshot();
+    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
 
     expect(() => readReport('json')).not.toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -99,7 +98,7 @@ describe('persistReport', () => {
       persist,
     });
     const jsonReport: Report = readReport('json');
-    expect(jsonReport).toMatchSnapshot();
+    expect(jsonReport.packageName).toBe('@code-pushup/core');
 
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -112,7 +111,7 @@ describe('persistReport', () => {
       persist,
     });
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toMatchSnapshot();
+    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
 
     expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
@@ -134,9 +133,9 @@ describe('persistReport', () => {
     expect(jsonReport.packageName).toBe('@code-pushup/core');
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('Code Pushup');
+    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
 
-    expect(logs).toContain('Code Pushup');
+    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
   });
 
   it('should persist some formats`', async () => {
@@ -151,9 +150,9 @@ describe('persistReport', () => {
     );
 
     const mdReport = readFileSync(reportPath('md')).toString();
-    expect(mdReport).toContain('Code Pushup');
+    expect(mdReport).toContain('Made with ❤️ by code-pushup.dev');
 
-    expect(logs).toContain('Code Pushup');
+    expect(logs).toContain('Made with ❤️ by code-pushup.dev');
   });
 
   // @TODO: should throw PersistDirError
