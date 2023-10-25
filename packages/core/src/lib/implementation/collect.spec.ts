@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Report, reportSchema } from '@code-pushup/models';
+import { reportSchema } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
 import { cleanFolder } from '../../../test';
 import { CollectOptions, collect } from './collect';

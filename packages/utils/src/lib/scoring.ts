@@ -2,7 +2,6 @@ import {
   AuditGroup,
   AuditReport,
   CategoryConfig,
-  CategoryConfigRefType,
   PluginReport,
   Report,
 } from '@code-pushup/models';

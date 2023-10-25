@@ -5,11 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
-  config,
   minimalConfig,
   minimalReport,
   persistConfig,
-  report,
 } from '@code-pushup/models/testing';
 import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test/console.mock';

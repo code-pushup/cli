@@ -1,8 +1,4 @@
-export {
-  CategoryConfig,
-  categoryConfigSchema,
-  CategoryConfigRefType,
-} from './lib/category-config';
+export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
 export {
   CoreConfig,
   coreConfigSchema,
