@@ -23,6 +23,20 @@ export function minimalConfig(
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
+
+  const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+    slug: PLUGIN_1_SLUG,
+    outputDir,
+    outputFile: `${PLUGIN_1_SLUG}.json`,
+  });
+  const { runner, ...reportPlg } = plg1;
+  reportPlg.audits = reportPlg.audits.map(a => ({
+    ...a,
+    score: 0,
+    value: 0,
+    displayValue: '',
+  }));
+
   return JSON.parse(
     JSON.stringify({
       persist: { outputDir },
@@ -76,13 +90,10 @@ export function minimalReport(outputDir = 'tmp'): Report {
 
   return JSON.parse(
     JSON.stringify({
-      persist: { outputDir },
-      upload: {
-        organization: 'code-pushup',
-        project: 'cli',
-        apiKey: 'dummy-api-key',
-        server: 'https://example.com/api',
-      },
+      packageName: '@code-pushup/core',
+      version: '0.1.0',
+      date: 'today',
+      duration: 42,
       categories: [
         {
           slug: 'category-1',

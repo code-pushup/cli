@@ -6,6 +6,8 @@ import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   config,
+  minimalConfig,
+  minimalReport,
   persistConfig,
   report,
 } from '@code-pushup/models/testing';
@@ -35,8 +37,8 @@ const readReport = (format: 'json' | 'md') => {
   }
 };
 
-const dummyReport = report();
-const dummyConfig = config(outputDir);
+const dummyReport = minimalReport();
+const dummyConfig = minimalConfig(outputDir);
 let logs: string[] = [];
 
 const resetFiles = async () => {
