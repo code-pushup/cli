@@ -47,6 +47,7 @@ export function yargsCli(
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
+    .array('persist.format')
     .options(options);
   //.demandCommand(...demandCommand);
 
@@ -80,6 +81,8 @@ export function yargsCli(
       }),
     });
   });
+
+  console.log(cli.argv);
 
   // return CLI object
   return cli as unknown as Argv<CoreConfig & GeneralCliOptions>;
