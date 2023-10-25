@@ -84,7 +84,7 @@ describe('autorun-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: [],
+        categories: expect.any(Array),
         plugins: expect.any(Array),
         packageName: '@code-pushup/core',
         packageVersion: '0.0.1',

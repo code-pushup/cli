@@ -5,7 +5,7 @@ import { CoreConfig } from '@code-pushup/models';
 import { CLI_NAME } from '../cli';
 
 export function yargsUploadCommandObject() {
-  const command = 'autorun';
+  const command = 'upload';
   return {
     command,
     describe: 'Upload report results to the portal',
