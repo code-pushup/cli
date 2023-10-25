@@ -78,3 +78,21 @@ Projects are tagged in two different dimensions - scope and type:
 | `type:feature`  | library with business logic for a specific feature                           | `type:util`                    |
 | `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
 | `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
+
+#### Special Targets
+
+The repository includes a couple of common optional targets:
+
+- `perf` - runs micro benchmarks of a project e.g. `nx perf utils` or `nx affected -t perf`
+
+#### Special Folder
+
+The repository standards organize reusable code specific to a target in dedicated folders at project root level.
+This helps to organize and share target related code.
+
+The following optional folders can be present in a project root;
+
+- `perf` - micro benchmarks related code
+- `test` - testing related code
+- `docs` - docs related files
+- `tooling` - tooling related code
