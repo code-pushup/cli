@@ -79,10 +79,6 @@ Projects are tagged in two different dimensions - scope and type:
 | `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
 | `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
 
-### Contributing
-
-Listed you can find information helpful when contributing to the project
-
 #### Special Targets
 
 The repository includes a couple of common optional targets:
