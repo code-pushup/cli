@@ -42,7 +42,7 @@ export function getProgress(taskName: string, options?: { progress: boolean }) {
       runIfProgress(() => mpb.incrementTask(taskName, options));
     },
     // @TODO evaluate better implementation
-    close: mpb.close,
+    close: () => runIfProgress(() => mpb.close),
   };
 }
 
