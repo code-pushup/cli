@@ -1,3 +1,5 @@
+import { CoreConfig } from '@code-pushup/models';
+
 const outputDir = 'tmp';
 
 export default {
@@ -19,21 +21,18 @@ export default {
           slug: 'dummy-audit-1',
           title: 'Dummy Audit 1',
           description: 'A dummy audit to fill the void 1',
-          label: '???',
           docsUrl: 'http://www.my-docs.dev?slug=dummy-audit-1',
         },
         {
           slug: 'dummy-audit-2',
           title: 'Dummy Audit 2',
           description: 'A dummy audit to fill the void 2',
-          label: '???',
           docsUrl: 'http://www.my-docs.dev?slug=dummy-audit-2',
         },
         {
           slug: 'dummy-audit-3',
           title: 'Dummy Audit 3',
           description: 'A dummy audit to fill the void 3',
-          label: '???',
           docsUrl: 'http://www.my-docs.dev?slug=dummy-audit-3',
         },
       ],
@@ -131,4 +130,4 @@ export default {
       ],
     },
   ],
-};
+} satisfies CoreConfig;
