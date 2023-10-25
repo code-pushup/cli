@@ -10,11 +10,13 @@ import {
 // Initialize mpb
 let mpb: MultiProgressBars;
 
-export type ProgressOptions = AddOptions;
-export function getProgress(
-  taskName: string,
-  options: ProgressOptions = { type: 'percentage', percentage: 0 },
-) {
+export function getProgress(taskName: string, options?: { progress: boolean }) {
+  const { progress = true } = options || {};
+  const runIfProgress = (fn: () => unknown) => {
+    if (progress) {
+      fn();
+    }
+  };
   // Initialize mpb
   if (!mpb) {
     mpb = new MultiProgressBars({
@@ -24,19 +26,25 @@ export function getProgress(
   }
 
   if (mpb.getIndex(taskName) === undefined) {
-    // Add tasks
-    mpb.addTask(taskName, options);
+    runIfProgress(() => {
+      // Add tasks
+      mpb.addTask(taskName, {
+        type: 'percentage',
+        percentage: 0,
+      });
+    });
   }
 
   // Return Singleton
 
   return {
     updateTask(options: UpdateOptions) {
-      mpb.updateTask(taskName, options);
+      runIfProgress(() => mpb.updateTask(taskName, options));
     },
     incrementTask(options: UpdateOptions) {
-      mpb.updateTask(taskName, options);
+      runIfProgress(() => mpb.incrementTask(taskName, options));
     },
+    // @TODO evaluate better implementation
     close: mpb.close,
   };
 }

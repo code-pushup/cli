@@ -132,9 +132,10 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
+  options?: { progress: boolean },
 ): Promise<PluginReport[]> {
   const progressName = 'Run Plugins';
-  const progressBar = getProgress(progressName);
+  const progressBar = getProgress(progressName, options);
   const percentageIncrement = 1 / plugins.length;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
