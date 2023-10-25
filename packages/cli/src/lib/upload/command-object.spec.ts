@@ -37,7 +37,7 @@ const baseArgs = [
       '..',
       '..',
       'test',
-      'js-format.config.mock.ts',
+      'code-pushup.config.ts',
     ),
   }),
 ];
