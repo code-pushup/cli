@@ -1,5 +1,5 @@
-import {describe, expect, it} from 'vitest';
-import {executeProcess} from './execute-process';
+import { describe, expect, it } from 'vitest';
+import { executeProcess } from './execute-process';
 
 describe('progress', () => {
   it('should log progress bar', async () => {
@@ -10,7 +10,7 @@ describe('progress', () => {
         './packages/utils/test/fixtures/execute-progress.mock.mjs',
         '-P',
         './packages/utils/tsconfig.spec.json',
-      ]
+      ],
     });
     // log from process itself
     expect(stdout).toContain('progress:start with duration: 300, plugins: 10');
