@@ -29,6 +29,7 @@ vi.mock('@code-pushup/portal-client', async () => {
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
+    progress: false,
     verbose: true,
     config: join(
       fileURLToPath(dirname(import.meta.url)),
