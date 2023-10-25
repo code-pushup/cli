@@ -31,7 +31,7 @@ export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
     ...eslintMeta,
     runner: runnerConfig(
       Object.values(ESLINT_AUDITS_MAP),
-      join(outputDir, 'eslint-out.json'),
+      join(outputDir, `eslint-out.json`),
     ),
     audits,
   };

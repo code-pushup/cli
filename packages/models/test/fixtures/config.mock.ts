@@ -20,18 +20,14 @@ export function config(outputDir = 'tmp'): CoreConfig {
 
 export function minimalConfig(
   outputDir = 'tmp',
-  outputFile?: string,
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
-  outputFile = outputFile
-    ? `${outputFile}.${Date.now()}.json`
-    : `${PLUGIN_1_SLUG}.${Date.now()}.json`;
+  const outputFile = `${PLUGIN_1_SLUG}.${Date.now()}.json`;
 
   const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
     slug: PLUGIN_1_SLUG,
     outputDir,
-    outputFile: `${PLUGIN_1_SLUG}.json`,
   });
   const { runner, ...reportPlg } = plg1;
   reportPlg.audits = reportPlg.audits.map(a => ({
@@ -82,7 +78,6 @@ export function minimalReport(outputDir = 'tmp'): Report {
   const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
     slug: PLUGIN_1_SLUG,
     outputDir,
-    outputFile: `${PLUGIN_1_SLUG}.json`,
   });
   const { runner, ...reportPlg } = plg1;
   reportPlg.audits = reportPlg.audits.map(a => ({
