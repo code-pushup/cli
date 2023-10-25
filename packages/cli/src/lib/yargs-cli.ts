@@ -82,8 +82,6 @@ export function yargsCli(
     });
   });
 
-  console.log(cli.argv);
-
   // return CLI object
   return cli as unknown as Argv<CoreConfig & GeneralCliOptions>;
 }
