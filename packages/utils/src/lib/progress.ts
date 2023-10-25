@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { MultiProgressBars, UpdateOptions } from 'multi-progress-bars';
+import { PluginReport } from '@code-pushup/models';
 
 // import chalk from 'chalk';
 

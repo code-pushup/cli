@@ -121,16 +121,11 @@ export async function executePlugin(
   }
 }
 
-const MOCK_PROGRESS = {
-  updateTask: (options: UpdateOptions) => void 0,
-  incrementTask: (options: UpdateOptions) => void 0,
-  close: () => void 0,
-};
-
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
- * @param plugins array of {@link PluginConfig} objects
+ * @param plugins array of {@param options
+@link PluginConfig} objects
  * @returns {Promise<PluginReport[]>} plugin report
  *
  * @example
@@ -152,28 +147,57 @@ export async function executePlugins(
 ): Promise<PluginReport[]> {
   const progressName = 'Run Plugins';
   const progressBar = options?.progress
-    ? getProgress(progressName)
+    ? getPluginProgress(progressName)
     : MOCK_PROGRESS;
-  const percentageIncrement = 1 / plugins.length;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
-    progressBar.updateTask({
-      message: `Executing  ${chalk.bold(pluginCfg.title)}`,
-      barTransformFn: barStyles.active,
-    });
+
+    progressBar.updateActivePlugin(pluginCfg.title);
     const pluginReport = await executePlugin(pluginCfg);
-    progressBar.incrementTask({
-      percentage: percentageIncrement,
-    });
+    progressBar.incrementProcessedPlugins(plugins.length);
+
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
 
-  progressBar.incrementTask({
-    barTransformFn: barStyles.done,
-    message: messageStyles.done('Done running plugins'),
-  });
-  progressBar.close();
+  progressBar.closePluginsProgress();
 
   return pluginsResult;
+}
+
+const MOCK_PROGRESS = {
+  incrementProcessedPlugins: (numPlugins: number) => {
+    void 0;
+  },
+  updateActivePlugin: (pluginTitle: string) => {
+    void 0;
+  },
+  closePluginsProgress: () => {
+    void 0;
+  },
+};
+
+function getPluginProgress(progressName: string) {
+  const progressBar = getProgress(progressName);
+
+  return {
+    incrementProcessedPlugins: (numPlugins: number) => {
+      progressBar.incrementTask({
+        percentage: 1 / numPlugins,
+      });
+    },
+    updateActivePlugin: (pluginTitle: string) => {
+      progressBar.updateTask({
+        message: `Executing  ${chalk.bold(pluginTitle)}`,
+        barTransformFn: barStyles.active,
+      });
+    },
+    closePluginsProgress: () => {
+      progressBar.incrementTask({
+        barTransformFn: barStyles.done,
+        message: messageStyles.done('Done running plugins'),
+      });
+      progressBar.close();
+    },
+  };
 }
