@@ -22,5 +22,6 @@ describe('collect', () => {
     expect(() =>
       reportSchema.omit({ packageName: true, version: true }).parse(report),
     ).not.toThrow();
+    expect(report.plugins[0]?.audits[0]?.slug).toBe('audit-1');
   });
 });

@@ -15,11 +15,11 @@ _Audits: 52_
 
 |Category|Score|Audits|
 |:--:|:--:|:--:|
-|Performance|1|2/1|
-|Bug prevention|19|16/19|
-|Code style|13|13/13|
+|Performance|0.9215000000000001|2/1|
+|Bug prevention|0.6842105263157895|16/19|
+|Code style|0.5384615384615384|13/13|
 
-**Performance 1**
+**Performance 0.9215000000000001**
 
 - <details>
 <summary>Disallow missing \`key\` props in iterators/collection literals (0) ESLint</summary>
@@ -29,7 +29,7 @@ ESLint rule **jsx-key**, from _react_ plugin.
 
 </details>
 
-**Bug prevention 19**
+**Bug prevention 0.6842105263157895**
 - <details>
 <summary>Disallow assignment operators in conditional expressions (1) ESLint</summary>
 undefined
@@ -158,7 +158,7 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin.
 
 </details>
 
-**Code style 13**
+**Code style 0.5384615384615384**
 - <details>
 <summary>Disallow unused variables (1) ESLint</summary>
 1 warning
@@ -280,11 +280,11 @@ _Audits: 52_
 
 |Category|Score|Audits|
 |:--:|:--:|:--:|
-|Performance|1|2/1|
-|Bug prevention|19|16/19|
-|Code style|13|13/13|
+|Performance|0.9215000000000001|2/1|
+|Bug prevention|0.6842105263157895|16/19|
+|Code style|0.5384615384615384|13/13|
 
-**Performance 1**
+**Performance 0.9215000000000001**
 
 - <details>
 <summary>Disallow missing \`key\` props in iterators/collection literals (0) ESLint</summary>
@@ -294,7 +294,7 @@ ESLint rule **jsx-key**, from _react_ plugin.
 
 </details>
 
-**Bug prevention 19**
+**Bug prevention 0.6842105263157895**
 - <details>
 <summary>Disallow assignment operators in conditional expressions (1) ESLint</summary>
 undefined
@@ -423,7 +423,7 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin.
 
 </details>
 
-**Code style 13**
+**Code style 0.5384615384615384**
 - <details>
 <summary>Disallow unused variables (1) ESLint</summary>
 1 warning
