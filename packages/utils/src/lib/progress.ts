@@ -1,10 +1,6 @@
 import chalk from 'chalk';
 import { MultiProgressBars, UpdateOptions } from 'multi-progress-bars';
-import { PluginReport } from '@code-pushup/models';
 
-// import chalk from 'chalk';
-
-// Initialize mpb
 let mpb: MultiProgressBars;
 
 export function getProgress(taskName: string) {
@@ -33,7 +29,7 @@ export function getProgress(taskName: string) {
     incrementTask(options: UpdateOptions) {
       mpb.incrementTask(taskName, options);
     },
-    // @TODO evaluate better implementation
+    // @TODO evaluate better implementation and read the docs wht it really does
     close: () => () => mpb.close,
   };
 }
