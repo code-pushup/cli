@@ -1,5 +1,7 @@
+import { afterEach, beforeEach, vi } from 'vitest';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../mocks/fs.mock';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
@@ -18,6 +20,14 @@ describe('CLI collect', () => {
       ...report,
       plugins: report.plugins.map(omitVariableData) as PluginReport[],
     });
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    cleanFolderPutGitKeep();
+  });
+  afterEach(() => {
+    cleanFolderPutGitKeep();
+  });
 
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({

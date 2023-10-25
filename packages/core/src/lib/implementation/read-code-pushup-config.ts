@@ -1,6 +1,6 @@
 import { stat } from 'fs/promises';
 import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
-import { importModule } from '@code-pushup/utils';
+import { importEsmModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
@@ -15,7 +15,7 @@ export async function readCodePushupConfig(filepath: string) {
     throw new ConfigPathError(filepath);
   }
 
-  return importModule<CoreConfig>(
+  return importEsmModule<CoreConfig>(
     {
       filepath,
     },

@@ -3,7 +3,7 @@ import { join } from 'path';
 import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
 import { latestHash } from '@code-pushup/utils';
-import { jsonToGql } from '../implementation/json-to-gql';
+import { jsonToGql } from './implementation/json-to-gql';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
 

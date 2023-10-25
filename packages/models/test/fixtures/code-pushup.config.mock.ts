@@ -1,4 +1,6 @@
-import { CoreConfig } from '@code-pushup/models';
+import { CoreConfig } from '../../src';
+import { auditReport } from './plugin-config.mock';
+import { runnerConfig } from './runner.mock';
 
 const outputDir = 'tmp';
 export default {
@@ -13,29 +15,13 @@ export default {
     {
       audits: [
         {
-          slug: 'command-object-audit-slug',
+          slug: 'mock-audit-slug',
           title: 'audit title',
           description: 'audit description',
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: {
-        command: 'node',
-        args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
-            [
-              {
-                title: 'dummy-title',
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
-        ],
-        outputFile: `${outputDir}/out.json`,
-      },
+      runner: runnerConfig([auditReport()], `${outputDir}/out.json`),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',

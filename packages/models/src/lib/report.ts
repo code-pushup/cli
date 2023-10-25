@@ -4,10 +4,7 @@ import {
   executionMetaSchema,
   packageVersionSchema,
 } from './implementation/schemas';
-import { hasMissingStrings } from './implementation/utils';
 import {
-  AuditOutputs,
-  PluginConfig,
   auditGroupSchema,
   auditOutputSchema,
   auditSchema,
@@ -52,17 +49,3 @@ export const reportSchema = packageVersionSchema({
   );
 
 export type Report = z.infer<typeof reportSchema>;
-
-/**
- *
- * Validation function for a plugins audit outputs inside the CLI. Used immediately after generation of the output to validate the result.
- *
- */
-export function auditOutputsRefsPresentInPluginConfigs(
-  audits: AuditOutputs,
-  cfg: PluginConfig,
-): string[] | false {
-  const outRefs = audits.map(({ slug }) => slug);
-  const pluginRef = cfg.audits.map(({ slug }) => cfg.slug + '#' + slug);
-  return hasMissingStrings(outRefs, pluginRef);
-}
