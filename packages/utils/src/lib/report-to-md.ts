@@ -1,10 +1,7 @@
 import { NEW_LINE, details, headline, li, link, style, table } from './md/';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
 import { ScoredReport } from './scoring';
-import {
-  countWeightedRefs,
-  reportHeadlineText,
-  reportOverviewTableHeaders,
-} from './utils';
+import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
 export function reportToMd(report: ScoredReport): string {
   // header section
@@ -20,7 +17,7 @@ export function reportToMd(report: ScoredReport): string {
   md += reportToDetailSection(report) + NEW_LINE;
 
   // footer section
-  md += 'Made with ❤️ by [code-pushup.dev](code-pushup.dev)';
+  md += `${FOOTER_PREFIX} ${link(CODE_PUSHUP_DOMAIN)}`;
   return md;
 }
 
@@ -39,9 +36,9 @@ function reportToMetaSection(report: ScoredReport): string {
     NEW_LINE +
     `_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_` +
     NEW_LINE +
-    `_Date: ${new Date(date).toString()}_` +
+    `_Date: ${date}_` +
     NEW_LINE +
-    `_Duration: ${duration}ms_` +
+    `_Duration: ${duration} ms_` +
     NEW_LINE +
     `_Plugins: ${plugins?.length}_` +
     NEW_LINE +
@@ -122,7 +119,8 @@ function reportToDetailSection(report: ScoredReport): string {
               );
             } else {
               // this should never happen
-              throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
+              console.error(`No audit found for ${auditSlugInCategoryRefs}`);
+              return '';
             }
           },
         )

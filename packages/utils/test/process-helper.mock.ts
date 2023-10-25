@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { vi } from 'vitest';
-import { ProcessConfig } from '../src/lib/execute-process';
+import { ProcessConfig } from '../src';
 
-const asyncProcessPath = join(__dirname, './execute-process.mock.mjs');
+const asyncProcessPath = join(__dirname, './fixtures/execute-process.mock.mjs');
 
 /**
  * Helps to get an async process runner config for testing.

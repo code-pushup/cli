@@ -1,24 +1,26 @@
 import chalk from 'chalk';
 import cliui from 'cliui';
 import { NEW_LINE } from './md';
-import { ScoredReport } from './scoring';
 import {
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
   countWeightedRefs,
-  reportHeadlineText,
-  reportOverviewTableHeaders,
-} from './utils';
+  sumRefs,
+} from './report';
+import { ScoredReport } from './scoring';
+import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 
 export function reportToStdout(report: ScoredReport): void {
   reportToHeaderSection(report);
   reportToMetaSection(report);
-  console.log(NEW_LINE);
+  console.log(NEW_LINE); // @TODO just use '' and \n does only work in markdown
   reportToOverviewSection(report);
   console.log(NEW_LINE);
   reportToDetailSection(report);
   console.log(NEW_LINE);
-  console.log('Made with ❤️ by code-pushup.dev');
+  console.log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 }
 
 function reportToHeaderSection(report: ScoredReport): void {
@@ -36,7 +38,7 @@ function reportToMetaSection(report: ScoredReport): void {
   _print(
     `Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9`,
   );
-  _print(`Date: ${new Date(date).toString()}`);
+  _print(`Date: ${date}`);
   _print(`Duration: ${duration}ms`);
   _print(`Plugins: ${plugins?.length}`);
   _print(

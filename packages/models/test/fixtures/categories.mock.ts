@@ -67,5 +67,5 @@ export function categoryConfig(
 }
 
 export function categoryConfigs(): CategoryConfig[] {
-  return Object.values(CATEGORIES_MAP);
+  return Object.values(JSON.parse(JSON.stringify(CATEGORIES_MAP)));
 }

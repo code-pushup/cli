@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe } from 'vitest';
-import {
-  dummyReport,
-  lighthouseReport,
-  nxValidatorsOnlyReport,
-} from '@code-pushup/models/testing';
+import { minimalReport } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test';
 import { reportToStdout } from './report-to-stdout';
 import { scoreReport } from './scoring';
@@ -20,101 +16,9 @@ describe('report-to-stdout', () => {
     unmockConsole();
   });
 
-  it('should contain all sections when using dummy report', () => {
-    const scoredReport = scoreReport(dummyReport);
-    reportToStdout(scoredReport);
-    // headline
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
-    // meat information section
-    expect(logs.find(log => log.match(/Version: [0-9a-z\-.]*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Commit: (.*?)/))).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/Date: [0-9a-zA-Z :\-()]*/)),
-    ).toBeTruthy();
-    expect(logs.find(log => log.match(/Duration: \d*ms/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Plugins: \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
-    // overview section
-    expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Performance|0|4\/17|/))).toBeTruthy();
-    // details section
-    expect(logs.find(log => log.match(/Performance 0/))).toBeTruthy();
-    expect(logs.find(log => log.match(/- Title of 0a \(\d\)/))).toBeTruthy();
-    // footer
-    expect(
-      logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),
-    ).toBeTruthy();
-  });
-
-  it('should contain all sections when using nx-validators report', () => {
-    const scoredReport = scoreReport(nxValidatorsOnlyReport);
-    reportToStdout(scoredReport);
-
-    // headline
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
-    // meat information section
-    expect(logs.find(log => log.match(/Version: [0-9a-z\-.]*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Commit: (.*?)/))).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/Date: [0-9a-zA-Z :\-()]*/)),
-    ).toBeTruthy();
-    expect(logs.find(log => log.match(/Duration: \d*ms/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Plugins: \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
-    // overview section
-    expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
-    // details section
-    expect(logs.find(log => log.match(/Use Nx Tooling \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Use Quality Tooling \d*/))).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/Normalize Typescript Config \d*/)),
-    ).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/Use Workspace Layout \d*/)),
-    ).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/- Title of check-version-mismatch \(\d\)/)),
-    ).toBeTruthy();
-    // footer
-    expect(
-      logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),
-    ).toBeTruthy();
-  });
-
-  it('should contain all sections when using lighthouse report', () => {
-    const scoredReport = scoreReport(lighthouseReport);
-    reportToStdout(scoredReport);
-    // headline
-    expect(logs.find(log => log.match(/Code Pushup Report/))).toBeTruthy();
-    // meat information section
-    expect(logs.find(log => log.match(/Version: [0-9a-z\-.]*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Commit: (.*?)/))).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/Date: [0-9a-zA-Z :\-()]*/)),
-    ).toBeTruthy();
-    expect(logs.find(log => log.match(/Duration: \d*ms/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Plugins: \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Audits: \d*/))).toBeTruthy();
-    // overview section
-    expect(logs.find(log => log.match('|Category|Score|Audits|'))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Performance|(.*?)/))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Accessibility|(.*?)/))).toBeTruthy();
-    expect(logs.find(log => log.match(/|Best Practices|(.*?)/))).toBeTruthy();
-    expect(logs.find(log => log.match(/|SEO|(.*?)/))).toBeTruthy();
-    expect(logs.find(log => log.match(/|PWA|(.*?)/))).toBeTruthy();
-    // details section
-    expect(logs.find(log => log.match(/Performance \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Accessibility \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/Best Practices \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/SEO \d*/))).toBeTruthy();
-    expect(logs.find(log => log.match(/PWA \d*/))).toBeTruthy();
-    expect(
-      logs.find(log => log.match(/- Title of first-contentful-paint/)),
-    ).toBeTruthy();
-    // footer
-    expect(
-      logs.find(log => log.match('Made with ❤️ by code-pushup.dev')),
-    ).toBeTruthy();
+  it('should contain all sections when using the fixture report', () => {
+    reportToStdout(scoreReport(minimalReport('tmp')));
+    const logOutput = logs.join('\n');
+    expect(logOutput).toMatchSnapshot();
   });
 });

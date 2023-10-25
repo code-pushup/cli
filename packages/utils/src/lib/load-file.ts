@@ -1,6 +1,6 @@
 import { Options, bundleRequire } from 'bundle-require';
 
-export async function importModule<T = unknown>(
+export async function importEsmModule<T = unknown>(
   options: Options,
   parse?: (d: unknown) => T,
 ) {
@@ -11,5 +11,6 @@ export async function importModule<T = unknown>(
   };
 
   const { mod } = await bundleRequire(options);
+  // @TODO consider handling undefined exports
   return parse(mod.default || mod);
 }
