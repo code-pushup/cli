@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`report-to-stdout > should contain all sections when using the fixture report 1`] = `
+"[1mCode Pushup Report[22m - @code-pushup/core@0.1.0
+[3m[90m---[39m[23m
+[3m[90mPackage Name: @code-pushup/core[39m[23m
+[3m[90mVersion: 0.1.0[39m[23m
+[3m[90mCommit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9[39m[23m
+[3m[90mDate: today[39m[23m
+[3m[90mDuration: 42ms[39m[23m
+[3m[90mPlugins: 1[39m[23m
+[3m[90mAudits: 1[39m[23m
+[3m[90m---[39m[23m
+
+
+ Category            Score               Audits
+ Category 1          0                   1/1
+
+
+[1mCategory 1 0[22m
+- Audit Title (1)
+  audit description
+  http://www.my-docs.dev 
+
+
+
+Made with ❤️ by code-pushup.dev"
+`;

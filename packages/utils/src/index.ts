@@ -1,3 +1,4 @@
+export { ScoredReport, scoreReport } from './lib/scoring';
 export { verboseUtils } from './lib/verbose-utils';
 export {
   CliArgsObject,
@@ -9,20 +10,23 @@ export {
   objectToCliArgs,
 } from './lib/execute-process';
 export { git, latestHash } from './lib/git';
-export { importModule } from './lib/load-file';
+export { importEsmModule } from './lib/load-file';
+export { FOOTER_PREFIX, CODE_PUSHUP_DOMAIN } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export {
-  calcDuration,
-  compareIssueSeverity,
   countOccurrences,
   distinct,
-  formatBytes,
-  formatCount,
   objectToEntries,
   pluralize,
   readJsonFile,
   readTextFile,
-  slugify,
   toArray,
 } from './lib/utils';
+export {
+  formatBytes,
+  slugify,
+  calcDuration,
+  formatCount,
+  compareIssueSeverity,
+} from './lib/report';

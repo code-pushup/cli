@@ -48,10 +48,17 @@ export async function executePlugin(
   pluginConfig: PluginConfig,
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
-  const { slug, title, icon, description, docsUrl, version, packageName } =
-    pluginConfig;
+  const {
+    slug,
+    title,
+    icon,
+    description,
+    docsUrl,
+    version,
+    packageName,
+    groups,
+  } = pluginConfig;
   const { args, command } = pluginConfig.runner;
-
   const { duration, date } = await executeProcess({
     command,
     args,
@@ -86,18 +93,20 @@ export async function executePlugin(
       };
     });
 
-    return {
+    const pluginReport: PluginReport = {
       version,
       packageName,
       slug,
       title,
       icon,
-      description,
-      docsUrl,
       date,
       duration,
       audits,
+      ...(description && { description }),
+      ...(docsUrl && { docsUrl }),
+      ...(groups && { groups }),
     };
+    return pluginReport;
   } catch (error) {
     const e = error as Error;
     throw new PluginOutputError(slug, e);
