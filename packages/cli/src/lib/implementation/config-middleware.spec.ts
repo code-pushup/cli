@@ -38,7 +38,7 @@ describe('applyConfigMiddleware', () => {
     expect(error?.message).toContain(invalidConfig);
   });
 
-  it('should provide default config', async () => {
+  it('should provide default config path', async () => {
     const defaultConfigPath = 'code-pushup.config.js';
     let error: Error = new Error();
     await configMiddleware({ config: defaultConfigPath }).catch(

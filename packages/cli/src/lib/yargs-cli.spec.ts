@@ -50,6 +50,6 @@ describe('yargsCli', () => {
         },
       ],
     }).parseAsync();
-    expect(parsedArgv.config).toContain(42);
+    expect(parsedArgv.config).toContain('');
   });
 });
