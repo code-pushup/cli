@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { readFile } from 'fs/promises';
-import { UpdateOptions } from 'multi-progress-bars';
 import { join } from 'path';
 import {
   PluginConfig,
@@ -166,10 +165,12 @@ export async function executePlugins(
 }
 
 const MOCK_PROGRESS = {
-  incrementProcessedPlugins: (numPlugins: number) => {
+  incrementProcessedPlugins: (_: number) => {
+    _;
     void 0;
   },
-  updateActivePlugin: (pluginTitle: string) => {
+  updateActivePlugin: (_: string) => {
+    _;
     void 0;
   },
   closePluginsProgress: () => {
