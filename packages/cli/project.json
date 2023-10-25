@@ -19,10 +19,6 @@
       "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
-    "exec": {
-      "command": "npx dist/packages/cli --config=./packages/cli/code-pushup.config.ts",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -40,6 +36,24 @@
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/cli"
       }
+    },
+    "run-help": {
+      "command": "npx dist/packages/cli --help",
+      "dependsOn": ["build"]
+    },
+    "run-collect": {
+      "command": "npx ../../dist/packages/cli collect --persist.format=stdout --persist.format=md",
+      "options": {
+        "cwd": "examples/react-todos-app"
+      },
+      "dependsOn": ["build"]
+    },
+    "run-print-config": {
+      "command": "npx ../../dist/packages/cli print-config",
+      "options": {
+        "cwd": "examples/react-todos-app"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": ["scope:core", "type:app"]
