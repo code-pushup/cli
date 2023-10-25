@@ -1,5 +1,12 @@
 import { CoreConfig } from '@code-pushup/models';
 
+/**
+ * This config is most probably a left over as it has no dedicated use case described
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/code-pushup.config.ts
+ */
+
 const outputDir = 'tmp';
 
 export default {

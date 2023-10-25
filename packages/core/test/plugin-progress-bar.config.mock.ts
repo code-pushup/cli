@@ -1,7 +1,13 @@
 import { PluginConfig } from '@code-pushup/models';
 
-const outputDir = 'tmp';
+/**
+ * This config file is here to demonstrate the progress bar for plugins
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/core/test/plugin-progress-bar.config.mock.ts
+ */
 
+const outputDir = 'tmp';
 const pluginSlug = (id: string): string => 'async-plugin-' + id;
 const auditSlug = (pId: string, aId: string): string =>
   pluginSlug(pId) + '-a' + aId;

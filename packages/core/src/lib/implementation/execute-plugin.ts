@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { readFile } from 'fs/promises';
+import { UpdateOptions } from 'multi-progress-bars';
 import { join } from 'path';
 import {
   PluginConfig,
@@ -120,6 +121,12 @@ export async function executePlugin(
   }
 }
 
+const MOCK_PROGRESS = {
+  updateTask: (options: UpdateOptions) => void 0,
+  incrementTask: (options: UpdateOptions) => void 0,
+  close: () => void 0,
+};
+
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
@@ -144,7 +151,9 @@ export async function executePlugins(
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
   const progressName = 'Run Plugins';
-  const progressBar = getProgress(progressName, options);
+  const progressBar = options?.progress
+    ? getProgress(progressName)
+    : MOCK_PROGRESS;
   const percentageIncrement = 1 / plugins.length;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
@@ -156,12 +165,14 @@ export async function executePlugins(
     const pluginReport = await executePlugin(pluginCfg);
     progressBar.incrementTask({
       percentage: percentageIncrement,
-      barTransformFn: barStyles.done,
-      message: messageStyles.done('Done running plugins'),
     });
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
 
+  progressBar.incrementTask({
+    barTransformFn: barStyles.done,
+    message: messageStyles.done('Done running plugins'),
+  });
   progressBar.close();
 
   return pluginsResult;

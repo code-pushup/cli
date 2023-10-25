@@ -9,8 +9,8 @@ export const commands: CommandModule[] = [
     ...yargsAutorunCommandObject(),
     command: '*',
   },
-  yargsAutorunCommandObject(),
+  yargsConfigCommandObject(),
   yargsCollectCommandObject(),
   yargsUploadCommandObject(),
-  yargsConfigCommandObject(),
+  yargsAutorunCommandObject(),
 ];

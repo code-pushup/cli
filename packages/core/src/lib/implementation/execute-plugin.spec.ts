@@ -10,6 +10,7 @@ import {
   runnerConfig,
 } from '@code-pushup/models/testing';
 import { cleanFolder } from '../../../test';
+import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import { executePlugin, executePlugins } from './execute-plugin';
 
 const validPluginCfg = pluginConfig([auditReport()]);
@@ -19,6 +20,8 @@ const validPluginCfg2 = pluginConfig([auditReport()], {
 const invalidSlugPluginCfg = pluginConfig([
   auditReport({ slug: '-invalid-audit-slug' }),
 ]);
+
+const DEFAULT_OPTIONS = { progress: DEFAULT_TESTING_CLI_OPTIONS.progress };
 
 describe('executePlugin', () => {
   beforeEach(() => {
@@ -63,7 +66,7 @@ describe('executePlugins', () => {
   });
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
-    const pluginResult = await executePlugins(plugins);
+    const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
 
     expect(pluginResult[0]?.date.endsWith('Z')).toBeTruthy();
     expect(pluginResult[0]?.duration).toBeTruthy();
@@ -80,6 +83,8 @@ describe('executePlugins', () => {
 
   it('should throws with invalid plugins', async () => {
     const plugins: PluginConfig[] = [validPluginCfg, invalidSlugPluginCfg];
-    await expect(() => executePlugins(plugins)).rejects.toThrowError();
+    await expect(() =>
+      executePlugins(plugins, DEFAULT_OPTIONS),
+    ).rejects.toThrowError();
   });
 });

@@ -1,5 +1,12 @@
 import { CoreConfig } from '@code-pushup/models';
 
+/**
+ * This config file is here to demonstrate the TypeScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.ts
+ */
+
 const outputDir = 'tmp';
 export default {
   upload: {

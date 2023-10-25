@@ -65,8 +65,8 @@ describe('upload-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
-        //   'upload.organization': 'some-other-organization',
-        //   'upload.project': 'some-other-project',
+        //   'upload.organization': 'some-other-organization', @TODO
+        //   'upload.project': 'some-other-project', @TODO
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),

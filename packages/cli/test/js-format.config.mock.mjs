@@ -1,3 +1,10 @@
+/**
+ * This config file is here to demonstrate the EcmaScriptModule version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.mjs
+ */
+
 const outputDir = 'tmp';
 export default {
   upload: {

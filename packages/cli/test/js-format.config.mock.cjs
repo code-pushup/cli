@@ -1,3 +1,10 @@
+/**
+ * This config file is here to demonstrate the CommonJS version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.cjs
+ */
+
 const outputDir = 'tmp';
 module.exports = {
   upload: {

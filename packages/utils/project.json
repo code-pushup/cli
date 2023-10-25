@@ -29,6 +29,9 @@
         ]
       }
     },
+    "perf": {
+      "command": "npx node ./packages/utils/perf/index.mjs"
+    },
     "test": {
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

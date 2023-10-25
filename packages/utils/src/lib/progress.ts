@@ -6,13 +6,7 @@ import { MultiProgressBars, UpdateOptions } from 'multi-progress-bars';
 // Initialize mpb
 let mpb: MultiProgressBars;
 
-export function getProgress(taskName: string, options?: { progress: boolean }) {
-  const { progress = true } = options || {};
-  const runIfProgress = (fn: () => unknown) => {
-    if (progress) {
-      fn();
-    }
-  };
+export function getProgress(taskName: string) {
   // Initialize mpb
   if (!mpb) {
     mpb = new MultiProgressBars({
@@ -22,27 +16,24 @@ export function getProgress(taskName: string, options?: { progress: boolean }) {
   }
 
   if (mpb.getIndex(taskName) === undefined) {
-    runIfProgress(() => {
-      // Add tasks
-      mpb.addTask(taskName, {
-        type: 'percentage',
-        percentage: 0,
-      });
+    // Add tasks
+    mpb.addTask(taskName, {
+      type: 'percentage',
+      percentage: 0,
     });
   }
 
   // Return Singleton
 
   return {
-    parent: mpb,
     updateTask(options: UpdateOptions) {
-      runIfProgress(() => mpb.updateTask(taskName, options));
+      mpb.updateTask(taskName, options);
     },
     incrementTask(options: UpdateOptions) {
-      runIfProgress(() => mpb.incrementTask(taskName, options));
+      mpb.incrementTask(taskName, options);
     },
     // @TODO evaluate better implementation
-    close: () => runIfProgress(() => mpb.close),
+    close: () => () => mpb.close,
   };
 }
 
