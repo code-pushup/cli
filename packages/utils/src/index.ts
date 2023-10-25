@@ -22,8 +22,10 @@ export {
   readTextFile,
   toArray,
 } from './lib/utils';
-export { formatBytes } from './lib/report';
-export { slugify } from './lib/report';
-export { calcDuration } from './lib/report';
-export { formatCount } from './lib/report';
-export { compareIssueSeverity } from './lib/report';
+export {
+  formatBytes,
+  slugify,
+  calcDuration,
+  formatCount,
+  compareIssueSeverity,
+} from './lib/report';
