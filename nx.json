@@ -41,7 +41,7 @@
       "!{projectRoot}/vite.config.[jt]s",
       "!{projectRoot}/test/**/*",
       "!{projectRoot}/perf/**/*",
-      "!{projectRoot}/code-pushup.config.[(mj)jt]s"
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s"
     ],
     "sharedGlobals": []
   },
