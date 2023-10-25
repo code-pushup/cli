@@ -1,5 +1,3 @@
-import { PluginConfig } from '@code-pushup/models';
-
 /**
  * This config file is here to demonstrate the progress bar for plugins
  *
@@ -13,7 +11,7 @@ const auditSlug = (pId: string, aId: string): string =>
   pluginSlug(pId) + '-a' + aId;
 const pluginTitle = (end: string): string => 'Async Plugin ' + end;
 const auditTitle = (end: string): string => 'Async Audit ' + end;
-const asyncPlugin = (pId: string, duration = 1000): PluginConfig => {
+const asyncPlugin = (pId: string, duration = 1000) => {
   const aId = '1';
   const outputFile = `${outputDir}/${pluginSlug(pId)}-output.json`;
   return {
