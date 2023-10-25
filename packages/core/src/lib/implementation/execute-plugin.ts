@@ -8,8 +8,10 @@ import {
 } from '@code-pushup/models';
 import {
   ProcessObserver,
+  barStyles,
   executeProcess,
   getProgress,
+  messageStyles,
 } from '@code-pushup/utils';
 
 /**
@@ -133,18 +135,19 @@ export async function executePlugins(
 ): Promise<PluginReport[]> {
   const progressName = 'Run Plugins';
   const progressBar = getProgress(progressName);
+  const percentageIncrement = 1 / plugins.length;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
-    progressBar.updateTask(progressName, {
-      message: 'Executing  ' + chalk.bold(pluginCfg.title),
-      barTransformFn: s => chalk.green(s),
+    progressBar.updateTask({
+      message: `Executing  ${chalk.bold(pluginCfg.title)}`,
+      barTransformFn: barStyles.active,
     });
     const pluginReport = await executePlugin(pluginCfg);
-    progressBar.incrementTask(progressName, {
-      percentage: 1 / plugins.length,
-      barTransformFn: s => chalk.gray(s),
-      message: chalk.green(chalk.bold('Done running plugins')),
+    progressBar.incrementTask({
+      percentage: percentageIncrement,
+      barTransformFn: barStyles.done,
+      message: messageStyles.done('Done running plugins'),
     });
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));

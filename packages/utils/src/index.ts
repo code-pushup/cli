@@ -8,7 +8,7 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { getProgress } from './lib/progress';
+export { getProgress, barStyles, messageStyles } from './lib/progress';
 export { git, latestHash } from './lib/git';
 export { importModule } from './lib/load-file';
 export { reportToMd } from './lib/report-to-md';

@@ -2,6 +2,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -23,8 +24,7 @@ const baseArgs = [
 ];
 const cli = (args: string[]) =>
   yargsCli(['collect', ...args], {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsCollectCommandObject()],
   });
 

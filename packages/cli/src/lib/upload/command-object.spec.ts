@@ -10,6 +10,7 @@ import {
 import { UploadOptions } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -44,8 +45,7 @@ const baseArgs = [
 ];
 const cli = (args: string[]) =>
   yargsCli(args, {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsUploadCommandObject()],
   });
 
