@@ -1,12 +1,15 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ReportFragment } from '@code-pushup/portal-client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  PortalUploadArgs,
+  ReportFragment,
+  uploadToPortal,
+} from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
 
@@ -33,8 +36,11 @@ const baseArgs = [
       '..',
       '..',
       '..',
+      'models',
       'test',
       'code-pushup.config.ts',
+      'fixtures',
+      'code-pushup.config.mock.ts',
     ),
   }),
 ];
@@ -47,6 +53,10 @@ const cli = (args: string[]) =>
 describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    cleanFolderPutGitKeep();
+  });
+  afterEach(() => {
+    cleanFolderPutGitKeep();
   });
 
   it('should override config with CLI arguments', async () => {
@@ -69,7 +79,6 @@ describe('autorun-command-object', () => {
     expect(parsedArgv.persist.format).toEqual(['md']);
   });
 
-  /*
   it('should call portal-client function with correct parameters', async () => {
     await cli(baseArgs).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
@@ -88,5 +97,4 @@ describe('autorun-command-object', () => {
       },
     } satisfies PortalUploadArgs);
   });
-  */
 });

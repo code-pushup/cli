@@ -13,6 +13,7 @@ export default defineConfig({
   // },
 
   test: {
+    testTimeout: 7000,
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',

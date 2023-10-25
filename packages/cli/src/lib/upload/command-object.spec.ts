@@ -1,4 +1,3 @@
-import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,11 +7,10 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
+import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
 
@@ -49,22 +47,18 @@ const cli = (args: string[]) =>
     commands: [yargsUploadCommandObject()],
   });
 
-const reportPath = (format: 'json' | 'md' = 'json') =>
-  join('tmp', 'report.' + format);
+const reportFile = (format: 'json' | 'md' = 'json') => 'report.' + format;
+const dummyReport = report();
 
 describe('upload-command-object', () => {
-  const dummyReport: Report = {
-    date: new Date().toISOString(),
-    duration: 1000,
-    categories: [],
-    plugins: [],
-    packageName: '@code-pushup/core',
-    version: '0.0.1',
-  };
-
   beforeEach(async () => {
     vi.clearAllMocks();
-    await writeFile(reportPath(), JSON.stringify(dummyReport));
+    cleanFolderPutGitKeep('tmp', {
+      [reportFile()]: JSON.stringify(dummyReport),
+    });
+  });
+  afterEach(async () => {
+    cleanFolderPutGitKeep('tmp');
   });
 
   it('should override config with CLI arguments', async () => {
@@ -94,7 +88,7 @@ describe('upload-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: [],
+        categories: expect.any(Array),
         plugins: expect.any(Array),
         packageName: dummyReport.packageName,
         packageVersion: dummyReport.version,

@@ -1,1 +1,2 @@
-export { mockConsole } from './console.mock';
+export * from './fs.mock';
+export * from './console.mock';

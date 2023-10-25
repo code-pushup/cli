@@ -3,8 +3,6 @@ import { fileURLToPath } from 'url';
 import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './command-object';
 
@@ -16,8 +14,11 @@ const baseArgs = [
       '..',
       '..',
       '..',
+      '..',
+      'models',
       'test',
-      'code-pushup.config.ts',
+      'fixtures',
+      'code-pushup.config.mock.ts',
     ),
   }),
 ];

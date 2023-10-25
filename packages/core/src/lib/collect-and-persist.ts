@@ -4,14 +4,14 @@ import {
   pluginReportSchema,
 } from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
-import { collect } from './commands/collect';
+import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
   'persist' | 'plugins' | 'categories'
 > &
-  GlobalOptions;
+  Omit<GlobalOptions, 'config'>;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
