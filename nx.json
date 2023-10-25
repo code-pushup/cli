@@ -39,7 +39,9 @@
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vite.config.[jt]s",
-      "!{projectRoot}/test/**/*"
+      "!{projectRoot}/test/**/*",
+      "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/code-pushup.config.[(mj)jt]s"
     ],
     "sharedGlobals": []
   },
