@@ -1,9 +1,5 @@
 import chalk from 'chalk';
-import {
-  AddOptions,
-  MultiProgressBars,
-  UpdateOptions,
-} from 'multi-progress-bars';
+import { MultiProgressBars, UpdateOptions } from 'multi-progress-bars';
 
 // import chalk from 'chalk';
 
@@ -38,6 +34,7 @@ export function getProgress(taskName: string, options?: { progress: boolean }) {
   // Return Singleton
 
   return {
+    parent: mpb,
     updateTask(options: UpdateOptions) {
       runIfProgress(() => mpb.updateTask(taskName, options));
     },
