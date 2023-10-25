@@ -1,14 +1,9 @@
-import { Report } from '@code-pushup/models';
 import { NEW_LINE, details, headline, li, link, style, table } from './md/';
-import {
-  CODE_PUSHUP_DOMAIN,
-  FOOTER_PREFIX,
-  countWeightedRefs,
-  sumRefs,
-} from './report';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
+import { ScoredReport } from './scoring';
 import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
-export function reportToMd(report: Report): string {
+export function reportToMd(report: ScoredReport): string {
   // header section
   let md = reportToHeaderSection() + NEW_LINE;
 
@@ -30,7 +25,7 @@ function reportToHeaderSection(): string {
   return headline(reportHeadlineText) + NEW_LINE;
 }
 
-function reportToMetaSection(report: Report): string {
+function reportToMetaSection(report: ScoredReport): string {
   const { date, duration, version, packageName, plugins } = report;
   return (
     `---` +
@@ -57,27 +52,27 @@ function reportToMetaSection(report: Report): string {
   );
 }
 
-function reportToOverviewSection(report: Report): string {
+function reportToOverviewSection(report: ScoredReport): string {
   const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
-    ...categories.map(({ title, refs }) => [
+    ...categories.map(({ title, refs, score }) => [
       title,
-      sumRefs(refs).toString(),
+      score.toString(),
       refs.length.toString() + '/' + countWeightedRefs(refs),
     ]),
   ];
   return table(tableContent);
 }
 
-function reportToDetailSection(report: Report): string {
+function reportToDetailSection(report: ScoredReport): string {
   let md = '';
   const { categories, plugins } = report;
 
   categories.forEach(category => {
-    const { title, refs } = category;
+    const { title, refs, score } = category;
 
-    md += style(`${title} ${sumRefs(refs)}`) + NEW_LINE;
+    md += style(`${title} ${score}`) + NEW_LINE;
 
     md +=
       refs

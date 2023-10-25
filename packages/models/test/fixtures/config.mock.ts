@@ -1,4 +1,4 @@
-import { CoreConfig } from '../../src';
+import { CoreConfig, Report } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
@@ -23,6 +23,20 @@ export function minimalConfig(
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
+
+  const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+    slug: PLUGIN_1_SLUG,
+    outputDir,
+    outputFile: `${PLUGIN_1_SLUG}.json`,
+  });
+  const { runner, ...reportPlg } = plg1;
+  reportPlg.audits = reportPlg.audits.map(a => ({
+    ...a,
+    score: 0,
+    value: 0,
+    displayValue: '',
+  }));
+
   return JSON.parse(
     JSON.stringify({
       persist: { outputDir },
@@ -54,5 +68,47 @@ export function minimalConfig(
         }),
       ],
     } satisfies Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>>),
+  );
+}
+
+export function minimalReport(outputDir = 'tmp'): Report {
+  const PLUGIN_1_SLUG = 'plugin-1';
+  const AUDIT_1_SLUG = 'audit-1';
+
+  const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+    slug: PLUGIN_1_SLUG,
+    outputDir,
+    outputFile: `${PLUGIN_1_SLUG}.json`,
+  });
+  const { runner, ...reportPlg } = plg1;
+  reportPlg.audits = reportPlg.audits.map(a => ({
+    ...a,
+    score: 0,
+    value: 0,
+    displayValue: '',
+  }));
+
+  return JSON.parse(
+    JSON.stringify({
+      packageName: '@code-pushup/core',
+      version: '0.1.0',
+      date: 'today',
+      duration: 42,
+      categories: [
+        {
+          slug: 'category-1',
+          title: 'Category 1',
+          refs: [
+            {
+              type: 'audit',
+              plugin: PLUGIN_1_SLUG,
+              slug: AUDIT_1_SLUG,
+              weight: 1,
+            },
+          ],
+        },
+      ],
+      plugins: [reportPlg as any],
+    } satisfies Report),
   );
 }

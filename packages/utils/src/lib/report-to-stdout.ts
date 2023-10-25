@@ -1,18 +1,13 @@
 import chalk from 'chalk';
 import cliui from 'cliui';
-import { Report } from '@code-pushup/models';
 import { NEW_LINE } from './md';
-import {
-  CODE_PUSHUP_DOMAIN,
-  FOOTER_PREFIX,
-  countWeightedRefs,
-  sumRefs,
-} from './report';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
+import { ScoredReport } from './scoring';
 import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 
-export function reportToStdout(report: Report): void {
+export function reportToStdout(report: ScoredReport): void {
   reportToHeaderSection(report);
   reportToMetaSection(report);
   console.log(NEW_LINE); // @TODO just use '' and \n does only work in markdown
@@ -23,12 +18,12 @@ export function reportToStdout(report: Report): void {
   console.log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 }
 
-function reportToHeaderSection(report: Report): void {
+function reportToHeaderSection(report: ScoredReport): void {
   const { packageName, version } = report;
   console.log(`${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`);
 }
 
-function reportToMetaSection(report: Report): void {
+function reportToMetaSection(report: ScoredReport): void {
   const { date, duration, version, packageName, plugins } = report;
   const _print = (text: string) => console.log(chalk.italic(chalk.gray(text)));
 
@@ -47,7 +42,7 @@ function reportToMetaSection(report: Report): void {
   _print(`---`);
 }
 
-function reportToOverviewSection(report: Report): void {
+function reportToOverviewSection(report: ScoredReport): void {
   const base = {
     width: 20,
     padding: [0, 1, 0, 1],
@@ -57,8 +52,7 @@ function reportToOverviewSection(report: Report): void {
   ui.div(...reportOverviewTableHeaders.map(text => ({ text, ...base })));
 
   // table content
-  report.categories.forEach(({ title, refs }) => {
-    const score = sumRefs(refs).toString();
+  report.categories.forEach(({ title, refs, score }) => {
     const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
 
     ui.div(
@@ -67,7 +61,7 @@ function reportToOverviewSection(report: Report): void {
         ...base,
       },
       {
-        text: score,
+        text: score.toString(),
         ...base,
       },
       {
@@ -80,13 +74,13 @@ function reportToOverviewSection(report: Report): void {
   console.log(ui.toString());
 }
 
-function reportToDetailSection(report: Report): void {
+function reportToDetailSection(report: ScoredReport): void {
   const { categories, plugins } = report;
 
   categories.forEach(category => {
-    const { title, refs } = category;
+    const { title, refs, score } = category;
 
-    console.log(chalk.bold(`${title} ${sumRefs(refs)}`));
+    console.log(chalk.bold(`${title} ${score}`));
 
     refs.forEach(
       ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
@@ -106,7 +100,7 @@ function reportToDetailSection(report: Report): void {
           console.log(`  ${content}`);
         } else {
           // this should never happen
-          console.error(`No audit found for ${auditSlugInCategoryRefs}`);
+          throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
         }
       },
     );

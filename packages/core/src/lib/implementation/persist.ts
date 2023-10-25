@@ -3,7 +3,12 @@ import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CoreConfig, Report } from '@code-pushup/models';
-import { formatBytes, reportToMd, reportToStdout } from '@code-pushup/utils';
+import {
+  formatBytes,
+  reportToMd,
+  reportToStdout,
+  scoreReport,
+} from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
   constructor(outputDir: string) {
@@ -27,9 +32,10 @@ export async function persistReport(
   const outputDir = persist.outputDir;
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
-
+  let scoredReport;
   if (format.includes('stdout')) {
-    reportToStdout(report);
+    scoredReport = scoreReport(report);
+    reportToStdout(scoredReport);
   }
 
   // collect physical format outputs
@@ -39,7 +45,8 @@ export async function persistReport(
   ];
 
   if (format.includes('md')) {
-    results.push({ format: 'md', content: reportToMd(report) });
+    scoredReport = scoredReport || scoreReport(report);
+    results.push({ format: 'md', content: reportToMd(scoredReport) });
   }
 
   if (!existsSync(outputDir)) {
