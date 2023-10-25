@@ -50,6 +50,7 @@ export function minimalConfig(
         pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
           slug: PLUGIN_1_SLUG,
           outputDir,
+          outputFile: `${PLUGIN_1_SLUG}.json`,
         }),
       ],
     } satisfies Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>>),
