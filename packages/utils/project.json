@@ -30,8 +30,7 @@
       }
     },
     "perf": {
-      "command": "npx node ./packages/utils/perf/index.mjs",
-      "dependsOn": ["lint"]
+      "command": "npx node ./packages/utils/perf/index.mjs"
     },
     "test": {
       "executor": "@nx/vite:test",
