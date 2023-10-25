@@ -2,6 +2,11 @@ import { z } from 'zod';
 import { filePathSchema } from './implementation/schemas';
 
 export const globalOptionsSchema = z.object({
+  progress: z
+    .boolean({
+      description: 'Show progress bar in stdout',
+    })
+    .default(true),
   verbose: z
     .boolean({
       description: 'Outputs additional information for a run',

@@ -3,7 +3,7 @@ import { calcDuration } from '@code-pushup/utils';
 import { name, version } from '../../../package.json';
 import { executePlugins } from './execute-plugin';
 
-export type CollectOptions = Pick<GlobalOptions, 'verbose'> &
+export type CollectOptions = Pick<GlobalOptions, 'verbose' | 'progress'> &
   Pick<CoreConfig, 'plugins' | 'categories' | 'upload'>;
 
 /**
@@ -19,7 +19,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
 
   const date = new Date().toISOString();
   const start = performance.now();
-  const pluginOutputs = await executePlugins(plugins);
+  const pluginOutputs = await executePlugins(plugins, options);
 
   return {
     packageName: name,
