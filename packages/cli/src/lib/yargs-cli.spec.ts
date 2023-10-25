@@ -1,15 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { Options } from 'yargs';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
-const options: Record<string, Options> = {
-  verbose: {
-    describe: 'more info.',
-    type: 'boolean',
-    default: false,
-  },
-};
 const demandCommand: [number, string] = [0, 'no command required'];
 function middleware<T extends Record<string, unknown>>(processArgs: T) {
   return {
@@ -25,11 +18,13 @@ describe('yargsCli', () => {
       options,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(false);
+    expect(parsedArgv.progress).toBe(true);
   });
 
   it('global options should parse correctly', async () => {
     const args: string[] = objectToCliArgs({
       verbose: true,
+      progress: false,
     });
 
     const parsedArgv = await yargsCli(args, {
@@ -37,6 +32,7 @@ describe('yargsCli', () => {
       demandCommand,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.progress).toBe(false);
   });
 
   it('global options and middleware handle argument overrides correctly', async () => {

@@ -1,6 +1,7 @@
 import { Format, GlobalOptions } from '@code-pushup/models';
 
-export type GeneralCliOptions = GlobalOptions;
+type GeneralCliOnlyOptions = { progress: boolean };
+export type GeneralCliOptions = GeneralCliOnlyOptions & GlobalOptions;
 
 export type CoreConfigCliOptions = {
   'persist.outputDir': string;

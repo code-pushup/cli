@@ -41,7 +41,7 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `require('fs').writeFileSync('${outputDir}/dummy-plugin-output.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputDir}/dummy-plugin-1-output.json', '${JSON.stringify(
             [
               {
                 title: 'Dummy Audit 1',
@@ -64,17 +64,17 @@ export default {
             ],
           )}')`,
         ],
-        outputFile: `${outputDir}/dummy-plugin-output.json`,
+        outputFile: `${outputDir}/dummy-plugin-1-output.json`,
       },
     },
     {
-      slug: 'async-dummy-plugin-1',
-      title: 'Dummy Plugin that takes time 1',
+      slug: 'dummy-plugin-2',
+      title: 'Dummy Plugin that takes time 2',
       icon: 'javascript',
       docsUrl: 'http://www.my-docs.dev?slug=dummy-plugin',
       audits: [
         {
-          slug: 'async-1-dummy-audit-1',
+          slug: 'dummy-plugin-2-audit-1',
           title: 'Dummy Audit 1',
         },
       ],
@@ -82,18 +82,18 @@ export default {
         command: 'node',
         args: [
           '-e',
-          `setTimeout(() => require('fs').writeFileSync('${outputDir}/dummy-plugin-output.json', '${JSON.stringify(
+          `require('fs').writeFileSync('${outputDir}/dummy-plugin-2-output.json', '${JSON.stringify(
             [
               {
                 title: 'Dummy Audit 1',
-                slug: 'async-1-dummy-audit-1',
+                slug: 'dummy-plugin-2-audit-1',
                 value: 420,
                 score: 0.42,
               },
             ],
-          )}'), 3000);`,
+          )}');`,
         ],
-        outputFile: `${outputDir}/dummy-plugin-output.json`,
+        outputFile: `${outputDir}/dummy-plugin-2-output.json`,
       },
     },
   ],
