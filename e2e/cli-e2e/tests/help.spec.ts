@@ -8,7 +8,7 @@ describe('CLI help', () => {
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
-    expect(stdout).toMatchSnapshot('help');
+    expect(stdout).toMatchSnapshot();
   });
 
   // @TODO 'should print help with help command'

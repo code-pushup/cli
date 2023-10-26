@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CLI help > should print help 1`] = `
+exports[`CLI help > should print help whit argument ---help 1`] = `
 "[1mCode PushUp CLI[22m
 
 Commands:
@@ -12,7 +12,6 @@ Commands:
   code-pushup autorun       Shortcut for running collect followed by upload
 
 Options:
-      --version              Show version number                       [boolean]
       --progress             Show progress bar in stdout.
                                                        [boolean] [default: true]
       --verbose              When true creates more verbose output. This is help
