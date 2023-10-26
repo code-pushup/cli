@@ -8,10 +8,9 @@ import {
 } from '@code-pushup/models';
 import {
   ProcessObserver,
-  barStyles,
+  ProgressBar,
   executeProcess,
-  getProgress,
-  messageStyles,
+  getProgressBar,
 } from '@code-pushup/utils';
 
 /**
@@ -100,7 +99,8 @@ export async function executePlugin(
       };
     });
 
-    const pluginReport: PluginReport = {
+    // @TODO consider just resting/spreading the values
+    return {
       version,
       packageName,
       slug,
@@ -112,13 +112,27 @@ export async function executePlugin(
       ...(description && { description }),
       ...(docsUrl && { docsUrl }),
       ...(groups && { groups }),
-    };
-    return pluginReport;
+    } satisfies PluginReport;
   } catch (error) {
     const e = error as Error;
     throw new PluginOutputError(slug, e);
   }
 }
+
+const MOCK_PROGRESS: ProgressBar = {
+  incrementInSteps: (_: number) => {
+    _;
+    void 0;
+  },
+  updateTitle: (_: string) => {
+    _;
+    void 0;
+  },
+  endProgress: (_?: string) => {
+    _;
+    void 0;
+  },
+};
 
 /**
  * Execute multiple plugins and aggregates their output.
@@ -144,61 +158,22 @@ export async function executePlugins(
   plugins: PluginConfig[],
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
+  const { progress = false } = options || {};
+
   const progressName = 'Run Plugins';
-  const progressBar = options?.progress
-    ? getPluginProgress(progressName)
-    : MOCK_PROGRESS;
+  const progressBar = progress ? getProgressBar(progressName) : MOCK_PROGRESS;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
 
-    progressBar.updateActivePlugin(pluginCfg.title);
+    progressBar.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
     const pluginReport = await executePlugin(pluginCfg);
-    progressBar.incrementProcessedPlugins(plugins.length);
+    progressBar.incrementInSteps(plugins.length);
 
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
 
-  progressBar.closePluginsProgress();
+  progressBar.endProgress('Done running plugins');
 
   return pluginsResult;
-}
-
-const MOCK_PROGRESS = {
-  incrementProcessedPlugins: (_: number) => {
-    _;
-    void 0;
-  },
-  updateActivePlugin: (_: string) => {
-    _;
-    void 0;
-  },
-  closePluginsProgress: () => {
-    void 0;
-  },
-};
-
-function getPluginProgress(progressName: string) {
-  const progressBar = getProgress(progressName);
-
-  return {
-    incrementProcessedPlugins: (numPlugins: number) => {
-      progressBar.incrementTask({
-        percentage: 1 / numPlugins,
-      });
-    },
-    updateActivePlugin: (pluginTitle: string) => {
-      progressBar.updateTask({
-        message: `Executing  ${chalk.bold(pluginTitle)}`,
-        barTransformFn: barStyles.active,
-      });
-    },
-    closePluginsProgress: () => {
-      progressBar.incrementTask({
-        barTransformFn: barStyles.done,
-        message: messageStyles.done('Done running plugins'),
-      });
-      progressBar.close();
-    },
-  };
 }

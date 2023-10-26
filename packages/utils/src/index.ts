@@ -9,7 +9,7 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { getProgress, barStyles, messageStyles } from './lib/progress';
+export { getProgressBar, ProgressBar } from './lib/progress';
 export { git, latestHash } from './lib/git';
 export { importEsmModule } from './lib/load-file';
 export { FOOTER_PREFIX, CODE_PUSHUP_DOMAIN } from './lib/report';

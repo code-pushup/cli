@@ -1,4 +1,4 @@
-import { getProgress } from '../../../../dist/packages/utils/index.js';
+import { getProgressBar } from '../../../../dist/packages/utils/index.js';
 
 const _arg = (name, fallback = '') =>
   process.argv
@@ -6,7 +6,8 @@ const _arg = (name, fallback = '') =>
     ?.split('=')
     ?.pop() || fallback;
 const duration = parseInt(_arg('duration', '300'));
-const plugins = parseInt(_arg('plugins', '10'));
+const steps = parseInt(_arg('steps', '10'));
+const verbose = Boolean(_arg('verbose', false));
 
 /**
  * Custom runner implementation that simulates asynchronous situations.
@@ -15,19 +16,21 @@ const plugins = parseInt(_arg('plugins', '10'));
  * We can decide if the process should error or complete. By default, it completes.
  *
  * @arg duration: number - duration of plugin run in ms; defaults to 300
- * @arg plugins: number - number of updates; defaults to 4
+ * @arg steps: number - number of updates; defaults to 4
  **/
 (async () => {
-  console.log(`progress:start with duration: ${duration}, plugins: ${plugins}`);
-  const progress = getProgress('mock-progress');
+  verbose &&
+    console.log(`progress:start with duration: ${duration}, steps: ${steps}`);
+  const progress = getProgressBar('mock-progress');
 
   let i = 0;
   const id = setInterval(() => {
-    if (i < plugins) {
-      progress.incrementTask({ percentage: 1 / plugins });
+    if (i < steps) {
+      progress.incrementInSteps(steps);
+      verbose && console.log('incrementInSteps: ', steps);
     } else {
       clearInterval(id);
-      progress.close();
+      progress.endProgress();
     }
     i++;
   }, duration);
