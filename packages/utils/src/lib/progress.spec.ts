@@ -19,8 +19,7 @@ describe('getSingletonMultiProgressBars', () => {
     const b = getSingletonProgressBars();
     expect(a).toBe(b);
     a.close();
-    b.close();
-    await bars.promise; // check if all tasks are done
+    await a.promise; // check if all tasks are done
   });
 
   // @TODO 'should end all tasks on close'
@@ -48,11 +47,18 @@ describe('getProgressBar', () => {
   it('should update task message', async () => {
     const taskA = getProgressBar(taskAName);
     expect(tasks[taskAName].message).toBe('');
+
     taskA.updateTitle('0');
     expect(tasks[taskAName].message).toBe('0');
     expect(progressBuffer[0].trim()).toBe(
       `${taskAName}: ${barStyles.active(' ')}   0% | 0`,
     );
+    taskA.updateTitle('1');
+    expect(tasks[taskAName].message).toBe('1');
+    expect(progressBuffer[0].trim()).toBe(
+      `${taskAName}: ${barStyles.active(' ')}   0% | 1`,
+    );
+
     bars.removeTask(taskAName);
   });
 
@@ -62,6 +68,11 @@ describe('getProgressBar', () => {
     expect(tasks[taskAName].message).toBe('');
     expect(progressBuffer[0].trim()).toBe(
       `${taskAName}: ${barStyles.active('▌')}  50% |`,
+    );
+    taskA.incrementInSteps(2);
+    expect(tasks[taskAName].message).toBe('');
+    expect(progressBuffer[0].trim()).toBe(
+      `${taskAName}: ${barStyles.active('█')} 100% |`,
     );
     bars.removeTask(taskAName);
   });

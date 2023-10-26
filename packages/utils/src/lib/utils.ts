@@ -32,8 +32,6 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
-// === Validation
-
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return Array.from(new Set(array));
 }

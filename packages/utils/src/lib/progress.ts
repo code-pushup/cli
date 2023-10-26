@@ -2,13 +2,14 @@ import chalk from 'chalk';
 import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 
 type BarStyles = 'active' | 'done' | 'idle';
-export const barStyles: Record<BarStyles, (s: string) => string> = {
+type StatusStyles = Record<BarStyles, (s: string) => string>;
+export const barStyles: StatusStyles = {
   active: (s: string) => chalk.green(s),
   done: (s: string) => chalk.gray(s),
   idle: (s: string) => chalk.gray(s),
 };
 
-export const messageStyles: Record<BarStyles, (s: string) => string> = {
+export const messageStyles: StatusStyles = {
   active: (s: string) => chalk.black(s),
   done: (s: string) => chalk.green(chalk.bold(s)),
   idle: (s: string) => chalk.gray(s),
