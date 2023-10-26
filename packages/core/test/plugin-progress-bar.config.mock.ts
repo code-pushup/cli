@@ -22,7 +22,7 @@ const asyncPlugin = (pId: string, duration = 1000) => {
     runner: {
       command: 'node',
       args: [
-        '-e',
+        'echo',
         `setTimeout(() => require('fs').writeFileSync('${outputFile}', '${JSON.stringify(
           [
             {

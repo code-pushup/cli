@@ -69,7 +69,7 @@ describe('objectToCliArgs', () => {
 
   it('should handle shorthands arguments', () => {
     const params = {
-      e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
+      e: `require('fs').writeFileSync(require('path').join('tmp', 'out.json')), '${JSON.stringify([
         {
           slug: 'largest-contentful-paint',
           title: 'Largest Contentful Paint',

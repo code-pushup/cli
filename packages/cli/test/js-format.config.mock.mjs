@@ -4,6 +4,7 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.mjs
  */
+import {join} from "path";
 
 const outputDir = 'tmp';
 export default {
@@ -27,8 +28,8 @@ export default {
       runner: {
         command: 'node',
         args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
+          'echo',
+          `require('fs').writeFileSync(require('path').join(outputDir, "out.json"), '${JSON.stringify(
             [
               {
                 title: 'dummy-title',
@@ -39,7 +40,7 @@ export default {
             ],
           )}')`,
         ],
-        outputFile: `${outputDir}/out.json`,
+        outputFile: join(outputDir, 'out.json'),
       },
       groups: [],
       slug: 'command-object-plugin',

@@ -46,7 +46,7 @@ export default {
       runner: {
         command: 'node',
         args: [
-          '-e',
+          'echo',
           `require('fs').writeFileSync('${outputDir}/dummy-plugin-1-output.json', '${JSON.stringify(
             [
               {
@@ -87,7 +87,7 @@ export default {
       runner: {
         command: 'node',
         args: [
-          '-e',
+          'echo',
           `require('fs').writeFileSync('${outputDir}/dummy-plugin-2-output.json', '${JSON.stringify(
             [
               {

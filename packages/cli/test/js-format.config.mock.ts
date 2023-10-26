@@ -29,8 +29,8 @@ export default {
       runner: {
         command: 'node',
         args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
+          'echo',
+          `const path = require('path'); require('fs').writeFileSync(path.join(outputDir, "out.json")', '${JSON.stringify(
             [
               {
                 title: 'dummy-title',

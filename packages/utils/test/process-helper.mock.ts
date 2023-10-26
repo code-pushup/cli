@@ -32,7 +32,7 @@ export function mockProcessConfig(
   processConfig: Partial<ProcessConfig>,
 ): ProcessConfig {
   return {
-    ...{ command: 'dummy-string', args: [], outputFile: 'tmp/out.json' },
+    ...{ command: 'dummy-string', args: [], outputFile: join('tmp','out.json') },
     ...processConfig,
     observer: spyObserver(),
   };
