@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import {CtorOptions, MultiProgressBars} from 'multi-progress-bars';
+import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 
 /**
  * ANSI escape codes in terminal stdout:
@@ -30,7 +30,9 @@ export type ProgressBar = {
 
 let mpb: MultiProgressBars;
 
-export function getSingletonProgressBars(options?: Partial<CtorOptions>): MultiProgressBars {
+export function getSingletonProgressBars(
+  options?: Partial<CtorOptions>,
+): MultiProgressBars {
   if (!mpb) {
     mpb = new MultiProgressBars({
       initMessage: '',
