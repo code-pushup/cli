@@ -12,7 +12,6 @@ Commands:
   code-pushup print-config  Print config
 
 Options:
-      --version              Show version number                       [boolean]
       --verbose              When true creates more verbose output. This is help
                              ful when debugging.      [boolean] [default: false]
       --config               Path the the config file, e.g. code-pushup.config.j
