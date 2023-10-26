@@ -1,21 +1,14 @@
 import chalk from 'chalk';
 import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 
-/**
- * ANSI escape codes in terminal stdout:
- * - `\u001b[30m` black
- * - `\u001b[90m` gray
- * - `\u001b[32m` green
- * - `\u001b[39m` reset or default color
- */
-
-export const barStyles = {
+type BarStyles = 'active' | 'done' | 'idle';
+export const barStyles: Record<BarStyles, (s: string) => string> = {
   active: (s: string) => chalk.green(s),
   done: (s: string) => chalk.gray(s),
   idle: (s: string) => chalk.gray(s),
 };
 
-export const messageStyles = {
+export const messageStyles: Record<BarStyles, (s: string) => string> = {
   active: (s: string) => chalk.black(s),
   done: (s: string) => chalk.green(chalk.bold(s)),
   idle: (s: string) => chalk.gray(s),

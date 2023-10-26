@@ -5,6 +5,14 @@ import {
   getSingletonProgressBars,
 } from './progress';
 
+/**
+ * ANSI escape codes in terminal stdout:
+ * - `\u001b[30m` black
+ * - `\u001b[90m` gray
+ * - `\u001b[32m` green
+ * - `\u001b[39m` reset or default color
+ */
+
 describe('getSingletonMultiProgressBars', () => {
   it('should be singleton', async () => {
     const a = getSingletonProgressBars();
