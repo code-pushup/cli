@@ -1,7 +1,7 @@
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI help', () => {
-  it('should print help whit argument ---help', async () => {
+  it('should print help with argument ---help', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: ['./dist/packages/cli', '--help'],
