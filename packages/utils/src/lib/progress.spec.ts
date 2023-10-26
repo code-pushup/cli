@@ -12,7 +12,10 @@ describe('getSingletonMultiProgressBars', () => {
     expect(a).toBe(b);
     a.close();
     b.close();
+    await bars.promise; // check if all tasks are done
   });
+
+  // @TODO 'should end all tasks on close'
 });
 
 const taskAName = 'a';
@@ -32,7 +35,6 @@ describe('getProgressBar', () => {
     // safety checks int the first test only
     bars.removeTask(taskAName);
     expect(bars.getIndex(taskAName)).toBe(undefined);
-    await bars.promise; // check if all tasks are done
   });
 
   it('should update task message', async () => {
