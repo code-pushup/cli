@@ -194,8 +194,8 @@ export function objectToCliArgs<
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      if(Array.isArray(value)) {
-        return value
+      if (Array.isArray(value)) {
+        return value;
       } else {
         return [value + ''];
       }

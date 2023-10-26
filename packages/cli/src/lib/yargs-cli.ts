@@ -43,6 +43,7 @@ export function yargsCli(
   // setup yargs
   cli
     .help()
+    .version(false)
     .alias('h', 'help')
     .parserConfiguration({
       'strip-dashed': true,
