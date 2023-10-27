@@ -1,6 +1,7 @@
+import { join } from 'path';
 import { CoreConfig } from '../../src';
+import { echoRunnerConfig } from './echo-runner-config.mock';
 import { auditReport } from './plugin-config.mock';
-import { runnerConfig } from './runner.mock';
 
 const outputDir = 'tmp';
 export default {
@@ -21,7 +22,7 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: runnerConfig([auditReport()], `${outputDir}/out.json`),
+      runner: echoRunnerConfig([auditReport()], join(outputDir, 'out.json')),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',

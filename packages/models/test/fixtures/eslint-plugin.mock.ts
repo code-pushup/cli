@@ -5,8 +5,8 @@ import type {
   PluginConfig,
   PluginReport,
 } from '../../src';
+import { echoRunnerConfig } from './echo-runner-config.mock';
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
-import { runnerConfig } from './runner.mock';
 
 const eslintMeta = {
   slug: 'eslint',
@@ -29,7 +29,7 @@ export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...eslintMeta,
-    runner: runnerConfig(
+    runner: echoRunnerConfig(
       Object.values(ESLINT_AUDITS_MAP),
       join(outputDir, 'eslint-out.json'),
     ),

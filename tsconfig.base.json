@@ -17,6 +17,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/cli/testing": ["packages/cli/test/index.ts"],
