@@ -8,6 +8,9 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["packages/nx-plugin/tsconfig.*?.json"]
+      },
       "rules": {}
     },
     {
