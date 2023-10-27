@@ -20,6 +20,22 @@ describe('yargsCli', () => {
     expect(parsedArgv.verbose).toBe(false);
   });
 
+  it('multiple config args should be parsed to last item from array', async () => {
+    const args: string[] = ['--config=./config.a.ts', '--config=./config.b.ts'];
+    const parsedArgv = await yargsCli(args, {
+      options,
+    }).parseAsync();
+    expect(parsedArgv.config).toBe('./config.b.ts');
+  });
+
+  it('single config arg should be parsed as a single string', async () => {
+    const args: string[] = ['--config=./config.a.ts'];
+    const parsedArgv = await yargsCli(args, {
+      options,
+    }).parseAsync();
+    expect(parsedArgv.config).toBe('./config.a.ts');
+  });
+
   it('global options should parse correctly', async () => {
     const args: string[] = objectToCliArgs({
       verbose: true,
