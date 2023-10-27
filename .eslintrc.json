@@ -57,18 +57,71 @@
         "plugin:@typescript-eslint/strict"
       ],
       "rules": {
+        // override rules from extended configs
         "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
         "@typescript-eslint/prefer-nullish-coalescing": [
           "warn",
           { "ignorePrimitives": { "string": true } }
         ],
         "@typescript-eslint/consistent-indexed-object-style": "off",
-        "@typescript-eslint/unbound-method": "off"
+        "@typescript-eslint/unbound-method": "off",
+        // additional rules
+        "@typescript-eslint/no-require-imports": "error",
+        "@typescript-eslint/default-param-last": "warn",
+        "@typescript-eslint/method-signature-style": "warn",
+        "@typescript-eslint/no-confusing-void-expression": "warn",
+        "@typescript-eslint/no-shadow": "warn",
+        "@typescript-eslint/no-unused-expressions": "warn",
+        "@typescript-eslint/naming-convention": [
+          "warn",
+          {
+            "selector": [
+              "variableLike",
+              "method",
+              "typeProperty",
+              "parameterProperty",
+              "classProperty"
+            ],
+            "format": ["camelCase"]
+          },
+          {
+            "selector": "variable",
+            "format": ["camelCase", "UPPER_CASE"]
+          },
+          {
+            "selector": "typeLike",
+            "format": ["PascalCase"]
+          },
+          {
+            "selector": "enumMember",
+            "format": ["PascalCase"]
+          },
+          {
+            "selector": "parameter",
+            "modifiers": ["unused"],
+            "format": null,
+            "custom": {
+              "regex": "^(_+|[a-z][a-zA-Z0-9]*)$",
+              "match": true
+            }
+          },
+          {
+            "selector": "objectLiteralProperty",
+            "modifiers": ["requiresQuotes"],
+            "format": null
+          },
+          {
+            "selector": ["variable", "parameter"],
+            "modifiers": ["destructured"],
+            "format": null
+          }
+        ]
       }
     },
     {
       "files": ["*.spec.ts", "*.spec.tsx"],
       "rules": {
+        // less strict rules for tests
         "@typescript-eslint/require-await": "warn",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
