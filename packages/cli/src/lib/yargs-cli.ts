@@ -49,6 +49,12 @@ export function yargsCli(
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
     .array('persist.format')
+    .coerce('config', (config: string | string[]) => {
+      if (Array.isArray(config)) {
+        return config[config.length - 1];
+      }
+      return config;
+    })
     .options(options);
   //.demandCommand(...demandCommand);
 
