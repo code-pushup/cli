@@ -137,8 +137,9 @@ const MOCK_PROGRESS: ProgressBar = {
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
- * @param plugins array of {@param options
-@link PluginConfig} objects
+ * @param plugins array of {@link PluginConfig} objects
+ * @param {Object} [options] execution options
+ * @param {boolean} options.progress show progress bar
  * @returns {Promise<PluginReport[]>} plugin report
  *
  * @example
