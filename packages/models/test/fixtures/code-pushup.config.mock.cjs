@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { createFileWriteRunnerConfig } from './file-write-runner-config';
+import { echoRunnerConfig } from './echo-runner-config.mock';
 
 const outputDir = 'tmp';
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: createFileWriteRunnerConfig(
+      runner: echoRunnerConfig(
         [
           {
             slug: 'command-object-audit-slug',

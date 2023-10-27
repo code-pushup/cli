@@ -1,7 +1,7 @@
 import { platform } from 'os';
 import { AuditOutput, RunnerConfig } from '../../src';
 
-export function createFileWriteRunnerConfig(
+export function echoRunnerConfig(
   output: AuditOutput[],
   outputFile: string,
 ): RunnerConfig {

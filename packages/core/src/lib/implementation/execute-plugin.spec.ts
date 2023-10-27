@@ -7,7 +7,7 @@ import {
 } from '@code-pushup/models';
 import {
   auditReport,
-  createFileWriteRunnerConfig,
+  echoRunnerConfig,
   pluginConfig,
 } from '@code-pushup/models/testing';
 import { cleanFolder } from '../../../test';
@@ -46,10 +46,7 @@ describe('executePlugin', () => {
       { p: 42 } as unknown as AuditReport,
     ];
     const pluginCfg = pluginConfig([auditReport()], {
-      runner: createFileWriteRunnerConfig(
-        invalidAuditOutputs,
-        join('tmp', 'out.json'),
-      ),
+      runner: echoRunnerConfig(invalidAuditOutputs, join('tmp', 'out.json')),
     });
     await expect(() => executePlugin(pluginCfg)).rejects.toThrowError(
       'Plugin output of plugin with slug mock-plugin-slug',

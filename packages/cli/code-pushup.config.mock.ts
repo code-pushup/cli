@@ -1,4 +1,5 @@
-import { createFileWriteRunnerConfig } from '../models/test/fixtures/file-write-runner-config';
+import { join } from 'path';
+import { echoRunnerConfig } from '../models/test/fixtures/echo-runner-config.mock';
 
 const outputDir = 'tmp';
 
@@ -39,7 +40,7 @@ export default {
           docsUrl: 'http://www.my-docs.dev?slug=dummy-audit-3',
         },
       ],
-      runner: createFileWriteRunnerConfig(
+      runner: echoRunnerConfig(
         [
           {
             slug: 'dummy-audit-1',
@@ -96,6 +97,3 @@ export default {
     },
   ],
 };
-function join(outputDir: string, arg1: string): string {
-  throw new Error('Function not implemented.');
-}

@@ -15,7 +15,7 @@ export async function lint(
   const results = lintResults.map(
     (result): LintResult => ({
       ...result,
-      relativeFilePath: toUnixPath(result.filePath, true),
+      relativeFilePath: toUnixPath(result.filePath, { toRelative: true }),
     }),
   );
 

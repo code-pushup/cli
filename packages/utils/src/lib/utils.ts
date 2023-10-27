@@ -32,10 +32,13 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
-export function toUnixPath(path: string, relative?: boolean): string {
+export function toUnixPath(
+  path: string,
+  options?: { toRelative?: boolean },
+): string {
   const unixPath = path.replace(/\\/g, '/');
 
-  if (relative) {
+  if (options?.toRelative) {
     return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
   }
 

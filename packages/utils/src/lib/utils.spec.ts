@@ -50,9 +50,11 @@ describe('toUnixPath', () => {
   });
 
   it('should transform absolute Windows path to relative UNIX path', () => {
-    expect(toUnixPath(`${process.cwd()}\\windows\\path\\config.ts`, true)).toBe(
-      'windows/path/config.ts',
-    );
+    expect(
+      toUnixPath(`${process.cwd()}\\windows\\path\\config.ts`, {
+        toRelative: true,
+      }),
+    ).toBe('windows/path/config.ts');
   });
 });
 

@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { CoreConfig } from '../../src';
-import { createFileWriteRunnerConfig } from './file-write-runner-config';
+import { echoRunnerConfig } from './echo-runner-config.mock';
 import { auditReport } from './plugin-config.mock';
 
 const outputDir = 'tmp';
@@ -22,10 +22,7 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: createFileWriteRunnerConfig(
-        [auditReport()],
-        join(outputDir, 'out.json'),
-      ),
+      runner: echoRunnerConfig([auditReport()], join(outputDir, 'out.json')),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
