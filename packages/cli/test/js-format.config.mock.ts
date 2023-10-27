@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { CoreConfig } from '@code-pushup/models';
 
 /**
@@ -8,6 +9,7 @@ import { CoreConfig } from '@code-pushup/models';
  */
 
 const outputDir = 'tmp';
+const outputFile = join(outputDir, `out.${Date.now()}.json`);
 export default {
   upload: {
     organization: 'code-pushup',
@@ -30,18 +32,16 @@ export default {
         command: 'node',
         args: [
           'echo',
-          `const path = require('path'); require('fs').writeFileSync(path.join(outputDir, "out.json")', '${JSON.stringify(
-            [
-              {
-                title: 'dummy-title',
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
-        outputFile: `${outputDir}/out.json`,
+        outputFile,
       },
       groups: [],
       slug: 'command-object-plugin',

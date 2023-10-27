@@ -69,14 +69,16 @@ describe('objectToCliArgs', () => {
 
   it('should handle shorthands arguments', () => {
     const params = {
-      e: `require('fs').writeFileSync(require('path').join('tmp', 'out.json')), '${JSON.stringify([
-        {
-          slug: 'largest-contentful-paint',
-          title: 'Largest Contentful Paint',
-          value: 0,
-          score: 0,
-        },
-      ])}')`,
+      e: `require('fs').writeFileSync(require('path').join('tmp', 'out.json')), '${JSON.stringify(
+        [
+          {
+            slug: 'largest-contentful-paint',
+            title: 'Largest Contentful Paint',
+            value: 0,
+            score: 0,
+          },
+        ],
+      )}')`,
     };
     const result = objectToCliArgs(params);
     expect(result).toEqual([`-e="${params.e}"`]);

@@ -4,9 +4,10 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.mjs
  */
-import {join} from "path";
+import { join } from 'path';
 
 const outputDir = 'tmp';
+const outputFile = join(outputDir, `out.${Date.now()}.json`);
 export default {
   upload: {
     organization: 'code-pushup',
@@ -29,18 +30,16 @@ export default {
         command: 'node',
         args: [
           'echo',
-          `require('fs').writeFileSync(require('path').join(outputDir, "out.json"), '${JSON.stringify(
-            [
-              {
-                title: 'dummy-title',
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
-        outputFile: join(outputDir, 'out.json'),
+        outputFile,
       },
       groups: [],
       slug: 'command-object-plugin',

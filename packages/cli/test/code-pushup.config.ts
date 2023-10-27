@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { CoreConfig } from '@code-pushup/models';
 
 /**
@@ -8,7 +9,8 @@ import { CoreConfig } from '@code-pushup/models';
  */
 
 const outputDir = 'tmp';
-
+const outputFile1 = join(outputDir, `dummy-plugin-1-output.${Date.now()}.json`);
+const outputFile2 = join(outputDir, `dummy-plugin-2-output.${Date.now()}.json`);
 export default {
   upload: {
     organization: 'code-pushup',
@@ -47,30 +49,28 @@ export default {
         command: 'node',
         args: [
           'echo',
-          `require('fs').writeFileSync('${outputDir}/dummy-plugin-1-output.json', '${JSON.stringify(
-            [
-              {
-                title: 'Dummy Audit 1',
-                slug: 'dummy-audit-1',
-                value: 420,
-                score: 0.42,
-              },
-              {
-                title: 'Dummy Audit 2',
-                slug: 'dummy-audit-2',
-                value: 80,
-                score: 0,
-              },
-              {
-                title: 'Dummy Audit 3',
-                slug: 'dummy-audit-3',
-                value: 12,
-                score: 0.12,
-              },
-            ],
-          )}')`,
+          `${JSON.stringify([
+            {
+              title: 'Dummy Audit 1',
+              slug: 'dummy-audit-1',
+              value: 420,
+              score: 0.42,
+            },
+            {
+              title: 'Dummy Audit 2',
+              slug: 'dummy-audit-2',
+              value: 80,
+              score: 0,
+            },
+            {
+              title: 'Dummy Audit 3',
+              slug: 'dummy-audit-3',
+              value: 12,
+              score: 0.12,
+            },
+          ])} > ${outputFile1}`,
         ],
-        outputFile: `${outputDir}/dummy-plugin-1-output.json`,
+        outputFile: outputFile1,
       },
     },
     {
@@ -88,18 +88,16 @@ export default {
         command: 'node',
         args: [
           'echo',
-          `require('fs').writeFileSync('${outputDir}/dummy-plugin-2-output.json', '${JSON.stringify(
-            [
-              {
-                title: 'Dummy Audit 1',
-                slug: 'dummy-plugin-2-audit-1',
-                value: 420,
-                score: 0.42,
-              },
-            ],
-          )}');`,
+          `${JSON.stringify([
+            {
+              title: 'Dummy Audit 1',
+              slug: 'dummy-plugin-2-audit-1',
+              value: 420,
+              score: 0.42,
+            },
+          ])} > ${outputFile2}`,
         ],
-        outputFile: `${outputDir}/dummy-plugin-2-output.json`,
+        outputFile: outputFile2,
       },
     },
   ],
