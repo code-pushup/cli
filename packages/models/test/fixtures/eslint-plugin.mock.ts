@@ -6,7 +6,7 @@ import type {
   PluginReport,
 } from '../../src';
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
-import { runnerConfig } from './runner.mock';
+import { createFileWriteRunnerConfig } from './file-write-runner-config';
 
 const eslintMeta = {
   slug: 'eslint',
@@ -29,7 +29,7 @@ export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...eslintMeta,
-    runner: runnerConfig(
+    runner: createFileWriteRunnerConfig(
       Object.values(ESLINT_AUDITS_MAP),
       join(outputDir, 'eslint-out.json'),
     ),

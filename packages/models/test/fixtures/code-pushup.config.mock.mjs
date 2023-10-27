@@ -1,3 +1,6 @@
+import { join } from 'path';
+import { createFileWriteRunnerConfig } from './file-write-runner-config';
+
 const outputDir = 'tmp';
 export default {
   upload: {
@@ -17,23 +20,16 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: {
-        command: 'node',
-        args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/out.json', '${JSON.stringify(
-            [
-              {
-                title: 'dummy-title',
-                slug: 'command-object-audit-slug',
-                value: 0,
-                score: 0,
-              },
-            ],
-          )}')`,
+      runner: createFileWriteRunnerConfig(
+        [
+          {
+            slug: 'command-object-audit-slug',
+            value: 0,
+            score: 0,
+          },
         ],
-        outputFile: `${outputDir}/out.json`,
-      },
+        join(outputDir, 'out.json'),
+      ),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',

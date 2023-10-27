@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { Audit, AuditReport, PluginConfig } from '../../src';
-import { runnerConfig } from './runner.mock';
+import { createFileWriteRunnerConfig } from './file-write-runner-config';
 
 export function pluginConfig(
   auditOutputs: AuditReport[],
@@ -15,7 +15,7 @@ export function pluginConfig(
     description: 'Plugin description',
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
-    runner: runnerConfig(auditOutputs, pluginOutputPath),
+    runner: createFileWriteRunnerConfig(auditOutputs, pluginOutputPath),
     ...(opt || {}),
   } satisfies PluginConfig;
 }

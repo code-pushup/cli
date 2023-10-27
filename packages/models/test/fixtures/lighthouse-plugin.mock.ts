@@ -1,7 +1,8 @@
+import { join } from 'path';
 import type { AuditGroup, PluginReport } from '../../src';
 import { Audit, PluginConfig } from '../../src';
+import { createFileWriteRunnerConfig } from './file-write-runner-config';
 import { LIGHTHOUSE_AUDIT_REPORTS_MAP } from './lighthouse-audits.mock';
-import { runnerConfig } from './runner.mock';
 
 const PLUGIN_GROUP_PERFORMANCE: AuditGroup = {
   slug: 'performance',
@@ -50,9 +51,9 @@ export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...lighthousePluginMeta,
-    runner: runnerConfig(
+    runner: createFileWriteRunnerConfig(
       Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP),
-      `${outputDir}/lighthouse-out.json`,
+      join(outputDir, 'lighthouse-out.json'),
     ),
     audits,
     groups: [PLUGIN_GROUP_PERFORMANCE],

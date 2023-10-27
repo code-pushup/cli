@@ -1,3 +1,5 @@
+import { createFileWriteRunnerConfig } from '../models/test/fixtures/file-write-runner-config';
+
 const outputDir = 'tmp';
 
 export default {
@@ -37,35 +39,26 @@ export default {
           docsUrl: 'http://www.my-docs.dev?slug=dummy-audit-3',
         },
       ],
-      runner: {
-        command: 'node',
-        args: [
-          '-e',
-          `require('fs').writeFileSync('${outputDir}/dummy-plugin-output.json', '${JSON.stringify(
-            [
-              {
-                title: 'Dummy Audit 1',
-                slug: 'dummy-audit-1',
-                value: 420,
-                score: 0.42,
-              },
-              {
-                title: 'Dummy Audit 2',
-                slug: 'dummy-audit-2',
-                value: 80,
-                score: 0,
-              },
-              {
-                title: 'Dummy Audit 3',
-                slug: 'dummy-audit-3',
-                value: 12,
-                score: 0.12,
-              },
-            ],
-          )}')`,
+      runner: createFileWriteRunnerConfig(
+        [
+          {
+            slug: 'dummy-audit-1',
+            value: 420,
+            score: 0.42,
+          },
+          {
+            slug: 'dummy-audit-2',
+            value: 80,
+            score: 0,
+          },
+          {
+            slug: 'dummy-audit-3',
+            value: 12,
+            score: 0.12,
+          },
         ],
-        outputFile: `${outputDir}/dummy-plugin-output.json`,
-      },
+        join(outputDir, 'dummy-plugin-output.json'),
+      ),
     },
   ],
   categories: [
@@ -103,3 +96,6 @@ export default {
     },
   ],
 };
+function join(outputDir: string, arg1: string): string {
+  throw new Error('Function not implemented.');
+}
