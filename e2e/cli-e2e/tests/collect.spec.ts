@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
@@ -21,10 +22,13 @@ describe('CLI collect', () => {
       plugins: report.plugins.map(omitVariableData) as PluginReport[],
     });
 
+  const cliPath = join('..', '..', 'dist', 'packages', 'cli');
+
   beforeEach(async () => {
     vi.clearAllMocks();
     cleanFolderPutGitKeep();
   });
+
   afterEach(() => {
     cleanFolderPutGitKeep();
   });
@@ -32,7 +36,7 @@ describe('CLI collect', () => {
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['../../dist/packages/cli', 'collect', '--no-progress'],
+      args: [cliPath, 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -48,12 +52,7 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [
-        '../../dist/packages/cli',
-        'collect',
-        '--persist.format=md',
-        '--no-progress',
-      ],
+      args: [cliPath, 'collect', '--persist.format=md', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -71,11 +70,11 @@ describe('CLI collect', () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
-        '../../dist/packages/cli',
+        cliPath,
         'collect',
         '--verbose',
-        '--no-progress',
         '--persist.format=stdout',
+        '--no-progress',
       ],
       cwd: 'examples/react-todos-app',
     });

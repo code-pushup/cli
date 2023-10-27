@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { Audit, AuditReport, PluginConfig } from '../../src';
-import { runnerConfig } from './runner.mock';
+import { echoRunnerConfig } from './echo-runner-config.mock';
 
 export function pluginConfig(
   auditOutputs: AuditReport[],
@@ -18,7 +18,7 @@ export function pluginConfig(
     description: 'Plugin description',
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
-    runner: runnerConfig(auditOutputs, pluginOutputFile),
+    runner: echoRunnerConfig(auditOutputs, pluginOutputPath),
     ...(opt || {}),
   } satisfies PluginConfig;
 }

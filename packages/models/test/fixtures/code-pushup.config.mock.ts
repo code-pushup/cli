@@ -1,19 +1,13 @@
 import { join } from 'path';
+import { CoreConfig } from '../../src';
 import { echoRunnerConfig } from './echo-runner-config.mock';
-
-/**
- * This config file is here to demonstrate the JavaScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
- *
- * Usage:
- * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.js
- */
+import { auditReport } from './plugin-config.mock';
 
 const outputDir = 'tmp';
-const outputFile = join(outputDir, `out.${Date.now()}.json`);
 export default {
   upload: {
     organization: 'code-pushup',
-    project: 'cli-js',
+    project: 'cli',
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
@@ -22,22 +16,13 @@ export default {
     {
       audits: [
         {
-          slug: 'command-object-audit-slug',
+          slug: 'mock-audit-slug',
           title: 'audit title',
           description: 'audit description',
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: echoRunnerConfig(
-        [
-          {
-            slug: 'command-object-audit-slug',
-            value: 0,
-            score: 0,
-          },
-        ],
-        outputFile,
-      },
+      runner: echoRunnerConfig([auditReport()], join(outputDir, 'out.json')),
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',
@@ -45,4 +30,4 @@ export default {
     },
   ],
   categories: [],
-};
+} satisfies CoreConfig;

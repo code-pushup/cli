@@ -1,3 +1,6 @@
+import { join } from 'path';
+import { echoRunnerConfig } from './echo-runner-config.mock';
+
 /**
  * This config file is here to demonstrate the CommonJS version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
  *
@@ -25,17 +28,13 @@ module.exports = {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: {
-        command: 'echo',
-        args: [
-          `${JSON.stringify([
-            {
-              title: 'dummy-title',
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
-            },
-          ])} > ${outputFile}`,
+      runner: echoRunnerConfig(
+        [
+          {
+            slug: 'command-object-audit-slug',
+            value: 0,
+            score: 0,
+          },
         ],
         outputFile,
       },

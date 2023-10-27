@@ -1,6 +1,7 @@
 import { defaultConfig } from 'lighthouse';
 import { join } from 'path';
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { PluginConfig } from '@code-pushup/models';
+import { echoRunnerConfig } from '@code-pushup/models/testing';
 
 type LighthousePluginConfig = {
   config: string;
@@ -19,16 +20,13 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         title: 'Largest Contentful Paint',
       },
     ],
-    runner: {
-      command: 'echo',
-      args: [
-        `${JSON.stringify([
-          {
-            slug: 'largest-contentful-paint',
-            value: 0,
-            score: 0,
-          },
-        ] satisfies AuditOutputs)} > ${outputFile}`,
+    runner: echoRunnerConfig(
+      [
+        {
+          slug: 'largest-contentful-paint',
+          value: 0,
+          score: 0,
+        },
       ],
       outputFile,
     },
