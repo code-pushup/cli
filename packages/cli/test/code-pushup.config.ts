@@ -46,9 +46,8 @@ export default {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          'echo',
           `${JSON.stringify([
             {
               title: 'Dummy Audit 1',
@@ -85,9 +84,8 @@ export default {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          'echo',
           `${JSON.stringify([
             {
               title: 'Dummy Audit 1',

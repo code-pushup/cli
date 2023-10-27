@@ -27,9 +27,8 @@ export default {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          'echo',
           `${JSON.stringify([
             {
               title: 'dummy-title',

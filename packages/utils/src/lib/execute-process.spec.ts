@@ -67,18 +67,15 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual(['bin.js']);
   });
 
+  it('should handle the "_" argument with multiple values', () => {
+    const params = { _: ['bin.js', '--help'] };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['bin.js', '--help']);
+  });
+
   it('should handle shorthands arguments', () => {
     const params = {
-      e: `require('fs').writeFileSync(require('path').join('tmp', 'out.json')), '${JSON.stringify(
-        [
-          {
-            slug: 'largest-contentful-paint',
-            title: 'Largest Contentful Paint',
-            value: 0,
-            score: 0,
-          },
-        ],
-      )}')`,
+      e: `test`,
     };
     const result = objectToCliArgs(params);
     expect(result).toEqual([`-e="${params.e}"`]);

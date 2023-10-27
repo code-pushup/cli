@@ -4,10 +4,9 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.cjs
  */
-const { join } = require('path');
 
 const outputDir = 'tmp';
-const outputFile = join(outputDir, `out.${Date.now()}.json`);
+const outputFile = `${outputDir}/out.${Date.now()}.json`;
 module.exports = {
   upload: {
     organization: 'code-pushup',
@@ -27,9 +26,8 @@ module.exports = {
         },
       ],
       runner: {
-        command: 'node',
+        command: 'echo',
         args: [
-          'echo',
           `${JSON.stringify([
             {
               title: 'dummy-title',

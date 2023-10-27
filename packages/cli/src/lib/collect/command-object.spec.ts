@@ -29,13 +29,6 @@ const cli = (args: string[]) =>
   });
 
 describe('collect-command-object', () => {
-  beforeEach(() => {
-    cleanFolderPutGitKeep();
-  });
-  afterEach(() => {
-    cleanFolderPutGitKeep();
-  });
-
   it('should override config with CLI arguments', async () => {
     const args = [
       ...baseArgs,

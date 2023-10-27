@@ -20,9 +20,8 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
       },
     ],
     runner: {
-      command: 'node',
+      command: 'echo',
       args: [
-        'echo',
         `${JSON.stringify([
           {
             slug: 'largest-contentful-paint',

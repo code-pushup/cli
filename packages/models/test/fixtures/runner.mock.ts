@@ -6,8 +6,8 @@ export function runnerConfig(
   outputFile = join('tmp', `out.${Date.now()}.json`),
 ): RunnerConfig {
   return {
-    command: 'node',
-    args: ['echo', `${JSON.stringify(audits)} > ${outputFile}`],
+    command: 'echo',
+    args: [`${JSON.stringify(audits)} > ${outputFile}`],
     outputFile,
   };
 }
