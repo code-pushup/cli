@@ -42,7 +42,7 @@ describe('applyConfigMiddleware', () => {
   });
 
   it('should throw with invalid config', async () => {
-    const invalidConfig = 'wrong/path/to/config';
+    const invalidConfig = join('wrong', 'path', 'to', 'config');
     let error: Error = new Error();
     await configMiddleware({ config: invalidConfig }).catch(e => (error = e));
     expect(error?.message).toContain(invalidConfig);

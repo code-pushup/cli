@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Audit, AuditGroup, Issue, PersistConfig } from '../src/';
 
 const __auditSlug__ = 'mock-audit-slug';
@@ -19,7 +20,7 @@ export function mockAuditConfig(opt?: { auditSlug?: string }): Audit {
 
 export function mockPersistConfig(opt?: Partial<PersistConfig>): PersistConfig {
   let { outputDir, format } = opt || {};
-  outputDir = outputDir || `tmp/${__outputFile__}`;
+  outputDir = outputDir || join('tmp', __outputFile__);
   format = format || [];
   return {
     outputDir,
