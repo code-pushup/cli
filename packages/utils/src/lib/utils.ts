@@ -32,6 +32,16 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
+export function toUnixPath(path: string, relative?: boolean): string {
+  const unixPath = path.replace(/\\/g, '/');
+
+  if (relative) {
+    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+  }
+
+  return unixPath;
+}
+
 // === Validation
 
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {

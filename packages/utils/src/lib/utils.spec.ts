@@ -1,5 +1,11 @@
 import { describe, expect } from 'vitest';
-import { countOccurrences, distinct, pluralize, toArray } from './utils';
+import {
+  countOccurrences,
+  distinct,
+  pluralize,
+  toArray,
+  toUnixPath,
+} from './utils';
 
 describe('pluralize', () => {
   it.each([
@@ -27,6 +33,26 @@ describe('countOccurrences', () => {
     expect(
       countOccurrences(['error', 'warning', 'error', 'error', 'warning']),
     ).toEqual({ error: 3, warning: 2 });
+  });
+});
+
+describe('toUnixPath', () => {
+  it.each([
+    ['main.ts', 'main.ts'],
+    ['src/main.ts', 'src/main.ts'],
+    ['../../relative/unix/path/index.ts', '../../relative/unix/path/index.ts'],
+    [
+      '..\\..\\relative\\windows\\path\\index.ts',
+      '../../relative/windows/path/index.ts',
+    ],
+  ])('should transform "%s" to valid slug "%s"', (path, unixPath) => {
+    expect(toUnixPath(path)).toBe(unixPath);
+  });
+
+  it('should transform absolute Windows path to relative UNIX path', () => {
+    expect(toUnixPath(`${process.cwd()}\\windows\\path\\config.ts`, true)).toBe(
+      'windows/path/config.ts',
+    );
   });
 });
 
