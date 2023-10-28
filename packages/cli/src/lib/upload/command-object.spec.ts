@@ -57,6 +57,7 @@ describe('upload-command-object', () => {
       [reportFile()]: JSON.stringify(dummyReport),
     });
   });
+
   afterEach(async () => {
     cleanFolderPutGitKeep('tmp');
   });

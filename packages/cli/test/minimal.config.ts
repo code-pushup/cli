@@ -17,15 +17,6 @@ const pluginProcess = join(
   `minimal-plugin-process.mock.mjs`,
 );
 const outputFile = join(outputDir, `out.${Date.now()}.json`);
-const outputData = JSON.stringify([
-  {
-    title: 'dummy-title',
-    slug: 'audit-1',
-    value: 0,
-    score: 0,
-  },
-]);
-
 export default {
   upload: {
     organization: 'code-pushup',

@@ -60,7 +60,7 @@ describe('autorun-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
-        //  'persist.format': 'md',
+        'persist.format': 'md',
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
