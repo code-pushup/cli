@@ -9,13 +9,19 @@ const config = (ext: string) =>
   withDirName(join('..', '..', '..', 'test', `js-format.config.mock.${ext}`));
 
 describe('applyConfigMiddleware', () => {
+  it('should load valid .ts config', async () => {
+    const configPathMjs = config('ts');
+    const _config = await configMiddleware({ config: configPathMjs });
+    expect(_config?.upload?.project).toContain('ts');
+    expect(_config.persist.outputDir).toContain('tmp');
+  });
   it('should load valid .mjs config', async () => {
     const configPathMjs = config('mjs');
     const _config = await configMiddleware({ config: configPathMjs });
     expect(_config?.upload?.project).toContain('mjs');
     expect(_config.persist.outputDir).toContain('tmp');
   });
-/*
+
   it('should load valid .cjs config', async () => {
     const configPathCjs = config('cjs');
     const _config = await configMiddleware({ config: configPathCjs });
@@ -44,5 +50,5 @@ describe('applyConfigMiddleware', () => {
       e => (error = e),
     );
     expect(error?.message).toContain(defaultConfigPath);
-  });*/
+  }); /**/
 });

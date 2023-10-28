@@ -37,7 +37,7 @@ const baseArgs = [
       '..',
       '..',
       'test',
-      'code-pushup.config.ts',
+      'minimal.config.ts',
     ),
   }),
 ];

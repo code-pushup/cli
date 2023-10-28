@@ -2,14 +2,16 @@ import { join } from 'path';
 import { CoreConfig } from '@code-pushup/models';
 
 /**
- * This config file is here to demonstrate the TypeScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ * This config is here to test CLI arguments parsing e.g. `--verbose` or `--format=md stdout`
+ * as well as the config file parsing, the content of this file
  *
  * Usage:
- * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.ts
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/cli-parsing.config.ts
  */
 
 const outputDir = 'tmp';
 const outputFile = join(outputDir, `out.${Date.now()}.json`);
+
 export default {
   upload: {
     organization: 'code-pushup',
@@ -17,12 +19,15 @@ export default {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  persist: { outputDir },
+  persist: {
+    outputDir,
+    format: ['md', 'stdout', 'json'],
+  },
   plugins: [
     {
       audits: [
         {
-          slug: 'command-object-audit-slug',
+          slug: 'audit-1',
           title: 'audit title',
           description: 'audit description',
           docsUrl: 'http://www.my-docs.dev',
@@ -33,10 +38,13 @@ export default {
         args: [
           `${JSON.stringify([
             {
-              title: 'dummy-title',
-              slug: 'command-object-audit-slug',
-              value: 0,
-              score: 0,
+              slug: 'audit-1',
+              title: 'audit title',
+              description: 'audit description',
+              docsUrl: 'http://www.my-docs.dev',
+              value: 350,
+              score: 68,
+              displayValue: '350ms',
             },
           ])} > ${outputFile}`,
         ],

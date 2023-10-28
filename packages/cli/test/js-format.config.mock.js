@@ -1,4 +1,4 @@
-import {join} from 'path';
+import { join } from 'path';
 
 /**
  * This config file is here to demonstrate the JavaScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')

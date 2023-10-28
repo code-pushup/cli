@@ -55,7 +55,7 @@ describe('yargsCli', () => {
         '..',
         '..',
         'test',
-        'code-pushup.config.ts',
+        'cli-parsing.config.ts',
       ),
       verbose: true,
       progress: false,

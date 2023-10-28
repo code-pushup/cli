@@ -1,16 +1,20 @@
+import { join } from 'path';
+import { CoreConfig } from '@code-pushup/models';
+
 /**
- * This config file is here to demonstrate the CommonJS version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ * This config is here to test the `print-config` command with all available settings given
  *
  * Usage:
- * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.cjs
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/all-values.config.ts
  */
 
 const outputDir = 'tmp';
-const outputFile = `${outputDir}/out.${Date.now()}.json`;
-module.exports = {
+const outputFile = join(outputDir, `out.${Date.now()}.json`);
+
+export default {
   upload: {
     organization: 'code-pushup',
-    project: 'cli-cjs',
+    project: 'cli',
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
@@ -19,7 +23,7 @@ module.exports = {
     {
       audits: [
         {
-          slug: 'command-object-audit-slug',
+          slug: 'audit-1',
           title: 'audit title',
           description: 'audit description',
           docsUrl: 'http://www.my-docs.dev',
@@ -31,7 +35,7 @@ module.exports = {
           `${JSON.stringify([
             {
               title: 'dummy-title',
-              slug: 'command-object-audit-slug',
+              slug: 'audit-1',
               value: 0,
               score: 0,
             },
@@ -40,10 +44,10 @@ module.exports = {
         outputFile,
       },
       groups: [],
-      slug: 'command-object-plugin',
-      title: 'command-object plugin',
+      slug: 'plugin-1',
+      title: 'plugin 1',
       icon: 'javascript',
     },
   ],
   categories: [],
-};
+} satisfies CoreConfig;

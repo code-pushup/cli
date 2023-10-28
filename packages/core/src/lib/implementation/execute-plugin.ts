@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { readFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
@@ -12,7 +13,6 @@ import {
   executeProcess,
   getProgressBar,
 } from '@code-pushup/utils';
-import {readFileSync} from "fs";
 
 /**
  * Error thrown when plugin output is invalid.
@@ -66,7 +66,6 @@ export async function executePlugin(
     groups,
   } = pluginConfig;
   const { args, command } = pluginConfig.runner;
-  console.log('duration:');
 
   const { duration, date } = await executeProcess({
     command,
@@ -165,13 +164,11 @@ export async function executePlugins(
 ): Promise<PluginReport[]> {
   const { progress = false } = options || {};
 
-
   const progressName = 'Run Plugins';
   const progressBar = progress ? getProgressBar(progressName) : MOCK_PROGRESS;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
-    console.log('Collect Plugin:', pluginCfg.slug);
 
     progressBar.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
 

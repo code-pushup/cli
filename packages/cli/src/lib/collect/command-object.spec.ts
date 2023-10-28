@@ -3,7 +3,6 @@ import { fileURLToPath } from 'url';
 import { afterEach } from 'vitest';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
@@ -18,7 +17,7 @@ const baseArgs = [
       '..',
       '..',
       'test',
-      'code-pushup.config.ts',
+      'minimal.config.ts',
     ),
   }),
 ];

@@ -12,7 +12,6 @@ export type CollectOptions = Pick<GlobalOptions, 'verbose' | 'progress'> &
  */
 export async function collect(options: CollectOptions): Promise<Report> {
   const { plugins, categories } = options;
-  console.log('plugins', plugins.length);
   if (!plugins?.length) {
     // @TODO wove this validation into the model
     throw new Error('No plugins registered');

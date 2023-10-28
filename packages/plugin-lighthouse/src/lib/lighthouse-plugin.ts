@@ -31,6 +31,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
           score: 0,
         },
       ],
-      outputFile)
-    }
+      outputFile,
+    ),
+  };
 }

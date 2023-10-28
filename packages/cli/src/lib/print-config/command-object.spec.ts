@@ -15,7 +15,7 @@ const baseArgs = [
       '..',
       '..',
       'test',
-      'code-pushup.config.ts',
+      'all-values.config.ts',
     ),
   }),
 ];
@@ -35,7 +35,7 @@ describe('print-config-command-object', () => {
     expect(parsedArgv.upload?.apiKey).toEqual('dummy-api-key');
     expect(parsedArgv.upload?.server).toEqual('https://example.com/api');
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('sync-dummy-plugin');
+    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 
@@ -60,7 +60,7 @@ describe('print-config-command-object', () => {
     expect(parsedArgv.upload?.apiKey).toEqual(overrides['upload.apiKey']);
     expect(parsedArgv.upload?.server).toEqual(overrides['upload.server']);
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('sync-dummy-plugin');
+    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 });

@@ -1,4 +1,4 @@
-import {CoreConfig, Report, PluginConfig, PluginReport} from '../../src';
+import { CoreConfig, PluginConfig, PluginReport, Report } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
@@ -68,15 +68,15 @@ export function minimalReport(outputDir = 'tmp'): Report {
     outputDir,
   });
 
-  const {runner: _, ...rest} = plg1;
+  const { runner: _, ...rest } = plg1;
   const pluginReport: PluginReport = {
     ...rest,
     duration: 0,
     date: 'dummy-data-string',
     version: '',
     packageName: '',
-    audits: [auditReport({ slug: AUDIT_1_SLUG })]
-  }
+    audits: [auditReport({ slug: AUDIT_1_SLUG })],
+  };
 
   return JSON.parse(
     JSON.stringify({
@@ -98,9 +98,7 @@ export function minimalReport(outputDir = 'tmp'): Report {
           ],
         },
       ],
-      plugins: [
-        pluginReport
-      ],
+      plugins: [pluginReport],
     } satisfies Report),
   );
 }
