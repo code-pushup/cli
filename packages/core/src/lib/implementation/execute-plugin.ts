@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { readFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
