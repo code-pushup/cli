@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { beforeEach, describe, vi } from 'vitest';
+import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
