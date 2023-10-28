@@ -1,6 +1,5 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { afterEach } from 'vitest';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';

@@ -33,16 +33,14 @@ export default {
       runner: {
         command: 'echo',
         args: [
-          `${JSON.stringify({
-            t: [
-              {
-                title: 'dummy-title',
-                slug: 'audit-1',
-                value: 0,
-                score: 0,
-              },
-            ],
-          })} > ${outputFile}`,
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'audit-1',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
         outputFile,
       },
