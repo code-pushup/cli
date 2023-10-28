@@ -40,7 +40,10 @@ describe('print-config', () => {
         apiKey: 'e2e-api-key',
         server: 'https://e2e.com/api',
       },
-      persist: { outputDir: `tmp/${ext}` },
+      persist: {
+        outputDir: `tmp/${ext}`,
+        filename: 'report',
+      },
       plugins: expect.any(Array),
       categories: expect.any(Array),
     });
@@ -64,6 +67,7 @@ describe('print-config', () => {
       },
       persist: {
         outputDir: `tmp/ts`,
+        filename: 'report',
       },
       plugins: expect.any(Array),
       categories: [],
