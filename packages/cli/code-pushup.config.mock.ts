@@ -1,9 +1,10 @@
 import { join } from 'path';
+import { coreConfigSchema } from '../models/src/lib/core-config';
 import { echoRunnerConfig } from '../models/test/fixtures/echo-runner-config.mock';
 
 const outputDir = 'tmp';
 
-export default {
+export default coreConfigSchema.parse({
   upload: {
     organization: 'code-pushup',
     project: 'cli',
@@ -96,4 +97,4 @@ export default {
       ],
     },
   ],
-};
+});

@@ -30,6 +30,7 @@ export async function persistReport(
 ): Promise<PersistResult> {
   const { persist } = config;
   const outputDir = persist.outputDir;
+  const filename = persist?.filename || reportName(report);
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
   let scoredReport;
@@ -61,7 +62,7 @@ export async function persistReport(
   // write relevant format outputs to file system
   return Promise.allSettled(
     results.map(({ format, content }) => {
-      const reportPath = join(outputDir, `report.${format}`);
+      const reportPath = join(outputDir, `${filename}.${format}`);
 
       return (
         writeFile(reportPath, content)
@@ -103,4 +104,8 @@ export function logPersistedResults(persistResult: PersistResult) {
       console.log(`- ${chalk.bold(result.reason)}`);
     });
   }
+}
+
+function reportName(report: Report): string {
+  return `report.${report.date}`;
 }

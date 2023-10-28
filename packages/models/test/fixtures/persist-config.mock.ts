@@ -1,8 +1,8 @@
-import { PersistConfig } from '../../src';
+import { PersistConfig, persistConfigSchema } from '../../src';
 
 export function persistConfig(opt?: Partial<PersistConfig>): PersistConfig {
-  return {
+  return persistConfigSchema.parse({
     outputDir: 'tmp',
     ...opt,
-  };
+  });
 }
