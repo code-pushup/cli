@@ -10,7 +10,21 @@ import { CoreConfig } from '@code-pushup/models';
  */
 
 const outputDir = 'tmp';
+const pluginProcess = join(
+  'packages',
+  'cli',
+  'test',
+  `minimal-plugin-process.mock.mjs`,
+);
 const outputFile = join(outputDir, `out.${Date.now()}.json`);
+const outputData = JSON.stringify([
+  {
+    title: 'dummy-title',
+    slug: 'audit-1',
+    value: 0,
+    score: 0,
+  },
+]);
 
 export default {
   upload: {
@@ -31,16 +45,13 @@ export default {
         },
       ],
       runner: {
-        command: 'echo',
+        command: 'node',
         args: [
-          `${JSON.stringify([
-            {
-              title: 'dummy-title',
-              slug: 'audit-1',
-              value: 0,
-              score: 0,
-            },
-          ])} > ${outputFile}`,
+          pluginProcess,
+          '0', // interval
+          '0', // steps
+          '0', // error
+          outputFile,
         ],
         outputFile,
       },
