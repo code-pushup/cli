@@ -5,8 +5,6 @@
  * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.mjs
  */
 import { join } from 'path';
-import { echoRunnerConfig } from './echo-runner-config.mock';
-
 
 const outputDir = 'tmp';
 const outputFile = join(outputDir, `out.${Date.now()}.json`);
@@ -28,13 +26,17 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: echoRunnerConfig(
-        [
-          {
-            slug: 'command-object-audit-slug',
-            value: 0,
-            score: 0,
-          },
+      runner: {
+        command: 'echo',
+        args: [
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
         outputFile,
       },

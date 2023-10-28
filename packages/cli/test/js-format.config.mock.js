@@ -1,5 +1,4 @@
-import { join } from 'path';
-import { echoRunnerConfig } from './echo-runner-config.mock';
+import {join} from 'path';
 
 /**
  * This config file is here to demonstrate the JavaScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
@@ -28,13 +27,17 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: echoRunnerConfig(
-        [
-          {
-            slug: 'command-object-audit-slug',
-            value: 0,
-            score: 0,
-          },
+      runner: {
+        command: 'echo',
+        args: [
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
         outputFile,
       },

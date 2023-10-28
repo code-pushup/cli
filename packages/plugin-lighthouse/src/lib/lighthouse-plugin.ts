@@ -14,6 +14,9 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
   // This line is here to have import and engines errors still present
   defaultConfig;
   return {
+    slug: 'lighthouse',
+    title: 'ChromeDevTools Lighthouse',
+    icon: 'lighthouse',
     audits: [
       {
         slug: 'largest-contentful-paint',
@@ -28,10 +31,6 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
           score: 0,
         },
       ],
-      outputFile,
-    },
-    slug: 'lighthouse',
-    title: 'ChromeDevTools Lighthouse',
-    icon: 'lighthouse',
-  };
+      outputFile)
+    }
 }

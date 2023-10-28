@@ -1,0 +1,56 @@
+name: Bug Report
+description: File a bug report
+title: ''
+labels: ['🐛 bug']
+body:
+  - type: markdown
+    attributes:
+      value: Please provide all relevant information in order for us to be able to identify and fix the issue as soon as possible.
+  - type: textarea
+    id: current-behaviour
+    attributes:
+      label: What happened?
+      description: Here you can describe the issue you are facing.
+      placeholder: e.g. When I use the --help option, no output appears.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: What would you expect to happen?
+      description: Please describe what you expected to happen.
+      placeholder: e.g. I expected to see a help message with all available arguments in stdout.
+    validations:
+      required: false
+  - type: textarea
+    id: how-to-reproduce
+    attributes:
+      label: What steps did you take?
+      description: Please provide a step-by-step guide on how to reproduce this issue.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: What operation system are you on?
+      multiple: false
+      options:
+        - Linux
+        - Windows
+        - MacOS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Node version
+      description: What Node version are you running?
+      placeholder: e.g. 20.0.0
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code.
+      render: shell

@@ -136,8 +136,9 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { next, error, complete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
+
   return new Promise((resolve, reject) => {
-    const process = spawn(cfg.command, cfg.args, { cwd });
+    const process = spawn(cfg.command, cfg.args, { cwd, shell: true }); // @TODO add comments on why shell: true
     let stdout = '';
     let stderr = '';
 

@@ -18,7 +18,7 @@ export function pluginConfig(
     description: 'Plugin description',
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
-    runner: echoRunnerConfig(auditOutputs, pluginOutputPath),
+    runner: echoRunnerConfig(auditOutputs, pluginOutputFile),
     ...(opt || {}),
   } satisfies PluginConfig;
 }

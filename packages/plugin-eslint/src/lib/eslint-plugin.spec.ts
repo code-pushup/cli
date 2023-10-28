@@ -1,7 +1,9 @@
+import os from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
 import { PluginConfig } from '@code-pushup/models';
+import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin';
 
 describe('eslintPlugin', () => {
@@ -14,23 +16,29 @@ describe('eslintPlugin', () => {
   );
 
   let cwdSpy: SpyInstance;
+  let platformSpy: SpyInstance;
 
   const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
     ...plugin,
     runner: {
       ...plugin.runner,
       args: plugin.runner.args?.map(arg =>
-        arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
+        toUnixPath(
+          arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
+        ),
       ),
     },
   });
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd');
+    // Linux produces extra quotation marks for globs
+    platformSpy = vi.spyOn(os, 'platform').mockReturnValue('linux');
   });
 
   afterAll(() => {
     cwdSpy.mockRestore();
+    platformSpy.mockRestore();
   });
 
   it('should initialize ESLint plugin for React application', async () => {

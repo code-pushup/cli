@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'fs/promises';
+import { platform } from 'os';
 import { dirname } from 'path';
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
@@ -51,7 +52,9 @@ export function createRunnerConfig(
       scriptPath,
       audits.map(audit => audit.slug).join(AUDIT_SLUGS_SEP),
       eslintrc,
-      ...toArray(patterns),
+      ...toArray(patterns).map(pattern =>
+        platform() === 'win32' ? pattern : `'${pattern}'`,
+      ),
     ],
     outputFile: RUNNER_OUTPUT_PATH,
   };
