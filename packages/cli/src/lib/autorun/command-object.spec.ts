@@ -8,7 +8,6 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
@@ -50,10 +49,6 @@ const cli = (args: string[]) =>
 describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    cleanFolderPutGitKeep();
-  });
-  afterEach(() => {
-    cleanFolderPutGitKeep();
   });
 
   it('should override config with CLI arguments', async () => {

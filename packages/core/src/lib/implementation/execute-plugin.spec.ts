@@ -10,7 +10,6 @@ import {
   echoRunnerConfig,
   pluginConfig,
 } from '@code-pushup/models/testing';
-import { cleanFolder } from '../../../test';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import { executePlugin, executePlugins } from './execute-plugin';
 
@@ -25,14 +24,6 @@ const invalidSlugPluginCfg = pluginConfig([
 const DEFAULT_OPTIONS = { progress: DEFAULT_TESTING_CLI_OPTIONS.progress };
 
 describe('executePlugin', () => {
-  beforeEach(() => {
-    cleanFolder();
-  });
-
-  afterEach(() => {
-    cleanFolder();
-  });
-
   it('should execute valid plugin config', async () => {
     const pluginResult = await executePlugin(validPluginCfg);
     expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
@@ -58,13 +49,6 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
-  beforeEach(() => {
-    cleanFolder();
-  });
-
-  afterEach(() => {
-    cleanFolder();
-  });
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
     const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
