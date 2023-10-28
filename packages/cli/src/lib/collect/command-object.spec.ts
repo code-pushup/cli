@@ -3,7 +3,11 @@ import { fileURLToPath } from 'url';
 import { afterEach } from 'vitest';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
+import {
+  cleanFolderPutGitKeep,
+  mockConsole,
+  unmockConsole,
+} from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -31,13 +35,19 @@ const cli = (args: string[]) =>
     middlewares,
     commands: [yargsCollectCommandObject()],
   });
+let logs = [];
 
 describe('collect-command-object', () => {
   beforeEach(() => {
     cleanFolderPutGitKeep();
+    mockConsole((...args: unknown[]) => {
+      logs.push(...args);
+    });
   });
   afterEach(() => {
     cleanFolderPutGitKeep();
+    logs = [];
+    unmockConsole();
   });
 
   it('should override config with CLI arguments', async () => {

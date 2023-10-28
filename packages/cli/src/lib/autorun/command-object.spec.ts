@@ -8,7 +8,11 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
+import {
+  cleanFolderPutGitKeep,
+  mockConsole,
+  unmockConsole,
+} from '../../../test';
 import { middlewares } from '../middlewares';
 import { options } from '../options';
 import { yargsCli } from '../yargs-cli';
@@ -51,13 +55,20 @@ const cli = (args: string[]) =>
     commands: [yargsAutorunCommandObject()],
   });
 
+let logs = [];
+
 describe('autorun-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     cleanFolderPutGitKeep();
+    mockConsole((...args: unknown[]) => {
+      logs.push(...args);
+    });
   });
   afterEach(() => {
     cleanFolderPutGitKeep();
+    logs = [];
+    unmockConsole();
   });
 
   it('should override config with CLI arguments', async () => {

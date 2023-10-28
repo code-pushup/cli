@@ -4,7 +4,7 @@ import { beforeEach, describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
-import { cleanFolderPutGitKeep } from '../../test';
+import { cleanFolderPutGitKeep, mockConsole, unmockConsole } from '../../test';
 import { collectAndPersistReports } from './collect-and-persist';
 
 // This in needed to mock the API client used inside the upload function
@@ -27,9 +27,11 @@ const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
 describe('collectAndPersistReports', () => {
   beforeEach(async () => {
     cleanFolderPutGitKeep();
+    mockConsole();
   });
   afterEach(async () => {
     cleanFolderPutGitKeep();
+    unmockConsole();
   });
 
   test('should work', async () => {
