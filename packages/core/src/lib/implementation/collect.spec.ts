@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { reportSchema } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
