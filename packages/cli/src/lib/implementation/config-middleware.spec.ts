@@ -50,5 +50,5 @@ describe('applyConfigMiddleware', () => {
       e => (error = e),
     );
     expect(error?.message).toContain(defaultConfigPath);
-  }); /**/
+  });
 });
