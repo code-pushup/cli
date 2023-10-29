@@ -6,6 +6,14 @@
  */
 import { join } from 'path';
 
+// Small hack to control the number of plugins while debugging
+const numPlugins = parseInt(
+  process.argv
+    .find(arg => arg.includes('numPlugins='))
+    ?.split('=')
+    .pop() || '6',
+);
+
 const outputDir = './tmp';
 const pluginProcess = join(
   'packages',
@@ -51,8 +59,10 @@ export default {
     server: 'https://example.com/api',
   },
   persist: { outputDir },
-  plugins: new Array(10).fill(0).map((_, idx) => asyncPlugin(idx + '', 300)),
-  categories: new Array(10).fill(0).map((_, idx) => ({
+  plugins: new Array(numPlugins)
+    .fill(0)
+    .map((_, idx) => asyncPlugin(idx + '', 300)),
+  categories: new Array(numPlugins).fill(0).map((_, idx) => ({
     slug: 'category-' + idx,
     title: 'Category ' + idx,
     refs: [
