@@ -121,19 +121,10 @@ export async function executePlugin(
   }
 }
 
-const MOCK_PROGRESS: ProgressBar = {
-  incrementInSteps: (_: number) => {
-    _;
-    void 0;
-  },
-  updateTitle: (_: string) => {
-    _;
-    void 0;
-  },
-  endProgress: (_?: string) => {
-    _;
-    void 0;
-  },
+const NOOP_PROGRESS: ProgressBar = {
+  incrementInSteps: () => { /* do nothing */ },
+  updateTitle: () => { /* do nothing */ },
+  endProgress:() => { /* do nothing */ },
 };
 
 /**
