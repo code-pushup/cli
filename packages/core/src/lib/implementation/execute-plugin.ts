@@ -8,7 +8,6 @@ import {
 } from '@code-pushup/models';
 import {
   ProcessObserver,
-  ProgressBar,
   executeProcess,
   getProgressBar,
 } from '@code-pushup/utils';
