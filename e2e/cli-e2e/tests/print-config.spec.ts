@@ -41,7 +41,7 @@ describe('print-config', () => {
         server: 'https://e2e.com/api',
       },
       persist: {
-        outputDir: join('tmp', 'ext'),
+        outputDir: join('tmp', ext),
         filename: 'report',
       },
       plugins: expect.any(Array),
