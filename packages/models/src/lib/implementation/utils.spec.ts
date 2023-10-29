@@ -58,8 +58,8 @@ describe('filenameRegex', () => {
     'file<name',
     'file>name',
     'file|name',
-  ])(`should not match invalid slugs %p`, invalidSlugs => {
-    expect(invalidSlugs).not.toMatch(filenameRegex);
+  ])(`should not match invalid file name %p`, invalidFilename => {
+    expect(invalidFilename).not.toMatch(filenameRegex);
   });
 });
 
