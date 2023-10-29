@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type {
   Audit,
-  CategoryConfig,
+  CategoryRefSchema,
   PluginConfig,
   PluginReport,
 } from '../../src';
@@ -51,7 +51,7 @@ type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
 export function eslintAuditRef(
   slug: ESLintAuditSlug,
   weight = 1,
-): CategoryConfig['refs'][number] {
+): CategoryRefSchema {
   return {
     type: 'audit',
     plugin: 'eslint',

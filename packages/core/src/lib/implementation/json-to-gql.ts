@@ -4,7 +4,7 @@ import {
   IssueSourceType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import { Issue, Report } from '@code-pushup/models';
+import { IssueSeverity as CliIssueSeverity, Report } from '@code-pushup/models';
 
 export function jsonToGql(report: Report) {
   return {
@@ -71,7 +71,7 @@ export function jsonToGql(report: Report) {
   >;
 }
 
-function transformSeverity(severity: Issue['severity']): IssueSeverity {
+function transformSeverity(severity: CliIssueSeverity): IssueSeverity {
   switch (severity) {
     case 'info':
       return IssueSeverity.Info;
@@ -79,5 +79,7 @@ function transformSeverity(severity: Issue['severity']): IssueSeverity {
       return IssueSeverity.Error;
     case 'warning':
       return IssueSeverity.Warning;
+    default:
+      throw new Error(`Severity ${severity} unknown`);
   }
 }
