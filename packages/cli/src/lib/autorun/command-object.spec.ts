@@ -1,6 +1,14 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  SpyInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -55,20 +63,17 @@ const cli = (args: string[]) =>
     commands: [yargsAutorunCommandObject()],
   });
 
-let logs = [];
-
 describe('autorun-command-object', () => {
+  let logSpy: SpyInstance;
+
   beforeEach(async () => {
     vi.clearAllMocks();
     cleanFolderPutGitKeep();
-    mockConsole((...args: unknown[]) => {
-      logs.push(...args);
-    });
+    logSpy = vi.spyOn(console, 'log');
   });
   afterEach(() => {
     cleanFolderPutGitKeep();
-    logs = [];
-    unmockConsole();
+    logSpy.mockRestore();
   });
 
   it('should override config with CLI arguments', async () => {
