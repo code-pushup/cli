@@ -26,7 +26,7 @@ const pluginTitle = (end: string): string => 'Async Plugin ' + end;
 const auditTitle = (end: string): string => 'Async Audit ' + end;
 const asyncPlugin = (pId: string, duration = 1000) => {
   const aId = '0';
-  const outputFile = `${outputDir}/${pluginSlug(pId)}-output.json`;
+  const outputFile = join(outputDir, `${pluginSlug(pId)}-output.json`);
   return {
     slug: pluginSlug(pId),
     title: pluginTitle(pId),
