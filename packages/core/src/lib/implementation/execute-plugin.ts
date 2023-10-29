@@ -155,20 +155,20 @@ export async function executePlugins(
   const { progress = false } = options || {};
 
   const progressName = 'Run Plugins';
-  const progressBar = progress ? getProgressBar(progressName) : MOCK_PROGRESS;
+  const progressBar = progress ? getProgressBar(progressName) : null;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
 
-    progressBar.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
+    progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
 
     const pluginReport = await executePlugin(pluginCfg);
-    progressBar.incrementInSteps(plugins.length);
+    progressBar?.incrementInSteps(plugins.length);
 
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
 
-  progressBar.endProgress('Done running plugins');
+  progressBar?.endProgress('Done running plugins');
 
   return pluginsResult;
 }
