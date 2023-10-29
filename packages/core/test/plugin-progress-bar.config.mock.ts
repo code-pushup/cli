@@ -4,15 +4,22 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./packages/core/test/plugin-progress-bar.config.mock.ts
  */
+import { join } from 'path';
 
-const outputDir = 'tmp';
-const pluginSlug = (id: string): string => 'async-plugin-' + id;
+const outputDir = './tmp';
+const pluginProcess = join(
+  'packages',
+  'core',
+  'test',
+  `plugin-progress-bar-plugin-process.mock.mjs`,
+);
+const pluginSlug = (id: string): string => 'progress-mock-plugin-' + id;
 const auditSlug = (pId: string, aId: string): string =>
   pluginSlug(pId) + '-a' + aId;
 const pluginTitle = (end: string): string => 'Async Plugin ' + end;
 const auditTitle = (end: string): string => 'Async Audit ' + end;
 const asyncPlugin = (pId: string, duration = 1000) => {
-  const aId = '1';
+  const aId = '0';
   const outputFile = `${outputDir}/${pluginSlug(pId)}-output.json`;
   return {
     slug: pluginSlug(pId),
@@ -22,17 +29,14 @@ const asyncPlugin = (pId: string, duration = 1000) => {
     runner: {
       command: 'node',
       args: [
-        '-e',
-        `setTimeout(() => require('fs').writeFileSync('${outputFile}', '${JSON.stringify(
-          [
-            {
-              slug: auditSlug(pId, aId),
-              title: auditTitle(aId),
-              value: 0,
-              score: 0,
-            },
-          ],
-        )}'), ${duration});`,
+        pluginProcess,
+        `--verbose`,
+        `--duration=${duration}`,
+        `--steps=${1}`,
+        `--throwError=${0}`,
+        `--outputDir=${outputDir}`,
+        `--pluginPostfix=${pId}`,
+        `--auditPostfix=${aId}`,
       ],
       outputFile,
     },
@@ -47,12 +51,17 @@ export default {
     server: 'https://example.com/api',
   },
   persist: { outputDir },
-  plugins: new Array(10).fill(0).map((_, idx) => asyncPlugin(idx + '', 1000)),
-  categories: [
-    {
-      slug: 'category-1',
-      title: 'Category 1',
-      refs: [],
-    },
-  ],
+  plugins: new Array(10).fill(0).map((_, idx) => asyncPlugin(idx + '', 300)),
+  categories: new Array(10).fill(0).map((_, idx) => ({
+    slug: 'category-' + idx,
+    title: 'Category ' + idx,
+    refs: [
+      {
+        type: 'audit',
+        slug: auditSlug(idx.toString(), '0'),
+        plugin: pluginSlug(idx.toString()),
+        weight: 1,
+      },
+    ],
+  })),
 };
