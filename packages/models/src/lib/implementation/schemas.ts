@@ -111,7 +111,7 @@ export function fileNameSchema(description: string) {
     .string({ description })
     .trim()
     .regex(filenameRegex, {
-      message: "The filename can't include / : * ? " < > |",
+      message: "The filename can't include / : * ?  < > |",
     })
     .min(1, { message: 'file name is invalid' });
 }
