@@ -41,8 +41,8 @@ describe('filenameRegex', () => {
   // test valid and array of strings against filenameRegex with it blocks
   it.each(['report', 'report.mock', 'report-test.mock'])(
     `should match valid %p`,
-    slug => {
-      expect(slug).toMatch(filenameRegex);
+    filename => {
+      expect(filename).toMatch(filenameRegex);
     },
   );
 
