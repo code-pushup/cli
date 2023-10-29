@@ -24,7 +24,7 @@ pnpm add --save-dev @code-pushup/models
 
 Import the type definitions if using TypeScript:
 
-- in `cli-parsing.config.ts`:
+- in `code-pushup.config.ts`:
 
   ```ts
   import type { CoreConfig } from '@code-pushup/models';
