@@ -16,6 +16,7 @@ describe('persistConfigSchema', () => {
   it('should throw if outputDir is invalid', () => {
     const persistConfigMock = persistConfig();
     persistConfigMock.outputDir = ' ';
+    persistConfigMock.filename = 'valid-filename';
 
     expect(() => persistConfigSchema.parse(persistConfigMock)).toThrow(
       `path is invalid`,
@@ -26,7 +27,7 @@ describe('persistConfigSchema', () => {
     const persistConfigMock = persistConfig();
     persistConfigMock.filename = ' ';
     expect(() => persistConfigSchema.parse(persistConfigMock)).toThrow(
-      `The filename cant include / : * ? \\" < > |`,
+      'The filename has to be valid',
     );
   });
 });
