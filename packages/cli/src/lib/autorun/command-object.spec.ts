@@ -1,30 +1,14 @@
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import {
-  SpyInstance,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
-import {
-  PortalUploadArgs,
-  ReportFragment,
-  uploadToPortal,
-} from '@code-pushup/portal-client';
-import { UploadOptions } from '@code-pushup/core';
-import { objectToCliArgs } from '@code-pushup/utils';
-import {
-  cleanFolderPutGitKeep,
-  mockConsole,
-  unmockConsole,
-} from '../../../test';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
-import { yargsCli } from '../yargs-cli';
-import { yargsAutorunCommandObject } from './command-object';
+import {dirname, join} from 'path';
+import {fileURLToPath} from 'url';
+import {afterEach, beforeEach, describe, expect, it, SpyInstance, vi,} from 'vitest';
+import {PortalUploadArgs, ReportFragment, uploadToPortal,} from '@code-pushup/portal-client';
+import {UploadOptions} from '@code-pushup/core';
+import {objectToCliArgs} from '@code-pushup/utils';
+import {cleanFolderPutGitKeep,} from '../../../test';
+import {middlewares} from '../middlewares';
+import {options} from '../options';
+import {yargsCli} from '../yargs-cli';
+import {yargsAutorunCommandObject} from './command-object';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
