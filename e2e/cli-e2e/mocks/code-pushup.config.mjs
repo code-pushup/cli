@@ -3,7 +3,7 @@
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputDir: 'tmp/mjs' },
+  persist: { outputDir: join('tmp', 'mjs') },
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',
