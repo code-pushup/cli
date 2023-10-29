@@ -121,12 +121,6 @@ export async function executePlugin(
   }
 }
 
-const NOOP_PROGRESS: ProgressBar = {
-  incrementInSteps: () => { /* do nothing */ },
-  updateTitle: () => { /* do nothing */ },
-  endProgress:() => { /* do nothing */ },
-};
-
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
