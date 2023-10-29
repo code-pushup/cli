@@ -1,9 +1,4 @@
-import {
-  CategoryConfig,
-  CategoryRefSchema,
-  Issue,
-  IssueSeverity,
-} from '@code-pushup/models';
+import { CategoryRefSchema, IssueSeverity } from '@code-pushup/models';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
