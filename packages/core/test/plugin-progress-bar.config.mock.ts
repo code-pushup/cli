@@ -4,8 +4,8 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./packages/core/test/plugin-progress-bar.config.mock.ts
  */
-import { join, dirname } from 'path';
-import {fileURLToPath} from "url";
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 // Small hack to control the number of plugins while debugging
 const numPlugins = parseInt(
