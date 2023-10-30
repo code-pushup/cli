@@ -1,4 +1,4 @@
-import { CoreConfig, Report } from '../../src';
+import { CoreConfig, PluginConfig, PluginReport, Report } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
@@ -23,19 +23,7 @@ export function minimalConfig(
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
-
-  const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
-    slug: PLUGIN_1_SLUG,
-    outputDir,
-    outputFile: `${PLUGIN_1_SLUG}.json`,
-  });
-  const { runner, ...reportPlg } = plg1;
-  reportPlg.audits = reportPlg.audits.map(a => ({
-    ...a,
-    score: 0,
-    value: 0,
-    displayValue: '',
-  }));
+  const outputFile = `${PLUGIN_1_SLUG}.${Date.now()}.json`;
 
   return JSON.parse(
     JSON.stringify({
@@ -64,7 +52,7 @@ export function minimalConfig(
         pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
           slug: PLUGIN_1_SLUG,
           outputDir,
-          outputFile: `${PLUGIN_1_SLUG}.json`,
+          outputFile,
         }),
       ],
     } satisfies Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>>),
@@ -75,18 +63,20 @@ export function minimalReport(outputDir = 'tmp'): Report {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
 
-  const plg1 = pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+  const plg1: PluginConfig = pluginConfig([], {
     slug: PLUGIN_1_SLUG,
     outputDir,
-    outputFile: `${PLUGIN_1_SLUG}.json`,
   });
-  const { runner, ...reportPlg } = plg1;
-  reportPlg.audits = reportPlg.audits.map(a => ({
-    ...a,
-    score: 0,
-    value: 0,
-    displayValue: '',
-  }));
+
+  const { runner: _, ...rest } = plg1;
+  const pluginReport: PluginReport = {
+    ...rest,
+    duration: 0,
+    date: 'dummy-data-string',
+    version: '',
+    packageName: '',
+    audits: [auditReport({ slug: AUDIT_1_SLUG })],
+  };
 
   return JSON.parse(
     JSON.stringify({
@@ -108,7 +98,7 @@ export function minimalReport(outputDir = 'tmp'): Report {
           ],
         },
       ],
-      plugins: [reportPlg as any],
+      plugins: [pluginReport],
     } satisfies Report),
   );
 }

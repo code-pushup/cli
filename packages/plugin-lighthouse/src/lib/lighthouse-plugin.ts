@@ -7,11 +7,16 @@ type LighthousePluginConfig = {
   config: string;
 };
 
+const outputDir = 'tmp';
+const outputFile = join(outputDir, `out.${Date.now()}.json`);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
   // This line is here to have import and engines errors still present
   defaultConfig;
   return {
+    slug: 'lighthouse',
+    title: 'ChromeDevTools Lighthouse',
+    icon: 'lighthouse',
     audits: [
       {
         slug: 'largest-contentful-paint',
@@ -26,10 +31,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
           score: 0,
         },
       ],
-      join('tmp', 'out.json'),
+      outputFile,
     ),
-    slug: 'lighthouse',
-    title: 'ChromeDevTools Lighthouse',
-    icon: 'lighthouse',
   };
 }

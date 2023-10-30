@@ -10,8 +10,7 @@ import { UploadOptions } from '@code-pushup/core';
 import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { cleanFolderPutGitKeep } from '../../../test';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
 
@@ -37,18 +36,14 @@ const baseArgs = [
       '..',
       '..',
       '..',
-      '..',
-      'models',
       'test',
-      'fixtures',
-      'code-pushup.config.mock.ts',
+      'minimal.config.ts',
     ),
   }),
 ];
 const cli = (args: string[]) =>
   yargsCli(args, {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsUploadCommandObject()],
   });
 
@@ -62,6 +57,7 @@ describe('upload-command-object', () => {
       [reportFile()]: JSON.stringify(dummyReport),
     });
   });
+
   afterEach(async () => {
     cleanFolderPutGitKeep('tmp');
   });
@@ -70,8 +66,8 @@ describe('upload-command-object', () => {
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
-        //   'upload.organization': 'some-other-organization',
-        //   'upload.project': 'some-other-project',
+        //   'upload.organization': 'some-other-organization', @TODO
+        //   'upload.project': 'some-other-project', @TODO
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),

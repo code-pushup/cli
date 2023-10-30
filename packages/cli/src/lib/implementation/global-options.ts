@@ -6,6 +6,11 @@ export function yargsGlobalOptionsDefinition(): Record<
   Options
 > {
   return {
+    progress: {
+      describe: 'Show progress bar in stdout.',
+      type: 'boolean',
+      default: true,
+    },
     verbose: {
       describe:
         'When true creates more verbose output. This is helpful when debugging.',

@@ -17,8 +17,7 @@ import {
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { cleanFolderPutGitKeep } from '../../../test';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
 
@@ -38,24 +37,21 @@ vi.mock('@code-pushup/portal-client', async () => {
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
+    progress: false,
     verbose: true,
     config: join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',
       '..',
-      '..',
-      'models',
       'test',
-      'fixtures',
-      'code-pushup.config.mock.ts',
+      'minimal.config.ts',
     ),
   }),
 ];
 const cli = (args: string[]) =>
   yargsCli(args, {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsAutorunCommandObject()],
   });
 
@@ -100,7 +96,7 @@ describe('autorun-command-object', () => {
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: [],
+        categories: expect.any(Array),
         plugins: expect.any(Array),
         packageName: '@code-pushup/core',
         packageVersion: '0.0.1',

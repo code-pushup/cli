@@ -2,8 +2,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './command-object';
 
@@ -15,18 +14,14 @@ const baseArgs = [
       '..',
       '..',
       '..',
-      '..',
-      'models',
       'test',
-      'fixtures',
-      'code-pushup.config.mock.ts',
+      'all-values.config.ts',
     ),
   }),
 ];
 const cli = (args: string[]) =>
   yargsCli(['config', ...args], {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsConfigCommandObject()],
   });
 
@@ -40,7 +35,7 @@ describe('print-config-command-object', () => {
     expect(parsedArgv.upload?.apiKey).toEqual('dummy-api-key');
     expect(parsedArgv.upload?.server).toEqual('https://example.com/api');
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('command-object-plugin');
+    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 
@@ -65,7 +60,7 @@ describe('print-config-command-object', () => {
     expect(parsedArgv.upload?.apiKey).toEqual(overrides['upload.apiKey']);
     expect(parsedArgv.upload?.server).toEqual(overrides['upload.server']);
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('command-object-plugin');
+    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 });
