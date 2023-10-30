@@ -1,4 +1,10 @@
-import {CoreConfig, Report, coreConfigSchema, PluginReport, PluginConfig} from '../../src';
+import {
+  CoreConfig,
+  PluginConfig,
+  PluginReport,
+  Report,
+  coreConfigSchema,
+} from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
