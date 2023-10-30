@@ -7,6 +7,11 @@
 export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
+ * Regular expression to validate a filename.
+ */
+export const filenameRegex = /^(?!.*[ \\/:*?"<>|]).+$/;
+
+/**
  * helper function to validate string arrays
  *
  * @param strings

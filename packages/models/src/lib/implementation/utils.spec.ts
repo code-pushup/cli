@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { hasDuplicateStrings, hasMissingStrings, slugRegex } from './utils';
+import {
+  filenameRegex,
+  hasDuplicateStrings,
+  hasMissingStrings,
+  slugRegex,
+} from './utils';
 
 describe('slugRegex', () => {
   // test valid and array of strings against slugRegex with it blocks
@@ -29,6 +34,32 @@ describe('slugRegex', () => {
     '123--456',
   ])(`should not match invalid slugs %p`, invalidSlugs => {
     expect(invalidSlugs).not.toMatch(slugRegex);
+  });
+});
+
+describe('filenameRegex', () => {
+  // test valid and array of strings against filenameRegex with it blocks
+  it.each(['report', 'report.mock', 'report-test.mock'])(
+    `should match valid %p`,
+    filename => {
+      expect(filename).toMatch(filenameRegex);
+    },
+  );
+
+  // test invalid and array of strings against filenameRegex with it blocks
+  it.each([
+    '',
+    ' ',
+    'file/name',
+    'file:name',
+    'file*name',
+    'file?name',
+    'file"name',
+    'file<name',
+    'file>name',
+    'file|name',
+  ])(`should not match invalid file name %p`, invalidFilename => {
+    expect(invalidFilename).not.toMatch(filenameRegex);
   });
 });
 
