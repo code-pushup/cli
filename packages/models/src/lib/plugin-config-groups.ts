@@ -19,7 +19,7 @@ export type AuditGroupRef = z.infer<typeof auditGroupRefSchema>;
 
 export const auditGroupSchema = scorableSchema(
   'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
-    'E.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
+    'E.g. the group slug "performance" groups audits and can be referenced in a category',
   auditGroupRefSchema,
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
