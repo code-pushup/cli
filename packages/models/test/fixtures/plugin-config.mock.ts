@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { Audit, AuditReport, PluginConfig } from '../../src';
-import { echoRunnerConfig } from './echo-runner-config.mock';
+import { echoRunnerConfig } from './runner-config.mock';
 
 export function pluginConfig(
   auditOutputs: AuditReport[],

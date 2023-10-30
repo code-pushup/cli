@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { echoRunnerConfig } from '../models/test/fixtures/echo-runner-config.mock';
+import { echoRunnerConfig } from '../models/test/fixtures/runner-config.mock';
 
 const outputDir = 'tmp';
 

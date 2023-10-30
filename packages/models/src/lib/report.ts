@@ -4,17 +4,15 @@ import {
   executionMetaSchema,
   packageVersionSchema,
 } from './implementation/schemas';
-import {
-  auditGroupSchema,
-  auditOutputSchema,
-  auditSchema,
-  pluginSchema,
-} from './plugin-config';
+import { pluginBaseSchema } from './plugin-config';
+import { auditSchema } from './plugin-config-audits';
+import { auditGroupSchema } from './plugin-config-groups';
+import { auditOutputSchema } from './plugin-process-output';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
-export const pluginReportSchema = pluginSchema
+export const pluginReportSchema = pluginBaseSchema
   .merge(
     executionMetaSchema({
       descriptionDate: 'Start date and time of plugin run',

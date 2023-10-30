@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { CategoryConfig, Issue } from '@code-pushup/models';
+import { CategoryConfig, CategoryConfigRef, Issue } from '@code-pushup/models';
 import {
   calcDuration,
   compareIssueSeverity,
@@ -128,7 +128,7 @@ describe('compareIssueSeverity', () => {
 
 describe('sumRefs', () => {
   it('should sum refs correctly', () => {
-    const refs: CategoryConfig['refs'] = [
+    const refs: CategoryConfigRef[] = [
       {
         slug: 'a1',
         weight: 0,

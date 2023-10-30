@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { echoRunnerConfig } from './echo-runner-config.mock';
+import { echoRunnerConfig } from './runner-config.mock';
 
 const outputDir = 'tmp';
 module.exports = {

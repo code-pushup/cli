@@ -1,4 +1,5 @@
-import { CategoryConfig, Issue } from '@code-pushup/models';
+import { CategoryConfig, CategoryConfigRef } from '@code-pushup/models';
+import { Issue } from '@code-pushup/models';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
@@ -53,6 +54,6 @@ export function compareIssueSeverity(
 }
 
 // @TODO replace with real scoring logic
-export function sumRefs(refs: CategoryConfig['refs']) {
+export function sumRefs(refs: CategoryConfigRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
 }
