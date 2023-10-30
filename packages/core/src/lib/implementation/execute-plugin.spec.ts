@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   AuditReport,
   PluginConfig,
@@ -10,7 +10,7 @@ import {
   echoRunnerConfig,
   pluginConfig,
 } from '@code-pushup/models/testing';
-import { cleanFolder } from '../../../test';
+import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import { executePlugin, executePlugins } from './execute-plugin';
 
 const validPluginCfg = pluginConfig([auditReport()]);
@@ -26,15 +26,9 @@ invalidSlugPluginCfg.audits = [
   },
 ];
 
+const DEFAULT_OPTIONS = { progress: DEFAULT_TESTING_CLI_OPTIONS.progress };
+
 describe('executePlugin', () => {
-  beforeEach(() => {
-    cleanFolder();
-  });
-
-  afterEach(() => {
-    cleanFolder();
-  });
-
   it('should execute valid plugin config', async () => {
     const pluginResult = await executePlugin(validPluginCfg);
     expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
@@ -62,16 +56,9 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
-  beforeEach(() => {
-    cleanFolder();
-  });
-
-  afterEach(() => {
-    cleanFolder();
-  });
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
-    const pluginResult = await executePlugins(plugins);
+    const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
 
     expect(pluginResult[0]?.date.endsWith('Z')).toBeTruthy();
     expect(pluginResult[0]?.duration).toBeTruthy();
@@ -88,6 +75,8 @@ describe('executePlugins', () => {
 
   it('should throws with invalid plugins', async () => {
     const plugins: PluginConfig[] = [validPluginCfg, invalidSlugPluginCfg];
-    await expect(() => executePlugins(plugins)).rejects.toThrowError();
+    await expect(() =>
+      executePlugins(plugins, DEFAULT_OPTIONS),
+    ).rejects.toThrowError();
   });
 });

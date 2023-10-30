@@ -1,7 +1,14 @@
 import { join } from 'path';
-import { echoRunnerConfig } from './runner-config.mock';
+
+/**
+ * This config file is here to demonstrate the JavaScript version of the 4 different supported versions ('ts' | 'mjs' | 'cjs' | 'js')
+ *
+ * Usage:
+ * npx ./dist/packages/cli collect --config=./packages/cli/test/js-format.config.mock.js
+ */
 
 const outputDir = 'tmp';
+const outputFile = join(outputDir, `out.${Date.now()}.json`);
 export default {
   upload: {
     organization: 'code-pushup',
@@ -20,16 +27,20 @@ export default {
           docsUrl: 'http://www.my-docs.dev',
         },
       ],
-      runner: echoRunnerConfig(
-        [
-          {
-            slug: 'command-object-audit-slug',
-            value: 0,
-            score: 0,
-          },
+      runner: {
+        command: 'echo',
+        args: [
+          `${JSON.stringify([
+            {
+              title: 'dummy-title',
+              slug: 'command-object-audit-slug',
+              value: 0,
+              score: 0,
+            },
+          ])} > ${outputFile}`,
         ],
-        join(outputDir, 'out.json'),
-      ),
+        outputFile,
+      },
       groups: [],
       slug: 'command-object-plugin',
       title: 'command-object plugin',

@@ -14,7 +14,10 @@ export function pluginConfig(
   opt?: Partial<PluginConfig> & { outputDir?: string; outputFile?: string },
 ): PluginConfig {
   const { outputDir, outputFile } = opt || {};
-  const pluginOutputPath = join(outputDir || 'tmp', outputFile || 'out.json');
+  const pluginOutputFile = join(
+    outputDir || 'tmp',
+    outputFile || `out.${Date.now()}.json`,
+  );
   return pluginConfigSchema.parse({
     slug: 'mock-plugin-slug',
     title: 'Plugin Title',
@@ -22,7 +25,7 @@ export function pluginConfig(
     description: 'Plugin description',
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
-    runner: echoRunnerConfig(auditOutputs, pluginOutputPath),
+    runner: echoRunnerConfig(auditOutputs, pluginOutputFile),
     ...(opt || {}),
   });
 }

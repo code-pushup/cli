@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
@@ -5,7 +6,11 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { ProcessObserver, executeProcess } from '@code-pushup/utils';
+import {
+  ProcessObserver,
+  executeProcess,
+  getProgressBar,
+} from '@code-pushup/utils';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -59,6 +64,7 @@ export async function executePlugin(
     groups,
   } = pluginConfig;
   const { args, command } = pluginConfig.runner;
+
   const { duration, date } = await executeProcess({
     command,
     args,
@@ -70,6 +76,7 @@ export async function executePlugin(
       process.cwd(),
       pluginConfig.runner.outputFile,
     );
+
     // read process output from file system and parse it
     const auditOutputs = auditOutputsSchema.parse(
       JSON.parse((await readFile(processOutputPath)).toString()),
@@ -93,7 +100,8 @@ export async function executePlugin(
       };
     });
 
-    const pluginReport: PluginReport = {
+    // @TODO consider just resting/spreading the values
+    return {
       version,
       packageName,
       slug,
@@ -105,8 +113,7 @@ export async function executePlugin(
       ...(description && { description }),
       ...(docsUrl && { docsUrl }),
       ...(groups && { groups }),
-    };
-    return pluginReport;
+    } satisfies PluginReport;
   } catch (error) {
     const e = error as Error;
     throw new PluginOutputError(slug, e);
@@ -117,6 +124,8 @@ export async function executePlugin(
  * Execute multiple plugins and aggregates their output.
  * @public
  * @param plugins array of {@link PluginConfig} objects
+ * @param {Object} [options] execution options
+ * @param {boolean} options.progress show progress bar
  * @returns {Promise<PluginReport[]>} plugin report
  *
  * @example
@@ -134,10 +143,25 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
+  options?: { progress: boolean },
 ): Promise<PluginReport[]> {
-  return await plugins.reduce(async (acc, pluginCfg) => {
+  const { progress = false } = options || {};
+
+  const progressName = 'Run Plugins';
+  const progressBar = progress ? getProgressBar(progressName) : null;
+
+  const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
     const outputs = await acc;
+
+    progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
+
     const pluginReport = await executePlugin(pluginCfg);
+    progressBar?.incrementInSteps(plugins.length);
+
     return outputs.concat(pluginReport);
   }, Promise.resolve([] as PluginReport[]));
+
+  progressBar?.endProgress('Done running plugins');
+
+  return pluginsResult;
 }
