@@ -1,5 +1,5 @@
 import { readCodePushupConfig } from '@code-pushup/core';
-import { CoreConfig, GlobalOptions } from '@code-pushup/models';
+import { CoreConfig } from '@code-pushup/models';
 import { GeneralCliOptions } from './model';
 
 export async function configMiddleware<
@@ -9,8 +9,9 @@ export async function configMiddleware<
   const { config, ...cliOptions } = args as GeneralCliOptions &
     Required<CoreConfig>;
   const importedRc = await readCodePushupConfig(config);
-  const parsedProcessArgs: CoreConfig & GlobalOptions = {
+  const parsedProcessArgs: CoreConfig & GeneralCliOptions = {
     config,
+    progress: cliOptions.progress,
     verbose: cliOptions.verbose,
     upload: {
       ...importedRc?.upload,

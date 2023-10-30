@@ -16,6 +16,7 @@
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",
     "cliui": "^8.0.1",
+    "multi-progress-bars": "^5.0.3",
     "simple-git": "^3.20.0",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
@@ -76,7 +77,7 @@
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.19.4",
     "@nx/nx-darwin-arm64": "^16.9.1",
-    "@nx/nx-darwin-x64": "^16.9.1",
+    "@nx/nx-darwin-x64": "^16.10.0",
     "@nx/nx-linux-x64-gnu": "16.7.4"
   },
   "config": {
