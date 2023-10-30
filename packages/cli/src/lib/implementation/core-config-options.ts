@@ -30,5 +30,5 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       describe: 'API key for the portal server',
       type: 'string',
     },
-  }; //as unknown as Record<keyof ArgsCliObj, Options>;
+  };
 }

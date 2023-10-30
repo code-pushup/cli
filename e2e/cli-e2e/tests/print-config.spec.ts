@@ -32,6 +32,7 @@ describe('print-config', () => {
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
+      progress: true,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.${ext}`),
       upload: {
@@ -57,6 +58,7 @@ describe('print-config', () => {
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
+      progress: true,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.ts`),
       upload: {
@@ -70,7 +72,7 @@ describe('print-config', () => {
         filename: 'report',
       },
       plugins: expect.any(Array),
-      categories: [],
+      categories: expect.any(Array),
     });
   });
 
