@@ -10,7 +10,7 @@ import { pluginAuditsSchema } from './plugin-config-audits';
 import { auditGroupsSchema } from './plugin-config-groups';
 import { runnerConfigSchema } from './plugin-config-runner';
 
-export const pluginBaseSchema = packageVersionSchema({
+export const pluginMetaSchema = packageVersionSchema({
   optional: true,
 })
   .merge(
@@ -35,7 +35,7 @@ export const pluginDataSchema = z.object({
 });
 type PluginData = z.infer<typeof pluginDataSchema>;
 
-export const pluginConfigSchema = pluginBaseSchema
+export const pluginConfigSchema = pluginMetaSchema
   .merge(pluginDataSchema)
   // every listed group ref points to an audit within the plugin
   .refine(

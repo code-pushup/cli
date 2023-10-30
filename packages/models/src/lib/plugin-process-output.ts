@@ -5,7 +5,7 @@ import {
   slugSchema,
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
-import { pluginBaseSchema } from './plugin-config';
+import { pluginMetaSchema } from './plugin-config';
 import { issueSchema } from './plugin-process-output-audit-issue';
 
 export const auditOutputSchema = z.object(
@@ -47,7 +47,7 @@ export const auditOutputsSchema = z
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
-export const pluginOutputSchema = pluginBaseSchema
+export const pluginOutputSchema = pluginMetaSchema
   .merge(executionMetaSchema())
   .merge(
     z.object(
