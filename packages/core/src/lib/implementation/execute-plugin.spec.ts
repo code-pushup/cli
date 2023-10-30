@@ -17,12 +17,14 @@ const validPluginCfg = pluginConfig([auditReport()]);
 const validPluginCfg2 = pluginConfig([auditReport()], {
   slug: 'p2',
 });
+const invalidReport = auditReport();
 const invalidSlugPluginCfg = pluginConfig([auditReport()]);
-if (invalidSlugPluginCfg.audits?.[0]?.slug) {
-  invalidSlugPluginCfg.audits[0].slug = '-invalid-audit-slug';
-} else {
-  throw new Error('should not happen but problem is typing only :)');
-}
+invalidSlugPluginCfg.audits = [
+  {
+    ...invalidReport,
+    slug: '-invalid-audit-slug',
+  },
+];
 
 describe('executePlugin', () => {
   beforeEach(() => {
