@@ -1,11 +1,11 @@
-import { CoreConfig, Report } from '../../src';
+import { CoreConfig, Report, coreConfigSchema } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginConfig } from './eslint-plugin.mock';
 import { lighthousePluginConfig } from './lighthouse-plugin.mock';
 import { auditReport, pluginConfig } from './plugin-config.mock';
 
 export function config(outputDir = 'tmp'): CoreConfig {
-  return {
+  return coreConfigSchema.parse({
     persist: { outputDir },
     upload: {
       organization: 'code-pushup',
@@ -15,7 +15,7 @@ export function config(outputDir = 'tmp'): CoreConfig {
     },
     categories: categoryConfigs(),
     plugins: [eslintPluginConfig(outputDir), lighthousePluginConfig(outputDir)],
-  };
+  });
 }
 
 export function minimalConfig(
@@ -38,36 +38,39 @@ export function minimalConfig(
   }));
 
   return JSON.parse(
-    JSON.stringify({
-      persist: { outputDir },
-      upload: {
-        organization: 'code-pushup',
-        project: 'cli',
-        apiKey: 'dummy-api-key',
-        server: 'https://example.com/api',
-      },
-      categories: [
-        {
-          slug: 'category-1',
-          title: 'Category 1',
-          refs: [
-            {
-              type: 'audit',
-              plugin: PLUGIN_1_SLUG,
-              slug: AUDIT_1_SLUG,
-              weight: 1,
-            },
-          ],
+    JSON.stringify(
+      coreConfigSchema.parse({
+        persist: { outputDir },
+        upload: {
+          organization: 'code-pushup',
+          project: 'cli',
+          apiKey: 'dummy-api-key',
+          server: 'https://example.com/api',
         },
-      ],
-      plugins: [
-        pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
-          slug: PLUGIN_1_SLUG,
-          outputDir,
-          outputFile: `${PLUGIN_1_SLUG}.json`,
-        }),
-      ],
-    } satisfies Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>>),
+        categories: [
+          {
+            slug: 'category-1',
+            title: 'Category 1',
+            refs: [
+              {
+                type: 'audit',
+                plugin: PLUGIN_1_SLUG,
+                slug: AUDIT_1_SLUG,
+                weight: 1,
+              },
+            ],
+          },
+        ],
+        plugins: [
+          pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+            slug: PLUGIN_1_SLUG,
+            outputDir,
+            outputFile: `${PLUGIN_1_SLUG}.json`,
+          }),
+        ],
+      }) satisfies Omit<CoreConfig, 'upload'> &
+        Required<Pick<CoreConfig, 'upload'>>,
+    ),
   );
 }
 
