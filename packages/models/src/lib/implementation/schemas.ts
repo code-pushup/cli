@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
-import { slugRegex } from './utils';
+import { filenameRegex, slugRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -101,6 +101,20 @@ export function filePathSchema(description: string) {
     .string({ description })
     .trim()
     .min(1, { message: 'path is invalid' });
+}
+
+/**
+ * Schema for a fileNameSchema
+ * @param description
+ */
+export function fileNameSchema(description: string) {
+  return z
+    .string({ description })
+    .trim()
+    .regex(filenameRegex, {
+      message: `The filename has to be valid`,
+    })
+    .min(1, { message: 'file name is invalid' });
 }
 
 /**
