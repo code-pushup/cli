@@ -31,9 +31,9 @@ export function echoRunnerConfig(
     platform() === 'win32'
       ? JSON.stringify(output)
       : "'" + JSON.stringify(output) + "'";
-  return runnerConfigSchema.parse({
+  return {
     command: 'echo',
     args: [auditOutput, '>', outputFile],
     outputFile,
-  });
+  };
 }

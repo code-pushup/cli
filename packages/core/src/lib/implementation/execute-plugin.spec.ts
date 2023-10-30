@@ -17,9 +17,12 @@ const validPluginCfg = pluginConfig([auditReport()]);
 const validPluginCfg2 = pluginConfig([auditReport()], {
   slug: 'p2',
 });
-const invalidSlugPluginCfg = pluginConfig([
-  auditReport({ slug: '-invalid-audit-slug' }),
-]);
+const invalidSlugPluginCfg = pluginConfig([auditReport()]);
+if (invalidSlugPluginCfg.audits?.[0]?.slug) {
+  invalidSlugPluginCfg.audits[0].slug = '-invalid-audit-slug';
+} else {
+  throw new Error('should not happen but problem is typing only :)');
+}
 
 describe('executePlugin', () => {
   beforeEach(() => {
@@ -45,9 +48,11 @@ describe('executePlugin', () => {
     const invalidAuditOutputs: AuditReport[] = [
       { p: 42 } as unknown as AuditReport,
     ];
-    const pluginCfg = pluginConfig([auditReport()], {
-      runner: echoRunnerConfig(invalidAuditOutputs, join('tmp', 'out.json')),
-    });
+    const pluginCfg = pluginConfig([auditReport()]);
+    pluginCfg.runner = echoRunnerConfig(
+      invalidAuditOutputs,
+      join('tmp', 'out.json'),
+    );
     await expect(() => executePlugin(pluginCfg)).rejects.toThrowError(
       'Plugin output of plugin with slug mock-plugin-slug',
     );
