@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { CategoryRefSchema, IssueSeverity } from '@code-pushup/models';
+import { CategoryRef, IssueSeverity } from '@code-pushup/models';
 import {
   calcDuration,
   compareIssueSeverity,
@@ -98,7 +98,7 @@ describe('formatCount', () => {
 
 describe('countWeightedRefs', () => {
   it('should calc weighted refs only', () => {
-    const refs: CategoryRefSchema[] = [
+    const refs: CategoryRef[] = [
       {
         slug: 'a1',
         weight: 0,
@@ -128,7 +128,7 @@ describe('compareIssueSeverity', () => {
 
 describe('sumRefs', () => {
   it('should sum refs correctly', () => {
-    const refs: CategoryRefSchema[] = [
+    const refs: CategoryRef[] = [
       {
         slug: 'a1',
         weight: 0,

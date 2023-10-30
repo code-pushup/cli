@@ -28,7 +28,7 @@ const categoryRefSchema = weightedRefSchema(
   }),
 );
 
-export type CategoryRefSchema = z.infer<typeof categoryRefSchema>;
+export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',

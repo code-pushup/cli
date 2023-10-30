@@ -79,7 +79,5 @@ function transformSeverity(severity: CliIssueSeverity): PortalIssueSeverity {
       return PortalIssueSeverity.Error;
     case 'warning':
       return PortalIssueSeverity.Warning;
-    default:
-      throw new Error(`Severity ${severity} unknown`);
   }
 }

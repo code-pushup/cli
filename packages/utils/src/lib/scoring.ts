@@ -3,7 +3,7 @@ import {
   AuditGroupRef,
   AuditReport,
   CategoryConfig,
-  CategoryRefSchema,
+  CategoryRef,
   PluginReport,
   Report,
 } from '@code-pushup/models';
@@ -37,8 +37,8 @@ function groupRefToScore(
 function categoryRefToScore(
   audits: EnrichedAuditReport[],
   groups: EnrichedScoredAuditGroup[],
-): (ref: CategoryRefSchema) => number {
-  return (ref: CategoryRefSchema): number => {
+): (ref: CategoryRef) => number {
+  return (ref: CategoryRef): number => {
     switch (ref.type) {
       case 'audit':
         // eslint-disable-next-line no-case-declarations

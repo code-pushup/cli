@@ -1,4 +1,4 @@
-import { CategoryRefSchema, IssueSeverity } from '@code-pushup/models';
+import { CategoryRef, IssueSeverity } from '@code-pushup/models';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
@@ -34,7 +34,7 @@ export function formatCount(count: number, name: string) {
   return `${count} ${text}`;
 }
 
-export function countWeightedRefs(refs: CategoryRefSchema[]) {
+export function countWeightedRefs(refs: CategoryRef[]) {
   return refs
     .filter(({ weight }) => weight > 0)
     .reduce((sum, { weight }) => sum + weight, 0);
@@ -53,6 +53,6 @@ export function compareIssueSeverity(
 }
 
 // @TODO replace with real scoring logic
-export function sumRefs(refs: CategoryRefSchema[]) {
+export function sumRefs(refs: CategoryRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
 }

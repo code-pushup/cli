@@ -1,5 +1,5 @@
 export {
-  CategoryRefSchema,
+  CategoryRef,
   CategoryConfig,
   categoryConfigSchema,
 } from './lib/category-config';
