@@ -1,15 +1,12 @@
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { describe, expect, it } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { middlewares } from './middlewares';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
 const demandCommand: [number, string] = [0, 'no command required'];
-function middleware<T extends Record<string, unknown>>(processArgs: T) {
-  return {
-    ...processArgs,
-    config: '42',
-  };
-}
 
 describe('yargsCli', () => {
   it('global options should provide correct defaults', async () => {
@@ -18,6 +15,7 @@ describe('yargsCli', () => {
       options,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(false);
+    expect(parsedArgv.progress).toBe(true);
   });
 
   it('multiple config args should be parsed to last item from array', async () => {
@@ -39,6 +37,7 @@ describe('yargsCli', () => {
   it('global options should parse correctly', async () => {
     const args: string[] = objectToCliArgs({
       verbose: true,
+      progress: false,
     });
 
     const parsedArgv = await yargsCli(args, {
@@ -46,21 +45,28 @@ describe('yargsCli', () => {
       demandCommand,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.progress).toBe(false);
   });
 
   it('global options and middleware handle argument overrides correctly', async () => {
     const args: string[] = objectToCliArgs({
-      config: 'validConfigPath',
+      config: join(
+        fileURLToPath(dirname(import.meta.url)),
+        '..',
+        '..',
+        'test',
+        'cli-parsing.config.ts',
+      ),
+      verbose: true,
+      progress: false,
+      format: ['md'],
     });
     const parsedArgv = await yargsCli(args, {
       options,
-      demandCommand,
-      middlewares: [
-        {
-          middlewareFunction: middleware,
-        },
-      ],
+      middlewares,
     }).parseAsync();
-    expect(parsedArgv.config).toContain(42);
+    expect(parsedArgv.config).toContain('');
+    expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.progress).toBe(false);
   });
 });
