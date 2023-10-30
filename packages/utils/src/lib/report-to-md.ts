@@ -1,14 +1,17 @@
-import { NEW_LINE, details, headline, li, link, style, table } from './md/';
+import { NEW_LINE, details, h2, headline, li, link, style, table } from './md/';
 import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
 import { ScoredReport } from './scoring';
-import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
+import {
+  formatReportScore,
+  pluginMetaTableHeaders,
+  reportHeadlineText,
+  reportMetaTableHeaders,
+  reportOverviewTableHeaders,
+} from './utils';
 
 export function reportToMd(report: ScoredReport): string {
   // header section
   let md = reportToHeaderSection() + NEW_LINE;
-
-  // meta section
-  md += reportToMetaSection(report) + NEW_LINE + NEW_LINE;
 
   // overview section
   md += reportToOverviewSection(report) + NEW_LINE + NEW_LINE;
@@ -16,7 +19,10 @@ export function reportToMd(report: ScoredReport): string {
   // details section
   md += reportToDetailSection(report) + NEW_LINE;
 
-  // footer section
+  // about section
+  md += reportToAboutSection(report) + NEW_LINE + NEW_LINE;
+
+  // // footer section
   md += `${FOOTER_PREFIX} ${link(CODE_PUSHUP_DOMAIN)}`;
   return md;
 }
@@ -25,43 +31,17 @@ function reportToHeaderSection(): string {
   return headline(reportHeadlineText) + NEW_LINE;
 }
 
-function reportToMetaSection(report: ScoredReport): string {
-  const { date, duration, version, packageName, plugins } = report;
-  return (
-    `---` +
-    NEW_LINE +
-    `_Package Name: ${packageName}_` +
-    NEW_LINE +
-    `_Version: ${version}_` +
-    NEW_LINE +
-    `_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_` +
-    NEW_LINE +
-    `_Date: ${date}_` +
-    NEW_LINE +
-    `_Duration: ${duration} ms_` +
-    NEW_LINE +
-    `_Plugins: ${plugins?.length}_` +
-    NEW_LINE +
-    `_Audits: ${plugins?.reduce(
-      (sum, { audits }) => sum + audits.length,
-      0,
-    )}_` +
-    NEW_LINE +
-    `---` +
-    NEW_LINE
-  );
-}
-
 function reportToOverviewSection(report: ScoredReport): string {
   const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs, score }) => [
       title,
-      score.toString(),
+      formatReportScore(score),
       refs.length.toString() + '/' + countWeightedRefs(refs),
     ]),
   ];
+  console.log(tableContent);
   return table(tableContent);
 }
 
@@ -128,4 +108,48 @@ function reportToDetailSection(report: ScoredReport): string {
   });
 
   return md;
+}
+
+function reportToAboutSection(report: ScoredReport): string {
+  const date = new Date().toString();
+  const { duration, version, plugins, categories } = report;
+  const commitData =
+    'Implement todos list ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))';
+  const reportMetaTable: string[][] = [
+    reportMetaTableHeaders,
+    [
+      commitData,
+      version as string,
+      (duration / 1000).toFixed(2) + 's',
+      plugins?.length.toString(),
+      categories?.length.toString(),
+      plugins?.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
+    ],
+  ];
+
+  const pluginMetaTable = [
+    pluginMetaTableHeaders,
+    ...plugins.map(({ title, version, duration, audits }) => [
+      title,
+      audits.length.toString(),
+      version as string,
+      (duration / 1000).toFixed(2) + 's',
+    ]),
+  ];
+
+  return (
+    h2('About') +
+    NEW_LINE +
+    NEW_LINE +
+    `Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on ${date}` +
+    NEW_LINE +
+    NEW_LINE +
+    table(reportMetaTable) +
+    NEW_LINE +
+    NEW_LINE +
+    'The following plugins were run:' +
+    NEW_LINE +
+    NEW_LINE +
+    table(pluginMetaTable)
+  );
 }

@@ -1,7 +1,26 @@
 import { readFile } from 'fs/promises';
 
-export const reportHeadlineText = 'Code Pushup Report';
-export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
+export const reportHeadlineText = 'Code PushUp Report';
+export const reportOverviewTableHeaders = [
+  '🏷 Category',
+  '⭐ Score',
+  '🛡 Audits',
+];
+export const reportMetaTableHeaders: string[] = [
+  'Commit',
+  'Version',
+  'Duration',
+  'Plugins',
+  'Categories',
+  'Audits',
+];
+
+export const pluginMetaTableHeaders: string[] = [
+  'Plugin',
+  'Audits',
+  'Version',
+  'Duration',
+];
 
 // === Transform
 
@@ -43,6 +62,19 @@ export function toUnixPath(
   }
 
   return unixPath;
+}
+
+export function formatReportScore(score: number): string {
+  const formattedScore = Math.round(score * 100).toString();
+  let scoreMarker: string;
+  if (score >= 0.9) {
+    scoreMarker = '🟢 ';
+  } else if (score >= 0.5) {
+    scoreMarker = '🟡 ';
+  } else {
+    scoreMarker = '🔴 ';
+  }
+  return scoreMarker + formattedScore;
 }
 
 // === Validation
