@@ -1,4 +1,4 @@
-import {Report, reportSchema} from '../../src';
+import { Report, reportSchema } from '../../src';
 import { categoryConfigs } from './categories.mock';
 import { eslintPluginReport } from './eslint-plugin.mock';
 import { lighthousePluginReport } from './lighthouse-plugin.mock';
