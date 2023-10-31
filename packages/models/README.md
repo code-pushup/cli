@@ -1,6 +1,6 @@
 # @code-pushup/models
 
-Model definitions and validators for the [Code PushUp CLI](../cli/README.md).
+**Model definitions and validators** for the [Code PushUp CLI](../cli/README.md).
 
 ## Setup
 
