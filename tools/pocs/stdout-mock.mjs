@@ -1,66 +1,130 @@
+import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
-import Table from 'cli-table3';
-import cliui from 'cliui';
-import { countAudits, report } from './mock-report.mjs';
 
-const fmtScore = score => Math.round(score * 100).toString();
+const isVerbose = process.argv.includes('--verbose');
+const isCI = !!process.env.CI;
 
-const withColor = ({ score, text }) => {
-  let str = text ?? fmtScore(score);
-  const style = text ? chalk : chalk.bold;
-  if (score < 0.5) {
-    str = style.red(str);
-  } else if (score < 0.9) {
-    str = style.yellow(str);
-  } else {
-    str = style.green(str);
-  }
-  return str;
-};
+const ui = cliui();
+const { logger } = ui;
+const tasks = ui.tasks({ verbose: isVerbose || isCI });
 
-report.plugins.forEach(plugin => {
-  const ui = cliui({ width: 80 });
+console.info('\n' + chalk.bold.blueBright('<↗> Code PushUp CLI 0.1.0') + '\n');
 
-  console.log(chalk.magentaBright.bold(`${plugin.title} audits`) + '\n');
+await tasks
+  .add('Load config and plugins', async () => {
+    await sleep(100);
+    return 'DONE - plugins: 2, audits: 17, categories: 3, upload: enabled';
+  })
+  .add('Execute plugins', async task => {
+    const spinner = logger.await('Executing plugins', {
+      suffix: 'ESLint, Lighthouse',
+    });
+    spinner.start();
+    spinner.tap(line => {
+      task.update(line);
+    });
 
-  const audits = plugin.audits;
-  audits.forEach(audit => {
-    ui.div(
-      {
-        text: withColor({ score: audit.score, text: '●' }),
-        width: 2,
-        padding: [0, 1, 0, 0],
-      },
-      {
-        text: audit.title,
-        padding: [0, 3, 0, 0],
-      },
-      {
-        text: chalk.cyanBright(audit.displayValue || `${audit.value}`),
-        width: 10,
-      },
-    );
-  });
+    spinner.update('Executing ESLint plugin', { suffix: '1/2' });
+    await sleep(900);
+    if (isVerbose) {
+      task.update(
+        logger.prepareSuccess(
+          'Completed ESLint plugin run (12 audits in 903 ms)',
+        ),
+      );
+    }
 
-  console.log(ui.toString());
+    spinner.update('Executing Lighthouse plugin', { suffix: '2/2' });
+    await sleep(3000);
+    if (isVerbose) {
+      task.update(
+        logger.prepareSuccess(
+          'Completed Lighthouse plugin run (5 audits in 3.02 s)',
+        ),
+      );
+    }
 
-  console.log('\n');
-});
+    spinner.stop();
+    return 'DONE - ESLint: 12 audits in 903 ms, Lighthouse: 5 audits in 3.02 s';
+  })
+  .add('Create report files', async task => {
+    const spinner = logger.await('Creating report files', {
+      suffix: 'json, md',
+    });
+    spinner.start();
+    spinner.tap(line => {
+      task.update(line);
+    });
 
-console.log(chalk.magentaBright.bold('Categories') + '\n');
+    spinner.update('Looking up commit in Git');
+    await sleep(100);
+    if (isVerbose) {
+      task.update(logger.prepareSuccess('Found commit "fix tests" (5a940e7)'));
+    }
 
-const table = new Table({
-  head: ['Category', 'Score', 'Audits'],
-  colAligns: ['left', 'right', 'right'],
-  style: {
-    head: ['cyan'],
-  },
-});
-table.push(
-  ...report.categories.map(category => [
-    category.title,
-    withColor({ score: category.score }),
-    countAudits(category, report.plugins),
-  ]),
+    spinner.update('Creating report.json');
+    await sleep(50);
+    if (isVerbose) {
+      task.update(logger.prepareSuccess('Created report.json (12.7 kB)'));
+    }
+
+    spinner.update('Creating report.md');
+    await sleep(150);
+    if (isVerbose) {
+      task.update(logger.prepareSuccess('Created report.md (301 kB)'));
+    }
+
+    spinner.stop();
+    return 'DONE - .code-pushup/report.json (12.7 kB), .code-pushup/report.md (301 kB)';
+  })
+  .add('Upload report to portal', async task => {
+    await sleep(800);
+    return task.error(new Error('Authorization error: Invalid API key'));
+  })
+  .run();
+
+console.info('\n');
+
+// const table = ui.table();
+// table
+//   .head(['Task', 'Status', 'Duration'])
+//   .row(['Load configuration and plugins', ui.colors.green('DONE'), '101 ms'])
+//   .row(['Execute ESLint plugin', ui.colors.green('DONE'), '903 ms'])
+//   .row(['Execute Lighthouse plugin', ui.colors.green('DONE'), '3.02 s'])
+//   .row(['Create report files', ui.colors.green('DONE'), '201 ms'])
+//   .row(['Upload report to portal', ui.colors.red('FAILED'), '805 ms'])
+//   .render();
+
+await import('./stdout-report-mock.mjs');
+
+console.info('\n' + chalk.bold('Artifacts:'));
+console.info('- ' + chalk.cyan('.code-pushup/report.json') + ' (12.7 kB)');
+console.info('- ' + chalk.cyan('.code-pushup/report.md') + ' (301 kB)');
+
+console.info('\n' + chalk.bold('Errors:'));
+console.info(
+  '- Upload report to portal => ' +
+    chalk.red('Authorization error: Invalid API key'),
 );
-console.log(table.toString());
+
+console.info('\nMade with ❤️ by Code PushUp');
+
+// await step({
+//   startText: 'Parsing configuration file',
+//   endText: 'Parsed configuration file',
+//   duration: 100,
+// });
+
+async function step({ startText, endText, duration }) {
+  const loader = logger.await(startText);
+  loader.start();
+  await sleep(duration);
+  loader.update(endText);
+  loader.stop();
+}
+
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
