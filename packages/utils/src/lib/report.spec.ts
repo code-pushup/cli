@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { afterEach, describe, expect, vi } from 'vitest';
 import {
-  CategoryConfig,
-  Issue,
+  CategoryRef,
+  IssueSeverity,
   reportNameFromReport,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
@@ -122,7 +122,7 @@ describe('formatCount', () => {
 
 describe('countWeightedRefs', () => {
   it('should calc weighted refs only', () => {
-    const refs: CategoryConfig['refs'] = [
+    const refs: CategoryRef[] = [
       {
         slug: 'a1',
         weight: 0,
@@ -143,16 +143,16 @@ describe('countWeightedRefs', () => {
 describe('compareIssueSeverity', () => {
   it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
     expect(
-      (['error', 'info', 'warning'] satisfies Issue['severity'][]).sort(
+      (['error', 'info', 'warning'] satisfies IssueSeverity[]).sort(
         compareIssueSeverity,
       ),
-    ).toEqual(['info', 'warning', 'error'] satisfies Issue['severity'][]);
+    ).toEqual(['info', 'warning', 'error'] satisfies IssueSeverity[]);
   });
 });
 
 describe('sumRefs', () => {
   it('should sum refs correctly', () => {
-    const refs: CategoryConfig['refs'] = [
+    const refs: CategoryRef[] = [
       {
         slug: 'a1',
         weight: 0,

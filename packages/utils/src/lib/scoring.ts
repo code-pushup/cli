@@ -1,7 +1,9 @@
 import {
   AuditGroup,
+  AuditGroupRef,
   AuditReport,
   CategoryConfig,
+  CategoryRef,
   PluginReport,
   Report,
 } from '@code-pushup/models';
@@ -20,7 +22,7 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
 
 function groupRefToScore(
   audits: AuditReport[],
-): (ref: AuditGroup['refs'][0]) => number {
+): (ref: AuditGroupRef) => number {
   return ref => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
@@ -35,8 +37,8 @@ function groupRefToScore(
 function categoryRefToScore(
   audits: EnrichedAuditReport[],
   groups: EnrichedScoredAuditGroup[],
-): (ref: CategoryConfig['refs'][0]) => number {
-  return (ref: CategoryConfig['refs'][0]): number => {
+): (ref: CategoryRef) => number {
+  return (ref: CategoryRef): number => {
     switch (ref.type) {
       case 'audit':
         // eslint-disable-next-line no-case-declarations

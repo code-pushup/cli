@@ -1,5 +1,6 @@
 import type { Linter } from 'eslint';
 import type { AuditOutput, Issue } from '@code-pushup/models';
+import { IssueSeverity } from '@code-pushup/models';
 import {
   compareIssueSeverity,
   countOccurrences,
@@ -71,7 +72,7 @@ function convertIssue(issue: LintIssue): Issue {
   };
 }
 
-function convertSeverity(severity: Linter.Severity): Issue['severity'] {
+function convertSeverity(severity: Linter.Severity): IssueSeverity {
   switch (severity) {
     case 2:
       return 'error';

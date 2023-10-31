@@ -2,7 +2,11 @@ export {
   REPORT_NAME_PATTERN,
   reportNameFromReport,
 } from './lib/implementation/utils';
-export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
+export {
+  CategoryConfig,
+  CategoryRef,
+  categoryConfigSchema,
+} from './lib/category-config';
 export {
   CoreConfig,
   coreConfigSchema,
@@ -18,10 +22,12 @@ export {
 } from './lib/persist-config';
 export {
   Audit,
+  AuditGroupRef,
   AuditGroup,
   AuditOutput,
   AuditOutputs,
   Issue,
+  IssueSeverity,
   PluginConfig,
   auditGroupSchema,
   auditOutputsSchema,
