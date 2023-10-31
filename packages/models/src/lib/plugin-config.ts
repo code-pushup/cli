@@ -70,13 +70,15 @@ export const auditSchema = z
 
 export type Audit = z.infer<typeof auditSchema>;
 
+const auditGroupRef = weightedRefSchema(
+  'Weighted references to audits',
+  "Reference slug to an audit within this plugin (e.g. 'max-lines')",
+);
+export type AuditGroupRef = z.infer<typeof auditGroupRef>;
 export const auditGroupSchema = scorableSchema(
   'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
     'E.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
-  weightedRefSchema(
-    'Weighted references to audits',
-    "Reference slug to an audit within this plugin (e.g. 'max-lines')",
-  ),
+  auditGroupRef,
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
 ).merge(
@@ -183,12 +185,14 @@ const sourceFileLocationSchema = z.object(
   { description: 'Source file location' },
 );
 
+export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
+  description: 'Severity level',
+});
+export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
 export const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
-    severity: z.enum(['info', 'warning', 'error'], {
-      description: 'Severity level',
-    }),
+    severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
   },
   { description: 'Issue information' },
