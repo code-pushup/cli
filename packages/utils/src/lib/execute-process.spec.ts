@@ -1,10 +1,6 @@
 import { join } from 'path';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  cleanFolderPutGitKeep,
-  getAsyncProcessRunnerConfig,
-  mockProcessConfig,
-} from '../../test';
+import { describe, expect, it, vi } from 'vitest';
+import { getAsyncProcessRunnerConfig, mockProcessConfig } from '../../test';
 import { executeProcess, objectToCliArgs } from './execute-process';
 
 const outFolder = '';
@@ -12,10 +8,6 @@ const outName = 'tmp/out-async-runner.json';
 const outputFile = join(outFolder, outName);
 
 describe('executeProcess', () => {
-  afterEach(() => {
-    cleanFolderPutGitKeep();
-  });
-
   it('should work with node command `node -v`', async () => {
     const cfg = mockProcessConfig({ command: `node`, args: ['-v'] });
     const processResult = await executeProcess(cfg);

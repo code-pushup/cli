@@ -7,6 +7,7 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
+import { reportNameFromReport } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
@@ -24,7 +25,7 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-
+const filename = () => reportNameFromReport({ date: new Date().toISOString() });
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
@@ -56,6 +57,7 @@ describe('autorun-command-object', () => {
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
+        'persist.filename': filename(),
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
@@ -72,7 +74,13 @@ describe('autorun-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    await cli(baseArgs).parseAsync();
+    const args = [
+      ...baseArgs,
+      ...objectToCliArgs({
+        'persist.filename': filename(),
+      }),
+    ];
+    await cli(args).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

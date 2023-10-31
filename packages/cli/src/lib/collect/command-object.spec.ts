@@ -1,11 +1,14 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
+import { reportNameFromReport } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
 
+const getFilename = () =>
+  reportNameFromReport({ date: new Date().toISOString() });
 const baseArgs = [
   ...objectToCliArgs({
     progress: false,
@@ -28,10 +31,12 @@ const cli = (args: string[]) =>
 
 describe('collect-command-object', () => {
   it('should override config with CLI arguments', async () => {
+    const filename = getFilename();
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
+        'persist.filename': filename,
       }),
     ];
     const parsedArgv = (await cli(

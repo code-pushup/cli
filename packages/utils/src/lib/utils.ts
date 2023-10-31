@@ -1,4 +1,7 @@
+import chalk from 'chalk';
+import { existsSync, mkdirSync } from 'fs';
 import { readFile } from 'fs/promises';
+import { formatBytes } from './report';
 
 export const reportHeadlineText = 'Code Pushup Report';
 export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
@@ -51,7 +54,11 @@ export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
 
-// === File
+// === Filesystem
+
+export function ensureDirectoryExists(baseDir: string) {
+  if (!existsSync(baseDir)) mkdirSync(baseDir, { recursive: true });
+}
 
 export async function readTextFile(path: string): Promise<string> {
   const buffer = await readFile(path);
@@ -61,4 +68,37 @@ export async function readTextFile(path: string): Promise<string> {
 export async function readJsonFile(path: string): Promise<unknown> {
   const text = await readTextFile(path);
   return JSON.parse(text);
+}
+export type FileResult = readonly [string] | readonly [string, number];
+export type MultipleFileResults = PromiseSettledResult<FileResult>[];
+export function logMultipleFileResults(
+  persistResult: MultipleFileResults,
+  messagePrefix: string,
+) {
+  const succeededPersistedResults = persistResult.filter(
+    (result): result is PromiseFulfilledResult<[string, number]> =>
+      result.status === 'fulfilled',
+  );
+
+  if (succeededPersistedResults.length) {
+    console.log(`${messagePrefix} successfully: `);
+    succeededPersistedResults.forEach(res => {
+      const [fileName, size] = res.value;
+      console.log(
+        `- ${chalk.bold(fileName)}` +
+          (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
+      );
+    });
+  }
+
+  const failedPersistedResults = persistResult.filter(
+    (result): result is PromiseRejectedResult => result.status === 'rejected',
+  );
+
+  if (failedPersistedResults.length) {
+    console.log(`${messagePrefix} failed: `);
+    failedPersistedResults.forEach(result => {
+      console.log(`- ${chalk.bold(result.reason)}`);
+    });
+  }
 }

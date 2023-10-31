@@ -1,3 +1,7 @@
+export {
+  REPORT_NAME_PATTERN,
+  reportNameFromReport,
+} from './lib/implementation/utils';
 export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
 export {
   CoreConfig,

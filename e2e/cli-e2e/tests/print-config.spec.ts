@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { expect } from 'vitest';
+import { reportNameFromReport } from '@code-pushup/models';
 import {
   CliArgsObject,
   executeProcess,
@@ -8,7 +9,7 @@ import {
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 type Extension = (typeof extensions)[number];
-
+const filename = () => reportNameFromReport({ date: new Date().toISOString() });
 const configFile = (ext: Extension) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/code-pushup.config.${ext}`);
 
@@ -27,7 +28,11 @@ const execCli = (argObj: Partial<CliArgsObject>) =>
 
 describe('print-config', () => {
   it.each(extensions)('should load .%s config file', async ext => {
-    const { code, stderr, stdout } = await execCli({ config: configFile(ext) });
+    const reportFileName = filename();
+    const { code, stderr, stdout } = await execCli({
+      config: configFile(ext),
+      'persist.filename': reportFileName,
+    });
     expect(code).toBe(0);
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
@@ -43,7 +48,7 @@ describe('print-config', () => {
       },
       persist: {
         outputDir: join('tmp', ext),
-        filename: 'report',
+        filename: reportFileName,
       },
       plugins: expect.any(Array),
       categories: expect.any(Array),
@@ -51,8 +56,10 @@ describe('print-config', () => {
   });
 
   it('should load .ts config file and merge cli arguments', async () => {
+    const reportFileName = filename();
     const { code, stderr, stdout } = await execCli({
       config: configFile('ts'),
+      'persist.filename': reportFileName,
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
@@ -69,7 +76,7 @@ describe('print-config', () => {
       },
       persist: {
         outputDir: join('tmp', 'ts'),
-        filename: 'report',
+        filename: reportFileName,
       },
       plugins: expect.any(Array),
       categories: expect.any(Array),
@@ -77,8 +84,10 @@ describe('print-config', () => {
   });
 
   it('should parse persist.format from arguments', async () => {
+    const reportFileName = filename();
     const { code, stderr, stdout } = await execCli({
       config: configFile('ts'),
+      'persist.filename': reportFileName,
       'persist.format': ['md', 'json', 'stdout'],
     });
     expect(code).toBe(0);

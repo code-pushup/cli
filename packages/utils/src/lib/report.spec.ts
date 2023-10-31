@@ -1,14 +1,38 @@
-import { describe, expect } from 'vitest';
-import { CategoryConfig, Issue } from '@code-pushup/models';
+import { vol } from 'memfs';
+import { afterEach, describe, expect, vi } from 'vitest';
+import {
+  CategoryConfig,
+  Issue,
+  reportNameFromReport,
+} from '@code-pushup/models';
+import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
   countWeightedRefs,
   formatBytes,
   formatCount,
+  loadReports,
   slugify,
   sumRefs,
 } from './report';
+
+// Mock file system API's
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
+
+const outputDir = MEMFS_VOLUME;
+
+const resetFiles = async (files?: Record<string, string>) => {
+  vol.reset();
+  vol.fromJSON(files || {}, outputDir);
+};
 
 describe('slugify', () => {
   it.each([
@@ -149,5 +173,52 @@ describe('sumRefs', () => {
       },
     ];
     expect(sumRefs(refs)).toBe(11);
+  });
+});
+
+describe('loadReports', () => {
+  afterEach(() => {
+    resetFiles({});
+  });
+
+  it('should load reports form outputDir', () => {
+    const report = { date: new Date().toISOString() };
+    resetFiles({
+      [`${reportNameFromReport(report)}.json`]: '{"test":42}',
+      [`${reportNameFromReport(report)}.md`]: 'test-42',
+    });
+    const reports = loadReports({ outputDir });
+    expect(reports).toEqual([
+      [`${reportNameFromReport(report)}.json`, '{"test":42}'],
+      [`${reportNameFromReport(report)}.md`, 'test-42'],
+    ]);
+  });
+
+  it('should load reports by filename', () => {
+    const report = { date: new Date().toISOString() };
+    resetFiles({
+      [`my-report.md`]: 'my-report-content',
+      [`my-report.test.json`]: '{"test":"my-report-content"}',
+      [`${reportNameFromReport(report)}.md`]: 'test-42',
+    });
+    const reports = loadReports({ outputDir, filename: 'my-report' });
+    expect(reports).toEqual([
+      [`my-report.md`, 'my-report-content'],
+      [`my-report.test.json`, '{"test":"my-report-content"}'],
+    ]);
+  });
+
+  it('should load reports by format', () => {
+    const report = { date: new Date().toISOString() };
+    resetFiles({
+      [`${reportNameFromReport(report)}.dummy.md`]: 'test-7',
+      [`${reportNameFromReport(report)}.json`]: '{"test":42}',
+      [`${reportNameFromReport(report)}.md`]: 'test-42',
+    });
+    const reports = loadReports({ outputDir, format: ['md'] });
+    expect(reports).toEqual([
+      [`${reportNameFromReport(report)}.dummy.md`, 'test-7'],
+      [`${reportNameFromReport(report)}.md`, 'test-42'],
+    ]);
   });
 });

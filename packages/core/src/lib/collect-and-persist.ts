@@ -3,9 +3,9 @@ import {
   GlobalOptions,
   pluginReportSchema,
 } from '@code-pushup/models';
-import { verboseUtils } from '@code-pushup/utils';
+import { logMultipleFileResults, verboseUtils } from '@code-pushup/utils';
 import { collect } from './implementation/collect';
-import { logPersistedResults, persistReport } from './implementation/persist';
+import { persistReport } from './implementation/persist';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -20,7 +20,7 @@ export async function collectAndPersistReports(
   const report = await collect(options);
 
   const persistResults = await persistReport(report, options);
-  exec(() => logPersistedResults(persistResults));
+  exec(() => logMultipleFileResults(persistResults, 'Generated reports'));
 
   // validate report and throw if invalid
   report.plugins.forEach(plugin => {

@@ -1,4 +1,12 @@
-import { CategoryConfig, Issue } from '@code-pushup/models';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'path';
+import {
+  CategoryConfig,
+  Issue,
+  PersistConfig,
+  REPORT_NAME_PATTERN,
+} from '@code-pushup/models';
+import { ensureDirectoryExists } from './utils';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
@@ -55,4 +63,27 @@ export function compareIssueSeverity(
 // @TODO replace with real scoring logic
 export function sumRefs(refs: CategoryConfig['refs']) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
+}
+
+export function loadReports(options: PersistConfig): [string, string][] {
+  const { outputDir, filename, format } = options;
+  ensureDirectoryExists(outputDir);
+
+  return (
+    readdirSync(outputDir)
+      // filter by file extension
+      .filter(file =>
+        format ? format.find(ext => file.endsWith(`.${ext}`)) : true,
+      )
+      // filter by file name
+      .filter(file =>
+        filename
+          ? file.includes(filename)
+          : new RegExp(REPORT_NAME_PATTERN).test(file),
+      )
+      .map(file => {
+        const filePath = join(outputDir, file);
+        return [file, readFileSync(filePath, 'utf8')];
+      })
+  );
 }

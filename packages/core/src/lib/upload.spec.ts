@@ -1,13 +1,16 @@
 import { vol } from 'memfs';
 import { join } from 'path';
-import { beforeEach, describe, vi } from 'vitest';
+import { afterEach, beforeEach, describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
+import { reportNameFromReport } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   persistConfig,
   report,
   uploadConfig,
 } from '@code-pushup/models/testing';
+import { FileResult } from '@code-pushup/utils';
+import { mockConsole, unmockConsole } from '../../test';
 import { upload } from './upload';
 
 // This in needed to mock the API client used inside the upload function
@@ -34,18 +37,33 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputDir = MEMFS_VOLUME;
-const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
-  join(path, 'report.' + format);
+const filename = reportNameFromReport({ date: new Date().toISOString() });
+const reportPath = (format: 'json' | 'md' = 'json') =>
+  join(outputDir, `${filename}.${format}`);
+
+let logs: string[] = [];
+const resetFiles = async (fileContent?: Record<string, string>) => {
+  vol.reset();
+  vol.fromJSON(fileContent || {}, MEMFS_VOLUME);
+};
+const setupConsole = async () => {
+  logs = [];
+  mockConsole(msg => logs.push(msg));
+};
+const teardownConsole = async () => {
+  logs = [];
+  unmockConsole();
+};
 
 describe('uploadToPortal', () => {
   beforeEach(async () => {
-    vol.reset();
-    vol.fromJSON(
-      {
-        [reportPath()]: JSON.stringify(report()),
-      },
-      MEMFS_VOLUME,
-    );
+    setupConsole();
+    resetFiles({ [reportPath()]: JSON.stringify(report()) });
+  });
+
+  afterEach(() => {
+    teardownConsole();
+    resetFiles();
   });
 
   test('should work', async () => {
@@ -54,10 +72,21 @@ describe('uploadToPortal', () => {
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',
       }),
-      persist: persistConfig({ outputDir }),
+      persist: persistConfig({ outputDir, filename }),
     };
     const result = await upload(cfg);
-
-    expect(result.packageName).toBe('dummy-package');
+    // loadedReports
+    expect(result.length).toBe(1);
+    expect(result?.[0]?.status).toBe('fulfilled');
+    expect((result?.[0] as PromiseFulfilledResult<FileResult>).value[0]).toBe(
+      `${filename}.json`,
+    );
+    // logMultipleFileResults
+    expect(logs.length).toBe(2);
+    expect(logs[0]).toContain('Uploaded reports');
+    expect(logs[1]).toContain(filename);
   });
+
+  // @TODO add tests for failed upload
+  // @TODO add tests for multiple uploads
 });

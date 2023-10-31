@@ -7,9 +7,10 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
+import { reportNameFromReport } from '@code-pushup/models';
 import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
+import { setupFolder } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
@@ -26,6 +27,9 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
+
+const filename = () => reportNameFromReport({ date: new Date().toISOString() });
+const dummyReport = report();
 
 const baseArgs = [
   'upload',
@@ -47,25 +51,20 @@ const cli = (args: string[]) =>
     commands: [yargsUploadCommandObject()],
   });
 
-const reportFile = (format: 'json' | 'md' = 'json') => 'report.' + format;
-const dummyReport = report();
-
 describe('upload-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    cleanFolderPutGitKeep('tmp', {
-      [reportFile()]: JSON.stringify(dummyReport),
-    });
-  });
-
-  afterEach(async () => {
-    cleanFolderPutGitKeep('tmp');
   });
 
   it('should override config with CLI arguments', async () => {
+    const reportFileName = filename();
+    setupFolder('tmp', {
+      [reportFileName + '.json']: JSON.stringify(dummyReport),
+    });
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
+        'persist.filename': reportFileName,
         //   'upload.organization': 'some-other-organization', @TODO
         //   'upload.project': 'some-other-project', @TODO
         'upload.apiKey': 'some-other-api-key',
@@ -82,6 +81,10 @@ describe('upload-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
+    const reportFileName = filename();
+    setupFolder('tmp', {
+      [reportFileName]: JSON.stringify(dummyReport),
+    });
     await cli(baseArgs).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
