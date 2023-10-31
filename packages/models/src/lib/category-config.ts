@@ -7,7 +7,7 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
-export const categoryConfigRefSchema = weightedRefSchema(
+const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
 ).merge(
@@ -21,11 +21,11 @@ export const categoryConfigRefSchema = weightedRefSchema(
     ),
   }),
 );
-export type CategoryConfigRef = z.infer<typeof categoryConfigRefSchema>;
+export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',
-  categoryConfigRefSchema,
+  categoryRefSchema,
   getDuplicateRefsInCategoryMetrics,
   duplicateRefsInCategoryMetricsErrorMsg,
 )
@@ -51,15 +51,13 @@ export const categoryConfigSchema = scorableSchema(
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
 // helper for validator: categories have unique refs to audits or groups
-export function duplicateRefsInCategoryMetricsErrorMsg(
-  metrics: CategoryConfigRef[],
-) {
+export function duplicateRefsInCategoryMetricsErrorMsg(metrics: CategoryRef[]) {
   const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
   return `In the categories, the following audit or group refs are duplicates: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInCategoryMetrics(metrics: CategoryConfigRef[]) {
+function getDuplicateRefsInCategoryMetrics(metrics: CategoryRef[]) {
   return hasDuplicateStrings(
     metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
   );

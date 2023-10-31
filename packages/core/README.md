@@ -1,8 +1,14 @@
 # @code-pushup/core
 
-**Quality metrics for your software project. Configure what you want to track using your favourite tools, integrate it in your CI and visualize reports in a beautiful dashboard.**
+🔎🔬 **Quality metrics for your software project.** 📉🔍
 
-This package contains the core business logic for the Code PushUp CLI.
+1. ⚙️ **Configure what you want to track using your favourite tools.**
+2. 🤖 **Integrate it in your CI.**
+3. 🌈 **Visualize reports in a beautiful dashboard.**
+
+---
+
+This package contains the **core business logic** for the Code PushUp CLI.
 
 For most use cases, you'll probably want to use the [@code-pushup/cli](../cli/README.md) package instead.
 The core package is useful if you prefer programmatic usage (avoids going through the command line).

@@ -1,10 +1,5 @@
 import { join } from 'node:path';
-import type {
-  Audit,
-  CategoryConfigRef,
-  PluginConfig,
-  PluginReport,
-} from '../../src';
+import type { Audit, CategoryRef, PluginConfig, PluginReport } from '../../src';
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
 import { echoRunnerConfig } from './runner-config.mock';
 
@@ -48,10 +43,7 @@ export function eslintPluginReport(): PluginReport {
 
 type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
 
-export function eslintAuditRef(
-  slug: ESLintAuditSlug,
-  weight = 1,
-): CategoryConfigRef {
+export function eslintAuditRef(slug: ESLintAuditSlug, weight = 1): CategoryRef {
   return {
     type: 'audit',
     plugin: 'eslint',

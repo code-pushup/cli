@@ -70,6 +70,10 @@ export function titleSchema(description = 'Descriptive name') {
   return z.string({ description }).max(256);
 }
 
+/**
+ * Used for categories, plugins and audits
+ * @param options
+ */
 export function metaSchema(options?: {
   titleDescription?: string;
   descriptionDescription?: string;
@@ -118,16 +122,6 @@ export function fileNameSchema(description: string) {
 }
 
 /**
- * Schema for a weight
- * @param description
- */
-export function weightSchema(
-  description = 'Coefficient for the given score (use weight 0 if only for display)',
-) {
-  return positiveIntSchema(description);
-}
-
-/**
  * Schema for a positiveInt
  * @param description
  */
@@ -151,6 +145,16 @@ export function packageVersionSchema(options?: {
     },
     { description: 'NPM package name and version of a published package' },
   );
+}
+
+/**
+ * Schema for a weight
+ * @param description
+ */
+export function weightSchema(
+  description = 'Coefficient for the given score (use weight 0 if only for display)',
+) {
+  return positiveIntSchema(description);
 }
 
 export function weightedRefSchema(

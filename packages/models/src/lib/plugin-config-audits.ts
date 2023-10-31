@@ -27,7 +27,7 @@ export const pluginAuditsSchema = z
       message: duplicateSlugsInAuditsErrorMsg(auditMetadata),
     }),
   );
-export type PluginAudits = z.infer<typeof pluginAuditsSchema>;
+
 // =======================
 
 // helper for validator: audit slugs are unique

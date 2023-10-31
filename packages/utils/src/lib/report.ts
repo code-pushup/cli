@@ -1,5 +1,5 @@
-import { CategoryConfig, CategoryConfigRef } from '@code-pushup/models';
-import { Issue } from '@code-pushup/models';
+import { IssueSeverity as PortalIssueSeverity } from '@code-pushup/portal-client';
+import { CategoryRef } from '@code-pushup/models';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
@@ -35,17 +35,17 @@ export function formatCount(count: number, name: string) {
   return `${count} ${text}`;
 }
 
-export function countWeightedRefs(refs: CategoryConfig['refs']) {
+export function countWeightedRefs(refs: CategoryRef[]) {
   return refs
     .filter(({ weight }) => weight > 0)
     .reduce((sum, { weight }) => sum + weight, 0);
 }
 
 export function compareIssueSeverity(
-  severity1: Issue['severity'],
-  severity2: Issue['severity'],
+  severity1: PortalIssueSeverity,
+  severity2: PortalIssueSeverity,
 ): number {
-  const levels: Record<Issue['severity'], number> = {
+  const levels: Record<PortalIssueSeverity, number> = {
     info: 0,
     warning: 1,
     error: 2,
@@ -54,6 +54,6 @@ export function compareIssueSeverity(
 }
 
 // @TODO replace with real scoring logic
-export function sumRefs(refs: CategoryConfigRef[]) {
+export function sumRefs(refs: CategoryRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
 }
