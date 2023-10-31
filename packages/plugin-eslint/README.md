@@ -1,6 +1,8 @@
 # @code-pushup/eslint-plugin
 
-**CodePushUp plugin for detecting problems in source code using ESLint.**
+🕵️ **Code PushUp plugin for detecting problems in source code using ESLint.** 📋
+
+---
 
 The plugin parses your ESLint configuration and lints targetted files using [ESLint's Node.js API](https://eslint.org/docs/latest/integrate/nodejs-api).
 
