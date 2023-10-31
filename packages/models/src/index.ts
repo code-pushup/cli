@@ -3,6 +3,7 @@ export {
   CategoryConfig,
   categoryConfigSchema,
 } from './lib/category-config';
+
 export {
   CoreConfig,
   coreConfigSchema,
@@ -29,7 +30,7 @@ export {
   auditGroupSchema,
 } from './lib/plugin-config-groups';
 export { AuditOutput, auditOutputsSchema } from './lib/plugin-process-output';
-export { Issue } from './lib/plugin-process-output-audit-issue';
+export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
   PluginReport,

@@ -1,5 +1,7 @@
-import { IssueSeverity as PortalIssueSeverity } from '@code-pushup/portal-client';
-import { CategoryRef } from '@code-pushup/models';
+import {
+  CategoryRef,
+  IssueSeverity as CliIssueSeverity,
+} from '@code-pushup/models';
 import { pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
@@ -42,10 +44,10 @@ export function countWeightedRefs(refs: CategoryRef[]) {
 }
 
 export function compareIssueSeverity(
-  severity1: PortalIssueSeverity,
-  severity2: PortalIssueSeverity,
+  severity1: CliIssueSeverity,
+  severity2: CliIssueSeverity,
 ): number {
-  const levels: Record<PortalIssueSeverity, number> = {
+  const levels: Record<CliIssueSeverity, number> = {
     info: 0,
     warning: 1,
     error: 2,

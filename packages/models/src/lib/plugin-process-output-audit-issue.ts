@@ -19,12 +19,14 @@ const sourceFileLocationSchema = z.object(
   { description: 'Source file location' },
 );
 
+export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
+  description: 'Severity level',
+});
+export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
 export const issueSchema = z.object(
   {
     message: z.string({ description: 'Descriptive error message' }).max(128),
-    severity: z.enum(['info', 'warning', 'error'], {
-      description: 'Severity level',
-    }),
+    severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
   },
   { description: 'Issue information' },
