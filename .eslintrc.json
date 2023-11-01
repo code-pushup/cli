@@ -54,7 +54,8 @@
       "extends": [
         "plugin:@nx/typescript",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:@typescript-eslint/strict"
+        "plugin:@typescript-eslint/strict",
+        "plugin:sonarjs/recommended"
       ],
       "rules": {
         // override rules from extended configs
@@ -158,6 +159,7 @@
         "no-magic-numbers": "off",
         "max-lines-per-function": "off",
         "curly": "off",
+        "sonarjs/no-duplicate-string": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
