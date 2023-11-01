@@ -66,6 +66,39 @@
         "@typescript-eslint/consistent-indexed-object-style": "off",
         "@typescript-eslint/unbound-method": "off",
         // additional rules
+        "arrow-body-style": ["warn", "as-needed"],
+        "complexity": "warn",
+        "curly": "warn",
+        "eqeqeq": ["error", "always", { "null": "never" }],
+        "guard-for-in": "error",
+        "max-depth": "warn",
+        "max-lines": ["warn", { "skipBlankLines": true, "skipComments": true }],
+        "max-lines-per-function": [
+          "warn",
+          { "skipBlankLines": true, "skipComments": true }
+        ],
+        "max-nested-callbacks": ["warn", { "max": 3 }],
+        "no-bitwise": "warn",
+        "no-console": ["warn", { "allow": ["error", "warn", "info"] }],
+        "no-duplicate-imports": "warn",
+        "no-eval": "error",
+        "no-magic-numbers": [
+          "warn",
+          {
+            "ignore": [-1, 0, 1, 2, 7, 10, 24, 60, 100, 1000, 3600],
+            "ignoreDefaultValues": true,
+            "enforceConst": true,
+            "detectObjects": true
+          }
+        ],
+        "no-param-reassign": ["error", { "props": true }],
+        "no-sequences": "error",
+        "no-template-curly-in-string": "error",
+        "no-undef-init": "warn",
+        "no-unreachable-loop": "error",
+        "prefer-template": "warn",
+        "radix": "warn",
+        "yoda": "warn",
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/default-param-last": "warn",
         "@typescript-eslint/method-signature-style": "warn",
@@ -119,13 +152,16 @@
       }
     },
     {
-      "files": ["*.spec.ts", "*.spec.tsx"],
+      "files": ["*.spec.ts", "*.mock.ts", "test/**/*.ts"],
       "rules": {
         // less strict rules for tests
-        "@typescript-eslint/require-await": "warn",
+        "no-magic-numbers": "off",
+        "max-lines-per-function": "off",
+        "curly": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off"
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/require-await": "warn"
       }
     },
     {
