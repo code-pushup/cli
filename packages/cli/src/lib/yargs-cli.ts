@@ -55,7 +55,8 @@ export function yargsCli(
       }
       return config;
     })
-    .options(options);
+    .options(options)
+    .strict();
   //.demandCommand(...demandCommand);
 
   // usage message
