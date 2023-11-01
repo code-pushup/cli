@@ -55,9 +55,17 @@
         "plugin:@nx/typescript",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:@typescript-eslint/strict",
+        "plugin:import/recommended",
         "plugin:sonarjs/recommended",
         "plugin:unicorn/recommended"
       ],
+      "settings": {
+        "import/resolver": {
+          "typescript": {
+            "project": "tsconfig.base.json"
+          }
+        }
+      },
       "rules": {
         // override rules from extended configs
         "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
@@ -129,6 +137,19 @@
         "prefer-template": "warn",
         "radix": "warn",
         "yoda": "warn",
+        "import/extensions": ["warn", "never", { "json": "always" }],
+        "import/max-dependencies": ["warn", { "ignoreTypeImports": true }],
+        "import/no-absolute-path": "error",
+        "import/no-amd": "error",
+        "import/no-anonymous-default-export": "warn",
+        "import/no-commonjs": "error",
+        "import/no-cycle": "error",
+        "import/no-deprecated": "warn",
+        "import/no-mutable-exports": "error",
+        "import/no-named-default": "warn",
+        "import/no-self-import": "error",
+        "import/no-unassigned-import": "warn",
+        "import/no-useless-path-segments": "warn",
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/default-param-last": "warn",
         "@typescript-eslint/method-signature-style": "warn",
@@ -218,6 +239,7 @@
         "prefer-template": "off",
         "arrow-body-style": "off",
         "curly": "off",
+        "import/no-useless-path-segments": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
         "@typescript-eslint/no-unsafe-return": "off",
