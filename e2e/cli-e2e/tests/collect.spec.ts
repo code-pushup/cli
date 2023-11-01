@@ -61,7 +61,7 @@ describe('CLI collect', () => {
 
     const md = await readTextFile('tmp/react-todos-app/report.md');
 
-    expect(md).toContain('# Code Pushup Report');
+    expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);
     expect(md).toContain(exampleAuditTitle);
   });
@@ -76,7 +76,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    expect(stdout).toContain('Code Pushup Report');
+    expect(stdout).toContain('Code PushUp Report');
     expect(stdout).toContain('Generated reports');
     expect(stdout).toContain('report.json');
     expect(stdout).toContain(exampleCategoryTitle);
