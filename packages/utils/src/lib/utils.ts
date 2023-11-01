@@ -65,16 +65,27 @@ export function toUnixPath(
 }
 
 export function formatReportScore(score: number): string {
-  const formattedScore = Math.round(score * 100).toString();
-  let scoreMarker: string;
+  return Math.round(score * 100).toString();
+}
+
+export function getRoundScoreMarker(score: number): string {
   if (score >= 0.9) {
-    scoreMarker = '🟢 ';
-  } else if (score >= 0.5) {
-    scoreMarker = '🟡 ';
-  } else {
-    scoreMarker = '🔴 ';
+    return '🟢';
   }
-  return scoreMarker + formattedScore;
+  if (score >= 0.5) {
+    return '🟡';
+  }
+  return '🔴';
+}
+
+export function getSquaredScoreMarker(score: number): string {
+  if (score >= 0.9) {
+    return '🟩';
+  }
+  if (score >= 0.5) {
+    return '🟨';
+  }
+  return '🟥';
 }
 
 // === Validation

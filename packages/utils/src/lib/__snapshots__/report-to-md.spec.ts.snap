@@ -1,533 +1,1079 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`report-to-md > should contain all sections when using the fixture report > # Code Pushup Report
+exports[`report-to-md > should contain all sections when using the fixture report > # Code PushUp Report
 
----
-_Package Name: @code-pushup/core_
-_Version: 0.1.0_
-_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_
-_Date: 2023-10-18T07:49:45.506Z_
-_Duration: 1652 ms_
-_Plugins: 2_
-_Audits: 52_
----
+|🏷 Category|⭐ Score|🛡 Audits|
+|:--|:--:|:--:|
+|[Performance](#performance)|92 🟢|2|
+|[Bug prevention](#bug-prevention)|68 🟡|16|
+|[Code style](#code-style)|54 🟡|13|
+
+## 🏷 Categories
+
+**<a name="performance"></a>🟢 Performance: 92**
 
 
-|Category|Score|Audits|
-|:--:|:--:|:--:|
-|Performance|0.9215000000000001|2/1|
-|Bug prevention|0.6842105263157895|16/19|
-|Code style|0.5384615384615384|13/13|
 
-**Performance 0.9215000000000001**
+- 🟢 Performance (_Lighthouse_)
 
-- <details>
-<summary>Disallow missing \`key\` props in iterators/collection literals (0) ESLint</summary>
-1 warning
-ESLint rule **jsx-key**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
+  - 🟨 [First Contentful Paint](#first-contentful-paint) - **1.2 s**
 
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint) - **1.5 s**
+
+  - 🟩 [Speed Index](#speed-index) - **1.2 s**
+
+  - 🟩 [Total Blocking Time](#total-blocking-time) - **0 ms**
+
+  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift) - **0**
+
+
+
+- 🟥 [Disallow missing \`key\` props in iterators/collection literals](#react-jsx-key) (_ESLint_) - **1 warning**
+
+**<a name="bug-prevention"></a>🟡 Bug prevention: 68**
+
+
+
+- 🟩 [Disallow assignment operators in conditional expressions](#no-cond-assign) (_ESLint_) - **0**
+
+- 🟩 [Disallow reassigning \`const\` variables](#no-const-assign) (_ESLint_) - **0**
+
+- 🟩 [Disallow the use of \`debugger\`](#no-debugger) (_ESLint_) - **0**
+
+- 🟩 [Disallow invalid regular expression strings in \`RegExp\` constructors](#no-invalid-regexp) (_ESLint_) - **0**
+
+- 🟩 [Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments](#no-undef) (_ESLint_) - **0**
+
+- 🟩 [Disallow loops with a body that allows only one iteration](#no-unreachable-loop) (_ESLint_) - **0**
+
+- 🟩 [Disallow negating the left operand of relational operators](#no-unsafe-negation) (_ESLint_) - **0**
+
+- 🟩 [Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed](#no-unsafe-optional-chaining) (_ESLint_) - **0**
+
+- 🟩 [Require calls to \`isNaN()\` when checking for \`NaN\`](#use-isnan) (_ESLint_) - **0**
+
+- 🟩 [Enforce comparing \`typeof\` expressions against valid strings](#valid-typeof) (_ESLint_) - **0**
+
+- 🟥 [Require the use of \`===\` and \`!==\`](#eqeqeq) (_ESLint_) - **1 warning**
+
+- 🟥 [Disallow missing \`key\` props in iterators/collection literals](#react-jsx-key) (_ESLint_) - **1 warning**
+
+- 🟥 [Disallow missing props validation in a React component definition](#react-prop-types) (_ESLint_) - **6 warnings**
+
+- 🟩 [Disallow missing React when using JSX](#react-react-in-jsx-scope) (_ESLint_) - **0**
+
+- 🟩 [enforces the Rules of Hooks](#react-hooks-rules-of-hooks) (_ESLint_) - **0**
+
+- 🟥 [verifies the list of dependencies for Hooks like useEffect and similar](#react-hooks-exhaustive-deps) (_ESLint_) - **2 warnings**
+
+**<a name="code-style"></a>🟡 Code style: 54**
+
+
+
+- 🟥 [Disallow unused variables](#no-unused-vars) (_ESLint_) - **1 warning**
+
+- 🟥 [Require braces around arrow function bodies](#arrow-body-style) (_ESLint_) - **1 warning**
+
+- 🟩 [Enforce camelcase naming convention](#camelcase) (_ESLint_) - **0**
+
+- 🟩 [Enforce consistent brace style for all control statements](#curly) (_ESLint_) - **0**
+
+- 🟥 [Require the use of \`===\` and \`!==\`](#eqeqeq) (_ESLint_) - **1 warning**
+
+- 🟥 [Enforce a maximum number of lines of code in a function](#max-lines-per-function) (_ESLint_) - **1 warning**
+
+- 🟩 [Enforce a maximum number of lines per file](#max-lines) (_ESLint_) - **0**
+
+- 🟥 [Require or disallow method and property shorthand syntax for object literals](#object-shorthand) (_ESLint_) - **3 warnings**
+
+- 🟩 [Require using arrow functions for callbacks](#prefer-arrow-callback) (_ESLint_) - **0**
+
+- 🟥 [Require \`const\` declarations for variables that are never reassigned after declared](#prefer-const) (_ESLint_) - **1 warning**
+
+- 🟩 [Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead](#prefer-object-spread) (_ESLint_) - **0**
+
+- 🟩 [Require or disallow "Yoda" conditions](#yoda) (_ESLint_) - **0**
+
+- 🟩 [Require \`let\` or \`const\` instead of \`var\`](#no-var) (_ESLint_) - **0**
+
+
+
+
+
+## 🛡️ Audits
+
+### <a name="no-cond-assign"></a>Disallow assignment operators in conditional expressions (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-**Bug prevention 0.6842105263157895**
-- <details>
-<summary>Disallow assignment operators in conditional expressions (1) ESLint</summary>
-undefined
-ESLint rule **no-cond-assign**.
-[Documentation](https://eslint.org/docs/latest/rules/no-cond-assign)
 
+### <a name="no-const-assign"></a>Disallow reassigning \`const\` variables (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow reassigning \`const\` variables (1) ESLint</summary>
-undefined
-ESLint rule **no-const-assign**.
-[Documentation](https://eslint.org/docs/latest/rules/no-const-assign)
 
+### <a name="no-debugger"></a>Disallow the use of \`debugger\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow the use of \`debugger\` (1) ESLint</summary>
-undefined
-ESLint rule **no-debugger**.
-[Documentation](https://eslint.org/docs/latest/rules/no-debugger)
 
+### <a name="no-invalid-regexp"></a>Disallow invalid regular expression strings in \`RegExp\` constructors (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow invalid regular expression strings in \`RegExp\` constructors (1) ESLint</summary>
-undefined
-ESLint rule **no-invalid-regexp**.
-[Documentation](https://eslint.org/docs/latest/rules/no-invalid-regexp)
 
+### <a name="no-undef"></a>Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments (1) ESLint</summary>
-undefined
-ESLint rule **no-undef**.
-[Documentation](https://eslint.org/docs/latest/rules/no-undef)
 
+### <a name="no-unreachable-loop"></a>Disallow loops with a body that allows only one iteration (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow loops with a body that allows only one iteration (1) ESLint</summary>
-undefined
-ESLint rule **no-unreachable-loop**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unreachable-loop)
 
+### <a name="no-unsafe-negation"></a>Disallow negating the left operand of relational operators (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow negating the left operand of relational operators (1) ESLint</summary>
-undefined
-ESLint rule **no-unsafe-negation**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unsafe-negation)
 
+### <a name="no-unsafe-optional-chaining"></a>Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed (1) ESLint</summary>
-undefined
-ESLint rule **no-unsafe-optional-chaining**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining)
 
+### <a name="no-unused-vars"></a>Disallow unused variables (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require calls to \`isNaN()\` when checking for \`NaN\` (1) ESLint</summary>
-undefined
-ESLint rule **use-isnan**.
-[Documentation](https://eslint.org/docs/latest/rules/use-isnan)
 
+### <a name="use-isnan"></a>Require calls to \`isNaN()\` when checking for \`NaN\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce comparing \`typeof\` expressions against valid strings (1) ESLint</summary>
-undefined
-ESLint rule **valid-typeof**.
-[Documentation](https://eslint.org/docs/latest/rules/valid-typeof)
 
+### <a name="valid-typeof"></a>Enforce comparing \`typeof\` expressions against valid strings (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require the use of \`===\` and \`!==\` (1) ESLint</summary>
-1 warning
-ESLint rule **eqeqeq**.
-[Documentation](https://eslint.org/docs/latest/rules/eqeqeq)
 
+### <a name="arrow-body-style"></a>Require braces around arrow function bodies (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing \`key\` props in iterators/collection literals (2) ESLint</summary>
-1 warning
-ESLint rule **jsx-key**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
 
+### <a name="camelcase"></a>Enforce camelcase naming convention (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing props validation in a React component definition (1) ESLint</summary>
-6 warnings
-ESLint rule **prop-types**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
 
+### <a name="curly"></a>Enforce consistent brace style for all control statements (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing React when using JSX (1) ESLint</summary>
-undefined
-ESLint rule **react-in-jsx-scope**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md)
 
+### <a name="eqeqeq"></a>Require the use of \`===\` and \`!==\` (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>enforces the Rules of Hooks (2) ESLint</summary>
-undefined
-ESLint rule **rules-of-hooks**, from _react-hooks_ plugin.
-[Documentation](https://reactjs.org/docs/hooks-rules.html)
 
+### <a name="max-lines-per-function"></a>Enforce a maximum number of lines of code in a function (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>verifies the list of dependencies for Hooks like useEffect and similar (2) ESLint</summary>
-2 warnings
-ESLint rule **exhaustive-deps**, from _react-hooks_ plugin.
-[Documentation](https://github.com/facebook/react/issues/14920)
 
+### <a name="max-lines"></a>Enforce a maximum number of lines per file (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-**Code style 0.5384615384615384**
-- <details>
-<summary>Disallow unused variables (1) ESLint</summary>
-1 warning
-ESLint rule **no-unused-vars**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unused-vars)
 
+### <a name="no-shadow"></a>Disallow variable declarations from shadowing variables declared in the outer scope (ESLint)
+
+<details>
+<summary>🟥 3 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require braces around arrow function bodies (1) ESLint</summary>
-1 warning
-ESLint rule **arrow-body-style**.
-[Documentation](https://eslint.org/docs/latest/rules/arrow-body-style)
 
+### <a name="no-var"></a>Require \`let\` or \`const\` instead of \`var\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce camelcase naming convention (1) ESLint</summary>
-undefined
-ESLint rule **camelcase**.
-[Documentation](https://eslint.org/docs/latest/rules/camelcase)
 
+### <a name="object-shorthand"></a>Require or disallow method and property shorthand syntax for object literals (ESLint)
+
+<details>
+<summary>🟥 3 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce consistent brace style for all control statements (1) ESLint</summary>
-undefined
-ESLint rule **curly**.
-[Documentation](https://eslint.org/docs/latest/rules/curly)
 
+### <a name="prefer-arrow-callback"></a>Require using arrow functions for callbacks (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require the use of \`===\` and \`!==\` (1) ESLint</summary>
-1 warning
-ESLint rule **eqeqeq**.
-[Documentation](https://eslint.org/docs/latest/rules/eqeqeq)
 
+### <a name="prefer-const"></a>Require \`const\` declarations for variables that are never reassigned after declared (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce a maximum number of lines of code in a function (1) ESLint</summary>
-1 warning
-ESLint rule **max-lines-per-function**.
-[Documentation](https://eslint.org/docs/latest/rules/max-lines-per-function)
 
+### <a name="prefer-object-spread"></a>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce a maximum number of lines per file (1) ESLint</summary>
-undefined
-ESLint rule **max-lines**.
-[Documentation](https://eslint.org/docs/latest/rules/max-lines)
 
+### <a name="yoda"></a>Require or disallow "Yoda" conditions (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require or disallow method and property shorthand syntax for object literals (1) ESLint</summary>
-3 warnings
-ESLint rule **object-shorthand**.
-[Documentation](https://eslint.org/docs/latest/rules/object-shorthand)
 
+### <a name="react-jsx-key"></a>Disallow missing \`key\` props in iterators/collection literals (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require using arrow functions for callbacks (1) ESLint</summary>
-undefined
-ESLint rule **prefer-arrow-callback**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-arrow-callback)
 
+### <a name="react-prop-types"></a>Disallow missing props validation in a React component definition (ESLint)
+
+<details>
+<summary>🟥 6 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require \`const\` declarations for variables that are never reassigned after declared (1) ESLint</summary>
-1 warning
-ESLint rule **prefer-const**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-const)
 
+### <a name="react-react-in-jsx-scope"></a>Disallow missing React when using JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (1) ESLint</summary>
-undefined
-ESLint rule **prefer-object-spread**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-object-spread)
 
+### <a name="react-hooks-rules-of-hooks"></a>enforces the Rules of Hooks (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require or disallow "Yoda" conditions (1) ESLint</summary>
-undefined
-ESLint rule **yoda**.
-[Documentation](https://eslint.org/docs/latest/rules/yoda)
 
+### <a name="react-hooks-exhaustive-deps"></a>verifies the list of dependencies for Hooks like useEffect and similar (ESLint)
+
+<details>
+<summary>🟥 2 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require \`let\` or \`const\` instead of \`var\` (1) ESLint</summary>
-undefined
-ESLint rule **no-var**.
-[Documentation](https://eslint.org/docs/latest/rules/no-var)
 
+### <a name="react-display-name"></a>Disallow missing displayName in a React component definition (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
+
+### <a name="react-jsx-no-comment-textnodes"></a>Disallow comments from being inserted as text nodes (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-jsx-no-duplicate-props"></a>Disallow duplicate properties in JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-jsx-no-target-blank"></a>Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-jsx-no-undef"></a>Disallow undeclared variables in JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-jsx-uses-react"></a>Disallow React to be incorrectly marked as unused (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-jsx-uses-vars"></a>Disallow variables used in JSX to be incorrectly marked as unused (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-children-prop"></a>Disallow passing of children as props (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-danger-with-children"></a>Disallow when a DOM element is using both children and dangerouslySetInnerHTML (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-deprecated"></a>Disallow usage of deprecated methods (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-direct-mutation-state"></a>Disallow direct mutation of this.state (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-find-dom-node"></a>Disallow usage of findDOMNode (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-is-mounted"></a>Disallow usage of isMounted (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-render-return-value"></a>Disallow usage of the return value of ReactDOM.render (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-string-refs"></a>Disallow using string references (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-unescaped-entities"></a>Disallow unescaped HTML entities from appearing in markup (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-no-unknown-property"></a>Disallow usage of unknown DOM property (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="react-require-render-return"></a>Enforce ES5 or ES6 class for returning value in render function (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="first-contentful-paint"></a>First Contentful Paint (Lighthouse)
+
+<details>
+<summary>🟨 1.2 s (score: 76)</summary>
+content
+</details>
+
+
+### <a name="largest-contentful-paint"></a>Largest Contentful Paint (Lighthouse)
+
+<details>
+<summary>🟨 1.5 s (score: 81)</summary>
+content
+</details>
+
+
+### <a name="total-blocking-time"></a>Total Blocking Time (Lighthouse)
+
+<details>
+<summary>🟩 0 ms (score: 100)</summary>
+content
+</details>
+
+
+### <a name="cumulative-layout-shift"></a>Cumulative Layout Shift (Lighthouse)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name="speed-index"></a>Speed Index (Lighthouse)
+
+<details>
+<summary>🟩 1.2 s (score: 93)</summary>
+content
+</details>
+
+
+
+
+
+
+## About
+
+Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 10:21:14 GMT+0100 (Central European Standard Time)
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--:|:--:|:--:|:--:|:--:|:--:|
+|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65s|2|3|52|
+
+The following plugins were run:
+
+|Plugin|Audits|Version|Duration|
+|:--:|:--:|:--:|:--:|
+|ESLint|47|0.1.0|0.37s|
+|Lighthouse|5|0.1.0|1.23s|
 
 Made with ❤️ by [code-pushup.dev](code-pushup.dev) 1`] = `
-"# Code Pushup Report
+"# Code PushUp Report
 
----
-_Package Name: @code-pushup/core_
-_Version: 0.1.0_
-_Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9_
-_Date: 2023-10-18T07:49:45.506Z_
-_Duration: 1652 ms_
-_Plugins: 2_
-_Audits: 52_
----
+|🏷 Category|⭐ Score|🛡 Audits|
+|:--|:--:|:--:|
+|[Performance](#performance)|92 🟢|2|
+|[Bug prevention](#bug-prevention)|68 🟡|16|
+|[Code style](#code-style)|54 🟡|13|
+
+## 🏷 Categories
+
+**<a name=\\"performance\\"></a>🟢 Performance: 92**
 
 
-|Category|Score|Audits|
-|:--:|:--:|:--:|
-|Performance|0.9215000000000001|2/1|
-|Bug prevention|0.6842105263157895|16/19|
-|Code style|0.5384615384615384|13/13|
 
-**Performance 0.9215000000000001**
+- 🟢 Performance (_Lighthouse_)
 
-- <details>
-<summary>Disallow missing \`key\` props in iterators/collection literals (0) ESLint</summary>
-1 warning
-ESLint rule **jsx-key**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
+  - 🟨 [First Contentful Paint](#first-contentful-paint) - **1.2 s**
 
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint) - **1.5 s**
+
+  - 🟩 [Speed Index](#speed-index) - **1.2 s**
+
+  - 🟩 [Total Blocking Time](#total-blocking-time) - **0 ms**
+
+  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift) - **0**
+
+
+
+- 🟥 [Disallow missing \`key\` props in iterators/collection literals](#react-jsx-key) (_ESLint_) - **1 warning**
+
+**<a name=\\"bug-prevention\\"></a>🟡 Bug prevention: 68**
+
+
+
+- 🟩 [Disallow assignment operators in conditional expressions](#no-cond-assign) (_ESLint_) - **0**
+
+- 🟩 [Disallow reassigning \`const\` variables](#no-const-assign) (_ESLint_) - **0**
+
+- 🟩 [Disallow the use of \`debugger\`](#no-debugger) (_ESLint_) - **0**
+
+- 🟩 [Disallow invalid regular expression strings in \`RegExp\` constructors](#no-invalid-regexp) (_ESLint_) - **0**
+
+- 🟩 [Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments](#no-undef) (_ESLint_) - **0**
+
+- 🟩 [Disallow loops with a body that allows only one iteration](#no-unreachable-loop) (_ESLint_) - **0**
+
+- 🟩 [Disallow negating the left operand of relational operators](#no-unsafe-negation) (_ESLint_) - **0**
+
+- 🟩 [Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed](#no-unsafe-optional-chaining) (_ESLint_) - **0**
+
+- 🟩 [Require calls to \`isNaN()\` when checking for \`NaN\`](#use-isnan) (_ESLint_) - **0**
+
+- 🟩 [Enforce comparing \`typeof\` expressions against valid strings](#valid-typeof) (_ESLint_) - **0**
+
+- 🟥 [Require the use of \`===\` and \`!==\`](#eqeqeq) (_ESLint_) - **1 warning**
+
+- 🟥 [Disallow missing \`key\` props in iterators/collection literals](#react-jsx-key) (_ESLint_) - **1 warning**
+
+- 🟥 [Disallow missing props validation in a React component definition](#react-prop-types) (_ESLint_) - **6 warnings**
+
+- 🟩 [Disallow missing React when using JSX](#react-react-in-jsx-scope) (_ESLint_) - **0**
+
+- 🟩 [enforces the Rules of Hooks](#react-hooks-rules-of-hooks) (_ESLint_) - **0**
+
+- 🟥 [verifies the list of dependencies for Hooks like useEffect and similar](#react-hooks-exhaustive-deps) (_ESLint_) - **2 warnings**
+
+**<a name=\\"code-style\\"></a>🟡 Code style: 54**
+
+
+
+- 🟥 [Disallow unused variables](#no-unused-vars) (_ESLint_) - **1 warning**
+
+- 🟥 [Require braces around arrow function bodies](#arrow-body-style) (_ESLint_) - **1 warning**
+
+- 🟩 [Enforce camelcase naming convention](#camelcase) (_ESLint_) - **0**
+
+- 🟩 [Enforce consistent brace style for all control statements](#curly) (_ESLint_) - **0**
+
+- 🟥 [Require the use of \`===\` and \`!==\`](#eqeqeq) (_ESLint_) - **1 warning**
+
+- 🟥 [Enforce a maximum number of lines of code in a function](#max-lines-per-function) (_ESLint_) - **1 warning**
+
+- 🟩 [Enforce a maximum number of lines per file](#max-lines) (_ESLint_) - **0**
+
+- 🟥 [Require or disallow method and property shorthand syntax for object literals](#object-shorthand) (_ESLint_) - **3 warnings**
+
+- 🟩 [Require using arrow functions for callbacks](#prefer-arrow-callback) (_ESLint_) - **0**
+
+- 🟥 [Require \`const\` declarations for variables that are never reassigned after declared](#prefer-const) (_ESLint_) - **1 warning**
+
+- 🟩 [Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead](#prefer-object-spread) (_ESLint_) - **0**
+
+- 🟩 [Require or disallow \\"Yoda\\" conditions](#yoda) (_ESLint_) - **0**
+
+- 🟩 [Require \`let\` or \`const\` instead of \`var\`](#no-var) (_ESLint_) - **0**
+
+
+
+
+
+## 🛡️ Audits
+
+### <a name=\\"no-cond-assign\\"></a>Disallow assignment operators in conditional expressions (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-**Bug prevention 0.6842105263157895**
-- <details>
-<summary>Disallow assignment operators in conditional expressions (1) ESLint</summary>
-undefined
-ESLint rule **no-cond-assign**.
-[Documentation](https://eslint.org/docs/latest/rules/no-cond-assign)
 
+### <a name=\\"no-const-assign\\"></a>Disallow reassigning \`const\` variables (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow reassigning \`const\` variables (1) ESLint</summary>
-undefined
-ESLint rule **no-const-assign**.
-[Documentation](https://eslint.org/docs/latest/rules/no-const-assign)
 
+### <a name=\\"no-debugger\\"></a>Disallow the use of \`debugger\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow the use of \`debugger\` (1) ESLint</summary>
-undefined
-ESLint rule **no-debugger**.
-[Documentation](https://eslint.org/docs/latest/rules/no-debugger)
 
+### <a name=\\"no-invalid-regexp\\"></a>Disallow invalid regular expression strings in \`RegExp\` constructors (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow invalid regular expression strings in \`RegExp\` constructors (1) ESLint</summary>
-undefined
-ESLint rule **no-invalid-regexp**.
-[Documentation](https://eslint.org/docs/latest/rules/no-invalid-regexp)
 
+### <a name=\\"no-undef\\"></a>Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments (1) ESLint</summary>
-undefined
-ESLint rule **no-undef**.
-[Documentation](https://eslint.org/docs/latest/rules/no-undef)
 
+### <a name=\\"no-unreachable-loop\\"></a>Disallow loops with a body that allows only one iteration (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow loops with a body that allows only one iteration (1) ESLint</summary>
-undefined
-ESLint rule **no-unreachable-loop**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unreachable-loop)
 
+### <a name=\\"no-unsafe-negation\\"></a>Disallow negating the left operand of relational operators (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow negating the left operand of relational operators (1) ESLint</summary>
-undefined
-ESLint rule **no-unsafe-negation**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unsafe-negation)
 
+### <a name=\\"no-unsafe-optional-chaining\\"></a>Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed (1) ESLint</summary>
-undefined
-ESLint rule **no-unsafe-optional-chaining**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining)
 
+### <a name=\\"no-unused-vars\\"></a>Disallow unused variables (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require calls to \`isNaN()\` when checking for \`NaN\` (1) ESLint</summary>
-undefined
-ESLint rule **use-isnan**.
-[Documentation](https://eslint.org/docs/latest/rules/use-isnan)
 
+### <a name=\\"use-isnan\\"></a>Require calls to \`isNaN()\` when checking for \`NaN\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce comparing \`typeof\` expressions against valid strings (1) ESLint</summary>
-undefined
-ESLint rule **valid-typeof**.
-[Documentation](https://eslint.org/docs/latest/rules/valid-typeof)
 
+### <a name=\\"valid-typeof\\"></a>Enforce comparing \`typeof\` expressions against valid strings (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require the use of \`===\` and \`!==\` (1) ESLint</summary>
-1 warning
-ESLint rule **eqeqeq**.
-[Documentation](https://eslint.org/docs/latest/rules/eqeqeq)
 
+### <a name=\\"arrow-body-style\\"></a>Require braces around arrow function bodies (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing \`key\` props in iterators/collection literals (2) ESLint</summary>
-1 warning
-ESLint rule **jsx-key**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
 
+### <a name=\\"camelcase\\"></a>Enforce camelcase naming convention (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing props validation in a React component definition (1) ESLint</summary>
-6 warnings
-ESLint rule **prop-types**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
 
+### <a name=\\"curly\\"></a>Enforce consistent brace style for all control statements (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow missing React when using JSX (1) ESLint</summary>
-undefined
-ESLint rule **react-in-jsx-scope**, from _react_ plugin.
-[Documentation](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md)
 
+### <a name=\\"eqeqeq\\"></a>Require the use of \`===\` and \`!==\` (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>enforces the Rules of Hooks (2) ESLint</summary>
-undefined
-ESLint rule **rules-of-hooks**, from _react-hooks_ plugin.
-[Documentation](https://reactjs.org/docs/hooks-rules.html)
 
+### <a name=\\"max-lines-per-function\\"></a>Enforce a maximum number of lines of code in a function (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>verifies the list of dependencies for Hooks like useEffect and similar (2) ESLint</summary>
-2 warnings
-ESLint rule **exhaustive-deps**, from _react-hooks_ plugin.
-[Documentation](https://github.com/facebook/react/issues/14920)
 
+### <a name=\\"max-lines\\"></a>Enforce a maximum number of lines per file (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-**Code style 0.5384615384615384**
-- <details>
-<summary>Disallow unused variables (1) ESLint</summary>
-1 warning
-ESLint rule **no-unused-vars**.
-[Documentation](https://eslint.org/docs/latest/rules/no-unused-vars)
 
+### <a name=\\"no-shadow\\"></a>Disallow variable declarations from shadowing variables declared in the outer scope (ESLint)
+
+<details>
+<summary>🟥 3 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require braces around arrow function bodies (1) ESLint</summary>
-1 warning
-ESLint rule **arrow-body-style**.
-[Documentation](https://eslint.org/docs/latest/rules/arrow-body-style)
 
+### <a name=\\"no-var\\"></a>Require \`let\` or \`const\` instead of \`var\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce camelcase naming convention (1) ESLint</summary>
-undefined
-ESLint rule **camelcase**.
-[Documentation](https://eslint.org/docs/latest/rules/camelcase)
 
+### <a name=\\"object-shorthand\\"></a>Require or disallow method and property shorthand syntax for object literals (ESLint)
+
+<details>
+<summary>🟥 3 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce consistent brace style for all control statements (1) ESLint</summary>
-undefined
-ESLint rule **curly**.
-[Documentation](https://eslint.org/docs/latest/rules/curly)
 
+### <a name=\\"prefer-arrow-callback\\"></a>Require using arrow functions for callbacks (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require the use of \`===\` and \`!==\` (1) ESLint</summary>
-1 warning
-ESLint rule **eqeqeq**.
-[Documentation](https://eslint.org/docs/latest/rules/eqeqeq)
 
+### <a name=\\"prefer-const\\"></a>Require \`const\` declarations for variables that are never reassigned after declared (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce a maximum number of lines of code in a function (1) ESLint</summary>
-1 warning
-ESLint rule **max-lines-per-function**.
-[Documentation](https://eslint.org/docs/latest/rules/max-lines-per-function)
 
+### <a name=\\"prefer-object-spread\\"></a>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Enforce a maximum number of lines per file (1) ESLint</summary>
-undefined
-ESLint rule **max-lines**.
-[Documentation](https://eslint.org/docs/latest/rules/max-lines)
 
+### <a name=\\"yoda\\"></a>Require or disallow \\"Yoda\\" conditions (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require or disallow method and property shorthand syntax for object literals (1) ESLint</summary>
-3 warnings
-ESLint rule **object-shorthand**.
-[Documentation](https://eslint.org/docs/latest/rules/object-shorthand)
 
+### <a name=\\"react-jsx-key\\"></a>Disallow missing \`key\` props in iterators/collection literals (ESLint)
+
+<details>
+<summary>🟥 1 warning (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require using arrow functions for callbacks (1) ESLint</summary>
-undefined
-ESLint rule **prefer-arrow-callback**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-arrow-callback)
 
+### <a name=\\"react-prop-types\\"></a>Disallow missing props validation in a React component definition (ESLint)
+
+<details>
+<summary>🟥 6 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require \`const\` declarations for variables that are never reassigned after declared (1) ESLint</summary>
-1 warning
-ESLint rule **prefer-const**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-const)
 
+### <a name=\\"react-react-in-jsx-scope\\"></a>Disallow missing React when using JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (1) ESLint</summary>
-undefined
-ESLint rule **prefer-object-spread**.
-[Documentation](https://eslint.org/docs/latest/rules/prefer-object-spread)
 
+### <a name=\\"react-hooks-rules-of-hooks\\"></a>enforces the Rules of Hooks (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
-- <details>
-<summary>Require or disallow \\"Yoda\\" conditions (1) ESLint</summary>
-undefined
-ESLint rule **yoda**.
-[Documentation](https://eslint.org/docs/latest/rules/yoda)
 
+### <a name=\\"react-hooks-exhaustive-deps\\"></a>verifies the list of dependencies for Hooks like useEffect and similar (ESLint)
+
+<details>
+<summary>🟥 2 warnings (score: 0)</summary>
+content
 </details>
 
-- <details>
-<summary>Require \`let\` or \`const\` instead of \`var\` (1) ESLint</summary>
-undefined
-ESLint rule **no-var**.
-[Documentation](https://eslint.org/docs/latest/rules/no-var)
 
+### <a name=\\"react-display-name\\"></a>Disallow missing displayName in a React component definition (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
 </details>
 
+
+### <a name=\\"react-jsx-no-comment-textnodes\\"></a>Disallow comments from being inserted as text nodes (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-jsx-no-duplicate-props\\"></a>Disallow duplicate properties in JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-jsx-no-target-blank\\"></a>Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\` (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-jsx-no-undef\\"></a>Disallow undeclared variables in JSX (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-jsx-uses-react\\"></a>Disallow React to be incorrectly marked as unused (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-jsx-uses-vars\\"></a>Disallow variables used in JSX to be incorrectly marked as unused (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-children-prop\\"></a>Disallow passing of children as props (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-danger-with-children\\"></a>Disallow when a DOM element is using both children and dangerouslySetInnerHTML (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-deprecated\\"></a>Disallow usage of deprecated methods (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-direct-mutation-state\\"></a>Disallow direct mutation of this.state (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-find-dom-node\\"></a>Disallow usage of findDOMNode (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-is-mounted\\"></a>Disallow usage of isMounted (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-render-return-value\\"></a>Disallow usage of the return value of ReactDOM.render (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-string-refs\\"></a>Disallow using string references (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-unescaped-entities\\"></a>Disallow unescaped HTML entities from appearing in markup (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-no-unknown-property\\"></a>Disallow usage of unknown DOM property (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"react-require-render-return\\"></a>Enforce ES5 or ES6 class for returning value in render function (ESLint)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"first-contentful-paint\\"></a>First Contentful Paint (Lighthouse)
+
+<details>
+<summary>🟨 1.2 s (score: 76)</summary>
+content
+</details>
+
+
+### <a name=\\"largest-contentful-paint\\"></a>Largest Contentful Paint (Lighthouse)
+
+<details>
+<summary>🟨 1.5 s (score: 81)</summary>
+content
+</details>
+
+
+### <a name=\\"total-blocking-time\\"></a>Total Blocking Time (Lighthouse)
+
+<details>
+<summary>🟩 0 ms (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"cumulative-layout-shift\\"></a>Cumulative Layout Shift (Lighthouse)
+
+<details>
+<summary>🟩 0 (score: 100)</summary>
+content
+</details>
+
+
+### <a name=\\"speed-index\\"></a>Speed Index (Lighthouse)
+
+<details>
+<summary>🟩 1.2 s (score: 93)</summary>
+content
+</details>
+
+
+
+
+
+
+## About
+
+Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 10:21:14 GMT+0100 (Central European Standard Time)
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--:|:--:|:--:|:--:|:--:|:--:|
+|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65s|2|3|52|
+
+The following plugins were run:
+
+|Plugin|Audits|Version|Duration|
+|:--:|:--:|:--:|:--:|
+|ESLint|47|0.1.0|0.37s|
+|Lighthouse|5|0.1.0|1.23s|
 
 Made with ❤️ by [code-pushup.dev](code-pushup.dev)"
 `;
