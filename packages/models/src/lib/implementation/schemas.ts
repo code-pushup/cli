@@ -169,7 +169,7 @@ export function weightedRefSchema(
     { description },
   );
 }
-export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>; // @TODO why is slug optional? @matej
+export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
 
 export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   description: string,
