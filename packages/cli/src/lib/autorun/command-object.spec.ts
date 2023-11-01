@@ -1,6 +1,14 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  SpyInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -8,6 +16,7 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
@@ -47,8 +56,16 @@ const cli = (args: string[]) =>
   });
 
 describe('autorun-command-object', () => {
+  let logSpy: SpyInstance;
+
   beforeEach(async () => {
     vi.clearAllMocks();
+    cleanFolderPutGitKeep();
+    logSpy = vi.spyOn(console, 'log');
+  });
+  afterEach(() => {
+    cleanFolderPutGitKeep();
+    logSpy.mockRestore();
   });
 
   it('should override config with CLI arguments', async () => {
