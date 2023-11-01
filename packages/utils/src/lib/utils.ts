@@ -22,6 +22,15 @@ export const pluginMetaTableHeaders: string[] = [
   'Duration',
 ];
 
+// details headers
+
+export const detailsTableHeaders: string[] = [
+  'Severity',
+  'Message',
+  'Source file',
+  'Line(s)',
+];
+
 // === Transform
 
 export function pluralize(text: string): string {
@@ -68,6 +77,8 @@ export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
 }
 
+// === Markdown
+
 export function getRoundScoreMarker(score: number): string {
   if (score >= 0.9) {
     return '🟢';
@@ -86,6 +97,18 @@ export function getSquaredScoreMarker(score: number): string {
     return '🟨';
   }
   return '🟥';
+}
+
+export function getSeverityIcon(
+  severity: 'info' | 'warning' | 'error',
+): string {
+  if (severity === 'error') {
+    return '🚨';
+  }
+  if (severity === 'warning') {
+    return '⚠️';
+  }
+  return 'ℹ️';
 }
 
 // === Validation

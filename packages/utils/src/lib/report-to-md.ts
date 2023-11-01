@@ -8,18 +8,22 @@ import {
   li,
   link,
   style,
-  table,
+  tableHtml,
+  tableMd,
 } from './md/';
 import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
 import { ScoredReport } from './scoring';
 import {
+  detailsTableHeaders,
   formatReportScore,
   getRoundScoreMarker,
+  getSeverityIcon,
   getSquaredScoreMarker,
   pluginMetaTableHeaders,
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
+  toUnixPath,
 } from './utils';
 
 export function reportToMd(report: ScoredReport): string {
@@ -77,7 +81,7 @@ function reportToOverviewSection(report: ScoredReport): string {
     ]),
   ];
 
-  return table(tableContent, ['l', 'c', 'c']);
+  return tableMd(tableContent, ['l', 'c', 'c']);
 }
 
 function reportToCategoriesSection(report: ScoredReport): string {
@@ -192,17 +196,42 @@ function reportToAuditsSection(report: ScoredReport): string {
       const detailsTitle = `${getSquaredScoreMarker(
         audit.score,
       )} ${getAuditResult(audit)} (score: ${formatReportScore(audit.score)})`;
-      // audit?.details?.issues.forEach(issue => {
-      // implement content as a table with header "Severity	Message	Source file	Line(s)"
-      // acc += li(issue);
-      // acc += NEW_LINE;
-      // };
+
       acc += h3(auditTitle);
       acc += NEW_LINE;
       acc += NEW_LINE;
-      acc += details(detailsTitle, 'content');
+
+      if (!audit.details?.issues?.length) {
+        acc += details(detailsTitle, 'No details');
+        acc += NEW_LINE;
+        acc += NEW_LINE;
+        return acc;
+      }
+
+      const detailsTable = [
+        detailsTableHeaders,
+        ...audit.details.issues.map(issue => [
+          `${getSeverityIcon(issue.severity)} <i>${issue.severity}</i>`,
+          issue.message,
+          `<a href="${toUnixPath(issue.source?.file as string, {
+            toRelative: true,
+          })}">
+             <code>${issue.source?.file}</code>
+           </a>`,
+          String(issue.source?.position?.startLine),
+        ]),
+      ];
+
+      const docsItem = audit.docsUrl
+        ? `${audit.description} ${link(audit.docsUrl, '📖 Docs')}` +
+          NEW_LINE +
+          NEW_LINE
+        : '';
+
+      acc += details(detailsTitle, tableHtml(detailsTable));
       acc += NEW_LINE;
       acc += NEW_LINE;
+      acc += docsItem;
 
       return acc;
     }, '');
@@ -226,7 +255,7 @@ function reportToAboutSection(report: ScoredReport): string {
     [
       commitData,
       version as string,
-      (duration / 1000).toFixed(2) + 's',
+      (duration / 1000).toFixed(2) + ' s',
       plugins?.length.toString(),
       categories?.length.toString(),
       plugins?.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
@@ -239,7 +268,7 @@ function reportToAboutSection(report: ScoredReport): string {
       title,
       audits.length.toString(),
       version as string,
-      (duration / 1000).toFixed(2) + 's',
+      (duration / 1000).toFixed(2) + ' s',
     ]),
   ];
 
@@ -250,13 +279,13 @@ function reportToAboutSection(report: ScoredReport): string {
     `Report was created by [Code PushUp](${readmeUrl}) on ${date}` +
     NEW_LINE +
     NEW_LINE +
-    table(reportMetaTable) +
+    tableMd(reportMetaTable) +
     NEW_LINE +
     NEW_LINE +
     'The following plugins were run:' +
     NEW_LINE +
     NEW_LINE +
-    table(pluginMetaTable)
+    tableMd(pluginMetaTable)
   );
 }
 

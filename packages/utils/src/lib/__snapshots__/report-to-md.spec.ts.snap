@@ -106,7 +106,7 @@ exports[`report-to-md > should contain all sections when using the fixture repor
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -114,7 +114,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -122,7 +122,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -130,7 +130,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -138,7 +138,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -146,7 +146,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -154,7 +154,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -162,7 +162,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -170,15 +170,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'loading' is assigned a value but never used.</td><td><a href="src/App.jsx">
+             <code>src/App.jsx</code>
+           </a></td><td>8</td></tr></table>
 </details>
 
+
+ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unused-vars)
 
 ### <a name="use-isnan"></a>Require calls to \`isNaN()\` when checking for \`NaN\` (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -186,7 +190,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -194,15 +198,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.</td><td><a href="src/components/TodoFilter.jsx">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>3</td></tr></table>
 </details>
 
+
+ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rules/arrow-body-style)
 
 ### <a name="camelcase"></a>Enforce camelcase naming convention (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -210,7 +218,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -218,23 +226,31 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected '===' and instead saw '=='.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>41</td></tr></table>
 </details>
 
+
+ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 
 ### <a name="max-lines-per-function"></a>Enforce a maximum number of lines of code in a function (ESLint)
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Arrow function has too many lines (71). Maximum allowed is 50.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>3</td></tr></table>
 </details>
 
+
+ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/latest/rules/max-lines-per-function)
 
 ### <a name="max-lines"></a>Enforce a maximum number of lines per file (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -242,15 +258,23 @@ content
 
 <details>
 <summary>🟥 3 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>11</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>29</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>41</td></tr></table>
 </details>
 
+
+ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-shadow)
 
 ### <a name="no-var"></a>Require \`let\` or \`const\` instead of \`var\` (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -258,15 +282,23 @@ content
 
 <details>
 <summary>🟥 3 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>19</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>32</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>33</td></tr></table>
 </details>
 
+
+ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rules/object-shorthand)
 
 ### <a name="prefer-arrow-callback"></a>Require using arrow functions for callbacks (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -274,15 +306,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'root' is never reassigned. Use 'const' instead.</td><td><a href="src/index.jsx">
+             <code>src/index.jsx</code>
+           </a></td><td>5</td></tr></table>
 </details>
 
+
+ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-const)
 
 ### <a name="prefer-object-spread"></a>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -290,7 +326,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -298,23 +334,41 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><a href="src/components/TodoList.jsx">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>7</td></tr></table>
 </details>
 
+
+ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
 
 ### <a name="react-prop-types"></a>Disallow missing props validation in a React component definition (ESLint)
 
 <details>
 <summary>🟥 6 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'onCreate' is missing in props validation</td><td><a href="src/components/CreateTodo.jsx">
+             <code>src/components/CreateTodo.jsx</code>
+           </a></td><td>15</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setQuery' is missing in props validation</td><td><a href="src/components/TodoFilter.jsx">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>10</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setHideComplete' is missing in props validation</td><td><a href="src/components/TodoFilter.jsx">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>18</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos' is missing in props validation</td><td><a href="src/components/TodoList.jsx">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos.map' is missing in props validation</td><td><a href="src/components/TodoList.jsx">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'onEdit' is missing in props validation</td><td><a href="src/components/TodoList.jsx">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>13</td></tr></table>
 </details>
 
+
+ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
 
 ### <a name="react-react-in-jsx-scope"></a>Disallow missing React when using JSX (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -322,7 +376,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -330,15 +384,21 @@ content
 
 <details>
 <summary>🟥 2 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>17</td></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><a href="src/hooks/useTodos.js">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>40</td></tr></table>
 </details>
 
+
+ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://github.com/facebook/react/issues/14920)
 
 ### <a name="react-display-name"></a>Disallow missing displayName in a React component definition (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -346,7 +406,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -354,7 +414,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -362,7 +422,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -370,7 +430,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -378,7 +438,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -386,7 +446,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -394,7 +454,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -402,7 +462,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -410,7 +470,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -418,7 +478,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -426,7 +486,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -434,7 +494,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -442,7 +502,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -450,7 +510,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -458,7 +518,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -466,7 +526,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -474,7 +534,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -482,7 +542,7 @@ content
 
 <details>
 <summary>🟨 1.2 s (score: 76)</summary>
-content
+No details
 </details>
 
 
@@ -490,7 +550,7 @@ content
 
 <details>
 <summary>🟨 1.5 s (score: 81)</summary>
-content
+No details
 </details>
 
 
@@ -498,7 +558,7 @@ content
 
 <details>
 <summary>🟩 0 ms (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -506,7 +566,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -514,7 +574,7 @@ content
 
 <details>
 <summary>🟩 1.2 s (score: 93)</summary>
-content
+No details
 </details>
 
 
@@ -524,18 +584,18 @@ content
 
 ## About
 
-Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 10:21:14 GMT+0100 (Central European Standard Time)
+Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 12:57:21 GMT+0100 (Central European Standard Time)
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--:|:--:|:--:|:--:|:--:|:--:|
-|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65s|2|3|52|
+|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65 s|2|3|52|
 
 The following plugins were run:
 
 |Plugin|Audits|Version|Duration|
 |:--:|:--:|:--:|:--:|
-|ESLint|47|0.1.0|0.37s|
-|Lighthouse|5|0.1.0|1.23s|
+|ESLint|47|0.1.0|0.37 s|
+|Lighthouse|5|0.1.0|1.23 s|
 
 Made with ❤️ by [code-pushup.dev](code-pushup.dev) 1`] = `
 "# Code PushUp Report
@@ -644,7 +704,7 @@ Made with ❤️ by [code-pushup.dev](code-pushup.dev) 1`] = `
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -652,7 +712,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -660,7 +720,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -668,7 +728,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -676,7 +736,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -684,7 +744,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -692,7 +752,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -700,7 +760,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -708,15 +768,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'loading' is assigned a value but never used.</td><td><a href=\\"src/App.jsx\\">
+             <code>src/App.jsx</code>
+           </a></td><td>8</td></tr></table>
 </details>
 
+
+ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unused-vars)
 
 ### <a name=\\"use-isnan\\"></a>Require calls to \`isNaN()\` when checking for \`NaN\` (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -724,7 +788,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -732,15 +796,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.</td><td><a href=\\"src/components/TodoFilter.jsx\\">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>3</td></tr></table>
 </details>
 
+
+ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rules/arrow-body-style)
 
 ### <a name=\\"camelcase\\"></a>Enforce camelcase naming convention (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -748,7 +816,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -756,23 +824,31 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected '===' and instead saw '=='.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>41</td></tr></table>
 </details>
 
+
+ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 
 ### <a name=\\"max-lines-per-function\\"></a>Enforce a maximum number of lines of code in a function (ESLint)
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Arrow function has too many lines (71). Maximum allowed is 50.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>3</td></tr></table>
 </details>
 
+
+ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/latest/rules/max-lines-per-function)
 
 ### <a name=\\"max-lines\\"></a>Enforce a maximum number of lines per file (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -780,15 +856,23 @@ content
 
 <details>
 <summary>🟥 3 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>11</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>29</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>41</td></tr></table>
 </details>
 
+
+ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-shadow)
 
 ### <a name=\\"no-var\\"></a>Require \`let\` or \`const\` instead of \`var\` (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -796,15 +880,23 @@ content
 
 <details>
 <summary>🟥 3 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>19</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>32</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>33</td></tr></table>
 </details>
 
+
+ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rules/object-shorthand)
 
 ### <a name=\\"prefer-arrow-callback\\"></a>Require using arrow functions for callbacks (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -812,15 +904,19 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'root' is never reassigned. Use 'const' instead.</td><td><a href=\\"src/index.jsx\\">
+             <code>src/index.jsx</code>
+           </a></td><td>5</td></tr></table>
 </details>
 
+
+ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-const)
 
 ### <a name=\\"prefer-object-spread\\"></a>Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -828,7 +924,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -836,23 +932,41 @@ content
 
 <details>
 <summary>🟥 1 warning (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing \\"key\\" prop for element in iterator</td><td><a href=\\"src/components/TodoList.jsx\\">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>7</td></tr></table>
 </details>
 
+
+ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
 
 ### <a name=\\"react-prop-types\\"></a>Disallow missing props validation in a React component definition (ESLint)
 
 <details>
 <summary>🟥 6 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'onCreate' is missing in props validation</td><td><a href=\\"src/components/CreateTodo.jsx\\">
+             <code>src/components/CreateTodo.jsx</code>
+           </a></td><td>15</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setQuery' is missing in props validation</td><td><a href=\\"src/components/TodoFilter.jsx\\">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>10</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setHideComplete' is missing in props validation</td><td><a href=\\"src/components/TodoFilter.jsx\\">
+             <code>src/components/TodoFilter.jsx</code>
+           </a></td><td>18</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos' is missing in props validation</td><td><a href=\\"src/components/TodoList.jsx\\">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos.map' is missing in props validation</td><td><a href=\\"src/components/TodoList.jsx\\">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'onEdit' is missing in props validation</td><td><a href=\\"src/components/TodoList.jsx\\">
+             <code>src/components/TodoList.jsx</code>
+           </a></td><td>13</td></tr></table>
 </details>
 
+
+ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
 
 ### <a name=\\"react-react-in-jsx-scope\\"></a>Disallow missing React when using JSX (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -860,7 +974,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -868,15 +982,21 @@ content
 
 <details>
 <summary>🟥 2 warnings (score: 0)</summary>
-content
+<table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>17</td></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><a href=\\"src/hooks/useTodos.js\\">
+             <code>src/hooks/useTodos.js</code>
+           </a></td><td>40</td></tr></table>
 </details>
 
+
+ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://github.com/facebook/react/issues/14920)
 
 ### <a name=\\"react-display-name\\"></a>Disallow missing displayName in a React component definition (ESLint)
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -884,7 +1004,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -892,7 +1012,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -900,7 +1020,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -908,7 +1028,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -916,7 +1036,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -924,7 +1044,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -932,7 +1052,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -940,7 +1060,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -948,7 +1068,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -956,7 +1076,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -964,7 +1084,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -972,7 +1092,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -980,7 +1100,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -988,7 +1108,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -996,7 +1116,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -1004,7 +1124,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -1012,7 +1132,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -1020,7 +1140,7 @@ content
 
 <details>
 <summary>🟨 1.2 s (score: 76)</summary>
-content
+No details
 </details>
 
 
@@ -1028,7 +1148,7 @@ content
 
 <details>
 <summary>🟨 1.5 s (score: 81)</summary>
-content
+No details
 </details>
 
 
@@ -1036,7 +1156,7 @@ content
 
 <details>
 <summary>🟩 0 ms (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -1044,7 +1164,7 @@ content
 
 <details>
 <summary>🟩 0 (score: 100)</summary>
-content
+No details
 </details>
 
 
@@ -1052,7 +1172,7 @@ content
 
 <details>
 <summary>🟩 1.2 s (score: 93)</summary>
-content
+No details
 </details>
 
 
@@ -1062,18 +1182,18 @@ content
 
 ## About
 
-Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 10:21:14 GMT+0100 (Central European Standard Time)
+Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed Nov 01 2023 12:57:21 GMT+0100 (Central European Standard Time)
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--:|:--:|:--:|:--:|:--:|:--:|
-|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65s|2|3|52|
+|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65 s|2|3|52|
 
 The following plugins were run:
 
 |Plugin|Audits|Version|Duration|
 |:--:|:--:|:--:|:--:|
-|ESLint|47|0.1.0|0.37s|
-|Lighthouse|5|0.1.0|1.23s|
+|ESLint|47|0.1.0|0.37 s|
+|Lighthouse|5|0.1.0|1.23 s|
 
 Made with ❤️ by [code-pushup.dev](code-pushup.dev)"
 `;
