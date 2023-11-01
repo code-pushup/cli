@@ -18,7 +18,10 @@
         "default",
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore"
-      ]
+      ],
+      "options": {
+        "maxWarnings": 0
+      }
     },
     "test": {
       "inputs": ["default", "^production"]
