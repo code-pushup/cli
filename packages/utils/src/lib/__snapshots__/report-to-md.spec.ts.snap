@@ -589,7 +589,7 @@ Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cl
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--:|:--:|:--:|:--:|:--:|:--:|
-|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.1.0|1.65 s|2|3|52|
+|_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))|0.0.1|1.65 s|2|3|52|
 
 The following plugins were run:
 
