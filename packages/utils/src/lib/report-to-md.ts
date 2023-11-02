@@ -11,7 +11,7 @@ import {
   tableHtml,
   tableMd,
 } from './md/';
-import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
+import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from './report';
 import { ScoredReport } from './scoring';
 import {
   detailsTableHeaders,
@@ -61,18 +61,15 @@ function reportToOverviewSection(report: ScoredReport): string {
       refs
         .reduce((acc, ref) => {
           if (ref.type === 'group') {
-            const groupRefs = categories.find(
-              ({ slug }) => slug === ref.slug,
-            )?.refs;
+            const groupRefs = report.plugins
+              .find(({ slug }) => slug === ref.plugin)
+              ?.groups?.find(({ slug }) => slug === ref.slug)?.refs;
 
-            if (!groupRefs) {
-              throwIsNotPresentError(
-                `Category refs ${ref.slug}`,
-                'config.categories',
-              );
+            if (!groupRefs?.length) {
+              return acc;
             }
 
-            return acc + countWeightedRefs(groupRefs);
+            return acc + groupRefs.length;
           } else {
             return acc + 1;
           }
@@ -152,16 +149,15 @@ function groupRefItemToCategorySection(
   plugins: ScoredReport['plugins'],
 ): string {
   const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const group = plugin?.groups?.find(
-    ({ slug: groupSlugInPluginGroups }) => groupSlugInPluginGroups === refSlug,
-  );
+  const group = plugin?.groups?.find(({ slug }) => slug === refSlug);
+  const groupScore = Number(formatReportScore(group?.score || 0));
 
   if (!group) {
     throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
   }
 
   const groupTitle = li(
-    `${getRoundScoreMarker(100)} ${group.title} (_${plugin.title}_)`,
+    `${getRoundScoreMarker(groupScore)} ${group.title} (_${plugin.title}_)`,
   );
   const foundAudits = group.refs.reduce((acc, ref) => {
     const audit = plugin?.audits.find(
@@ -171,6 +167,7 @@ function groupRefItemToCategorySection(
     if (audit) {
       acc.push(audit);
     }
+
     return acc;
   }, [] as AuditReport[]);
 
