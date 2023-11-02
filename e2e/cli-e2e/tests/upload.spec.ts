@@ -19,6 +19,23 @@ describe('CLI upload', () => {
     expect(stderr).toMatchSnapshot();
   });
 
+  it('should throw error if no server url', async () => {
+    const { code, stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        join('..', '..', 'dist', 'packages', 'cli'),
+        'upload',
+        '--no-progress',
+        '--persist.outputDir',
+        '../../e2e/cli-e2e/mocks',
+      ],
+      cwd: 'examples/react-todos-app',
+    }).catch(error => error);
+
+    expect(code).toBe(1);
+    expect(stderr).toMatchSnapshot();
+  });
+
   it('should upload report.json', async () => {
     expect.assertions(5);
 
@@ -51,7 +68,20 @@ describe('CLI upload', () => {
     );
 
     const report = await requestBody.promise;
-    expect(report).toMatchSnapshot();
+
+    expect(report).toStrictEqual({
+      operationName: 'saveReport',
+      query: expect.any(String),
+      variables: {
+        categories: [],
+        commandDuration: 578,
+        commandStartDate: '2023-11-02T20:21:43.699Z',
+        commit: expect.any(String),
+        packageName: '@code-pushup/core',
+        packageVersion: '0.0.1',
+        plugins: [],
+      },
+    });
 
     server.close();
   });
