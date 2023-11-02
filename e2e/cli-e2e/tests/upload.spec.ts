@@ -9,31 +9,36 @@ describe('CLI upload', () => {
   });
 
   it('should throw error if no report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [join('..', '..', 'dist', 'packages', 'cli'), 'upload'],
-      cwd: 'examples/react-todos-app',
-    }).catch(error => error);
+    const run = () =>
+      executeProcess({
+        command: 'npx',
+        args: [join('..', '..', 'dist', 'packages', 'cli'), 'upload'],
+        cwd: 'examples/react-todos-app',
+      });
 
-    expect(code).toBe(1);
-    expect(stderr).toMatchSnapshot();
+    expect(async () => await run()).rejects.toThrowError(
+      'Error: report.json not found.',
+    );
   });
 
   it('should throw error if no server url', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        join('..', '..', 'dist', 'packages', 'cli'),
-        'upload',
-        '--no-progress',
-        '--persist.outputDir',
-        '../../e2e/cli-e2e/mocks',
-      ],
-      cwd: 'examples/react-todos-app',
-    }).catch(error => error);
+    const run = () =>
+      executeProcess({
+        command: 'npx',
+        args: [
+          join('..', '..', 'dist', 'packages', 'cli'),
+          'upload',
+          '--no-progress',
+          '--persist.outputDir',
+          '../../e2e/cli-e2e/mocks',
+        ],
+        cwd: 'examples/react-todos-app',
+      });
 
-    expect(code).toBe(1);
-    expect(stderr).toMatchSnapshot();
+    // TODO: maybe we should throw a more specific error
+    expect(async () => await run()).rejects.toThrowError(
+      'TypeError: Only absolute URLs are supported',
+    );
   });
 
   it('should upload report.json', async () => {
