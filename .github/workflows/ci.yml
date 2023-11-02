@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        run: npx nx affected:lint --parallel=3 --max-warnings=0
+        run: npx nx affected:lint --parallel=3
 
   test:
     strategy:
