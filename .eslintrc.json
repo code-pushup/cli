@@ -59,6 +59,7 @@
         "plugin:sonarjs/recommended",
         "plugin:unicorn/recommended"
       ],
+      "plugins": ["functional"],
       "settings": {
         "import/resolver": {
           "typescript": {
@@ -137,6 +138,14 @@
         "prefer-template": "warn",
         "radix": "warn",
         "yoda": "warn",
+        "functional/immutable-data": [
+          "error",
+          { "ignoreImmediateMutation": true }
+        ],
+        "functional/no-let": "warn",
+        "functional/no-loop-statements": "warn",
+        "functional/prefer-property-signatures": "warn",
+        "functional/prefer-tacit": "warn",
         "import/extensions": ["warn", "never", { "json": "always" }],
         "import/max-dependencies": ["warn", { "ignoreTypeImports": true }],
         "import/no-absolute-path": "error",
@@ -211,6 +220,11 @@
         "curly": "off",
         "sonarjs/no-duplicate-string": "off",
         "unicorn/consistent-function-scoping": "off",
+        "functional/no-let": "off",
+        "functional/immutable-data": [
+          "warn",
+          { "ignoreImmediateMutation": true }
+        ],
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
@@ -239,6 +253,8 @@
         "prefer-template": "off",
         "arrow-body-style": "off",
         "curly": "off",
+        "functional/immutable-data": "off",
+        "functional/no-let": "off",
         "import/no-useless-path-segments": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
