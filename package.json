@@ -66,6 +66,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-sonarjs": "^0.22.0",
     "eslint-plugin-unicorn": "^48.0.1",
+    "eslint-plugin-vitest": "^0.3.8",
     "husky": "^8.0.0",
     "inquirer": "^8.2.6",
     "jsdom": "~22.1.0",
