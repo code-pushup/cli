@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
@@ -21,8 +21,15 @@ export async function upload(
 
   const { apiKey, server, organization, project } = options.upload;
   const { outputDir } = options.persist;
+
+  const reportPath = join(outputDir, 'report.json');
+
+  if (!existsSync(reportPath)) {
+    throw new Error(`report.json not found. Did you run collect first?`);
+  }
+
   const report = reportSchema.parse(
-    JSON.parse(readFileSync(join(outputDir, 'report.json')).toString()),
+    JSON.parse(readFileSync(reportPath).toString()),
   );
 
   const data = {
@@ -33,6 +40,8 @@ export async function upload(
   };
 
   return uploadFn({ apiKey, server, data }).catch(e => {
-    throw new Error('upload failed. ' + e.message);
+    const error = new Error('upload failed. ' + e.message);
+    error.stack = e.stack;
+    throw error;
   });
 }
