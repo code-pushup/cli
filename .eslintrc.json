@@ -61,7 +61,7 @@
         "plugin:deprecation/recommended",
         "plugin:promise/recommended"
       ],
-      "plugins": ["functional"],
+      "plugins": ["functional", "no-secrets"],
       "settings": {
         "import/resolver": {
           "typescript": {
@@ -140,6 +140,10 @@
         "prefer-template": "warn",
         "radix": "warn",
         "yoda": "warn",
+        "no-secrets/no-secrets": [
+          "error",
+          { "additionalDelimiters": ["-"], "ignoreContent": "https://" }
+        ],
         "functional/immutable-data": [
           "error",
           { "ignoreImmediateMutation": true }

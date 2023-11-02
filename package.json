@@ -60,6 +60,7 @@
     "eslint-plugin-functional": "^6.0.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-no-secrets": "^0.8.9",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
