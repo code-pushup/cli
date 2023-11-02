@@ -6,6 +6,7 @@ const {
 /** @type {import('@commitlint/types').UserConfig} */
 const configuration = {
   extends: ['@commitlint/config-conventional'],
+  plugins: ['@ngx-devs/commitlint-plugin-imperative'],
   rules: {
     'scope-enum': async ctx => {
       const projects = await getProjects(
@@ -16,6 +17,7 @@ const configuration = {
       const scopes = [...projects, 'tools', 'workflows', 'testing'].sort();
       return [RuleConfigSeverity.Error, 'always', scopes];
     },
+    'imperative-rule/en': [RuleConfigSeverity.Error, 'always'],
   },
 };
 
