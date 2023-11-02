@@ -75,7 +75,7 @@ export function titleSchema(description = 'Descriptive name') {
  */
 
 export function scoreSchema(description = 'Score between 0 and 1') {
-  return z.number({ description }).min(0).max(1).optional().default(0);
+  return z.number({ description }).min(0).max(1).default(0).optional();
 }
 
 export function metaSchema(options?: {
