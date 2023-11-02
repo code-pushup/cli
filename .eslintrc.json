@@ -219,7 +219,19 @@
     },
     {
       "files": ["*.spec.ts", "*.mock.ts", "test/**/*.ts"],
+      "extends": ["plugin:vitest/recommended"],
       "rules": {
+        // add and customize vitest rules
+        "vitest/prefer-to-be": "warn",
+        "vitest/consistent-test-filename": [
+          "warn",
+          { "pattern": ".*\\.spec\\.[tj]sx?$" }
+        ],
+        "vitest/consistent-test-it": "warn",
+        "vitest/prefer-to-have-length": "warn",
+        "vitest/no-alias-methods": "warn",
+        "vitest/no-conditional-tests": "warn",
+        "vitest/require-hook": "warn",
         // less strict rules for tests
         "no-magic-numbers": "off",
         "max-lines-per-function": "off",
@@ -309,7 +321,13 @@
         "unicorn/prefer-at": "off",
         "unicorn/prefer-top-level-await": "off",
         "unicorn/consistent-function-scoping": "off",
-        "unicorn/no-useless-undefined": "off"
+        "unicorn/no-useless-undefined": "off",
+        "vitest/prefer-to-be": "off",
+        "vitest/consistent-test-it": "off",
+        "vitest/prefer-to-have-length": "off",
+        "vitest/no-alias-methods": "off",
+        "vitest/no-conditional-tests": "off",
+        "vitest/require-hook": "off"
       }
     }
   ]
