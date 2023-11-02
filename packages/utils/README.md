@@ -1,6 +1,6 @@
 # @code-pushup/utils
 
-Low-level utilities (helper functions, etc.) used by [Code PushUp CLI](../cli/README.md).
+Low-level **utilities** (helper functions, etc.) used by [Code PushUp CLI](../cli/README.md).
 
 ## Setup
 

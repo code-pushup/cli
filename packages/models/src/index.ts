@@ -1,4 +1,8 @@
-export { CategoryConfig, categoryConfigSchema } from './lib/category-config';
+export {
+  CategoryRef,
+  CategoryConfig,
+  categoryConfigSchema,
+} from './lib/category-config';
 export {
   CoreConfig,
   coreConfigSchema,
@@ -14,10 +18,12 @@ export {
 } from './lib/persist-config';
 export {
   Audit,
+  AuditGroupRef,
   AuditGroup,
   AuditOutput,
   AuditOutputs,
   Issue,
+  IssueSeverity,
   PluginConfig,
   auditGroupSchema,
   auditOutputsSchema,

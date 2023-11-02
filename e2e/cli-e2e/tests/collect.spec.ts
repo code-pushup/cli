@@ -36,7 +36,7 @@ describe('CLI collect', () => {
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [cliPath, 'collect'],
+      args: [cliPath, 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -52,7 +52,7 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [cliPath, 'collect', '--persist.format=md'],
+      args: [cliPath, 'collect', '--persist.format=md', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -69,7 +69,13 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: [cliPath, 'collect', '--verbose', '--persist.format=stdout'],
+      args: [
+        cliPath,
+        'collect',
+        '--verbose',
+        '--persist.format=stdout',
+        '--no-progress',
+      ],
       cwd: 'examples/react-todos-app',
     });
 

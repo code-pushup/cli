@@ -1,5 +1,6 @@
 import { Format, GlobalOptions } from '@code-pushup/models';
 
+// type GeneralCliOnlyOptions = { progress: boolean }; // @TODO consider interactive and progress as CLI only options
 export type GeneralCliOptions = GlobalOptions;
 
 export type CoreConfigCliOptions = {

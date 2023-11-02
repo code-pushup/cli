@@ -136,8 +136,9 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { next, error, complete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
+
   return new Promise((resolve, reject) => {
-    const process = spawn(cfg.command, cfg.args, { cwd, shell: true });
+    const process = spawn(cfg.command, cfg.args, { cwd, shell: true }); // @TODO add comments on why shell: true
     let stdout = '';
     let stderr = '';
 
@@ -179,10 +180,9 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  *
  * @example
  * const args = objectToProcessArgs({
- *   _: 'index.js', // index.js
+ *   _: ['node', 'index.js'], // node index.js
  *   name: 'Juanita', // --name=Juanita
  *   interactive: false, // --no-interactive
- *   parallel: 5, // --parallel=5
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
@@ -195,14 +195,18 @@ export function objectToCliArgs<
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      return [value + ''];
+      if (Array.isArray(value)) {
+        return value;
+      } else {
+        return [value + ''];
+      }
     }
     const prefix = key.length === 1 ? '-' : '--';
     // "-*" arguments (shorthands)
     if (Array.isArray(value)) {
       return value.map(v => `${prefix}${key}="${v}"`);
     }
-    // --* arguments ==========
+    // "--*" arguments ==========
 
     if (Array.isArray(value)) {
       return value.map(v => `${prefix}${key}="${v}"`);

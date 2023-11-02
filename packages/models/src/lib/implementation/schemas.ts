@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugRegex } from './utils';
+import { filenameRegex, slugRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -73,11 +73,14 @@ export function titleSchema(description = 'Descriptive name') {
  * Schema for a score of group
  * @param description
  */
-
 export function scoreSchema(description = 'Score between 0 and 1') {
   return z.number({ description }).min(0).max(1).default(0).optional();
 }
 
+/**
+ * Used for categories, plugins and audits
+ * @param options
+ */
 export function metaSchema(options?: {
   titleDescription?: string;
   descriptionDescription?: string;
@@ -115,13 +118,17 @@ export function filePathSchema(description: string) {
 }
 
 /**
- * Schema for a weight
+ * Schema for a fileNameSchema
  * @param description
  */
-export function weightSchema(
-  description = 'Coefficient for the given score (use weight 0 if only for display)',
-) {
-  return positiveIntSchema(description);
+export function fileNameSchema(description: string) {
+  return z
+    .string({ description })
+    .trim()
+    .regex(filenameRegex, {
+      message: `The filename has to be valid`,
+    })
+    .min(1, { message: 'file name is invalid' });
 }
 
 /**
@@ -148,6 +155,16 @@ export function packageVersionSchema(options?: {
     },
     { description: 'NPM package name and version of a published package' },
   );
+}
+
+/**
+ * Schema for a weight
+ * @param description
+ */
+export function weightSchema(
+  description = 'Coefficient for the given score (use weight 0 if only for display)',
+) {
+  return positiveIntSchema(description);
 }
 
 export function weightedRefSchema(
