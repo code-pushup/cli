@@ -16,6 +16,6 @@ describe('report-to-md', () => {
     const date = new Date(2000, 0, 1, 0);
     vi.setSystemTime(date);
     const mdReport = reportToMd(scoreReport(report()));
-    expect(mdReport).toMatchSnapshot(mdReport);
+    expect(mdReport).toMatchSnapshot();
   });
 });
