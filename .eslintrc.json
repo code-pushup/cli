@@ -57,7 +57,8 @@
         "plugin:@typescript-eslint/strict",
         "plugin:import/recommended",
         "plugin:sonarjs/recommended",
-        "plugin:unicorn/recommended"
+        "plugin:unicorn/recommended",
+        "plugin:deprecation/recommended"
       ],
       "plugins": ["functional"],
       "settings": {
