@@ -58,7 +58,8 @@
         "plugin:import/recommended",
         "plugin:sonarjs/recommended",
         "plugin:unicorn/recommended",
-        "plugin:deprecation/recommended"
+        "plugin:deprecation/recommended",
+        "plugin:promise/recommended"
       ],
       "plugins": ["functional"],
       "settings": {
