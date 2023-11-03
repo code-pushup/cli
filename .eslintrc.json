@@ -231,7 +231,26 @@
         "vitest/prefer-to-have-length": "warn",
         "vitest/no-alias-methods": "warn",
         "vitest/no-conditional-tests": "warn",
+        "vitest/no-conditional-expect": "warn",
         "vitest/require-hook": "warn",
+        "vitest/no-focused-tests": "warn",
+        "vitest/no-disabled-tests": "warn",
+        "vitest/require-to-throw-message": "warn",
+        "vitest/max-nested-describe": ["warn", { "max": 2 }],
+        "vitest/no-done-callback": "warn",
+        "vitest/no-duplicate-hooks": "warn",
+        "vitest/no-mocks-import": "warn",
+        "vitest/no-standalone-expect": "warn",
+        "vitest/no-test-return-statement": "warn",
+        "vitest/prefer-comparison-matcher": "warn",
+        "vitest/prefer-each": "warn",
+        "vitest/prefer-equality-matcher": "warn",
+        "vitest/prefer-hooks-on-top": "warn",
+        "vitest/prefer-mock-promise-shorthand": "warn",
+        "vitest/prefer-spy-on": "warn",
+        "vitest/prefer-to-contain": "warn",
+        "vitest/prefer-todo": "warn",
+        "vitest/require-top-level-describe": "warn",
         // less strict rules for tests
         "no-magic-numbers": "off",
         "max-lines-per-function": "off",
@@ -243,6 +262,7 @@
           "warn",
           { "ignoreImmediateMutation": true }
         ],
+        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
@@ -327,7 +347,8 @@
         "vitest/prefer-to-have-length": "off",
         "vitest/no-alias-methods": "off",
         "vitest/no-conditional-tests": "off",
-        "vitest/require-hook": "off"
+        "vitest/require-hook": "off",
+        "vitest/require-to-throw-message": "off"
       }
     }
   ]
