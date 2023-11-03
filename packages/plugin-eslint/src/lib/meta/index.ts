@@ -1,6 +1,6 @@
 import type { ESLint } from 'eslint';
 import type { Audit, AuditGroup } from '@code-pushup/models';
-import { groupsFromRuleTypes } from './groups';
+import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
 import { listRules } from './rules';
 import { ruleToAudit } from './transform';
 
@@ -12,7 +12,10 @@ export async function listAuditsAndGroups(
 
   const audits = rules.map(ruleToAudit);
 
-  const groups = groupsFromRuleTypes(rules);
+  const groups = [
+    ...groupsFromRuleTypes(rules),
+    ...groupsFromRuleCategories(rules),
+  ];
 
   return { audits, groups };
 }
