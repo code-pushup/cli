@@ -436,6 +436,305 @@ Custom options:
     },
   ],
   "description": "Official Code PushUp ESLint plugin",
+  "groups": [
+    {
+      "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+      "refs": [
+        {
+          "slug": "typescript-eslint-ban-ts-comment",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-extra-non-null-assertion",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-loss-of-precision",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-misused-new",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-non-null-asserted-optional-chain",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-non-null-assertion",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-unused-vars",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-var-requires",
+          "weight": 1,
+        },
+        {
+          "slug": "for-direction",
+          "weight": 1,
+        },
+        {
+          "slug": "no-async-promise-executor",
+          "weight": 1,
+        },
+        {
+          "slug": "no-class-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-compare-neg-zero",
+          "weight": 1,
+        },
+        {
+          "slug": "no-cond-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-constant-condition",
+          "weight": 1,
+        },
+        {
+          "slug": "no-control-regex",
+          "weight": 1,
+        },
+        {
+          "slug": "no-debugger",
+          "weight": 1,
+        },
+        {
+          "slug": "no-dupe-else-if",
+          "weight": 1,
+        },
+        {
+          "slug": "no-duplicate-case",
+          "weight": 1,
+        },
+        {
+          "slug": "no-empty-character-class",
+          "weight": 1,
+        },
+        {
+          "slug": "no-empty-pattern",
+          "weight": 1,
+        },
+        {
+          "slug": "no-ex-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-fallthrough",
+          "weight": 1,
+        },
+        {
+          "slug": "no-inner-declarations",
+          "weight": 1,
+        },
+        {
+          "slug": "no-invalid-regexp",
+          "weight": 1,
+        },
+        {
+          "slug": "no-irregular-whitespace",
+          "weight": 1,
+        },
+        {
+          "slug": "no-misleading-character-class",
+          "weight": 1,
+        },
+        {
+          "slug": "no-prototype-builtins",
+          "weight": 1,
+        },
+        {
+          "slug": "no-self-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-sparse-arrays",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unexpected-multiline",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unsafe-finally",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unsafe-optional-chaining",
+          "weight": 1,
+        },
+        {
+          "slug": "no-useless-backreference",
+          "weight": 1,
+        },
+        {
+          "slug": "use-isnan",
+          "weight": 1,
+        },
+      ],
+      "slug": "problems",
+      "title": "Problems",
+    },
+    {
+      "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+      "refs": [
+        {
+          "slug": "typescript-eslint-adjacent-overload-signatures",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-ban-types",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-array-constructor",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-empty-function",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-empty-interface",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-explicit-any",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-extra-semi",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-inferrable-types",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-namespace",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-this-alias",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-no-unnecessary-type-constraint",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-prefer-as-const",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-prefer-namespace-keyword",
+          "weight": 1,
+        },
+        {
+          "slug": "typescript-eslint-triple-slash-reference",
+          "weight": 1,
+        },
+        {
+          "slug": "no-var",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-const",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-rest-params",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-spread",
+          "weight": 1,
+        },
+        {
+          "slug": "no-case-declarations",
+          "weight": 1,
+        },
+        {
+          "slug": "no-delete-var",
+          "weight": 1,
+        },
+        {
+          "slug": "no-empty",
+          "weight": 1,
+        },
+        {
+          "slug": "no-extra-boolean-cast",
+          "weight": 1,
+        },
+        {
+          "slug": "no-global-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-nonoctal-decimal-escape",
+          "weight": 1,
+        },
+        {
+          "slug": "no-octal",
+          "weight": 1,
+        },
+        {
+          "slug": "no-regex-spaces",
+          "weight": 1,
+        },
+        {
+          "slug": "no-shadow-restricted-names",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unused-labels",
+          "weight": 1,
+        },
+        {
+          "slug": "no-useless-catch",
+          "weight": 1,
+        },
+        {
+          "slug": "no-useless-escape",
+          "weight": 1,
+        },
+        {
+          "slug": "no-with",
+          "weight": 1,
+        },
+        {
+          "slug": "require-yield",
+          "weight": 1,
+        },
+        {
+          "slug": "nx-enforce-module-boundaries-9dba9763586d15c6",
+          "weight": 1,
+        },
+        {
+          "slug": "nx-dependency-checks",
+          "weight": 1,
+        },
+      ],
+      "slug": "suggestions",
+      "title": "Suggestions",
+    },
+    {
+      "description": "Primarily about whitespace, semicolons, commas, and parentheses, all the parts of the program that determine how the code looks rather than how it executes.",
+      "refs": [
+        {
+          "slug": "no-mixed-spaces-and-tabs",
+          "weight": 1,
+        },
+      ],
+      "slug": "formatting",
+      "title": "Formatting",
+    },
+  ],
   "icon": "eslint",
   "packageName": "@code-pushup/eslint-plugin",
   "runner": {
@@ -742,6 +1041,132 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     },
   ],
   "description": "Official Code PushUp ESLint plugin",
+  "groups": [
+    {
+      "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+      "refs": [
+        {
+          "slug": "no-cond-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-const-assign",
+          "weight": 1,
+        },
+        {
+          "slug": "no-debugger",
+          "weight": 1,
+        },
+        {
+          "slug": "no-invalid-regexp",
+          "weight": 1,
+        },
+        {
+          "slug": "no-undef",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unreachable-loop",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unsafe-negation",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unsafe-optional-chaining",
+          "weight": 1,
+        },
+        {
+          "slug": "no-unused-vars",
+          "weight": 1,
+        },
+        {
+          "slug": "use-isnan",
+          "weight": 1,
+        },
+        {
+          "slug": "valid-typeof",
+          "weight": 1,
+        },
+        {
+          "slug": "react-hooks-rules-of-hooks",
+          "weight": 1,
+        },
+      ],
+      "slug": "problems",
+      "title": "Problems",
+    },
+    {
+      "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+      "refs": [
+        {
+          "slug": "arrow-body-style",
+          "weight": 1,
+        },
+        {
+          "slug": "camelcase",
+          "weight": 1,
+        },
+        {
+          "slug": "curly",
+          "weight": 1,
+        },
+        {
+          "slug": "eqeqeq",
+          "weight": 1,
+        },
+        {
+          "slug": "max-lines-per-function",
+          "weight": 1,
+        },
+        {
+          "slug": "max-lines",
+          "weight": 1,
+        },
+        {
+          "slug": "no-shadow",
+          "weight": 1,
+        },
+        {
+          "slug": "no-var",
+          "weight": 1,
+        },
+        {
+          "slug": "object-shorthand",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-arrow-callback",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-const",
+          "weight": 1,
+        },
+        {
+          "slug": "prefer-object-spread",
+          "weight": 1,
+        },
+        {
+          "slug": "yoda",
+          "weight": 1,
+        },
+        {
+          "slug": "react-hooks-exhaustive-deps",
+          "weight": 1,
+        },
+      ],
+      "slug": "suggestions",
+      "title": "Suggestions",
+    },
+    {
+      "description": "Primarily about whitespace, semicolons, commas, and parentheses, all the parts of the program that determine how the code looks rather than how it executes.",
+      "refs": [],
+      "slug": "formatting",
+      "title": "Formatting",
+    },
+  ],
   "icon": "eslint",
   "packageName": "@code-pushup/eslint-plugin",
   "runner": {

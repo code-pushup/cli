@@ -7,9 +7,9 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { getProgressBar, ProgressBar } from './lib/progress';
 export { git, latestHash } from './lib/git';
 export { importEsmModule } from './lib/load-file';
+export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -26,6 +26,7 @@ export {
   countOccurrences,
   distinct,
   objectToEntries,
+  objectToKeys,
   pluralize,
   readJsonFile,
   readTextFile,
