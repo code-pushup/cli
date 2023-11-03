@@ -14,10 +14,15 @@ export class Deferred<T> {
   }
 }
 
-export async function createMockServer(): Promise<{
+function randomPort() {
+  return Math.floor(Math.random() * 10000) + 10000;
+}
+
+export async function createMockServer(port = randomPort()): Promise<{
   server: Server;
   requestListener: Mock;
   requestBody: Deferred<unknown>;
+  port: number;
 }> {
   const requestBody = new Deferred<unknown>();
 
@@ -41,7 +46,7 @@ export async function createMockServer(): Promise<{
   });
 
   const server = createServer(requestListener);
-  server.listen(8080);
+  server.listen(port);
 
-  return { server, requestListener, requestBody };
+  return { server, requestListener, requestBody, port };
 }

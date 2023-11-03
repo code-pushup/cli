@@ -44,7 +44,8 @@ describe('CLI upload', () => {
   it('should upload report.json', async () => {
     expect.assertions(5);
 
-    const { server, requestListener, requestBody } = await createMockServer();
+    const { server, requestListener, requestBody, port } =
+      await createMockServer();
 
     const { code, stderr } = await executeProcess({
       command: 'node',
@@ -55,7 +56,7 @@ describe('CLI upload', () => {
         '--persist.outputDir',
         '../../e2e/cli-e2e/mocks',
         '--upload.server',
-        'http://localhost:8080/graphql',
+        `http://localhost:${port}/graphql`,
       ],
       cwd: 'examples/react-todos-app',
     });
