@@ -1,8 +1,8 @@
 import type { Rule } from 'eslint';
 import type { AuditGroup, AuditGroupRef } from '@code-pushup/models';
-import { objectToKeys } from '@code-pushup/utils';
+import { objectToKeys, slugify } from '@code-pushup/utils';
 import { ruleIdToSlug } from './hash';
-import type { RuleData } from './rules';
+import { type RuleData, parseRuleId } from './rules';
 
 type RuleType = NonNullable<Rule.RuleMetaData['type']>;
 
@@ -49,4 +49,39 @@ export function groupsFromRuleTypes(rules: RuleData[]): AuditGroup[] {
         (slug): AuditGroupRef => ({ slug, weight: 1 }),
       ) ?? [],
   }));
+}
+
+export function groupsFromRuleCategories(rules: RuleData[]): AuditGroup[] {
+  const categoriesMap = rules.reduce<Record<string, Record<string, string[]>>>(
+    (acc, { meta: { docs }, ruleId, options }) => {
+      const category = docs?.category;
+      if (!category) {
+        return acc;
+      }
+      const { plugin = '' } = parseRuleId(ruleId);
+      return {
+        ...acc,
+        [plugin]: {
+          ...acc[plugin],
+          [category]: [
+            ...(acc[plugin]?.[category] ?? []),
+            ruleIdToSlug(ruleId, options),
+          ],
+        },
+      };
+    },
+    {},
+  );
+
+  return Object.entries(categoriesMap)
+    .flatMap(([plugin, categories]) =>
+      Object.entries(categories).map(
+        ([category, slugs]): AuditGroup => ({
+          slug: `${slugify(plugin)}-${slugify(category)}`,
+          title: `${category} (${plugin})`,
+          refs: slugs.map(slug => ({ slug, weight: 1 })),
+        }),
+      ),
+    )
+    .sort((a, b) => a.slug.localeCompare(b.slug));
 }

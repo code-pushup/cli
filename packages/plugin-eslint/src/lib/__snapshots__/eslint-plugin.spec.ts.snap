@@ -1166,6 +1166,102 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "slug": "formatting",
       "title": "Formatting",
     },
+    {
+      "refs": [
+        {
+          "slug": "react-prop-types",
+          "weight": 1,
+        },
+        {
+          "slug": "react-display-name",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-no-target-blank",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-uses-react",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-uses-vars",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-children-prop",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-deprecated",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-find-dom-node",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-is-mounted",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-render-return-value",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-string-refs",
+          "weight": 1,
+        },
+      ],
+      "slug": "react-best-practices",
+      "title": "Best Practices (react)",
+    },
+    {
+      "refs": [
+        {
+          "slug": "react-jsx-key",
+          "weight": 1,
+        },
+        {
+          "slug": "react-react-in-jsx-scope",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-no-comment-textnodes",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-no-duplicate-props",
+          "weight": 1,
+        },
+        {
+          "slug": "react-jsx-no-undef",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-danger-with-children",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-direct-mutation-state",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-unescaped-entities",
+          "weight": 1,
+        },
+        {
+          "slug": "react-no-unknown-property",
+          "weight": 1,
+        },
+        {
+          "slug": "react-require-render-return",
+          "weight": 1,
+        },
+      ],
+      "slug": "react-possible-errors",
+      "title": "Possible Errors (react)",
+    },
   ],
   "icon": "eslint",
   "packageName": "@code-pushup/eslint-plugin",
