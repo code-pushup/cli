@@ -46,7 +46,7 @@ describe('CLI port', () => {
       expect.anything(),
     );
 
-    expect(report).toMatchObject({
+    expect(report).toStrictEqual({
       operationName: 'saveReport',
       query: expect.any(String),
       variables: {

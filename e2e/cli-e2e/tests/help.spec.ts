@@ -11,5 +11,13 @@ describe('CLI help', () => {
     expect(stdout).toMatchSnapshot();
   });
 
-  // @TODO 'should print help with help command'
+  it('should print help with help command', async () => {
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['./dist/packages/cli', 'help'],
+    });
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+    expect(stdout).toMatchSnapshot();
+  });
 });
