@@ -116,7 +116,7 @@ function auditRefItemToCategorySection(
   refPlugin: string,
   plugins: ScoredReport['plugins'],
 ): string {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin)!;
+  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
   const pluginAudit = plugin?.audits.find(({ slug }) => slug === refSlug);
 
   if (!pluginAudit) {
