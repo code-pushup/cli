@@ -70,14 +70,6 @@ export function titleSchema(description = 'Descriptive name') {
 }
 
 /**
- * Schema for a score of group
- * @param description
- */
-export function scoreSchema(description = 'Score between 0 and 1') {
-  return z.number({ description }).min(0).max(1).default(0).optional();
-}
-
-/**
  * Used for categories, plugins and audits
  * @param options
  */
@@ -85,14 +77,12 @@ export function metaSchema(options?: {
   titleDescription?: string;
   descriptionDescription?: string;
   docsUrlDescription?: string;
-  scoreDescription?: string;
   description?: string;
 }) {
   const {
     descriptionDescription,
     titleDescription,
     docsUrlDescription,
-    scoreDescription,
     description,
   } = options || {};
   return z.object(
@@ -100,7 +90,6 @@ export function metaSchema(options?: {
       title: titleSchema(titleDescription),
       description: descriptionSchema(descriptionDescription),
       docsUrl: docsUrlSchema(docsUrlDescription),
-      score: scoreSchema(scoreDescription),
     },
     { description },
   );

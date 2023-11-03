@@ -29,7 +29,6 @@ export function auditConfig(opt?: Partial<Audit>): Audit {
     title: opt?.title || 'Audit Title',
     description: opt?.description || 'audit description',
     docsUrl: opt?.docsUrl || 'http://www.my-docs.dev',
-    score: opt?.score || 0,
   } satisfies Required<Audit>;
 }
 

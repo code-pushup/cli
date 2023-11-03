@@ -1,4 +1,9 @@
-import { AuditReport, PluginReport } from '@code-pushup/models';
+import {
+  AuditReport,
+  CategoryConfig,
+  Issue,
+  PluginReport,
+} from '@code-pushup/models';
 import {
   NEW_LINE,
   details,
@@ -11,8 +16,14 @@ import {
   tableHtml,
   tableMd,
 } from './md/';
-import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from './report';
-import { ScoredReport } from './scoring';
+import {
+  FOOTER_PREFIX,
+  README_LINK,
+  countCategoryAudits,
+  formatDuration,
+  slugify,
+} from './report';
+import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
 import {
   detailsTableHeaders,
   formatReportScore,
@@ -23,7 +34,6 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
-  toUnixPath,
 } from './utils';
 
 export function reportToMd(report: ScoredReport): string {
@@ -42,8 +52,8 @@ export function reportToMd(report: ScoredReport): string {
   // about section
   md += reportToAboutSection(report) + NEW_LINE + NEW_LINE;
 
-  // // footer section
-  md += `${FOOTER_PREFIX} ${link(CODE_PUSHUP_DOMAIN)}`;
+  // footer section
+  md += `${FOOTER_PREFIX} ${link(README_LINK, 'Code PushUp')}`;
   return md;
 }
 
@@ -57,24 +67,8 @@ function reportToOverviewSection(report: ScoredReport): string {
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs, score, slug }) => [
       link(`#${slug}`, title),
-      `${formatReportScore(score)} ${getRoundScoreMarker(score)}`,
-      refs
-        .reduce((acc, ref) => {
-          if (ref.type === 'group') {
-            const groupRefs = report.plugins
-              .find(({ slug }) => slug === ref.plugin)
-              ?.groups?.find(({ slug }) => slug === ref.slug)?.refs;
-
-            if (!groupRefs?.length) {
-              return acc;
-            }
-
-            return acc + groupRefs.length;
-          } else {
-            return acc + 1;
-          }
-        }, 0)
-        .toString(),
+      `${getRoundScoreMarker(score)} ${style(formatReportScore(score))}`,
+      countCategoryAudits(refs, report.plugins).toString(),
     ]),
   ];
 
@@ -85,14 +79,11 @@ function reportToCategoriesSection(report: ScoredReport): string {
   const { categories, plugins } = report;
 
   const categoryDetails = categories.reduce((acc, category) => {
-    const categoryTitle =
-      style(
-        `<a name="${category.slug}"></a>${getRoundScoreMarker(
-          category.score,
-        )} ${category.title}: ${formatReportScore(category.score)}`,
-      ) +
-      NEW_LINE +
-      NEW_LINE;
+    const categoryTitle = h3(category.title);
+    const categoryScore = `${getRoundScoreMarker(
+      category.score,
+    )} Score:  ${style(formatReportScore(category.score))}`;
+    const categoryDocs = getDocsAndDescription(category);
 
     const refs = category.refs.reduce((acc, ref) => {
       if (ref.type === 'group') {
@@ -103,17 +94,21 @@ function reportToCategoriesSection(report: ScoredReport): string {
       return acc;
     }, '');
 
-    return acc + categoryTitle + NEW_LINE + NEW_LINE + refs;
+    return (
+      acc +
+      NEW_LINE +
+      categoryTitle +
+      NEW_LINE +
+      NEW_LINE +
+      categoryDocs +
+      categoryScore +
+      NEW_LINE +
+      NEW_LINE +
+      refs
+    );
   }, '');
 
-  return (
-    h2('🏷 Categories') +
-    NEW_LINE +
-    NEW_LINE +
-    categoryDetails +
-    NEW_LINE +
-    NEW_LINE
-  );
+  return h2('🏷 Categories') + NEW_LINE + categoryDetails;
 }
 
 function auditRefItemToCategorySection(
@@ -121,25 +116,24 @@ function auditRefItemToCategorySection(
   refPlugin: string,
   plugins: ScoredReport['plugins'],
 ): string {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const pluginAudit = plugin?.audits.find(
-    ({ slug: auditSlugInPluginAudits }) => auditSlugInPluginAudits === refSlug,
-  );
+  const plugin = plugins.find(({ slug }) => slug === refPlugin)!;
+  const pluginAudit = plugin?.audits.find(({ slug }) => slug === refSlug);
 
   if (!pluginAudit) {
     throwIsNotPresentError(`Audit ${refSlug}`, plugin?.slug);
   }
 
-  const auditTitle = link(`#${pluginAudit.slug}`, pluginAudit?.title);
+  const auditTitle = link(
+    `#${slugify(pluginAudit.title)}-${slugify(plugin.title)}`,
+    pluginAudit?.title,
+  );
 
   return (
     li(
       `${getSquaredScoreMarker(pluginAudit.score)} ${auditTitle} (_${
         plugin.title
-      }_) - **${getAuditResult(pluginAudit)}**`,
-    ) +
-    NEW_LINE +
-    NEW_LINE
+      }_) - ${getAuditResult(pluginAudit)}`,
+    ) + NEW_LINE
   );
 }
 
@@ -149,7 +143,9 @@ function groupRefItemToCategorySection(
   plugins: ScoredReport['plugins'],
 ): string {
   const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const group = plugin?.groups?.find(({ slug }) => slug === refSlug);
+  const group = plugin?.groups?.find(
+    ({ slug }) => slug === refSlug,
+  ) as EnrichedScoredAuditGroup;
   const groupScore = Number(formatReportScore(group?.score || 0));
 
   if (!group) {
@@ -165,67 +161,77 @@ function groupRefItemToCategorySection(
         auditSlugInPluginAudits === ref.slug,
     );
     if (audit) {
-      acc.push(audit);
+      return [...acc, audit];
     }
 
     return acc;
   }, [] as AuditReport[]);
 
   const groupAudits = foundAudits.reduce((acc, audit) => {
-    const auditTitle = link(`#${audit.slug}`, audit?.title);
+    const auditTitle = link(
+      `#${slugify(audit.title)}-${slugify(plugin.title)}`,
+      audit?.title,
+    );
     acc += `  ${li(
-      `${getSquaredScoreMarker(audit.score)} ${auditTitle} - **${getAuditResult(
+      `${getSquaredScoreMarker(audit.score)} ${auditTitle} - ${getAuditResult(
         audit,
-      )}**`,
+      )}`,
     )}`;
-    acc += NEW_LINE;
     acc += NEW_LINE;
     return acc;
   }, '');
 
-  return groupTitle + NEW_LINE + NEW_LINE + groupAudits + NEW_LINE + NEW_LINE;
+  return groupTitle + NEW_LINE + groupAudits;
 }
 
 function reportToAuditsSection(report: ScoredReport): string {
   const auditsData = report.plugins.reduce((acc, plugin) => {
     const audits = plugin.audits.reduce((acc, audit) => {
-      const auditTitle = `<a name="${audit.slug}"></a>${audit.title} (${plugin.title})`;
+      const auditTitle = `${audit.title} (${plugin.title})`;
       const detailsTitle = `${getSquaredScoreMarker(
         audit.score,
       )} ${getAuditResult(audit)} (score: ${formatReportScore(audit.score)})`;
+      const docsItem = getDocsAndDescription(audit);
 
       acc += h3(auditTitle);
       acc += NEW_LINE;
       acc += NEW_LINE;
 
       if (!audit.details?.issues?.length) {
-        acc += details(detailsTitle, 'No details');
+        acc += detailsTitle;
         acc += NEW_LINE;
         acc += NEW_LINE;
+        acc += docsItem;
         return acc;
       }
 
-      const detailsTable = [
+      const detailsTableData = [
         detailsTableHeaders,
-        ...audit.details.issues.map(issue => [
-          `${getSeverityIcon(issue.severity)} <i>${issue.severity}</i>`,
-          issue.message,
-          `<a href="${toUnixPath(issue.source?.file as string, {
-            toRelative: true,
-          })}">
-             <code>${issue.source?.file}</code>
-           </a>`,
-          String(issue.source?.position?.startLine),
-        ]),
+        ...audit.details.issues.map((issue: Issue) => {
+          const severity = `${getSeverityIcon(issue.severity)} <i>${
+            issue.severity
+          }</i>`;
+          const message = issue.message;
+
+          if (!issue.source) {
+            return [severity, message, '', ''];
+          }
+          // TODO: implement file links, ticket #149
+          const file = `<code>${issue.source?.file}</code>`;
+          if (!issue.source.position) {
+            return [severity, message, file, ''];
+          }
+          const { startLine, endLine } = issue.source.position;
+          const line = `${startLine || ''}${
+            endLine && startLine !== endLine ? `-${endLine}` : ''
+          }`;
+
+          return [severity, message, file, line];
+        }),
       ];
+      const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
 
-      const docsItem = audit.docsUrl
-        ? `${audit.description} ${link(audit.docsUrl, '📖 Docs')}` +
-          NEW_LINE +
-          NEW_LINE
-        : '';
-
-      acc += details(detailsTitle, tableHtml(detailsTable));
+      acc += details(detailsTitle, detailsTable);
       acc += NEW_LINE;
       acc += NEW_LINE;
       acc += docsItem;
@@ -236,26 +242,24 @@ function reportToAuditsSection(report: ScoredReport): string {
     return acc + audits;
   }, '');
 
-  return (
-    h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsData + NEW_LINE + NEW_LINE
-  );
+  return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsData;
 }
 
 function reportToAboutSection(report: ScoredReport): string {
   const date = new Date().toString();
   const { duration, version, plugins, categories } = report;
+  // TODO: replace mock commitData with real data, ticket #192
   const commitData =
     '_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))';
-  const readmeUrl = 'https://github.com/flowup/quality-metrics-cli#readme';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,
     [
       commitData,
-      version as string,
-      (duration / 1000).toFixed(2) + ' s',
-      plugins?.length.toString(),
-      categories?.length.toString(),
-      plugins?.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
+      style(version || '', ['c']),
+      formatDuration(duration),
+      plugins.length.toString(),
+      categories.length.toString(),
+      plugins.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
     ],
   ];
 
@@ -264,8 +268,8 @@ function reportToAboutSection(report: ScoredReport): string {
     ...plugins.map(({ title, version, duration, audits }) => [
       title,
       audits.length.toString(),
-      version as string,
-      (duration / 1000).toFixed(2) + ' s',
+      style(version || '', ['c']),
+      formatDuration(duration),
     ]),
   ];
 
@@ -273,22 +277,31 @@ function reportToAboutSection(report: ScoredReport): string {
     h2('About') +
     NEW_LINE +
     NEW_LINE +
-    `Report was created by [Code PushUp](${readmeUrl}) on ${date}` +
+    `Report was created by [Code PushUp](${README_LINK}) on ${date}.` +
     NEW_LINE +
     NEW_LINE +
-    tableMd(reportMetaTable) +
+    tableMd(reportMetaTable, ['l', 'c', 'c', 'c', 'c', 'c']) +
     NEW_LINE +
     NEW_LINE +
     'The following plugins were run:' +
     NEW_LINE +
     NEW_LINE +
-    tableMd(pluginMetaTable)
+    tableMd(pluginMetaTable, ['l', 'c', 'c', 'c'])
   );
+}
+
+function getDocsAndDescription({
+  docsUrl,
+  description,
+}: AuditReport | CategoryConfig): string {
+  return docsUrl
+    ? `${description || ''} ${link(docsUrl, '📖 Docs')}` + NEW_LINE + NEW_LINE
+    : '';
 }
 
 function getAuditResult(audit: AuditReport): string {
   const { displayValue, value } = audit;
-  return displayValue || value.toString();
+  return `<b>${displayValue || value}</b>`;
 }
 
 function throwIsNotPresentError(itemName: string, presentPlace: string): never {

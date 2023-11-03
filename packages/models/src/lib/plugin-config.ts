@@ -86,7 +86,6 @@ export const auditGroupSchema = scorableSchema(
     titleDescription: 'Descriptive name for the group',
     descriptionDescription: 'Description of the group (markdown)',
     docsUrlDescription: 'Group documentation site',
-    scoreDescription: 'Group score',
     description: 'Group metadata',
   }),
 );

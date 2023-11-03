@@ -9,7 +9,11 @@ import {
   minimalReport,
   persistConfig,
 } from '@code-pushup/models/testing';
-import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX } from '@code-pushup/utils';
+import {
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
+  README_LINK,
+} from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test/console.mock';
 import { logPersistedResults, persistReport } from './persist';
 
@@ -113,7 +117,7 @@ describe('persistReport', () => {
     });
     const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain(
-      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+      `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
     expect(console.log).toHaveBeenCalledTimes(0);
@@ -137,7 +141,7 @@ describe('persistReport', () => {
 
     const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain(
-      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+      `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
     expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
@@ -156,7 +160,7 @@ describe('persistReport', () => {
 
     const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain(
-      `${FOOTER_PREFIX} [${CODE_PUSHUP_DOMAIN}](${CODE_PUSHUP_DOMAIN})`,
+      `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
     expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
