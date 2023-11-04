@@ -66,7 +66,7 @@ function reportToOverviewSection(report: ScoredReport): string {
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs, score, slug }) => [
-      link(`#${slug}`, title),
+      link(`#${slugify(title)}`, title),
       `${getRoundScoreMarker(score)} ${style(formatReportScore(score))}`,
       countCategoryAudits(refs, report.plugins).toString(),
     ]),
@@ -190,10 +190,13 @@ function reportToAuditsSection(report: ScoredReport): string {
       const auditTitle = `${audit.title} (${plugin.title})`;
       const detailsTitle = `${getSquaredScoreMarker(
         audit.score,
-      )} ${getAuditResult(audit)} (score: ${formatReportScore(audit.score)})`;
+      )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
+        audit.score,
+      )})`;
       const docsItem = getDocsAndDescription(audit);
 
       acc += h3(auditTitle);
+
       acc += NEW_LINE;
       acc += NEW_LINE;
 
@@ -299,9 +302,11 @@ function getDocsAndDescription({
     : '';
 }
 
-function getAuditResult(audit: AuditReport): string {
+function getAuditResult(audit: AuditReport, isHtml = false): string {
   const { displayValue, value } = audit;
-  return `<b>${displayValue || value}</b>`;
+  return isHtml
+    ? `<b>${displayValue || value}</b>`
+    : style(String(displayValue || value));
 }
 
 function throwIsNotPresentError(itemName: string, presentPlace: string): never {
