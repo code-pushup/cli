@@ -65,7 +65,7 @@ function reportToOverviewSection(report: ScoredReport): string {
   const { categories } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
-    ...categories.map(({ title, refs, score, slug }) => [
+    ...categories.map(({ title, refs, score }) => [
       link(`#${slugify(title)}`, title),
       `${getRoundScoreMarker(score)} ${style(formatReportScore(score))}`,
       countCategoryAudits(refs, report.plugins).toString(),
