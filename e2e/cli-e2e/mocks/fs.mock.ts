@@ -29,9 +29,9 @@ export function cleanFolderPutGitKeep<T extends object>(
   }
 }
 
-export function setupFolder<T extends object>(
+export function setupFolder(
   dirName = 'tmp',
-  content?: { [key in keyof T]: string },
+  content?: Record<string, string>,
 ) {
   ensureDirectoryExists(dirName);
   if (content) {
