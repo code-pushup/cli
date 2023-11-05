@@ -10,7 +10,7 @@ describe('persistConfigSchema', () => {
 
   it('should fill defaults', () => {
     const persistConfigMock = persistConfigSchema.parse(persistConfig());
-    expect(persistConfigMock.filename).toBe(undefined);
+    expect(persistConfigMock.filename).toBe('code-pushup.report');
   });
 
   it('should throw if outputDir is invalid', () => {

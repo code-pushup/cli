@@ -83,9 +83,15 @@ describe('upload-command-object', () => {
   it('should call portal-client function with correct parameters', async () => {
     const reportFileName = filename();
     setupFolder('tmp', {
-      [reportFileName]: JSON.stringify(dummyReport),
+      [reportFileName + '.json']: JSON.stringify(dummyReport),
     });
-    await cli(baseArgs).parseAsync();
+    const args = [
+      ...baseArgs,
+      ...objectToCliArgs<CliArgsObject>({
+        'persist.filename': reportFileName,
+      }),
+    ];
+    await cli(args).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
