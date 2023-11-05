@@ -3,7 +3,7 @@ import { beforeEach, vi } from 'vitest';
 import {
   PluginReport,
   Report,
-  reportNameFromReport,
+  reportFileName,
   reportSchema,
 } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
@@ -32,8 +32,7 @@ describe('CLI collect', () => {
   const reportFile = (filename: string, ext = 'json') =>
     join(reportPath, `${filename}.${ext}`);
 
-  const filename = () =>
-    reportNameFromReport({ date: new Date().toISOString() });
+  const filename = () => reportFileName({ date: new Date().toISOString() });
   const baseArgs = [cliPath, 'collect', '--verbose', '--no-progress'];
 
   beforeEach(async () => {

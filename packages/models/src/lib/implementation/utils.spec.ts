@@ -4,7 +4,7 @@ import {
   filenameRegex,
   hasDuplicateStrings,
   hasMissingStrings,
-  reportNameFromReport,
+  reportFileName,
   slugRegex,
 } from './utils';
 
@@ -67,7 +67,7 @@ describe('filenameRegex', () => {
 
 describe('reportNameFromReport', () => {
   it('should create a file name that is in sync with the REPORT_NAME_PATTERN', () => {
-    expect(reportNameFromReport({ date: new Date().toISOString() })).toMatch(
+    expect(reportFileName({ date: new Date().toISOString() })).toMatch(
       REPORT_NAME_PATTERN,
     );
   });

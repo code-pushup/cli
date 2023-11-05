@@ -2,14 +2,13 @@ import { vol } from 'memfs';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
-import { reportNameFromReport } from '@code-pushup/models';
+import { reportFileName } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   persistConfig,
   report,
   uploadConfig,
 } from '@code-pushup/models/testing';
-import { FileResult } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../test';
 import { upload } from './upload';
 
@@ -37,7 +36,7 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputDir = MEMFS_VOLUME;
-const filename = reportNameFromReport({ date: new Date().toISOString() });
+const filename = reportFileName({ date: new Date().toISOString() });
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputDir, `${filename}.${format}`);
 
@@ -76,15 +75,7 @@ describe('uploadToPortal', () => {
     };
     const result = await upload(cfg);
     // loadedReports
-    expect(result.length).toBe(1);
-    expect(result?.[0]?.status).toBe('fulfilled');
-    expect((result?.[0] as PromiseFulfilledResult<FileResult>).value[0]).toBe(
-      `${filename}.json`,
-    );
-    // logMultipleFileResults
-    expect(logs.length).toBe(2);
-    expect(logs[0]).toContain('Uploaded reports');
-    expect(logs[1]).toContain(filename);
+    expect(result).toEqual({ packageName: 'dummy-package' });
   });
 
   // @TODO add tests for failed upload

@@ -1,6 +1,6 @@
 export {
   REPORT_NAME_PATTERN,
-  reportNameFromReport,
+  reportFileName,
 } from './lib/implementation/utils';
 export {
   CategoryConfig,

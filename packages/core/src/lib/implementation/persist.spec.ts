@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { vol } from 'memfs';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Report, reportNameFromReport } from '@code-pushup/models';
+import { Report, reportFileName } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   minimalConfig,
@@ -24,8 +24,7 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputDir = MEMFS_VOLUME;
-const getFilename = () =>
-  reportNameFromReport({ date: new Date().toISOString() });
+const getFilename = () => reportFileName({ date: new Date().toISOString() });
 const readReport = (name: string, format: 'json' | 'md' = 'json') => {
   const reportContent = readFileSync(join(outputDir, name)).toString();
   if (format === 'json') {

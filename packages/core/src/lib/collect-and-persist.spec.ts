@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
-import { Report, reportNameFromReport } from '@code-pushup/models';
+import { Report, reportFileName } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../test/constants';
@@ -22,8 +22,7 @@ vi.mock('@code-pushup/portal-client', async () => {
 });
 
 const outputDir = 'tmp';
-const getFilename = () =>
-  reportNameFromReport({ date: new Date().toISOString() });
+const getFilename = () => reportFileName({ date: new Date().toISOString() });
 const reportPath = (filename: string, format: 'json' | 'md' = 'json') =>
   join(outputDir, `${filename}.${format}`);
 

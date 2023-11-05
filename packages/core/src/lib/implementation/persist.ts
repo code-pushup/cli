@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { CoreConfig, Report, reportNameFromReport } from '@code-pushup/models';
+import { CoreConfig, Report, reportFileName } from '@code-pushup/models';
 import {
   MultipleFileResults,
   reportToMd,
@@ -27,7 +27,7 @@ export async function persistReport(
 ): Promise<MultipleFileResults> {
   const { persist } = config;
   const outputDir = persist.outputDir;
-  const filename = persist?.filename || reportNameFromReport(report);
+  const filename = persist?.filename || reportFileName(report);
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
   let scoredReport;

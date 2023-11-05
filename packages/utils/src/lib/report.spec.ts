@@ -3,7 +3,7 @@ import { afterEach, describe, expect, vi } from 'vitest';
 import {
   CategoryRef,
   IssueSeverity,
-  reportNameFromReport,
+  reportFileName,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {
@@ -181,44 +181,62 @@ describe('loadReports', () => {
     resetFiles({});
   });
 
-  it('should load reports form outputDir', () => {
+  it('should load reports form outputDir', async () => {
     const report = { date: new Date().toISOString() };
     resetFiles({
-      [`${reportNameFromReport(report)}.json`]: '{"test":42}',
-      [`${reportNameFromReport(report)}.md`]: 'test-42',
+      [`${reportFileName(report)}.json`]: '{"test":42}',
+      [`${reportFileName(report)}.md`]: 'test-42',
     });
-    const reports = loadReports({ outputDir });
+    const reports = await loadReports({ outputDir });
     expect(reports).toEqual([
-      [`${reportNameFromReport(report)}.json`, '{"test":42}'],
-      [`${reportNameFromReport(report)}.md`, 'test-42'],
+      {
+        status: 'fulfilled',
+        value: [`${reportFileName(report)}.json`, '{"test":42}'],
+      },
+      {
+        status: 'fulfilled',
+        value: [`${reportFileName(report)}.md`, 'test-42'],
+      },
     ]);
   });
 
-  it('should load reports by filename', () => {
+  it('should load reports by filename', async () => {
     const report = { date: new Date().toISOString() };
     resetFiles({
       [`my-report.md`]: 'my-report-content',
       [`my-report.test.json`]: '{"test":"my-report-content"}',
-      [`${reportNameFromReport(report)}.md`]: 'test-42',
+      [`${reportFileName(report)}.md`]: 'test-42',
     });
-    const reports = loadReports({ outputDir, filename: 'my-report' });
+    const reports = await loadReports({ outputDir, filename: 'my-report' });
     expect(reports).toEqual([
-      [`my-report.md`, 'my-report-content'],
-      [`my-report.test.json`, '{"test":"my-report-content"}'],
+      {
+        status: 'fulfilled',
+        value: [`my-report.md`, 'my-report-content'],
+      },
+      {
+        status: 'fulfilled',
+        value: [`my-report.test.json`, '{"test":"my-report-content"}'],
+      },
     ]);
   });
 
-  it('should load reports by format', () => {
+  it('should load reports by format', async () => {
     const report = { date: new Date().toISOString() };
     resetFiles({
-      [`${reportNameFromReport(report)}.dummy.md`]: 'test-7',
-      [`${reportNameFromReport(report)}.json`]: '{"test":42}',
-      [`${reportNameFromReport(report)}.md`]: 'test-42',
+      [`${reportFileName(report)}.dummy.md`]: 'test-7',
+      [`${reportFileName(report)}.json`]: '{"test":42}',
+      [`${reportFileName(report)}.md`]: 'test-42',
     });
-    const reports = loadReports({ outputDir, format: ['md'] });
+    const reports = await loadReports({ outputDir, format: ['md'] });
     expect(reports).toEqual([
-      [`${reportNameFromReport(report)}.dummy.md`, 'test-7'],
-      [`${reportNameFromReport(report)}.md`, 'test-42'],
+      {
+        status: 'fulfilled',
+        value: [`${reportFileName(report)}.dummy.md`, 'test-7'],
+      },
+      {
+        status: 'fulfilled',
+        value: [`${reportFileName(report)}.md`, 'test-42'],
+      },
     ]);
   });
 });

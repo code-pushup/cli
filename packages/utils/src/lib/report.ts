@@ -1,7 +1,8 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'path';
 import {
   CategoryRef,
+  Format,
   IssueSeverity,
   PersistConfig,
   REPORT_NAME_PATTERN,
@@ -64,12 +65,14 @@ export function sumRefs(refs: CategoryRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
 }
 
-export function loadReports(options: PersistConfig): [string, string][] {
+export async function loadReports(options: PersistConfig) {
   const { outputDir, filename, format } = options;
-  ensureDirectoryExists(outputDir);
+  await ensureDirectoryExists(outputDir);
 
-  return (
-    readdirSync(outputDir)
+  const dirResult = await readdir(outputDir);
+
+  const result = await Promise.allSettled(
+    dirResult
       // filter by file extension
       .filter(file =>
         format ? format.find(ext => file.endsWith(`.${ext}`)) : true,
@@ -80,9 +83,28 @@ export function loadReports(options: PersistConfig): [string, string][] {
           ? file.includes(filename)
           : new RegExp(REPORT_NAME_PATTERN).test(file),
       )
-      .map(file => {
-        const filePath = join(outputDir, file);
-        return [file, readFileSync(filePath, 'utf8')];
-      })
+      .map(file => getFileResult(file, outputDir)),
   );
+  return result;
+}
+
+export async function loadReport(
+  options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
+    format: Format;
+  },
+) {
+  const { outputDir, filename, format } = options;
+  await ensureDirectoryExists(outputDir);
+  const filePath = join(outputDir, `${filename}.${format}`);
+  const content = await readFile(filePath, 'utf8');
+  return content;
+}
+
+async function getFileResult(
+  file: string,
+  outputDir: string,
+): Promise<[string, string | null]> {
+  const filePath = join(outputDir, file);
+  const content = await readFile(filePath, 'utf8');
+  return [file, content || null];
 }

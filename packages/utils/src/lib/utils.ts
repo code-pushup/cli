@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { existsSync, mkdirSync } from 'fs';
+import { mkdir, stat } from 'fs/promises';
 import { readFile } from 'fs/promises';
 import { formatBytes } from './report';
 
@@ -56,8 +56,12 @@ export function distinct<T extends string | number | boolean>(array: T[]): T[] {
 
 // === Filesystem
 
-export function ensureDirectoryExists(baseDir: string) {
-  if (!existsSync(baseDir)) mkdirSync(baseDir, { recursive: true });
+export async function ensureDirectoryExists(baseDir: string) {
+  try {
+    await stat(baseDir);
+  } catch (e) {
+    await mkdir(baseDir, { recursive: true });
+  }
 }
 
 export async function readTextFile(path: string): Promise<string> {

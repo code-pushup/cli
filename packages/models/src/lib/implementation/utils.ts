@@ -11,9 +11,7 @@ export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
  */
 export const REPORT_NAME_PATTERN =
   /^(report\.)(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z)/;
-export function reportNameFromReport<T extends { date: string }>(
-  report: T,
-): string {
+export function reportFileName<T extends { date: string }>(report: T): string {
   return `report.${report.date.replace(/:/g, '-')}`;
 }
 /**

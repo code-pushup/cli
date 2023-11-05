@@ -6,9 +6,9 @@ export type Format = z.infer<typeof formatSchema>;
 
 export const persistConfigSchema = z.object({
   outputDir: filePathSchema('Artifacts folder'),
-  filename: fileNameSchema(
-    'Artifacts file name (without extension)',
-  ).optional(),
+  filename: fileNameSchema('Artifacts file name (without extension)').default(
+    'code-pushup.report',
+  ),
   format: z.array(formatSchema).default(['stdout']).optional(), // @TODO remove default or optional value and otherwise it will not set defaults.
 });
 

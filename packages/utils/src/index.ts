@@ -18,6 +18,7 @@ export {
   formatBytes,
   formatCount,
   slugify,
+  loadReport,
   loadReports,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
