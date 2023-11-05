@@ -47,7 +47,6 @@ describe('CLI collect', () => {
       command: 'npx',
       args: [
         ...baseArgs,
-        '--persist.format=json',
         `--persist.filename=${reportFileName}`,
       ],
       cwd: 'examples/react-todos-app',
