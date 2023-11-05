@@ -16,7 +16,6 @@ import {
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './command-object';
@@ -60,11 +59,9 @@ describe('autorun-command-object', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    cleanFolderPutGitKeep();
     logSpy = vi.spyOn(console, 'log');
   });
   afterEach(() => {
-    cleanFolderPutGitKeep();
     logSpy.mockRestore();
   });
 

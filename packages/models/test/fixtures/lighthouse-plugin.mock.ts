@@ -1,8 +1,8 @@
 import { join } from 'path';
 import type { AuditGroup, PluginReport } from '../../src';
 import { Audit, PluginConfig } from '../../src';
-import { echoRunnerConfig } from './echo-runner-config.mock';
 import { LIGHTHOUSE_AUDIT_REPORTS_MAP } from './lighthouse-audits.mock';
+import { echoRunnerConfig } from './runner-config.mock';
 
 const PLUGIN_GROUP_PERFORMANCE: AuditGroup = {
   slug: 'performance',

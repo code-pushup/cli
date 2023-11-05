@@ -4,7 +4,7 @@ import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
-import { cleanFolderPutGitKeep, mockConsole, unmockConsole } from '../../test';
+import { mockConsole, unmockConsole } from '../../test';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../test/constants';
 import { collectAndPersistReports } from './collect-and-persist';
 
@@ -27,11 +27,9 @@ const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
 
 describe('collectAndPersistReports', () => {
   beforeEach(async () => {
-    cleanFolderPutGitKeep();
     mockConsole();
   });
   afterEach(async () => {
-    cleanFolderPutGitKeep();
     unmockConsole();
   });
 

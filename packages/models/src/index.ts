@@ -3,6 +3,7 @@ export {
   CategoryConfig,
   categoryConfigSchema,
 } from './lib/category-config';
+
 export {
   CoreConfig,
   coreConfigSchema,
@@ -16,22 +17,20 @@ export {
   formatSchema,
   persistConfigSchema,
 } from './lib/persist-config';
+export { PluginConfig, pluginConfigSchema } from './lib/plugin-config';
+export { RunnerConfig } from './lib/plugin-config-runner';
 export {
+  auditSchema,
   Audit,
+  pluginAuditsSchema,
+} from './lib/plugin-config-audits';
+export {
   AuditGroupRef,
   AuditGroup,
-  AuditOutput,
-  AuditOutputs,
-  Issue,
-  IssueSeverity,
-  PluginConfig,
   auditGroupSchema,
-  auditOutputsSchema,
-  auditSchema,
-  issueSchema,
-  pluginConfigSchema,
-  RunnerConfig,
-} from './lib/plugin-config';
+} from './lib/plugin-config-groups';
+export { AuditOutput, auditOutputsSchema } from './lib/plugin-process-output';
+export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
   PluginReport,
@@ -40,3 +39,4 @@ export {
   reportSchema,
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
+export { materialIconSchema } from './lib/implementation/schemas';

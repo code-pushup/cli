@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import { filenameRegex, slugRegex } from './utils';
 
 /**
@@ -168,6 +169,7 @@ export function weightedRefSchema(
     { description },
   );
 }
+export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
 
 export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   description: string,
@@ -191,3 +193,8 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
     { description },
   );
 }
+
+export const materialIconSchema = z.enum(
+  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
+  { description: 'Icon from VSCode Material Icons extension' },
+);
