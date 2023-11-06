@@ -1,4 +1,4 @@
-import { Options, bundleRequire } from 'bundle-require';
+import { type Options, bundleRequire } from 'bundle-require';
 
 export async function importEsmModule<T = unknown>(
   options: Options,

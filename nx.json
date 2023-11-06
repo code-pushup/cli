@@ -20,7 +20,8 @@
         "{workspaceRoot}/.eslintignore"
       ],
       "options": {
-        "maxWarnings": 0
+        "maxWarnings": 0,
+        "reportUnusedDisableDirectives": "warn"
       }
     },
     "test": {

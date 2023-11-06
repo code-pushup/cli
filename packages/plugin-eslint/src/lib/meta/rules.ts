@@ -75,3 +75,14 @@ function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {
       return false;
   }
 }
+
+export function parseRuleId(ruleId: string): { plugin?: string; name: string } {
+  const i = ruleId.lastIndexOf('/');
+  if (i < 0) {
+    return { name: ruleId };
+  }
+  return {
+    plugin: ruleId.slice(0, i),
+    name: ruleId.slice(i + 1),
+  };
+}

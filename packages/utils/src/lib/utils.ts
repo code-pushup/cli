@@ -47,6 +47,10 @@ export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+export function objectToKeys<T extends object>(obj: T) {
+  return Object.keys(obj) as (keyof T)[];
+}
+
 export function objectToEntries<T extends object>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
