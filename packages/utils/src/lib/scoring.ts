@@ -9,8 +9,12 @@ import {
 } from '@code-pushup/models';
 
 type EnrichedAuditReport = AuditReport & { plugin: string };
-type EnrichedScoredAuditGroup = AuditGroup & { plugin: string; score: number };
 type ScoredCategoryConfig = CategoryConfig & { score: number };
+
+export type EnrichedScoredAuditGroup = AuditGroup & {
+  plugin: string;
+  score: number;
+};
 
 export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {

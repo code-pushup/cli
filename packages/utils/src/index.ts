@@ -13,6 +13,7 @@ export { importEsmModule } from './lib/load-file';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
+  README_LINK,
   calcDuration,
   compareIssueSeverity,
   formatBytes,
