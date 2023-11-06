@@ -8,7 +8,7 @@ export {
   objectToCliArgs,
 } from './lib/execute-process';
 export { getProgressBar, ProgressBar } from './lib/progress';
-export { git, latestHash } from './lib/git';
+export { git, getLatestCommit } from './lib/git';
 export { importEsmModule } from './lib/load-file';
 export {
   CODE_PUSHUP_DOMAIN,

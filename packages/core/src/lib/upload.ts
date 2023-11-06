@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, reportSchema } from '@code-pushup/models';
-import { latestHash } from '@code-pushup/utils';
+import { getLatestCommit } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
@@ -24,11 +24,16 @@ export async function upload(
   const report = reportSchema.parse(
     JSON.parse(readFileSync(join(outputDir, 'report.json')).toString()),
   );
+  const commitData = await getLatestCommit();
+
+  if (!commitData) {
+    throw new Error('no commit data available');
+  }
 
   const data = {
     organization,
     project,
-    commit: await latestHash(),
+    commit: commitData.hash,
     ...jsonToGql(report),
   };
 

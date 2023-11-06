@@ -4,6 +4,7 @@ import {
   Issue,
   PluginReport,
 } from '@code-pushup/models';
+import { CommitData, GITHUB_CLI_REPO_LINK } from './git';
 import {
   NEW_LINE,
   details,
@@ -36,7 +37,10 @@ import {
   reportOverviewTableHeaders,
 } from './utils';
 
-export function reportToMd(report: ScoredReport): string {
+export function reportToMd(
+  report: ScoredReport,
+  commitData: CommitData | null,
+): string {
   // header section
   let md = reportToHeaderSection() + NEW_LINE;
 
@@ -50,7 +54,7 @@ export function reportToMd(report: ScoredReport): string {
   md += reportToAuditsSection(report) + NEW_LINE + NEW_LINE;
 
   // about section
-  md += reportToAboutSection(report) + NEW_LINE + NEW_LINE;
+  md += reportToAboutSection(report, commitData) + NEW_LINE + NEW_LINE;
 
   // footer section
   md += `${FOOTER_PREFIX} ${link(README_LINK, 'Code PushUp')}`;
@@ -248,16 +252,22 @@ function reportToAuditsSection(report: ScoredReport): string {
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsData;
 }
 
-function reportToAboutSection(report: ScoredReport): string {
+function reportToAboutSection(
+  report: ScoredReport,
+  commitData: CommitData | null,
+): string {
   const date = new Date().toString();
   const { duration, version, plugins, categories } = report;
-  // TODO: replace mock commitData with real data, ticket #192
-  const commitData =
-    '_Implement todos list_ ([3ac01d1](https://github.com/flowup/todos-app/commit/3ac01d192698e0a923bd410f79594371480a6e4c))';
+  const commitInfo = commitData
+    ? `${commitData.message} ([${commitData.hash.slice(
+        0,
+        7,
+      )}](${GITHUB_CLI_REPO_LINK}/commit/${commitData.hash}))`
+    : 'No commit data available';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,
     [
-      commitData,
+      commitInfo,
       style(version || '', ['c']),
       formatDuration(duration),
       plugins.length.toString(),

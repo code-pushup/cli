@@ -1,12 +1,21 @@
 import simpleGit from 'simple-git';
 
-export const git = simpleGit();
+export type CommitData = {
+  hash: string;
+  message: string;
+  author: string;
+  date: string;
+};
 
-export async function latestHash() {
-  // git log -1 --pretty=format:"%H" // logs hash e.g. 41682a2fec1d4ece81c696a26c08984baeb4bcf3
-  const log = await git.log({ maxCount: 1, format: { hash: '%H' } });
-  if (!log?.latest?.hash) {
-    throw new Error('no latest hash present in git history.');
-  }
-  return log?.latest?.hash;
+export const git = simpleGit();
+export const GITHUB_CLI_REPO_LINK =
+  'https://github.com/flowup/quality-metrics-cli';
+
+export async function getLatestCommit() {
+  // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
+  const log = await git.log({
+    maxCount: 1,
+    format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
+  });
+  return log?.latest;
 }
