@@ -26,7 +26,7 @@
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^17.6.4",
     "@commitlint/cz-commitlint": "^17.7.1",
-    "@ngx-devs/commitlint-plugin-imperative": "^1.1.4",
+    "commitlint-plugin-tense": "^1.0.2",
     "@nx/devkit": "^16.8.1",
     "@nx/esbuild": "16.7.4",
     "@nx/eslint-plugin": "16.7.4",
