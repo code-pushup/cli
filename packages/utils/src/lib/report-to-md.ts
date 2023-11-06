@@ -155,7 +155,7 @@ function groupRefItemToCategorySection(
   const groupTitle = li(
     `${getRoundScoreMarker(groupScore)} ${group.title} (_${plugin.title}_)`,
   );
-  const foundAudits = group.refs.reduce((acc, ref) => {
+  const foundAudits = group.refs.reduce<AuditReport[]>((acc, ref) => {
     const audit = plugin?.audits.find(
       ({ slug: auditSlugInPluginAudits }) =>
         auditSlugInPluginAudits === ref.slug,
@@ -165,7 +165,7 @@ function groupRefItemToCategorySection(
     }
 
     return acc;
-  }, [] as AuditReport[]);
+  }, []);
 
   const groupAudits = foundAudits.reduce((acc, audit) => {
     const auditTitle = link(
