@@ -17,9 +17,14 @@ const validPluginCfg = pluginConfig([auditReport()]);
 const validPluginCfg2 = pluginConfig([auditReport()], {
   slug: 'p2',
 });
-const invalidSlugPluginCfg = pluginConfig([
-  auditReport({ slug: '-invalid-audit-slug' }),
-]);
+const invalidReport = auditReport();
+const invalidSlugPluginCfg = pluginConfig([auditReport()]);
+invalidSlugPluginCfg.audits = [
+  {
+    ...invalidReport,
+    slug: '-invalid-audit-slug',
+  },
+];
 
 const DEFAULT_OPTIONS = { progress: DEFAULT_TESTING_CLI_OPTIONS.progress };
 
@@ -39,9 +44,11 @@ describe('executePlugin', () => {
     const invalidAuditOutputs: AuditReport[] = [
       { p: 42 } as unknown as AuditReport,
     ];
-    const pluginCfg = pluginConfig([auditReport()], {
-      runner: echoRunnerConfig(invalidAuditOutputs, join('tmp', 'out.json')),
-    });
+    const pluginCfg = pluginConfig([auditReport()]);
+    pluginCfg.runner = echoRunnerConfig(
+      invalidAuditOutputs,
+      join('tmp', 'out.json'),
+    );
     await expect(() => executePlugin(pluginCfg)).rejects.toThrowError(
       'Plugin output of plugin with slug mock-plugin-slug',
     );

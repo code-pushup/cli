@@ -1,4 +1,7 @@
-import { CategoryRef, IssueSeverity } from '@code-pushup/models';
+import {
+  CategoryRef,
+  IssueSeverity as CliIssueSeverity,
+} from '@code-pushup/models';
 import { ScoredReport } from './scoring';
 import { pluralize } from './utils';
 
@@ -70,10 +73,10 @@ export function countCategoryAudits(
 }
 
 export function compareIssueSeverity(
-  severity1: IssueSeverity,
-  severity2: IssueSeverity,
+  severity1: CliIssueSeverity,
+  severity2: CliIssueSeverity,
 ): number {
-  const levels: Record<IssueSeverity, number> = {
+  const levels: Record<CliIssueSeverity, number> = {
     info: 0,
     warning: 1,
     error: 2,
