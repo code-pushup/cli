@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { describe } from 'vitest';
 import { report } from '@code-pushup/models/testing';
 import { GITHUB_CLI_REPO_LINK } from './git';
@@ -24,7 +23,6 @@ describe('report-to-md', () => {
       date: '2021-09-10 12:00:00 +0200',
     };
     const mdReport = reportToMd(scoreReport(report()), commit);
-    fs.writeFileSync('report.md', mdReport);
     expect(mdReport).toContain(
       `${commit.message} ([${commit.hash.slice(
         0,
