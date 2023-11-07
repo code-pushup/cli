@@ -33,8 +33,8 @@ export async function eslintPlugin(
   const { eslintrc, patterns } = eslintPluginConfigSchema.parse(config);
 
   const eslint = new ESLint({
+    overrideConfigFile: eslintrc,
     useEslintrc: false,
-    baseConfig: { extends: eslintrc },
   });
 
   const { audits, groups } = await listAuditsAndGroups(eslint, patterns);

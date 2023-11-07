@@ -69,8 +69,6 @@ describe('eslintPlugin', () => {
   it("should throw if eslintrc file doesn't exist", async () => {
     await expect(
       eslintPlugin({ eslintrc: '.eslintrc.yml', patterns: '**/*.js' }),
-    ).rejects.toThrowError(
-      'Failed to load config ".eslintrc.yml" to extend from',
-    );
+    ).rejects.toThrowError('Cannot read config file');
   });
 });
