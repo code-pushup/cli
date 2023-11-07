@@ -4,13 +4,14 @@ import { verboseUtils } from './verbose-utils';
 
 const verboseHelper = verboseUtils(true);
 const noVerboseHelper = verboseUtils(false);
+let logs: string[];
+
 describe('verbose-utils', () => {
-  let logs: string[] = [];
   beforeEach(() => {
+    logs = [];
     mockConsole(args => logs.push(args));
   });
   afterEach(() => {
-    logs = [];
     unmockConsole();
   });
 

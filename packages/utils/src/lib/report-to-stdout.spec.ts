@@ -4,7 +4,7 @@ import { mockConsole, unmockConsole } from '../../test';
 import { reportToStdout } from './report-to-stdout';
 import { scoreReport } from './scoring';
 
-let logs: string[] = [];
+let logs: string[];
 
 describe('report-to-stdout', () => {
   beforeEach(async () => {
@@ -12,7 +12,6 @@ describe('report-to-stdout', () => {
     mockConsole(msg => logs.push(msg));
   });
   afterEach(() => {
-    logs = [];
     unmockConsole();
   });
 
