@@ -48,7 +48,7 @@ describe('uploadToPortal', () => {
     );
   });
 
-  test('should work', async () => {
+  it('should work', async () => {
     const cfg = {
       upload: uploadConfig({
         apiKey: 'dummy-api-key',
