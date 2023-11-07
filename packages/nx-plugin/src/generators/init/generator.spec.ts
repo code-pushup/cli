@@ -1,5 +1,6 @@
 import { Tree, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
+import { TargetDefaults } from 'nx/src/config/nx-json';
 import { describe, expect, it } from 'vitest';
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
@@ -28,11 +29,13 @@ describe('init generator', () => {
   it('should run successfully', async () => {
     await initGenerator(tree, options);
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults || {};
-    expect(Object.keys(targetDefaults)).toContain(cpuTargetName);
+    const targetDefaults = readNxJson(tree)?.targetDefaults;
+    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
+      cpuTargetName,
+    );
     const cacheableOperations =
       readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations || {};
+        ?.cacheableOperations;
     expect(cacheableOperations).toContain(cpuTargetName);
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
@@ -46,11 +49,13 @@ describe('init generator', () => {
   it('should skip packageJson', async () => {
     await initGenerator(tree, { ...options, skipPackageJson: true });
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults || {};
-    expect(Object.keys(targetDefaults)).toContain(cpuTargetName);
+    const targetDefaults = readNxJson(tree)?.targetDefaults;
+    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
+      cpuTargetName,
+    );
     const cacheableOperations =
       readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations || {};
+        ?.cacheableOperations;
     expect(cacheableOperations).toContain(cpuTargetName);
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
