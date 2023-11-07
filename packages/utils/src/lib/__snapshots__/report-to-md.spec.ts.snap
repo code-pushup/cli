@@ -393,31 +393,31 @@ ESLint rule **require-render-return**, from _react_ plugin. [📖 Docs](https://
 
 🟨 <b>1.2 s</b> (score: 76)
 
- [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
+[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
 
 ### Largest Contentful Paint (Lighthouse)
 
 🟨 <b>1.5 s</b> (score: 81)
 
- [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
+[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
 
 ### Total Blocking Time (Lighthouse)
 
 🟩 <b>0 ms</b> (score: 100)
 
- [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
+[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
 
 ### Cumulative Layout Shift (Lighthouse)
 
 🟩 <b>0</b> (score: 100)
 
- [📖 Docs](https://web.dev/cls/)
+[📖 Docs](https://web.dev/cls/)
 
 ### Speed Index (Lighthouse)
 
 🟩 <b>1.2 s</b> (score: 93)
 
- [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
+[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
 
 
 
