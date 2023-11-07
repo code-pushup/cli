@@ -342,7 +342,6 @@
         "unicorn/prefer-top-level-await": "off",
         "unicorn/consistent-function-scoping": "off",
         "unicorn/no-useless-undefined": "off",
-        "vitest/no-alias-methods": "off",
         "vitest/no-conditional-tests": "off",
         "vitest/require-hook": "off",
         "vitest/require-to-throw-message": "off"

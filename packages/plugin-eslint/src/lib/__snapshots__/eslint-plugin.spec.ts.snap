@@ -424,11 +424,13 @@ Custom options:
   ]
 }
 \`\`\`",
+      "docsUrl": "",
       "slug": "nx-enforce-module-boundaries-9dba9763586d15c6",
       "title": "Ensure that module boundaries are respected within the monorepo",
     },
     {
       "description": "ESLint rule **dependency-checks**, from _@nx_ plugin.",
+      "docsUrl": "",
       "slug": "nx-dependency-checks",
       "title": "Checks dependencies in project's package.json for version mismatches",
     },

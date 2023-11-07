@@ -37,7 +37,7 @@ describe('executePlugin', () => {
 
   it('should throws with invalid plugin audits slug', async () => {
     const pluginCfg = invalidSlugPluginCfg;
-    await expect(() => executePlugin(pluginCfg)).rejects.toThrowError();
+    await expect(() => executePlugin(pluginCfg)).rejects.toThrow();
   });
 
   it('should throw if invalid runnerOutput is produced', async () => {
@@ -49,7 +49,7 @@ describe('executePlugin', () => {
       invalidAuditOutputs,
       join('tmp', 'out.json'),
     );
-    await expect(() => executePlugin(pluginCfg)).rejects.toThrowError(
+    await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
       'Plugin output of plugin with slug mock-plugin-slug',
     );
   });
@@ -77,6 +77,6 @@ describe('executePlugins', () => {
     const plugins: PluginConfig[] = [validPluginCfg, invalidSlugPluginCfg];
     await expect(() =>
       executePlugins(plugins, DEFAULT_OPTIONS),
-    ).rejects.toThrowError();
+    ).rejects.toThrow();
   });
 });
