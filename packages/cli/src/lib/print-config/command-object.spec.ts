@@ -29,13 +29,13 @@ describe('print-config-command-object', () => {
   it('should print existing config', async () => {
     const parsedArgv = await cli(baseArgs).parseAsync();
     expect(parsedArgv.persist.outputDir).toBe('tmp');
-    expect(parsedArgv.persist.format).toEqual(undefined);
-    expect(parsedArgv.upload?.organization).toEqual('code-pushup');
-    expect(parsedArgv.upload?.project).toEqual('cli');
-    expect(parsedArgv.upload?.apiKey).toEqual('dummy-api-key');
-    expect(parsedArgv.upload?.server).toEqual('https://example.com/api');
+    expect(parsedArgv.persist.format).toBeUndefined();
+    expect(parsedArgv.upload?.organization).toBe('code-pushup');
+    expect(parsedArgv.upload?.project).toBe('cli');
+    expect(parsedArgv.upload?.apiKey).toBe('dummy-api-key');
+    expect(parsedArgv.upload?.server).toBe('https://example.com/api');
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
+    expect(parsedArgv.plugins[0]?.slug).toBe('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 
@@ -60,7 +60,7 @@ describe('print-config-command-object', () => {
     expect(parsedArgv.upload?.apiKey).toEqual(overrides['upload.apiKey']);
     expect(parsedArgv.upload?.server).toEqual(overrides['upload.server']);
     expect(parsedArgv.plugins).toEqual(expect.any(Array));
-    expect(parsedArgv.plugins[0]?.slug).toEqual('plugin-1');
+    expect(parsedArgv.plugins[0]?.slug).toBe('plugin-1');
     expect(parsedArgv.categories).toEqual(expect.any(Array));
   });
 });
