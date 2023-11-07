@@ -181,14 +181,14 @@ describe('logPersistedResults', () => {
 
   it('should log report sizes correctly`', async () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10000] }]);
-    expect(logs.length).toBe(2);
+    expect(logs).toHaveLength(2);
     expect(logs).toContain('Generated reports successfully: ');
     expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
   });
 
   it('should log fails correctly`', async () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    expect(logs.length).toBe(2);
+    expect(logs).toHaveLength(2);
 
     expect(logs).toContain('Generated reports failed: ');
     expect(logs).toContain('- [1mfail[22m');
@@ -199,7 +199,7 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    expect(logs.length).toBe(4);
+    expect(logs).toHaveLength(4);
     expect(logs).toContain('Generated reports successfully: ');
     expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
 

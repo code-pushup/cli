@@ -18,24 +18,24 @@ describe('verbose-utils', () => {
     const spy = vi.fn();
     verboseHelper.exec(spy);
     expect(spy).toHaveBeenCalled();
-    expect(logs.length).toBe(0);
+    expect(logs).toHaveLength(0);
   });
 
   it('exec should work no-verbose', () => {
     const spy = vi.fn();
     noVerboseHelper.exec(spy);
     expect(spy).not.toHaveBeenCalled();
-    expect(logs.length).toBe(0);
+    expect(logs).toHaveLength(0);
   });
 
   it('log should work verbose', () => {
     verboseHelper.log('42');
-    expect(logs.length).toBe(1);
+    expect(logs).toHaveLength(1);
     expect(logs[0]).toBe('42');
   });
 
   it('log should work no-verbose', () => {
     noVerboseHelper.log('42');
-    expect(logs.length).toBe(0);
+    expect(logs).toHaveLength(0);
   });
 });
