@@ -1,7 +1,9 @@
 import nx from '@nx/devkit';
+import 'dotenv/config';
 import type { Linter } from 'eslint';
 import { jsonc } from 'jsonc';
 import { readFile, writeFile } from 'node:fs/promises';
+import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
 
@@ -43,11 +45,27 @@ const eslintConfig: Linter.Config = {
 };
 await writeFile(eslintrc, JSON.stringify(eslintConfig, null, 2));
 
+// load upload configuration from environment
+const envSchema = z.object({
+  CP_SERVER: z.string().url(),
+  CP_API_KEY: z.string().min(1),
+  CP_ORGANIZATION: z.string().min(1),
+  CP_PROJECT: z.string().min(1),
+});
+const env = await envSchema.parseAsync(process.env);
+
 const config: CoreConfig = {
   persist: {
     outputDir: '.code-pushup',
     filename: 'report',
     format: ['json', 'md'],
+  },
+
+  upload: {
+    server: env.CP_SERVER,
+    apiKey: env.CP_API_KEY,
+    organization: env.CP_ORGANIZATION,
+    project: env.CP_PROJECT,
   },
 
   plugins: [await eslintPlugin({ eslintrc, patterns })],
