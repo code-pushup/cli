@@ -39,8 +39,8 @@ describe('init generator', () => {
     expect(
       Object.keys(pkgJson.devDependencies).filter(dep =>
         devDependencyNames.includes(dep),
-      ).length,
-    ).toBe(devDependencyNames.length);
+      ),
+    ).toHaveLength(devDependencyNames.length);
   });
 
   it('should skip packageJson', async () => {
@@ -57,7 +57,7 @@ describe('init generator', () => {
     expect(
       Object.keys(pkgJson.devDependencies).filter(dep =>
         devDependencyNames.includes(dep),
-      ).length,
-    ).toBe(0);
+      ),
+    ).toHaveLength(0);
   });
 });
