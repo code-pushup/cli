@@ -25,7 +25,7 @@ export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
 export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
 export const issueSchema = z.object(
   {
-    message: z.string({ description: 'Descriptive error message' }).max(128),
+    message: z.string({ description: 'Descriptive error message' }).max(512),
     severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
   },
