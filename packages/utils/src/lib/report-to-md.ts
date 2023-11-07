@@ -304,9 +304,21 @@ function getDocsAndDescription({
   docsUrl,
   description,
 }: AuditReport | CategoryConfig): string {
-  return docsUrl
-    ? `${description || ''} ${link(docsUrl, '📖 Docs')}` + NEW_LINE + NEW_LINE
-    : '';
+  if (docsUrl) {
+    const docsLink = link(docsUrl, '📖 Docs');
+    if (!description) {
+      return docsLink + NEW_LINE + NEW_LINE;
+    }
+    if (description.endsWith('```')) {
+      // when description ends in code block, link must be moved to next paragraph
+      return description + NEW_LINE + NEW_LINE + docsLink + NEW_LINE + NEW_LINE;
+    }
+    return `${description} ${docsLink}${NEW_LINE}${NEW_LINE}`;
+  }
+  if (description) {
+    return description + NEW_LINE + NEW_LINE;
+  }
+  return '';
 }
 
 function getAuditResult(audit: AuditReport, isHtml = false): string {
