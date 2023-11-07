@@ -63,8 +63,8 @@ describe('executePlugins', () => {
     expect(pluginResult[0]?.date.endsWith('Z')).toBeTruthy();
     expect(pluginResult[0]?.duration).toBeTruthy();
 
-    expect(pluginResult[0]?.audits[0]?.slug).toEqual('mock-audit-slug');
-    expect(pluginResult[1]?.audits[0]?.slug).toEqual('mock-audit-slug');
+    expect(pluginResult[0]?.audits[0]?.slug).toBe('mock-audit-slug');
+    expect(pluginResult[1]?.audits[0]?.slug).toBe('mock-audit-slug');
     expect(() =>
       auditOutputsSchema.parse(pluginResult[0]?.audits),
     ).not.toThrow();
