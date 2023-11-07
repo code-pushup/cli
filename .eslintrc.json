@@ -341,8 +341,7 @@
         "unicorn/prefer-at": "off",
         "unicorn/prefer-top-level-await": "off",
         "unicorn/consistent-function-scoping": "off",
-        "unicorn/no-useless-undefined": "off",
-        "vitest/require-to-throw-message": "off"
+        "unicorn/no-useless-undefined": "off"
       }
     }
   ]
