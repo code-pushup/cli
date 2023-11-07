@@ -158,3 +158,8 @@ jobs:
         run: npx dist/packages/cli --config code-pushup.config.ts collect
       - name: Upload Code PushUp report to portal
         run: npx dist/packages/cli --config code-pushup.config.ts upload
+      - name: Save report files as workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-pushup-report
+          path: .code-pushup/
