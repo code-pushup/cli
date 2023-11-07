@@ -23,11 +23,11 @@ describe('calculateScore', () => {
   const scoreFn = (ref: (typeof refs)[number]) =>
     scores[ref.slug as keyof typeof scores];
 
-  test('Lighthouse performance group', () => {
+  it('Lighthouse performance group', () => {
     expect(calculateScore(refs, scoreFn)).toBeCloseTo(0.92);
   });
 
-  test('ignore refs with weight 0', () => {
+  it('ignore refs with weight 0', () => {
     expect(
       calculateScore(
         [

@@ -33,7 +33,7 @@ describe('collectAndPersistReports', () => {
     unmockConsole();
   });
 
-  test('should work', async () => {
+  it('should work', async () => {
     await collectAndPersistReports({
       ...DEFAULT_TESTING_CLI_OPTIONS,
       ...minimalConfig(outputDir),
