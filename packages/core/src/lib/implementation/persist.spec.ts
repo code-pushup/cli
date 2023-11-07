@@ -41,7 +41,7 @@ const readReport = (format: 'json' | 'md') => {
 
 const dummyReport = minimalReport();
 const dummyConfig = minimalConfig(outputDir);
-let logs: string[] = [];
+let logs: string[];
 
 const resetFiles = async () => {
   vol.reset();
@@ -60,7 +60,6 @@ const setupConsole = async () => {
   mockConsole(msg => logs.push(msg));
 };
 const teardownConsole = async () => {
-  logs = [];
   unmockConsole();
 };
 

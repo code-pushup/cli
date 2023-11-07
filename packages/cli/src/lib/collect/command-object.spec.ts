@@ -30,10 +30,11 @@ const cli = (args: string[]) =>
     ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsCollectCommandObject()],
   });
-let logs = [];
+let logs;
 
 describe('collect-command-object', () => {
   beforeEach(() => {
+    logs = [];
     cleanFolderPutGitKeep();
     mockConsole((...args: unknown[]) => {
       logs.push(...args);
@@ -41,7 +42,6 @@ describe('collect-command-object', () => {
   });
   afterEach(() => {
     cleanFolderPutGitKeep();
-    logs = [];
     unmockConsole();
   });
 

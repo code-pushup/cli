@@ -343,7 +343,6 @@
         "unicorn/consistent-function-scoping": "off",
         "unicorn/no-useless-undefined": "off",
         "vitest/no-conditional-tests": "off",
-        "vitest/require-hook": "off",
         "vitest/require-to-throw-message": "off"
       }
     }
