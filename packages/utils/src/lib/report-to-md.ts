@@ -4,7 +4,7 @@ import {
   Issue,
   PluginReport,
 } from '@code-pushup/models';
-import { CommitData, GITHUB_CLI_REPO_LINK } from './git';
+import { CommitData } from './git';
 import {
   NEW_LINE,
   details,
@@ -259,11 +259,8 @@ function reportToAboutSection(
   const date = new Date().toString();
   const { duration, version, plugins, categories } = report;
   const commitInfo = commitData
-    ? `${commitData.message} ([${commitData.hash.slice(
-        0,
-        7,
-      )}](${GITHUB_CLI_REPO_LINK}/commit/${commitData.hash}))`
-    : 'No commit data available';
+    ? `${commitData.message} (${commitData.hash.slice(0, 7)})`
+    : 'N/A';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,
     [

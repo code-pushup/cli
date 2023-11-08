@@ -1,6 +1,5 @@
 import { describe } from 'vitest';
 import { report } from '@code-pushup/models/testing';
-import { GITHUB_CLI_REPO_LINK } from './git';
 import { reportToMd } from './report-to-md';
 import { scoreReport } from './scoring';
 
@@ -24,10 +23,7 @@ describe('report-to-md', () => {
     };
     const mdReport = reportToMd(scoreReport(report()), commit);
     expect(mdReport).toContain(
-      `${commit.message} ([${commit.hash.slice(
-        0,
-        7,
-      )}](${GITHUB_CLI_REPO_LINK}/commit/${commit.hash}))`,
+      `${commit.message} (${commit.hash.slice(0, 7)})`,
     );
     expect(mdReport).toMatchSnapshot();
   });

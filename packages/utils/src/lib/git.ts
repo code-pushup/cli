@@ -8,8 +8,6 @@ export type CommitData = {
 };
 
 export const git = simpleGit();
-export const GITHUB_CLI_REPO_LINK =
-  'https://github.com/flowup/quality-metrics-cli';
 
 export async function getLatestCommit() {
   // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
