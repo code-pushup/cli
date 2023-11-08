@@ -5,6 +5,7 @@ import { join } from 'path';
 import { CoreConfig, Report } from '@code-pushup/models';
 import {
   formatBytes,
+  getLatestCommit,
   reportToMd,
   reportToStdout,
   scoreReport,
@@ -47,7 +48,14 @@ export async function persistReport(
 
   if (format.includes('md')) {
     scoredReport = scoredReport || scoreReport(report);
-    results.push({ format: 'md', content: reportToMd(scoredReport) });
+    const commitData = await getLatestCommit();
+    if (!commitData) {
+      console.warn('no commit data available');
+    }
+    results.push({
+      format: 'md',
+      content: reportToMd(scoredReport, commitData),
+    });
   }
 
   if (!existsSync(outputDir)) {

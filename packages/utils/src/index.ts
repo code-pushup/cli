@@ -7,7 +7,7 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, latestHash } from './lib/git';
+export { git, getLatestCommit } from './lib/git';
 export { importEsmModule } from './lib/load-file';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
