@@ -9,6 +9,7 @@ export async function lint(
   const eslint = new ESLint({
     overrideConfigFile: eslintrc,
     useEslintrc: false,
+    errorOnUnmatchedPattern: false,
   });
 
   const lintResults = await eslint.lintFiles(patterns);
