@@ -19,7 +19,7 @@ describe('report-to-md', () => {
       hash: '41682a2fec1d4ece81c696a26c08984baeb4bcf3',
       message: 'refactor(cli): fix exec target',
       author: 'BioPhoton',
-      date: '2021-09-10 12:00:00 +0200',
+      date: 'Sat Sep 10 12:00:00 2021 +0200',
     };
     const mdReport = reportToMd(scoreReport(report()), commit);
     expect(mdReport).toContain(
