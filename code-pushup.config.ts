@@ -31,9 +31,10 @@ const projects = Object.values(
 
 // determine plugin parameters
 const eslintrc = 'tmp-eslintrc.json';
-const patterns = projects.flatMap(
-  project => project.targets?.lint.options.lintFilePatterns ?? [],
-);
+const patterns = projects.flatMap(project => [
+  ...(project.targets?.lint.options.lintFilePatterns ?? []),
+  `${project.sourceRoot}/*.spec.ts`, // add test file glob to load vitest rules
+]);
 
 // create single ESLint config with project-specific overrides
 const eslintConfig: Linter.Config = {
