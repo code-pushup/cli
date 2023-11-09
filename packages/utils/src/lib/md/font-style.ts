@@ -2,6 +2,7 @@ const stylesMap = {
   i: '_', // italic
   b: '**', // bold
   s: '~', // strike through
+  c: '`', // code
 } as const;
 
 export type FontStyle = keyof typeof stylesMap;

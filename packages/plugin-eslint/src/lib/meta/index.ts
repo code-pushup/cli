@@ -1,12 +1,21 @@
 import type { ESLint } from 'eslint';
-import type { Audit } from '@code-pushup/models';
+import type { Audit, AuditGroup } from '@code-pushup/models';
+import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
 import { listRules } from './rules';
 import { ruleToAudit } from './transform';
 
-export async function listAudits(
+export async function listAuditsAndGroups(
   eslint: ESLint,
   patterns: string | string[],
-): Promise<Audit[]> {
+): Promise<{ audits: Audit[]; groups: AuditGroup[] }> {
   const rules = await listRules(eslint, patterns);
-  return rules.map(ruleToAudit);
+
+  const audits = rules.map(ruleToAudit);
+
+  const groups = [
+    ...groupsFromRuleTypes(rules),
+    ...groupsFromRuleCategories(rules),
+  ];
+
+  return { audits, groups };
 }

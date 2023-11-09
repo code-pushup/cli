@@ -45,7 +45,7 @@ describe('executeProcess', () => {
     const errorSpy = vi.fn();
     const processResult = await executeProcess(cfg).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(1);
-    expect(processResult).toBe(undefined);
+    expect(processResult).toBeUndefined();
     expect(observer?.complete).toHaveBeenCalledTimes(0);
     expect(observer?.next).toHaveBeenCalledTimes(2);
     expect(observer?.error).toHaveBeenCalledTimes(1);

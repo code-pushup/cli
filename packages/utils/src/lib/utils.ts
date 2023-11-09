@@ -3,8 +3,36 @@ import { mkdir, stat } from 'fs/promises';
 import { readFile } from 'fs/promises';
 import { formatBytes } from './report';
 
-export const reportHeadlineText = 'Code Pushup Report';
-export const reportOverviewTableHeaders = ['Category', 'Score', 'Audits'];
+export const reportHeadlineText = 'Code PushUp Report';
+export const reportOverviewTableHeaders = [
+  '🏷 Category',
+  '⭐ Score',
+  '🛡 Audits',
+];
+export const reportMetaTableHeaders: string[] = [
+  'Commit',
+  'Version',
+  'Duration',
+  'Plugins',
+  'Categories',
+  'Audits',
+];
+
+export const pluginMetaTableHeaders: string[] = [
+  'Plugin',
+  'Audits',
+  'Version',
+  'Duration',
+];
+
+// details headers
+
+export const detailsTableHeaders: string[] = [
+  'Severity',
+  'Message',
+  'Source file',
+  'Line(s)',
+];
 
 // === Transform
 
@@ -20,6 +48,10 @@ export function pluralize(text: string): string {
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
+}
+
+export function objectToKeys<T extends object>(obj: T) {
+  return Object.keys(obj) as (keyof T)[];
 }
 
 export function objectToEntries<T extends object>(obj: T) {
@@ -46,6 +78,44 @@ export function toUnixPath(
   }
 
   return unixPath;
+}
+
+export function formatReportScore(score: number): string {
+  return Math.round(score * 100).toString();
+}
+
+// === Markdown
+
+export function getRoundScoreMarker(score: number): string {
+  if (score >= 0.9) {
+    return '🟢';
+  }
+  if (score >= 0.5) {
+    return '🟡';
+  }
+  return '🔴';
+}
+
+export function getSquaredScoreMarker(score: number): string {
+  if (score >= 0.9) {
+    return '🟩';
+  }
+  if (score >= 0.5) {
+    return '🟨';
+  }
+  return '🟥';
+}
+
+export function getSeverityIcon(
+  severity: 'info' | 'warning' | 'error',
+): string {
+  if (severity === 'error') {
+    return '🚨';
+  }
+  if (severity === 'warning') {
+    return '⚠️';
+  }
+  return 'ℹ️';
 }
 
 // === Validation

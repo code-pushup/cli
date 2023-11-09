@@ -86,9 +86,10 @@ describe('lint', () => {
 
   it('should correctly use ESLint Node API', async () => {
     await lint('.eslintrc.js', ['**/*.js']);
-    expect(ESLint).toHaveBeenCalledWith({
+    expect(ESLint).toHaveBeenCalledWith<ConstructorParameters<typeof ESLint>>({
+      overrideConfigFile: '.eslintrc.js',
       useEslintrc: false,
-      baseConfig: { extends: '.eslintrc.js' },
+      errorOnUnmatchedPattern: false,
     });
     expect(eslint.lintFiles).toHaveBeenCalledTimes(1);
     expect(eslint.lintFiles).toHaveBeenCalledWith(['**/*.js']);

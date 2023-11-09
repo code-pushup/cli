@@ -51,7 +51,7 @@ npx nx run-many -t test
 npx nx build cli
 
 # lint projects affected by changes (compared to main branch)
-npx nx affected:lint --max-warnings=0
+npx nx affected:lint
 ```
 
 ### Git

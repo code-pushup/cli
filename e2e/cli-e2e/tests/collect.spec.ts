@@ -44,10 +44,7 @@ describe('CLI collect', () => {
     const reportFileName = filename();
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [
-        ...baseArgs,
-        `--persist.filename=${reportFileName}`,
-      ],
+      args: [...baseArgs, `--persist.filename=${reportFileName}`],
       cwd: 'examples/react-todos-app',
     });
 
@@ -77,7 +74,7 @@ describe('CLI collect', () => {
 
     const md = await readTextFile(reportFile(reportFileName, 'md'));
 
-    expect(md).toContain('# Code Pushup Report');
+    expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);
     expect(md).toContain(exampleAuditTitle);
   });
@@ -97,7 +94,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    expect(stdout).toContain('Code Pushup Report');
+    expect(stdout).toContain('Code PushUp Report');
     expect(stdout).toContain('Generated reports');
     expect(stdout).toContain(reportFileName);
     expect(stdout).toContain(exampleCategoryTitle);

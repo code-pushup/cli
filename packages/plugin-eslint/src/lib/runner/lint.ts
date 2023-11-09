@@ -7,8 +7,9 @@ export async function lint(
   patterns: string[],
 ): Promise<LinterOutput> {
   const eslint = new ESLint({
+    overrideConfigFile: eslintrc,
     useEslintrc: false,
-    baseConfig: { extends: eslintrc },
+    errorOnUnmatchedPattern: false,
   });
 
   const lintResults = await eslint.lintFiles(patterns);

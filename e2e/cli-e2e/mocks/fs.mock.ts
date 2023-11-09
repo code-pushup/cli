@@ -29,10 +29,7 @@ export function cleanFolderPutGitKeep<T extends object>(
   }
 }
 
-export function setupFolder(
-  dirName = 'tmp',
-  content?: Record<string, string>,
-) {
+export function setupFolder(dirName = 'tmp', content?: Record<string, string>) {
   ensureDirectoryExists(dirName);
   if (content) {
     for (const fileName in content) {

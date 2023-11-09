@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
-import { listAudits } from './meta';
+import { listAuditsAndGroups } from './meta';
 import { createRunnerConfig } from './runner';
 
 /**
@@ -33,11 +33,11 @@ export async function eslintPlugin(
   const { eslintrc, patterns } = eslintPluginConfigSchema.parse(config);
 
   const eslint = new ESLint({
+    overrideConfigFile: eslintrc,
     useEslintrc: false,
-    baseConfig: { extends: eslintrc },
   });
 
-  const audits = await listAudits(eslint, patterns);
+  const { audits, groups } = await listAuditsAndGroups(eslint, patterns);
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -54,10 +54,7 @@ export async function eslintPlugin(
     version,
 
     audits,
-
-    // TODO: groups?
-    // - could be `problem`/`suggestion`/`layout` if based on `meta.type`
-    // - `meta.category` (deprecated, but still used by some) could also be a source of groups
+    groups,
 
     runner: createRunnerConfig(runnerScriptPath, audits, eslintrc, patterns),
   };
