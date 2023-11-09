@@ -32,11 +32,13 @@ export async function persistReport(
   const { persist } = config;
   const outputDir = persist.outputDir;
   const filename = persist?.filename || reportName(report);
-  let { format } = persist;
-  format = format && format.length !== 0 ? format : ['stdout'];
-  let scoredReport;
+  const format =
+    persist.format && persist.format.length !== 0 ? persist.format : ['stdout'];
+
+  // Score the report once at the start
+  const scoredReport = scoreReport(report);
+
   if (format.includes('stdout')) {
-    scoredReport = scoreReport(report);
     reportToStdout(scoredReport);
   }
 
@@ -47,15 +49,18 @@ export async function persistReport(
   ];
 
   if (format.includes('md')) {
-    scoredReport = scoredReport || scoreReport(report);
-    const commitData = await getLatestCommit();
-    if (!commitData) {
-      console.warn('no commit data available');
+    try {
+      const commitData = await getLatestCommit();
+      if (!commitData) {
+        console.warn('no commit data available');
+      }
+      results.push({
+        format: 'md',
+        content: reportToMd(scoredReport, commitData),
+      });
+    } catch (e) {
+      console.warn(e);
     }
-    results.push({
-      format: 'md',
-      content: reportToMd(scoredReport, commitData),
-    });
   }
 
   if (!existsSync(outputDir)) {
