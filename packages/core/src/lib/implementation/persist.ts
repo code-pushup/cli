@@ -4,6 +4,7 @@ import { join } from 'path';
 import { CoreConfig, Report, reportFileName } from '@code-pushup/models';
 import {
   MultipleFileResults,
+  getLatestCommit,
   reportToMd,
   reportToStdout,
   scoreReport,
@@ -44,7 +45,14 @@ export async function persistReport(
 
   if (format.includes('md')) {
     scoredReport = scoredReport || scoreReport(report);
-    results.push({ format: 'md', content: reportToMd(scoredReport) });
+    const commitData = await getLatestCommit();
+    if (!commitData) {
+      console.warn('no commit data available');
+    }
+    results.push({
+      format: 'md',
+      content: reportToMd(scoredReport, commitData),
+    });
   }
 
   if (!existsSync(outputDir)) {

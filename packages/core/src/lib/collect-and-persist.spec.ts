@@ -34,7 +34,7 @@ describe('collectAndPersistReports', () => {
     unmockConsole();
   });
 
-  test('should work', async () => {
+  it('should work', async () => {
     const cfg = minimalConfig(outputDir);
     const filename = getFilename();
     cfg.persist.filename = filename;

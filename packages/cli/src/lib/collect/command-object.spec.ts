@@ -28,10 +28,12 @@ const cli = (args: string[]) =>
     ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsCollectCommandObject()],
   });
-let logs = [];
 
 describe('collect-command-object', () => {
+  let logs: unknown[];
+
   beforeEach(() => {
+    logs = [];
     mockConsole((...args: unknown[]) => {
       logs.push(...args);
     });

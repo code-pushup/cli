@@ -2,15 +2,18 @@ import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'path';
 import {
   CategoryRef,
+  IssueSeverity as CliIssueSeverity,
   Format,
-  IssueSeverity,
   PersistConfig,
   REPORT_NAME_PATTERN,
 } from '@code-pushup/models';
+import { ScoredReport } from './scoring';
 import { ensureDirectoryExists, pluralize } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
+export const README_LINK =
+  'https://github.com/flowup/quality-metrics-cli#readme';
 
 export function slugify(text: string): string {
   return text
@@ -32,6 +35,13 @@ export function formatBytes(bytes: number, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
+export function formatDuration(duration: number): string {
+  if (duration < 1000) {
+    return `${duration} ms`;
+  }
+  return `${(duration / 1000).toFixed(2)} s`;
+}
+
 export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);
@@ -48,11 +58,30 @@ export function countWeightedRefs(refs: CategoryRef[]) {
     .reduce((sum, { weight }) => sum + weight, 0);
 }
 
-export function compareIssueSeverity(
-  severity1: IssueSeverity,
-  severity2: IssueSeverity,
+export function countCategoryAudits(
+  refs: CategoryRef[],
+  plugins: ScoredReport['plugins'],
 ): number {
-  const levels: Record<IssueSeverity, number> = {
+  return refs.reduce((acc, ref) => {
+    if (ref.type === 'group') {
+      const groupRefs = plugins
+        .find(({ slug }) => slug === ref.plugin)
+        ?.groups?.find(({ slug }) => slug === ref.slug)?.refs;
+
+      if (!groupRefs?.length) {
+        return acc;
+      }
+      return acc + groupRefs.length;
+    }
+    return acc + 1;
+  }, 0);
+}
+
+export function compareIssueSeverity(
+  severity1: CliIssueSeverity,
+  severity2: CliIssueSeverity,
+): number {
+  const levels: Record<CliIssueSeverity, number> = {
     info: 0,
     warning: 1,
     error: 2,

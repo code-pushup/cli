@@ -1,6 +1,13 @@
 import { join } from 'node:path';
-import { Audit, AuditReport, PluginConfig } from '../../src';
-import { echoRunnerConfig } from './echo-runner-config.mock';
+import {
+  Audit,
+  AuditReport,
+  PluginConfig,
+  auditSchema,
+  pluginConfigSchema,
+} from '../../src';
+import { auditReportSchema } from '../../src/lib/report';
+import { echoRunnerConfig } from './runner-config.mock';
 
 export function pluginConfig(
   auditOutputs: AuditReport[],
@@ -11,7 +18,7 @@ export function pluginConfig(
     outputDir || 'tmp',
     outputFile || `out.${Date.now()}.json`,
   );
-  return {
+  return pluginConfigSchema.parse({
     slug: 'mock-plugin-slug',
     title: 'Plugin Title',
     icon: 'nrwl',
@@ -20,20 +27,20 @@ export function pluginConfig(
     audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
     runner: echoRunnerConfig(auditOutputs, pluginOutputFile),
     ...(opt || {}),
-  } satisfies PluginConfig;
+  });
 }
 
 export function auditConfig(opt?: Partial<Audit>): Audit {
-  return {
+  return auditSchema.parse({
     slug: opt?.slug || 'mock-audit-slug',
     title: opt?.title || 'Audit Title',
     description: opt?.description || 'audit description',
     docsUrl: opt?.docsUrl || 'http://www.my-docs.dev',
-  } satisfies Required<Audit>;
+  }) as Required<Audit>;
 }
 
 export function auditReport(opt?: Partial<AuditReport>): AuditReport {
-  return {
+  return auditReportSchema.parse({
     slug: 'mock-audit-slug',
     title: 'Audit Title',
     description: 'audit description',
@@ -45,5 +52,5 @@ export function auditReport(opt?: Partial<AuditReport>): AuditReport {
       issues: [],
     },
     ...(opt || {}),
-  } satisfies AuditReport;
+  }) as Required<AuditReport>;
 }
