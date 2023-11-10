@@ -26,10 +26,9 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-
-const filename = () => 'report';
 const dummyReport = report();
 
+// @TODO move into test library
 const baseArgs = [
   'upload',
   ...objectToCliArgs({
@@ -56,14 +55,12 @@ describe('upload-command-object', () => {
   });
 
   it('should override config with CLI arguments', async () => {
-    const reportFileName = filename();
     setupFolder('tmp', {
-      [reportFileName + '.json']: JSON.stringify(dummyReport),
+      ['report.json']: JSON.stringify(dummyReport),
     });
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
-        'persist.filename': reportFileName,
         //   'upload.organization': 'some-other-organization', @TODO
         //   'upload.project': 'some-other-project', @TODO
         'upload.apiKey': 'some-other-api-key',
@@ -80,7 +77,7 @@ describe('upload-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    const reportFileName = filename();
+    const reportFileName = 'my-report';
     setupFolder('tmp', {
       [reportFileName + '.json']: JSON.stringify(dummyReport),
     });

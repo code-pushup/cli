@@ -22,8 +22,8 @@ vi.mock('@code-pushup/portal-client', async () => {
 });
 
 const outputDir = 'tmp';
-const reportPath = (filename: string, format: 'json' | 'md' = 'json') =>
-  join(outputDir, `${filename}.${format}`);
+const reportPath = (format: 'json' | 'md' = 'json') =>
+  join(outputDir, `report.${format}`);
 
 describe('collectAndPersistReports', () => {
   beforeEach(async () => {
@@ -35,15 +35,11 @@ describe('collectAndPersistReports', () => {
 
   it('should work', async () => {
     const cfg = minimalConfig(outputDir);
-    const filename = 'report';
-    cfg.persist.filename = filename;
     await collectAndPersistReports({
       ...DEFAULT_TESTING_CLI_OPTIONS,
       ...cfg,
     });
-    const result = JSON.parse(
-      readFileSync(reportPath(filename)).toString(),
-    ) as Report;
+    const result = JSON.parse(readFileSync(reportPath()).toString()) as Report;
     expect(result.plugins[0]?.audits[0]?.slug).toBe('audit-1');
   });
 
