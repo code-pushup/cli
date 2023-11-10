@@ -46,7 +46,7 @@ describe('executePlugin', () => {
         transform: (d: Record<string, unknown>[]) =>
           d.map((d, idx) => ({
             ...d,
-            slug: '-' + idx,
+            slug: '-invalid-slug-' + idx,
           })) as unknown as AuditOutputs,
       },
     };
