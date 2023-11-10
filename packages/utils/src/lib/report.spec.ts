@@ -25,7 +25,7 @@ vi.mock('fs/promises', async () => {
 
 const outputDir = MEMFS_VOLUME;
 
-const resetFiles = async (files?: Record<string, string>) => {
+const resetFiles = (files?: Record<string, string>) => {
   vol.reset();
   vol.fromJSON(files || {}, outputDir);
 };
