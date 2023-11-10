@@ -1,14 +1,34 @@
-import { describe, expect } from 'vitest';
-import { CategoryRef } from '@code-pushup/models';
+import { vol } from 'memfs';
+import { afterEach, describe, expect, vi } from 'vitest';
+import { CategoryRef, IssueSeverity, PluginReport } from '@code-pushup/models';
+import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
   countWeightedRefs,
   formatBytes,
   formatCount,
+  loadReport,
   slugify,
   sumRefs,
 } from './report';
+
+// Mock file system API's
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
+
+const outputDir = MEMFS_VOLUME;
+
+const resetFiles = (files?: Record<string, string>) => {
+  vol.reset();
+  vol.fromJSON(files || {}, outputDir);
+};
 
 describe('slugify', () => {
   it.each([
@@ -149,5 +169,57 @@ describe('sumRefs', () => {
       },
     ];
     expect(sumRefs(refs)).toBe(11);
+  });
+});
+
+describe('loadReport', () => {
+  afterEach(() => {
+    resetFiles({});
+  });
+
+  it('should load reports form outputDir', async () => {
+    const reportMock = report();
+    resetFiles({
+      [`report.json`]: JSON.stringify(reportMock),
+      [`report.md`]: 'test-42',
+    });
+    const reports = await loadReport({
+      outputDir,
+      filename: 'report',
+      format: 'json',
+    });
+    expect(reports).toEqual(reportMock);
+  });
+
+  it('should load reports by format', async () => {
+    resetFiles({
+      [`report.dummy.md`]: 'test-7',
+      [`report.json`]: '{"test":42}',
+      [`report.md`]: 'test-42',
+    });
+    const reports = await loadReport({
+      outputDir,
+      format: 'md',
+      filename: 'report',
+    });
+    expect(reports).toBe('test-42');
+  });
+
+  it('should throw for invalid json reports', async () => {
+    const reportMock = report();
+    reportMock.plugins = [
+      {
+        ...reportMock.plugins[0],
+        slug: '-Invalud_slug',
+      } as unknown as PluginReport,
+    ];
+
+    resetFiles({
+      [`report.json`]: JSON.stringify(reportMock),
+    });
+
+    await expect(
+      loadReport({ outputDir, filename: 'report', format: 'json' }),
+    ).rejects.toThrow('validation');
   });
 });

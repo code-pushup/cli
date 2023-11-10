@@ -1,11 +1,11 @@
-import chalk from 'chalk';
 import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CoreConfig, Report } from '@code-pushup/models';
 import {
-  formatBytes,
+  MultipleFileResults,
   getLatestCommit,
+  logMultipleFileResults,
   reportToMd,
   reportToStdout,
   scoreReport,
@@ -23,15 +23,13 @@ export class PersistError extends Error {
   }
 }
 
-export type PersistResult = PromiseSettledResult<readonly [string, number]>[];
-
 export async function persistReport(
   report: Report,
   config: CoreConfig,
-): Promise<PersistResult> {
+): Promise<MultipleFileResults> {
   const { persist } = config;
   const outputDir = persist.outputDir;
-  const filename = persist?.filename || reportName(report);
+  const filename = persist.filename;
   let { format } = persist;
   format = format && format.length !== 0 ? format : ['stdout'];
   let scoredReport;
@@ -86,34 +84,6 @@ export async function persistReport(
   );
 }
 
-export function logPersistedResults(persistResult: PersistResult) {
-  const succeededPersistedResults = persistResult.filter(
-    (result): result is PromiseFulfilledResult<[string, number]> =>
-      result.status === 'fulfilled',
-  );
-
-  if (succeededPersistedResults.length) {
-    console.log(`Generated reports successfully: `);
-    succeededPersistedResults.forEach(res => {
-      const [fileName, size] = res.value;
-      console.log(
-        `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
-      );
-    });
-  }
-
-  const failedPersistedResults = persistResult.filter(
-    (result): result is PromiseRejectedResult => result.status === 'rejected',
-  );
-
-  if (failedPersistedResults.length) {
-    console.log(`Generated reports failed: `);
-    failedPersistedResults.forEach(result => {
-      console.log(`- ${chalk.bold(result.reason)}`);
-    });
-  }
-}
-
-function reportName(report: Report): string {
-  return `report.${report.date}`;
+export function logPersistedResults(persistResults: MultipleFileResults) {
+  logMultipleFileResults(persistResults, 'Generated reports');
 }

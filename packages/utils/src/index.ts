@@ -19,6 +19,7 @@ export {
   formatBytes,
   formatCount,
   slugify,
+  loadReport,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
@@ -33,5 +34,9 @@ export {
   readTextFile,
   toArray,
   toUnixPath,
+  ensureDirectoryExists,
+  FileResult,
+  MultipleFileResults,
+  logMultipleFileResults,
 } from './lib/utils';
 export { verboseUtils } from './lib/verbose-utils';

@@ -32,7 +32,6 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
@@ -70,6 +69,7 @@ describe('autorun-command-object', () => {
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
+        'persist.filename': 'my-report',
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
