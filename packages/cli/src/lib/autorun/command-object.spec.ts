@@ -32,7 +32,6 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-const filename = () => 'report';
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
@@ -70,7 +69,7 @@ describe('autorun-command-object', () => {
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
-        'persist.filename': filename(),
+        'persist.filename': 'my-report',
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
@@ -87,13 +86,7 @@ describe('autorun-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    const args = [
-      ...baseArgs,
-      ...objectToCliArgs({
-        'persist.filename': filename(),
-      }),
-    ];
-    await cli(args).parseAsync();
+    await cli(baseArgs).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
