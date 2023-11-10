@@ -4,9 +4,7 @@ import { CliArgsObject } from '@code-pushup/utils';
 import { configFile, execCli, extensions } from '../mocks/utils';
 
 const execCliPrintConfig = (argObj: Partial<CliArgsObject>) =>
-  execCli('print-config', {
-    ...argObj,
-  });
+  execCli('print-config', argObj);
 
 describe('print-config', () => {
   it.each(extensions)('should load .%s config file', async ext => {
