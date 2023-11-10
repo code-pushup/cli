@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { mkdir, readFile, stat } from 'fs/promises';
 import { formatBytes } from './report';
 
+// @TODO move logic out of this file as much as possible. use report.ts or scoring.ts instead.
 export const reportHeadlineText = 'Code PushUp Report';
 export const reportOverviewTableHeaders = [
   '🏷 Category',
@@ -66,24 +67,16 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
-export function toUnixPath(
-  path: string,
-  options?: { toRelative?: boolean },
-): string {
-  const unixPath = path.replace(/\\/g, '/');
-
-  if (options?.toRelative) {
-    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
-  }
-
-  return unixPath;
+export function distinct<T extends string | number | boolean>(array: T[]): T[] {
+  return Array.from(new Set(array));
 }
 
+// @TODO move to report.ts
 export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
 }
 
-// === Markdown
+// === Markdown @TODO move to report-to-md.ts
 
 export function getRoundScoreMarker(score: number): string {
   if (score >= 0.9) {
@@ -117,19 +110,28 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-// === Validation
+// === Filesystem @TODO move to fs-utils.ts
 
-export function distinct<T extends string | number | boolean>(array: T[]): T[] {
-  return Array.from(new Set(array));
+export function toUnixPath(
+  path: string,
+  options?: { toRelative?: boolean },
+): string {
+  const unixPath = path.replace(/\\/g, '/');
+
+  if (options?.toRelative) {
+    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+  }
+
+  return unixPath;
 }
-
-// === Filesystem
 
 export async function ensureDirectoryExists(baseDir: string) {
   try {
-    await stat(baseDir);
-  } catch {
     await mkdir(baseDir, { recursive: true });
+  } catch (error) {
+    if ((error as { code: string }).code !== 'EEXIST') {
+      throw error;
+    }
   }
 }
 

@@ -1,18 +1,14 @@
 import { vol } from 'memfs';
 import { afterEach, describe, expect, vi } from 'vitest';
-import {
-  CategoryRef,
-  IssueSeverity,
-  reportFileName,
-} from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
+import { CategoryRef, IssueSeverity } from '@code-pushup/models';
+import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
   countWeightedRefs,
   formatBytes,
   formatCount,
-  loadReports,
+  loadReport,
   slugify,
   sumRefs,
 } from './report';
@@ -176,71 +172,54 @@ describe('sumRefs', () => {
   });
 });
 
-describe('loadReports', () => {
+describe('loadReport', () => {
   afterEach(() => {
     resetFiles({});
   });
 
   it('should load reports form outputDir', async () => {
-    const report = { date: new Date().toISOString() };
+    const reportMock = report();
     resetFiles({
-      [`${reportFileName(report)}.json`]: '{"test":42}',
-      [`${reportFileName(report)}.md`]: 'test-42',
+      [`report.json`]: JSON.stringify(reportMock),
+      [`report.md`]: 'test-42',
     });
-    const reports = await loadReports({ outputDir, filename: 'report' });
-    expect(reports).toEqual([
-      {
-        status: 'fulfilled',
-        value: [`${reportFileName(report)}.json`, '{"test":42}'],
-      },
-      {
-        status: 'fulfilled',
-        value: [`${reportFileName(report)}.md`, 'test-42'],
-      },
-    ]);
-  });
-
-  it('should load reports by filename', async () => {
-    const report = { date: new Date().toISOString() };
-    resetFiles({
-      [`my-report.md`]: 'my-report-content',
-      [`my-report.test.json`]: '{"test":"my-report-content"}',
-      [`${reportFileName(report)}.md`]: 'test-42',
+    const reports = await loadReport({
+      outputDir,
+      filename: 'report',
+      format: 'json',
     });
-    const reports = await loadReports({ outputDir, filename: 'my-report' });
-    expect(reports).toEqual([
-      {
-        status: 'fulfilled',
-        value: [`my-report.md`, 'my-report-content'],
-      },
-      {
-        status: 'fulfilled',
-        value: [`my-report.test.json`, '{"test":"my-report-content"}'],
-      },
-    ]);
+    expect(reports).toEqual(reportMock);
   });
 
   it('should load reports by format', async () => {
-    const report = { date: new Date().toISOString() };
     resetFiles({
-      [`${reportFileName(report)}.dummy.md`]: 'test-7',
-      [`${reportFileName(report)}.json`]: '{"test":42}',
-      [`${reportFileName(report)}.md`]: 'test-42',
+      [`report.dummy.md`]: 'test-7',
+      [`report.json`]: '{"test":42}',
+      [`report.md`]: 'test-42',
     });
-    const reports = await loadReports({
+    const reports = await loadReport({
       outputDir,
-      format: ['md'],
+      format: 'md',
       filename: 'report',
     });
-    expect(reports).toEqual([
+    expect(reports).toEqual('test-42');
+  });
+
+  it('should throw for invalid json reports', async () => {
+    const reportMock = report();
+    reportMock.plugins = [
       {
-        status: 'fulfilled',
-        value: [`${reportFileName(report)}.dummy.md`, 'test-7'],
-      },
-      {
-        status: 'fulfilled',
-        value: [`${reportFileName(report)}.md`, 'test-42'],
-      },
-    ]);
+        ...reportMock.plugins[0],
+        slug: '-Invalud_slug',
+      } as any,
+    ];
+
+    resetFiles({
+      [`report.json`]: JSON.stringify(reportMock),
+    });
+
+    expect(() =>
+      loadReport({ outputDir, filename: 'report', format: 'json' }),
+    ).rejects.toThrow('validation');
   });
 });

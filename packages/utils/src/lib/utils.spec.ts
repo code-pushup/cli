@@ -1,8 +1,12 @@
+import { vol } from 'memfs';
+import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
   countOccurrences,
   distinct,
+  ensureDirectoryExists,
   logMultipleFileResults,
   pluralize,
   toArray,
@@ -18,6 +22,13 @@ vi.mock('fs/promises', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
   return memfs.fs.promises;
 });
+
+const outputDir = MEMFS_VOLUME;
+
+const resetFiles = async (files?: Record<string, string>) => {
+  vol.reset();
+  vol.fromJSON(files || {}, outputDir);
+};
 
 describe('pluralize', () => {
   it.each([
@@ -85,6 +96,28 @@ describe('distinct', () => {
       'no-invalid-regexp',
       '@typescript-eslint/no-unused-vars',
     ]);
+  });
+});
+
+describe('ensureDirectoryExists', () => {
+  beforeEach(() => {
+    resetFiles();
+  });
+
+  it('should create folder', async () => {
+    resetFiles();
+    expect(
+      ensureDirectoryExists(join(outputDir, 'sub', 'dir')),
+    ).resolves.toEqual(void 0);
+  });
+
+  it('should throw if path is a file path', async () => {
+    resetFiles({
+      'test.json': '{}',
+    });
+    expect(
+      ensureDirectoryExists(join(outputDir, 'sub', 'dir', 'test.json')),
+    ).rejects.toThrow('c');
   });
 });
 

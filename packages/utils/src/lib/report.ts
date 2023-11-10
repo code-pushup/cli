@@ -9,7 +9,7 @@ import {
   reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';
-import { ensureDirectoryExists, pluralize } from './utils';
+import { ensureDirectoryExists, pluralize, readJsonFile } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -95,28 +95,6 @@ export function sumRefs(refs: CategoryRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
 }
 
-export async function loadReports(options: PersistConfig) {
-  const { outputDir, filename, format } = options;
-  await ensureDirectoryExists(outputDir);
-
-  const dirResult = await readdir(outputDir);
-
-  return await Promise.allSettled(
-    dirResult
-      // filter by file extension
-      .filter(file =>
-        format ? format.find(ext => file.endsWith(`.${ext}`)) : true,
-      )
-      // filter by file name
-      .filter(file =>
-        filename
-          ? file.includes(filename)
-          : new RegExp(REPORT_NAME_PATTERN).test(file),
-      )
-      .map(file => getFileResult(file, outputDir)),
-  );
-}
-
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
 export async function loadReport<T extends Format>(
   options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
@@ -126,11 +104,11 @@ export async function loadReport<T extends Format>(
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
   const filePath = join(outputDir, `${filename}.${format}`);
-  const content = await readFile(filePath, 'utf8');
+  const content = await readJsonFile(filePath);
   const z: Format = 'json' as const;
   if (format === z) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return reportSchema.parse(JSON.parse(content)) as any;
+    return reportSchema.parse(content) as any;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return content as any;
