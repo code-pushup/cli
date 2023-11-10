@@ -6,8 +6,6 @@ import { middlewares } from './middlewares';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
-const demandCommand: [number, string] = [0, 'no command required'];
-
 describe('yargsCli', () => {
   it('global options should provide correct defaults', async () => {
     const args: string[] = [];
@@ -42,7 +40,6 @@ describe('yargsCli', () => {
 
     const parsedArgv = await yargsCli(args, {
       options,
-      demandCommand,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.progress).toBe(false);
