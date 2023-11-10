@@ -1,6 +1,8 @@
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import {
+  AuditOutput,
+  AuditOutputs,
   AuditReport,
   PluginConfig,
   auditOutputsSchema,
@@ -80,5 +82,30 @@ describe('executePlugins', () => {
     await expect(() =>
       executePlugins(plugins, DEFAULT_OPTIONS),
     ).rejects.toThrow(/Plugin output of plugin .* is invalid./);
+  });
+
+  it('should use transform if provided', async () => {
+    const plugins = [
+      {
+        ...validPluginCfg,
+        runner: {
+          ...validPluginCfg.runner,
+          transform: (outputs: Record<string, unknown>[]): AuditOutputs => {
+            return outputs.map(output => {
+              return {
+                ...output,
+                displayValue:
+                  'transformed slug description - ' +
+                  (output as { slug: string }).slug,
+              } as unknown as AuditOutput;
+            });
+          },
+        },
+      },
+    ];
+    const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
+    expect(pluginResult[0]?.audits[0]?.displayValue).toBe(
+      'transformed slug description - mock-audit-slug',
+    );
   });
 });

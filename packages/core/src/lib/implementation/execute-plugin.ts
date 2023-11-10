@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
   PluginConfig,
@@ -10,6 +9,7 @@ import {
   ProcessObserver,
   executeProcess,
   getProgressBar,
+  readJsonFile,
 } from '@code-pushup/utils';
 
 /**
@@ -78,10 +78,21 @@ export async function executePlugin(
     );
 
     // read process output from file system and parse it
-    const auditOutputs = auditOutputsSchema.parse(
-      JSON.parse((await readFile(processOutputPath)).toString()),
+    let unknownAuditOutputs = await readJsonFile<Record<string, unknown>[]>(
+      processOutputPath,
     );
 
+    // parse transform unknownAuditOutputs to auditOutputs
+    if (pluginConfig.runner?.transform) {
+      unknownAuditOutputs = pluginConfig.runner.transform(
+        unknownAuditOutputs,
+      ) as Record<string, unknown>[];
+    }
+
+    // validate audit outputs
+    const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
+
+    // enrich auditOutputs
     const audits = auditOutputs.map(auditOutput => {
       const auditMetadata = pluginConfig.audits.find(
         audit => audit.slug === auditOutput.slug,

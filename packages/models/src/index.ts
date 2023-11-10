@@ -29,7 +29,11 @@ export {
   AuditGroup,
   auditGroupSchema,
 } from './lib/plugin-config-groups';
-export { AuditOutput, auditOutputsSchema } from './lib/plugin-process-output';
+export {
+  AuditOutput,
+  AuditOutputs,
+  auditOutputsSchema,
+} from './lib/plugin-process-output';
 export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,

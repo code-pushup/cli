@@ -128,7 +128,7 @@ export async function readTextFile(path: string): Promise<string> {
   return buffer.toString();
 }
 
-export async function readJsonFile(path: string): Promise<unknown> {
+export async function readJsonFile<T = unknown>(path: string): Promise<T> {
   const text = await readTextFile(path);
   return JSON.parse(text);
 }
