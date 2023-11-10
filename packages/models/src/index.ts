@@ -1,4 +1,3 @@
-export {} from './lib/implementation/utils';
 export {
   CategoryConfig,
   CategoryRef,
