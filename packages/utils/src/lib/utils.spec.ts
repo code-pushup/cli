@@ -105,10 +105,11 @@ describe('ensureDirectoryExists', () => {
   });
 
   it('should create folder', async () => {
-    resetFiles();
+    const dir = join(MEMFS_VOLUME, 'sub', 'dir');
+    await ensureDirectoryExists(dir);
     await expect(
-      ensureDirectoryExists(join(outputDir, 'sub', 'dir')),
-    ).resolves.toEqual(void 0);
+      stat(dir).then(stats => stats.isDirectory()),
+    ).resolves.toBeTruthy();
   });
 });
 
