@@ -18,11 +18,11 @@ export async function upload(
   }
   const { apiKey, server, organization, project } = options.upload;
   const { outputDir, filename } = options.persist;
-  const report = (await loadReport({
+  const report: Report = await loadReport({
     outputDir,
     filename: filename,
     format: 'json',
-  })) as Report;
+  });
   const commitData = await getLatestCommit();
 
   if (!commitData) {

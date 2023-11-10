@@ -4,6 +4,7 @@ import {
   IssueSeverity as CliIssueSeverity,
   Format,
   PersistConfig,
+  Report,
   reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';

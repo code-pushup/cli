@@ -38,7 +38,7 @@ const outputDir = MEMFS_VOLUME;
 const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputDir, `${'report'}.${format}`);
 
-let logs: string[] = [];
+let logs: string[];
 const resetFiles = async (fileContent?: Record<string, string>) => {
   vol.reset();
   vol.fromJSON(fileContent || {}, MEMFS_VOLUME);

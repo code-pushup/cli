@@ -30,7 +30,7 @@ describe('print-config-command-object', () => {
     const parsedArgv = await cli(baseArgs).parseAsync();
     expect(parsedArgv.persist.outputDir).toBe('tmp');
     expect(parsedArgv.persist.filename).toBe('report');
-    expect(parsedArgv.persist.format).toEqual(undefined);
+    expect(parsedArgv.persist.format).toBeUndefined();
     expect(parsedArgv.upload?.organization).toBe('code-pushup');
     expect(parsedArgv.upload?.project).toBe('cli');
     expect(parsedArgv.upload?.apiKey).toBe('dummy-api-key');
