@@ -187,7 +187,7 @@ describe('loadReports', () => {
       [`${reportFileName(report)}.json`]: '{"test":42}',
       [`${reportFileName(report)}.md`]: 'test-42',
     });
-    const reports = await loadReports({ outputDir });
+    const reports = await loadReports({ outputDir, filename: 'report' });
     expect(reports).toEqual([
       {
         status: 'fulfilled',
@@ -227,7 +227,11 @@ describe('loadReports', () => {
       [`${reportFileName(report)}.json`]: '{"test":42}',
       [`${reportFileName(report)}.md`]: 'test-42',
     });
-    const reports = await loadReports({ outputDir, format: ['md'] });
+    const reports = await loadReports({
+      outputDir,
+      format: ['md'],
+      filename: 'report',
+    });
     expect(reports).toEqual([
       {
         status: 'fulfilled',
