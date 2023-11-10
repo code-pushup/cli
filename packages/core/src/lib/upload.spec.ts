@@ -60,4 +60,7 @@ describe('uploadToPortal', () => {
 
     expect(result.packageName).toBe('dummy-package');
   });
+
+  // @TODO add tests for failed upload
+  // @TODO add tests for multiple uploads
 });

@@ -1,11 +1,30 @@
-import { describe, expect } from 'vitest';
+import { stat } from 'fs/promises';
+import { vol } from 'memfs';
+import { join } from 'path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/models/testing';
+import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
   countOccurrences,
   distinct,
+  ensureDirectoryExists,
+  logMultipleFileResults,
   pluralize,
   toArray,
   toUnixPath,
 } from './utils';
+
+// Mock file system API's
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
+
+const outputDir = MEMFS_VOLUME;
 
 describe('pluralize', () => {
   it.each([
@@ -73,5 +92,88 @@ describe('distinct', () => {
       'no-invalid-regexp',
       '@typescript-eslint/no-unused-vars',
     ]);
+  });
+});
+
+describe('ensureDirectoryExists', () => {
+  beforeEach(() => {
+    vol.reset();
+    vol.fromJSON({}, outputDir);
+  });
+
+  it('should create folder', async () => {
+    const dir = join(MEMFS_VOLUME, 'sub', 'dir');
+    await ensureDirectoryExists(dir);
+    await expect(
+      stat(dir).then(stats => stats.isDirectory()),
+    ).resolves.toBeTruthy();
+  });
+});
+
+describe('logMultipleFileResults', () => {
+  let logs: string[];
+  const setupConsole = async () => {
+    logs = [];
+    mockConsole(msg => logs.push(msg));
+  };
+  const teardownConsole = async () => {
+    logs = [];
+    unmockConsole();
+  };
+
+  beforeEach(async () => {
+    logs = [];
+    setupConsole();
+  });
+
+  afterEach(() => {
+    teardownConsole();
+  });
+
+  it('should log reports correctly`', async () => {
+    logMultipleFileResults(
+      [{ status: 'fulfilled', value: ['out.json'] }],
+      'Uploaded reports',
+    );
+    expect(logs).toHaveLength(2);
+    expect(logs[0]).toContain('Uploaded reports successfully: ');
+    expect(logs[1]).toContain('- [1mout.json[22m');
+  });
+
+  it('should log report sizes correctly`', async () => {
+    logMultipleFileResults(
+      [{ status: 'fulfilled', value: ['out.json', 10000] }],
+      'Generated reports',
+    );
+    expect(logs).toHaveLength(2);
+    expect(logs[0]).toContain('Generated reports successfully: ');
+    expect(logs[1]).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
+  });
+
+  it('should log fails correctly`', async () => {
+    logMultipleFileResults(
+      [{ status: 'rejected', reason: 'fail' }],
+      'Generated reports',
+    );
+    expect(logs).toHaveLength(2);
+
+    expect(logs).toContain('Generated reports failed: ');
+    expect(logs).toContain('- [1mfail[22m');
+  });
+
+  it('should log report sizes and fails correctly`', async () => {
+    logMultipleFileResults(
+      [
+        { status: 'fulfilled', value: ['out.json', 10000] },
+        { status: 'rejected', reason: 'fail' },
+      ],
+      'Generated reports',
+    );
+    expect(logs).toHaveLength(4);
+    expect(logs).toContain('Generated reports successfully: ');
+    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
+
+    expect(logs).toContain('Generated reports failed: ');
+    expect(logs).toContain('- [1mfail[22m');
   });
 });

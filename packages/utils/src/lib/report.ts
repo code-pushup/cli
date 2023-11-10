@@ -1,9 +1,19 @@
+import { join } from 'path';
 import {
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
+  Format,
+  PersistConfig,
+  Report,
+  reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';
-import { pluralize } from './utils';
+import {
+  ensureDirectoryExists,
+  pluralize,
+  readJsonFile,
+  readTextFile,
+} from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -87,4 +97,24 @@ export function compareIssueSeverity(
 // @TODO replace with real scoring logic
 export function sumRefs(refs: CategoryRef[]) {
   return refs.reduce((sum, { weight }) => sum + weight, 0);
+}
+
+type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
+
+export async function loadReport<T extends Format>(
+  options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
+    format: T;
+  },
+): Promise<LoadedReportFormat<T>> {
+  const { outputDir, filename, format } = options;
+  await ensureDirectoryExists(outputDir);
+  const filePath = join(outputDir, `${filename}.${format}`);
+
+  if (format === 'json') {
+    const content = await readJsonFile(filePath);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return reportSchema.parse(content) as any;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return readTextFile(filePath) as any;
 }
