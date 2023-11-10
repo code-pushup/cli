@@ -28,10 +28,8 @@ const execCli = (argObj: Partial<CliArgsObject>) =>
 
 describe('print-config', () => {
   it.each(extensions)('should load .%s config file', async ext => {
-    const reportFileName = filename();
     const { code, stderr, stdout } = await execCli({
       config: configFile(ext),
-      'persist.filename': reportFileName,
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
@@ -48,7 +46,7 @@ describe('print-config', () => {
       },
       persist: {
         outputDir: join('tmp', ext),
-        filename: reportFileName,
+        filename: 'report',
       },
       plugins: expect.any(Array),
       categories: expect.any(Array),

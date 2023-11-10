@@ -2,7 +2,6 @@ import { vol } from 'memfs';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
-import { reportFileName } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   persistConfig,
@@ -36,9 +35,8 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputDir = MEMFS_VOLUME;
-const filename = reportFileName({ date: new Date().toISOString() });
 const reportPath = (format: 'json' | 'md' = 'json') =>
-  join(outputDir, `${filename}.${format}`);
+  join(outputDir, `${'report'}.${format}`);
 
 let logs: string[] = [];
 const resetFiles = async (fileContent?: Record<string, string>) => {
@@ -71,7 +69,7 @@ describe('uploadToPortal', () => {
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',
       }),
-      persist: persistConfig({ outputDir, filename }),
+      persist: persistConfig({ outputDir }),
     };
     const result = await upload(cfg);
     // loadedReports

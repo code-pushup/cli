@@ -19,16 +19,6 @@ vi.mock('fs/promises', async () => {
   return memfs.fs.promises;
 });
 
-let logs: string[] = [];
-const setupConsole = async () => {
-  logs = [];
-  mockConsole(msg => logs.push(msg));
-};
-const teardownConsole = async () => {
-  logs = [];
-  unmockConsole();
-};
-
 describe('pluralize', () => {
   it.each([
     ['warning', 'warnings'],
@@ -99,7 +89,18 @@ describe('distinct', () => {
 });
 
 describe('logMultipleFileResults', () => {
+  let logs: string[];
+  const setupConsole = async () => {
+    logs = [];
+    mockConsole(msg => logs.push(msg));
+  };
+  const teardownConsole = async () => {
+    logs = [];
+    unmockConsole();
+  };
+
   beforeEach(async () => {
+    logs = [];
     setupConsole();
   });
 
@@ -112,7 +113,7 @@ describe('logMultipleFileResults', () => {
       [{ status: 'fulfilled', value: ['out.json'] }],
       'Uploaded reports',
     );
-    expect(logs.length).toBe(2);
+    expect(logs).toHaveLength(2);
     expect(logs[0]).toContain('Uploaded reports successfully: ');
     expect(logs[1]).toContain('- [1mout.json[22m');
   });
@@ -122,7 +123,7 @@ describe('logMultipleFileResults', () => {
       [{ status: 'fulfilled', value: ['out.json', 10000] }],
       'Generated reports',
     );
-    expect(logs.length).toBe(2);
+    expect(logs).toHaveLength(2);
     expect(logs[0]).toContain('Generated reports successfully: ');
     expect(logs[1]).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
   });
@@ -132,7 +133,7 @@ describe('logMultipleFileResults', () => {
       [{ status: 'rejected', reason: 'fail' }],
       'Generated reports',
     );
-    expect(logs.length).toBe(2);
+    expect(logs).toHaveLength(2);
 
     expect(logs).toContain('Generated reports failed: ');
     expect(logs).toContain('- [1mfail[22m');
@@ -146,7 +147,7 @@ describe('logMultipleFileResults', () => {
       ],
       'Generated reports',
     );
-    expect(logs.length).toBe(4);
+    expect(logs).toHaveLength(4);
     expect(logs).toContain('Generated reports successfully: ');
     expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
 

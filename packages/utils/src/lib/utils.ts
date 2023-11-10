@@ -1,6 +1,5 @@
 import chalk from 'chalk';
-import { mkdir, stat } from 'fs/promises';
-import { readFile } from 'fs/promises';
+import { mkdir, readFile, stat } from 'fs/promises';
 import { formatBytes } from './report';
 
 export const reportHeadlineText = 'Code PushUp Report';
@@ -129,7 +128,7 @@ export function distinct<T extends string | number | boolean>(array: T[]): T[] {
 export async function ensureDirectoryExists(baseDir: string) {
   try {
     await stat(baseDir);
-  } catch (e) {
+  } catch {
     await mkdir(baseDir, { recursive: true });
   }
 }

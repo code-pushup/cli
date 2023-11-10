@@ -101,7 +101,7 @@ export async function loadReports(options: PersistConfig) {
 
   const dirResult = await readdir(outputDir);
 
-  const result = await Promise.allSettled(
+  return await Promise.allSettled(
     dirResult
       // filter by file extension
       .filter(file =>
@@ -115,7 +115,6 @@ export async function loadReports(options: PersistConfig) {
       )
       .map(file => getFileResult(file, outputDir)),
   );
-  return result;
 }
 
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
@@ -123,16 +122,18 @@ export async function loadReport<T extends Format>(
   options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
     format: T;
   },
-) {
+): Promise<LoadedReportFormat<T>> {
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
   const filePath = join(outputDir, `${filename}.${format}`);
   const content = await readFile(filePath, 'utf8');
   const z: Format = 'json' as const;
   if (format === z) {
-    return reportSchema.parse(JSON.parse(content));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return reportSchema.parse(JSON.parse(content)) as any;
   }
-  return content;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return content as any;
 }
 
 async function getFileResult(
