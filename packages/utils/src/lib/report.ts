@@ -1,15 +1,18 @@
-import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'path';
 import {
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
   PersistConfig,
-  REPORT_NAME_PATTERN,
   reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';
-import { ensureDirectoryExists, pluralize, readJsonFile } from './utils';
+import {
+  ensureDirectoryExists,
+  pluralize,
+  readJsonFile,
+  readTextFile,
+} from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -104,21 +107,12 @@ export async function loadReport<T extends Format>(
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
   const filePath = join(outputDir, `${filename}.${format}`);
-  const content = await readJsonFile(filePath);
-  const z: Format = 'json' as const;
-  if (format === z) {
+
+  if (format === 'json') {
+    const content = await readJsonFile(filePath);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return reportSchema.parse(content) as any;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return content as any;
-}
-
-async function getFileResult(
-  file: string,
-  outputDir: string,
-): Promise<[string, string | null]> {
-  const filePath = join(outputDir, file);
-  const content = await readFile(filePath, 'utf8');
-  return [file, content || null];
+  return readTextFile(filePath) as any;
 }

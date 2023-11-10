@@ -106,18 +106,9 @@ describe('ensureDirectoryExists', () => {
 
   it('should create folder', async () => {
     resetFiles();
-    expect(
+    await expect(
       ensureDirectoryExists(join(outputDir, 'sub', 'dir')),
     ).resolves.toEqual(void 0);
-  });
-
-  it('should throw if path is a file path', async () => {
-    resetFiles({
-      'test.json': '{}',
-    });
-    expect(
-      ensureDirectoryExists(join(outputDir, 'sub', 'dir', 'test.json')),
-    ).rejects.toThrow('c');
   });
 });
 

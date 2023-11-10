@@ -20,7 +20,6 @@ export {
   formatCount,
   slugify,
   loadReport,
-  loadReports,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';

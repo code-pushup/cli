@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { mkdir, readFile, stat } from 'fs/promises';
+import { mkdir, readFile } from 'fs/promises';
 import { formatBytes } from './report';
 
 // @TODO move logic out of this file as much as possible. use report.ts or scoring.ts instead.
@@ -128,7 +128,9 @@ export function toUnixPath(
 export async function ensureDirectoryExists(baseDir: string) {
   try {
     await mkdir(baseDir, { recursive: true });
+    return;
   } catch (error) {
+    console.log((error as { code: string; message: string }).message);
     if ((error as { code: string }).code !== 'EEXIST') {
       throw error;
     }

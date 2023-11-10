@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { afterEach, describe, expect, vi } from 'vitest';
-import { CategoryRef, IssueSeverity } from '@code-pushup/models';
+import { CategoryRef, IssueSeverity, PluginReport } from '@code-pushup/models';
 import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
@@ -202,7 +202,7 @@ describe('loadReport', () => {
       format: 'md',
       filename: 'report',
     });
-    expect(reports).toEqual('test-42');
+    expect(reports).toBe('test-42');
   });
 
   it('should throw for invalid json reports', async () => {
@@ -211,14 +211,14 @@ describe('loadReport', () => {
       {
         ...reportMock.plugins[0],
         slug: '-Invalud_slug',
-      } as any,
+      } as unknown as PluginReport,
     ];
 
     resetFiles({
       [`report.json`]: JSON.stringify(reportMock),
     });
 
-    expect(() =>
+    await expect(
       loadReport({ outputDir, filename: 'report', format: 'json' }),
     ).rejects.toThrow('validation');
   });
