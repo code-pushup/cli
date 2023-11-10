@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  REPORT_NAME_PATTERN,
   filenameRegex,
   hasDuplicateStrings,
   hasMissingStrings,
-  reportFileName,
   slugRegex,
 } from './utils';
 
@@ -62,14 +60,6 @@ describe('filenameRegex', () => {
     'file|name',
   ])(`should not match invalid file name %p`, invalidFilename => {
     expect(invalidFilename).not.toMatch(filenameRegex);
-  });
-});
-
-describe('reportFileName', () => {
-  it('should create a file name that is in sync with the REPORT_NAME_PATTERN', () => {
-    expect(reportFileName({ date: new Date().toISOString() })).toMatch(
-      REPORT_NAME_PATTERN,
-    );
   });
 });
 
