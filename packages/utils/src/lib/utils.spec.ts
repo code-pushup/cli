@@ -1,3 +1,4 @@
+import { stat } from 'fs/promises';
 import { vol } from 'memfs';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
