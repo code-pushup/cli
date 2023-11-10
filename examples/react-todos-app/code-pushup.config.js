@@ -1,4 +1,3 @@
-// TODO: import plugins using NPM package names using local registry: https://github.com/flowup/quality-metrics-cli/issues/33
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 
 const eslintAuditRef = (slug, weight) => ({
