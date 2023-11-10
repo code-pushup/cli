@@ -5,6 +5,7 @@ import { CoreConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
   getLatestCommit,
+  logMultipleFileResults,
   reportToMd,
   reportToStdout,
   scoreReport,
@@ -81,4 +82,8 @@ export async function persistReport(
       );
     }),
   );
+}
+
+export async function logPersistedResults(persistResults: MultipleFileResults) {
+  logMultipleFileResults(persistResults, 'Generated reports');
 }

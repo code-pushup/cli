@@ -13,10 +13,9 @@ import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
-  logMultipleFileResults,
 } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test';
-import { persistReport } from './persist';
+import { logPersistedResults, persistReport } from './persist';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -180,20 +179,14 @@ describe('logPersistedResults', () => {
   });
 
   it('should log report sizes correctly`', async () => {
-    logMultipleFileResults(
-      [{ status: 'fulfilled', value: ['out.json', 10000] }],
-      'Generated reports',
-    );
+    logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10000] }]);
     expect(logs).toHaveLength(2);
     expect(logs).toContain('Generated reports successfully: ');
     expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
   });
 
   it('should log fails correctly`', async () => {
-    logMultipleFileResults(
-      [{ status: 'rejected', reason: 'fail' }],
-      'Generated reports',
-    );
+    logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
     expect(logs).toHaveLength(2);
 
     expect(logs).toContain('Generated reports failed: ');
@@ -201,13 +194,10 @@ describe('logPersistedResults', () => {
   });
 
   it('should log report sizes and fails correctly`', async () => {
-    logMultipleFileResults(
-      [
-        { status: 'fulfilled', value: ['out.json', 10000] },
-        { status: 'rejected', reason: 'fail' },
-      ],
-      'Generated reports',
-    );
+    logPersistedResults([
+      { status: 'fulfilled', value: ['out.json', 10000] },
+      { status: 'rejected', reason: 'fail' },
+    ]);
     expect(logs).toHaveLength(4);
     expect(logs).toContain('Generated reports successfully: ');
     expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
