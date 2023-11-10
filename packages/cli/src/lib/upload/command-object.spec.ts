@@ -7,7 +7,6 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
-import { reportFileName } from '@code-pushup/models';
 import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { setupFolder } from '../../../test';
@@ -28,7 +27,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   };
 });
 
-const filename = () => reportFileName({ date: new Date().toISOString() });
+const filename = () => 'report';
 const dummyReport = report();
 
 const baseArgs = [

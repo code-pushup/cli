@@ -1,11 +1,6 @@
 import { join } from 'path';
 import { beforeEach, vi } from 'vitest';
-import {
-  PluginReport,
-  Report,
-  reportFileName,
-  reportSchema,
-} from '@code-pushup/models';
+import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 import { setupFolder } from '../mocks/fs.mock';
 
@@ -32,7 +27,7 @@ describe('CLI collect', () => {
   const reportFile = (filename: string, ext = 'json') =>
     join(reportPath, `${filename}.${ext}`);
 
-  const filename = () => reportFileName({ date: new Date().toISOString() });
+  const filename = () => 'report';
   const baseArgs = [cliPath, 'collect', '--verbose', '--no-progress'];
 
   beforeEach(async () => {

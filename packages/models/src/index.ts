@@ -1,7 +1,4 @@
-export {
-  REPORT_NAME_PATTERN,
-  reportFileName,
-} from './lib/implementation/utils';
+export {} from './lib/implementation/utils';
 export {
   CategoryConfig,
   CategoryRef,

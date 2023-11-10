@@ -15,7 +15,6 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
-import { reportFileName } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
@@ -33,7 +32,7 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-const filename = () => reportFileName({ date: new Date().toISOString() });
+const filename = () => 'report';
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({

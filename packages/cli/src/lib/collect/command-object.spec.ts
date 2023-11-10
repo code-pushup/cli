@@ -1,14 +1,13 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
-import { reportFileName } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
 
-const getFilename = () => reportFileName({ date: new Date().toISOString() });
+const getFilename = () => 'report';
 const baseArgs = [
   ...objectToCliArgs({
     progress: false,

@@ -1,6 +1,5 @@
 import { join } from 'path';
 import { expect } from 'vitest';
-import { reportFileName } from '@code-pushup/models';
 import {
   CliArgsObject,
   executeProcess,
@@ -9,7 +8,7 @@ import {
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 type Extension = (typeof extensions)[number];
-const filename = () => reportFileName({ date: new Date().toISOString() });
+const filename = () => 'report';
 const configFile = (ext: Extension) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/code-pushup.config.${ext}`);
 
