@@ -23,13 +23,6 @@ describe('CLI collect', () => {
     });
 
   const cliPath = join('..', '..', 'dist', 'packages', 'cli');
-  // @TODO use filename over outputDir
-  const reportPath = join('tmp', 'react-todos-app');
-  const reportFile = (filename: string, ext = 'json') =>
-    join(reportPath, `${filename}.${ext}`);
-
-  const filename = () => 'report';
-  const baseArgs = [cliPath, 'collect', '--verbose', '--no-progress'];
 
   beforeEach(async () => {
     vi.clearAllMocks();
