@@ -100,6 +100,7 @@ export function sumRefs(refs: CategoryRef[]) {
 }
 
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
+
 export async function loadReport<T extends Format>(
   options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
     format: T;
