@@ -1,5 +1,5 @@
 import { uploadToPortal } from '@code-pushup/portal-client';
-import { CoreConfig, reportSchema } from '@code-pushup/models';
+import { CoreConfig, Report } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
 
@@ -17,12 +17,12 @@ export async function upload(
     throw new Error('upload config needs to be set');
   }
   const { apiKey, server, organization, project } = options.upload;
-  const { outputDir } = options.persist;
-  const report = await loadReport({
-    outputDir: options.persist.outputDir,
-    filename: options.persist.filename,
+  const { outputDir, filename } = options.persist;
+  const report = (await loadReport({
+    outputDir,
+    filename: filename,
     format: 'json',
-  });
+  })) as Report;
   const commitData = await getLatestCommit();
 
   if (!commitData) {

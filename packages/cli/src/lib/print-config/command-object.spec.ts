@@ -29,7 +29,7 @@ describe('print-config-command-object', () => {
   it('should print existing config', async () => {
     const parsedArgv = await cli(baseArgs).parseAsync();
     expect(parsedArgv.persist.outputDir).toBe('tmp');
-    expect(parsedArgv.persist.filename).toBe('code-pushup.report');
+    expect(parsedArgv.persist.filename).toBe('report');
     expect(parsedArgv.persist.format).toEqual(undefined);
     expect(parsedArgv.upload?.organization).toBe('code-pushup');
     expect(parsedArgv.upload?.project).toBe('cli');

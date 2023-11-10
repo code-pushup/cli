@@ -6,6 +6,7 @@ import {
   Format,
   PersistConfig,
   REPORT_NAME_PATTERN,
+  reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';
 import { ensureDirectoryExists, pluralize } from './utils';
@@ -117,15 +118,20 @@ export async function loadReports(options: PersistConfig) {
   return result;
 }
 
-export async function loadReport(
+type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
+export async function loadReport<T extends Format>(
   options: Required<Pick<PersistConfig, 'outputDir' | 'filename'>> & {
-    format: Format;
+    format: T;
   },
 ) {
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
   const filePath = join(outputDir, `${filename}.${format}`);
   const content = await readFile(filePath, 'utf8');
+  const z: Format = 'json' as const;
+  if (format === z) {
+    return reportSchema.parse(JSON.parse(content));
+  }
   return content;
 }
 
