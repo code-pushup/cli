@@ -65,7 +65,7 @@ describe('filenameRegex', () => {
   });
 });
 
-describe('reportNameFromReport', () => {
+describe('reportFileName', () => {
   it('should create a file name that is in sync with the REPORT_NAME_PATTERN', () => {
     expect(reportFileName({ date: new Date().toISOString() })).toMatch(
       REPORT_NAME_PATTERN,
