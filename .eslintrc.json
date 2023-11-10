@@ -61,7 +61,7 @@
         "plugin:deprecation/recommended",
         "plugin:promise/recommended"
       ],
-      "plugins": ["functional", "no-secrets"],
+      "plugins": ["n", "functional", "no-secrets"],
       "settings": {
         "import/resolver": {
           "typescript": {
@@ -140,6 +140,10 @@
         "prefer-template": "warn",
         "radix": "warn",
         "yoda": "warn",
+        "n/no-unsupported-features/node-builtins": "error",
+        "n/no-process-exit": "warn",
+        "n/no-sync": "warn",
+        "n/prefer-promises/fs": "warn",
         "no-secrets/no-secrets": [
           "error",
           { "additionalDelimiters": ["-"], "ignoreContent": "https://" }
@@ -292,6 +296,7 @@
         "arrow-body-style": "off",
         "curly": "off",
         "no-duplicate-imports": "off",
+        "n/no-sync": "off",
         "functional/immutable-data": "off",
         "functional/no-let": "off",
         "import/no-useless-path-segments": "off",
