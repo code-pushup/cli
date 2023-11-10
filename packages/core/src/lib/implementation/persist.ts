@@ -84,6 +84,6 @@ export async function persistReport(
   );
 }
 
-export async function logPersistedResults(persistResults: MultipleFileResults) {
+export function logPersistedResults(persistResults: MultipleFileResults) {
   logMultipleFileResults(persistResults, 'Generated reports');
 }
