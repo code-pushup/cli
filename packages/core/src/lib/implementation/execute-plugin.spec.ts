@@ -1,17 +1,11 @@
-import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 import {
   AuditOutput,
   AuditOutputs,
-  AuditReport,
   PluginConfig,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import {
-  auditReport,
-  echoRunnerConfig,
-  pluginConfig,
-} from '@code-pushup/models/testing';
+import { auditReport, pluginConfig } from '@code-pushup/models/testing';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import { executePlugin, executePlugins } from './execute-plugin';
 
@@ -44,15 +38,19 @@ describe('executePlugin', () => {
     );
   });
 
-  it('should throw if invalid runnerOutput is produced', async () => {
-    const invalidAuditOutputs: AuditReport[] = [
-      { p: 42 } as unknown as AuditReport,
-    ];
-    const pluginCfg = pluginConfig([auditReport()]);
-    pluginCfg.runner = echoRunnerConfig(
-      invalidAuditOutputs,
-      join('tmp', 'out.json'),
-    );
+  it('should throw if invalid runnerOutput is produced with transform', async () => {
+    const pluginCfg: PluginConfig = {
+      ...validPluginCfg,
+      runner: {
+        ...validPluginCfg.runner,
+        transform: (d: Record<string, unknown>[]) =>
+          d.map((d, idx) => ({
+            ...d,
+            slug: '-' + idx,
+          })) as unknown as AuditOutputs,
+      },
+    };
+
     await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
       /Plugin output of plugin .* is invalid./,
     );
