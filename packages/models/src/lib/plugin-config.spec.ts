@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { config } from '../../test';
+import { config, echoRunnerConfig, pluginConfig } from '../../test';
 import { pluginConfigSchema } from './plugin-config';
+import { AuditOutput, AuditOutputs } from './plugin-process-output';
 
 describe('pluginConfigSchema', () => {
   it('should parse if plugin configuration is valid', () => {
@@ -69,5 +70,32 @@ describe('pluginConfigSchema', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       `slug has to follow the pattern`,
     );
+  });
+
+  it('take a transform function', () => {
+    const undefinedPluginOutput = [
+      { slug: 'audit-1', value: 0, score: 0 },
+      { slug: 'audit-2', value: 0, score: 0 },
+    ];
+    const pluginCfg = pluginConfig([], {
+      runner: echoRunnerConfig(undefinedPluginOutput, 'out.json'),
+    });
+    pluginCfg.runner.transform = (
+      data: Record<string, unknown>[],
+    ): AuditOutputs => {
+      return data.map(
+        data => ({ slug: data.slug, score: data.score } as AuditOutput),
+      );
+    };
+
+    expect(pluginConfigSchema.parse(pluginCfg).runner.transform).toBeDefined();
+    expect(
+      pluginConfigSchema
+        .parse(pluginCfg)
+        .runner.transform(undefinedPluginOutput),
+    ).toEqual([
+      { slug: 'audit-1', score: 0 },
+      { slug: 'audit-2', score: 0 },
+    ]);
   });
 });
