@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
-import { setupFolder } from '../mocks/fs.mock';
+import { cleanFolderPutGitKeep } from '../mocks/fs.mock';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
@@ -33,42 +33,40 @@ describe('CLI collect', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    setupFolder();
+    cleanFolderPutGitKeep();
+  });
+
+  afterEach(() => {
+    cleanFolderPutGitKeep();
   });
 
   it('should run ESLint plugin and create report.json', async () => {
-    const reportFileName = filename();
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [...baseArgs, `--persist.filename=${reportFileName}`],
+      args: [cliPath, 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile(reportFile(reportFileName, 'json'));
+    const report = await readJsonFile('tmp/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
   it('should create report.md', async () => {
-    const reportFileName = filename();
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: [
-        ...baseArgs,
-        '--persist.format=md',
-        `--persist.filename=${reportFileName}`,
-      ],
+      args: [cliPath, 'collect', '--persist.format=md', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile(reportFile(reportFileName, 'md'));
+    const md = await readTextFile('tmp/react-todos-app/report.md');
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);
@@ -76,13 +74,14 @@ describe('CLI collect', () => {
   });
 
   it('should print report summary to stdout', async () => {
-    const reportFileName = filename();
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
-        ...baseArgs,
+        cliPath,
+        'collect',
+        '--verbose',
         '--persist.format=stdout',
-        `--persist.filename=${reportFileName}`,
+        '--no-progress',
       ],
       cwd: 'examples/react-todos-app',
     });
@@ -92,7 +91,7 @@ describe('CLI collect', () => {
 
     expect(stdout).toContain('Code PushUp Report');
     expect(stdout).toContain('Generated reports');
-    expect(stdout).toContain(reportFileName);
+    expect(stdout).toContain('report.json');
     expect(stdout).toContain(exampleCategoryTitle);
     expect(stdout).toContain(exampleAuditTitle);
   });

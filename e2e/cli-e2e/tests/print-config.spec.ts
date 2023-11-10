@@ -1,40 +1,23 @@
 import { join } from 'path';
 import { expect } from 'vitest';
-import {
-  CliArgsObject,
-  executeProcess,
-  objectToCliArgs,
-} from '@code-pushup/utils';
+import { CliArgsObject } from '@code-pushup/utils';
+import { configFile, execCli, extensions } from '../mocks/utils';
 
-const extensions = ['js', 'mjs', 'ts'] as const;
-type Extension = (typeof extensions)[number];
-const filename = () => 'report';
-const configFile = (ext: Extension) =>
-  join(process.cwd(), `e2e/cli-e2e/mocks/code-pushup.config.${ext}`);
-
-const execCli = (argObj: Partial<CliArgsObject>) =>
-  executeProcess({
-    command: 'npx',
-    args: [
-      './dist/packages/cli',
-      'print-config',
-      ...objectToCliArgs({
-        verbose: true,
-        ...argObj,
-      }),
-    ],
+const execCliPrintConfig = (argObj: Partial<CliArgsObject>) =>
+  execCli('print-config', {
+    ...argObj,
   });
 
 describe('print-config', () => {
   it.each(extensions)('should load .%s config file', async ext => {
-    const { code, stderr, stdout } = await execCli({
+    const { code, stderr, stdout } = await execCliPrintConfig({
       config: configFile(ext),
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
-      progress: true,
+      progress: false,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.${ext}`),
       upload: {
@@ -53,16 +36,14 @@ describe('print-config', () => {
   });
 
   it('should load .ts config file and merge cli arguments', async () => {
-    const reportFileName = filename();
-    const { code, stderr, stdout } = await execCli({
-      config: configFile('ts'),
-      'persist.filename': reportFileName,
+    const { code, stderr, stdout } = await execCliPrintConfig({
+      'persist.filename': 'my-report',
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
     const args = JSON.parse(stdout);
     expect(args).toEqual({
-      progress: true,
+      progress: false,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.ts`),
       upload: {
@@ -73,7 +54,7 @@ describe('print-config', () => {
       },
       persist: {
         outputDir: join('tmp', 'ts'),
-        filename: reportFileName,
+        filename: 'my-report',
       },
       plugins: expect.any(Array),
       categories: expect.any(Array),
@@ -81,10 +62,7 @@ describe('print-config', () => {
   });
 
   it('should parse persist.format from arguments', async () => {
-    const reportFileName = filename();
-    const { code, stderr, stdout } = await execCli({
-      config: configFile('ts'),
-      'persist.filename': reportFileName,
+    const { code, stderr, stdout } = await execCliPrintConfig({
       'persist.format': ['md', 'json', 'stdout'],
     });
     expect(code).toBe(0);

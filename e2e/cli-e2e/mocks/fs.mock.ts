@@ -2,6 +2,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { ensureDirectoryExists } from '@code-pushup/utils';
 
+// @TODO move into testing library
 export function cleanFolder<T extends object>(
   dirName = 'tmp',
   content?: { [key in keyof T]: string },
@@ -14,7 +15,7 @@ export function cleanFolder<T extends object>(
     }
   }
 }
-
+// @TODO move into testing library
 export function cleanFolderPutGitKeep<T extends object>(
   dirName = 'tmp',
   content?: { [key in keyof T]: string },

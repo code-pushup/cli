@@ -17,6 +17,7 @@ const numPlugins = parseInt(
 
 const outputDir = './tmp';
 const pluginProcess = join(
+  // @ts-ignore
   fileURLToPath(dirname(import.meta.url)),
   'plugin-progress-bar-plugin-process.mock.mjs',
 );

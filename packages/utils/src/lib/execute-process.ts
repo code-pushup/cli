@@ -192,6 +192,7 @@ export function objectToCliArgs<
   if (!params) {
     return [];
   }
+
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
@@ -223,6 +224,8 @@ export function objectToCliArgs<
     if (typeof value === 'boolean') {
       return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
+
+    // @TODO add support for nested objects `persist.filename`
 
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
