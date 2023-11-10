@@ -146,8 +146,10 @@ export async function readJsonFile(path: string): Promise<unknown> {
   const text = await readTextFile(path);
   return JSON.parse(text);
 }
+
 export type FileResult = readonly [string] | readonly [string, number];
 export type MultipleFileResults = PromiseSettledResult<FileResult>[];
+
 export function logMultipleFileResults(
   persistResult: MultipleFileResults,
   messagePrefix: string,
