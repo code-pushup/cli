@@ -54,7 +54,13 @@ describe('print-config', () => {
         outputDir: join('tmp', 'ts'),
         filename: 'my-report',
       },
-      plugins: expect.any(Array),
+      plugins: expect.arrayContaining([
+        expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
+        expect.objectContaining({
+          slug: 'lighthouse',
+          title: 'ChromeDevTools Lighthouse',
+        }),
+      ]),
       categories: expect.any(Array),
     });
   });
