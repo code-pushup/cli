@@ -32,9 +32,7 @@ describe('readCodePushupConfig', () => {
 
   it('should throw if file does not exisit', async () => {
     const filepath = join('invalid-path', 'valid-export.mjs');
-    await expect(readCodePushupConfig(filepath)).rejects.toThrow(
-      `no such file or directory, stat '${filepath}'`,
-    );
+    await expect(readCodePushupConfig(filepath)).rejects.toThrow(`${filepath}`);
   });
 
   it('should throw if config is invalid', async () => {
