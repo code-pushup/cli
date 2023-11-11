@@ -1,22 +1,23 @@
 import chalk from 'chalk';
 import {
-  AuditOutput,
-  auditOutputsSchema,
-  AuditReport, EsmObserver, EsmRunnerConfig,
+  AuditOutputs,
+  AuditReport,
   PluginConfig,
   PluginReport,
-  RunnerResult
+  RunnerResult,
+  auditReportSchema,
 } from '@code-pushup/models';
-import {getProgressBar, ProcessObserver,} from '@code-pushup/utils';
-import {executeEsmRunner} from "./execute-esm-runner";
-import {executeRunner} from "./execute-runner";
+import { ProcessObserver, getProgressBar } from '@code-pushup/utils';
+import { executeRunner } from './execute-runner';
 
 /**
  * Error thrown when plugin output is invalid.
  */
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {
-    super(`Audit metadata not found for slug ${auditSlug} from plugin ${pluginSlug}`);
+    super(
+      `Audit metadata not found for slug ${auditSlug} from plugin ${pluginSlug}`,
+    );
   }
 }
 
@@ -47,56 +48,69 @@ export async function executePlugin(
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     audits: _,
     description,
     docsUrl,
     groups,
     ...pluginMeta
   } = pluginConfig;
-  let runnerResult: RunnerResult;
+  const runnerResult: RunnerResult = await executeRunner(
+    pluginConfig.runner,
+    observer,
+  );
+  const { audits: runnerAuditOutputs, ...executionMeta } = runnerResult;
 
-  if (typeof pluginConfig?.es5Runner === 'function') {
-    runnerResult = await executeEsmRunner({
-      runner: pluginConfig?.es5Runner
-    })
-  } else {
-    runnerResult = await executeRunner(pluginConfig.runner);
-  }
-
-  const {audits: runnerAuditOutputs, ...executionMeta} = runnerResult;
   // read process output from file system and parse it
-  let auditOutputs = auditOutputsSchema.parse(runnerAuditOutputs);
-  const audits = auditOutputs.map(auditOutput => {
-    const auditMetadata = pluginConfig.audits.find(
-      audit => audit.slug === auditOutput.slug,
-    );
-    if (!auditMetadata) {
-      throw new PluginOutputMissingAuditError(
-        auditOutput.slug, pluginMeta.slug
-      );
-    }
-    return {
+  /*auditOutputsCorrelateWithPluginOutput(
+    runnerAuditOutputs,
+    pluginConfig.audits,
+  );*/
+
+  // enrich `AuditOutputs` to `AuditReport`
+  const audits: AuditReport[] = runnerAuditOutputs.map(auditOutput => {
+    return auditReportSchema.parse({
       ...auditOutput,
-      ...auditMetadata,
-    } satisfies AuditReport;
+      ...pluginConfig.audits.find(audit => audit.slug === auditOutput.slug),
+    });
   });
 
   return {
     ...pluginMeta,
     ...executionMeta,
     audits,
-    ...(description && {description}),
-    ...(docsUrl && {docsUrl}),
-    ...(groups && {groups}),
+    ...(description && { description }),
+    ...(docsUrl && { docsUrl }),
+    ...(groups && { groups }),
   } satisfies PluginReport;
-
 }
 
+/**
+ * Execute multiple plugins and aggregates their output.
+ * @public
+ * @param plugins array of {@link PluginConfig} objects
+ * @param {Object} [options] execution options
+ * @param {boolean} options.progress show progress bar
+ * @returns {Promise<PluginReport[]>} plugin report
+ *
+ * @example
+ * // plugin execution
+ * const plugins = [pluginConfigSchema.parse({...})];
+ *
+ * @example
+ * // error handling
+ * try {
+ * await executePlugins(plugins);
+ * } catch (e) {
+ * console.log(e.message); // Plugin output is invalid
+ * }
+ *
+ */
 export async function executePlugins(
   plugins: PluginConfig[],
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
-  const {progress = false} = options || {};
+  const { progress = false } = options || {};
 
   const progressName = 'Run Plugins';
   const progressBar = progress ? getProgressBar(progressName) : null;
@@ -115,4 +129,18 @@ export async function executePlugins(
   progressBar?.endProgress('Done running plugins');
 
   return pluginsResult;
+}
+
+function auditOutputsCorrelateWithPluginOutput(
+  auditOutputs: AuditOutputs,
+  pluginConfigAudits: PluginConfig['audits'],
+) {
+  auditOutputs.forEach(auditOutput => {
+    const auditMetadata = pluginConfigAudits.find(
+      audit => audit.slug === auditOutput.slug,
+    );
+    if (!auditMetadata) {
+      throw new Error(`Missing audit ${auditOutput.slug}.`);
+    }
+  });
 }

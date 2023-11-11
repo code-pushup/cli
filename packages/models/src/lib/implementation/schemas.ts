@@ -21,7 +21,6 @@ export function executionMetaSchema(
 }
 export type ExecutionMeta = z.infer<ReturnType<typeof executionMetaSchema>>;
 
-
 /**
  * Schema for a slug of a categories, plugins or audits.
  * @param description

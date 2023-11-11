@@ -1,5 +1,9 @@
 import { platform } from 'os';
-import { RunnerConfig } from '../../src';
+import {
+  AuditOutputs,
+  OutputFileToAuditOutputs,
+  RunnerConfig,
+} from '../../src';
 import {EsmRunnerConfig, esmRunnerConfigSchema, runnerConfigSchema} from '../../src/lib/plugin-config-runner';
 import {AuditOutput, AuditOutputs} from '../../src/lib/plugin-process-output';
 
@@ -38,6 +42,7 @@ export function esmRunnerConfig(options?: Partial<EsmRunnerConfig>): EsmRunnerCo
 export function echoRunnerConfig(
   output: AuditOutput[],
   outputFile: string,
+  options?: Partial<RunnerConfig>,
 ): RunnerConfig {
   const auditOutput =
     platform() === 'win32'
@@ -47,5 +52,19 @@ export function echoRunnerConfig(
     command: 'echo',
     args: [auditOutput, '>', outputFile],
     outputFile,
+    ...options,
+  };
+}
+
+export function outputFileToAuditOutputs(
+  transform: (outputs: any) => AuditOutput = (a: AuditOutput) => ({
+    ...a,
+    displayValue: 'transformed',
+  }),
+): OutputFileToAuditOutputs {
+  return (outputs: unknown): AuditOutputs => {
+    return (outputs as AuditOutputs).map(output => {
+      return transform(output);
+    });
   };
 }

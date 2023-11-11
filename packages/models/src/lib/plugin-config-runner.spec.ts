@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import {esmRunnerConfig, runnerConfig} from '../../test/fixtures/runner-config.mock';
-import {esmRunnerConfigSchema, runnerConfigSchema} from './plugin-config-runner';
+import {
+  esmRunnerConfig,
+  runnerConfig,
+} from '../../test/fixtures/runner-config.mock';
+import {
+  esmRunnerConfigSchema,
+  runnerConfigSchema,
+} from './plugin-config-runner';
 
 describe('runnerConfig', () => {
   it('should parse if configuration is valid', () => {

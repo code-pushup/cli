@@ -1,29 +1,41 @@
-import {auditOutputsSchema, RunnerConfig, RunnerResult} from "@code-pushup/models";
-import {executeProcess} from "@code-pushup/utils";
-import {readFile} from "fs/promises";
-import {join} from "path";
+import { join } from 'path';
+import {
+  AuditOutputs,
+  RunnerConfig,
+  RunnerResult,
+  runnerResultSchema,
+} from '@code-pushup/models';
+import {
+  ProcessObserver,
+  executeProcess,
+  readJsonFile,
+} from '@code-pushup/utils';
 
-export async function executeRunner(cfg: RunnerConfig): Promise<RunnerResult> {
-  const {args, command, outputFile} = cfg;
+export async function executeRunner(
+  cfg: RunnerConfig,
+  observer?: ProcessObserver,
+): Promise<RunnerResult> {
+  const { args, command, outputFile, outputFileToAuditResults } = cfg;
 
-  const {duration, date} = await executeProcess({
+  const { duration, date } = await executeProcess({
     command,
     args,
+    observer,
   });
 
-  const processOutputPath = join(
-    process.cwd(),
-    outputFile,
-  );
-
   // read process output from file system and parse it
-  const audits = auditOutputsSchema.parse(
-    JSON.parse((await readFile(processOutputPath)).toString()),
+  let audits = await readJsonFile<AuditOutputs>(
+    join(process.cwd(), outputFile),
   );
 
-  return {
+  // transform unknownAuditOutputs to auditOutputs
+  if (outputFileToAuditResults) {
+    audits = outputFileToAuditResults(audits) as RunnerResult['audits'];
+  }
+
+  return runnerResultSchema.parse({
     duration,
     date,
-    audits
-  } satisfies RunnerResult;
+    audits,
+  });
 }

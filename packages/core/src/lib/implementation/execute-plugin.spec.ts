@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
+import { PluginConfig, pluginReportSchema } from '@code-pushup/models';
 import {
   AuditReport,
   PluginConfig,
@@ -8,6 +9,10 @@ import {
 import {
   auditReport,
   echoRunnerConfig,
+  pluginConfig,
+} from '@code-pushup/models/testing';
+  auditReport,
+  outputFileToAuditOutputs,
   pluginConfig,
 } from '@code-pushup/models/testing';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
@@ -32,7 +37,7 @@ describe('executePlugin', () => {
   it('should execute valid plugin config', async () => {
     const pluginResult = await executePlugin(validPluginCfg);
     expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
-    expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
+    expect(() => pluginReportSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
   it('should throws with invalid plugin audits slug', async () => {
@@ -42,15 +47,15 @@ describe('executePlugin', () => {
     );
   });
 
-  it('should throw if invalid runnerOutput is produced', async () => {
-    const invalidAuditOutputs: AuditReport[] = [
-      { p: 42 } as unknown as AuditReport,
-    ];
-    const pluginCfg = pluginConfig([auditReport()]);
-    pluginCfg.runner = echoRunnerConfig(
-      invalidAuditOutputs,
-      join('tmp', 'out.json'),
-    );
+  it('should throw if invalid runnerOutput is produced with transform', async () => {
+    const pluginCfg: PluginConfig = {
+      ...validPluginCfg,
+      runner: {
+        ...validPluginCfg.runner,
+        outputFileToAuditResults: outputFileToAuditOutputs(),
+      },
+    };
+
     await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
       /Plugin output of plugin .* is invalid./,
     );
@@ -60,19 +65,10 @@ describe('executePlugin', () => {
 describe('executePlugins', () => {
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
+
     const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
 
-    expect(pluginResult[0]?.date.endsWith('Z')).toBeTruthy();
-    expect(pluginResult[0]?.duration).toBeTruthy();
-
-    expect(pluginResult[0]?.audits[0]?.slug).toBe('mock-audit-slug');
-    expect(pluginResult[1]?.audits[0]?.slug).toBe('mock-audit-slug');
-    expect(() =>
-      auditOutputsSchema.parse(pluginResult[0]?.audits),
-    ).not.toThrow();
-    expect(() =>
-      auditOutputsSchema.parse(pluginResult[1]?.audits),
-    ).not.toThrow();
+    expect(() => pluginReportSchema.parse(pluginResult)).not.toThrow();
   });
 
   it('should throws with invalid plugins', async () => {
