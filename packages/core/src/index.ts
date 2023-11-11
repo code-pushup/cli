@@ -5,7 +5,7 @@ export {
 } from './lib/implementation/persist';
 export {
   executePlugins,
-  PluginOutputError,
+  PluginOutputMissingAuditError,
 } from './lib/implementation/execute-plugin';
 export { collect, CollectOptions } from './lib/implementation/collect';
 export { upload, UploadOptions } from './lib/upload';

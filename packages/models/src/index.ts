@@ -37,6 +37,7 @@ export {
 export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
+  auditReportSchema,
   PluginReport,
   Report,
   pluginReportSchema,

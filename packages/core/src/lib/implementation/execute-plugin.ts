@@ -20,10 +20,8 @@ import {
  * Error thrown when plugin output is invalid.
  */
 export class PluginOutputMissingAuditError extends Error {
-  constructor(auditSlug: string, pluginSlug: string) {
-    super(
-      `Audit metadata not found for slug ${auditSlug} from plugin ${pluginSlug}`,
-    );
+  constructor(auditSlug: string) {
+    super(`Audit metadata not found for slug ${auditSlug}`);
   }
 }
 
@@ -54,6 +52,8 @@ export async function executePlugin(
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    runner: onlyUsedForRestingPluginMeta,
     audits: pluginConfigAudits,
     description,
     docsUrl,
@@ -62,11 +62,12 @@ export async function executePlugin(
   } = pluginConfig;
   const { args, command } = pluginConfig.runner;
 
-  const { code, stdout, stderr, ...executionMeta } = await executeProcess({
+  const { date, duration } = await executeProcess({
     command,
     args,
     observer,
   });
+  const executionMeta = { date, duration };
 
   const processOutputPath = join(process.cwd(), pluginConfig.runner.outputFile);
 
@@ -81,6 +82,7 @@ export async function executePlugin(
       unknownAuditOutputs,
     ) as AuditOutputs;
   }
+
   // validate audit outputs
   const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
 
@@ -160,7 +162,7 @@ function auditOutputsCorrelateWithPluginOutput(
       audit => audit.slug === auditOutput.slug,
     );
     if (!auditMetadata) {
-      throw new Error(`Missing audit ${auditOutput.slug}.`);
+      throw new PluginOutputMissingAuditError(auditOutput.slug);
     }
   });
 }

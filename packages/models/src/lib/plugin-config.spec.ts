@@ -72,7 +72,7 @@ describe('pluginConfigSchema', () => {
     );
   });
 
-  it('take a transform function', () => {
+  it('take a outputFileToAuditResults function', () => {
     const undefinedPluginOutput = [
       { slug: 'audit-1', value: 0, score: 0 },
       { slug: 'audit-2', value: 0, score: 0 },
@@ -80,7 +80,7 @@ describe('pluginConfigSchema', () => {
     const pluginCfg = pluginConfig([], {
       runner: echoRunnerConfig(undefinedPluginOutput, 'out.json'),
     });
-    pluginCfg.runner.transform = (
+    pluginCfg.runner.outputFileToAuditResults = (
       data: Record<string, unknown>[],
     ): AuditOutputs => {
       return data.map(
@@ -88,11 +88,13 @@ describe('pluginConfigSchema', () => {
       );
     };
 
-    expect(pluginConfigSchema.parse(pluginCfg).runner.transform).toBeDefined();
+    expect(
+      pluginConfigSchema.parse(pluginCfg).runner.outputFileToAuditResults,
+    ).toBeDefined();
     expect(
       pluginConfigSchema
         .parse(pluginCfg)
-        .runner.transform(undefinedPluginOutput),
+        .runner.outputFileToAuditResults(undefinedPluginOutput),
     ).toEqual([
       { slug: 'audit-1', score: 0 },
       { slug: 'audit-2', score: 0 },

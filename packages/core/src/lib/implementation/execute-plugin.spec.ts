@@ -7,7 +7,11 @@ import {
 } from '@code-pushup/models';
 import { auditReport, pluginConfig } from '@code-pushup/models/testing';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
-import { executePlugin, executePlugins } from './execute-plugin';
+import {
+  PluginOutputMissingAuditError,
+  executePlugin,
+  executePlugins,
+} from './execute-plugin';
 
 const validPluginCfg = pluginConfig([auditReport()]);
 const validPluginCfg2 = pluginConfig([auditReport()], {
@@ -31,10 +35,10 @@ describe('executePlugin', () => {
     expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
-  it('should throws with invalid plugin audits slug', async () => {
+  it('should throws with missing plugin audit', async () => {
     const pluginCfg = invalidSlugPluginCfg;
     await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
-      /Plugin output of plugin .* is invalid./,
+      new PluginOutputMissingAuditError('mock-audit-slug'),
     );
   });
 
@@ -43,7 +47,7 @@ describe('executePlugin', () => {
       ...validPluginCfg,
       runner: {
         ...validPluginCfg.runner,
-        transform: (d: Record<string, unknown>[]) =>
+        outputFileToAuditResults: (d: Record<string, unknown>[]) =>
           d.map((d, idx) => ({
             ...d,
             slug: '-invalid-slug-' + idx,
@@ -52,7 +56,7 @@ describe('executePlugin', () => {
     };
 
     await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
-      /Plugin output of plugin .* is invalid./,
+      'The slug has to follow the pattern',
     );
   });
 });
@@ -79,16 +83,18 @@ describe('executePlugins', () => {
     const plugins: PluginConfig[] = [validPluginCfg, invalidSlugPluginCfg];
     await expect(() =>
       executePlugins(plugins, DEFAULT_OPTIONS),
-    ).rejects.toThrow(/Plugin output of plugin .* is invalid./);
+    ).rejects.toThrow('Audit metadata not found for slug mock-audit-slug');
   });
 
-  it('should use transform if provided', async () => {
-    const plugins = [
+  it('should use outputFileToAuditResults if provided', async () => {
+    const plugins: PluginConfig[] = [
       {
         ...validPluginCfg,
         runner: {
           ...validPluginCfg.runner,
-          transform: (outputs: Record<string, unknown>[]): AuditOutputs => {
+          outputFileToAuditResults: (
+            outputs: Record<string, unknown>[],
+          ): AuditOutputs => {
             return outputs.map(output => {
               return {
                 ...output,
