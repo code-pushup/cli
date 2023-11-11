@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { calcDuration } from './report';
+import {ExecutionMeta} from "@code-pushup/models";
 
 /**
  * Represents the process result.
@@ -13,9 +14,7 @@ export type ProcessResult = {
   stdout: string;
   stderr: string;
   code: number | null;
-  date: string;
-  duration: number;
-};
+} & ExecutionMeta;
 
 /**
  * Error class for process errors.

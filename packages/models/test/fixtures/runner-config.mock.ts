@@ -1,7 +1,7 @@
 import { platform } from 'os';
 import { RunnerConfig } from '../../src';
-import { runnerConfigSchema } from '../../src/lib/plugin-config-runner';
-import { AuditOutput } from '../../src/lib/plugin-process-output';
+import {EsmRunnerConfig, esmRunnerConfigSchema, runnerConfigSchema} from '../../src/lib/plugin-config-runner';
+import {AuditOutput, AuditOutputs} from '../../src/lib/plugin-process-output';
 
 /**
  * Use this helper as a general purpose mock with working defaults
@@ -14,6 +14,18 @@ export function runnerConfig(options?: Partial<RunnerConfig>): RunnerConfig {
     args: ['-v', '>', outputFile],
     outputFile,
     ...options,
+  });
+}
+
+/**
+ * Use this helper as a general purpose mock with working defaults
+ * @param options
+ */
+export function esmRunnerConfig(options?: Partial<EsmRunnerConfig>): EsmRunnerConfig {
+  return esmRunnerConfigSchema.parse((cfg: unknown): AuditOutputs => {
+    return [
+      {} as AuditOutput
+    ];
   });
 }
 

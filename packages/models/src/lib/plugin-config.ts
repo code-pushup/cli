@@ -8,7 +8,7 @@ import {
 import { errorItems, hasMissingStrings } from './implementation/utils';
 import { pluginAuditsSchema } from './plugin-config-audits';
 import { auditGroupsSchema } from './plugin-config-groups';
-import { runnerConfigSchema } from './plugin-config-runner';
+import {esmRunnerConfigSchema, runnerConfigSchema} from './plugin-config-runner';
 
 export const pluginMetaSchema = packageVersionSchema({
   optional: true,
@@ -30,6 +30,7 @@ export const pluginMetaSchema = packageVersionSchema({
 
 export const pluginDataSchema = z.object({
   runner: runnerConfigSchema,
+  es5Runner: esmRunnerConfigSchema,
   audits: pluginAuditsSchema,
   groups: auditGroupsSchema,
 });

@@ -18,7 +18,7 @@ export {
   persistConfigSchema,
 } from './lib/persist-config';
 export { PluginConfig, pluginConfigSchema } from './lib/plugin-config';
-export { RunnerConfig } from './lib/plugin-config-runner';
+export { RunnerConfig,RunnerResult,runnerResultSchema, EsmRunnerConfig, EsmObserver } from './lib/plugin-config-runner';
 export {
   auditSchema,
   Audit,
@@ -29,7 +29,7 @@ export {
   AuditGroup,
   auditGroupSchema,
 } from './lib/plugin-config-groups';
-export { AuditOutput, auditOutputsSchema } from './lib/plugin-process-output';
+export { AuditOutput, AuditOutputs, auditOutputsSchema, PluginOutput } from './lib/plugin-process-output';
 export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
@@ -39,4 +39,5 @@ export {
   reportSchema,
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
-export { materialIconSchema } from './lib/implementation/schemas';
+export { materialIconSchema, ExecutionMeta } from './lib/implementation/schemas';
+

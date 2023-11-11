@@ -19,6 +19,8 @@ export function executionMetaSchema(
     duration: z.number({ description: options.descriptionDuration }),
   });
 }
+export type ExecutionMeta = z.infer<ReturnType<typeof executionMetaSchema>>;
+
 
 /**
  * Schema for a slug of a categories, plugins or audits.

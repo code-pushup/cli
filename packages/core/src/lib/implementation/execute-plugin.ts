@@ -1,29 +1,22 @@
 import chalk from 'chalk';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 import {
+  AuditOutput,
+  auditOutputsSchema,
+  AuditReport, EsmObserver, EsmRunnerConfig,
   PluginConfig,
   PluginReport,
-  auditOutputsSchema,
+  RunnerResult
 } from '@code-pushup/models';
-import {
-  ProcessObserver,
-  executeProcess,
-  getProgressBar,
-} from '@code-pushup/utils';
+import {getProgressBar, ProcessObserver,} from '@code-pushup/utils';
+import {executeEsmRunner} from "./execute-esm-runner";
+import {executeRunner} from "./execute-runner";
 
 /**
  * Error thrown when plugin output is invalid.
  */
-export class PluginOutputError extends Error {
-  constructor(pluginSlug: string, error?: Error) {
-    super(
-      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Error: ${error?.message}`,
-    );
-    if (error) {
-      this.name = error.name;
-      this.stack = error.stack;
-    }
+export class PluginOutputMissingAuditError extends Error {
+  constructor(auditSlug: string, pluginSlug: string) {
+    super(`Audit metadata not found for slug ${auditSlug} from plugin ${pluginSlug}`);
   }
 }
 
@@ -34,7 +27,7 @@ export class PluginOutputError extends Error {
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
- * @throws {PluginOutputError} - if plugin runner output is invalid
+ * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -54,98 +47,56 @@ export async function executePlugin(
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
   const {
-    slug,
-    title,
-    icon,
+    audits: _,
     description,
     docsUrl,
-    version,
-    packageName,
     groups,
+    ...pluginMeta
   } = pluginConfig;
-  const { args, command } = pluginConfig.runner;
+  let runnerResult: RunnerResult;
 
-  const { duration, date } = await executeProcess({
-    command,
-    args,
-    observer,
+  if (typeof pluginConfig?.es5Runner === 'function') {
+    runnerResult = await executeEsmRunner({
+      runner: pluginConfig?.es5Runner
+    })
+  } else {
+    runnerResult = await executeRunner(pluginConfig.runner);
+  }
+
+  const {audits: runnerAuditOutputs, ...executionMeta} = runnerResult;
+  // read process output from file system and parse it
+  let auditOutputs = auditOutputsSchema.parse(runnerAuditOutputs);
+  const audits = auditOutputs.map(auditOutput => {
+    const auditMetadata = pluginConfig.audits.find(
+      audit => audit.slug === auditOutput.slug,
+    );
+    if (!auditMetadata) {
+      throw new PluginOutputMissingAuditError(
+        auditOutput.slug, pluginMeta.slug
+      );
+    }
+    return {
+      ...auditOutput,
+      ...auditMetadata,
+    } satisfies AuditReport;
   });
 
-  try {
-    const processOutputPath = join(
-      process.cwd(),
-      pluginConfig.runner.outputFile,
-    );
+  return {
+    ...pluginMeta,
+    ...executionMeta,
+    audits,
+    ...(description && {description}),
+    ...(docsUrl && {docsUrl}),
+    ...(groups && {groups}),
+  } satisfies PluginReport;
 
-    // read process output from file system and parse it
-    const auditOutputs = auditOutputsSchema.parse(
-      JSON.parse((await readFile(processOutputPath)).toString()),
-    );
-
-    const audits = auditOutputs.map(auditOutput => {
-      const auditMetadata = pluginConfig.audits.find(
-        audit => audit.slug === auditOutput.slug,
-      );
-      if (!auditMetadata) {
-        throw new PluginOutputError(
-          slug,
-          new Error(
-            `Audit metadata not found for slug ${auditOutput.slug} from runner output`,
-          ),
-        );
-      }
-      return {
-        ...auditOutput,
-        ...auditMetadata,
-      };
-    });
-
-    // @TODO consider just resting/spreading the values
-    return {
-      version,
-      packageName,
-      slug,
-      title,
-      icon,
-      date,
-      duration,
-      audits,
-      ...(description && { description }),
-      ...(docsUrl && { docsUrl }),
-      ...(groups && { groups }),
-    } satisfies PluginReport;
-  } catch (error) {
-    const e = error as Error;
-    throw new PluginOutputError(slug, e);
-  }
 }
 
-/**
- * Execute multiple plugins and aggregates their output.
- * @public
- * @param plugins array of {@link PluginConfig} objects
- * @param {Object} [options] execution options
- * @param {boolean} options.progress show progress bar
- * @returns {Promise<PluginReport[]>} plugin report
- *
- * @example
- * // plugin execution
- * const plugins = [pluginConfigSchema.parse({...})];
- *
- * @example
- * // error handling
- * try {
- * await executePlugins(plugins);
- * } catch (e) {
- * console.log(e.message); // Plugin output is invalid
- * }
- *
- */
 export async function executePlugins(
   plugins: PluginConfig[],
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
-  const { progress = false } = options || {};
+  const {progress = false} = options || {};
 
   const progressName = 'Run Plugins';
   const progressBar = progress ? getProgressBar(progressName) : null;
