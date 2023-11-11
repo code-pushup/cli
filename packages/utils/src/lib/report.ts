@@ -94,11 +94,6 @@ export function compareIssueSeverity(
   return levels[severity1] - levels[severity2];
 }
 
-// @TODO replace with real scoring logic
-export function sumRefs(refs: CategoryRef[]) {
-  return refs.reduce((sum, { weight }) => sum + weight, 0);
-}
-
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
 
 export async function loadReport<T extends Format>(
