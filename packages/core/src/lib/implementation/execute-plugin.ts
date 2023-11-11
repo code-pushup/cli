@@ -1,9 +1,13 @@
 import chalk from 'chalk';
 import { join } from 'path';
 import {
+  AuditOutput,
+  AuditOutputs,
+  AuditReport,
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
+  auditReportSchema,
 } from '@code-pushup/models';
 import {
   ProcessObserver,
@@ -15,15 +19,11 @@ import {
 /**
  * Error thrown when plugin output is invalid.
  */
-export class PluginOutputError extends Error {
-  constructor(pluginSlug: string, error?: Error) {
+export class PluginOutputMissingAuditError extends Error {
+  constructor(auditSlug: string, pluginSlug: string) {
     super(
-      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Error: ${error?.message}`,
+      `Audit metadata not found for slug ${auditSlug} from plugin ${pluginSlug}`,
     );
-    if (error) {
-      this.name = error.name;
-      this.stack = error.stack;
-    }
   }
 }
 
@@ -34,7 +34,7 @@ export class PluginOutputError extends Error {
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
- * @throws {PluginOutputError} - if plugin runner output is invalid
+ * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -54,81 +54,55 @@ export async function executePlugin(
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
   const {
-    slug,
-    title,
-    icon,
+    audits: pluginConfigAudits,
     description,
     docsUrl,
-    version,
-    packageName,
     groups,
+    ...pluginMeta
   } = pluginConfig;
   const { args, command } = pluginConfig.runner;
 
-  const { duration, date } = await executeProcess({
+  const { code, stdout, stderr, ...executionMeta } = await executeProcess({
     command,
     args,
     observer,
   });
 
-  try {
-    const processOutputPath = join(
-      process.cwd(),
-      pluginConfig.runner.outputFile,
-    );
+  const processOutputPath = join(process.cwd(), pluginConfig.runner.outputFile);
 
-    // read process output from file system and parse it
-    let unknownAuditOutputs = await readJsonFile<Record<string, unknown>[]>(
-      processOutputPath,
-    );
+  // read process output from file system and parse it
+  let unknownAuditOutputs = await readJsonFile<Record<string, unknown>[]>(
+    processOutputPath,
+  );
 
-    // parse transform unknownAuditOutputs to auditOutputs
-    if (pluginConfig.runner?.transform) {
-      unknownAuditOutputs = pluginConfig.runner.transform(
-        unknownAuditOutputs,
-      ) as Record<string, unknown>[];
-    }
-
-    // validate audit outputs
-    const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
-
-    // enrich auditOutputs
-    const audits = auditOutputs.map(auditOutput => {
-      const auditMetadata = pluginConfig.audits.find(
-        audit => audit.slug === auditOutput.slug,
-      );
-      if (!auditMetadata) {
-        throw new PluginOutputError(
-          slug,
-          new Error(
-            `Audit metadata not found for slug ${auditOutput.slug} from runner output`,
-          ),
-        );
-      }
-      return {
-        ...auditOutput,
-        ...auditMetadata,
-      };
-    });
-
-    // @TODO consider just resting/spreading the values
-    return {
-      version,
-      packageName,
-      slug,
-      title,
-      icon,
-      date,
-      duration,
-      audits,
-      ...(description && { description }),
-      ...(docsUrl && { docsUrl }),
-      ...(groups && { groups }),
-    } satisfies PluginReport;
-  } catch (error) {
-    const e = error as Error;
-    throw new PluginOutputError(slug, e);
+  // parse transform unknownAuditOutputs to auditOutputs
+  if (pluginConfig.runner?.outputFileToAuditResults) {
+    unknownAuditOutputs = pluginConfig.runner.outputFileToAuditResults(
+      unknownAuditOutputs,
+    ) as AuditOutputs;
   }
+  // validate audit outputs
+  const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
+
+  // validate auditOutputs
+  auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
+
+  // enrich `AuditOutputs` to `AuditReport`
+  const audits: AuditReport[] = auditOutputs.map((auditOutput: AuditOutput) =>
+    auditReportSchema.parse({
+      ...auditOutput,
+      ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug),
+    }),
+  );
+
+  return {
+    ...pluginMeta,
+    ...executionMeta,
+    audits,
+    ...(description && { description }),
+    ...(docsUrl && { docsUrl }),
+    ...(groups && { groups }),
+  } satisfies PluginReport;
 }
 
 /**
@@ -175,4 +149,18 @@ export async function executePlugins(
   progressBar?.endProgress('Done running plugins');
 
   return pluginsResult;
+}
+
+function auditOutputsCorrelateWithPluginOutput(
+  auditOutputs: AuditOutputs,
+  pluginConfigAudits: PluginConfig['audits'],
+) {
+  auditOutputs.forEach(auditOutput => {
+    const auditMetadata = pluginConfigAudits.find(
+      audit => audit.slug === auditOutput.slug,
+    );
+    if (!auditMetadata) {
+      throw new Error(`Missing audit ${auditOutput.slug}.`);
+    }
+  });
 }
