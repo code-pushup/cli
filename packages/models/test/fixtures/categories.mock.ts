@@ -60,12 +60,21 @@ const CATEGORIES_MAP = {
   },
 } satisfies Record<string, CategoryConfig>;
 
-type CategorySlug = keyof typeof CATEGORIES_MAP;
-
-export function categoryConfig(
-  slug: CategorySlug = 'performance',
-): CategoryConfig {
-  return CATEGORIES_MAP[slug];
+export function categoryConfig(slug = 'category-slug-1'): CategoryConfig {
+  return {
+    slug,
+    title: 'Category Title',
+    description: 'Category description here',
+    docsUrl: 'https://info.dev?category=category-slug',
+    refs: [
+      {
+        type: 'audit',
+        plugin: 'plugin-1',
+        slug: 'audit-1',
+        weight: 1,
+      },
+    ],
+  };
 }
 
 export function categoryConfigs(): CategoryConfig[] {
