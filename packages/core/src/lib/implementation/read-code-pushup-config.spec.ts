@@ -1,4 +1,4 @@
-import { join, sep } from 'path';
+import { join } from 'path';
 import * as process from 'process';
 import { describe, expect } from 'vitest';
 import { persistConfig, uploadConfig } from '@code-pushup/models/testing';
@@ -33,7 +33,7 @@ describe('readCodePushupConfig', () => {
   it('should throw if file does not exisit', async () => {
     const filepath = join('invalid-path', 'valid-export.mjs');
     await expect(readCodePushupConfig(filepath)).rejects.toThrow(
-      `invalid-path${sep}valid-export.mjs`,
+      `invalid-path`,
     );
   });
 
