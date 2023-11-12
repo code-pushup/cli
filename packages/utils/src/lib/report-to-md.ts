@@ -31,9 +31,9 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
-  slugify,
 } from './report';
 import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
+import { slugify } from './utils';
 
 export function reportToMd(
   report: ScoredReport,

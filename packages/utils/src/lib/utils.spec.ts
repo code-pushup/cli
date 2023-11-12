@@ -10,10 +10,10 @@ import {
   ensureDirectoryExists,
   logMultipleFileResults,
   pluralize,
+  slugify,
   toArray,
   toUnixPath,
 } from './utils';
-import { slugify } from './utils';
 
 // Mock file system API's
 vi.mock('fs', async () => {
