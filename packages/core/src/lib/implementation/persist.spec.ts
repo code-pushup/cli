@@ -14,7 +14,7 @@ import {
   FOOTER_PREFIX,
   README_LINK,
 } from '@code-pushup/utils';
-import { mockConsole, unmockConsole } from '../../../test/console.mock';
+import { mockConsole, unmockConsole } from '../../../test';
 import { logPersistedResults, persistReport } from './persist';
 
 // Mock file system API's

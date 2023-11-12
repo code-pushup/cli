@@ -2,15 +2,12 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { CollectAndPersistReportsOptions } from '@code-pushup/core';
 import { objectToCliArgs } from '@code-pushup/utils';
-import {
-  cleanFolderPutGitKeep,
-  mockConsole,
-  unmockConsole,
-} from '../../../test';
+import { mockConsole, unmockConsole } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './command-object';
 
+const getFilename = () => 'report';
 const baseArgs = [
   ...objectToCliArgs({
     progress: false,
@@ -36,21 +33,22 @@ describe('collect-command-object', () => {
 
   beforeEach(() => {
     logs = [];
-    cleanFolderPutGitKeep();
     mockConsole((...args: unknown[]) => {
       logs.push(...args);
     });
   });
   afterEach(() => {
-    cleanFolderPutGitKeep();
+    logs = [];
     unmockConsole();
   });
 
   it('should override config with CLI arguments', async () => {
+    const filename = getFilename();
     const args = [
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
+        'persist.filename': filename,
       }),
     ];
     const parsedArgv = (await cli(

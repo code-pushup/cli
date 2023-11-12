@@ -29,6 +29,7 @@ describe('print-config-command-object', () => {
   it('should print existing config', async () => {
     const parsedArgv = await cli(baseArgs).parseAsync();
     expect(parsedArgv.persist.outputDir).toBe('tmp');
+    expect(parsedArgv.persist.filename).toBe('report');
     expect(parsedArgv.persist.format).toBeUndefined();
     expect(parsedArgv.upload?.organization).toBe('code-pushup');
     expect(parsedArgv.upload?.project).toBe('cli');
@@ -43,6 +44,7 @@ describe('print-config-command-object', () => {
     const overrides = {
       'persist.outputDir': 'custom/output/dir',
       'persist.format': ['md'],
+      'persist.filename': 'custom-report-filename',
       'upload.organization': 'custom-org',
       'upload.project': 'custom-project',
       'upload.apiKey': 'custom-api-key',
@@ -52,6 +54,7 @@ describe('print-config-command-object', () => {
 
     const parsedArgv = await cli(args).parseAsync();
     expect(parsedArgv.persist.outputDir).toBe(overrides['persist.outputDir']);
+    expect(parsedArgv.persist.filename).toBe('custom-report-filename');
     expect(parsedArgv.persist.format).toEqual(overrides['persist.format']);
     expect(parsedArgv.upload?.organization).toEqual(
       overrides['upload.organization'],

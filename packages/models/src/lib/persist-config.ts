@@ -9,7 +9,7 @@ export const persistConfigSchema = z.object({
   filename: fileNameSchema('Artifacts file name (without extension)').default(
     'report',
   ),
-  format: z.array(formatSchema).default(['stdout']).optional(), // @TODO remove default or optional value and otherwise it will not set defaults
+  format: z.array(formatSchema).default(['stdout']).optional(), // @TODO remove default or optional value and otherwise it will not set defaults.
 });
 
 export type PersistConfig = z.infer<typeof persistConfigSchema>;

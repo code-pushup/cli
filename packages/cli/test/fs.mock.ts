@@ -1,26 +1,12 @@
-import { mkdirSync, rmSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { ensureDirectoryExists } from '@code-pushup/utils';
 
-export function cleanFolder<T extends object>(
+export async function setupFolder<T extends object>(
   dirName = 'tmp',
   content?: { [key in keyof T]: string },
 ) {
-  rmSync(dirName, { recursive: true, force: true });
-  mkdirSync(dirName, { recursive: true });
-  if (content) {
-    for (const fileName in content) {
-      writeFileSync(join(dirName, fileName), content[fileName]);
-    }
-  }
-}
-
-export function cleanFolderPutGitKeep<T extends object>(
-  dirName = 'tmp',
-  content?: { [key in keyof T]: string },
-) {
-  rmSync(dirName, { recursive: true, force: true });
-  mkdirSync(dirName, { recursive: true });
-  writeFileSync(join(dirName, '.gitkeep'), '');
+  await ensureDirectoryExists(dirName);
   if (content) {
     for (const fileName in content) {
       writeFileSync(join(dirName, fileName), content[fileName]);
