@@ -17,7 +17,9 @@ describe('importEsmModule', () => {
       importEsmModule<{ name: string }>({
         filepath: join('invalid-path', 'valid-export.mjs'),
       }),
-    ).rejects.toThrow(new NoFileError('invalid-path/valid-export.mjs').message);
+    ).rejects.toThrow(
+      new NoFileError(join('invalid-path', 'valid-export.mjs')).message,
+    );
   });
 
   it('should throw if export is not defined', async () => {
