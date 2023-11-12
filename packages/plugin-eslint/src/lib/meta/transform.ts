@@ -19,6 +19,8 @@ export function ruleToAudit({ ruleId, meta, options }: RuleData): Audit {
     slug: ruleIdToSlug(ruleId, options),
     title: meta.docs?.description ?? name,
     description: lines.join('\n\n'),
-    docsUrl: meta.docs?.url,
+    ...(meta.docs?.url && {
+      docsUrl: meta.docs.url,
+    }),
   };
 }

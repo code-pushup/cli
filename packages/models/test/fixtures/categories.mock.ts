@@ -5,6 +5,8 @@ const CATEGORIES_MAP = {
   performance: {
     slug: 'performance',
     title: 'Performance',
+    description: 'Performance metrics',
+    docsUrl: 'https://developers.google.com/web/fundamentals/performance',
     refs: [
       {
         type: 'group',

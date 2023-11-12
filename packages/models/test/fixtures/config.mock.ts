@@ -12,7 +12,7 @@ import { persistConfig } from './persist-config.mock';
 import { auditReport, pluginConfig } from './plugin-config.mock';
 
 export function config(outputDir = 'tmp'): CoreConfig {
-  return {
+  return coreConfigSchema.parse({
     persist: persistConfig({ outputDir }),
     upload: {
       organization: 'code-pushup',
@@ -22,7 +22,7 @@ export function config(outputDir = 'tmp'): CoreConfig {
     },
     categories: categoryConfigs(),
     plugins: [eslintPluginConfig(outputDir), lighthousePluginConfig(outputDir)],
-  };
+  });
 }
 
 export function minimalConfig(

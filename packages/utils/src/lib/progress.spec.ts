@@ -32,7 +32,7 @@ const progressBuffer = bars?.['logger'].progressBuffer;
 
 describe('getProgressBar', () => {
   it('should init task', async () => {
-    expect(bars.getIndex(taskAName)).toBe(undefined);
+    expect(bars.getIndex(taskAName)).toBeUndefined();
     getProgressBar(taskAName);
     expect(bars.getIndex(taskAName)).toBe(0);
     expect(progressBuffer[0].trim()).toBe(
@@ -41,7 +41,7 @@ describe('getProgressBar', () => {
 
     // safety checks int the first test only
     bars.removeTask(taskAName);
-    expect(bars.getIndex(taskAName)).toBe(undefined);
+    expect(bars.getIndex(taskAName)).toBeUndefined();
   });
 
   it('should update task message', async () => {

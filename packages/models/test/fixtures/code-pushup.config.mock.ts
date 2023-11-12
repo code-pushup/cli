@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { CoreConfig } from '../../src';
-import { echoRunnerConfig } from './echo-runner-config.mock';
 import { auditReport } from './plugin-config.mock';
+import { echoRunnerConfig } from './runner-config.mock';
 
 const outputDir = 'tmp';
 export default {

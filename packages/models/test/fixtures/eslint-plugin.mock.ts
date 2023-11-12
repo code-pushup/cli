@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { Audit, CategoryRef, PluginConfig, PluginReport } from '../../src';
-import { echoRunnerConfig } from './echo-runner-config.mock';
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
+import { echoRunnerConfig } from './runner-config.mock';
 
 const eslintMeta = {
   slug: 'eslint',

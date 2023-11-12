@@ -1,6 +1,14 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  SpyInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -24,7 +32,6 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-
 const baseArgs = [
   'autorun',
   ...objectToCliArgs({
@@ -47,8 +54,14 @@ const cli = (args: string[]) =>
   });
 
 describe('autorun-command-object', () => {
+  let logSpy: SpyInstance;
+
   beforeEach(async () => {
     vi.clearAllMocks();
+    logSpy = vi.spyOn(console, 'log');
+  });
+  afterEach(() => {
+    logSpy.mockRestore();
   });
 
   it('should override config with CLI arguments', async () => {
@@ -56,6 +69,7 @@ describe('autorun-command-object', () => {
       ...baseArgs,
       ...objectToCliArgs({
         'persist.format': 'md',
+        'persist.filename': 'my-report',
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),

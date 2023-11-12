@@ -4,6 +4,7 @@ import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
+import { mockConsole, unmockConsole } from '../../test';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../test/constants';
 import { collectAndPersistReports } from './collect-and-persist';
 
@@ -21,14 +22,22 @@ vi.mock('@code-pushup/portal-client', async () => {
 });
 
 const outputDir = 'tmp';
-const reportPath = (path = outputDir, format: 'json' | 'md' = 'json') =>
-  join(path, 'report.' + format);
+const reportPath = (format: 'json' | 'md' = 'json') =>
+  join(outputDir, `report.${format}`);
 
 describe('collectAndPersistReports', () => {
-  test('should work', async () => {
+  beforeEach(async () => {
+    mockConsole();
+  });
+  afterEach(async () => {
+    unmockConsole();
+  });
+
+  it('should work', async () => {
+    const cfg = minimalConfig(outputDir);
     await collectAndPersistReports({
       ...DEFAULT_TESTING_CLI_OPTIONS,
-      ...minimalConfig(outputDir),
+      ...cfg,
     });
     const result = JSON.parse(readFileSync(reportPath()).toString()) as Report;
     expect(result.plugins[0]?.audits[0]?.slug).toBe('audit-1');

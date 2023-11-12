@@ -4,7 +4,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
 import { readJsonFile } from '@code-pushup/utils';
-import { listAudits } from './meta';
+import { listAuditsAndGroups } from './meta';
 import {
   RUNNER_OUTPUT_PATH,
   createRunnerConfig,
@@ -36,7 +36,7 @@ describe('executeRunner', () => {
       useEslintrc: false,
       baseConfig: { extends: eslintrc },
     });
-    const audits = await listAudits(eslint, patterns);
+    const { audits } = await listAuditsAndGroups(eslint, patterns);
 
     const runnerConfig = createRunnerConfig(
       'bin.js',

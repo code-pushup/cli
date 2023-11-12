@@ -33,9 +33,9 @@ describe('CoreConfig', () => {
   it('should throw if ref in a category does not exist in audits', () => {
     const coreConfig = config();
     const ref = coreConfig.categories[1].refs[0];
-    const missingAuditSlug = 'missing-audit-ref';
-
     const pluginSlug = ref.plugin;
+
+    const missingAuditSlug = 'missing-audit-ref';
     ref.slug = missingAuditSlug;
     expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
       `In the categories, the following plugin refs do not exist in the provided plugins: ${pluginSlug}/${missingAuditSlug}`,
@@ -47,7 +47,6 @@ describe('CoreConfig', () => {
     const categoryConfig = coreConfig.categories[0];
     const ref = { ...categoryConfig.refs[0], slug: 'missing-slug' };
     coreConfig.categories[1].refs.push(ref);
-    console.log('refs[0]', categoryConfig.refs[0]);
 
     expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
       `In the categories, the following plugin refs do not exist in the provided plugins: lighthouse#missing-slug (group)`,

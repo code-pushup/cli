@@ -9,7 +9,7 @@ import {
 import { UploadOptions } from '@code-pushup/core';
 import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
-import { cleanFolderPutGitKeep } from '../../../test';
+import { setupFolder } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
@@ -26,7 +26,9 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
+const dummyReport = report();
 
+// @TODO move into test library
 const baseArgs = [
   'upload',
   ...objectToCliArgs({
@@ -47,22 +49,15 @@ const cli = (args: string[]) =>
     commands: [yargsUploadCommandObject()],
   });
 
-const reportFile = (format: 'json' | 'md' = 'json') => 'report.' + format;
-const dummyReport = report();
-
 describe('upload-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    cleanFolderPutGitKeep('tmp', {
-      [reportFile()]: JSON.stringify(dummyReport),
-    });
-  });
-
-  afterEach(async () => {
-    cleanFolderPutGitKeep('tmp');
   });
 
   it('should override config with CLI arguments', async () => {
+    setupFolder('tmp', {
+      ['report.json']: JSON.stringify(dummyReport),
+    });
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
@@ -82,7 +77,17 @@ describe('upload-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    await cli(baseArgs).parseAsync();
+    const reportFileName = 'my-report';
+    setupFolder('tmp', {
+      [reportFileName + '.json']: JSON.stringify(dummyReport),
+    });
+    const args = [
+      ...baseArgs,
+      ...objectToCliArgs<CliArgsObject>({
+        'persist.filename': reportFileName,
+      }),
+    ];
+    await cli(args).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

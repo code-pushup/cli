@@ -48,7 +48,7 @@ describe('uploadToPortal', () => {
     );
   });
 
-  test('should work', async () => {
+  it('should work', async () => {
     const cfg = {
       upload: uploadConfig({
         apiKey: 'dummy-api-key',
@@ -60,4 +60,7 @@ describe('uploadToPortal', () => {
 
     expect(result.packageName).toBe('dummy-package');
   });
+
+  // @TODO add tests for failed upload
+  // @TODO add tests for multiple uploads
 });

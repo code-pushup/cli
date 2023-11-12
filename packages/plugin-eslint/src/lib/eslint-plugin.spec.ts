@@ -63,14 +63,12 @@ describe('eslintPlugin', () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
       eslintPlugin({ eslintrc: '.eslintrc.json' }),
-    ).rejects.toThrowError('patterns');
+    ).rejects.toThrow('patterns');
   });
 
   it("should throw if eslintrc file doesn't exist", async () => {
     await expect(
       eslintPlugin({ eslintrc: '.eslintrc.yml', patterns: '**/*.js' }),
-    ).rejects.toThrowError(
-      'Failed to load config ".eslintrc.yml" to extend from',
-    );
+    ).rejects.toThrow('Cannot read config file');
   });
 });

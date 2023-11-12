@@ -1,8 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { uploadToPortal } from '@code-pushup/portal-client';
-import { CoreConfig, reportSchema } from '@code-pushup/models';
-import { latestHash } from '@code-pushup/utils';
+import { CoreConfig, Report } from '@code-pushup/models';
+import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
 
 export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
@@ -18,21 +16,25 @@ export async function upload(
   if (options?.upload === undefined) {
     throw new Error('upload config needs to be set');
   }
-
   const { apiKey, server, organization, project } = options.upload;
-  const { outputDir } = options.persist;
-  const report = reportSchema.parse(
-    JSON.parse(readFileSync(join(outputDir, 'report.json')).toString()),
-  );
+  const { outputDir, filename } = options.persist;
+  const report: Report = await loadReport({
+    outputDir,
+    filename: filename,
+    format: 'json',
+  });
+  const commitData = await getLatestCommit();
+
+  if (!commitData) {
+    throw new Error('no commit data available');
+  }
 
   const data = {
     organization,
     project,
-    commit: await latestHash(),
+    commit: commitData.hash,
     ...jsonToGql(report),
   };
 
-  return uploadFn({ apiKey, server, data }).catch(e => {
-    throw new Error('upload failed. ' + e.message);
-  });
+  return uploadFn({ apiKey, server, data });
 }

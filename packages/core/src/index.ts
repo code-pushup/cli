@@ -1,5 +1,4 @@
 export {
-  logPersistedResults,
   persistReport,
   PersistError,
   PersistDirError,
