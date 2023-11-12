@@ -21,12 +21,8 @@ import {
   FOOTER_PREFIX,
   README_LINK,
   countCategoryAudits,
-  formatDuration,
-  slugify,
-} from './report';
-import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
-import {
   detailsTableHeaders,
+  formatDuration,
   formatReportScore,
   getRoundScoreMarker,
   getSeverityIcon,
@@ -35,7 +31,9 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
-} from './utils';
+  slugify,
+} from './report';
+import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
 
 export function reportToMd(
   report: ScoredReport,

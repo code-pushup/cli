@@ -2,39 +2,15 @@ import chalk from 'chalk';
 import { mkdir, readFile } from 'fs/promises';
 import { formatBytes } from './report';
 
-// @TODO move logic out of this file as much as possible. use report.ts or scoring.ts instead.
-export const reportHeadlineText = 'Code PushUp Report';
-export const reportOverviewTableHeaders = [
-  '🏷 Category',
-  '⭐ Score',
-  '🛡 Audits',
-];
-export const reportMetaTableHeaders: string[] = [
-  'Commit',
-  'Version',
-  'Duration',
-  'Plugins',
-  'Categories',
-  'Audits',
-];
-
-export const pluginMetaTableHeaders: string[] = [
-  'Plugin',
-  'Audits',
-  'Version',
-  'Duration',
-];
-
-// details headers
-
-export const detailsTableHeaders: string[] = [
-  'Severity',
-  'Message',
-  'Source file',
-  'Line(s)',
-];
-
 // === Transform
+
+export function slugify(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+|\//g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
 
 export function pluralize(text: string): string {
   if (text.endsWith('y')) {
@@ -69,45 +45,6 @@ export function countOccurrences<T extends PropertyKey>(
 
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return Array.from(new Set(array));
-}
-
-// @TODO move to report.ts
-export function formatReportScore(score: number): string {
-  return Math.round(score * 100).toString();
-}
-
-// === Markdown @TODO move to report-to-md.ts
-
-export function getRoundScoreMarker(score: number): string {
-  if (score >= 0.9) {
-    return '🟢';
-  }
-  if (score >= 0.5) {
-    return '🟡';
-  }
-  return '🔴';
-}
-
-export function getSquaredScoreMarker(score: number): string {
-  if (score >= 0.9) {
-    return '🟩';
-  }
-  if (score >= 0.5) {
-    return '🟨';
-  }
-  return '🟥';
-}
-
-export function getSeverityIcon(
-  severity: 'info' | 'warning' | 'error',
-): string {
-  if (severity === 'error') {
-    return '🚨';
-  }
-  if (severity === 'warning') {
-    return '⚠️';
-  }
-  return 'ℹ️';
 }
 
 // === Filesystem @TODO move to fs-utils.ts
