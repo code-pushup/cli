@@ -45,16 +45,20 @@ function categoryRefToScore(
   // Create lookup objects
   const auditLookup = audits.reduce<Record<string, EnrichedAuditReport>>(
     (lookup, audit) => {
-      lookup[`${audit.plugin}-${audit.slug}`] = audit;
-      return lookup;
+      return {
+        ...lookup,
+        [`${audit.plugin}-${audit.slug}`]: audit,
+      };
     },
     {},
   );
 
   const groupLookup = groups.reduce<Record<string, EnrichedScoredAuditGroup>>(
     (lookup, group) => {
-      lookup[`${group.plugin}-${group.slug}`] = group;
-      return lookup;
+      return {
+        ...lookup,
+        [`${group.plugin}-${group.slug}`]: group,
+      };
     },
     {},
   );
@@ -93,9 +97,11 @@ export function calculateScore<T extends { weight: number }>(
 ): number {
   const { numerator, denominator } = refs.reduce(
     (acc, ref) => {
-      acc.numerator += scoreFn(ref) * ref.weight;
-      acc.denominator += ref.weight;
-      return acc;
+      const score = scoreFn(ref);
+      return {
+        numerator: acc.numerator + score * ref.weight,
+        denominator: acc.denominator + ref.weight,
+      };
     },
     { numerator: 0, denominator: 0 },
   );
@@ -103,8 +109,31 @@ export function calculateScore<T extends { weight: number }>(
 }
 
 export function scoreReport(report: Report): ScoredReport {
-  const allScoredAudits: EnrichedAuditReport[] = [];
-  const allScoredGroups: EnrichedScoredAuditGroup[] = [];
+  const allScoredAudits: EnrichedAuditReport[] = report.plugins.flatMap(
+    plugin => {
+      const { audits } = plugin;
+      return audits.map(audit => ({
+        ...audit,
+        plugin: plugin.slug,
+      }));
+    },
+  );
+
+  const allScoredGroups: EnrichedScoredAuditGroup[] = report.plugins.flatMap(
+    plugin => {
+      const { groups } = plugin;
+      return (
+        groups?.map(group => {
+          const scoredGroup = {
+            ...group,
+            score: calculateScore(group.refs, groupRefToScore(allScoredAudits)),
+            plugin: plugin.slug,
+          };
+          return scoredGroup;
+        }) || []
+      );
+    },
+  );
 
   const scoredPlugins = report.plugins.map(plugin => {
     const { groups, audits } = plugin;
@@ -112,17 +141,14 @@ export function scoreReport(report: Report): ScoredReport {
       ...audit,
       plugin: plugin.slug,
     }));
-    allScoredAudits.push(...preparedAudits);
 
     const preparedGroups =
       groups?.map(group => {
-        const scoredGroup = {
+        return {
           ...group,
           score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
           plugin: plugin.slug,
         };
-        allScoredGroups.push(scoredGroup);
-        return scoredGroup;
       }) || [];
 
     return {
