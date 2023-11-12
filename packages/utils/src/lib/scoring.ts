@@ -123,14 +123,11 @@ export function scoreReport(report: Report): ScoredReport {
     plugin => {
       const { groups } = plugin;
       return (
-        groups?.map(group => {
-          const scoredGroup = {
-            ...group,
-            score: calculateScore(group.refs, groupRefToScore(allScoredAudits)),
-            plugin: plugin.slug,
-          };
-          return scoredGroup;
-        }) || []
+        groups?.map(group => ({
+          ...group,
+          score: calculateScore(group.refs, groupRefToScore(allScoredAudits)),
+          plugin: plugin.slug,
+        })) || []
       );
     },
   );
@@ -143,13 +140,11 @@ export function scoreReport(report: Report): ScoredReport {
     }));
 
     const preparedGroups =
-      groups?.map(group => {
-        return {
-          ...group,
-          score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
-          plugin: plugin.slug,
-        };
-      }) || [];
+      groups?.map(group => ({
+        ...group,
+        score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
+        plugin: plugin.slug,
+      })) || [];
 
     return {
       ...plugin,
