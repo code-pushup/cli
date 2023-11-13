@@ -47,7 +47,7 @@ describe('executePlugin', () => {
       ...validPluginCfg,
       runner: {
         ...validPluginCfg.runner,
-        outputFileToAuditResults: (d: Record<string, unknown>[]) =>
+        outputTransform: (d: Record<string, unknown>[]) =>
           d.map((d, idx) => ({
             ...d,
             slug: '-invalid-slug-' + idx,
@@ -86,13 +86,13 @@ describe('executePlugins', () => {
     ).rejects.toThrow('Audit metadata not found for slug mock-audit-slug');
   });
 
-  it('should use outputFileToAuditResults if provided', async () => {
+  it('should use outputTransform if provided', async () => {
     const plugins: PluginConfig[] = [
       {
         ...validPluginCfg,
         runner: {
           ...validPluginCfg.runner,
-          outputFileToAuditResults: (
+          outputTransform: (
             outputs: Record<string, unknown>[],
           ): AuditOutputs => {
             return outputs.map(output => {

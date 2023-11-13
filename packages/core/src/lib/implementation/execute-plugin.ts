@@ -77,9 +77,9 @@ export async function executePlugin(
   );
 
   // parse transform unknownAuditOutputs to auditOutputs
-  if (pluginConfig.runner?.outputFileToAuditResults) {
+  if (pluginConfig.runner?.outputTransform) {
     unknownAuditOutputs =
-      pluginConfig.runner.outputFileToAuditResults(unknownAuditOutputs);
+      pluginConfig.runner.outputTransform(unknownAuditOutputs);
   }
 
   // validate audit outputs
