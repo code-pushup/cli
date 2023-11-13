@@ -6,12 +6,6 @@ export class NoExportError extends Error {
   }
 }
 
-export class NoFileError extends Error {
-  constructor(filepath: string) {
-    super(`The entry point "${filepath}" cannot be marked as external`);
-  }
-}
-
 export async function importEsmModule<T = unknown>(
   options: Options,
   parse?: (d: unknown) => T,
