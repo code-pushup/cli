@@ -18,7 +18,6 @@ export {
   compareIssueSeverity,
   formatBytes,
   formatCount,
-  slugify,
   loadReport,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
@@ -38,5 +37,6 @@ export {
   FileResult,
   MultipleFileResults,
   logMultipleFileResults,
+  slugify,
 } from './lib/utils';
 export { verboseUtils } from './lib/verbose-utils';
