@@ -37,6 +37,7 @@ describe('print-config', () => {
       ]),
       // @TODO add test data to config file
       categories: expect.any(Array),
+      onlyPlugins: [],
     });
   });
 
@@ -61,6 +62,7 @@ describe('print-config', () => {
       }),
       plugins: expect.any(Array),
       categories: expect.any(Array),
+      onlyPlugins: [],
     });
   });
 

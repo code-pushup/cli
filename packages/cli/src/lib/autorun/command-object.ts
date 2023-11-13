@@ -7,6 +7,7 @@ import {
   upload,
 } from '@code-pushup/core';
 import { CLI_NAME } from '../cli';
+import { onlyPluginsOption } from '../implementation/only-config-option';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 
@@ -15,6 +16,9 @@ export function yargsAutorunCommandObject() {
   return {
     command,
     describe: 'Shortcut for running collect followed by upload',
+    builder: {
+      onlyPlugins: onlyPluginsOption,
+    },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       console.log(chalk.bold(CLI_NAME));
       console.log(chalk.gray(`Run ${command}...`));
