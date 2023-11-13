@@ -1,28 +1,90 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`report-to-stdout > should contain all sections when using the fixture report 1`] = `
-"[1mCode PushUp Report[22m - @code-pushup/core@0.1.0
-[3m[90m---[39m[23m
-[3m[90mPackage Name: @code-pushup/core[39m[23m
-[3m[90mVersion: 0.1.0[39m[23m
-[3m[90mCommit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9[39m[23m
-[3m[90mDate: today[39m[23m
-[3m[90mDuration: 42ms[39m[23m
-[3m[90mPlugins: 1[39m[23m
-[3m[90mAudits: 1[39m[23m
-[3m[90m---[39m[23m
+"Code PushUp Report - @code-pushup/core@0.0.1
 
 
- 🏷 Category          ⭐ Score             🛡 Audits
- Category 1          0                   1/1
+ESLint audits
+
+● Disallow assignment operators in conditional expressions            0
+● Disallow reassigning \`const\` variables                              0
+● Disallow the use of \`debugger\`                                      0
+● Disallow invalid regular expression strings in \`RegExp\` construct   0
+  ors
+● Disallow the use of undeclared variables unless mentioned in \`/*g   0
+  lobal */\` comments
+● Disallow loops with a body that allows only one iteration           0
+● Disallow negating the left operand of relational operators          0
+● Disallow use of optional chaining in contexts where the \`undefine   0
+  d\` value is not allowed
+● Disallow unused variables                                           1 warning
+● Require calls to \`isNaN()\` when checking for \`NaN\`                  0
+● Enforce comparing \`typeof\` expressions against valid strings        0
+● Require braces around arrow function bodies                         1 warning
+● Enforce camelcase naming convention                                 0
+● Enforce consistent brace style for all control statements           0
+● Require the use of \`===\` and \`!==\`                                  1 warning
+● Enforce a maximum number of lines of code in a function             1 warning
+● Enforce a maximum number of lines per file                          0
+● Disallow variable declarations from shadowing variables declared    3 warnings
+  in the outer scope
+● Require \`let\` or \`const\` instead of \`var\`                           0
+● Require or disallow method and property shorthand syntax for obje   3 warnings
+  ct literals
+● Require using arrow functions for callbacks                         0
+● Require \`const\` declarations for variables that are never reassig   1 warning
+  ned after declared
+● Disallow using Object.assign with an object literal as the first    0
+  argument and prefer the use of object spread instead
+● Require or disallow \\"Yoda\\" conditions                               0
+● Disallow missing \`key\` props in iterators/collection literals       1 warning
+● Disallow missing props validation in a React component definition   6 warnings
+● Disallow missing React when using JSX                               0
+● enforces the Rules of Hooks                                         0
+● verifies the list of dependencies for Hooks like useEffect and si   2 warnings
+  milar
+● Disallow missing displayName in a React component definition        0
+● Disallow comments from being inserted as text nodes                 0
+● Disallow duplicate properties in JSX                                0
+● Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`     0
+● Disallow undeclared variables in JSX                                0
+● Disallow React to be incorrectly marked as unused                   0
+● Disallow variables used in JSX to be incorrectly marked as unused   0
+● Disallow passing of children as props                               0
+● Disallow when a DOM element is using both children and dangerousl   0
+  ySetInnerHTML
+● Disallow usage of deprecated methods                                0
+● Disallow direct mutation of this.state                              0
+● Disallow usage of findDOMNode                                       0
+● Disallow usage of isMounted                                         0
+● Disallow usage of the return value of ReactDOM.render               0
+● Disallow using string references                                    0
+● Disallow unescaped HTML entities from appearing in markup           0
+● Disallow usage of unknown DOM property                              0
+● Enforce ES5 or ES6 class for returning value in render function     0
 
 
-[1mCategory 1 0[22m
-- Audit Title (1)
-  audit description
-  http://www.my-docs.dev 
+Lighthouse audits
+
+● First Contentful Paint                                              1.2 s
+● Largest Contentful Paint                                            1.5 s
+● Total Blocking Time                                                 0 ms
+● Cumulative Layout Shift                                             0
+● Speed Index                                                         1.2 s
 
 
+Categories
 
-Made with ❤️ by code-pushup.dev"
+┌────────────────┬───────┬────────┐
+│ Category       │ Score │ Audits │
+├────────────────┼───────┼────────┤
+│ Performance    │    92 │      6 │
+├────────────────┼───────┼────────┤
+│ Bug prevention │    68 │     16 │
+├────────────────┼───────┼────────┤
+│ Code style     │    54 │     13 │
+└────────────────┴───────┴────────┘
+
+Made with ❤ by code-pushup.dev
+"
 `;

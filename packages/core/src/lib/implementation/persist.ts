@@ -35,7 +35,7 @@ export async function persistReport(
   let scoredReport;
   if (format.includes('stdout')) {
     scoredReport = scoreReport(report);
-    reportToStdout(scoredReport);
+    console.log(reportToStdout(scoredReport));
   }
 
   // collect physical format outputs
