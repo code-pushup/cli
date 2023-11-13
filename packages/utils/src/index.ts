@@ -34,9 +34,12 @@ export {
   logMultipleFileResults,
 } from './lib/utils';
 export { verboseUtils } from './lib/verbose-utils';
-export { pluralize } from './lib/transformation';
-export { toArray } from './lib/transformation';
-export { objectToKeys } from './lib/transformation';
-export { objectToEntries } from './lib/transformation';
-export { countOccurrences } from './lib/transformation';
-export { distinct } from './lib/transformation';
+export {} from './lib/transformation';
+export {
+  pluralize,
+  toArray,
+  objectToKeys,
+  objectToEntries,
+  countOccurrences,
+  distinct,
+} from './lib/transformation';
