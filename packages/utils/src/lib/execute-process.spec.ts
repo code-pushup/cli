@@ -86,15 +86,15 @@ describe('objectToCliArgs', () => {
   });
 
   it('should handle boolean arguments', () => {
-    const params = { interactive: true };
+    const params = { progress: true };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--interactive']);
+    expect(result).toEqual(['--progress']);
   });
 
   it('should handle negated boolean arguments', () => {
-    const params = { interactive: false };
+    const params = { progress: false };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--no-interactive']);
+    expect(result).toEqual(['--no-progress']);
   });
 
   it('should handle array of string arguments', () => {

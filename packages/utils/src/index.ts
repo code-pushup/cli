@@ -24,19 +24,22 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export { ScoredReport, scoreReport } from './lib/scoring';
 export {
-  countOccurrences,
-  distinct,
-  objectToEntries,
-  objectToKeys,
-  pluralize,
   readJsonFile,
   readTextFile,
-  toArray,
   toUnixPath,
   ensureDirectoryExists,
   FileResult,
   MultipleFileResults,
   logMultipleFileResults,
-  slugify,
-} from './lib/utils';
+} from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
+export {
+  pluralize,
+  toArray,
+  objectToKeys,
+  objectToEntries,
+  countOccurrences,
+  distinct,
+  slugify,
+} from './lib/transformation';
+export { NEW_LINE } from './lib/md';

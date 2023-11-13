@@ -5,15 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
-  countOccurrences,
-  distinct,
   ensureDirectoryExists,
   logMultipleFileResults,
-  pluralize,
-  slugify,
-  toArray,
   toUnixPath,
-} from './utils';
+} from './file-system';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -26,48 +21,6 @@ vi.mock('fs/promises', async () => {
 });
 
 const outputDir = MEMFS_VOLUME;
-
-describe('slugify', () => {
-  it.each([
-    ['Largest Contentful Paint', 'largest-contentful-paint'],
-    ['cumulative-layout-shift', 'cumulative-layout-shift'],
-    ['max-lines-200', 'max-lines-200'],
-    ['rxjs/finnish', 'rxjs-finnish'],
-    ['@typescript-eslint/no-explicit-any', 'typescript-eslint-no-explicit-any'],
-    ['Code  PushUp ', 'code-pushup'],
-  ])('should transform "%s" to valid slug "%s"', (text, slug) => {
-    expect(slugify(text)).toBe(slug);
-  });
-});
-
-describe('pluralize', () => {
-  it.each([
-    ['warning', 'warnings'],
-    ['error', 'errors'],
-    ['category', 'categories'],
-    ['status', 'statuses'],
-  ])('should pluralize "%s" as "%s"', (singular, plural) => {
-    expect(pluralize(singular)).toBe(plural);
-  });
-});
-
-describe('toArray', () => {
-  it('should transform non-array value into array with single value', () => {
-    expect(toArray('src/**/*.ts')).toEqual(['src/**/*.ts']);
-  });
-
-  it('should leave array value unchanged', () => {
-    expect(toArray(['*.ts', '*.js'])).toEqual(['*.ts', '*.js']);
-  });
-});
-
-describe('countOccurrences', () => {
-  it('should return record with counts for each item', () => {
-    expect(
-      countOccurrences(['error', 'warning', 'error', 'error', 'warning']),
-    ).toEqual({ error: 3, warning: 2 });
-  });
-});
 
 describe('toUnixPath', () => {
   it.each([
@@ -88,24 +41,6 @@ describe('toUnixPath', () => {
         toRelative: true,
       }),
     ).toBe('windows/path/config.ts');
-  });
-});
-
-describe('distinct', () => {
-  it('should remove duplicate strings from array', () => {
-    expect(
-      distinct([
-        'no-unused-vars',
-        'no-invalid-regexp',
-        'no-unused-vars',
-        'no-invalid-regexp',
-        '@typescript-eslint/no-unused-vars',
-      ]),
-    ).toEqual([
-      'no-unused-vars',
-      'no-invalid-regexp',
-      '@typescript-eslint/no-unused-vars',
-    ]);
   });
 });
 

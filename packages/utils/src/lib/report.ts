@@ -7,15 +7,15 @@ import {
   Report,
   reportSchema,
 } from '@code-pushup/models';
-import { ScoredReport } from './scoring';
 import {
   ensureDirectoryExists,
-  pluralize,
   readJsonFile,
   readTextFile,
-} from './utils';
+} from './file-system';
+import { ScoredReport } from './scoring';
+import { pluralize } from './transformation';
 
-export const FOOTER_PREFIX = 'Made with ❤️ by';
+export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
 export const README_LINK =
   'https://github.com/flowup/quality-metrics-cli#readme';
@@ -25,6 +25,7 @@ export const reportOverviewTableHeaders = [
   '⭐ Score',
   '🛡 Audits',
 ];
+export const reportRawOverviewTableHeaders = ['Category', 'Score', 'Audits'];
 export const reportMetaTableHeaders: string[] = [
   'Commit',
   'Version',

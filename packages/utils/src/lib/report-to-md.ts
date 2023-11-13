@@ -33,7 +33,7 @@ import {
   reportOverviewTableHeaders,
 } from './report';
 import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
-import { slugify } from './utils';
+import { slugify } from './transformation';
 
 export function reportToMd(
   report: ScoredReport,
