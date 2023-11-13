@@ -29,7 +29,7 @@ export {
   AuditGroup,
   auditGroupSchema,
 } from './lib/plugin-config-groups';
-export { AuditOutput, auditOutputsSchema } from './lib/plugin-process-output';
+export { AuditOutput, AuditOutputs, auditOutputsSchema } from './lib/plugin-process-output';
 export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
@@ -40,3 +40,9 @@ export {
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export { materialIconSchema } from './lib/implementation/schemas';
+export {
+  EsmObserver,
+  EsmRunnerConfig,
+  RunnerResult,
+  runnerResultSchema,
+} from './lib/plugin-config-runner';
