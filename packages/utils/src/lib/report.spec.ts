@@ -9,8 +9,6 @@ import {
   formatBytes,
   formatCount,
   loadReport,
-  slugify,
-  sumRefs,
 } from './report';
 
 // Mock file system API's
@@ -29,19 +27,6 @@ const resetFiles = (files?: Record<string, string>) => {
   vol.reset();
   vol.fromJSON(files || {}, outputDir);
 };
-
-describe('slugify', () => {
-  it.each([
-    ['Largest Contentful Paint', 'largest-contentful-paint'],
-    ['cumulative-layout-shift', 'cumulative-layout-shift'],
-    ['max-lines-200', 'max-lines-200'],
-    ['rxjs/finnish', 'rxjs-finnish'],
-    ['@typescript-eslint/no-explicit-any', 'typescript-eslint-no-explicit-any'],
-    ['Code  PushUp ', 'code-pushup'],
-  ])('should transform "%s" to valid slug "%s"', (text, slug) => {
-    expect(slugify(text)).toBe(slug);
-  });
-});
 
 describe('formatBytes', () => {
   it('should log file sizes in Bytes`', async () => {
@@ -143,32 +128,6 @@ describe('compareIssueSeverity', () => {
         compareIssueSeverity,
       ),
     ).toEqual(['info', 'warning', 'error'] satisfies IssueSeverity[]);
-  });
-});
-
-describe('sumRefs', () => {
-  it('should sum refs correctly', () => {
-    const refs: CategoryRef[] = [
-      {
-        slug: 'a1',
-        weight: 0,
-        plugin: 'a',
-        type: 'audit',
-      },
-      {
-        slug: 'a2',
-        weight: 1,
-        plugin: 'a',
-        type: 'audit',
-      },
-      {
-        slug: 'a3',
-        weight: 10,
-        plugin: 'a',
-        type: 'audit',
-      },
-    ];
-    expect(sumRefs(refs)).toBe(11);
   });
 });
 

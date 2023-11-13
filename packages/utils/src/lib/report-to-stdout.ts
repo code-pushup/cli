@@ -1,9 +1,14 @@
 import chalk from 'chalk';
 import cliui from 'cliui';
 import { NEW_LINE } from './md';
-import { CODE_PUSHUP_DOMAIN, FOOTER_PREFIX, countWeightedRefs } from './report';
+import {
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
+  countWeightedRefs,
+  reportHeadlineText,
+  reportOverviewTableHeaders,
+} from './report';
 import { ScoredReport } from './scoring';
-import { reportHeadlineText, reportOverviewTableHeaders } from './utils';
 
 const ui = cliui({ width: 60 }); // @TODO check display width
 
