@@ -1,6 +1,6 @@
 import { join } from 'path';
 import * as process from 'process';
-import { NoExportError, NoFileError, importEsmModule } from '../lib/load-file';
+import { NoExportError, importEsmModule } from '../lib/load-file';
 
 const getFilepath = (fileName: string) =>
   join(process.cwd(), 'packages', 'utils', 'test', 'fixtures', fileName);
