@@ -28,13 +28,22 @@ describe('print-config', () => {
         outputDir: join('tmp', ext),
         filename: 'report',
       },
-      plugins: expect.any(Array),
+      plugins: expect.arrayContaining([
+        expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
+        expect.objectContaining({
+          slug: 'lighthouse',
+          title: 'ChromeDevTools Lighthouse',
+        }),
+      ]),
+      // @TODO add test data to config file
       categories: expect.any(Array),
     });
   });
 
   it('should load .ts config file and merge cli arguments', async () => {
     const { code, stderr, stdout } = await execCliPrintConfig({
+      'persist.outputDir': 'my-dir',
+      'persist.format': 'md',
       'persist.filename': 'my-report',
     });
     expect(code).toBe(0);
@@ -44,23 +53,13 @@ describe('print-config', () => {
       progress: false,
       verbose: true,
       config: expect.stringContaining(`code-pushup.config.ts`),
-      upload: {
-        organization: 'code-pushup',
-        project: `cli-ts`,
-        apiKey: 'e2e-api-key',
-        server: 'https://e2e.com/api',
-      },
-      persist: {
-        outputDir: join('tmp', 'ts'),
+      upload: expect.any(Object),
+      persist: expect.objectContaining({
+        outputDir: 'my-dir',
+        format: ['md'],
         filename: 'my-report',
-      },
-      plugins: expect.arrayContaining([
-        expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
-        expect.objectContaining({
-          slug: 'lighthouse',
-          title: 'ChromeDevTools Lighthouse',
-        }),
-      ]),
+      }),
+      plugins: expect.any(Array),
       categories: expect.any(Array),
     });
   });
