@@ -35,7 +35,7 @@ describe('executePlugin', () => {
     expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
-  it('should throws with missing plugin audit', async () => {
+  it('should throw with missing plugin audit', async () => {
     const pluginCfg = invalidSlugPluginCfg;
     await expect(() => executePlugin(pluginCfg)).rejects.toThrow(
       new PluginOutputMissingAuditError('mock-audit-slug'),
