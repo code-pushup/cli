@@ -1,3 +1,11 @@
+export function slugify(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+|\//g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
+
 export function pluralize(text: string): string {
   if (text.endsWith('y')) {
     return text.slice(0, -1) + 'ies';

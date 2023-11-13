@@ -18,7 +18,6 @@ export {
   compareIssueSeverity,
   formatBytes,
   formatCount,
-  slugify,
   loadReport,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
@@ -32,9 +31,8 @@ export {
   FileResult,
   MultipleFileResults,
   logMultipleFileResults,
-} from './lib/utils';
+} from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
-export {} from './lib/transformation';
 export {
   pluralize,
   toArray,
@@ -42,4 +40,5 @@ export {
   objectToEntries,
   countOccurrences,
   distinct,
+  slugify,
 } from './lib/transformation';

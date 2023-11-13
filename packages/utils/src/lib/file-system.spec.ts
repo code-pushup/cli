@@ -8,7 +8,7 @@ import {
   ensureDirectoryExists,
   logMultipleFileResults,
   toUnixPath,
-} from './utils';
+} from './file-system';
 
 // Mock file system API's
 vi.mock('fs', async () => {

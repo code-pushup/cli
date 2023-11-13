@@ -7,21 +7,83 @@ import {
   Report,
   reportSchema,
 } from '@code-pushup/models';
+import {
+  ensureDirectoryExists,
+  readJsonFile,
+  readTextFile,
+} from './file-system';
 import { ScoredReport } from './scoring';
 import { pluralize } from './transformation';
-import { ensureDirectoryExists, readJsonFile, readTextFile } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
 export const README_LINK =
   'https://github.com/flowup/quality-metrics-cli#readme';
+export const reportHeadlineText = 'Code PushUp Report';
+export const reportOverviewTableHeaders = [
+  '🏷 Category',
+  '⭐ Score',
+  '🛡 Audits',
+];
+export const reportMetaTableHeaders: string[] = [
+  'Commit',
+  'Version',
+  'Duration',
+  'Plugins',
+  'Categories',
+  'Audits',
+];
 
-export function slugify(text: string): string {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+|\//g, '-')
-    .replace(/[^a-z0-9-]/g, '');
+export const pluginMetaTableHeaders: string[] = [
+  'Plugin',
+  'Audits',
+  'Version',
+  'Duration',
+];
+
+// details headers
+
+export const detailsTableHeaders: string[] = [
+  'Severity',
+  'Message',
+  'Source file',
+  'Line(s)',
+];
+
+export function formatReportScore(score: number): string {
+  return Math.round(score * 100).toString();
+}
+
+export function getRoundScoreMarker(score: number): string {
+  if (score >= 0.9) {
+    return '🟢';
+  }
+  if (score >= 0.5) {
+    return '🟡';
+  }
+  return '🔴';
+}
+
+export function getSquaredScoreMarker(score: number): string {
+  if (score >= 0.9) {
+    return '🟩';
+  }
+  if (score >= 0.5) {
+    return '🟨';
+  }
+  return '🟥';
+}
+
+export function getSeverityIcon(
+  severity: 'info' | 'warning' | 'error',
+): string {
+  if (severity === 'error') {
+    return '🚨';
+  }
+  if (severity === 'warning') {
+    return '⚠️';
+  }
+  return 'ℹ️';
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
