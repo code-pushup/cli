@@ -24,73 +24,6 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   categories: ScoredCategoryConfig[];
 };
 
-function groupRefToScore(
-  audits: AuditReport[],
-): (ref: AuditGroupRef) => number {
-  return ref => {
-    const score = audits.find(audit => audit.slug === ref.slug)?.score;
-    if (score == null) {
-      throw new Error(
-        `Group has invalid ref - audit with slug ${ref.slug} not found`,
-      );
-    }
-    return score;
-  };
-}
-
-function categoryRefToScore(
-  audits: EnrichedAuditReport[],
-  groups: EnrichedScoredAuditGroup[],
-): (ref: CategoryRef) => number {
-  // Create lookup objects
-  const auditLookup = audits.reduce<Record<string, EnrichedAuditReport>>(
-    (lookup, audit) => {
-      return {
-        ...lookup,
-        [`${audit.plugin}-${audit.slug}`]: audit,
-      };
-    },
-    {},
-  );
-
-  const groupLookup = groups.reduce<Record<string, EnrichedScoredAuditGroup>>(
-    (lookup, group) => {
-      return {
-        ...lookup,
-        [`${group.plugin}-${group.slug}`]: group,
-      };
-    },
-    {},
-  );
-
-  return (ref: CategoryRef): number => {
-    switch (ref.type) {
-      case 'audit': {
-        const audit = auditLookup[`${ref.plugin}-${ref.slug}`];
-        if (!audit) {
-          throw new Error(
-            `Category has invalid ref - audit with slug ${ref.slug} not found in ${ref.plugin} plugin`,
-          );
-        }
-        return audit.score;
-      }
-
-      case 'group': {
-        const group = groupLookup[`${ref.plugin}-${ref.slug}`];
-        if (!group) {
-          throw new Error(
-            `Category has invalid ref - group with slug ${ref.slug} not found in ${ref.plugin} plugin`,
-          );
-        }
-        return group.score;
-      }
-
-      default:
-        throw new Error(`Type ${ref.type} is unknown`);
-    }
-  };
-}
-
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
   scoreFn: (ref: T) => number,
@@ -109,61 +42,70 @@ export function calculateScore<T extends { weight: number }>(
 }
 
 export function scoreReport(report: Report): ScoredReport {
-  const allScoredAudits: EnrichedAuditReport[] = report.plugins.flatMap(
-    plugin => {
-      const { audits } = plugin;
-      return audits.map(audit => ({
-        ...audit,
-        plugin: plugin.slug,
-      }));
-    },
-  );
+  const allScoredAuditsAndGroups = new Map();
 
-  const allScoredGroups: EnrichedScoredAuditGroup[] = report.plugins.flatMap(
-    plugin => {
-      const { groups } = plugin;
-      return (
-        groups?.map(group => ({
-          ...group,
-          score: calculateScore(group.refs, groupRefToScore(allScoredAudits)),
-          plugin: plugin.slug,
-        })) || []
-      );
-    },
-  );
+  report.plugins.forEach(plugin => {
+    const { audits } = plugin;
+    const groups = plugin.groups || [];
 
-  const scoredPlugins = report.plugins.map(plugin => {
-    const { groups, audits } = plugin;
-    const preparedAudits = audits.map(audit => ({
-      ...audit,
-      plugin: plugin.slug,
-    }));
+    audits.forEach(audit => {
+      const key = `${plugin.slug}-${audit.slug}-audit`;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      audit.plugin = plugin.slug;
+      allScoredAuditsAndGroups.set(key, audit);
+    });
 
-    const preparedGroups =
-      groups?.map(group => ({
-        ...group,
-        score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
-        plugin: plugin.slug,
-      })) || [];
+    function groupScoreFn(ref: AuditGroupRef) {
+      const score = allScoredAuditsAndGroups.get(
+        `${plugin.slug}-${ref.slug}-audit`,
+      )?.score;
+      if (score == null) {
+        throw new Error(
+          `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
+        );
+      }
+      return score;
+    }
 
-    return {
-      ...plugin,
-      audits: preparedAudits,
-      groups: preparedGroups,
-    };
+    groups.forEach(group => {
+      const key = `${plugin.slug}-${group.slug}-group`;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      group.score = calculateScore(group.refs, groupScoreFn);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      group.plugin = plugin.slug;
+      allScoredAuditsAndGroups.set(key, group);
+    });
+    plugin.groups = groups;
   });
 
-  const scoredCategories = report.categories.map(category => ({
-    ...category,
-    score: calculateScore(
-      category.refs,
-      categoryRefToScore(allScoredAudits, allScoredGroups),
-    ),
-  }));
+  function catScoreFn(ref: CategoryRef) {
+    const key = `${ref.plugin}-${ref.slug}-${ref.type}`;
+    const item = allScoredAuditsAndGroups.get(key);
+    if (!item) {
+      throw new Error(
+        `Category has invalid ref - ${ref.type} with slug ${key} not found in ${ref.plugin} plugin`,
+      );
+    }
+    return item.score;
+  }
 
-  return {
-    ...report,
-    categories: scoredCategories,
-    plugins: scoredPlugins,
-  };
+  const scoredCategoriesMap = report.categories.reduce(
+    (categoryMap, category) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      category.score = calculateScore(category.refs, catScoreFn);
+      categoryMap.set(category.slug, category);
+      return categoryMap;
+    },
+    new Map(),
+  );
+
+  report.categories = Array.from(scoredCategoriesMap.values());
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+
+  return report;
 }

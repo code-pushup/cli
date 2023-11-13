@@ -13,113 +13,60 @@ export function calculateScore(refs, scoreFn) {
 }
 
 export function scoreReportOptimized3(report) {
-  const allScoredAudits = report.plugins.flatMap(plugin => {
+  const allScoredAuditsAndGroups = new Map();
+
+  report.plugins.forEach(plugin => {
     const { audits } = plugin;
-    return audits.map(audit => ({
-      ...audit,
-      plugin: plugin.slug,
-    }));
-  });
+    const groups = plugin.groups || [];
 
-  const allScoredGroups = report.plugins.flatMap(plugin => {
-    const { groups } = plugin;
-    return (
-      groups?.map(group => ({
-        ...group,
-        score: calculateScore(group.refs, groupRefToScore(allScoredAudits)),
-        plugin: plugin.slug,
-      })) || []
-    );
-  });
+    audits.forEach(audit => {
+      const key = `${plugin.slug}-${audit.slug}-audit`;
+      audit.plugin = plugin.slug;
+      allScoredAuditsAndGroups.set(key, audit);
+    });
 
-  const scoredPlugins = report.plugins.map(plugin => {
-    const { groups, audits } = plugin;
-    const preparedAudits = audits.map(audit => ({
-      ...audit,
-      plugin: plugin.slug,
-    }));
-
-    const preparedGroups =
-      groups?.map(group => ({
-        ...group,
-        score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
-        plugin: plugin.slug,
-      })) || [];
-
-    return {
-      ...plugin,
-      audits: preparedAudits,
-      groups: preparedGroups,
-    };
-  });
-
-  const scoredCategories = report.categories.map(category => ({
-    ...category,
-    score: calculateScore(
-      category.refs,
-      categoryRefToScore(allScoredAudits, allScoredGroups),
-    ),
-  }));
-
-  return {
-    ...report,
-    categories: scoredCategories,
-    plugins: scoredPlugins,
-  };
-}
-
-function categoryRefToScore(audits, groups) {
-  // Create lookup objects
-  const auditLookup = audits.reduce((lookup, audit) => {
-    return {
-      ...lookup,
-      [`${audit.plugin}-${audit.slug}`]: audit,
-    };
-  }, {});
-
-  const groupLookup = groups.reduce((lookup, group) => {
-    return {
-      ...lookup,
-      [`${group.plugin}-${group.slug}`]: group,
-    };
-  }, {});
-
-  return ref => {
-    switch (ref.type) {
-      case 'audit': {
-        const audit = auditLookup[`${ref.plugin}-${ref.slug}`];
-        if (!audit) {
-          throw new Error(
-            `Category has invalid ref - audit with slug ${ref.slug} not found in ${ref.plugin} plugin`,
-          );
-        }
-        return audit.score;
+    function groupScoreFn(ref) {
+      const score = allScoredAuditsAndGroups.get(
+        `${plugin.slug}-${ref.slug}-audit`,
+      )?.score;
+      if (score == null) {
+        throw new Error(
+          `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
+        );
       }
-
-      case 'group': {
-        const group = groupLookup[`${ref.plugin}-${ref.slug}`];
-        if (!group) {
-          throw new Error(
-            `Category has invalid ref - group with slug ${ref.slug} not found in ${ref.plugin} plugin`,
-          );
-        }
-        return group.score;
-      }
-
-      default:
-        throw new Error(`Type ${ref.type} is unknown`);
+      return score;
     }
-  };
-}
 
-function groupRefToScore(audits) {
-  return ref => {
-    const score = audits.find(audit => audit.slug === ref.slug)?.score;
-    if (score == null) {
+    groups.forEach(group => {
+      const key = `${plugin.slug}-${group.slug}-group`;
+      group.score = calculateScore(group.refs, groupScoreFn);
+      group.plugin = plugin.slug;
+      allScoredAuditsAndGroups.set(key, group);
+    });
+    plugin.groups = groups;
+  });
+
+  function catScoreFn(ref) {
+    const key = `${ref.plugin}-${ref.slug}-${ref.type}`;
+    const item = allScoredAuditsAndGroups.get(key);
+    if (!item) {
       throw new Error(
-        `Group has invalid ref - audit with slug ${ref.slug} not found`,
+        `Category has invalid ref - ${ref.type} with slug ${key} not found in ${ref.plugin} plugin`,
       );
     }
-    return score;
-  };
+    return item.score;
+  }
+
+  const scoredCategoriesMap = report.categories.reduce(
+    (categoryMap, category) => {
+      category.score = calculateScore(category.refs, catScoreFn);
+      categoryMap.set(category.slug, category);
+      return categoryMap;
+    },
+    new Map(),
+  );
+
+  report.categories = Array.from(scoredCategoriesMap.values());
+
+  return report;
 }
