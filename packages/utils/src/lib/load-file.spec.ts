@@ -29,7 +29,7 @@ describe('importEsmModule', () => {
     ).rejects.toThrow(new NoExportError(filepath));
   });
 
-  it('should throw if export is undefined defined', async () => {
+  it('should throw if export is undefined', async () => {
     const filepath = getFilepath('undefined-export.mjs');
     await expect(
       importEsmModule<{ name: string }>({
