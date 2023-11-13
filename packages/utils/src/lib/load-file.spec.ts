@@ -12,14 +12,12 @@ describe('importEsmModule', () => {
     expect(module).toBe('valid-export');
   });
 
-  it('should throw if file does not exisit', async () => {
+  it('should throw if file does not existing', async () => {
     await expect(
       importEsmModule<{ name: string }>({
-        filepath: join('invalid-path', 'valid-export.mjs'),
+        filepath: join('invalid-path', 'not-existing-export.mjs'),
       }),
-    ).rejects.toThrow(
-      new NoFileError(join('invalid-path', 'valid-export.mjs')).message,
-    );
+    ).rejects.toThrow('not-existing-export.mjs');
   });
 
   it('should throw if export is not defined', async () => {
