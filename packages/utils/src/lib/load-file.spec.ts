@@ -4,6 +4,7 @@ import { NoExportError, importEsmModule } from '../lib/load-file';
 
 const getFilepath = (fileName: string) =>
   join(process.cwd(), 'packages', 'utils', 'test', 'fixtures', fileName);
+
 describe('importEsmModule', () => {
   it('should load file', async () => {
     const module = await importEsmModule<{ name: string }>({
