@@ -5,7 +5,7 @@ import { auditOutputsSchema } from './plugin-process-output';
 export const outputTransformSchema = z
   .function()
   .args(z.unknown())
-  .returns(auditOutputsSchema);
+  .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
 
 export type OutputTransform = z.infer<typeof outputTransformSchema>;
 
