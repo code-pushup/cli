@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import cliui from 'cliui';
+import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -12,7 +13,7 @@ import {
 import { ScoredReport } from './scoring';
 
 function addLine(line = ''): string {
-  return line + '\n';
+  return line + NEW_LINE;
 }
 
 export function reportToStdout(report: ScoredReport): string {
