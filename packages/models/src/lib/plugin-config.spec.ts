@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { config, echoRunnerConfig, pluginConfig } from '../../test';
+import { config, pluginConfig } from '../../test';
 import { pluginConfigSchema } from './plugin-config';
-import { AuditOutput, AuditOutputs } from './plugin-process-output';
+import { AuditOutputs } from './plugin-process-output';
 
 describe('pluginConfigSchema', () => {
   it('should parse if plugin configuration is valid', () => {
@@ -41,7 +41,7 @@ describe('pluginConfigSchema', () => {
   it('should throw if plugin groups contain invalid slugs', () => {
     const invalidGroupSlug = '-invalid-group-slug';
     const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups;
+    const groups = pluginConfig.groups!;
     groups[0].slug = invalidGroupSlug;
     pluginConfig.groups = groups;
 
@@ -52,7 +52,7 @@ describe('pluginConfigSchema', () => {
 
   it('should throw if plugin groups have duplicate slugs', () => {
     const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups;
+    const groups = pluginConfig.groups!;
     pluginConfig.groups = [...groups, groups[0]];
     expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       'In groups the slugs are not unique',
@@ -62,7 +62,7 @@ describe('pluginConfigSchema', () => {
   it('should throw if plugin groups refs contain invalid slugs', () => {
     const invalidAuditRef = '-invalid-audit-ref';
     const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups;
+    const groups = pluginConfig.groups!;
 
     groups[0].refs[0].slug = invalidAuditRef;
     pluginConfig.groups = groups;
@@ -72,32 +72,32 @@ describe('pluginConfigSchema', () => {
     );
   });
 
-  it('take a outputFileToAuditResults function', () => {
+  it('should take a outputFileToAuditResults function', () => {
     const undefinedPluginOutput = [
-      { slug: 'audit-1', value: 0, score: 0 },
-      { slug: 'audit-2', value: 0, score: 0 },
+      { slug: 'audit-1', errors: 0 },
+      { slug: 'audit-2', errors: 5 },
     ];
-    const pluginCfg = pluginConfig([], {
-      runner: echoRunnerConfig(undefinedPluginOutput, 'out.json'),
-    });
+    const pluginCfg = pluginConfig([]);
     pluginCfg.runner.outputFileToAuditResults = (
-      data: Record<string, unknown>[],
+      data: unknown,
     ): AuditOutputs => {
-      return data.map(
-        data => ({ slug: data.slug, score: data.score } as AuditOutput),
-      );
+      return (data as typeof undefinedPluginOutput).map(data => ({
+        slug: data.slug,
+        score: Number(data.errors === 0),
+        value: data.errors,
+      }));
     };
 
     expect(
       pluginConfigSchema.parse(pluginCfg).runner.outputFileToAuditResults,
     ).toBeDefined();
     expect(
-      pluginConfigSchema
-        .parse(pluginCfg)
-        .runner.outputFileToAuditResults(undefinedPluginOutput),
+      pluginConfigSchema.parse(pluginCfg).runner.outputFileToAuditResults!(
+        undefinedPluginOutput,
+      ),
     ).toEqual([
-      { slug: 'audit-1', score: 0 },
-      { slug: 'audit-2', score: 0 },
+      { slug: 'audit-1', score: 1, value: 0 },
+      { slug: 'audit-2', score: 0, value: 5 },
     ]);
   });
 });

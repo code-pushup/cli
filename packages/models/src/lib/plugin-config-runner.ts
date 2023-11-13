@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { filePathSchema } from './implementation/schemas';
+import { auditOutputsSchema } from './plugin-process-output';
 
 export const outputTransformSchema = z
   .function()
-  .args(z.array(z.record(z.string(), z.unknown())));
-// @TODO add returns definition as AuditOutputs - this fails ATM when compiling
+  .args(z.array(z.record(z.string(), z.unknown())))
+  .returns(auditOutputsSchema);
 
 export type OutputTransform = z.infer<typeof outputTransformSchema>;
 
