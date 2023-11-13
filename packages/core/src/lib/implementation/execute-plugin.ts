@@ -91,7 +91,7 @@ export async function executePlugin(
 
   // enrich `AuditOutputs` to `AuditReport`
   const audits: AuditReport[] = auditOutputs.map((auditOutput: AuditOutput) =>
-    auditReportSchema.parse({
+    ({
       ...auditOutput,
       ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug),
     }),
