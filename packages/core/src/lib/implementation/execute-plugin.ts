@@ -7,7 +7,6 @@ import {
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
-  auditReportSchema,
 } from '@code-pushup/models';
 import {
   ProcessObserver,
@@ -90,11 +89,12 @@ export async function executePlugin(
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   // enrich `AuditOutputs` to `AuditReport`
-  const audits: AuditReport[] = auditOutputs.map((auditOutput: AuditOutput) =>
-    ({
-      ...auditOutput,
-      ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug),
-    }),
+  const audits: AuditReport[] = auditOutputs.map(
+    (auditOutput: AuditOutput) =>
+      ({
+        ...auditOutput,
+        ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug),
+      } as unknown as AuditReport),
   );
 
   return {
