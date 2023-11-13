@@ -47,8 +47,8 @@ describe('executePlugin', () => {
       ...validPluginCfg,
       runner: {
         ...validPluginCfg.runner,
-        outputTransform: (d: Record<string, unknown>[]) =>
-          d.map((d, idx) => ({
+        outputTransform: (d: unknown) =>
+          Array.from(d as Record<string, unknown>[]).map((d, idx) => ({
             ...d,
             slug: '-invalid-slug-' + idx,
           })) as unknown as AuditOutputs,
@@ -92,17 +92,18 @@ describe('executePlugins', () => {
         ...validPluginCfg,
         runner: {
           ...validPluginCfg.runner,
-          outputTransform: (
-            outputs: Record<string, unknown>[],
-          ): AuditOutputs => {
-            return outputs.map(output => {
-              return {
-                ...output,
-                displayValue:
-                  'transformed slug description - ' +
-                  (output as { slug: string }).slug,
-              } as unknown as AuditOutput;
-            });
+          outputTransform: (outputs: unknown): Promise<AuditOutputs> => {
+            const arr = Array.from(outputs as Record<string, unknown>[]);
+            return Promise.resolve(
+              arr.map(output => {
+                return {
+                  ...output,
+                  displayValue:
+                    'transformed slug description - ' +
+                    (output as { slug: string }).slug,
+                } as unknown as AuditOutput;
+              }),
+            );
           },
         },
       },
