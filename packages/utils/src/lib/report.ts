@@ -7,13 +7,13 @@ import {
   Report,
   reportSchema,
 } from '@code-pushup/models';
-import { ScoredReport } from './scoring';
 import {
   ensureDirectoryExists,
-  pluralize,
   readJsonFile,
   readTextFile,
-} from './utils';
+} from './file-system';
+import { ScoredReport } from './scoring';
+import { pluralize } from './transformation';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
