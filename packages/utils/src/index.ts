@@ -25,14 +25,8 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export { ScoredReport, scoreReport } from './lib/scoring';
 export {
-  countOccurrences,
-  distinct,
-  objectToEntries,
-  objectToKeys,
-  pluralize,
   readJsonFile,
   readTextFile,
-  toArray,
   toUnixPath,
   ensureDirectoryExists,
   FileResult,
@@ -40,3 +34,9 @@ export {
   logMultipleFileResults,
 } from './lib/utils';
 export { verboseUtils } from './lib/verbose-utils';
+export { pluralize } from './lib/transformation';
+export { toArray } from './lib/transformation';
+export { objectToKeys } from './lib/transformation';
+export { objectToEntries } from './lib/transformation';
+export { countOccurrences } from './lib/transformation';
+export { distinct } from './lib/transformation';

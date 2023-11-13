@@ -8,12 +8,8 @@ import {
   reportSchema,
 } from '@code-pushup/models';
 import { ScoredReport } from './scoring';
-import {
-  ensureDirectoryExists,
-  pluralize,
-  readJsonFile,
-  readTextFile,
-} from './utils';
+import { pluralize } from './transformation';
+import { ensureDirectoryExists, readJsonFile, readTextFile } from './utils';
 
 export const FOOTER_PREFIX = 'Made with ❤️ by';
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
