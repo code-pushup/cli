@@ -1,5 +1,6 @@
 import { join } from 'path';
 import {
+  AuditGroup,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
@@ -126,16 +127,35 @@ export function countCategoryAudits(
   refs: CategoryRef[],
   plugins: ScoredReport['plugins'],
 ): number {
+  // Create lookup object for groups within each plugin
+  const groupLookup = plugins.reduce<
+    Record<string, Record<string, AuditGroup>>
+  >((lookup, plugin) => {
+    if (!plugin.groups.length) {
+      return lookup;
+    }
+
+    return {
+      ...lookup,
+      [plugin.slug]: {
+        ...plugin.groups.reduce<Record<string, AuditGroup>>(
+          (groupLookup, group) => {
+            return {
+              ...groupLookup,
+              [group.slug]: group,
+            };
+          },
+          {},
+        ),
+      },
+    };
+  }, {});
+
+  // Count audits
   return refs.reduce((acc, ref) => {
     if (ref.type === 'group') {
-      const groupRefs = plugins
-        .find(({ slug }) => slug === ref.plugin)
-        ?.groups?.find(({ slug }) => slug === ref.slug)?.refs;
-
-      if (!groupRefs?.length) {
-        return acc;
-      }
-      return acc + groupRefs.length;
+      const groupRefs = groupLookup[ref.plugin]?.[ref.slug]?.refs;
+      return acc + (groupRefs?.length || 0);
     }
     return acc + 1;
   }, 0);

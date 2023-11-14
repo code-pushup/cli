@@ -40,3 +40,18 @@ export function countOccurrences<T extends PropertyKey>(
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
+
+export function deepClone<T>(obj: T): T {
+  if (obj == null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key as keyof T] = deepClone(obj[key]);
+    }
+  }
+  return cloned;
+}
