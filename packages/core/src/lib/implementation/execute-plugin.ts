@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { join } from 'path';
 import {
+  Audit,
   AuditOutput,
   AuditOutputs,
   AuditReport,
@@ -90,11 +91,12 @@ export async function executePlugin(
 
   // enrich `AuditOutputs` to `AuditReport`
   const audits: AuditReport[] = auditOutputs.map(
-    (auditOutput: AuditOutput) =>
-      ({
-        ...auditOutput,
-        ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug),
-      } as unknown as AuditReport),
+    (auditOutput: AuditOutput) => ({
+      ...auditOutput,
+      ...(pluginConfigAudits.find(
+        audit => audit.slug === auditOutput.slug,
+      ) as Audit),
+    }),
   );
 
   return {
