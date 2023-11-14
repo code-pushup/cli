@@ -13,6 +13,7 @@ export async function executeProcessRunner(
 ): Promise<RunnerResult> {
   const { args, command, outputFile, outputTransform } = cfg;
 
+  // execute process
   const { duration, date } = await executeProcess({
     command,
     args,
@@ -26,9 +27,10 @@ export async function executeProcessRunner(
 
   // transform unknownAuditOutputs to auditOutputs
   if (outputTransform) {
-    audits = (await outputTransform(audits)) as AuditOutputs;
+    audits = await outputTransform(audits);
   }
 
+  // create runner result
   return {
     duration,
     date,
