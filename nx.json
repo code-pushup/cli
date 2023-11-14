@@ -1,17 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "cache": true
     },
     "lint": {
       "inputs": [
@@ -22,13 +15,11 @@
       "options": {
         "maxWarnings": 0,
         "reportUnusedDisableDirectives": "warn"
-      }
+      },
+      "cache": true
     },
-    "test": {
-      "inputs": ["default", "^production"]
-    },
-    "e2e": {
-      "dependsOn": ["^build"],
+    "@nx/vite:test": {
+      "cache": true,
       "inputs": ["default", "^production"]
     }
   },
