@@ -30,7 +30,7 @@
       }
     },
     "perf": {
-      "command": "npx node ./packages/utils/perf/index.mjs"
+      "command": "npx tsx ./packages/utils/perf"
     },
     "test": {
       "executor": "@nx/vite:test",
