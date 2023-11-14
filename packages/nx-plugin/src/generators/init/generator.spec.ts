@@ -1,9 +1,19 @@
-import {readJson, readNxJson, Tree} from '@nx/devkit';
-import {createTreeWithEmptyWorkspace} from '@nx/devkit/testing';
-import {describe, expect, it} from 'vitest';
-import {cpuCliVersion, cpuModelVersion, cpuNxPluginVersion, cpuUtilsVersion,} from '../../utils/versions';
-import {checkDependenciesInstalled, initGenerator, moveToDevDependencies, updateNxJsonConfig,} from './generator';
-import {InitGeneratorSchema} from './schema';
+import { Tree, readJson, readNxJson } from '@nx/devkit';
+import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
+import { describe, expect, it } from 'vitest';
+import {
+  cpuCliVersion,
+  cpuModelVersion,
+  cpuNxPluginVersion,
+  cpuUtilsVersion,
+} from '../../utils/versions';
+import {
+  checkDependenciesInstalled,
+  initGenerator,
+  moveToDevDependencies,
+  updateNxJsonConfig,
+} from './generator';
+import { InitGeneratorSchema } from './schema';
 
 type PackageJson = {
   devDependencies: Record<string, string>;

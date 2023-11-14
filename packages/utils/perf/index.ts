@@ -1,27 +1,37 @@
-import Benchmark from 'benchmark';
-import { scoreReport } from './implementations/base.mjs';
-import { scoreReportOptimized0 } from './implementations/optimized0.mjs';
-import { scoreReportOptimized1 } from './implementations/optimized1.mjs';
-import { scoreReportOptimized2 } from './implementations/optimized2.mjs';
-import { scoreReportOptimized3 } from './implementations/optimized3.mjs';
+import * as Benchmark from 'benchmark';
+import { Report } from '@code-pushup/models';
+import { scoreReport } from './implementations/base';
+import { scoreReportOptimized0 } from './implementations/optimized0';
+import { scoreReportOptimized1 } from './implementations/optimized1';
+import { scoreReportOptimized2 } from './implementations/optimized2';
+import { scoreReportOptimized3 } from './implementations/optimized3';
+
+interface MinimalReportOptions {
+  numAuditsP1?: number;
+  numAuditsP2?: number;
+  numGroupRefs2?: number;
+}
 
 const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits1'))
     ?.split('=')
     .pop() || '0',
+  10,
 );
 const PROCESS_ARGUMENT_NUM_AUDITS_P2 = parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits2'))
     ?.split('=')
     .pop() || '0',
+  10,
 );
 const PROCESS_ARGUMENT_NUM_GROUPS_P2 = parseInt(
   process.argv
     .find(arg => arg.startsWith('--numGroupRefs2'))
     ?.split('=')
     .pop() || '0',
+  10,
 );
 
 const suite = new Benchmark.Suite('report-scoring');
@@ -42,13 +52,13 @@ const NUM_GROUPS_P2 = PROCESS_ARGUMENT_NUM_GROUPS_P2 || NUM_AUDITS_P2 / 2;
 
 // Add listener
 const listeners = {
-  cycle: function (event) {
+  cycle: function (event: Benchmark.Event) {
     console.log(String(event.target));
   },
-  complete: function () {
-    if (typeof this?.filter === 'function') {
+  complete: () => {
+    if (typeof suite.filter === 'function') {
       console.log(' ');
-      console.log('Fastest is ' + this?.filter('fastest').map('name'));
+      console.log('Fastest is ' + suite.filter('fastest').map('name'));
     }
   },
 };
@@ -85,12 +95,12 @@ console.log(' ');
 console.log('Start benchmark...');
 console.log(' ');
 
-let start = performance.now();
-const result = suite.run();
+const start = performance.now();
+
+suite.run();
 
 console.log(
-  'Total Duration: ',
-  ((performance.now() - start) / 1000).toFixed(2) + ' sec',
+  `Total Duration: ${((performance.now() - start) / 1000).toFixed(2)} sec`,
 );
 
 // ==============================================================
@@ -117,15 +127,18 @@ function _scoreReportOptimized3() {
 
 // ==============================================================
 
-function minimalReport(opt) {
+function minimalReport(opt?: MinimalReportOptions): Report {
   const numAuditsP1 = opt?.numAuditsP1 || NUM_AUDITS_P1;
   const numAuditsP2 = opt?.numAuditsP2 || NUM_AUDITS_P2;
   const numGroupRefs2 = opt?.numGroupRefs2 || NUM_GROUPS_P2;
 
   return {
+    date: '2022-01-01',
+    duration: 0,
     categories: [
       {
         slug: 'c1_',
+        title: 'Category 1',
         refs: new Array(numAuditsP1).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P1,
@@ -136,6 +149,7 @@ function minimalReport(opt) {
       },
       {
         slug: 'c2_',
+        title: 'Category 2',
         refs: new Array(numAuditsP2).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P2,
@@ -147,20 +161,34 @@ function minimalReport(opt) {
     ],
     plugins: [
       {
+        date: '2022-01-01',
+        duration: 0,
         slug: SLUG_PLUGIN_P1,
-        audits: new Array(numAuditsP1).map((_, idx) => ({
+        title: 'Plugin 1',
+        icon: 'slug',
+        audits: new Array(numAuditsP1).fill(null).map((_, idx) => ({
+          value: 0,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
+          title: 'Default Title',
           score: 0.1,
         })),
+        groups: [],
       },
       {
+        date: '2022-01-01',
+        duration: 0,
         slug: SLUG_PLUGIN_P2,
+        title: 'Plugin 2',
+        icon: 'slug',
         audits: new Array(numAuditsP2).map((_, idx) => ({
+          value: 0,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
+          title: 'Default Title',
           score: 0.1,
         })),
         groups: [
           {
+            title: 'Group 1',
             slug: GROUP_P2_PREFIX + 1,
             refs: new Array(numGroupRefs2).map((_, idx) => ({
               slug: `${AUDIT_P2_PREFIX}${idx}`,
