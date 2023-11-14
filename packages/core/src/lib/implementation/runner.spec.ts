@@ -13,7 +13,7 @@ import {
 
 const validRunnerCfg = echoRunnerConfig([auditReport()], 'output.json');
 
-describe('executeRunner', () => {
+describe('executeRunnerConfig', () => {
   it('should work with valid plugins', async () => {
     const runnerResult = await executeRunnerConfig(validRunnerCfg);
 
@@ -57,7 +57,7 @@ describe('executeRunner', () => {
   });
 });
 
-describe('executeEsmRunner', () => {
+describe('executeRunnerFunction', () => {
   it('should execute valid plugin config', async () => {
     const nextSpy = vi.fn();
     const runnerResult: RunnerResult = await executeRunnerFunction(
