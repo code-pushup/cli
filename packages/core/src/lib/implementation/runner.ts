@@ -1,7 +1,7 @@
 import { join } from 'path';
 import {
   AuditOutputs,
-  EsmRunnerConfig,
+  RunnerFunction,
   RunnerConfig,
 } from '@code-pushup/models';
 import {
@@ -50,7 +50,7 @@ export async function executeProcessRunner(
 }
 
 export async function executeEsmRunner(
-  runner: EsmRunnerConfig,
+  runner: RunnerFunction,
   observer?: Observer,
 ): Promise<RunnerResult> {
   const date = new Date().toISOString();

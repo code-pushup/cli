@@ -45,4 +45,4 @@ export {
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export { materialIconSchema } from './lib/implementation/schemas';
-export { EsmObserver, EsmRunnerConfig } from './lib/plugin-config-runner';
+export { EsmObserver, RunnerFunction } from './lib/plugin-config-runner';

@@ -1,4 +1,10 @@
-export function calculateScore(refs, scoreFn) {
+import { AuditGroupRef, CategoryRef, Report } from '@code-pushup/models';
+import { ScoredReport } from '../../src';
+
+export function calculateScore<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): number {
   const { numerator, denominator } = refs.reduce(
     (acc, ref) => {
       const score = scoreFn(ref);
@@ -12,25 +18,26 @@ export function calculateScore(refs, scoreFn) {
   return numerator / denominator;
 }
 
-export function deepClone(obj) {
+export function deepClone<T>(obj: T): T {
   if (obj == null || typeof obj !== 'object') {
     return obj;
   }
 
-  const cloned = Array.isArray(obj) ? [] : {};
+  const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
+  // eslint-disable-next-line functional/no-loop-statements
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepClone(obj[key]);
+      cloned[key as keyof T] = deepClone(obj[key]);
     }
   }
   return cloned;
 }
 
-export function scoreReportOptimized3(report) {
-  const scoredReport = deepClone(report);
+export function scoreReportOptimized3(report: Report): ScoredReport {
+  const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map();
 
-  scoredReport.plugins.forEach(plugin => {
+  scoredReport.plugins?.forEach(plugin => {
     const { audits } = plugin;
     const groups = plugin.groups || [];
 
@@ -40,7 +47,7 @@ export function scoreReportOptimized3(report) {
       allScoredAuditsAndGroups.set(key, audit);
     });
 
-    function groupScoreFn(ref) {
+    function groupScoreFn(ref: AuditGroupRef) {
       const score = allScoredAuditsAndGroups.get(
         `${plugin.slug}-${ref.slug}-audit`,
       )?.score;
@@ -61,7 +68,7 @@ export function scoreReportOptimized3(report) {
     plugin.groups = groups;
   });
 
-  function catScoreFn(ref) {
+  function catScoreFn(ref: CategoryRef) {
     const key = `${ref.plugin}-${ref.slug}-${ref.type}`;
     const item = allScoredAuditsAndGroups.get(key);
     if (!item) {
@@ -73,7 +80,7 @@ export function scoreReportOptimized3(report) {
   }
 
   const scoredCategoriesMap = new Map();
-
+  // eslint-disable-next-line functional/no-loop-statements
   for (const category of scoredReport.categories) {
     category.score = calculateScore(category.refs, catScoreFn);
     scoredCategoriesMap.set(category.slug, category);

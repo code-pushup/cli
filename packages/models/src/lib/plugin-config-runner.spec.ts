@@ -4,7 +4,7 @@ import {
   runnerConfig,
 } from '../../test/fixtures/runner-config.mock';
 import {
-  esmRunnerConfigSchema,
+  runnerFunctionSchema,
   runnerConfigSchema,
 } from './plugin-config-runner';
 
@@ -33,12 +33,12 @@ describe('runnerConfig', () => {
 describe('esmRunnerConfig', () => {
   it('should parse if configuration is valid', () => {
     const runnerConfigMock = esmRunnerConfig();
-    expect(() => esmRunnerConfigSchema.parse(runnerConfigMock)).not.toThrow();
+    expect(() => runnerFunctionSchema.parse(runnerConfigMock)).not.toThrow();
   });
 
   it('should throw if not a function', () => {
     const runnerConfigMock = runnerConfig();
-    expect(() => esmRunnerConfigSchema.parse(runnerConfigMock)).toThrow(
+    expect(() => runnerFunctionSchema.parse(runnerConfigMock)).toThrow(
       `Expected function,`,
     );
   });

@@ -9,7 +9,7 @@ import { errorItems, hasMissingStrings } from './implementation/utils';
 import { pluginAuditsSchema } from './plugin-config-audits';
 import { auditGroupsSchema } from './plugin-config-groups';
 import {
-  esmRunnerConfigSchema,
+  runnerFunctionSchema,
   runnerConfigSchema,
 } from './plugin-config-runner';
 
@@ -32,7 +32,7 @@ export const pluginMetaSchema = packageVersionSchema({
   );
 
 export const pluginDataSchema = z.object({
-  runner: z.union([runnerConfigSchema, esmRunnerConfigSchema]),
+  runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
   groups: auditGroupsSchema,
 });

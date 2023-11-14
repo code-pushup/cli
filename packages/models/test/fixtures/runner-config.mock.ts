@@ -1,8 +1,8 @@
 import { platform } from 'os';
 import { RunnerConfig } from '../../src';
 import {
-  EsmRunnerConfig,
-  esmRunnerConfigSchema,
+  RunnerFunction,
+  runnerFunctionSchema,
   runnerConfigSchema,
 } from '../../src/lib/plugin-config-runner';
 import { AuditOutput, AuditOutputs } from '../../src/lib/plugin-process-output';
@@ -47,9 +47,9 @@ export function echoRunnerConfig(
  * @param options
  */
 export function esmRunnerConfig(
-  options?: Partial<EsmRunnerConfig>,
-): EsmRunnerConfig {
-  return esmRunnerConfigSchema.parse((cfg: unknown): AuditOutputs => {
+  options?: Partial<RunnerFunction>,
+): RunnerFunction {
+  return runnerFunctionSchema.parse((cfg: unknown): AuditOutputs => {
     return [{} as AuditOutput];
   });
 }
