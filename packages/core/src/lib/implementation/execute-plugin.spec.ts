@@ -81,9 +81,9 @@ describe('executePlugin', () => {
       ...validPluginCfg,
       runner: '' as unknown as RunnerFunction,
     };
-    const pluginResult = await executePlugin(pluginCfg);
-    expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
-    expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
+    await expect(executePlugin(pluginCfg)).rejects.toThrow(
+      'runner is not a function',
+    );
   });
 
   it('should throw if invalid runnerOutput', async () => {
