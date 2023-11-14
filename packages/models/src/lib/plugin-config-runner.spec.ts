@@ -28,7 +28,7 @@ describe('runnerConfig', () => {
   });
 });
 
-describe('esmRunnerConfig', () => {
+describe('runnerFunction', () => {
   it('should parse if configuration is valid', () => {
     const runnerConfigMock = () => Promise.resolve([auditReport()]);
     expect(() => runnerFunctionSchema.parse(runnerConfigMock)).not.toThrow();
