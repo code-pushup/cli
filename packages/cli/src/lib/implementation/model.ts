@@ -6,7 +6,7 @@ export type GeneralCliOptions = GlobalOptions;
 export type CoreConfigCliOptions = {
   'persist.outputDir': string;
   'persist.filename': string;
-  'persist.format': Format | string;
+  'persist.format': Format;
   'upload.organization': string;
   'upload.project': string;
   'upload.apiKey': string;
