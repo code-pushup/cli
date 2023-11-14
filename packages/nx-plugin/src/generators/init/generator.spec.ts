@@ -1,9 +1,9 @@
-import { Tree, readJson, readNxJson } from '@nx/devkit';
-import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { TargetDefaults } from 'nx/src/config/nx-json';
-import { describe, expect, it } from 'vitest';
-import { initGenerator } from './generator';
-import { InitGeneratorSchema } from './schema';
+import {readJson, readNxJson, Tree} from '@nx/devkit';
+import {createTreeWithEmptyWorkspace} from '@nx/devkit/testing';
+import {describe, expect, it} from 'vitest';
+import {cpuCliVersion, cpuModelVersion, cpuNxPluginVersion, cpuUtilsVersion,} from '../../utils/versions';
+import {checkDependenciesInstalled, initGenerator, moveToDevDependencies, updateNxJsonConfig,} from './generator';
+import {InitGeneratorSchema} from './schema';
 
 type PackageJson = {
   devDependencies: Record<string, string>;
@@ -18,6 +18,81 @@ const devDependencyNames = [
   '@code-pushup/utils',
 ];
 
+describe('checkDependenciesInstalled', () => {
+  let tree: Tree;
+
+  beforeEach(() => {
+    tree = createTreeWithEmptyWorkspace();
+  });
+
+  it('should add dependencies', async () => {
+    tree.write('package.json', JSON.stringify({ devDependencies: {} }));
+
+    checkDependenciesInstalled(tree);
+    expect(readJson<PackageJson>(tree, 'package.json').devDependencies).toEqual(
+      {
+        ['@code-pushup/nx-plugin']: cpuNxPluginVersion,
+        ['@code-pushup/models']: cpuModelVersion,
+        ['@code-pushup/utils']: cpuUtilsVersion,
+        ['@code-pushup/cli']: cpuCliVersion,
+      },
+    );
+  });
+});
+
+describe('moveToDevDependencies', () => {
+  let tree: Tree;
+
+  beforeEach(() => {
+    tree = createTreeWithEmptyWorkspace();
+  });
+
+  it('should move dependencies', async () => {
+    tree.write(
+      'package.json',
+      JSON.stringify({
+        dependencies: {
+          ['@code-pushup/nx-plugin']: cpuNxPluginVersion,
+        },
+        devDependencies: {
+          ['@code-pushup/models']: cpuModelVersion,
+          ['@code-pushup/utils']: cpuUtilsVersion,
+          ['@code-pushup/cli']: cpuCliVersion,
+        },
+      }),
+    );
+
+    moveToDevDependencies(tree);
+    expect(readJson<PackageJson>(tree, 'package.json').devDependencies).toEqual(
+      {
+        ['@code-pushup/nx-plugin']: cpuNxPluginVersion,
+        ['@code-pushup/models']: cpuModelVersion,
+        ['@code-pushup/utils']: cpuUtilsVersion,
+        ['@code-pushup/cli']: cpuCliVersion,
+      },
+    );
+  });
+});
+
+describe('updateNxJsonConfig', () => {
+  let tree: Tree;
+
+  beforeEach(() => {
+    tree = createTreeWithEmptyWorkspace();
+  });
+
+  it('should update nx.json', async () => {
+    updateNxJsonConfig(tree);
+    const nxJson = readNxJson(tree);
+
+    expect(nxJson?.targetDefaults).toEqual(
+      expect.objectContaining({
+        [cpuTargetName]: { inputs: ['default', '^production'], cache: true },
+      }),
+    );
+  });
+});
+
 describe('init generator', () => {
   let tree: Tree;
   const options: InitGeneratorSchema = { skipPackageJson: false };
@@ -28,15 +103,15 @@ describe('init generator', () => {
 
   it('should run successfully', async () => {
     await initGenerator(tree, options);
+
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults;
-    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
-      cpuTargetName,
+    const nxJson = readNxJson(tree);
+    expect(nxJson?.targetDefaults).toEqual(
+      expect.objectContaining({
+        [cpuTargetName]: expect.any(Object),
+      }),
     );
-    const cacheableOperations =
-      readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations;
-    expect(cacheableOperations).toContain(cpuTargetName);
+
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
     expect(
@@ -49,14 +124,13 @@ describe('init generator', () => {
   it('should skip packageJson', async () => {
     await initGenerator(tree, { ...options, skipPackageJson: true });
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults;
-    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
-      cpuTargetName,
+    const nxJson = readNxJson(tree);
+    expect(nxJson?.targetDefaults).toEqual(
+      expect.objectContaining({
+        [cpuTargetName]: expect.any(Object),
+      }),
     );
-    const cacheableOperations =
-      readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations;
-    expect(cacheableOperations).toContain(cpuTargetName);
+
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
     expect(

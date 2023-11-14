@@ -17,7 +17,7 @@ import {
 } from '../../utils/versions';
 import { InitGeneratorSchema } from './schema';
 
-function checkDependenciesInstalled(host: Tree) {
+export function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson(host, 'package.json');
   const devDependencies: Record<string, string> = {};
   const dependencies = {};
@@ -33,7 +33,7 @@ function checkDependenciesInstalled(host: Tree) {
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }
 
-function moveToDevDependencies(tree: Tree) {
+export function moveToDevDependencies(tree: Tree) {
   updateJson(tree, 'package.json', packageJson => {
     packageJson.dependencies = packageJson.dependencies || {};
     packageJson.devDependencies = packageJson.devDependencies || {};
@@ -48,7 +48,7 @@ function moveToDevDependencies(tree: Tree) {
   });
 }
 
-function updateNxJsonConfig(tree: Tree) {
+export function updateNxJsonConfig(tree: Tree) {
   const nxJson: NxJsonConfiguration = readNxJson(tree) as NxJsonConfiguration;
 
   const targetName = 'code-pushup';
@@ -56,14 +56,8 @@ function updateNxJsonConfig(tree: Tree) {
   nxJson.targetDefaults ??= {};
   nxJson.targetDefaults[targetName] = {
     inputs: ['default', '^production'],
+    cache: true,
   };
-
-  const cacheableOperations =
-    nxJson?.tasksRunnerOptions?.default?.options?.cacheableOperations;
-  if (cacheableOperations) {
-    cacheableOperations.push(targetName);
-  }
-
   updateNxJson(tree, nxJson);
 }
 
