@@ -1,9 +1,11 @@
 import { Format, GlobalOptions } from '@code-pushup/models';
 
+// type GeneralCliOnlyOptions = { progress: boolean }; // @TODO consider progress as CLI only options
 export type GeneralCliOptions = GlobalOptions;
 
 export type CoreConfigCliOptions = {
   'persist.outputDir': string;
+  'persist.filename': string;
   'persist.format': Format | string;
   'upload.organization': string;
   'upload.project': string;

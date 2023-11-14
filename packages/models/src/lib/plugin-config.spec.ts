@@ -1,114 +1,101 @@
 import { describe, expect, it } from 'vitest';
-import {
-  mockAuditOutputs,
-  mockGroupConfig,
-  mockPluginConfig,
-} from '../../test';
-import {
-  auditGroupSchema,
-  auditOutputsSchema,
-  pluginConfigSchema,
-} from './plugin-config';
+import { config, pluginConfig } from '../../test';
+import { pluginConfigSchema } from './plugin-config';
+import { AuditOutputs } from './plugin-process-output';
 
 describe('pluginConfigSchema', () => {
-  it('should parse if configuration is valid', () => {
-    const cfg = mockPluginConfig();
-    expect(() => pluginConfigSchema.parse(cfg)).not.toThrow();
+  it('should parse if plugin configuration is valid', () => {
+    const pluginConfig = config().plugins[0];
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if plugin slug has a invalid pattern', () => {
-    const invalidCategorySlug = '-invalid-plugin-slug';
-    const cfg = mockPluginConfig({ pluginSlug: invalidCategorySlug });
+    const invalidPluginSlug = '-invalid-plugin-slug';
+    const pluginConfig = config().plugins[0];
+    pluginConfig.slug = invalidPluginSlug;
 
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       `slug has to follow the pattern`,
     );
   });
 
-  it('should throw if audit ref in audits is invalid', () => {
+  it('should throw if plugin audits contain invalid slugs', () => {
     const invalidAuditRef = '-invalid-audit-slug';
-    const cfg = mockPluginConfig({ auditSlug: [invalidAuditRef] });
+    const pluginConfig = config().plugins[0];
+    pluginConfig.audits[0].slug = invalidAuditRef;
 
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       `slug has to follow the patter`,
     );
   });
 
-  it('should throw if audit refs are duplicates', () => {
-    const duplicatedAuditRef = 'mock-audit-slug';
-    const cfg = mockPluginConfig({
-      auditSlug: [duplicatedAuditRef, duplicatedAuditRef],
-    });
+  it('should throw if plugin audits slugs are duplicates', () => {
+    const pluginConfig = config().plugins[0];
+    pluginConfig.audits = [...pluginConfig.audits, pluginConfig.audits[0]];
 
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       `In plugin audits the slugs are not unique`,
     );
   });
 
-  it('should throw if groups slug in invalid', () => {
+  it('should throw if plugin groups contain invalid slugs', () => {
     const invalidGroupSlug = '-invalid-group-slug';
-    const cfg = mockPluginConfig();
-    cfg.groups = [mockGroupConfig({ groupSlug: invalidGroupSlug })];
+    const pluginConfig = config().plugins[1];
+    const groups = pluginConfig.groups!;
+    groups[0].slug = invalidGroupSlug;
+    pluginConfig.groups = groups;
 
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       `slug has to follow the patter`,
     );
   });
 
-  it('should throw if group metrics ref in invalid', () => {
-    const invalidAuditRef = '-invalid-audit-ref';
-    const cfg = mockPluginConfig();
-    cfg.groups = [mockGroupConfig({ auditSlug: invalidAuditRef })];
-
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
-      `slug has to follow the patter`,
-    );
-  });
-
-  it('should throw if groups have duplicate slugs', () => {
-    const auditSlug = 'no-any';
-    const cfg = mockPluginConfig({ auditSlug });
-    cfg.groups = [
-      mockGroupConfig({ auditSlug }),
-      mockGroupConfig({ auditSlug }),
-    ];
-    expect(() => pluginConfigSchema.parse(cfg)).toThrow(
+  it('should throw if plugin groups have duplicate slugs', () => {
+    const pluginConfig = config().plugins[1];
+    const groups = pluginConfig.groups!;
+    pluginConfig.groups = [...groups, groups[0]];
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
       'In groups the slugs are not unique',
     );
   });
 
-  it('should throw if a group has duplicate audit refs', () => {
-    const auditSlug = 'no-any';
-    const cfg = mockGroupConfig({ auditSlug: [auditSlug, auditSlug] });
+  it('should throw if plugin groups refs contain invalid slugs', () => {
+    const invalidAuditRef = '-invalid-audit-ref';
+    const pluginConfig = config().plugins[1];
+    const groups = pluginConfig.groups!;
 
-    expect(() => auditGroupSchema.parse(cfg)).toThrow(
-      'In plugin groups the audit refs are not unique',
-    );
-  });
-});
+    groups[0].refs[0].slug = invalidAuditRef;
+    pluginConfig.groups = groups;
 
-/*
- RunnerOutput
- - each audit result should contain a valid slug of some audit provided during initialization
-   - this is always checked within the context of the given plugin
-  */
-describe('auditOutputSchema', () => {
-  it('should pass if output audits are valid', () => {
-    const out = mockAuditOutputs();
-    expect(() => auditOutputsSchema.parse(out)).not.toThrow();
-  });
-
-  it('should throw if slugs of audits are invalid', () => {
-    const out = mockAuditOutputs({ auditSlug: '-invalid-audit-slug' });
-    expect(() => auditOutputsSchema.parse(out)).toThrow(
-      'slug has to follow the pattern',
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
+      `slug has to follow the pattern`,
     );
   });
 
-  it('should throw if slugs of audits are duplicated', () => {
-    const out = mockAuditOutputs({ auditSlug: ['a', 'a'] });
-    expect(() => auditOutputsSchema.parse(out)).toThrow(
-      'In plugin audits the slugs are not unique',
-    );
+  it('should take a outputTransform function', () => {
+    const undefinedPluginOutput = [
+      { slug: 'audit-1', errors: 0 },
+      { slug: 'audit-2', errors: 5 },
+    ];
+    const pluginCfg = pluginConfig([]);
+    pluginCfg.runner.outputTransform = (data: unknown): AuditOutputs => {
+      return (data as typeof undefinedPluginOutput).map(data => ({
+        slug: data.slug,
+        score: Number(data.errors === 0),
+        value: data.errors,
+      }));
+    };
+
+    expect(
+      pluginConfigSchema.parse(pluginCfg).runner.outputTransform,
+    ).toBeDefined();
+    expect(
+      pluginConfigSchema.parse(pluginCfg).runner.outputTransform!(
+        undefinedPluginOutput,
+      ),
+    ).toEqual([
+      { slug: 'audit-1', score: 1, value: 0 },
+      { slug: 'audit-2', score: 0, value: 5 },
+    ]);
   });
 });

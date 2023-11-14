@@ -1,6 +1,8 @@
 # @code-pushup/eslint-plugin
 
-**CodePushUp plugin for detecting problems in source code using ESLint.**
+🕵️ **Code PushUp plugin for detecting problems in source code using ESLint.** 📋
+
+---
 
 The plugin parses your ESLint configuration and lints targetted files using [ESLint's Node.js API](https://eslint.org/docs/latest/integrate/nodejs-api).
 
@@ -49,9 +51,9 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    };
    ```
 
-5. (Optional) Reference audits which you wish to include in custom categories (use `npx code-pushup print-config` to list audits).
+5. (Optional) Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
-   Assign weights based on what influence each ESLint rule should have on the overall category score (assign weight 0 to only include as extra info).
+   Assign weights based on what influence each ESLint rule should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
    Note that categories can combine multiple plugins.
 
    ```js
@@ -102,4 +104,44 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    };
    ```
 
-6. Run the CLI with `npx code-pushup` and view or upload report (refer to [CLI docs](../cli/README.md)).
+   Referencing individual audits provides a lot of granularity, but it can be difficult to maintain such a configuration when there is a high amount of lint rules. A simpler way is to reference many related audits at once using groups. E.g. you can distinguish rules which have declared a type of `problem`, `suggestion`, or `layout`:
+
+   ```js
+   export default {
+     // ...
+     categories: [
+       {
+         slug: 'bug-prevention',
+         title: 'Bug prevention',
+         refs: [
+           {
+             type: 'group',
+             plugin: 'eslint',
+             slug: 'problems',
+             weight: 100,
+           },
+         ],
+       },
+       {
+         slug: 'code-style',
+         title: 'Code style',
+         refs: [
+           {
+             type: 'group',
+             plugin: 'eslint',
+             slug: 'suggestions',
+             weight: 75,
+           },
+           {
+             type: 'group',
+             plugin: 'eslint',
+             slug: 'formatting',
+             weight: 25,
+           },
+         ],
+       },
+     ],
+   };
+   ```
+
+6. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).

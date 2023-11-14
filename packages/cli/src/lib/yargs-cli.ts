@@ -24,7 +24,6 @@ export function yargsCli(
     usageMessage?: string;
     scriptName?: string;
     commands?: CommandModule[];
-    demandCommand?: [number, string];
     options?: { [key: string]: Options };
     middlewares?: {
       middlewareFunction: unknown;
@@ -33,8 +32,7 @@ export function yargsCli(
   },
 ): Argv<CoreConfig & GeneralCliOptions> {
   const { usageMessage, scriptName } = cfg;
-  let { commands, options, middlewares /*demandCommand*/ } = cfg;
-  // demandCommand = Array.isArray(demandCommand) ? demandCommand: [1, 'Minimum 1 command!']; @TODO implement when commands are present
+  let { commands, options, middlewares } = cfg;
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
   options = options || {};
@@ -43,12 +41,19 @@ export function yargsCli(
   // setup yargs
   cli
     .help()
+    .version(false)
     .alias('h', 'help')
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
+    .array('persist.format')
+    .coerce('config', (config: string | string[]) => {
+      if (Array.isArray(config)) {
+        return config[config.length - 1];
+      }
+      return config;
+    })
     .options(options);
-  //.demandCommand(...demandCommand);
 
   // usage message
   if (usageMessage) {

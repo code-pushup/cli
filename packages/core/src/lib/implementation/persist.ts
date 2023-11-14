@@ -1,9 +1,15 @@
-import chalk from 'chalk';
 import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CoreConfig, Report } from '@code-pushup/models';
-import { formatBytes, reportToMd, reportToStdout } from '@code-pushup/utils';
+import {
+  MultipleFileResults,
+  getLatestCommit,
+  logMultipleFileResults,
+  reportToMd,
+  reportToStdout,
+  scoreReport,
+} from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
   constructor(outputDir: string) {
@@ -17,19 +23,19 @@ export class PersistError extends Error {
   }
 }
 
-export type PersistResult = PromiseSettledResult<readonly [string, number]>[];
-
 export async function persistReport(
   report: Report,
   config: CoreConfig,
-): Promise<PersistResult> {
+): Promise<MultipleFileResults> {
   const { persist } = config;
   const outputDir = persist.outputDir;
-  let { format } = persist;
-  format = format && format.length !== 0 ? format : ['stdout'];
-
+  const filename = persist.filename;
+  const format =
+    persist.format && persist.format.length !== 0 ? persist.format : ['stdout'];
+  let scoredReport;
   if (format.includes('stdout')) {
-    reportToStdout(report);
+    scoredReport = scoreReport(report);
+    console.log(reportToStdout(scoredReport));
   }
 
   // collect physical format outputs
@@ -39,7 +45,15 @@ export async function persistReport(
   ];
 
   if (format.includes('md')) {
-    results.push({ format: 'md', content: reportToMd(report) });
+    scoredReport = scoredReport || scoreReport(report);
+    const commitData = await getLatestCommit();
+    if (!commitData) {
+      console.warn('no commit data available');
+    }
+    results.push({
+      format: 'md',
+      content: reportToMd(scoredReport, commitData),
+    });
   }
 
   if (!existsSync(outputDir)) {
@@ -54,7 +68,7 @@ export async function persistReport(
   // write relevant format outputs to file system
   return Promise.allSettled(
     results.map(({ format, content }) => {
-      const reportPath = join(outputDir, `report.${format}`);
+      const reportPath = join(outputDir, `${filename}.${format}`);
 
       return (
         writeFile(reportPath, content)
@@ -70,30 +84,6 @@ export async function persistReport(
   );
 }
 
-export function logPersistedResults(persistResult: PersistResult) {
-  const succeededPersistedResults = persistResult.filter(
-    (result): result is PromiseFulfilledResult<[string, number]> =>
-      result.status === 'fulfilled',
-  );
-
-  if (succeededPersistedResults.length) {
-    console.log(`Generated reports successfully: `);
-    succeededPersistedResults.forEach(res => {
-      const [fileName, size] = res.value;
-      console.log(
-        `- ${chalk.bold(fileName)} (${chalk.gray(formatBytes(size))})`,
-      );
-    });
-  }
-
-  const failedPersistedResults = persistResult.filter(
-    (result): result is PromiseRejectedResult => result.status === 'rejected',
-  );
-
-  if (failedPersistedResults.length) {
-    console.log(`Generated reports failed: `);
-    failedPersistedResults.forEach(result => {
-      console.log(`- ${chalk.bold(result.reason)}`);
-    });
-  }
+export function logPersistedResults(persistResults: MultipleFileResults) {
+  logMultipleFileResults(persistResults, 'Generated reports');
 }

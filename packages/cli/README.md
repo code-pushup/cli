@@ -1,8 +1,14 @@
 # @code-pushup/cli
 
-**Quality metrics for your software project. Configure what you want to track using your favourite tools, integrate it in your CI and visualize reports in a beautiful dashboard.**
+🔎🔬 **Quality metrics for your software project.** 📉🔍
 
-The Code PushUp CLI serves to collect audit results, and optionally upload the report to the Code PushUp portal.
+1. ⚙️ **Configure what you want to track using your favourite tools.**
+2. 🤖 **Integrate it in your CI.**
+3. 🌈 **Visualize reports in a beautiful dashboard.**
+
+---
+
+The Code PushUp CLI serves to **collect audit results**, and optionally **upload the report** to the Code PushUp portal.
 
 It can be used locally in your repository, or integrated in your CI environment.
 

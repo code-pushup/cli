@@ -6,6 +6,7 @@ const {
 /** @type {import('@commitlint/types').UserConfig} */
 const configuration = {
   extends: ['@commitlint/config-conventional'],
+  plugins: ['commitlint-plugin-tense'],
   rules: {
     'scope-enum': async ctx => {
       const projects = await getProjects(
@@ -16,6 +17,11 @@ const configuration = {
       const scopes = [...projects, 'tools', 'workflows', 'testing'].sort();
       return [RuleConfigSeverity.Error, 'always', scopes];
     },
+    'tense/subject-tense': [
+      RuleConfigSeverity.Error,
+      'always',
+      { firstOnly: true, allowedTenses: ['present-imperative'] },
+    ],
   },
 };
 

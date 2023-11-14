@@ -1,8 +1,9 @@
 import { CommandModule } from 'yargs';
 
 export function yargsConfigCommandObject() {
+  const command = 'print-config';
   return {
-    command: 'print-config',
+    command,
     describe: 'Print config',
     handler: args => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

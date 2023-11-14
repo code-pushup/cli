@@ -1,4 +1,3 @@
-import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,10 +7,10 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { UploadOptions } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
+import { report } from '@code-pushup/models/testing';
 import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
-import { middlewares } from '../middlewares';
-import { options } from '../options';
+import { setupFolder } from '../../../test';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './command-object';
 
@@ -27,7 +26,9 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
+const dummyReport = report();
 
+// @TODO move into test library
 const baseArgs = [
   'upload',
   ...objectToCliArgs({
@@ -38,41 +39,30 @@ const baseArgs = [
       '..',
       '..',
       'test',
-      'config.mock.ts',
+      'minimal.config.ts',
     ),
   }),
 ];
 const cli = (args: string[]) =>
   yargsCli(args, {
-    options,
-    middlewares,
+    ...DEFAULT_CLI_CONFIGURATION,
     commands: [yargsUploadCommandObject()],
   });
 
-const reportPath = (format: 'json' | 'md' = 'json') =>
-  join('tmp', 'report.' + format);
-
 describe('upload-command-object', () => {
-  const dummyReport: Report = {
-    date: new Date().toISOString(),
-    duration: 1000,
-    categories: [],
-    plugins: [],
-    packageName: '@code-pushup/core',
-    version: '0.0.1',
-  };
-
   beforeEach(async () => {
     vi.clearAllMocks();
-    await writeFile(reportPath(), JSON.stringify(dummyReport));
   });
 
   it('should override config with CLI arguments', async () => {
+    setupFolder('tmp', {
+      ['report.json']: JSON.stringify(dummyReport),
+    });
     const args = [
       ...baseArgs,
       ...objectToCliArgs<CliArgsObject>({
-        //   'upload.organization': 'some-other-organization',
-        //   'upload.project': 'some-other-project',
+        //   'upload.organization': 'some-other-organization', @TODO
+        //   'upload.project': 'some-other-project', @TODO
         'upload.apiKey': 'some-other-api-key',
         'upload.server': 'https://other-example.com/api',
       }),
@@ -87,14 +77,24 @@ describe('upload-command-object', () => {
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    await cli(baseArgs).parseAsync();
+    const reportFileName = 'my-report';
+    setupFolder('tmp', {
+      [reportFileName + '.json']: JSON.stringify(dummyReport),
+    });
+    const args = [
+      ...baseArgs,
+      ...objectToCliArgs<CliArgsObject>({
+        'persist.filename': reportFileName,
+      }),
+    ];
+    await cli(args).parseAsync();
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
         commandStartDate: expect.any(String),
         commandDuration: expect.any(Number),
-        categories: [],
+        categories: expect.any(Array),
         plugins: expect.any(Array),
         packageName: dummyReport.packageName,
         packageVersion: dummyReport.version,

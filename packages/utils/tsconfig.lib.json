@@ -10,6 +10,8 @@
     "vite.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
-    "src/**/*.mock.ts"
+    "src/**/*.mock.ts",
+    "test/**/*.ts",
+    "perf/**/*.ts"
   ]
 }

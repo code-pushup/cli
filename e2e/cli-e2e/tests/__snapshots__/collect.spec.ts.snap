@@ -993,6 +993,228 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
         },
       ],
       "description": "Official Code PushUp ESLint plugin",
+      "groups": [
+        {
+          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+          "refs": [
+            {
+              "slug": "no-cond-assign",
+              "weight": 1,
+            },
+            {
+              "slug": "no-const-assign",
+              "weight": 1,
+            },
+            {
+              "slug": "no-debugger",
+              "weight": 1,
+            },
+            {
+              "slug": "no-invalid-regexp",
+              "weight": 1,
+            },
+            {
+              "slug": "no-undef",
+              "weight": 1,
+            },
+            {
+              "slug": "no-unreachable-loop",
+              "weight": 1,
+            },
+            {
+              "slug": "no-unsafe-negation",
+              "weight": 1,
+            },
+            {
+              "slug": "no-unsafe-optional-chaining",
+              "weight": 1,
+            },
+            {
+              "slug": "no-unused-vars",
+              "weight": 1,
+            },
+            {
+              "slug": "use-isnan",
+              "weight": 1,
+            },
+            {
+              "slug": "valid-typeof",
+              "weight": 1,
+            },
+            {
+              "slug": "react-hooks-rules-of-hooks",
+              "weight": 1,
+            },
+          ],
+          "slug": "problems",
+          "title": "Problems",
+        },
+        {
+          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+          "refs": [
+            {
+              "slug": "arrow-body-style",
+              "weight": 1,
+            },
+            {
+              "slug": "camelcase",
+              "weight": 1,
+            },
+            {
+              "slug": "curly",
+              "weight": 1,
+            },
+            {
+              "slug": "eqeqeq",
+              "weight": 1,
+            },
+            {
+              "slug": "max-lines-per-function",
+              "weight": 1,
+            },
+            {
+              "slug": "max-lines",
+              "weight": 1,
+            },
+            {
+              "slug": "no-shadow",
+              "weight": 1,
+            },
+            {
+              "slug": "no-var",
+              "weight": 1,
+            },
+            {
+              "slug": "object-shorthand",
+              "weight": 1,
+            },
+            {
+              "slug": "prefer-arrow-callback",
+              "weight": 1,
+            },
+            {
+              "slug": "prefer-const",
+              "weight": 1,
+            },
+            {
+              "slug": "prefer-object-spread",
+              "weight": 1,
+            },
+            {
+              "slug": "yoda",
+              "weight": 1,
+            },
+            {
+              "slug": "react-hooks-exhaustive-deps",
+              "weight": 1,
+            },
+          ],
+          "slug": "suggestions",
+          "title": "Suggestions",
+        },
+        {
+          "description": "Primarily about whitespace, semicolons, commas, and parentheses, all the parts of the program that determine how the code looks rather than how it executes.",
+          "refs": [],
+          "slug": "formatting",
+          "title": "Formatting",
+        },
+        {
+          "refs": [
+            {
+              "slug": "react-prop-types",
+              "weight": 1,
+            },
+            {
+              "slug": "react-display-name",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-no-target-blank",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-uses-react",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-uses-vars",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-children-prop",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-deprecated",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-find-dom-node",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-is-mounted",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-render-return-value",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-string-refs",
+              "weight": 1,
+            },
+          ],
+          "slug": "react-best-practices",
+          "title": "Best Practices (react)",
+        },
+        {
+          "refs": [
+            {
+              "slug": "react-jsx-key",
+              "weight": 1,
+            },
+            {
+              "slug": "react-react-in-jsx-scope",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-no-comment-textnodes",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-no-duplicate-props",
+              "weight": 1,
+            },
+            {
+              "slug": "react-jsx-no-undef",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-danger-with-children",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-direct-mutation-state",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-unescaped-entities",
+              "weight": 1,
+            },
+            {
+              "slug": "react-no-unknown-property",
+              "weight": 1,
+            },
+            {
+              "slug": "react-require-render-return",
+              "weight": 1,
+            },
+          ],
+          "slug": "react-possible-errors",
+          "title": "Possible Errors (react)",
+        },
+      ],
       "icon": "eslint",
       "packageName": "@code-pushup/eslint-plugin",
       "slug": "eslint",

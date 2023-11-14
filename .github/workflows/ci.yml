@@ -58,11 +58,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        run: npx nx affected:lint --parallel=3 --max-warnings=0
+        run: npx nx affected:lint --parallel=3
 
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     name: Unit tests
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -78,11 +82,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Unit test affected projects
-        run: npx nx affected:test --parallel=3
+        uses: Wandalen/wretry.action@master
+        with:
+          command: npx nx affected:test --parallel=3
+          attempt_limit: 2
 
   e2e:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     name: E2E tests
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -98,7 +109,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: E2E test affected projects
-        run: npx nx affected:e2e --parallel=3
+        uses: Wandalen/wretry.action@master
+        with:
+          command: npx nx affected:e2e --parallel=3
+          attempt_limit: 2
 
   build:
     runs-on: ubuntu-latest
@@ -119,3 +133,33 @@ jobs:
         run: npm ci
       - name: Build affected projects
         run: npx nx affected:build --parallel=3
+
+  code-pushup:
+    runs-on: ubuntu-latest
+    name: Code PushUp
+    env:
+      CP_SERVER: ${{ secrets.CP_SERVER }}
+      CP_API_KEY: ${{ secrets.CP_API_KEY }}
+      CP_ORGANIZATION: code-pushup
+      CP_PROJECT: cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build CLI and ESLint plugin
+        run: npx nx run-many -t build -p cli,plugin-eslint --parallel=2
+      - name: Collect Code PushUp report
+        run: npx dist/packages/cli --config code-pushup.config.ts collect
+      - name: Upload Code PushUp report to portal
+        run: npx dist/packages/cli --config code-pushup.config.ts upload
+      - name: Save report files as workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-pushup-report
+          path: .code-pushup/

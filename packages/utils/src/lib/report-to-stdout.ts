@@ -1,113 +1,113 @@
 import chalk from 'chalk';
+import Table from 'cli-table3';
 import cliui from 'cliui';
-import { Report } from '@code-pushup/models';
 import { NEW_LINE } from './md';
 import {
-  countWeightedRefs,
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
+  countCategoryAudits,
+  formatReportScore,
   reportHeadlineText,
-  reportOverviewTableHeaders,
-  sumRefs,
-} from './utils';
+  reportRawOverviewTableHeaders,
+} from './report';
+import { ScoredReport } from './scoring';
 
-const ui = cliui({ width: 60 }); // @TODO check display width
-
-export function reportToStdout(report: Report): void {
-  reportToHeaderSection(report);
-  reportToMetaSection(report);
-  console.log(NEW_LINE);
-  reportToOverviewSection(report);
-  console.log(NEW_LINE);
-  reportToDetailSection(report);
-  console.log(NEW_LINE);
-  console.log('Made with ❤️ by code-pushup.dev');
+function addLine(line = ''): string {
+  return line + NEW_LINE;
 }
 
-function reportToHeaderSection(report: Report): void {
+export function reportToStdout(report: ScoredReport): string {
+  let output = '';
+
+  output += addLine(reportToHeaderSection(report));
+  output += addLine();
+  output += addLine(reportToDetailSection(report));
+  output += addLine(reportToOverviewSection(report));
+  output += addLine(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+
+  return output;
+}
+
+function reportToHeaderSection(report: ScoredReport): string {
   const { packageName, version } = report;
-  console.log(`${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`);
+  return `${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`;
 }
 
-function reportToMetaSection(report: Report): void {
-  const { date, duration, version, packageName, plugins } = report;
-  const _print = (text: string) => console.log(chalk.italic(chalk.gray(text)));
+function reportToOverviewSection({
+  categories,
+  plugins,
+}: ScoredReport): string {
+  let output = addLine(chalk.magentaBright.bold('Categories'));
+  output += addLine();
 
-  _print(`---`);
-  _print(`Package Name: ${packageName}`);
-  _print(`Version: ${version}`);
-  _print(
-    `Commit: feat(cli): add logic for markdown report - 7eba125ad5643c2f90cb21389fc3442d786f43f9`,
-  );
-  _print(`Date: ${new Date(date).toString()}`);
-  _print(`Duration: ${duration}ms`);
-  _print(`Plugins: ${plugins?.length}`);
-  _print(
-    `Audits: ${plugins?.reduce((sum, { audits }) => sum + audits.length, 0)}`,
-  );
-  _print(`---`);
-}
-
-function reportToOverviewSection(report: Report): void {
-  const base = {
-    width: 20,
-    padding: [0, 1, 0, 1],
-  };
-
-  // table header
-  ui.div(...reportOverviewTableHeaders.map(text => ({ text, ...base })));
-
-  // table content
-  report.categories.forEach(({ title, refs }) => {
-    const score = sumRefs(refs).toString();
-    const audits = `${refs.length.toString()}/${countWeightedRefs(refs)}`;
-
-    ui.div(
-      {
-        text: `${title}`,
-        ...base,
-      },
-      {
-        text: score,
-        ...base,
-      },
-      {
-        text: audits,
-        ...base,
-      },
-    );
+  const table = new Table({
+    head: reportRawOverviewTableHeaders,
+    colAligns: ['left', 'right', 'right'],
+    style: {
+      head: ['cyan'],
+    },
   });
 
-  console.log(ui.toString());
+  table.push(
+    ...categories.map(({ title, score, refs }) => [
+      title,
+      withColor({ score }),
+      countCategoryAudits(refs, plugins),
+    ]),
+  );
+
+  output += addLine(table.toString());
+
+  return output;
 }
 
-function reportToDetailSection(report: Report): void {
-  const { categories, plugins } = report;
+function reportToDetailSection(report: ScoredReport): string {
+  const { plugins } = report;
 
-  categories.forEach(category => {
-    const { title, refs } = category;
+  let output = '';
 
-    console.log(chalk.bold(`${title} ${sumRefs(refs)}`));
+  plugins.forEach(({ title, audits }) => {
+    output += addLine();
+    output += addLine(chalk.magentaBright.bold(`${title} audits`));
+    output += addLine();
 
-    refs.forEach(
-      ({ slug: auditSlugInCategoryRefs, weight, plugin: pluginSlug }) => {
-        const audit = plugins
-          .find(({ slug }) => slug === pluginSlug)
-          ?.audits.find(
-            ({ slug: auditSlugInPluginAudits }) =>
-              auditSlugInPluginAudits === auditSlugInCategoryRefs,
-          );
+    const ui = cliui({ width: 80 });
 
-        if (audit) {
-          let content = `${audit.description}` + NEW_LINE;
-          if (audit.docsUrl) {
-            content += `  ${audit.docsUrl} ${NEW_LINE}`;
-          }
-          console.log(`- ${audit.title} (${weight})`);
-          console.log(`  ${content}`);
-        } else {
-          // this should never happen
-          throw new Error(`No audit found for ${auditSlugInCategoryRefs}`);
-        }
-      },
-    );
+    audits.forEach(({ score, title, displayValue, value }) => {
+      ui.div(
+        {
+          text: withColor({ score, text: '●' }),
+          width: 2,
+          padding: [0, 1, 0, 0],
+        },
+        {
+          text: title,
+          padding: [0, 3, 0, 0],
+        },
+        {
+          text: chalk.cyanBright(displayValue || `${value}`),
+          width: 10,
+          padding: [0, 0, 0, 0],
+        },
+      );
+    });
+
+    output += addLine(ui.toString());
+    output += addLine();
   });
+
+  return output;
+}
+
+function withColor({ score, text }: { score: number; text?: string }) {
+  let str = text ?? formatReportScore(score);
+  const style = text ? chalk : chalk.bold;
+  if (score < 0.5) {
+    str = style.red(str);
+  } else if (score < 0.9) {
+    str = style.yellow(str);
+  } else {
+    str = style.green(str);
+  }
+  return str;
 }

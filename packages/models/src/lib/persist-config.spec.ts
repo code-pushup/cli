@@ -1,16 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { mockPersistConfig } from '../../test';
+import { persistConfig } from '../../test';
 import { persistConfigSchema } from './persist-config';
 
 describe('persistConfigSchema', () => {
   it('should parse if configuration is valid', () => {
-    const cfg = mockPersistConfig();
-    expect(() => persistConfigSchema.parse(cfg)).not.toThrow();
+    const persistConfigMock = persistConfig();
+    expect(() => persistConfigSchema.parse(persistConfigMock)).not.toThrow();
+  });
+
+  it('should fill defaults', () => {
+    const persistConfigMock = persistConfigSchema.parse(persistConfig());
+    expect(persistConfigMock.filename).toBe('report');
   });
 
   it('should throw if outputDir is invalid', () => {
-    const cfg = mockPersistConfig({ outputDir: ' ' });
+    const persistConfigMock = persistConfig();
+    persistConfigMock.outputDir = ' ';
+    persistConfigMock.filename = 'valid-filename';
 
-    expect(() => persistConfigSchema.parse(cfg)).toThrow(`path is invalid`);
+    expect(() => persistConfigSchema.parse(persistConfigMock)).toThrow(
+      `path is invalid`,
+    );
+  });
+
+  it('should throw if filename is invalid', () => {
+    const persistConfigMock = persistConfig();
+    persistConfigMock.filename = ' ';
+    expect(() => persistConfigSchema.parse(persistConfigMock)).toThrow(
+      'The filename has to be valid',
+    );
   });
 });

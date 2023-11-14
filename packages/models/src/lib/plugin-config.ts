@@ -1,28 +1,16 @@
 import { z } from 'zod';
-import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import {
-  executionMetaSchema,
-  filePathSchema,
+  materialIconSchema,
   metaSchema,
   packageVersionSchema,
-  positiveIntSchema,
-  scorableSchema,
   slugSchema,
-  weightedRefSchema,
 } from './implementation/schemas';
-import {
-  errorItems,
-  exists,
-  hasDuplicateStrings,
-  hasMissingStrings,
-} from './implementation/utils';
+import { errorItems, hasMissingStrings } from './implementation/utils';
+import { pluginAuditsSchema } from './plugin-config-audits';
+import { auditGroupsSchema } from './plugin-config-groups';
+import { runnerConfigSchema } from './plugin-config-runner';
 
-export const materialIconSchema = z.enum(
-  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
-  { description: 'Icon from VSCode Material Icons extension' },
-);
-
-export const pluginSchema = packageVersionSchema({
+export const pluginMetaSchema = packageVersionSchema({
   optional: true,
 })
   .merge(
@@ -40,82 +28,15 @@ export const pluginSchema = packageVersionSchema({
     }),
   );
 
-const runnerConfigSchema = z.object(
-  {
-    command: z.string({
-      description: 'Shell command to execute',
-    }),
-    args: z.array(z.string({ description: 'Command arguments' })).optional(),
-    outputFile: filePathSchema('Output path'),
-  },
-  {
-    description: 'How to execute runner',
-  },
-);
+export const pluginDataSchema = z.object({
+  runner: runnerConfigSchema,
+  audits: pluginAuditsSchema,
+  groups: auditGroupsSchema,
+});
+type PluginData = z.infer<typeof pluginDataSchema>;
 
-export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
-
-export const auditSchema = z
-  .object({
-    slug: slugSchema('ID (unique within plugin)'),
-  })
-  .merge(
-    metaSchema({
-      titleDescription: 'Descriptive name',
-      descriptionDescription: 'Description (markdown)',
-      docsUrlDescription: 'Link to documentation (rationale)',
-      description: 'List of scorable metrics for the given plugin',
-    }),
-  );
-
-export type Audit = z.infer<typeof auditSchema>;
-
-export const auditGroupSchema = scorableSchema(
-  'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
-    'E.g. the group slug "performance" groups audits and can be referenced in a category as "[plugin-slug]#group:[group-slug]")',
-  weightedRefSchema(
-    'Weighted references to audits',
-    "Reference slug to an audit within this plugin (e.g. 'max-lines')",
-  ),
-  getDuplicateRefsInGroups,
-  duplicateRefsInGroupsErrorMsg,
-).merge(
-  metaSchema({
-    titleDescription: 'Descriptive name for the group',
-    descriptionDescription: 'Description of the group (markdown)',
-    docsUrlDescription: 'Group documentation site',
-    description: 'Group metadata',
-  }),
-);
-export type AuditGroup = z.infer<typeof auditGroupSchema>;
-
-export const pluginConfigSchema = z
-  .object({
-    runner: runnerConfigSchema,
-    audits: z
-      .array(auditSchema, {
-        description: 'List of audits maintained in a plugin',
-      })
-      // audit slugs are unique
-      .refine(
-        auditMetadata => !getDuplicateSlugsInAudits(auditMetadata),
-        auditMetadata => ({
-          message: duplicateSlugsInAuditsErrorMsg(auditMetadata),
-        }),
-      ),
-    groups: z
-      .array(auditGroupSchema, {
-        description: 'List of groups',
-      })
-      .optional()
-      .refine(
-        groups => !getDuplicateSlugsInGroups(groups),
-        groups => ({
-          message: duplicateSlugsInGroupsErrorMsg(groups),
-        }),
-      ),
-  })
-  .merge(pluginSchema)
+export const pluginConfigSchema = pluginMetaSchema
+  .merge(pluginDataSchema)
   // every listed group ref points to an audit within the plugin
   .refine(
     pluginCfg => !getMissingRefsFromGroups(pluginCfg),
@@ -126,32 +47,15 @@ export const pluginConfigSchema = z
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
-// helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: AuditGroup[] | undefined) {
-  const duplicateRefs = getDuplicateSlugsInGroups(groups);
-  return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
-}
-
-function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
-  return Array.isArray(groups)
-    ? hasDuplicateStrings(groups.map(({ slug }) => slug))
-    : false;
-}
-
-type _PluginCfg = {
-  audits?: Audit[];
-  groups?: AuditGroup[];
-};
-
 // helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(pluginCfg: _PluginCfg) {
+function missingRefsFromGroupsErrorMsg(pluginCfg: PluginData) {
   const missingRefs = getMissingRefsFromGroups(pluginCfg);
   return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }
 
-function getMissingRefsFromGroups(pluginCfg: _PluginCfg) {
+function getMissingRefsFromGroups(pluginCfg: PluginData) {
   if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
     const groups = pluginCfg?.groups || [];
     const audits = pluginCfg?.audits || [];
@@ -161,119 +65,4 @@ function getMissingRefsFromGroups(pluginCfg: _PluginCfg) {
     );
   }
   return false;
-}
-
-// =======
-
-const sourceFileLocationSchema = z.object(
-  {
-    file: filePathSchema('Relative path to source file in Git repo'),
-    position: z
-      .object(
-        {
-          startLine: positiveIntSchema('Start line'),
-          startColumn: positiveIntSchema('Start column').optional(),
-          endLine: positiveIntSchema('End line').optional(),
-          endColumn: positiveIntSchema('End column').optional(),
-        },
-        { description: 'Location in file' },
-      )
-      .optional(),
-  },
-  { description: 'Source file location' },
-);
-
-export const issueSchema = z.object(
-  {
-    message: z.string({ description: 'Descriptive error message' }).max(128),
-    severity: z.enum(['info', 'warning', 'error'], {
-      description: 'Severity level',
-    }),
-    source: sourceFileLocationSchema.optional(),
-  },
-  { description: 'Issue information' },
-);
-export type Issue = z.infer<typeof issueSchema>;
-
-export const auditOutputSchema = z.object(
-  {
-    slug: slugSchema('Reference to audit'),
-    displayValue: z
-      .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
-      .optional(),
-    value: positiveIntSchema('Raw numeric value'),
-    score: z
-      .number({
-        description: 'Value between 0 and 1',
-      })
-      .min(0)
-      .max(1),
-    details: z
-      .object(
-        {
-          issues: z.array(issueSchema, { description: 'List of findings' }),
-        },
-        { description: 'Detailed information' },
-      )
-      .optional(),
-  },
-  { description: 'Audit information' },
-);
-
-export type AuditOutput = z.infer<typeof auditOutputSchema>;
-
-export const auditOutputsSchema = z
-  .array(auditOutputSchema, {
-    description:
-      'List of JSON formatted audit output emitted by the runner process of a plugin',
-  })
-  // audit slugs are unique
-  .refine(
-    audits => !getDuplicateSlugsInAudits(audits),
-    audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
-  );
-export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
-
-export const pluginOutputSchema = pluginSchema
-  .merge(executionMetaSchema())
-  .merge(
-    z.object(
-      {
-        audits: auditOutputsSchema,
-      },
-      {
-        description:
-          'List of JSON formatted audit output emitted by the runner process of a plugin',
-      },
-    ),
-  );
-
-export type PluginOutput = z.infer<typeof pluginOutputSchema>;
-
-// helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: { slug: string }[]) {
-  const duplicateRefs = getDuplicateSlugsInAudits(audits);
-  return `In plugin audits the slugs are not unique: ${errorItems(
-    duplicateRefs,
-  )}`;
-}
-
-function getDuplicateSlugsInAudits(audits: { slug: string }[]) {
-  return hasDuplicateStrings(audits.map(({ slug }) => slug));
-}
-
-type _RefsList = { slug?: string }[];
-
-// helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits: _RefsList) {
-  const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
-  return `In plugin groups the audit refs are not unique: ${errorItems(
-    duplicateRefs,
-  )}`;
-}
-
-function getDuplicateRefsInGroups(groupAudits: _RefsList) {
-  return hasDuplicateStrings(
-    groupAudits.map(({ slug: ref }) => ref).filter(exists),
-  );
 }

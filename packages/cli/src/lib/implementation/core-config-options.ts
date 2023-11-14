@@ -9,6 +9,10 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       describe: 'Directory for the produced reports',
       type: 'string',
     },
+    'persist.filename': {
+      describe: 'Filename for the produced reports.',
+      type: 'string',
+    },
     'persist.format': {
       describe: 'Format of the report output. e.g. `md`, `json`, `stdout`',
       type: 'array',
@@ -30,5 +34,5 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       describe: 'API key for the portal server',
       type: 'string',
     },
-  }; //as unknown as Record<keyof ArgsCliObj, Options>;
+  };
 }

@@ -18,7 +18,11 @@
         "default",
         "{workspaceRoot}/.eslintrc.json",
         "{workspaceRoot}/.eslintignore"
-      ]
+      ],
+      "options": {
+        "maxWarnings": 0,
+        "reportUnusedDisableDirectives": "warn"
+      }
     },
     "test": {
       "inputs": ["default", "^production"]
@@ -59,7 +63,9 @@
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vite.config.[jt]s",
-      "!{projectRoot}/test/**/*"
+      "!{projectRoot}/test/**/*",
+      "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s"
     ],
     "sharedGlobals": []
   },

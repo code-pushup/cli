@@ -1,4 +1,3 @@
-export { verboseUtils } from './lib/verbose-utils';
 export {
   CliArgsObject,
   ProcessConfig,
@@ -8,21 +7,39 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, latestHash } from './lib/git';
-export { importModule } from './lib/load-file';
-export { reportToMd } from './lib/report-to-md';
-export { reportToStdout } from './lib/report-to-stdout';
+export { git, getLatestCommit } from './lib/git';
+export { importEsmModule } from './lib/load-file';
+export { ProgressBar, getProgressBar } from './lib/progress';
 export {
+  CODE_PUSHUP_DOMAIN,
+  FOOTER_PREFIX,
+  README_LINK,
   calcDuration,
   compareIssueSeverity,
-  countOccurrences,
-  distinct,
   formatBytes,
   formatCount,
-  objectToEntries,
-  pluralize,
+  loadReport,
+} from './lib/report';
+export { reportToMd } from './lib/report-to-md';
+export { reportToStdout } from './lib/report-to-stdout';
+export { ScoredReport, scoreReport } from './lib/scoring';
+export {
   readJsonFile,
   readTextFile,
-  slugify,
+  toUnixPath,
+  ensureDirectoryExists,
+  FileResult,
+  MultipleFileResults,
+  logMultipleFileResults,
+} from './lib/file-system';
+export { verboseUtils } from './lib/verbose-utils';
+export {
+  pluralize,
   toArray,
-} from './lib/utils';
+  objectToKeys,
+  objectToEntries,
+  countOccurrences,
+  distinct,
+  slugify,
+} from './lib/transformation';
+export { NEW_LINE } from './lib/md';

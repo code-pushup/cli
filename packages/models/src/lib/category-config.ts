@@ -7,28 +7,25 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
-type _RefsList = {
-  type?: string;
-  slug?: string;
-  plugin?: string;
-}[];
+const categoryRefSchema = weightedRefSchema(
+  'Weighted references to audits and/or groups for the category',
+  'Slug of an audit or group (depending on `type`)',
+).merge(
+  z.object({
+    type: z.enum(['audit', 'group'], {
+      description:
+        'Discriminant for reference kind, affects where `slug` is looked up',
+    }),
+    plugin: slugSchema(
+      'Plugin slug (plugin should contain referenced audit or group)',
+    ),
+  }),
+);
+export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',
-  weightedRefSchema(
-    'Weighted references to audits and/or groups for the category',
-    'Slug of an audit or group (depending on `type`)',
-  ).merge(
-    z.object({
-      type: z.enum(['audit', 'group'], {
-        description:
-          'Discriminant for reference kind, affects where `slug` is looked up',
-      }),
-      plugin: slugSchema(
-        'Plugin slug (plugin should contain referenced audit or group)',
-      ),
-    }),
-  ),
+  categoryRefSchema,
   getDuplicateRefsInCategoryMetrics,
   duplicateRefsInCategoryMetricsErrorMsg,
 )
@@ -54,13 +51,13 @@ export const categoryConfigSchema = scorableSchema(
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
 // helper for validator: categories have unique refs to audits or groups
-export function duplicateRefsInCategoryMetricsErrorMsg(metrics: _RefsList) {
+export function duplicateRefsInCategoryMetricsErrorMsg(metrics: CategoryRef[]) {
   const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
   return `In the categories, the following audit or group refs are duplicates: ${errorItems(
     duplicateRefs,
   )}`;
 }
-function getDuplicateRefsInCategoryMetrics(metrics: _RefsList) {
+function getDuplicateRefsInCategoryMetrics(metrics: CategoryRef[]) {
   return hasDuplicateStrings(
     metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
   );

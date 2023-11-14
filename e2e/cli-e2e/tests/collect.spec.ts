@@ -1,10 +1,12 @@
+import { join } from 'path';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { cleanFolderPutGitKeep } from '../mocks/fs.mock';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
-  const exampleAuditTitle =
-    'Require `const` declarations for variables that are never reassigned after declared';
+  const exampleAuditTitle = 'Require `const` declarations for variables';
 
   const omitVariableData = ({
     date,
@@ -19,10 +21,21 @@ describe('CLI collect', () => {
       plugins: report.plugins.map(omitVariableData) as PluginReport[],
     });
 
+  const cliPath = join('..', '..', 'dist', 'packages', 'cli');
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    cleanFolderPutGitKeep();
+  });
+
+  afterEach(() => {
+    cleanFolderPutGitKeep();
+  });
+
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['../../dist/packages/cli', 'collect'],
+      args: [cliPath, 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -38,7 +51,7 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['../../dist/packages/cli', 'collect', '--persist.format=md'],
+      args: [cliPath, 'collect', '--persist.format=md', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -47,7 +60,7 @@ describe('CLI collect', () => {
 
     const md = await readTextFile('tmp/react-todos-app/report.md');
 
-    expect(md).toContain('# Code Pushup Report');
+    expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);
     expect(md).toContain(exampleAuditTitle);
   });
@@ -56,10 +69,11 @@ describe('CLI collect', () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
-        '../../dist/packages/cli',
+        cliPath,
         'collect',
         '--verbose',
         '--persist.format=stdout',
+        '--no-progress',
       ],
       cwd: 'examples/react-todos-app',
     });
@@ -67,7 +81,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    expect(stdout).toContain('Code Pushup Report');
+    expect(stdout).toContain('Code PushUp Report');
     expect(stdout).toContain('Generated reports');
     expect(stdout).toContain('report.json');
     expect(stdout).toContain(exampleCategoryTitle);

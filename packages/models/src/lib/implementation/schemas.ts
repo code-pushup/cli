@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { slugRegex } from './utils';
+import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
+import { filenameRegex, slugRegex } from './utils';
 
 /**
  * Schema for execution meta date
@@ -69,6 +70,10 @@ export function titleSchema(description = 'Descriptive name') {
   return z.string({ description }).max(256);
 }
 
+/**
+ * Used for categories, plugins and audits
+ * @param options
+ */
 export function metaSchema(options?: {
   titleDescription?: string;
   descriptionDescription?: string;
@@ -103,13 +108,17 @@ export function filePathSchema(description: string) {
 }
 
 /**
- * Schema for a weight
+ * Schema for a fileNameSchema
  * @param description
  */
-export function weightSchema(
-  description = 'Coefficient for the given score (use weight 0 if only for display)',
-) {
-  return positiveIntSchema(description);
+export function fileNameSchema(description: string) {
+  return z
+    .string({ description })
+    .trim()
+    .regex(filenameRegex, {
+      message: `The filename has to be valid`,
+    })
+    .min(1, { message: 'file name is invalid' });
 }
 
 /**
@@ -138,6 +147,16 @@ export function packageVersionSchema(options?: {
   );
 }
 
+/**
+ * Schema for a weight
+ * @param description
+ */
+export function weightSchema(
+  description = 'Coefficient for the given score (use weight 0 if only for display)',
+) {
+  return positiveIntSchema(description);
+}
+
 export function weightedRefSchema(
   description: string,
   slugDescription: string,
@@ -150,6 +169,7 @@ export function weightedRefSchema(
     { description },
   );
 }
+export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
 
 export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   description: string,
@@ -173,3 +193,8 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
     { description },
   );
 }
+
+export const materialIconSchema = z.enum(
+  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
+  { description: 'Icon from VSCode Material Icons extension' },
+);

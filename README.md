@@ -1,6 +1,12 @@
 # Code PushUp CLI
 
-**Quality metrics for your software project. Configure what you want to track using your favourite tools, integrate it in your CI and visualize reports in a beautiful dashboard.**
+🔎🔬 **Quality metrics for your software project.** 📉🔍
+
+1. ⚙️ **Configure what you want to track using your favourite tools.**
+2. 🤖 **Integrate it in your CI.**
+3. 🌈 **Visualize reports in a beautiful dashboard.**
+
+---
 
 This monorepo contains code for open-source Code PushUp NPM packages:
 
@@ -45,7 +51,7 @@ npx nx run-many -t test
 npx nx build cli
 
 # lint projects affected by changes (compared to main branch)
-npx nx affected:lint --max-warnings=0
+npx nx affected:lint
 ```
 
 ### Git
@@ -78,3 +84,21 @@ Projects are tagged in two different dimensions - scope and type:
 | `type:feature`  | library with business logic for a specific feature                           | `type:util`                    |
 | `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
 | `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
+
+#### Special Targets
+
+The repository includes a couple of common optional targets:
+
+- `perf` - runs micro benchmarks of a project e.g. `nx perf utils` or `nx affected -t perf`
+
+#### Special Folder
+
+The repository standards organize reusable code specific to a target in dedicated folders at project root level.
+This helps to organize and share target related code.
+
+The following optional folders can be present in a project root;
+
+- `perf` - micro benchmarks related code
+- `test` - testing related code
+- `docs` - docs related files
+- `tooling` - tooling related code

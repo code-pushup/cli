@@ -1,22 +1,10 @@
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { describe, expect, it } from 'vitest';
-import { Options } from 'yargs';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { middlewares } from './middlewares';
+import { options } from './options';
 import { yargsCli } from './yargs-cli';
-
-const options: Record<string, Options> = {
-  interactive: {
-    describe: 'When false disables interactive input prompts for options.',
-    type: 'boolean',
-    default: true,
-  },
-};
-const demandCommand: [number, string] = [0, 'no command required'];
-function middleware<T extends Record<string, unknown>>(processArgs: T) {
-  return {
-    ...processArgs,
-    config: '42',
-  };
-}
 
 describe('yargsCli', () => {
   it('global options should provide correct defaults', async () => {
@@ -24,34 +12,58 @@ describe('yargsCli', () => {
     const parsedArgv = await yargsCli(args, {
       options,
     }).parseAsync();
-    expect(parsedArgv.interactive).toBe(true);
+    expect(parsedArgv.verbose).toBe(false);
+    expect(parsedArgv.progress).toBe(true);
+  });
+
+  it('multiple config args should be parsed to last item from array', async () => {
+    const args: string[] = ['--config=./config.a.ts', '--config=./config.b.ts'];
+    const parsedArgv = await yargsCli(args, {
+      options,
+    }).parseAsync();
+    expect(parsedArgv.config).toBe('./config.b.ts');
+  });
+
+  it('single config arg should be parsed as a single string', async () => {
+    const args: string[] = ['--config=./config.a.ts'];
+    const parsedArgv = await yargsCli(args, {
+      options,
+    }).parseAsync();
+    expect(parsedArgv.config).toBe('./config.a.ts');
   });
 
   it('global options should parse correctly', async () => {
     const args: string[] = objectToCliArgs({
-      interactive: false,
+      verbose: true,
+      progress: false,
     });
 
     const parsedArgv = await yargsCli(args, {
       options,
-      demandCommand,
     }).parseAsync();
-    expect(parsedArgv.interactive).toBe(false);
+    expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.progress).toBe(false);
   });
 
   it('global options and middleware handle argument overrides correctly', async () => {
     const args: string[] = objectToCliArgs({
-      config: 'validConfigPath',
+      config: join(
+        fileURLToPath(dirname(import.meta.url)),
+        '..',
+        '..',
+        'test',
+        'cli-parsing.config.mock.ts',
+      ),
+      verbose: true,
+      progress: false,
+      format: ['md'],
     });
     const parsedArgv = await yargsCli(args, {
       options,
-      demandCommand,
-      middlewares: [
-        {
-          middlewareFunction: middleware,
-        },
-      ],
+      middlewares,
     }).parseAsync();
-    expect(parsedArgv.config).toContain(42);
+    expect(parsedArgv.config).toContain('');
+    expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.progress).toBe(false);
   });
 });

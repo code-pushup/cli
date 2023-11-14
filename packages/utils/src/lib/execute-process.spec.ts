@@ -1,10 +1,7 @@
 import { join } from 'path';
 import { describe, expect, it, vi } from 'vitest';
+import { getAsyncProcessRunnerConfig, mockProcessConfig } from '../../test';
 import { executeProcess, objectToCliArgs } from './execute-process';
-import {
-  getAsyncProcessRunnerConfig,
-  mockProcessConfig,
-} from './mock/process-helper.mock';
 
 const outFolder = '';
 const outName = 'tmp/out-async-runner.json';
@@ -48,7 +45,7 @@ describe('executeProcess', () => {
     const errorSpy = vi.fn();
     const processResult = await executeProcess(cfg).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(1);
-    expect(processResult).toBe(undefined);
+    expect(processResult).toBeUndefined();
     expect(observer?.complete).toHaveBeenCalledTimes(0);
     expect(observer?.next).toHaveBeenCalledTimes(2);
     expect(observer?.error).toHaveBeenCalledTimes(1);
@@ -62,16 +59,15 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual(['bin.js']);
   });
 
+  it('should handle the "_" argument with multiple values', () => {
+    const params = { _: ['bin.js', '--help'] };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual(['bin.js', '--help']);
+  });
+
   it('should handle shorthands arguments', () => {
     const params = {
-      e: `require('fs').writeFileSync('tmp/out.json', '${JSON.stringify([
-        {
-          slug: 'largest-contentful-paint',
-          title: 'Largest Contentful Paint',
-          value: 0,
-          score: 0,
-        },
-      ])}')`,
+      e: `test`,
     };
     const result = objectToCliArgs(params);
     expect(result).toEqual([`-e="${params.e}"`]);
@@ -90,15 +86,15 @@ describe('objectToCliArgs', () => {
   });
 
   it('should handle boolean arguments', () => {
-    const params = { interactive: true };
+    const params = { progress: true };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--interactive']);
+    expect(result).toEqual(['--progress']);
   });
 
   it('should handle negated boolean arguments', () => {
-    const params = { interactive: false };
+    const params = { progress: false };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--no-interactive']);
+    expect(result).toEqual(['--no-progress']);
   });
 
   it('should handle array of string arguments', () => {
