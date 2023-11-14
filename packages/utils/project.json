@@ -30,7 +30,7 @@
       }
     },
     "perf": {
-      "command": "npx tsx ./packages/utils/perf"
+      "command": "npx tsx ./packages/utils/perf --tsconfig=packages/utils/tsconfig.perf.json"
     },
     "test": {
       "executor": "@nx/vite:test",

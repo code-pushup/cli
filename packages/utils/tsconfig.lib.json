@@ -5,12 +5,13 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "perf/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "vite.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "perf/**/*.ts"
   ]
 }
