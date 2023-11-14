@@ -181,3 +181,18 @@ export function logMultipleFileResults(
     });
   }
 }
+
+export function deepClone<T>(obj: T): T {
+  if (obj == null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key as keyof T] = deepClone(obj[key]);
+    }
+  }
+  return cloned;
+}

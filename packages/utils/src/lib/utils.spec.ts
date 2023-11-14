@@ -6,6 +6,7 @@ import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
   countOccurrences,
+  deepClone,
   distinct,
   ensureDirectoryExists,
   logMultipleFileResults,
@@ -175,5 +176,29 @@ describe('logMultipleFileResults', () => {
 
     expect(logs).toContain('Generated reports failed: ');
     expect(logs).toContain('- [1mfail[22m');
+  });
+
+  it('should deep clone the object with nested array with objects, with null and undefined properties', () => {
+    const obj = {
+      a: 1,
+      b: 2,
+      c: [
+        { d: 3, e: 4 },
+        { f: 5, g: 6 },
+      ],
+      d: null,
+      e: undefined,
+    };
+    const cloned = deepClone(obj);
+    expect(cloned).toEqual(obj);
+    expect(cloned).not.toBe(obj);
+    expect(cloned.c).toEqual(obj.c);
+    expect(cloned.c).not.toBe(obj.c);
+    expect(cloned.c[0]).toEqual(obj.c[0]);
+    expect(cloned.c[0]).not.toBe(obj.c[0]);
+    expect(cloned.c[1]).toEqual(obj.c[1]);
+    expect(cloned.c[1]).not.toBe(obj.c[1]);
+    expect(cloned.d).toBe(obj.d);
+    expect(cloned.e).toBe(obj.e);
   });
 });

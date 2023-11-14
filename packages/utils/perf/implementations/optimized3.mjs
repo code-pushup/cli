@@ -12,10 +12,25 @@ export function calculateScore(refs, scoreFn) {
   return numerator / denominator;
 }
 
+export function deepClone(obj) {
+  if (obj == null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const cloned = Array.isArray(obj) ? [] : {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key] = deepClone(obj[key]);
+    }
+  }
+  return cloned;
+}
+
 export function scoreReportOptimized3(report) {
+  const scoredReport = deepClone(report);
   const allScoredAuditsAndGroups = new Map();
 
-  report.plugins.forEach(plugin => {
+  scoredReport.plugins.forEach(plugin => {
     const { audits } = plugin;
     const groups = plugin.groups || [];
 
@@ -57,16 +72,14 @@ export function scoreReportOptimized3(report) {
     return item.score;
   }
 
-  const scoredCategoriesMap = report.categories.reduce(
-    (categoryMap, category) => {
-      category.score = calculateScore(category.refs, catScoreFn);
-      categoryMap.set(category.slug, category);
-      return categoryMap;
-    },
-    new Map(),
-  );
+  const scoredCategoriesMap = new Map();
 
-  report.categories = Array.from(scoredCategoriesMap.values());
+  for (const category of scoredReport.categories) {
+    category.score = calculateScore(category.refs, catScoreFn);
+    scoredCategoriesMap.set(category.slug, category);
+  }
 
-  return report;
+  scoredReport.categories = Array.from(scoredCategoriesMap.values());
+
+  return scoredReport;
 }

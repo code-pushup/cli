@@ -7,6 +7,7 @@ import {
   PluginReport,
   Report,
 } from '@code-pushup/models';
+import { deepClone } from './utils';
 
 type EnrichedAuditReport = AuditReport & { plugin: string };
 type ScoredCategoryConfig = CategoryConfig & { score: number };
@@ -42,16 +43,15 @@ export function calculateScore<T extends { weight: number }>(
 }
 
 export function scoreReport(report: Report): ScoredReport {
+  const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map();
 
-  report.plugins.forEach(plugin => {
+  scoredReport.plugins?.forEach(plugin => {
     const { audits } = plugin;
     const groups = plugin.groups || [];
 
     audits.forEach(audit => {
       const key = `${plugin.slug}-${audit.slug}-audit`;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       audit.plugin = plugin.slug;
       allScoredAuditsAndGroups.set(key, audit);
     });
@@ -70,11 +70,7 @@ export function scoreReport(report: Report): ScoredReport {
 
     groups.forEach(group => {
       const key = `${plugin.slug}-${group.slug}-group`;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       group.score = calculateScore(group.refs, groupScoreFn);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       group.plugin = plugin.slug;
       allScoredAuditsAndGroups.set(key, group);
     });
@@ -92,20 +88,14 @@ export function scoreReport(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategoriesMap = report.categories.reduce(
-    (categoryMap, category) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      category.score = calculateScore(category.refs, catScoreFn);
-      categoryMap.set(category.slug, category);
-      return categoryMap;
-    },
-    new Map(),
-  );
+  const scoredCategoriesMap = new Map();
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const category of scoredReport.categories) {
+    category.score = calculateScore(category.refs, catScoreFn);
+    scoredCategoriesMap.set(category.slug, category);
+  }
 
-  report.categories = Array.from(scoredCategoriesMap.values());
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
+  scoredReport.categories = Array.from(scoredCategoriesMap.values());
 
-  return report;
+  return scoredReport;
 }
