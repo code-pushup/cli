@@ -33,6 +33,6 @@ export type EsmObserver = z.infer<typeof esmObserver>;
 export const esmRunnerConfigSchema = z
   .function()
   .args(esmObserver.optional())
-  .returns(z.promise(auditOutputsSchema));
+  .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
 
 export type EsmRunnerConfig = z.infer<typeof esmRunnerConfigSchema>;
