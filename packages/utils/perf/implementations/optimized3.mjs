@@ -1,34 +1,4 @@
-import {
-  AuditGroup,
-  AuditGroupRef,
-  AuditReport,
-  CategoryConfig,
-  CategoryRef,
-  PluginReport,
-  Report,
-} from '@code-pushup/models';
-import { deepClone } from './transformation';
-
-type EnrichedAuditReport = AuditReport & { plugin: string };
-type ScoredCategoryConfig = CategoryConfig & { score: number };
-
-export type EnrichedScoredAuditGroup = AuditGroup & {
-  plugin: string;
-  score: number;
-};
-
-export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
-  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: EnrichedAuditReport[];
-    groups: EnrichedScoredAuditGroup[];
-  })[];
-  categories: ScoredCategoryConfig[];
-};
-
-export function calculateScore<T extends { weight: number }>(
-  refs: T[],
-  scoreFn: (ref: T) => number,
-): number {
+export function calculateScore(refs, scoreFn) {
   const { numerator, denominator } = refs.reduce(
     (acc, ref) => {
       const score = scoreFn(ref);
@@ -42,11 +12,25 @@ export function calculateScore<T extends { weight: number }>(
   return numerator / denominator;
 }
 
-export function scoreReport(report: Report): ScoredReport {
-  const scoredReport = deepClone(report) as ScoredReport;
+export function deepClone(obj) {
+  if (obj == null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const cloned = Array.isArray(obj) ? [] : {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key] = deepClone(obj[key]);
+    }
+  }
+  return cloned;
+}
+
+export function scoreReportOptimized3(report) {
+  const scoredReport = deepClone(report);
   const allScoredAuditsAndGroups = new Map();
 
-  scoredReport.plugins?.forEach(plugin => {
+  scoredReport.plugins.forEach(plugin => {
     const { audits } = plugin;
     const groups = plugin.groups || [];
 
@@ -56,7 +40,7 @@ export function scoreReport(report: Report): ScoredReport {
       allScoredAuditsAndGroups.set(key, audit);
     });
 
-    function groupScoreFn(ref: AuditGroupRef) {
+    function groupScoreFn(ref) {
       const score = allScoredAuditsAndGroups.get(
         `${plugin.slug}-${ref.slug}-audit`,
       )?.score;
@@ -77,7 +61,7 @@ export function scoreReport(report: Report): ScoredReport {
     plugin.groups = groups;
   });
 
-  function catScoreFn(ref: CategoryRef) {
+  function catScoreFn(ref) {
     const key = `${ref.plugin}-${ref.slug}-${ref.type}`;
     const item = allScoredAuditsAndGroups.get(key);
     if (!item) {
@@ -89,7 +73,7 @@ export function scoreReport(report: Report): ScoredReport {
   }
 
   const scoredCategoriesMap = new Map();
-  // eslint-disable-next-line functional/no-loop-statements
+
   for (const category of scoredReport.categories) {
     category.score = calculateScore(category.refs, catScoreFn);
     scoredCategoriesMap.set(category.slug, category);

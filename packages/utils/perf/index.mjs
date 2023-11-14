@@ -3,6 +3,7 @@ import { scoreReport } from './implementations/base.mjs';
 import { scoreReportOptimized0 } from './implementations/optimized0.mjs';
 import { scoreReportOptimized1 } from './implementations/optimized1.mjs';
 import { scoreReportOptimized2 } from './implementations/optimized2.mjs';
+import { scoreReportOptimized3 } from './implementations/optimized3.mjs';
 
 const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
   process.argv
@@ -59,6 +60,7 @@ suite.add('scoreReport', _scoreReport);
 suite.add('scoreReportOptimized0', _scoreReportOptimized0);
 suite.add('scoreReportOptimized1', _scoreReportOptimized1);
 suite.add('scoreReportOptimized2', _scoreReportOptimized2);
+suite.add('scoreReportOptimized3', _scoreReportOptimized3);
 
 // ==================
 
@@ -107,6 +109,10 @@ function _scoreReportOptimized1() {
 
 function _scoreReportOptimized2() {
   scoreReportOptimized2(minimalReport());
+}
+
+function _scoreReportOptimized3() {
+  scoreReportOptimized3(minimalReport());
 }
 
 // ==============================================================
