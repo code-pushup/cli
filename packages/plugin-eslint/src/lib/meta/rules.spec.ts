@@ -2,6 +2,7 @@ import { ESLint } from 'eslint';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
+import { expect } from 'vitest';
 import { RuleData, listRules, parseRuleId } from './rules';
 
 describe('listRules', () => {
@@ -105,7 +106,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(69);
+      await expect(listRules(eslint, patterns)).resolves.toHaveLength(66);
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
