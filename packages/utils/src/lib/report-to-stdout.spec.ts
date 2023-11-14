@@ -1,23 +1,14 @@
-import { afterEach, beforeEach, describe } from 'vitest';
-import { minimalReport } from '@code-pushup/models/testing';
-import { mockConsole, unmockConsole } from '../../test';
+import { describe } from 'vitest';
+import { report } from '@code-pushup/models/testing';
 import { reportToStdout } from './report-to-stdout';
 import { scoreReport } from './scoring';
 
-let logs: string[];
-
 describe('report-to-stdout', () => {
-  beforeEach(async () => {
-    logs = [];
-    mockConsole(msg => logs.push(msg));
-  });
-  afterEach(() => {
-    unmockConsole();
-  });
-
   it('should contain all sections when using the fixture report', () => {
-    reportToStdout(scoreReport(minimalReport('tmp')));
-    const logOutput = logs.join('\n');
-    expect(logOutput).toMatchSnapshot();
+    const logOutput = reportToStdout(scoreReport(report()));
+    // logOutput.replace(/\u001B\[\d+m/g, '') removes all color codes from the output
+    // for snapshot readability
+    // eslint-disable-next-line no-control-regex
+    expect(logOutput.replace(/\u001B\[\d+m/g, '')).toMatchSnapshot();
   });
 });

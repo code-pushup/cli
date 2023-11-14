@@ -1,7 +1,10 @@
 import chalk from 'chalk';
-import { readFile } from 'fs/promises';
 import { join } from 'path';
 import {
+  Audit,
+  AuditOutput,
+  AuditOutputs,
+  AuditReport,
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
@@ -10,20 +13,15 @@ import {
   ProcessObserver,
   executeProcess,
   getProgressBar,
+  readJsonFile,
 } from '@code-pushup/utils';
 
 /**
  * Error thrown when plugin output is invalid.
  */
-export class PluginOutputError extends Error {
-  constructor(pluginSlug: string, error?: Error) {
-    super(
-      `Plugin output of plugin with slug ${pluginSlug} is invalid. \n Error: ${error?.message}`,
-    );
-    if (error) {
-      this.name = error.name;
-      this.stack = error.stack;
-    }
+export class PluginOutputMissingAuditError extends Error {
+  constructor(auditSlug: string) {
+    super(`Audit metadata not found for slug ${auditSlug}`);
   }
 }
 
@@ -34,7 +32,7 @@ export class PluginOutputError extends Error {
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
  * @param observer - process {@link ProcessObserver}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
- * @throws {PluginOutputError} - if plugin runner output is invalid
+ * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -54,70 +52,61 @@ export async function executePlugin(
   observer?: ProcessObserver,
 ): Promise<PluginReport> {
   const {
-    slug,
-    title,
-    icon,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    runner: onlyUsedForRestingPluginMeta,
+    audits: pluginConfigAudits,
     description,
     docsUrl,
-    version,
-    packageName,
     groups,
+    ...pluginMeta
   } = pluginConfig;
   const { args, command } = pluginConfig.runner;
 
-  const { duration, date } = await executeProcess({
+  const { date, duration } = await executeProcess({
     command,
     args,
     observer,
   });
+  const executionMeta = { date, duration };
 
-  try {
-    const processOutputPath = join(
-      process.cwd(),
-      pluginConfig.runner.outputFile,
+  const processOutputPath = join(process.cwd(), pluginConfig.runner.outputFile);
+
+  // read process output from file system and parse it
+  let unknownAuditOutputs = await readJsonFile<Record<string, unknown>[]>(
+    processOutputPath,
+  );
+
+  // parse transform unknownAuditOutputs to auditOutputs
+  if (pluginConfig.runner?.outputTransform) {
+    unknownAuditOutputs = await pluginConfig.runner.outputTransform(
+      unknownAuditOutputs,
     );
-
-    // read process output from file system and parse it
-    const auditOutputs = auditOutputsSchema.parse(
-      JSON.parse((await readFile(processOutputPath)).toString()),
-    );
-
-    const audits = auditOutputs.map(auditOutput => {
-      const auditMetadata = pluginConfig.audits.find(
-        audit => audit.slug === auditOutput.slug,
-      );
-      if (!auditMetadata) {
-        throw new PluginOutputError(
-          slug,
-          new Error(
-            `Audit metadata not found for slug ${auditOutput.slug} from runner output`,
-          ),
-        );
-      }
-      return {
-        ...auditOutput,
-        ...auditMetadata,
-      };
-    });
-
-    // @TODO consider just resting/spreading the values
-    return {
-      version,
-      packageName,
-      slug,
-      title,
-      icon,
-      date,
-      duration,
-      audits,
-      ...(description && { description }),
-      ...(docsUrl && { docsUrl }),
-      ...(groups && { groups }),
-    } satisfies PluginReport;
-  } catch (error) {
-    const e = error as Error;
-    throw new PluginOutputError(slug, e);
   }
+
+  // validate audit outputs
+  const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
+
+  // validate auditOutputs
+  auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
+
+  // enrich `AuditOutputs` to `AuditReport`
+  const audits: AuditReport[] = auditOutputs.map(
+    (auditOutput: AuditOutput) => ({
+      ...auditOutput,
+      ...(pluginConfigAudits.find(
+        audit => audit.slug === auditOutput.slug,
+      ) as Audit),
+    }),
+  );
+
+  return {
+    ...pluginMeta,
+    ...executionMeta,
+    audits,
+    ...(description && { description }),
+    ...(docsUrl && { docsUrl }),
+    ...(groups && { groups }),
+  } satisfies PluginReport;
 }
 
 /**
@@ -164,4 +153,18 @@ export async function executePlugins(
   progressBar?.endProgress('Done running plugins');
 
   return pluginsResult;
+}
+
+function auditOutputsCorrelateWithPluginOutput(
+  auditOutputs: AuditOutputs,
+  pluginConfigAudits: PluginConfig['audits'],
+) {
+  auditOutputs.forEach(auditOutput => {
+    const auditMetadata = pluginConfigAudits.find(
+      audit => audit.slug === auditOutput.slug,
+    );
+    if (!auditMetadata) {
+      throw new PluginOutputMissingAuditError(auditOutput.slug);
+    }
+  });
 }

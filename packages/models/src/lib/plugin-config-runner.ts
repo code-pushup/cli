@@ -1,6 +1,13 @@
-import {z} from 'zod';
-import {executionMetaSchema, filePathSchema} from './implementation/schemas';
-import {auditOutputsSchema} from "./plugin-process-output";
+import { z } from 'zod';
+import { filePathSchema } from './implementation/schemas';
+import { auditOutputsSchema } from './plugin-process-output';
+
+export const outputTransformSchema = z
+  .function()
+  .args(z.unknown())
+  .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
+
+export type OutputTransform = z.infer<typeof outputTransformSchema>;
 
 export const runnerConfigSchema = z.object(
   {
@@ -9,6 +16,7 @@ export const runnerConfigSchema = z.object(
     }),
     args: z.array(z.string({ description: 'Command arguments' })).optional(),
     outputFile: filePathSchema('Output path'),
+    outputTransform: outputTransformSchema.optional(),
   },
   {
     description: 'How to execute runner',
@@ -17,24 +25,13 @@ export const runnerConfigSchema = z.object(
 
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
-export const runnerResultSchema = executionMetaSchema().merge(
-  z.object(
-    {
-    //  audits: auditReportSchema,
-    },
-    {
-      description: 'Shape for all versions of runner',
-    },
-  ),
-);
-export type RunnerResult = z.infer<typeof runnerResultSchema>;
-
 export const esmObserver = z.object({
   next: z.function().args(z.unknown()).returns(z.void()),
 });
 export type EsmObserver = z.infer<typeof esmObserver>;
 
-export const esmRunnerConfigSchema = z.function()
+export const esmRunnerConfigSchema = z
+  .function()
   .args(esmObserver.optional())
   .returns(z.promise(auditOutputsSchema));
 

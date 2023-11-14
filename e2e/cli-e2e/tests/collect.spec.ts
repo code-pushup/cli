@@ -6,8 +6,7 @@ import { cleanFolderPutGitKeep } from '../mocks/fs.mock';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
-  const exampleAuditTitle =
-    'Require `const` declarations for variables that are never reassigned after declared';
+  const exampleAuditTitle = 'Require `const` declarations for variables';
 
   const omitVariableData = ({
     date,

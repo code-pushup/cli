@@ -37,6 +37,7 @@ export {
 export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
+  auditReportSchema,
   PluginReport,
   Report,
   pluginReportSchema,
@@ -44,9 +45,4 @@ export {
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
 export { materialIconSchema } from './lib/implementation/schemas';
-export {
-  EsmObserver,
-  EsmRunnerConfig,
-  RunnerResult,
-  runnerResultSchema,
-} from './lib/plugin-config-runner';
+export { EsmObserver, EsmRunnerConfig } from './lib/plugin-config-runner';

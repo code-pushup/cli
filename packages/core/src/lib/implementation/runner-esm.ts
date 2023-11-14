@@ -2,25 +2,22 @@ import {
   AuditOutputs,
   EsmObserver,
   EsmRunnerConfig,
-  RunnerResult,
-  runnerResultSchema,
 } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
+import { RunnerResult } from './runner';
 
 export type EsmRunnerProcessConfig = {
   runner: EsmRunnerConfig;
   observer?: EsmObserver;
 };
 
-export function executeEsmRunner(
-  cfg: EsmRunnerProcessConfig,
-): Promise<RunnerResult> {
+export function runnerEsm(cfg: EsmRunnerProcessConfig): Promise<RunnerResult> {
   const { observer, runner } = cfg;
   const date = new Date().toISOString();
   const start = performance.now();
 
-  return runner(observer).then((result: AuditOutputs) => {
+  return runner(observer).then((audits: AuditOutputs) => {
     const timings = { date, duration: calcDuration(start) };
-    return runnerResultSchema.parse({ result, ...timings });
+    return { ...timings, audits };
   });
 }

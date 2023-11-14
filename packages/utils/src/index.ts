@@ -42,3 +42,4 @@ export {
   distinct,
   slugify,
 } from './lib/transformation';
+export { NEW_LINE } from './lib/md';

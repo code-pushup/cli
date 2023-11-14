@@ -1,11 +1,6 @@
 import { z } from 'zod';
-import {
-  executionMetaSchema,
-  positiveIntSchema,
-  slugSchema,
-} from './implementation/schemas';
+import { positiveIntSchema, slugSchema } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
-import { pluginMetaSchema } from './plugin-config';
 import { issueSchema } from './plugin-process-output-audit-issue';
 
 export const auditOutputSchema = z.object(
@@ -47,22 +42,6 @@ export const auditOutputsSchema = z
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
-/*export const pluginOutputSchema = pluginMetaSchema
- // .merge(executionMetaSchema())
-  .merge(
-    z.object(
-      {
-        audits: auditOutputsSchema,
-      },
-      {
-        description:
-          'List of JSON formatted audit output emitted by the runner process of a plugin',
-      },
-    ),
-  );
-
-export type PluginOutput = z.infer<typeof pluginOutputSchema>;
-*/
 // helper for validator: audit slugs are unique
 function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
