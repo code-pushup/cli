@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  esmRunnerConfig,
-  runnerConfig,
-} from '../../test/fixtures/runner-config.mock';
+import { auditReport } from '../../test/fixtures/plugin-config.mock';
+import { runnerConfig } from '../../test/fixtures/runner-config.mock';
 import {
   runnerConfigSchema,
   runnerFunctionSchema,
@@ -32,7 +30,7 @@ describe('runnerConfig', () => {
 
 describe('esmRunnerConfig', () => {
   it('should parse if configuration is valid', () => {
-    const runnerConfigMock = esmRunnerConfig();
+    const runnerConfigMock = () => Promise.resolve([auditReport()]);
     expect(() => runnerFunctionSchema.parse(runnerConfigMock)).not.toThrow();
   });
 

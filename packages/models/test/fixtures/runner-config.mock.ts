@@ -41,15 +41,3 @@ export function echoRunnerConfig(
     outputFile,
   };
 }
-
-/**
- * Use this helper as a general purpose mock with working defaults
- * @param options
- */
-export function esmRunnerConfig(
-  options?: Partial<RunnerFunction>,
-): RunnerFunction {
-  return runnerFunctionSchema.parse((cfg: unknown): AuditOutputs => {
-    return [{} as AuditOutput];
-  });
-}

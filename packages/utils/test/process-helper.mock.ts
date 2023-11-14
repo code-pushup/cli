@@ -46,11 +46,11 @@ export function mockProcessConfig(
  * Helps to set up spy observers for testing.
  */
 export function spyObserver() {
-  const nextSpy = vi.fn();
+  const onStdoutSpy = vi.fn();
   const errorSpy = vi.fn();
   const completeSpy = vi.fn();
   return {
-    next: nextSpy,
+    onStdout: onStdoutSpy,
     error: errorSpy,
     complete: completeSpy,
   };

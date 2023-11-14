@@ -5,10 +5,7 @@ export * from './memfs';
 export { eslintPluginConfig } from './fixtures/eslint-plugin.mock';
 export { lighthousePluginConfig } from './fixtures/lighthouse-plugin.mock';
 
-export {
-  echoRunnerConfig,
-  esmRunnerConfig,
-} from './fixtures/runner-config.mock';
+export { echoRunnerConfig } from './fixtures/runner-config.mock';
 export { persistConfig } from './fixtures/persist-config.mock';
 export {
   auditConfig,
