@@ -13,3 +13,4 @@ export {
   pluginConfig,
 } from './fixtures/plugin-config.mock';
 export { uploadConfig } from './fixtures/upload-config.mock';
+export { categoryConfig } from './fixtures/categories.mock';

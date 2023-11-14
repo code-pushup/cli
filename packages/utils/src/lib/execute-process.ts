@@ -182,7 +182,6 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  * const args = objectToProcessArgs({
  *   _: ['node', 'index.js'], // node index.js
  *   name: 'Juanita', // --name=Juanita
- *   interactive: false, // --no-interactive
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */

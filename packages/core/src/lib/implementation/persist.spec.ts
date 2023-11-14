@@ -12,6 +12,7 @@ import {
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
+  NEW_LINE,
   README_LINK,
 } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test';
@@ -76,7 +77,9 @@ describe('persistReport', () => {
 
   it('should stdout as format by default`', async () => {
     await persistReport(dummyReport, dummyConfig);
-    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+    expect(logs.join(NEW_LINE)).toContain(
+      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    );
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -89,7 +92,9 @@ describe('persistReport', () => {
       ...dummyConfig,
       persist,
     });
-    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+    expect(logs.join(NEW_LINE)).toContain(
+      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    );
 
     expect(() => readReport('json')).not.toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
@@ -143,7 +148,9 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+    expect(logs.join(NEW_LINE)).toContain(
+      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    );
   });
 
   it('should persist some formats`', async () => {
@@ -162,7 +169,9 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(logs).toContain(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+    expect(logs.join(NEW_LINE)).toMatch(
+      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    );
   });
 
   // @TODO: should throw PersistDirError
