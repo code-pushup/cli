@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { executionMetaSchema, filePathSchema } from './implementation/schemas';
-import {auditOutputSchema, auditOutputsSchema} from './plugin-process-output';
+import {auditReportSchema, pluginReportSchema} from './report';
 
 export const runnerConfigSchema = z.object(
   {
@@ -20,7 +20,7 @@ export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 export const runnerResultSchema = executionMetaSchema().merge(
   z.object(
     {
-      audits: auditOutputSchema,
+    //  audits: auditReportSchema,
     },
     {
       description: 'Shape for all versions of runner',
@@ -28,7 +28,7 @@ export const runnerResultSchema = executionMetaSchema().merge(
   ),
 );
 export type RunnerResult = z.infer<typeof runnerResultSchema>;
-/*
+
 export const esmObserver = z.object({
   next: z.function().args(z.unknown()).returns(z.void()),
 });
@@ -37,7 +37,6 @@ export type EsmObserver = z.infer<typeof esmObserver>;
 export const esmRunnerConfigSchema = z
   .function()
   .args(esmObserver.optional())
-  .returns(z.promise(z.array(z.record(z.string(), z.unknown()))));
+ // .returns(z.promise(pluginReportSchema));
 
 export type EsmRunnerConfig = z.infer<typeof esmRunnerConfigSchema>;
-*/

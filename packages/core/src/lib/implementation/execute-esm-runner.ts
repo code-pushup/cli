@@ -23,5 +23,3 @@ export function executeEsmRunner(
     return runnerResultSchema.parse({ result, ...timings });
   });
 }
-
-

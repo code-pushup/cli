@@ -47,8 +47,8 @@ export const auditOutputsSchema = z
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
-export const pluginOutputSchema = pluginMetaSchema
-  .merge(executionMetaSchema())
+/*export const pluginOutputSchema = pluginMetaSchema
+ // .merge(executionMetaSchema())
   .merge(
     z.object(
       {
@@ -62,7 +62,7 @@ export const pluginOutputSchema = pluginMetaSchema
   );
 
 export type PluginOutput = z.infer<typeof pluginOutputSchema>;
-
+*/
 // helper for validator: audit slugs are unique
 function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);

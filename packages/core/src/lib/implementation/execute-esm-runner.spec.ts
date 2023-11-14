@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditOutputs,
-  //EsmObserver,
+  AuditOutputs, //EsmObserver,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { executeEsmRunner } from './execute-esm-runner';
