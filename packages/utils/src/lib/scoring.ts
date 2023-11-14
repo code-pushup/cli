@@ -9,7 +9,7 @@ import {
 } from '@code-pushup/models';
 import { deepClone } from './transformation';
 
-type EnrichedAuditReport = AuditReport & { plugin: string };
+export type EnrichedAuditReport = AuditReport & { plugin: string };
 type ScoredCategoryConfig = CategoryConfig & { score: number };
 
 export type EnrichedScoredAuditGroup = AuditGroup & {
