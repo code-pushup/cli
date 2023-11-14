@@ -2,6 +2,8 @@
 
 .env
 
+.nx
+
 # compiled output
 dist
 tmp
