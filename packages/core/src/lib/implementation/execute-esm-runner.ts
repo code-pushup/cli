@@ -1,4 +1,5 @@
 import {
+  AuditOutputs,
   EsmObserver,
   EsmRunnerConfig,
   RunnerResult,
@@ -18,7 +19,7 @@ export function executeEsmRunner(
   const date = new Date().toISOString();
   const start = performance.now();
 
-  return runner(observer).then(result => {
+  return runner(observer).then((result: AuditOutputs) => {
     const timings = { date, duration: calcDuration(start) };
     return runnerResultSchema.parse({ result, ...timings });
   });

@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { executionMetaSchema, filePathSchema } from './implementation/schemas';
-import {auditReportSchema, pluginReportSchema} from './report';
+import {z} from 'zod';
+import {executionMetaSchema, filePathSchema} from './implementation/schemas';
+import {auditOutputsSchema} from "./plugin-process-output";
 
 export const runnerConfigSchema = z.object(
   {
@@ -34,9 +34,8 @@ export const esmObserver = z.object({
 });
 export type EsmObserver = z.infer<typeof esmObserver>;
 
-export const esmRunnerConfigSchema = z
-  .function()
+export const esmRunnerConfigSchema = z.function()
   .args(esmObserver.optional())
- // .returns(z.promise(pluginReportSchema));
+  .returns(z.promise(auditOutputsSchema));
 
 export type EsmRunnerConfig = z.infer<typeof esmRunnerConfigSchema>;
