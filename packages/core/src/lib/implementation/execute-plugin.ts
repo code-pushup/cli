@@ -9,8 +9,7 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { Observer, getProgressBar } from '@code-pushup/utils';
-import { executeEsmRunner } from './runner-esm';
-import { executeProcessRunner } from './runner-process';
+import { executeEsmRunner, executeProcessRunner } from './runner';
 
 /**
  * Error thrown when plugin output is invalid.
