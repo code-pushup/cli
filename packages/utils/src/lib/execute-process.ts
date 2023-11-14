@@ -1,5 +1,4 @@
 import { spawn } from 'child_process';
-import { Observer } from './observer';
 import { calcDuration } from './report';
 
 /**
@@ -86,20 +85,22 @@ export type ProcessConfig = {
 };
 
 /**
- * Process observer object. Contains the next, error and complete function.
+ * Process observer object. Contains the onStdout, error and complete function.
  * @category Types
  * @public
- * @property {function} next - The next function of the observer (optional).
+ * @property {function} onStdout - The onStdout function of the observer (optional).
  * @property {function} error - The error function of the observer (optional).
  * @property {function} complete - The complete function of the observer (optional).
  *
  * @example
  * const observer = {
- *  next: (stdout) => console.log(stdout)
+ *  onStdout: (stdout) => console.log(stdout)
  *  }
  */
-export type ProcessObserver = Omit<Observer, 'error'> & {
+export type ProcessObserver = {
+  onStdout?: (stdout: string) => void;
   error?: (error: ProcessError) => void;
+  complete?: () => void;
 };
 
 /**
@@ -120,7 +121,7 @@ export type ProcessObserver = Omit<Observer, 'error'> & {
  *    command: 'node',
  *    args: ['download-data.js'],
  *    observer: {
- *      next: updateProgress,
+ *      onStdout: updateProgress,
  *      error: handleError,
  *      complete: cleanLogs,
  *    }
@@ -132,7 +133,7 @@ export type ProcessObserver = Omit<Observer, 'error'> & {
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { observer, cwd } = cfg;
-  const { next, error, complete } = observer || {};
+  const { onStdout, error, complete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
 
@@ -143,7 +144,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
 
     process.stdout.on('data', data => {
       stdout += data.toString();
-      next?.(data);
+      onStdout?.(data);
     });
 
     process.stderr.on('data', data => {

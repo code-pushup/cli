@@ -9,8 +9,8 @@ import { errorItems, hasMissingStrings } from './implementation/utils';
 import { pluginAuditsSchema } from './plugin-config-audits';
 import { auditGroupsSchema } from './plugin-config-groups';
 import {
-  runnerFunctionSchema,
   runnerConfigSchema,
+  runnerFunctionSchema,
 } from './plugin-config-runner';
 
 export const pluginMetaSchema = packageVersionSchema({

@@ -2,8 +2,8 @@ import { platform } from 'os';
 import { RunnerConfig } from '../../src';
 import {
   RunnerFunction,
-  runnerFunctionSchema,
   runnerConfigSchema,
+  runnerFunctionSchema,
 } from '../../src/lib/plugin-config-runner';
 import { AuditOutput, AuditOutputs } from '../../src/lib/plugin-process-output';
 

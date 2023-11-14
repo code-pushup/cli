@@ -1,14 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { AuditOutputs, auditOutputsSchema } from '@code-pushup/models';
+import {
+  AuditOutputs,
+  OnProgress,
+  auditOutputsSchema,
+} from '@code-pushup/models';
 import { auditReport, echoRunnerConfig } from '@code-pushup/models/testing';
-import { Observer } from '@code-pushup/utils';
-import { RunnerResult, executeEsmRunner, executeProcessRunner } from './runner';
+import {
+  RunnerResult,
+  executeRunnerConfig,
+  executeRunnerFunction,
+} from './runner';
 
 const validRunnerCfg = echoRunnerConfig([auditReport()], 'output.json');
 
 describe('executeRunner', () => {
   it('should work with valid plugins', async () => {
-    const runnerResult = await executeProcessRunner(validRunnerCfg);
+    const runnerResult = await executeRunnerConfig(validRunnerCfg);
 
     // data sanity
     expect(runnerResult.date.endsWith('Z')).toBeTruthy();
@@ -29,7 +36,7 @@ describe('executeRunner', () => {
         })),
     };
 
-    const runnerResult = await executeProcessRunner(runnerCfgWithTransform);
+    const runnerResult = await executeRunnerConfig(runnerCfgWithTransform);
 
     expect(runnerResult.audits[0]?.displayValue).toBe(
       'transformed - mock-audit-slug',
@@ -45,7 +52,7 @@ describe('executeRunner', () => {
     };
 
     await expect(
-      executeProcessRunner(runnerCfgWithErrorTransform),
+      executeRunnerConfig(runnerCfgWithErrorTransform),
     ).rejects.toThrow('transform mock error');
   });
 });
@@ -53,15 +60,15 @@ describe('executeRunner', () => {
 describe('executeEsmRunner', () => {
   it('should execute valid plugin config', async () => {
     const nextSpy = vi.fn();
-    const runnerResult: RunnerResult = await executeEsmRunner(
-      (observer?: Observer) => {
-        observer?.next?.('update');
+    const runnerResult: RunnerResult = await executeRunnerFunction(
+      (observer?: OnProgress) => {
+        observer?.('update');
 
         return Promise.resolve([
           { slug: 'mock-audit-slug', score: 0, value: 0 },
         ] satisfies AuditOutputs);
       },
-      { next: nextSpy },
+      nextSpy,
     );
     expect(nextSpy).toHaveBeenCalledWith('update');
     expect(runnerResult.audits[0]?.slug).toBe('mock-audit-slug');
@@ -70,10 +77,11 @@ describe('executeEsmRunner', () => {
   it('should throw if plugin throws', async () => {
     const nextSpy = vi.fn();
     await expect(
-      executeEsmRunner(
+      executeRunnerFunction(
         () => Promise.reject(new Error('plugin exec mock error')),
-        { next: nextSpy },
+        nextSpy,
       ),
     ).rejects.toThrow('plugin exec mock error');
+    expect(nextSpy).not.toHaveBeenCalled();
   });
 });

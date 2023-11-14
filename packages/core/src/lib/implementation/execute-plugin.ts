@@ -4,12 +4,13 @@ import {
   AuditOutput,
   AuditOutputs,
   AuditReport,
+  OnProgress,
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { Observer, getProgressBar } from '@code-pushup/utils';
-import { executeEsmRunner, executeProcessRunner } from './runner';
+import { getProgressBar } from '@code-pushup/utils';
+import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -44,7 +45,7 @@ export class PluginOutputMissingAuditError extends Error {
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
-  observer?: Observer,
+  onProgress?: OnProgress,
 ): Promise<PluginReport> {
   const {
     runner,
@@ -58,8 +59,8 @@ export async function executePlugin(
   // execute plugin runner
   const runnerResult =
     typeof runner === 'object'
-      ? await executeProcessRunner(runner, observer)
-      : await executeEsmRunner(runner, observer);
+      ? await executeRunnerConfig(runner, onProgress)
+      : await executeRunnerFunction(runner, onProgress);
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   // validate auditOutputs

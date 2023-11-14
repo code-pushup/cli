@@ -18,7 +18,7 @@ describe('executeProcess', () => {
     const cfg = mockProcessConfig({ command: `npx`, args: ['--help'] });
     const { observer } = cfg;
     const processResult = await executeProcess(cfg);
-    expect(observer?.next).toHaveBeenCalledTimes(1);
+    expect(observer?.onStdout).toHaveBeenCalledTimes(1);
     expect(observer?.complete).toHaveBeenCalledTimes(1);
     expect(processResult.stdout).toContain('Options');
   });
@@ -32,7 +32,7 @@ describe('executeProcess', () => {
     const processResult = await executeProcess(cfg).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('process:complete');
-    expect(observer?.next).toHaveBeenCalledTimes(6);
+    expect(observer?.onStdout).toHaveBeenCalledTimes(6);
     expect(observer?.error).toHaveBeenCalledTimes(0);
     expect(observer?.complete).toHaveBeenCalledTimes(1);
   });
@@ -47,7 +47,7 @@ describe('executeProcess', () => {
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(processResult).toBeUndefined();
     expect(observer?.complete).toHaveBeenCalledTimes(0);
-    expect(observer?.next).toHaveBeenCalledTimes(2);
+    expect(observer?.onStdout).toHaveBeenCalledTimes(2);
     expect(observer?.error).toHaveBeenCalledTimes(1);
   });
 });

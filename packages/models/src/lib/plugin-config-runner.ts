@@ -25,14 +25,15 @@ export const runnerConfigSchema = z.object(
 
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
-export const esmObserver = z.object({
-  next: z.function().args(z.unknown()).returns(z.void()).optional(),
-});
-export type EsmObserver = z.infer<typeof esmObserver>;
+export const onProgressSchema = z
+  .function()
+  .args(z.unknown())
+  .returns(z.void());
+export type OnProgress = z.infer<typeof onProgressSchema>;
 
 export const runnerFunctionSchema = z
   .function()
-  .args(esmObserver.optional())
+  .args(onProgressSchema.optional())
   .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
 
 export type RunnerFunction = z.infer<typeof runnerFunctionSchema>;

@@ -1,16 +1,11 @@
 import { join } from 'path';
 import {
   AuditOutputs,
-  RunnerFunction,
+  OnProgress,
   RunnerConfig,
+  RunnerFunction,
 } from '@code-pushup/models';
-import {
-  Observer,
-  ProcessObserver,
-  calcDuration,
-  executeProcess,
-  readJsonFile,
-} from '@code-pushup/utils';
+import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
@@ -18,9 +13,9 @@ export type RunnerResult = {
   audits: AuditOutputs;
 };
 
-export async function executeProcessRunner(
+export async function executeRunnerConfig(
   cfg: RunnerConfig,
-  observer?: ProcessObserver,
+  onProgress?: OnProgress,
 ): Promise<RunnerResult> {
   const { args, command, outputFile, outputTransform } = cfg;
 
@@ -28,7 +23,7 @@ export async function executeProcessRunner(
   const { duration, date } = await executeProcess({
     command,
     args,
-    observer,
+    observer: { onStdout: onProgress },
   });
 
   // read process output from file system and parse it
@@ -49,20 +44,20 @@ export async function executeProcessRunner(
   };
 }
 
-export async function executeEsmRunner(
+export async function executeRunnerFunction(
   runner: RunnerFunction,
-  observer?: Observer,
+  onProgress?: OnProgress,
 ): Promise<RunnerResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
   // execute plugin runner
-  const audits = await runner(observer);
+  const audits = await runner(onProgress);
 
   // create runner result
   return {
     date,
     duration: calcDuration(start),
     audits,
-  } satisfies RunnerResult;
+  };
 }

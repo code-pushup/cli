@@ -4,8 +4,8 @@ import {
   runnerConfig,
 } from '../../test/fixtures/runner-config.mock';
 import {
-  runnerFunctionSchema,
   runnerConfigSchema,
+  runnerFunctionSchema,
 } from './plugin-config-runner';
 
 describe('runnerConfig', () => {
