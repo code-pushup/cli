@@ -25,7 +25,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "@commitlint/config-nx-scopes": "^17.6.4",
+    "@commitlint/config-nx-scopes": "^18.4.0",
     "@commitlint/cz-commitlint": "^17.7.1",
     "@nx/devkit": "17.1.2",
     "@nx/esbuild": "17.1.2",
