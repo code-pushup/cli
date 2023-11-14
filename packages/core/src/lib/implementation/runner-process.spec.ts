@@ -15,20 +15,17 @@ describe('executeRunner', () => {
     expect(runnerResult.audits[0]?.slug).toBe('mock-audit-slug');
 
     // schema validation
-    // expect(() => runnerResult.date).toBe(expect.any(String));
-    // expect(() => runnerResult.duration).toBe(expect.any(Number));
     expect(() => auditOutputsSchema.parse(runnerResult.audits)).not.toThrow();
   });
 
   it('should use transform if provided', async () => {
-    const outputTransform = (audits: unknown) =>
-      (audits as AuditOutputs).map(a => ({
-        ...a,
-        displayValue: `transformed - ${a.slug}`,
-      }));
     const runnerCfgWithTransform = {
       ...validRunnerCfg,
-      outputTransform,
+      outputTransform: (audits: unknown) =>
+        (audits as AuditOutputs).map(a => ({
+          ...a,
+          displayValue: `transformed - ${a.slug}`,
+        })),
     };
 
     const runnerResult = await executeProcessRunner(runnerCfgWithTransform);
@@ -36,5 +33,18 @@ describe('executeRunner', () => {
     expect(runnerResult.audits[0]?.displayValue).toBe(
       'transformed - mock-audit-slug',
     );
+  });
+
+  it('should throw if transform throws', async () => {
+    const runnerCfgWithErrorTransform = {
+      ...validRunnerCfg,
+      outputTransform: () => {
+        return Promise.reject(new Error('transform mock error'));
+      },
+    };
+
+    await expect(
+      executeProcessRunner(runnerCfgWithErrorTransform),
+    ).rejects.toThrow('transform mock error');
   });
 });

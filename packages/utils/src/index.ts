@@ -43,3 +43,4 @@ export {
   slugify,
 } from './lib/transformation';
 export { NEW_LINE } from './lib/md';
+export { Observer } from './lib/observer';

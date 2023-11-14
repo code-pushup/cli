@@ -1,18 +1,11 @@
-import {
-  AuditOutputs,
-  EsmObserver,
-  EsmRunnerConfig,
-} from '@code-pushup/models';
-import { calcDuration } from '@code-pushup/utils';
+import { AuditOutputs, EsmRunnerConfig } from '@code-pushup/models';
+import { Observer, calcDuration } from '@code-pushup/utils';
 import { RunnerResult } from './runner';
 
-export type EsmRunnerProcessConfig = {
-  runner: EsmRunnerConfig;
-  observer?: EsmObserver;
-};
-
-export function runnerEsm(cfg: EsmRunnerProcessConfig): Promise<RunnerResult> {
-  const { observer, runner } = cfg;
+export function executeEsmRunner(
+  runner: EsmRunnerConfig,
+  observer?: Observer,
+): Promise<RunnerResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 

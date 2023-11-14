@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import { Observer } from './observer';
 import { calcDuration } from './report';
 
 /**
@@ -97,10 +98,8 @@ export type ProcessConfig = {
  *  next: (stdout) => console.log(stdout)
  *  }
  */
-export type ProcessObserver = {
-  next?: (stdout: string) => void;
+export type ProcessObserver = Omit<Observer, 'error'> & {
   error?: (error: ProcessError) => void;
-  complete?: () => void;
 };
 
 /**

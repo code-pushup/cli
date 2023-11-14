@@ -26,7 +26,7 @@ export const runnerConfigSchema = z.object(
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
 export const esmObserver = z.object({
-  next: z.function().args(z.unknown()).returns(z.void()),
+  next: z.function().args(z.unknown()).returns(z.void()).optional(),
 });
 export type EsmObserver = z.infer<typeof esmObserver>;
 
