@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   AuditOutputs,
+  OnProgress,
   PluginConfig,
   RunnerConfig,
+  RunnerFunction,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { auditReport, pluginConfig } from '@code-pushup/models/testing';
-import { Observer } from '@code-pushup/utils';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import {
   PluginOutputMissingAuditError,
@@ -43,7 +44,7 @@ describe('executePlugin', () => {
     );
   });
 
-  it('should work with valid process runner config', async () => {
+  it('should work with valid runner config', async () => {
     const runnerConfig = validPluginCfg.runner as RunnerConfig;
     const pluginCfg: PluginConfig = {
       ...validPluginCfg,
@@ -58,9 +59,9 @@ describe('executePlugin', () => {
     expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
-  it('should work with valid esm runner config', async () => {
-    const esmRunnerConfig = (observer?: Observer) => {
-      observer?.next?.('update');
+  it('should work with valid runner function', async () => {
+    const runnerFunction = (onProgress?: OnProgress) => {
+      onProgress?.('update');
       return Promise.resolve([
         { slug: 'mock-audit-slug', score: 0, value: 0 },
       ] satisfies AuditOutputs);
@@ -68,18 +69,28 @@ describe('executePlugin', () => {
 
     const pluginCfg: PluginConfig = {
       ...validPluginCfg,
-      runner: esmRunnerConfig,
+      runner: runnerFunction,
     };
     const pluginResult = await executePlugin(pluginCfg);
     expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
     expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
   });
 
-  it('should throw if invalid runnerOutput is produced with transform', async () => {
+  it('should throw with invalid runner config', async () => {
     const pluginCfg: PluginConfig = {
       ...validPluginCfg,
-      runner: (observer?: Observer) => {
-        observer?.next?.('update');
+      runner: '' as unknown as RunnerFunction,
+    };
+    const pluginResult = await executePlugin(pluginCfg);
+    expect(pluginResult.audits[0]?.slug).toBe('mock-audit-slug');
+    expect(() => auditOutputsSchema.parse(pluginResult.audits)).not.toThrow();
+  });
+
+  it('should throw if invalid runnerOutput', async () => {
+    const pluginCfg: PluginConfig = {
+      ...validPluginCfg,
+      runner: (onProgress?: OnProgress) => {
+        onProgress?.('update');
 
         return Promise.resolve([
           { slug: '-mock-audit-slug', score: 0, value: 0 },
