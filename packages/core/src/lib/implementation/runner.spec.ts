@@ -71,9 +71,9 @@ describe('executeEsmRunner', () => {
     const nextSpy = vi.fn();
     await expect(
       executeEsmRunner(
-        () => Promise.reject(new Error('plugin exex mock error')),
+        () => Promise.reject(new Error('plugin exec mock error')),
         { next: nextSpy },
       ),
-    ).rejects.toThrow('plugin exex mock error');
+    ).rejects.toThrow('plugin exec mock error');
   });
 });
