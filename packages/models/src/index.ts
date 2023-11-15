@@ -17,7 +17,6 @@ export {
   persistConfigSchema,
 } from './lib/persist-config';
 export { PluginConfig, pluginConfigSchema } from './lib/plugin-config';
-export { RunnerConfig } from './lib/plugin-config-runner';
 export {
   auditSchema,
   Audit,
@@ -43,7 +42,11 @@ export {
   reportSchema,
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
+export { materialIconSchema } from './lib/implementation/schemas';
 export {
-  materialIconSchema,
-  filePathSchema,
-} from './lib/implementation/schemas';
+  onProgressSchema,
+  OnProgress,
+  RunnerFunction,
+  runnerConfigSchema,
+  RunnerConfig,
+} from './lib/plugin-config-runner';
