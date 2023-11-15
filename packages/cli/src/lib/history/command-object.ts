@@ -1,7 +1,7 @@
 import chalk from 'chalk';
+import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { CommandModule } from 'yargs';
-import { writeFile } from 'fs/promises';
 import {
   CollectAndPersistReportsOptions,
   UploadOptions,
