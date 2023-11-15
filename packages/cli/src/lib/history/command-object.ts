@@ -49,6 +49,7 @@ export function yargsHistoryCommandObject() {
       for (const commit of commitsToAudit) {
         const start = startDuration();
         const result: Record<string, unknown> = {
+          commit,
           start,
         };
         progress.incrementInSteps(commitsToAudit.length);
