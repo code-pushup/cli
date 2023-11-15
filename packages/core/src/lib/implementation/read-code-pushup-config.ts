@@ -1,9 +1,5 @@
 import { stat } from 'fs/promises';
-import {
-  CoreConfig,
-  coreConfigSchema,
-  filePathSchema,
-} from '@code-pushup/models';
+import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
 import { importEsmModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
@@ -13,16 +9,18 @@ export class ConfigPathError extends Error {
 }
 
 export async function readCodePushupConfig(filepath: string) {
-  const validFilepath = filePathSchema('config file path').parse(filepath);
-  const isFile = (await stat(validFilepath)).isFile();
+  if (!filepath.length) {
+    throw new Error('No filepath provided');
+  }
 
+  const isFile = (await stat(filepath)).isFile();
   if (!isFile) {
-    throw new ConfigPathError(validFilepath);
+    throw new ConfigPathError(filepath);
   }
 
   return importEsmModule<CoreConfig>(
     {
-      filepath: validFilepath,
+      filepath: filepath,
     },
     coreConfigSchema.parse,
   );

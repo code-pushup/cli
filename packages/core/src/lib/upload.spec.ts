@@ -8,7 +8,7 @@ import {
   report,
   uploadConfig,
 } from '@code-pushup/models/testing';
-import { upload } from './upload';
+import { UploadOptions, upload } from './upload';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {
@@ -49,7 +49,9 @@ describe('uploadToPortal', () => {
   });
 
   it('should work', async () => {
-    const cfg = {
+    const cfg: UploadOptions = {
+      verbose: false,
+      progress: false,
       upload: uploadConfig({
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',

@@ -1,8 +1,8 @@
 import { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
 import { name, version } from '../../../package.json';
+import { GlobalOptions } from '../types';
 import { executePlugins } from './execute-plugin';
-import { GlobalOptions } from './global-options';
 
 export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> &
   GlobalOptions;
