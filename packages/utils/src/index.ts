@@ -8,7 +8,6 @@ export {
   objectToCliArgs,
 } from './lib/execute-process';
 export { git, getLatestCommit } from './lib/git';
-export { importEsmModule } from './lib/load-file';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
@@ -31,6 +30,7 @@ export {
   FileResult,
   MultipleFileResults,
   logMultipleFileResults,
+  importEsmModule,
 } from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
 export {
