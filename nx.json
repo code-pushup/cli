@@ -37,6 +37,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "commitMessageFormat": "release(${projectName}): ${version}",
+        "tagPrefix": "{projectName}@",
         "preset": {
           "name": "conventionalcommits",
           "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
