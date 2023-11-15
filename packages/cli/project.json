@@ -19,7 +19,14 @@
       "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
-    "version": {},
+    "version": {
+      "postTargets": ["cli:github"]
+    },
+    "github": {
+      "options": {
+        "notesFile": "./packages/cli/CHANGELOG.md"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

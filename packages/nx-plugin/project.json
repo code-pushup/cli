@@ -36,7 +36,12 @@
         ]
       }
     },
-    "version": {},
+    "version": { "postTargets": ["nx-plugin:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/nx-plugin/CHANGELOG.md"
+      }
+    },
     "exec:init": {
       "command": "nx g ./dist/packages/nx-plugin:init",
       "dependsOn": ["build"]

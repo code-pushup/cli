@@ -50,6 +50,12 @@
           ]
         }
       }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}"
+      }
     }
   },
   "namedInputs": {

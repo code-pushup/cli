@@ -15,7 +15,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": {},
+    "version": { "postTargets": ["core:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/core/CHANGELOG.md"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
