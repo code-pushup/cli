@@ -1,0 +1,41 @@
+name: Version
+
+on:
+
+env:
+  NX_NON_NATIVE_HASHER: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    name: Audit
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --omit=optional
+
+  version:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Version code
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Version affected projects
+        run: npx nx affected -t version --parallel=3
