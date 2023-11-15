@@ -85,22 +85,22 @@ export type ProcessConfig = {
 };
 
 /**
- * Process observer object. Contains the next, error and complete function.
+ * Process observer object. Contains the onStdout, error and complete function.
  * @category Types
  * @public
- * @property {function} next - The next function of the observer (optional).
- * @property {function} error - The error function of the observer (optional).
- * @property {function} complete - The complete function of the observer (optional).
+ * @property {function} onStdout - The onStdout function of the observer (optional).
+ * @property {function} onError - The error function of the observer (optional).
+ * @property {function} onComplete - The complete function of the observer (optional).
  *
  * @example
  * const observer = {
- *  next: (stdout) => console.log(stdout)
+ *  onStdout: (stdout) => console.log(stdout)
  *  }
  */
 export type ProcessObserver = {
-  next?: (stdout: string) => void;
-  error?: (error: ProcessError) => void;
-  complete?: () => void;
+  onStdout?: (stdout: string) => void;
+  onError?: (error: ProcessError) => void;
+  onComplete?: () => void;
 };
 
 /**
@@ -121,7 +121,7 @@ export type ProcessObserver = {
  *    command: 'node',
  *    args: ['download-data.js'],
  *    observer: {
- *      next: updateProgress,
+ *      onStdout: updateProgress,
  *      error: handleError,
  *      complete: cleanLogs,
  *    }
@@ -133,7 +133,7 @@ export type ProcessObserver = {
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { observer, cwd } = cfg;
-  const { next, error, complete } = observer || {};
+  const { onStdout, onError, onComplete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
 
@@ -144,7 +144,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
 
     process.stdout.on('data', data => {
       stdout += data.toString();
-      next?.(data);
+      onStdout?.(data);
     });
 
     process.stderr.on('data', data => {
@@ -158,11 +158,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     process.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
       if (code === 0) {
-        complete?.();
+        onComplete?.();
         resolve({ code, stdout, stderr, ...timings });
       } else {
         const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
-        error?.(errorMsg);
+        onError?.(errorMsg);
         reject(errorMsg);
       }
     });

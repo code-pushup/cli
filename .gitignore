@@ -2,6 +2,8 @@
 
 .env
 
+.nx
+
 # compiled output
 dist
 tmp
@@ -42,5 +44,5 @@ testem.log
 Thumbs.db
 
 # generated Code PushUp reports
-/.code-pushup
 .nx/cache
+
