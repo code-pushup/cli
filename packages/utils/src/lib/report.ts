@@ -107,9 +107,8 @@ export function formatDuration(duration: number): string {
   return `${(duration / 1000).toFixed(2)} s`;
 }
 
-
 export function startDuration(): number {
-  // @TOSO mark with symbol to detact Date.now vs perofmance.now
+  // @TODO mark with symbol to detact Date.now vs perofmance.now
   return performance.now();
 }
 

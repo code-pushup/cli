@@ -5,12 +5,13 @@ import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { Report } from '@code-pushup/models';
 import {
   calcDuration,
-  getCurrentBranchOrTag, getProgressBar,
+  getCurrentBranchOrTag,
+  getProgressBar,
   git,
-  guardAgainstDirtyRepo, startDuration,
+  guardAgainstDirtyRepo,
+  startDuration,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
 
@@ -40,9 +41,10 @@ export function yargsHistoryCommandObject() {
         // crawl from oldest to newest
         .reverse();
 
-      const reports: Report[] = [];
+      const reports: unknown[] = [];
 
       const progress = getProgressBar('CurrentCommit');
+      // eslint-disable-next-line functional/no-loop-statements
       for (const commit of commitsToAudit) {
         progress.updateTitle(commit);
         progress.incrementInSteps(commitsToAudit.length);
@@ -52,7 +54,7 @@ export function yargsHistoryCommandObject() {
         console.log('Generating History:', activeBranch);
 
         const start = startDuration();
-        const report = await collectAndPersistReports({
+        await collectAndPersistReports({
           ...config,
           persist: {
             ...config.persist,
@@ -62,10 +64,9 @@ export function yargsHistoryCommandObject() {
         });
         reports.push({
           [join(config.persist.filename)]: {
-            duration: calcDuration(start)
+            duration: calcDuration(start),
           },
-        } as any);
-
+        });
       }
       progress.endProgress('History generated!');
 
