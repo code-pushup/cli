@@ -10,7 +10,6 @@ export {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from './lib/core-config';
-export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {
   Format,
   PersistConfig,

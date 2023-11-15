@@ -1,18 +1,20 @@
-import { Format, GlobalOptions } from '@code-pushup/models';
+import { GlobalOptions } from '@code-pushup/core';
+import { Format } from '@code-pushup/models';
 
-// type GeneralCliOnlyOptions = { progress: boolean }; // @TODO consider progress as CLI only options
-export type GeneralCliOptions = GlobalOptions;
+export type GeneralCliOptions = { config: string } & GlobalOptions;
 
-export type CoreConfigCliOptions = {
+export type PersistConfigCliOptions = {
   'persist.outputDir': string;
   'persist.filename': string;
   'persist.format': Format;
+};
+
+export type UploadConfigCliOptions = {
   'upload.organization': string;
   'upload.project': string;
   'upload.apiKey': string;
   'upload.server': string;
 };
-export type CommandBase = CoreConfigCliOptions & GlobalOptions;
-export type ArgsCliObj = Partial<GeneralCliOptions> & {
-  format?: Format | Format[];
-};
+
+export type CoreConfigCliOptions = PersistConfigCliOptions &
+  UploadConfigCliOptions;

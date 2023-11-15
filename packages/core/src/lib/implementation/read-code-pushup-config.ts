@@ -9,8 +9,11 @@ export class ConfigPathError extends Error {
 }
 
 export async function readCodePushupConfig(filepath: string) {
-  const isFile = (await stat(filepath)).isFile();
+  if (!filepath.length) {
+    throw new Error('No filepath provided');
+  }
 
+  const isFile = (await stat(filepath)).isFile();
   if (!isFile) {
     throw new ConfigPathError(filepath);
   }

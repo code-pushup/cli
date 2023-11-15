@@ -6,8 +6,6 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
-import { CoreConfig } from '@code-pushup/models';
-import { GeneralCliOptions } from './implementation/model';
 import { logErrorBeforeThrow } from './implementation/utils';
 
 /**
@@ -18,7 +16,7 @@ import { logErrorBeforeThrow } from './implementation/utils';
  *   // bootstrap CLI; format arguments
  *   .argv;
  */
-export function yargsCli(
+export function yargsCli<T = unknown>(
   argv: string[],
   cfg: {
     usageMessage?: string;
@@ -30,7 +28,7 @@ export function yargsCli(
       applyBeforeValidation?: boolean;
     }[];
   },
-): Argv<CoreConfig & GeneralCliOptions> {
+): Argv<T> {
   const { usageMessage, scriptName } = cfg;
   let { commands, options, middlewares } = cfg;
   commands = Array.isArray(commands) ? commands : [];
@@ -87,5 +85,5 @@ export function yargsCli(
   });
 
   // return CLI object
-  return cli as unknown as Argv<CoreConfig & GeneralCliOptions>;
+  return cli as unknown as Argv<T>;
 }
