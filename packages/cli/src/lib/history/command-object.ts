@@ -31,6 +31,8 @@ export function yargsHistoryCommandObject() {
 
       // await guardAgainstDirtyRepo();
 
+      git.checkout('main');
+
       const current = await getCurrentBranchOrTag();
       console.log('Current Branch:', current);
 
