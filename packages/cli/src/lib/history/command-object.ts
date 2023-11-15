@@ -59,7 +59,7 @@ export function yargsHistoryCommandObject() {
           },
         });
         reports.push({
-          report: join(config.persist.outputDir, config.persist.filename),
+          report: join(config.persist.filename),
         } as any);
 
       }
