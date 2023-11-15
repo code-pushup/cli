@@ -107,6 +107,12 @@ export function formatDuration(duration: number): string {
   return `${(duration / 1000).toFixed(2)} s`;
 }
 
+
+export function startDuration(): number {
+  // @TOSO mark with symbol to detact Date.now vs perofmance.now
+  return performance.now();
+}
+
 export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);

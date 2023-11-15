@@ -10,7 +10,7 @@ import {
   calcDuration,
   getCurrentBranchOrTag, getProgressBar,
   git,
-  guardAgainstDirtyRepo,
+  guardAgainstDirtyRepo, startDuration,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
 
@@ -52,7 +52,7 @@ export function yargsHistoryCommandObject() {
         const activeBranch = await getCurrentBranchOrTag();
         console.log('Generating History:', activeBranch);
 
-        const start = Date.now();
+        const start = startDuration();
         const report = await collectAndPersistReports({
           ...config,
           persist: {

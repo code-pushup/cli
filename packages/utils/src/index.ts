@@ -21,6 +21,7 @@ export {
   FOOTER_PREFIX,
   README_LINK,
   calcDuration,
+  startDuration,
   compareIssueSeverity,
   formatBytes,
   formatCount,
