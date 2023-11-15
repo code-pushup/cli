@@ -1,10 +1,17 @@
+import chalk from 'chalk';
+import { join } from 'path';
 import { CommandModule } from 'yargs';
+import {
+  CollectAndPersistReportsOptions,
+  collectAndPersistReports,
+} from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
 import {
   getCurrentBranchOrTag,
   git,
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
+import { CLI_NAME } from '../cli';
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -12,8 +19,9 @@ export function yargsHistoryCommandObject() {
     command,
     describe: 'Create history of commits',
     handler: async args => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _, $0, ...config } = args;
+      console.log(chalk.bold(CLI_NAME));
+      console.log(chalk.gray(`Run ${command}...`));
+      const config = args as unknown as CollectAndPersistReportsOptions;
 
       await guardAgainstDirtyRepo();
 
@@ -37,10 +45,19 @@ export function yargsHistoryCommandObject() {
         const activeBranch = await getCurrentBranchOrTag();
         console.log('Current Branch:', activeBranch);
 
-        const report = { activeBranch }; // await yargsAutorunCommandObject().handler(config as any);
-        reports.push(report as any as Report);
+        const report = await collectAndPersistReports({
+          ...config,
+          persist: {
+            ...config.persist,
+            filename: `${commit}-report`,
+          },
+        });
+        reports.push({
+          report: join(config.persist.outputDir, config.persist.filename),
+        } as any);
 
         // ensureCleanGit
+        await guardAgainstDirtyRepo();
       }
 
       await git.checkout(current);
