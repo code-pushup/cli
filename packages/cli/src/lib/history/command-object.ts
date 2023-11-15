@@ -46,7 +46,7 @@ export function yargsHistoryCommandObject() {
 
       const reports: unknown[] = [];
 
-      const progress = getProgressBar('CurrentCommit');
+      const progress = getProgressBar('History');
       // eslint-disable-next-line functional/no-loop-statements
       for (const commit of commitsToAudit) {
         const start = startDuration();
@@ -75,7 +75,7 @@ export function yargsHistoryCommandObject() {
           console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
         } else {
           progress.updateTitle(`Upload ${commit}`);
-          // await upload(commitConfig as unknown as UploadOptions);
+          await upload(commitConfig as unknown as UploadOptions);
           result['upload'] = new Date().toISOString();
         }
 
