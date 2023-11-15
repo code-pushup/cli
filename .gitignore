@@ -2,6 +2,7 @@
 
 .env
 
+# workspace caches
 .nx
 
 # compiled output
