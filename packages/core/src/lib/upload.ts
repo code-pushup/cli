@@ -22,7 +22,7 @@ export async function upload(
   const { outputDir, filename } = options.persist;
   const report: Report = await loadReport({
     outputDir,
-    filename: filename,
+    filename,
     format: 'json',
   });
   const commitData = await getLatestCommit();

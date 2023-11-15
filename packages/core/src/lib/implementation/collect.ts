@@ -4,10 +4,7 @@ import { name, version } from '../../../package.json';
 import { executePlugins } from './execute-plugin';
 import { GlobalOptions } from './global-options';
 
-export type CollectOptions = Pick<
-  CoreConfig,
-  'plugins' | 'categories' | 'upload'
-> &
+export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> &
   GlobalOptions;
 
 /**
