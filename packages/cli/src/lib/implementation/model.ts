@@ -1,7 +1,16 @@
-import { Format, GlobalOptions } from '@code-pushup/models';
+import { z } from 'zod';
+import { globalOptionsSchema } from '@code-pushup/core';
+import { Format, filePathSchema } from '@code-pushup/models';
 
-// type GeneralCliOnlyOptions = { progress: boolean }; // @TODO consider progress as CLI only options
-export type GeneralCliOptions = GlobalOptions;
+export const generalCliOptions = z
+  .object({
+    config: filePathSchema(
+      "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
+    ).default('code-pushup.config.js'),
+  })
+  .merge(globalOptionsSchema);
+
+export type GeneralCliOptions = z.infer<typeof generalCliOptions>;
 
 export type CoreConfigCliOptions = {
   'persist.outputDir': string;
@@ -11,8 +20,4 @@ export type CoreConfigCliOptions = {
   'upload.project': string;
   'upload.apiKey': string;
   'upload.server': string;
-};
-export type CommandBase = CoreConfigCliOptions & GlobalOptions;
-export type ArgsCliObj = Partial<GeneralCliOptions> & {
-  format?: Format | Format[];
 };

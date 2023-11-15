@@ -10,6 +10,10 @@ export {
 export { collect, CollectOptions } from './lib/implementation/collect';
 export { upload, UploadOptions } from './lib/upload';
 export {
+  GlobalOptions,
+  globalOptionsSchema,
+} from './lib/implementation/global-options';
+export {
   collectAndPersistReports,
   CollectAndPersistReportsOptions,
 } from './lib/collect-and-persist';

@@ -10,7 +10,6 @@ export {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from './lib/core-config';
-export { GlobalOptions, globalOptionsSchema } from './lib/global-options';
 export {
   Format,
   PersistConfig,
@@ -44,4 +43,7 @@ export {
   reportSchema,
 } from './lib/report';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
-export { materialIconSchema } from './lib/implementation/schemas';
+export {
+  materialIconSchema,
+  filePathSchema,
+} from './lib/implementation/schemas';

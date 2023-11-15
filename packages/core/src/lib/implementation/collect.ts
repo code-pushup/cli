@@ -1,10 +1,14 @@
-import { CoreConfig, GlobalOptions, Report } from '@code-pushup/models';
+import { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration } from '@code-pushup/utils';
 import { name, version } from '../../../package.json';
 import { executePlugins } from './execute-plugin';
+import { GlobalOptions } from './global-options';
 
-export type CollectOptions = Pick<GlobalOptions, 'verbose' | 'progress'> &
-  Pick<CoreConfig, 'plugins' | 'categories' | 'upload'>;
+export type CollectOptions = Pick<
+  CoreConfig,
+  'plugins' | 'categories' | 'upload'
+> &
+  GlobalOptions;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object

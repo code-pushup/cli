@@ -1,9 +1,11 @@
 import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, Report } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
+import { GlobalOptions } from './implementation/global-options';
 import { jsonToGql } from './implementation/json-to-gql';
 
-export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
+export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'> &
+  GlobalOptions;
 
 /**
  * Uploads collected audits to the portal
