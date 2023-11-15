@@ -18,7 +18,7 @@
       "files": ["*.json"],
       "parser": "jsonc-eslint-parser",
       "rules": {
-        "@typescript-eslint/no-floating-promises": "warn"
+        "@nx/dependency-checks": ["error"]
       }
     }
   ]
