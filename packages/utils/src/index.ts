@@ -7,7 +7,14 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, getLatestCommit } from './lib/git';
+export {
+  git,
+  getLatestCommit,
+  getCurrentBranchOrTag,
+  branchHasChanges,
+  guardAgainstDirtyRepo,
+  GitTag,
+} from './lib/git';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,

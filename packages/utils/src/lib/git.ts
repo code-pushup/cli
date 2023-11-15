@@ -7,6 +7,12 @@ export type CommitData = {
   date: string;
 };
 
+export interface GitTag {
+  name: string;
+  semver: string;
+  date: string;
+}
+
 export const git = simpleGit();
 
 export async function getLatestCommit() {
@@ -16,4 +22,26 @@ export async function getLatestCommit() {
     format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
   });
   return log?.latest;
+}
+
+export async function branchHasChanges(): Promise<boolean> {
+  return await git.status(['-s']).then(r => Boolean(r.files.length));
+}
+
+export async function guardAgainstDirtyRepo() {
+  const isDirty = await branchHasChanges();
+  if (isDirty) {
+    throw new Error(`
+        Repository should be clean before we you can proceed.
+        Commit your local changes or stash them.
+      `);
+  }
+}
+
+export async function getCurrentBranchOrTag() {
+  return (
+    (await git.branch().then(r => r.current)) ||
+    // @TODO replace with simple git
+    (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
+  );
 }

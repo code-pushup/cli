@@ -48,6 +48,13 @@
       },
       "dependsOn": ["build"]
     },
+    "run-history": {
+      "command": "npx ../../dist/packages/cli history --persist.format=stdout --persist.format=md",
+      "options": {
+        "cwd": "examples/react-todos-app"
+      },
+      "dependsOn": ["build"]
+    },
     "run-print-config": {
       "command": "npx ../../dist/packages/cli print-config",
       "options": {
