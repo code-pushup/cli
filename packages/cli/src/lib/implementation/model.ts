@@ -1,23 +1,20 @@
-import { z } from 'zod';
-import { globalOptionsSchema } from '@code-pushup/core';
-import { Format, filePathSchema } from '@code-pushup/models';
+import { GlobalOptions } from '@code-pushup/core';
+import { Format } from '@code-pushup/models';
 
-export const generalCliOptions = z
-  .object({
-    config: filePathSchema(
-      "Path to config file in format `ts` or `mjs`. defaults to 'code-pushup.config.js'",
-    ).default('code-pushup.config.js'),
-  })
-  .merge(globalOptionsSchema);
+export type GeneralCliOptions = { config: string } & GlobalOptions;
 
-export type GeneralCliOptions = z.infer<typeof generalCliOptions>;
-
-export type CoreConfigCliOptions = {
+export type PersistConfigCliOptions = {
   'persist.outputDir': string;
   'persist.filename': string;
   'persist.format': Format;
+};
+
+export type UploadConfigCliOptions = {
   'upload.organization': string;
   'upload.project': string;
   'upload.apiKey': string;
   'upload.server': string;
 };
+
+export type CoreConfigCliOptions = PersistConfigCliOptions &
+  UploadConfigCliOptions;
