@@ -9,6 +9,7 @@ import {
 import { CLI_NAME } from '../cli';
 
 type AutorunOptions = CollectOptions & UploadOptions;
+
 export function yargsAutorunCommandObject() {
   const command = 'autorun';
   return {
