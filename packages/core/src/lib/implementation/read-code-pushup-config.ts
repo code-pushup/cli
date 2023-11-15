@@ -20,7 +20,7 @@ export async function readCodePushupConfig(filepath: string) {
 
   return importEsmModule<CoreConfig>(
     {
-      filepath: filepath,
+      filepath,
     },
     coreConfigSchema.parse,
   );
