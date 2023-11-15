@@ -29,8 +29,7 @@ export function yargsHistoryCommandObject() {
       console.log(chalk.gray(`Run ${command}...`));
       const config = args as unknown as CollectAndPersistReportsOptions;
 
-      await git.stash();
-      await guardAgainstDirtyRepo();
+      // await guardAgainstDirtyRepo();
 
       const current = await getCurrentBranchOrTag();
       console.log('Current Branch:', current);
