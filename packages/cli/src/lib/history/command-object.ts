@@ -7,6 +7,7 @@ import {
 } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
 import {
+  calcDuration,
   getCurrentBranchOrTag, getProgressBar,
   git,
   guardAgainstDirtyRepo,
@@ -35,6 +36,7 @@ export function yargsHistoryCommandObject() {
       console.log('All Log:', log.all.length);
 
       const commitsToAudit = log.all
+       // .splice(0,3)
         .map(({ hash }) => hash)
         // crawl from oldest to newest
         .reverse();
@@ -43,13 +45,14 @@ export function yargsHistoryCommandObject() {
 
       const progress = getProgressBar('CurrentCommit');
       for (const commit of commitsToAudit) {
-        progress.updateTitle('Commit: ' + commit);
+        progress.updateTitle(commit);
         progress.incrementInSteps(commitsToAudit.length);
 
         await git.checkout(commit);
         const activeBranch = await getCurrentBranchOrTag();
-        console.log('Current Branch:', activeBranch);
+        console.log('Generating History:', activeBranch);
 
+        const start = Date.now();
         const report = await collectAndPersistReports({
           ...config,
           persist: {
@@ -59,11 +62,13 @@ export function yargsHistoryCommandObject() {
           },
         });
         reports.push({
-          report: join(config.persist.filename),
+          [join(config.persist.filename)]: {
+            duration: calcDuration(start)
+          },
         } as any);
 
       }
-      progress.endProgress('Done!');
+      progress.endProgress('History generated!');
 
       await git.checkout(current);
       console.log('Current Branch:', current);
