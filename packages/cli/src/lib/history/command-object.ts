@@ -49,6 +49,7 @@ export function yargsHistoryCommandObject() {
           ...config,
           persist: {
             ...config.persist,
+            format: [],
             filename: `${commit}-report`,
           },
         });
@@ -56,7 +57,7 @@ export function yargsHistoryCommandObject() {
           report: join(config.persist.outputDir, config.persist.filename),
         } as any);
 
-        // await guardAgainstDirtyRepo();
+        await guardAgainstDirtyRepo();
       }
 
       await git.checkout(current);
