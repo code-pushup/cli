@@ -3,8 +3,11 @@ import { join } from 'path';
 import { CommandModule } from 'yargs';
 import {
   CollectAndPersistReportsOptions,
+  UploadOptions,
   collectAndPersistReports,
+  upload,
 } from '@code-pushup/core';
+import { CoreConfig } from '@code-pushup/models';
 import {
   calcDuration,
   getCurrentBranchOrTag,
@@ -30,9 +33,6 @@ export function yargsHistoryCommandObject() {
       const current = await getCurrentBranchOrTag();
       console.log('Current Branch:', current);
 
-      const tags = await git.tags();
-      console.log('Tags:', tags.all);
-
       const log = await git.log();
       console.log('All Log:', log.all.length);
 
@@ -46,26 +46,37 @@ export function yargsHistoryCommandObject() {
       const progress = getProgressBar('CurrentCommit');
       // eslint-disable-next-line functional/no-loop-statements
       for (const commit of commitsToAudit) {
-        progress.updateTitle(commit);
+        const start = startDuration();
+        const result: Record<string, unknown> = {
+          start,
+        };
         progress.incrementInSteps(commitsToAudit.length);
 
         await git.checkout(commit);
-        const activeBranch = await getCurrentBranchOrTag();
-        console.log('Generating History:', activeBranch);
-
-        const start = startDuration();
-        await collectAndPersistReports({
+        const commitConfig = {
           ...config,
           persist: {
             ...config.persist,
             format: [],
             filename: `${commit}-report`,
           },
-        });
+        } satisfies CoreConfig;
+        progress.updateTitle(`Collect ${commit}`);
+        await collectAndPersistReports(
+          commitConfig as unknown as CollectAndPersistReportsOptions,
+        );
+        result['duration'] = calcDuration(start);
+
+        if (!(commitConfig as unknown as UploadOptions)?.upload) {
+          console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
+        } else {
+          progress.updateTitle(`Upload ${commit}`);
+          await upload(commitConfig as unknown as UploadOptions);
+          result['upload'] = new Date().toISOString();
+        }
+
         reports.push({
-          [join(config.persist.filename)]: {
-            duration: calcDuration(start),
-          },
+          [join(config.persist.filename)]: result,
         });
       }
       progress.endProgress('History generated!');
