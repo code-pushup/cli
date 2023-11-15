@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { join } from 'path';
 import { CommandModule } from 'yargs';
+import { writeFile } from 'fs/promises';
 import {
   CollectAndPersistReportsOptions,
   UploadOptions,
@@ -84,6 +85,7 @@ export function yargsHistoryCommandObject() {
       await git.checkout(current);
       console.log('Current Branch:', current);
       console.log('Reports:', reports);
+      await writeFile('history.json', JSON.stringify(reports, null, 2));
     },
   } satisfies CommandModule;
 }
