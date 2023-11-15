@@ -56,8 +56,7 @@ export function yargsHistoryCommandObject() {
           report: join(config.persist.outputDir, config.persist.filename),
         } as any);
 
-        // ensureCleanGit
-        await guardAgainstDirtyRepo();
+        // await guardAgainstDirtyRepo();
       }
 
       await git.checkout(current);
