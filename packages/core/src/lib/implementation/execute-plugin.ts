@@ -1,20 +1,16 @@
 import chalk from 'chalk';
-import { join } from 'path';
 import {
   Audit,
   AuditOutput,
   AuditOutputs,
   AuditReport,
+  OnProgress,
   PluginConfig,
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import {
-  ProcessObserver,
-  executeProcess,
-  getProgressBar,
-  readJsonFile,
-} from '@code-pushup/utils';
+import { getProgressBar } from '@code-pushup/utils';
+import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
 /**
  * Error thrown when plugin output is invalid.
@@ -30,7 +26,7 @@ export class PluginOutputMissingAuditError extends Error {
  *
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
- * @param observer - process {@link ProcessObserver}
+ * @param onProgress - progress handler {@link OnProgress}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
  * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
@@ -49,48 +45,30 @@ export class PluginOutputMissingAuditError extends Error {
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
-  observer?: ProcessObserver,
+  onProgress?: OnProgress,
 ): Promise<PluginReport> {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    runner: onlyUsedForRestingPluginMeta,
+    runner,
     audits: pluginConfigAudits,
     description,
     docsUrl,
     groups,
     ...pluginMeta
   } = pluginConfig;
-  const { args, command } = pluginConfig.runner;
 
-  const { date, duration } = await executeProcess({
-    command,
-    args,
-    observer,
-  });
-  const executionMeta = { date, duration };
-
-  const processOutputPath = join(process.cwd(), pluginConfig.runner.outputFile);
-
-  // read process output from file system and parse it
-  let unknownAuditOutputs = await readJsonFile<Record<string, unknown>[]>(
-    processOutputPath,
-  );
-
-  // parse transform unknownAuditOutputs to auditOutputs
-  if (pluginConfig.runner?.outputTransform) {
-    unknownAuditOutputs = await pluginConfig.runner.outputTransform(
-      unknownAuditOutputs,
-    );
-  }
-
-  // validate audit outputs
-  const auditOutputs = auditOutputsSchema.parse(unknownAuditOutputs);
+  // execute plugin runner
+  const runnerResult =
+    typeof runner === 'object'
+      ? await executeRunnerConfig(runner, onProgress)
+      : await executeRunnerFunction(runner, onProgress);
+  const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   // validate auditOutputs
+  const auditOutputs = auditOutputsSchema.parse(unvalidatedAuditOutputs);
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   // enrich `AuditOutputs` to `AuditReport`
-  const audits: AuditReport[] = auditOutputs.map(
+  const auditReports: AuditReport[] = auditOutputs.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(
@@ -99,10 +77,11 @@ export async function executePlugin(
     }),
   );
 
+  // create plugin report
   return {
     ...pluginMeta,
     ...executionMeta,
-    audits,
+    audits: auditReports,
     ...(description && { description }),
     ...(docsUrl && { docsUrl }),
     ...(groups && { groups }),
