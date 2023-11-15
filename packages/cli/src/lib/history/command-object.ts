@@ -7,7 +7,7 @@ import {
 } from '@code-pushup/core';
 import { Report } from '@code-pushup/models';
 import {
-  getCurrentBranchOrTag,
+  getCurrentBranchOrTag, getProgressBar,
   git,
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
@@ -40,7 +40,12 @@ export function yargsHistoryCommandObject() {
         .reverse();
 
       const reports: Report[] = [];
+
+      const progress = getProgressBar('CurrentCommit');
       for (const commit of commitsToAudit) {
+        progress.updateTitle('Commit: ' + commit);
+        progress.incrementInSteps(commitsToAudit.length);
+
         await git.checkout(commit);
         const activeBranch = await getCurrentBranchOrTag();
         console.log('Current Branch:', activeBranch);
@@ -57,8 +62,8 @@ export function yargsHistoryCommandObject() {
           report: join(config.persist.outputDir, config.persist.filename),
         } as any);
 
-        await guardAgainstDirtyRepo();
       }
+      progress.endProgress('Done!');
 
       await git.checkout(current);
       console.log('Current Branch:', current);
