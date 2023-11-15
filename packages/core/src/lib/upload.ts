@@ -2,8 +2,10 @@ import { uploadToPortal } from '@code-pushup/portal-client';
 import { CoreConfig, Report } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
+import { GlobalOptions } from './types';
 
-export type UploadOptions = Pick<CoreConfig, 'upload' | 'persist'>;
+export type UploadOptions = Required<Pick<CoreConfig, 'upload' | 'persist'>> &
+  GlobalOptions;
 
 /**
  * Uploads collected audits to the portal
@@ -20,7 +22,7 @@ export async function upload(
   const { outputDir, filename } = options.persist;
   const report: Report = await loadReport({
     outputDir,
-    filename: filename,
+    filename,
     format: 'json',
   });
   const commitData = await getLatestCommit();

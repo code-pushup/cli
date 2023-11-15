@@ -1,9 +1,14 @@
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { collectAndPersistReports, upload } from '@code-pushup/core';
-import { CoreConfig } from '@code-pushup/models';
+import {
+  CollectOptions,
+  UploadOptions,
+  collectAndPersistReports,
+  upload,
+} from '@code-pushup/core';
 import { CLI_NAME } from '../cli';
-import { GeneralCliOptions } from '../implementation/model';
+
+type AutorunOptions = CollectOptions & UploadOptions;
 
 export function yargsAutorunCommandObject() {
   const command = 'autorun';
@@ -13,7 +18,7 @@ export function yargsAutorunCommandObject() {
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       console.log(chalk.bold(CLI_NAME));
       console.log(chalk.gray(`Run ${command}...`));
-      const options = args as unknown as CoreConfig & GeneralCliOptions;
+      const options = args as unknown as AutorunOptions;
       await collectAndPersistReports(options);
       if (!options.upload) {
         console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose

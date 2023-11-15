@@ -1,5 +1,12 @@
-function groupRefToScore(audits) {
-  return ref => {
+import { AuditGroupRef, CategoryRef, Report } from '@code-pushup/models';
+import { ScoredReport } from '../../src';
+import {
+  EnrichedAuditReport,
+  EnrichedScoredAuditGroup,
+} from '../../src/lib/scoring';
+
+function groupRefToScore(audits: EnrichedAuditReport[]) {
+  return (ref: AuditGroupRef) => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
       throw new Error(
@@ -10,13 +17,16 @@ function groupRefToScore(audits) {
   };
 }
 
-function categoryRefToScore(audits, groups) {
-  return ref => {
+function categoryRefToScore(
+  audits: EnrichedAuditReport[],
+  groups: EnrichedScoredAuditGroup[],
+) {
+  return (ref: CategoryRef) => {
     let audit;
     let group;
 
     switch (ref.type) {
-      case CategoryConfigRefType.Audit:
+      case 'audit':
         audit = audits.find(
           a => a.slug === ref.slug && a.plugin === ref.plugin,
         );
@@ -27,7 +37,7 @@ function categoryRefToScore(audits, groups) {
         }
         return audit.score;
 
-      case CategoryConfigRefType.Group:
+      case 'group':
         group = groups.find(
           g => g.slug === ref.slug && g.plugin === ref.plugin,
         );
@@ -43,7 +53,10 @@ function categoryRefToScore(audits, groups) {
   };
 }
 
-export function calculateScore(refs, scoreFn) {
+export function calculateScore<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+) {
   const numerator = refs.reduce(
     (sum, ref) => sum + scoreFn(ref) * ref.weight,
     0,
@@ -52,7 +65,7 @@ export function calculateScore(refs, scoreFn) {
   return numerator / denominator;
 }
 
-export function scoreReport(report) {
+export function scoreReportOptimized0(report: Report): ScoredReport {
   const scoredPlugins = report.plugins.map(plugin => {
     const { groups, audits } = plugin;
     const preparedAudits = audits.map(audit => ({
@@ -73,7 +86,6 @@ export function scoreReport(report) {
     };
   });
 
-  // @TODO intro dict to avoid multiple find calls in the scoreFn
   const allScoredAudits = scoredPlugins.flatMap(({ audits }) => audits);
   const allScoredGroups = scoredPlugins.flatMap(({ groups }) => groups);
 

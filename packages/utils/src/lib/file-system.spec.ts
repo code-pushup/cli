@@ -1,11 +1,14 @@
 import { stat } from 'fs/promises';
 import { vol } from 'memfs';
 import { join } from 'path';
+import process from 'process';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
+  NoExportError,
   ensureDirectoryExists,
+  importEsmModule,
   logMultipleFileResults,
   toUnixPath,
 } from './file-system';
@@ -124,5 +127,43 @@ describe('logMultipleFileResults', () => {
 
     expect(logs).toContain('Generated reports failed: ');
     expect(logs).toContain('- [1mfail[22m');
+  });
+});
+
+const getFilepath = (fileName: string) =>
+  join(process.cwd(), 'packages', 'utils', 'test', 'fixtures', fileName);
+
+describe('importEsmModule', () => {
+  it('should load file', async () => {
+    const module = await importEsmModule<{ name: string }>({
+      filepath: getFilepath('valid-export.mjs'),
+    });
+    expect(module).toBe('valid-export');
+  });
+
+  it('should throw if file does not exist', async () => {
+    await expect(
+      importEsmModule<{ name: string }>({
+        filepath: join('invalid-path', 'not-existing-export.mjs'),
+      }),
+    ).rejects.toThrow('not-existing-export.mjs');
+  });
+
+  it('should throw if export is not defined', async () => {
+    const filepath = getFilepath('no-export.mjs');
+    await expect(
+      importEsmModule<{ name: string }>({
+        filepath,
+      }),
+    ).rejects.toThrow(new NoExportError(filepath));
+  });
+
+  it('should throw if export is undefined', async () => {
+    const filepath = getFilepath('undefined-export.mjs');
+    await expect(
+      importEsmModule<{ name: string }>({
+        filepath,
+      }),
+    ).rejects.toThrow(new NoExportError(filepath));
   });
 });

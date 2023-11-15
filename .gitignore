@@ -44,5 +44,5 @@ Thumbs.db
 # generated Code PushUp reports
 /.code-pushup
 
-# generated Nx files
+# workspace caches
 .nx

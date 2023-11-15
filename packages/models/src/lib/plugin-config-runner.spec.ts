@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { auditReport } from '../../test/fixtures/plugin-config.mock';
 import { runnerConfig } from '../../test/fixtures/runner-config.mock';
-import { runnerConfigSchema } from './plugin-config-runner';
+import {
+  runnerConfigSchema,
+  runnerFunctionSchema,
+} from './plugin-config-runner';
 
 describe('runnerConfig', () => {
   it('should parse if configuration is valid', () => {
@@ -20,6 +24,20 @@ describe('runnerConfig', () => {
     runnerConfigMock.outputFile = ' ';
     expect(() => runnerConfigSchema.parse(runnerConfigMock)).toThrow(
       `path is invalid`,
+    );
+  });
+});
+
+describe('runnerFunction', () => {
+  it('should parse if configuration is valid', () => {
+    const runnerConfigMock = () => Promise.resolve([auditReport()]);
+    expect(() => runnerFunctionSchema.parse(runnerConfigMock)).not.toThrow();
+  });
+
+  it('should throw if not a function', () => {
+    const runnerConfigMock = runnerConfig();
+    expect(() => runnerFunctionSchema.parse(runnerConfigMock)).toThrow(
+      `Expected function,`,
     );
   });
 });
