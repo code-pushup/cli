@@ -26,7 +26,7 @@ export class PluginOutputMissingAuditError extends Error {
  *
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
- * @param observer - process {@link Observer}
+ * @param onProgress - progress handler {@link OnProgress}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
  * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
