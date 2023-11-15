@@ -89,8 +89,8 @@ export type ProcessConfig = {
  * @category Types
  * @public
  * @property {function} onStdout - The onStdout function of the observer (optional).
- * @property {function} error - The error function of the observer (optional).
- * @property {function} complete - The complete function of the observer (optional).
+ * @property {function} onError - The error function of the observer (optional).
+ * @property {function} onComplete - The complete function of the observer (optional).
  *
  * @example
  * const observer = {
@@ -99,8 +99,8 @@ export type ProcessConfig = {
  */
 export type ProcessObserver = {
   onStdout?: (stdout: string) => void;
-  error?: (error: ProcessError) => void;
-  complete?: () => void;
+  onError?: (error: ProcessError) => void;
+  onComplete?: () => void;
 };
 
 /**
@@ -133,7 +133,7 @@ export type ProcessObserver = {
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { observer, cwd } = cfg;
-  const { onStdout, error, complete } = observer || {};
+  const { onStdout, onError, onComplete } = observer || {};
   const date = new Date().toISOString();
   const start = performance.now();
 
@@ -158,11 +158,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     process.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
       if (code === 0) {
-        complete?.();
+        onComplete?.();
         resolve({ code, stdout, stderr, ...timings });
       } else {
         const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
-        error?.(errorMsg);
+        onError?.(errorMsg);
         reject(errorMsg);
       }
     });

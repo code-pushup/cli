@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { vi } from 'vitest';
-import { ProcessConfig } from '../src';
+import { ProcessConfig, ProcessObserver } from '../src';
 
 const asyncProcessPath = join(__dirname, './fixtures/execute-process.mock.mjs');
 
@@ -45,13 +45,13 @@ export function mockProcessConfig(
 /**
  * Helps to set up spy observers for testing.
  */
-export function spyObserver() {
+export function spyObserver(): ProcessObserver {
   const onStdoutSpy = vi.fn();
   const errorSpy = vi.fn();
   const completeSpy = vi.fn();
   return {
     onStdout: onStdoutSpy,
-    error: errorSpy,
-    complete: completeSpy,
+    onError: errorSpy,
+    onComplete: completeSpy,
   };
 }

@@ -19,7 +19,7 @@ describe('executeProcess', () => {
     const { observer } = cfg;
     const processResult = await executeProcess(cfg);
     expect(observer?.onStdout).toHaveBeenCalledTimes(1);
-    expect(observer?.complete).toHaveBeenCalledTimes(1);
+    expect(observer?.onComplete).toHaveBeenCalledTimes(1);
     expect(processResult.stdout).toContain('Options');
   });
 
@@ -33,8 +33,8 @@ describe('executeProcess', () => {
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('process:complete');
     expect(observer?.onStdout).toHaveBeenCalledTimes(6);
-    expect(observer?.error).toHaveBeenCalledTimes(0);
-    expect(observer?.complete).toHaveBeenCalledTimes(1);
+    expect(observer?.onError).toHaveBeenCalledTimes(0);
+    expect(observer?.onComplete).toHaveBeenCalledTimes(1);
   });
 
   it('should work with async script `node custom-script.js --arg` that throws an error', async () => {
@@ -46,9 +46,9 @@ describe('executeProcess', () => {
     const processResult = await executeProcess(cfg).catch(errorSpy);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(processResult).toBeUndefined();
-    expect(observer?.complete).toHaveBeenCalledTimes(0);
+    expect(observer?.onComplete).toHaveBeenCalledTimes(0);
     expect(observer?.onStdout).toHaveBeenCalledTimes(2);
-    expect(observer?.error).toHaveBeenCalledTimes(1);
+    expect(observer?.onError).toHaveBeenCalledTimes(1);
   });
 });
 
