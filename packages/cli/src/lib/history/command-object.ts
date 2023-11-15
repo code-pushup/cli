@@ -36,7 +36,7 @@ export function yargsHistoryCommandObject() {
       console.log('All Log:', log.all.length);
 
       const commitsToAudit = log.all
-       // .splice(0,3)
+        .splice(0,3)
         .map(({ hash }) => hash)
         // crawl from oldest to newest
         .reverse();
