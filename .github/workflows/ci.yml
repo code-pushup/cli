@@ -163,3 +163,5 @@ jobs:
         with:
           name: code-pushup-report
           path: .code-pushup/
+      - name: Create history and upload to portal
+        run: npx dist/packages/cli --config code-pushup.config.ts history

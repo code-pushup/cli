@@ -73,7 +73,7 @@ export function yargsHistoryCommandObject() {
           console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
         } else {
           progress.updateTitle(`Upload ${commit}`);
-          // await upload(commitConfig as unknown as UploadOptions);
+          await upload(commitConfig as unknown as UploadOptions);
           result['upload'] = new Date().toISOString();
         }
 
