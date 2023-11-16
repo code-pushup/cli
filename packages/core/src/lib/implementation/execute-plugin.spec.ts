@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { SpyInstance, describe, expect, it } from 'vitest';
 import {
   AuditOutputs,
   OnProgress,
@@ -105,6 +105,16 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
+  let errorSpy: SpyInstance;
+
+  beforeEach(() => {
+    errorSpy = vi.spyOn(console, 'error');
+  });
+
+  afterEach(() => {
+    errorSpy.mockRestore();
+  });
+
   it('should work with valid plugins', async () => {
     const plugins = [validPluginCfg, validPluginCfg2];
     const pluginResult = await executePlugins(plugins, DEFAULT_OPTIONS);
@@ -143,7 +153,6 @@ describe('executePlugins', () => {
       runner: vi.fn().mockRejectedValue('plugin 3 error'),
     };
     const plugins = [pluginConfig, pluginConfig2, pluginConfig3];
-    const errorSpy = vi.spyOn(console, 'error');
     await expect(() =>
       executePlugins(plugins, DEFAULT_OPTIONS),
     ).rejects.toThrow(
