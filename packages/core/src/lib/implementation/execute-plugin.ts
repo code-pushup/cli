@@ -12,6 +12,18 @@ import {
 import { getProgressBar } from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
+type ExecutePluginSuccess = {
+  status: 'fulfilled';
+  value: PluginReport;
+};
+
+type ExecutePluginFailure = {
+  status: 'rejected';
+  error: string;
+};
+
+type ExecutePluginResult = ExecutePluginSuccess | ExecutePluginFailure;
+
 /**
  * Error thrown when plugin output is invalid.
  */
@@ -123,15 +135,43 @@ export async function executePlugins(
 
     progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
 
-    const pluginReport = await executePlugin(pluginCfg);
-    progressBar?.incrementInSteps(plugins.length);
-
-    return outputs.concat(pluginReport);
-  }, Promise.resolve([] as PluginReport[]));
+    try {
+      const pluginReport = await executePlugin(pluginCfg);
+      progressBar?.incrementInSteps(plugins.length);
+      return outputs.concat({ value: pluginReport, status: 'fulfilled' });
+    } catch (e: unknown) {
+      progressBar?.incrementInSteps(plugins.length);
+      return outputs.concat({
+        error: e instanceof Error ? e.message : String(e),
+        status: 'rejected',
+      });
+    }
+  }, Promise.resolve([] as ExecutePluginResult[]));
 
   progressBar?.endProgress('Done running plugins');
 
-  return pluginsResult;
+  const errors = pluginsResult.filter(
+    (pluginResult): pluginResult is ExecutePluginFailure =>
+      pluginResult.status === 'rejected',
+  );
+
+  errors.forEach(error => console.error(error.error));
+
+  if (errors.length) {
+    const errorMessages = errors.map(error => error.error).join(', ');
+    throw new Error(
+      `Plugins failed: ${errors.length} errors: ${errorMessages}`,
+    );
+  }
+
+  return pluginsResult
+    .map(pluginResult =>
+      pluginResult.status === 'fulfilled' ? pluginResult.value : undefined,
+    )
+    .filter(
+      (pluginResult): pluginResult is PluginReport =>
+        pluginResult !== undefined,
+    );
 }
 
 function auditOutputsCorrelateWithPluginOutput(

@@ -129,6 +129,33 @@ describe('executePlugins', () => {
     ).rejects.toThrow('Audit metadata not found for slug mock-audit-slug');
   });
 
+  it('should log invalid plugin errors and throw', async () => {
+    const pluginConfig = {
+      ...validPluginCfg,
+      runner: vi.fn().mockRejectedValue('plugin 1 error'),
+    };
+    const pluginConfig2 = {
+      ...validPluginCfg2,
+      runner: vi.fn().mockResolvedValue([]),
+    };
+    const pluginConfig3 = {
+      ...validPluginCfg,
+      runner: vi.fn().mockRejectedValue('plugin 3 error'),
+    };
+    const plugins = [pluginConfig, pluginConfig2, pluginConfig3];
+    const errorSpy = vi.spyOn(console, 'error');
+    await expect(() =>
+      executePlugins(plugins, DEFAULT_OPTIONS),
+    ).rejects.toThrow(
+      'Plugins failed: 2 errors: plugin 1 error, plugin 3 error',
+    );
+    expect(errorSpy).toHaveBeenCalledWith('plugin 1 error');
+    expect(errorSpy).toHaveBeenCalledWith('plugin 3 error');
+    expect(pluginConfig.runner).toHaveBeenCalled();
+    expect(pluginConfig2.runner).toHaveBeenCalled();
+    expect(pluginConfig3.runner).toHaveBeenCalled();
+  });
+
   it('should use outputTransform if provided', async () => {
     const processRunner = validPluginCfg.runner as RunnerConfig;
     const plugins: PluginConfig[] = [
