@@ -146,7 +146,7 @@ describe('validateOnlyPluginsOption', () => {
   });
 
   afterEach(() => {
-    logSpy.mockClear();
+    logSpy.mockRestore();
   });
 
   it('should log if onlyPlugins option contains non-existing plugin', () => {
