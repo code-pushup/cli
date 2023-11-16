@@ -31,10 +31,10 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/cli"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/cli"
+        "reportsDirectory": "../../coverage/cli"
       }
     },
     "run-help": {

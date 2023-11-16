@@ -30,7 +30,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/core"
+        "reportsDirectory": "../../coverage/core"
       }
     }
   },
