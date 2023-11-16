@@ -31,16 +31,8 @@ describe('CLI collect', () => {
 
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        '--yes',
-        '--quiet',
-        '-p',
-        '@code-pushup/cli@e2e',
-        'code-pushup',
-        'collect',
-        '--no-progress',
-      ],
+      command: 'code-pushup',
+      args: ['collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -55,17 +47,8 @@ describe('CLI collect', () => {
 
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        '--yes',
-        '--quiet',
-        '-p',
-        '@code-pushup/cli@e2e',
-        'code-pushup',
-        'collect',
-        '--persist.format=md',
-        '--no-progress',
-      ],
+      command: 'code-pushup',
+      args: ['collect', '--persist.format=md', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -81,13 +64,8 @@ describe('CLI collect', () => {
 
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
-      command: 'npx',
+      command: 'code-pushup',
       args: [
-        '--yes',
-        '--quiet',
-        '-p',
-        '@code-pushup/cli@e2e',
-        'code-pushup',
         'collect',
         '--verbose',
         '--persist.format=stdout',

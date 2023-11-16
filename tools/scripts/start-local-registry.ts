@@ -16,8 +16,6 @@ export default async () => {
     verbose: true,
   });
 
-  console.log('stopLocalRegistry', global.stopLocalRegistry);
-
   execFileSync(
     'npx',
     [
