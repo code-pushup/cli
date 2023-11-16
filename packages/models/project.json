@@ -15,6 +15,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "version": { "postTargets": ["models:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/models/CHANGELOG.md"
+      }
+    },
     "publish": {
       "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
       "dependsOn": ["build"]
