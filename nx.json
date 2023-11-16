@@ -40,9 +40,6 @@
         "tagPrefix": "{projectName}@",
         "preset": {
           "name": "conventionalcommits",
-          "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
-          "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
-          "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}",
           "types": [
             { "type": "feat", "section": "Features" },
             { "type": "fix", "section": "Bug Fixes" },
