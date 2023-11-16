@@ -4,7 +4,7 @@ import { ensureDirectoryExists } from '@code-pushup/utils';
 
 // @TODO move into testing library
 export function cleanFolder<T extends object>(
-  dirName = 'tmp',
+  dirName = 'tmp/cli-e2e',
   content?: { [key in keyof T]: string },
 ) {
   rmSync(dirName, { recursive: true, force: true });
@@ -17,7 +17,7 @@ export function cleanFolder<T extends object>(
 }
 // @TODO move into testing library
 export function cleanFolderPutGitKeep<T extends object>(
-  dirName = 'tmp',
+  dirName = 'tmp/cli-e2e',
   content?: { [key in keyof T]: string },
 ) {
   rmSync(dirName, { recursive: true, force: true });
@@ -30,7 +30,10 @@ export function cleanFolderPutGitKeep<T extends object>(
   }
 }
 
-export function setupFolder(dirName = 'tmp', content?: Record<string, string>) {
+export function setupFolder(
+  dirName = 'tmp/cli-e2e',
+  content?: Record<string, string>,
+) {
   ensureDirectoryExists(dirName);
   if (content) {
     for (const fileName in content) {

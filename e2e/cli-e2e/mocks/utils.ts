@@ -21,7 +21,11 @@ export const execCli = (
   executeProcess({
     command: 'npx',
     args: [
-      './dist/packages/cli',
+      '--yes',
+      '--quiet',
+      '-p',
+      '@code-pushup/cli@e2e',
+      'code-pushup',
       command,
       ...objectToCliArgs({
         verbose: true,
