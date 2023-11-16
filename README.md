@@ -74,16 +74,17 @@ Therefore, PRs are merged via one of two strategies:
 
 Projects are tagged in two different dimensions - scope and type:
 
-| tag             | description                                                                  | allowed dependencies           |
-| :-------------- | :--------------------------------------------------------------------------- | :----------------------------- |
-| `scope:core`    | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared` |
-| `scope:plugin`  | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                 |
-| `scope:shared`  | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                 |
-| `scope:tooling` | supplementary tooling, e.g. code generation                                  | `scope:shared`                 |
-| `type:app`      | application, e.g. CLI or example web app                                     | `type:feature` or `type:util`  |
-| `type:feature`  | library with business logic for a specific feature                           | `type:util`                    |
-| `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
-| `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
+| tag                 | description                                                                  | allowed dependencies                               |
+| :------------------ | :--------------------------------------------------------------------------- | :------------------------------------------------- |
+| `scope:core`        | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared`                     |
+| `scope:plugin`      | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                                     |
+| `scope:shared`      | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                                     |
+| `scope:tooling`     | supplementary tooling, e.g. code generation                                  | `scope:shared`                                     |
+| `type:app`          | application, e.g. CLI or example web app                                     | `type:feature`, `type:util` or `type:testing-util` |
+| `type:feature`      | library with business logic for a specific feature                           | `type:util` or `type:testing-util`                 |
+| `type:util`         | general purpose utilities and types intended for reuse                       | `type:util` or `type:testing-util`                 |
+| `type:e2e`          | E2E testing                                                                  | `type:app`, `type:feature` or `type:testing-util`  |
+| `type:testing-util` | testing utilities                                                            | `type:util`                                        |
 
 #### Special Targets
 

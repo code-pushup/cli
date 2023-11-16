@@ -30,18 +30,30 @@
               },
               {
                 "sourceTag": "type:e2e",
-                "onlyDependOnLibsWithTags": ["type:app", "type:feature"]
+                "onlyDependOnLibsWithTags": [
+                  "type:app",
+                  "type:feature",
+                  "type:testing-util"
+                ]
               },
               {
                 "sourceTag": "type:app",
-                "onlyDependOnLibsWithTags": ["type:feature", "type:util"]
+                "onlyDependOnLibsWithTags": [
+                  "type:feature",
+                  "type:util",
+                  "type:testing-util"
+                ]
               },
               {
                 "sourceTag": "type:feature",
-                "onlyDependOnLibsWithTags": ["type:util"]
+                "onlyDependOnLibsWithTags": ["type:util", "type:testing-util"]
               },
               {
                 "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util", "type:testing-util"]
+              },
+              {
+                "sourceTag": "type:testing-util",
                 "onlyDependOnLibsWithTags": ["type:util"]
               }
             ]
@@ -222,7 +234,12 @@
       }
     },
     {
-      "files": ["*.spec.ts", "*.mock.ts", "test/**/*.ts"],
+      "files": [
+        "*.spec.ts",
+        "*.mock.ts",
+        "test/**/*.ts",
+        "testing-utils/**/*.ts"
+      ],
       "extends": ["plugin:vitest/recommended"],
       "rules": {
         // add and customize vitest rules
