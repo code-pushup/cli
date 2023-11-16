@@ -29,7 +29,7 @@ export async function configMiddleware<
         ...cliOptions?.persist,
       },
       plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
-      categories: filterCategoryRefsByOnlyPluginsOption(
+      categories: filterCategoryByOnlyPluginsOption(
         importedRc.categories,
         cliOptions,
       ),
@@ -39,7 +39,7 @@ export async function configMiddleware<
   return parsedProcessArgs;
 }
 
-function filterPluginsByOnlyPluginsOption(
+export function filterPluginsByOnlyPluginsOption(
   plugins: CoreConfig['plugins'],
   { onlyPlugins }: { onlyPlugins?: string[] },
 ): CoreConfig['plugins'] {
@@ -49,19 +49,36 @@ function filterPluginsByOnlyPluginsOption(
   return plugins.filter(plugin => onlyPlugins.includes(plugin.slug));
 }
 
-function filterCategoryRefsByOnlyPluginsOption(
-  categoryRefs: CoreConfig['categories'],
+// skip the whole category if it has at least one skipped plugin ref
+// see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
+export function filterCategoryByOnlyPluginsOption(
+  categories: CoreConfig['categories'],
   { onlyPlugins }: { onlyPlugins?: string[] },
 ): CoreConfig['categories'] {
   if (!onlyPlugins?.length) {
-    return categoryRefs;
+    return categories;
   }
-  return categoryRefs.filter(categoryRef =>
-    categoryRef.refs.some(ref => onlyPlugins.includes(ref.plugin)),
+
+  return categories.filter(category =>
+    category.refs.every(ref => {
+      const isNotSkipped = onlyPlugins.includes(ref.slug);
+
+      if (!isNotSkipped) {
+        console.log(
+          `${chalk.yellow('⚠')} Category "${
+            category.title
+          }" is ignored because it references audits from skipped plugin "${
+            ref.slug
+          }"`,
+        );
+      }
+
+      return isNotSkipped;
+    }),
   );
 }
 
-function validateOnlyPluginsOption(
+export function validateOnlyPluginsOption(
   plugins: CoreConfig['plugins'],
   { onlyPlugins }: { onlyPlugins?: string[] },
 ): void {
