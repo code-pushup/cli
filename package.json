@@ -49,7 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-react": "~4.0.0",
-    "@vitest/coverage-c8": "~0.32.0",
+    "@vitest/coverage-v8": "^0.34.6",
     "@vitest/ui": "~0.32.0",
     "benchmark": "^2.1.4",
     "commitizen": "^4.3.0",
