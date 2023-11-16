@@ -98,7 +98,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
   });
 
   afterEach(() => {
-    logSpy.mockClear();
+    logSpy.mockRestore();
   });
 
   it('should return all categories if no onlyPlugins option', () => {
