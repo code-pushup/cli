@@ -84,7 +84,7 @@ jobs:
       - name: Unit test affected projects
         uses: Wandalen/wretry.action@master
         with:
-          command: npx nx affected:test --parallel=3
+          command: npx nx affected:test --parallel=3 --coverage
           attempt_limit: 2
 
   e2e:
