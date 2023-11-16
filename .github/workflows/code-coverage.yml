@@ -1,0 +1,61 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NX_NON_NATIVE_HASHER: true
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    name: Update code coverage
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Execute all tests
+        run: npx nx run-many -t test
+      - name: Upload cli coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/packages/cli/coverage-final.json
+          flags: cli
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload core coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/packages/core/coverage-final.json
+          flags: core
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload plugin-eslint coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/packages/plugin-eslint/coverage-final.json
+          flags: plugin-eslint
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload models coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/packages/models/coverage-final.json
+          flags: models
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload utils coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/packages/utils/coverage-final.json
+          flags: utils
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload testing-utils coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/testing-utils/coverage-final.json
+          flags: testing-utils
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
