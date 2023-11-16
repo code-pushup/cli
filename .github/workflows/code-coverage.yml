@@ -9,8 +9,12 @@ env:
 
 jobs:
   coverage:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lib: [cli, core, models, plugin-eslint, utils, testing-utils]
     name: Update code coverage
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
@@ -21,41 +25,11 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute all tests
-        run: npx nx run-many -t test
-      - name: Upload cli coverage reports to Codecov
+      - name: Execute all tests and generate coverage reports
+        run: npx nx run ${{ matrix.lib }}:test --coverage
+      - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
-          files: ./coverage/packages/cli/coverage-final.json
-          flags: cli
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload core coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          files: ./coverage/packages/core/coverage-final.json
-          flags: core
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload plugin-eslint coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          files: ./coverage/packages/plugin-eslint/coverage-final.json
-          flags: plugin-eslint
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload models coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          files: ./coverage/packages/models/coverage-final.json
-          flags: models
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload utils coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          files: ./coverage/packages/utils/coverage-final.json
-          flags: utils
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload testing-utils coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          files: ./coverage/testing-utils/coverage-final.json
-          flags: testing-utils
+          files: ./coverage/${{ matrix.lib }}/coverage-final.json
+          flags: ${{ matrix.lib }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
