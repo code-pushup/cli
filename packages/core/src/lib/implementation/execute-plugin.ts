@@ -9,20 +9,10 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { getProgressBar } from '@code-pushup/utils';
+import { getProgressBar, logMultipleResults } from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
-type ExecutePluginSuccess = {
-  status: 'fulfilled';
-  value: PluginReport;
-};
-
-type ExecutePluginFailure = {
-  status: 'rejected';
-  error: string;
-};
-
-type ExecutePluginResult = ExecutePluginSuccess | ExecutePluginFailure;
+type ExecutePluginResult = PluginReport | string;
 
 /**
  * Error thrown when plugin output is invalid.
@@ -138,40 +128,46 @@ export async function executePlugins(
     try {
       const pluginReport = await executePlugin(pluginCfg);
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat({ value: pluginReport, status: 'fulfilled' });
+      return outputs.concat(Promise.resolve(pluginReport));
     } catch (e: unknown) {
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat({
-        error: e instanceof Error ? e.message : String(e),
-        status: 'rejected',
-      });
+      return outputs.concat(
+        Promise.reject(e instanceof Error ? e.message : String(e)),
+      );
     }
-  }, Promise.resolve([] as ExecutePluginResult[]));
+  }, Promise.resolve([] as Promise<ExecutePluginResult>[]));
 
   progressBar?.endProgress('Done running plugins');
 
-  const errors = pluginsResult.filter(
-    (pluginResult): pluginResult is ExecutePluginFailure =>
-      pluginResult.status === 'rejected',
-  );
+  const errorsCallback = ({ reason }: PromiseRejectedResult) =>
+    console.error(reason);
 
-  errors.forEach(error => console.error(error.error));
+  return Promise.allSettled(pluginsResult).then(results => {
+    logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
-  if (errors.length) {
-    const errorMessages = errors.map(error => error.error).join(', ');
-    throw new Error(
-      `Plugins failed: ${errors.length} errors: ${errorMessages}`,
+    const failedResults = results.filter(
+      (
+        result: PromiseSettledResult<ExecutePluginResult>,
+      ): result is PromiseRejectedResult => result.status === 'rejected',
     );
-  }
+    if (failedResults.length) {
+      const errorMessages = failedResults
+        .map(({ reason }: PromiseRejectedResult) => reason)
+        .join(', ');
+      throw new Error(
+        `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
+      );
+    }
 
-  return pluginsResult
-    .map(pluginResult =>
-      pluginResult.status === 'fulfilled' ? pluginResult.value : undefined,
-    )
-    .filter(
-      (pluginResult): pluginResult is PluginReport =>
-        pluginResult !== undefined,
-    );
+    return results
+      .filter(
+        (
+          result: PromiseSettledResult<ExecutePluginResult>,
+        ): result is PromiseFulfilledResult<PluginReport> =>
+          result.status === 'fulfilled',
+      )
+      .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
+  });
 }
 
 function auditOutputsCorrelateWithPluginOutput(

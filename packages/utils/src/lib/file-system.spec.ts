@@ -4,14 +4,15 @@ import { join } from 'path';
 import process from 'process';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
-import { mockConsole, unmockConsole } from '../../test/console.mock';
 import {
+  FileResult,
   NoExportError,
   ensureDirectoryExists,
   importEsmModule,
   logMultipleFileResults,
   toUnixPath,
 } from './file-system';
+import * as logResults from './log-results';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -63,70 +64,32 @@ describe('ensureDirectoryExists', () => {
 });
 
 describe('logMultipleFileResults', () => {
-  let logs: string[];
-  const setupConsole = async () => {
-    logs = [];
-    mockConsole(msg => logs.push(msg));
-  };
-  const teardownConsole = async () => {
-    logs = [];
-    unmockConsole();
-  };
-
-  beforeEach(async () => {
-    logs = [];
-    setupConsole();
-  });
-
   afterEach(() => {
-    teardownConsole();
+    vi.restoreAllMocks();
   });
 
-  it('should log reports correctly`', async () => {
-    logMultipleFileResults(
-      [{ status: 'fulfilled', value: ['out.json'] }],
-      'Uploaded reports',
+  it('should call logMultipleResults with the correct arguments', () => {
+    const logMultipleResultsSpy = vi.spyOn(
+      logResults,
+      'logMultipleResults' as never,
     );
-    expect(logs).toHaveLength(2);
-    expect(logs[0]).toContain('Uploaded reports successfully: ');
-    expect(logs[1]).toContain('- [1mout.json[22m');
-  });
+    const persistResult = [
+      {
+        status: 'fulfilled',
+        value: ['out.json', 10000],
+      } as PromiseFulfilledResult<FileResult>,
+    ];
+    const messagePrefix = 'Generated reports';
 
-  it('should log report sizes correctly`', async () => {
-    logMultipleFileResults(
-      [{ status: 'fulfilled', value: ['out.json', 10000] }],
-      'Generated reports',
+    logMultipleFileResults(persistResult, messagePrefix);
+
+    expect(logMultipleResultsSpy).toHaveBeenCalled();
+    expect(logMultipleResultsSpy).toHaveBeenCalledWith(
+      persistResult,
+      messagePrefix,
+      expect.any(Function),
+      expect.any(Function),
     );
-    expect(logs).toHaveLength(2);
-    expect(logs[0]).toContain('Generated reports successfully: ');
-    expect(logs[1]).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
-  });
-
-  it('should log fails correctly`', async () => {
-    logMultipleFileResults(
-      [{ status: 'rejected', reason: 'fail' }],
-      'Generated reports',
-    );
-    expect(logs).toHaveLength(2);
-
-    expect(logs).toContain('Generated reports failed: ');
-    expect(logs).toContain('- [1mfail[22m');
-  });
-
-  it('should log report sizes and fails correctly`', async () => {
-    logMultipleFileResults(
-      [
-        { status: 'fulfilled', value: ['out.json', 10000] },
-        { status: 'rejected', reason: 'fail' },
-      ],
-      'Generated reports',
-    );
-    expect(logs).toHaveLength(4);
-    expect(logs).toContain('Generated reports successfully: ');
-    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
-
-    expect(logs).toContain('Generated reports failed: ');
-    expect(logs).toContain('- [1mfail[22m');
   });
 });
 
