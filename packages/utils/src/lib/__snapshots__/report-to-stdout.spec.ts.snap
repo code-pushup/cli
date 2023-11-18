@@ -9,14 +9,14 @@ ESLint audits
 ● Disallow assignment operators in conditional expressions            0
 ● Disallow reassigning \`const\` variables                              0
 ● Disallow the use of \`debugger\`                                      0
-● Disallow invalid regular expression strings in \`RegExp\` construct   0
-  ors
-● Disallow the use of undeclared variables unless mentioned in \`/*g   0
-  lobal */\` comments
+● Disallow invalid regular expression strings in \`RegExp\`             0
+  constructors
+● Disallow the use of undeclared variables unless mentioned in        0
+  \`/*global */\` comments
 ● Disallow loops with a body that allows only one iteration           0
 ● Disallow negating the left operand of relational operators          0
-● Disallow use of optional chaining in contexts where the \`undefine   0
-  d\` value is not allowed
+● Disallow use of optional chaining in contexts where the             0
+  \`undefined\` value is not allowed
 ● Disallow unused variables                                           1 warning
 ● Require calls to \`isNaN()\` when checking for \`NaN\`                  0
 ● Enforce comparing \`typeof\` expressions against valid strings        0
@@ -29,11 +29,11 @@ ESLint audits
 ● Disallow variable declarations from shadowing variables declared    3 warnings
   in the outer scope
 ● Require \`let\` or \`const\` instead of \`var\`                           0
-● Require or disallow method and property shorthand syntax for obje   3 warnings
-  ct literals
+● Require or disallow method and property shorthand syntax for        3 warnings
+  object literals
 ● Require using arrow functions for callbacks                         0
-● Require \`const\` declarations for variables that are never reassig   1 warning
-  ned after declared
+● Require \`const\` declarations for variables that are never           1 warning
+  reassigned after declared
 ● Disallow using Object.assign with an object literal as the first    0
   argument and prefer the use of object spread instead
 ● Require or disallow \\"Yoda\\" conditions                               0
@@ -41,8 +41,8 @@ ESLint audits
 ● Disallow missing props validation in a React component definition   6 warnings
 ● Disallow missing React when using JSX                               0
 ● enforces the Rules of Hooks                                         0
-● verifies the list of dependencies for Hooks like useEffect and si   2 warnings
-  milar
+● verifies the list of dependencies for Hooks like useEffect and      2 warnings
+  similar
 ● Disallow missing displayName in a React component definition        0
 ● Disallow comments from being inserted as text nodes                 0
 ● Disallow duplicate properties in JSX                                0
@@ -51,8 +51,8 @@ ESLint audits
 ● Disallow React to be incorrectly marked as unused                   0
 ● Disallow variables used in JSX to be incorrectly marked as unused   0
 ● Disallow passing of children as props                               0
-● Disallow when a DOM element is using both children and dangerousl   0
-  ySetInnerHTML
+● Disallow when a DOM element is using both children and              0
+  dangerouslySetInnerHTML
 ● Disallow usage of deprecated methods                                0
 ● Disallow direct mutation of this.state                              0
 ● Disallow usage of findDOMNode                                       0
