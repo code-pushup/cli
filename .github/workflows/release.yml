@@ -6,7 +6,9 @@ env:
   NX_NON_NATIVE_HASHER: true
 
 jobs:
-  coverage:
+  release:
+    # This line is critical for copy paste issues
+    if: github.repository == 'code-pushup/cli'
     name: Version libraries
     runs-on: ubuntu-latest
     steps:
