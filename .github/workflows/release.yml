@@ -1,7 +1,5 @@
 name: Release Packages
 
-on: push
-
 env:
   NX_NON_NATIVE_HASHER: true
 
