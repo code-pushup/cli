@@ -7,7 +7,6 @@ env:
 
 jobs:
   coverage:
-    strategy:
     name: Version libraries
     runs-on: ubuntu-latest
     steps:
