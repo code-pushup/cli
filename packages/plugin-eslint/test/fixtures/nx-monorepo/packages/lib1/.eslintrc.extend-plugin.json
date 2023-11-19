@@ -1,23 +1,13 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": ["../../.eslintrc.plugin.json"],
   "ignorePatterns": ["!**/*"],
-  "plugins": ["@typescript-eslint"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
-    },
-    {
       "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@typescript-eslint/recommended-type-checked"],
+      "extends": ["plugin:@typescript-eslint/stylistic"],
       "rules": {
-        "quotes": "off",
         "@typescript-eslint/array-type": ["error", { "default": "generic" }]
       }
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
     }
   ]
 }

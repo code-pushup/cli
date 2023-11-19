@@ -169,13 +169,13 @@ describe('listRules', () => {
       );
     });
 
-    it('should include @typescript-eslint rule set implicitly by extending recommended-type-checked config', async () => {
+    it('should include @typescript-eslint rule set implicitly by extending stylistic config', async () => {
       const rules = await listRules(
         eslintNew(eslintrcLib1('.eslintrc.extend-plugin.json')),
         patternsNew,
       );
 
-      expect(rules).toHaveLength(41);
+      expect(rules).toHaveLength(19);
 
       expect(rules).toContainEqual({
         meta: {
