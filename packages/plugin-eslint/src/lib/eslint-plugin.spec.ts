@@ -53,8 +53,8 @@ describe('eslintPlugin', () => {
   it('should initialize ESLint plugin for Nx project', async () => {
     cwdSpy.mockReturnValue(join(fixturesDir, 'nx-monorepo'));
     const plugin = await eslintPlugin({
-      eslintrc: './packages/utils/.eslintrc.json',
-      patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
+      eslintrc: './packages/lib1/.eslintrc.json',
+      patterns: ['packages/lib1/**/*.ts', 'packages/lib1/**/*.json'],
     });
     expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
   });

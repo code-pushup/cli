@@ -93,108 +93,116 @@ describe('listRules', () => {
 
   describe('Nx monorepo project', () => {
     const nxRootDir = join(fixturesDir, 'nx-monorepo');
-    const eslintrc = join(nxRootDir, 'packages/utils/.eslintrc.json');
-
-    const eslint = new ESLint({
-      useEslintrc: false,
-      baseConfig: { extends: eslintrc },
-    });
-    const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
+    const eslintrcLib1 = (rcPath = '.eslintrc.json') =>
+      join(nxRootDir, 'packages/lib1', rcPath);
+    const eslintNew = (rc = eslintrcLib1()) =>
+      new ESLint({
+        useEslintrc: false,
+        baseConfig: { extends: rc },
+      });
+    const patternsNew = ['packages/lib1/**/*.ts', 'packages/lib1/**/*.json'];
 
     beforeAll(() => {
       cwdSpy.mockReturnValue(nxRootDir);
     });
 
-    it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(66);
+    it('should list expected number of rules excluding disabled rules', async () => {
+      // +1 from root:
+      //  - +1 set explicitly
+      // +1 from lib1:
+      // - +1 set explicitly
+      // - -1 disable existing rule from root
+      await expect(listRules(eslintNew(), patternsNew)).resolves.toHaveLength(
+        1,
+      );
+    });
+
+    it('should include eslint built-in rule set implicitly by extending recommended config', async () => {
+      const rules = await listRules(
+        eslintNew(eslintrcLib1('.eslintrc.extend-built-in.json')),
+        patternsNew,
+      );
+
+      expect(rules).toHaveLength(61);
+
+      expect(rules).toContainEqual({
+        meta: {
+          docs: {
+            description: 'Require generator functions to contain `yield`',
+            recommended: true,
+            url: 'https://eslint.org/docs/latest/rules/require-yield',
+          },
+          messages: {
+            missingYield: "This generator function does not have 'yield'.",
+          },
+          schema: [],
+          type: 'suggestion',
+        },
+        options: [],
+        ruleId: 'require-yield',
+      } as RuleData);
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
       // set in root .eslintrc.json
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
-        ruleId: '@nx/enforce-module-boundaries',
-        meta: {
-          docs: {
-            description:
-              'Ensure that module boundaries are respected within the monorepo',
-            // @ts-expect-error Nx rule produces string, but ESLint types expect boolean
-            recommended: 'error',
-            url: '',
+      await expect(
+        listRules(
+          eslintNew(eslintrcLib1('.eslintrc.extend-plugin.json')),
+          patternsNew,
+        ),
+      ).resolves.toContainEqual(
+        expect.objectContaining({
+          ruleId: '@typescript-eslint/array-type',
+          meta: {
+            docs: expect.objectContaining({
+              description: expect.any(String),
+              recommended: expect.any(String),
+              url: expect.any(String),
+            }),
+            fixable: expect.any(String),
+            messages: expect.any(Object),
+            schema: expect.any(Array),
+            type: expect.any(String),
           },
-          fixable: 'code',
-          messages: expect.any(Object),
-          schema: [
-            {
-              additionalProperties: false,
-              properties: expect.any(Object),
-              type: 'object',
-            },
-          ],
-          type: 'suggestion',
-        },
-        options: [
-          {
-            allow: [],
-            depConstraints: [
-              {
-                onlyDependOnLibsWithTags: ['*'],
-                sourceTag: '*',
-              },
-            ],
-            enforceBuildableLibDependency: true,
-          },
-        ],
-      } satisfies RuleData);
+          options: [{ default: 'generic' }],
+        }),
+      );
     });
 
-    it('should include built-in rule set implicitly by extending recommended config', async () => {
-      // extended via @nx/typescript -> @typescript-eslint/eslint-recommended
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
-        ruleId: 'no-var',
+    it('should include @typescript-eslint rule set implicitly by extending recommended-type-checked config', async () => {
+      const rules = await listRules(
+        eslintNew(eslintrcLib1('.eslintrc.extend-plugin.json')),
+        patternsNew,
+      );
+
+      expect(rules).toHaveLength(41);
+
+      expect(rules).toContainEqual({
         meta: {
           docs: {
-            description: 'Require `let` or `const` instead of `var`',
+            description: 'Require rest parameters instead of `arguments`',
             recommended: false,
-            url: 'https://eslint.org/docs/latest/rules/no-var',
+            url: 'https://eslint.org/docs/latest/rules/prefer-rest-params',
           },
-          fixable: 'code',
           messages: {
-            unexpectedVar: 'Unexpected var, use let or const instead.',
+            preferRestParams: "Use the rest parameters instead of 'arguments'.",
           },
           schema: [],
           type: 'suggestion',
         },
         options: [],
-      } as RuleData);
-    });
-
-    it('should include plugin rule set implicitly by extending recommended config', async () => {
-      // extended via @nx/typescript -> @typescript-eslint/recommended
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
-        ruleId: '@typescript-eslint/no-extra-semi',
-        meta: {
-          docs: {
-            description: 'Disallow unnecessary semicolons',
-            extendsBaseRule: true,
-            // @ts-expect-error TypeScript rule produces string, but ESLint types expect boolean
-            recommended: 'error',
-            url: 'https://typescript-eslint.io/rules/no-extra-semi',
-          },
-          fixable: 'code',
-          hasSuggestions: undefined,
-          messages: {
-            unexpected: 'Unnecessary semicolon.',
-          },
-          schema: [],
-          type: 'suggestion',
-        },
-        options: [],
+        ruleId: 'prefer-rest-params',
       } satisfies RuleData);
     });
 
     it('should not include rule which was turned off in extended config', async () => {
       // extended TypeScript config sets "no-extra-semi": "off"
-      await expect(listRules(eslint, patterns)).resolves.not.toContainEqual(
+      await expect(
+        listRules(
+          eslintNew(eslintrcLib1('.eslintrc.extend-plugin.json')),
+          patternsNew,
+        ),
+      ).resolves.not.toContainEqual(
         expect.objectContaining({
           ruleId: 'no-extra-semi',
         } satisfies Partial<RuleData>),
@@ -202,45 +210,27 @@ describe('listRules', () => {
     });
 
     it('should include rule added to root config by project config', async () => {
-      // set only in packages/utils/.eslintrc.json
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
-        ruleId: '@nx/dependency-checks',
+      // set only in packages/lib1/.eslintrc.json
+      //  "no-async-promise-executor": 1
+      await expect(
+        listRules(eslintNew(eslintrcLib1()), patternsNew),
+      ).resolves.toContainEqual({
         meta: {
           docs: {
             description:
-              "Checks dependencies in project's package.json for version mismatches",
-            // @ts-expect-error Nx rule produces string, but ESLint types expect boolean
-            recommended: 'error',
-            url: '',
+              'Disallow using an async function as a Promise executor',
+            recommended: true,
+            url: 'https://eslint.org/docs/latest/rules/no-async-promise-executor',
           },
-          fixable: 'code',
+          fixable: null as unknown as undefined, // Type inconsistency in eslint null is not included
           messages: {
-            missingDependency:
-              'The "{{projectName}}" project uses the following packages, but they are missing from "{{section}}":{{packageNames}}',
-            missingDependencySection:
-              'Dependency sections are missing from the "package.json" but following dependencies were detected:{{dependencies}}',
-            obsoleteDependency:
-              'The "{{packageName}}" package is not used by "{{projectName}}" project.',
-            versionMismatch:
-              'The version specifier does not contain the installed version of "{{packageName}}" package: {{version}}.',
+            async: 'Promise executor functions should not be async.',
           },
-          schema: [
-            {
-              additionalProperties: false,
-              properties: {
-                buildTargets: [{ type: 'string' }],
-                checkMissingDependencies: { type: 'boolean' },
-                checkObsoleteDependencies: { type: 'boolean' },
-                checkVersionMismatches: { type: 'boolean' },
-                ignoredDependencies: [{ type: 'string' }],
-                includeTransitiveDependencies: { type: 'boolean' },
-              },
-              type: 'object',
-            },
-          ],
-          type: 'suggestion',
+          schema: [],
+          type: 'problem',
         },
         options: [],
+        ruleId: 'no-async-promise-executor',
       } satisfies RuleData);
     });
   });

@@ -1,6 +1,7 @@
 {
   "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
+  "plugins": ["@typescript-eslint"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -8,18 +9,15 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "extends": ["plugin:@typescript-eslint/recommended-type-checked"],
+      "rules": {
+        "quotes": "off",
+        "@typescript-eslint/array-type": ["error", { "default": "generic" }]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
-    },
-    {
-      "files": ["*.json"],
-      "parser": "jsonc-eslint-parser",
-      "rules": {
-        "@nx/dependency-checks": ["error"]
-      }
     }
   ]
 }
