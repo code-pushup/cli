@@ -15,6 +15,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "version": { "postTargets": ["models:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/models/CHANGELOG.md"
+      }
+    },
     "publish": {
       "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -31,10 +37,10 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/models"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/models"
+        "reportsDirectory": "../../coverage/models"
       }
     }
   },

@@ -15,6 +15,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "version": { "postTargets": ["core:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/core/CHANGELOG.md"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -30,7 +36,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/core"
+        "reportsDirectory": "../../coverage/core"
       }
     }
   },

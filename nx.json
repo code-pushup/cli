@@ -21,6 +21,32 @@
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"]
+    },
+    "version": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "commitMessageFormat": "release(${projectName}): ${version}",
+        "tagPrefix": "{projectName}@",
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "build", "section": "Dependency updates" },
+            { "type": "docs", "section": "Documentation" },
+            { "type": "refactor", "section": "Code Refactoring" },
+            { "type": "perf", "section": "Performance Improvements" }
+          ]
+        }
+      }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}"
+      }
     }
   },
   "namedInputs": {
