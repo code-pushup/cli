@@ -41,8 +41,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# generated Code PushUp reports
-/.code-pushup
+
 
 # workspace caches
 .nx
