@@ -60,7 +60,7 @@ const envSchema = z.object({
   CP_PROJECT: z.string().min(1),
 });
 const env = await envSchema.parseAsync(process.env);
-const outputDir = '.code-pushup';
+const outputDir = join(process.cwd(),'.code-pushup');
 const config: CoreConfig = {
   persist: {
     outputDir,
