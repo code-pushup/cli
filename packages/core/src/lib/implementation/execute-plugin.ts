@@ -141,33 +141,34 @@ export async function executePlugins(
 
   const errorsCallback = ({ reason }: PromiseRejectedResult) =>
     console.error(reason);
+  const results = await Promise.allSettled(pluginsResult);
 
-  return Promise.allSettled(pluginsResult).then(results => {
-    logMultipleResults(results, 'Plugins', undefined, errorsCallback);
+  logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
-    const failedResults = results.filter(
+  // TODO: add groupBy method for promiseSettledResult by status, #287
+
+  const failedResults = results.filter(
+    (
+      result: PromiseSettledResult<ExecutePluginResult>,
+    ): result is PromiseRejectedResult => result.status === 'rejected',
+  );
+  if (failedResults.length) {
+    const errorMessages = failedResults
+      .map(({ reason }: PromiseRejectedResult) => reason)
+      .join(', ');
+    throw new Error(
+      `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
+    );
+  }
+
+  return results
+    .filter(
       (
         result: PromiseSettledResult<ExecutePluginResult>,
-      ): result is PromiseRejectedResult => result.status === 'rejected',
-    );
-    if (failedResults.length) {
-      const errorMessages = failedResults
-        .map(({ reason }: PromiseRejectedResult) => reason)
-        .join(', ');
-      throw new Error(
-        `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
-      );
-    }
-
-    return results
-      .filter(
-        (
-          result: PromiseSettledResult<ExecutePluginResult>,
-        ): result is PromiseFulfilledResult<PluginReport> =>
-          result.status === 'fulfilled',
-      )
-      .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
-  });
+      ): result is PromiseFulfilledResult<PluginReport> =>
+        result.status === 'fulfilled',
+    )
+    .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
 }
 
 function auditOutputsCorrelateWithPluginOutput(

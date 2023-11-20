@@ -15,10 +15,11 @@ export function logMultipleResults<T>(
         result.status === 'fulfilled',
     );
 
-    if (succeededResults.length) {
-      console.log(`${messagePrefix} successfully: `);
-      succeededResults.forEach(succeededCallback);
-    }
+    logPluginExecution(
+      succeededResults,
+      `${messagePrefix} successfully: `,
+      succeededCallback,
+    );
   }
 
   if (failedCallback) {
@@ -26,9 +27,27 @@ export function logMultipleResults<T>(
       (result): result is PromiseRejectedResult => result.status === 'rejected',
     );
 
-    if (failedResults.length) {
-      console.log(`${messagePrefix} failed: `);
-      failedResults.forEach(failedCallback);
-    }
+    logPluginExecution(
+      failedResults,
+      `${messagePrefix} failed: `,
+      failedCallback,
+    );
+  }
+}
+
+export function logPluginExecution<T>(
+  results: (PromiseFulfilledResult<T> | PromiseRejectedResult)[],
+  logMessage: string,
+  callback:
+    | ((result: PromiseFulfilledResult<T>) => void)
+    | ((result: PromiseRejectedResult) => void),
+): void {
+  if (results.length) {
+    console.log(logMessage);
+    results.forEach(
+      callback as (
+        result: PromiseFulfilledResult<T> | PromiseRejectedResult,
+      ) => void,
+    );
   }
 }
