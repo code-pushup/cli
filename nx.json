@@ -4,7 +4,13 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "unit-test",
+          "integration-test",
+          "e2e"
+        ]
       }
     }
   },
@@ -24,7 +30,10 @@
         "reportUnusedDisableDirectives": "warn"
       }
     },
-    "test": {
+    "unit-test": {
+      "inputs": ["default", "^production"]
+    },
+    "integration-test": {
       "inputs": ["default", "^production"]
     },
     "e2e": {
@@ -68,7 +77,7 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.[jt]s",
+      "!{projectRoot}/vite.config.@(unit|integration).[jt]s",
       "!{projectRoot}/test/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s"
