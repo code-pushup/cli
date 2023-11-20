@@ -42,14 +42,14 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/utils"
+        "reportsDirectory": "../../coverage/utils/unit"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/utils"
+        "reportsDirectory": "../../coverage/utils/integration"
       }
     }
   },

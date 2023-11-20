@@ -41,14 +41,14 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/cli"
+        "reportsDirectory": "../../coverage/cli/unit"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/cli"
+        "reportsDirectory": "../../coverage/cli/integration"
       }
     },
     "run-help": {

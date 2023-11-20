@@ -40,14 +40,14 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/plugin-eslint"
+        "reportsDirectory": "../../coverage/plugin-eslint/unit"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/plugin-eslint"
+        "reportsDirectory": "../../coverage/plugin-eslint/integration"
       }
     }
   },
