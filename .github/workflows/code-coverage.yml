@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         lib: [cli, core, models, plugin-eslint, utils, testing-utils]
+        scope: [unit, integration]
     name: Update code coverage
     runs-on: ubuntu-latest
     steps:
@@ -25,13 +26,11 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute all unit tests and generate coverage reports
-        run: npx nx run ${{ matrix.lib }}:unit-test --coverage
-      - name: Execute all integration tests and generate coverage reports
-        run: npx nx run ${{ matrix.lib }}:integration-test --coverage
+      - name: Execute all tests and generate coverage reports
+        run: npx nx run ${{ matrix.lib }}:${{ matrix.scope }}-test --coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
-          files: ./coverage/${{ matrix.lib }}/coverage-final.json
+          files: ./coverage/${{ matrix.lib }}/${{ matrix.scope }}-tests/coverage-final.json
           flags: ${{ matrix.lib }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
