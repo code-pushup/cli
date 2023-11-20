@@ -36,11 +36,17 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/plugin-eslint"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
         "reportsDirectory": "../../coverage/plugin-eslint"
       }
     }
