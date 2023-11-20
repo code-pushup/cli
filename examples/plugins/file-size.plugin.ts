@@ -80,7 +80,7 @@ export async function create(options: FileSizeOptions): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
     title: 'File Size Plugin',
-    icon: 'javascript',
+    icon: 'file',
     description:
       'A plugin to measure and assert filesize of files in a directory.',
     runner: () => runnerFunction(options),

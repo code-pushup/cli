@@ -46,7 +46,7 @@ export async function create(
   return {
     slug: pluginSlug,
     title: 'Lighthouse Plugin',
-    icon: 'javascript',
+    icon: 'lighthouse',
     description:
       'A plugin to measure and assert filesize of files in a directory.',
     runner: runnerConfig(options),
