@@ -1301,8 +1301,7 @@ export async function create(
     slug: pluginSlug,
     title: 'Lighthouse Plugin',
     icon: 'lighthouse',
-    description:
-      'A plugin to measure and assert filesize of files in a directory.',
+    description: 'Lighthouse CLI wrapped as code-pushup plugin',
     runner: runnerConfig(options),
     audits,
     groups: [categoryPerfGroup],
