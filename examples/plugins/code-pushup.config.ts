@@ -13,7 +13,7 @@ import {
 /**
  *
  * Run it with:
- * `nx run-collect cli --config=./examples/plugins/code-pushup.config.ts --verbose --no-progress`
+ * `nx run-collect cli --config=./examples/plugins/code-pushup.config.ts --verbose --no-progress --persist.format=stdout,md,json`
  *
  */
 

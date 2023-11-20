@@ -8,11 +8,11 @@ import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
 import {
   create as fileSizePlugin,
-  recommendedRef as fileSizeRecommendedRef,
+  recommendedRefs as fileSizeRecommendedRef,
 } from './examples/plugins/file-size.plugin';
 import {
   create as lighthousePlugin,
-  recommendedRefs,
+  recommendedRefs as lighthouseRecommendedRefs,
 } from './examples/plugins/lighthouse.plugin';
 import type { CoreConfig } from './packages/models/src';
 
@@ -109,7 +109,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRef, ...recommendedRefs],
+      refs: [...fileSizeRecommendedRef, ...lighthouseRecommendedRefs],
     },
   ],
 };

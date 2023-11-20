@@ -6,7 +6,7 @@ import {
   RunnerConfig,
 } from '../../dist/packages/models/src';
 import { objectToCliArgs, verboseUtils } from '../../dist/packages/utils/index';
-import { AuditGroup } from '../../packages/models/src';
+import { AuditOutput, Issue } from '../../packages/models/src';
 
 export type LighthouseOptions = {
   url: string;
@@ -1353,16 +1353,68 @@ function runnerConfig(options: LighthouseOptions): PluginConfig['runner'] {
 }
 
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
-  return Object.entries(lhr.audits).map(([slug, result]) => {
-    return {
-      slug,
-      score: result.score || 0,
-      value: result?.numericValue
-        ? parseInt(result.numericValue.toString())
-        : 0,
-      displayValue: result.displayValue,
-      description: result.description,
-      // details: result.details as Issue,
-    };
-  });
+  return Object.values(lhr.audits).map(
+    ({
+      id: slug,
+      score,
+      numericValue: value = 0, // not every audit has a numericValue
+      displayValue,
+      details,
+    }) => {
+      let auditOutput: AuditOutput = {
+        slug,
+        score: score || 0, // score can be null
+        value: parseInt(value.toString()),
+        displayValue: displayValue,
+      };
+
+      const issues = lhrDetailsToIssueDetails(details);
+      if (issues) {
+        auditOutput = {
+          ...auditOutput,
+          details: {
+            issues,
+          },
+        };
+      }
+
+      return auditOutput;
+    },
+  ) as AuditOutputs;
+}
+
+function lhrDetailsToIssueDetails(
+  details = {} as Result['audits'][string]['details'],
+): Issue[] | null {
+  const { type, items } = details as any;
+  /**
+   * @TODO implement cases
+   * - 'table',
+   * - undefined,
+   * - 'filmstrip',
+   * - 'screenshot',
+   * - 'debugdata',
+   * - 'opportunity',
+   * - 'criticalrequestchain',
+   * - 'list',
+   * - 'treemap-data'
+   */
+  if (type === 'table') {
+    return [
+      {
+        message: items
+          .map(item =>
+            Object.entries(item).map(([key, value]) => `${key}-${value}`),
+          )
+          .join(',')
+          .slice(0, 505),
+        severity: 'info',
+        source: {
+          file: 'file-name',
+        },
+      },
+    ];
+  }
+
+  return null;
 }
