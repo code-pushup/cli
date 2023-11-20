@@ -5,6 +5,7 @@ import {
   IssueSeverity as CliIssueSeverity,
   Format,
   PersistConfig,
+  PluginReport,
   Report,
   reportSchema,
 } from '@code-pushup/models';
@@ -13,7 +14,12 @@ import {
   readJsonFile,
   readTextFile,
 } from './file-system';
-import { EnrichedAuditReport, ScoredReport } from './scoring';
+import {
+  EnrichedAuditReport,
+  EnrichedScoredAuditGroupWithAudits,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
 import { pluralize } from './transformation';
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
@@ -170,6 +176,76 @@ export function getAuditsFromAllPlugins(
   );
 }
 
+export function getAuditByRef(
+  { slug, weight, plugin }: CategoryRef,
+  plugins: ScoredReport['plugins'],
+): WeighedAuditReport {
+  const auditPlugin = plugins.find(
+    ({ slug }) => slug === plugin,
+  ) as PluginReport;
+  const audit = auditPlugin?.audits.find(
+    ({ slug: auditSlug }) => auditSlug === slug,
+  );
+  if (!audit) {
+    throwIsNotPresentError(`Audit ${slug}`, auditPlugin?.slug);
+  }
+  return {
+    ...audit,
+    weight,
+    plugin,
+  };
+}
+
+export function getGroupWithAudits(
+  refSlug: string,
+  refPlugin: string,
+  plugins: ScoredReport['plugins'],
+): EnrichedScoredAuditGroupWithAudits {
+  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
+  const groupWithAudits = plugin?.groups?.find(
+    ({ slug }) => slug === refSlug,
+  ) as EnrichedScoredAuditGroupWithAudits;
+
+  if (!groupWithAudits) {
+    throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
+  }
+  const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
+    (acc: WeighedAuditReport[], ref) => {
+      const audit = getAuditByRef(
+        { ...ref, plugin: refPlugin } as CategoryRef,
+        plugins,
+      );
+      if (audit) {
+        return [...acc, audit];
+      }
+      return [...acc];
+    },
+    [],
+  ) as WeighedAuditReport[];
+  groupWithAudits.audits = groupAudits.sort((a, b) => sortCategoryAudits(a, b));
+
+  return groupWithAudits;
+}
+
+export function sortCategoryAudits(
+  a: WeighedAuditReport,
+  b: WeighedAuditReport,
+): number {
+  if (a.weight !== b.weight) {
+    return b.weight - a.weight;
+  }
+
+  if (a.score !== b.score) {
+    return a.score - b.score;
+  }
+
+  if (a.value !== b.value) {
+    return b.value - a.value;
+  }
+
+  return a.title.localeCompare(b.title);
+}
+
 export function sortAudits(
   a: EnrichedAuditReport,
   b: EnrichedAuditReport,
@@ -215,4 +291,11 @@ export async function loadReport<T extends Format>(
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return readTextFile(filePath) as any;
+}
+
+export function throwIsNotPresentError(
+  itemName: string,
+  presentPlace: string,
+): never {
+  throw new Error(`${itemName} is not present in ${presentPlace}`);
 }
