@@ -235,7 +235,7 @@
     },
     {
       "files": [
-        "*.spec.ts",
+        "*.test.ts",
         "*.mock.ts",
         "test/**/*.ts",
         "testing-utils/**/*.ts"
@@ -246,7 +246,7 @@
         "vitest/prefer-to-be": "warn",
         "vitest/consistent-test-filename": [
           "warn",
-          { "pattern": ".*\\.spec\\.[tj]sx?$" }
+          { "pattern": ".*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$" }
         ],
         "vitest/consistent-test-it": "warn",
         "vitest/prefer-to-have-length": "warn",
