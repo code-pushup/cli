@@ -11,11 +11,10 @@
         "lintFilePatterns": ["testing-utils/**/*.ts"]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
         "reportsDirectory": "../coverage/testing-utils"
       }
     }
