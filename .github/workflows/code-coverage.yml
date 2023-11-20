@@ -25,8 +25,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute all tests and generate coverage reports
-        run: npx nx run ${{ matrix.lib }}:test --coverage
+      - name: Execute all unit tests and generate coverage reports
+        run: npx nx run ${{ matrix.lib }}:unit-test --coverage
+      - name: Execute all integration tests and generate coverage reports
+        run: npx nx run ${{ matrix.lib }}:integration-test --coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
