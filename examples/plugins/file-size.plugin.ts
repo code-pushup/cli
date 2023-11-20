@@ -35,7 +35,7 @@ export const audits = {
  * create as fileSizePlugin,
  * pluginSlug as fileSizePluginSlug,
  * fileSizeAuditSlug
- * } from 'file-Size.plugin.ts';
+ * } from 'file-size.plugin.ts';
  * export default {
  *   persist: {
  *     outputDir: '.code-pushup',
@@ -72,37 +72,47 @@ export async function create(options: FileSizeOptions): Promise<PluginConfig> {
     icon: 'javascript',
     description:
       'A plugin to measure and assert filesize of files in a directory.',
-    audits: [fileSizeAudit],
-    runner: async (): Promise<AuditOutputs> => {
-      let fileSizeAuditOutput: AuditOutput = {
-        slug: fileSizeAuditSlug,
-        score: 0,
-        value: 0,
-        displayValue: `${0} ${pluralize('file')}`,
-      };
-      return [fileSizeAuditOutput];
-
-      const issues = await fileSizePlugin(options);
-      // early exit if no issues
-      if (!issues.length) {
-        return [fileSizeAuditOutput];
-      }
-
-      const errorCount = issues.filter(i => i.severity === 'error').length;
-      const score = errorCount > 0 ? (errorCount / issues.length - 1) * -1 : 0;
-
-      fileSizeAuditOutput = {
-        ...fileSizeAuditOutput,
-        score,
-        value: errorCount,
-        displayValue: `${errorCount} ${
-          errorCount === 1 ? 'file' : pluralize('file')
-        }`,
-      };
-
-      return [fileSizeAuditOutput];
-    },
+    runner: () => runnerFunction(options),
+    audits: Object.values(audits),
   };
+}
+
+async function runnerFunction(options: FileSizeOptions): Promise<AuditOutputs> {
+  let fileSizeAuditOutput: AuditOutput = {
+    slug: fileSizeAuditSlug,
+    score: 0,
+    value: 0,
+    displayValue: `${0} ${pluralize('file')}`,
+  };
+
+  const issues = await fileSizePlugin(options);
+  // early exit if no issues
+  if (!issues.length) {
+    return [fileSizeAuditOutput];
+  }
+
+  const errorCount = issues.filter(i => i.severity === 'error').length;
+  const score = errorCount > 0 ? (errorCount / issues.length - 1) * -1 : 0;
+
+  fileSizeAuditOutput = {
+    ...fileSizeAuditOutput,
+    score,
+    value: errorCount,
+    displayValue: `${errorCount} ${
+      errorCount === 1 ? 'file' : pluralize('file')
+    }`,
+  };
+
+  if (issues.length) {
+    fileSizeAuditOutput = {
+      ...fileSizeAuditOutput,
+      details: {
+        issues,
+      },
+    };
+  }
+
+  return [fileSizeAuditOutput];
 }
 
 async function fileSizePlugin(options: {
@@ -128,7 +138,9 @@ async function fileSizePlugin(options: {
       }
       issues.push(assertFileSize(filePath, stats.size, budget));
     } else if (stats.isDirectory()) {
-      issues.push(...(await fileSizePlugin({ directory: filePath })));
+      issues.push(
+        ...(await fileSizePlugin({ directory: filePath, pattern, budget })),
+      );
     }
   }
 
@@ -141,10 +153,12 @@ function assertFileSize(
   budget?: number,
 ): Issue {
   const sizeSmallerThanBudget = budget ? size < budget : true;
+  // write how moch bigger
+  const errorMsg = `File ${basename(filePath)} is ${formatBytes(
+    size - budget,
+  )} bytes too big. ( budget: ${formatBytes(budget)})`;
   return {
-    message: `File ${basename(filePath)} ${
-      sizeSmallerThanBudget ? 'OK' : '> ' + formatBytes(budget)
-    }`,
+    message: sizeSmallerThanBudget ? `File ${basename(filePath)} OK` : errorMsg,
     severity: sizeSmallerThanBudget ? 'info' : 'error',
     source: {
       file: filePath,
