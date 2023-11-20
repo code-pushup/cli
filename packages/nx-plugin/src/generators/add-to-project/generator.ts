@@ -3,15 +3,19 @@ import {
   formatFiles,
   generateFiles,
   readProjectConfiguration,
+  updateProjectConfiguration,
 } from '@nx/devkit';
 import * as path from 'path';
+import { join } from 'path';
 import { AddToProjectGeneratorSchema } from './schema';
 
 export async function addToProjectGenerator(
   tree: Tree,
   options: AddToProjectGeneratorSchema,
 ) {
-  const { root } = readProjectConfiguration(tree, options.project);
+  const projectConfiguration = readProjectConfiguration(tree, options.project);
+
+  const { root } = projectConfiguration;
 
   if (tree.exists(path.join(root, 'code-pushup.config.json'))) {
     console.log('Code PushUp already configured for this project');
@@ -20,7 +24,22 @@ export async function addToProjectGenerator(
 
   generateFiles(tree, path.join(__dirname, 'files'), root, options);
 
-  // @TODO add target for executing code-pushup with the right config
+  updateProjectConfiguration(tree, options.project, {
+    ...projectConfiguration,
+    targets: {
+      ...projectConfiguration.targets,
+      collect: {
+        executor: 'nx:run-commands',
+        options: {
+          command: `code-pushup collect --no-progress --config=${join(
+            './',
+            root,
+            'code-pushup.config.json',
+          )}`,
+        },
+      },
+    },
+  });
 
   await formatFiles(tree);
 }
