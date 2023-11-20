@@ -5,7 +5,12 @@ import {
   RunnerConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
+import {
+  calcDuration,
+  executeProcess,
+  readJsonFile,
+  readTextFile,
+} from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
@@ -27,14 +32,14 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  let audits = await readJsonFile<AuditOutputs>(
+  const pluginOutput: string = await readTextFile(
     join(process.cwd(), outputFile),
   );
 
   // transform unknownAuditOutputs to auditOutputs
-  if (outputTransform) {
-    audits = await outputTransform(audits);
-  }
+  const audits: AuditOutputs = outputTransform
+    ? await outputTransform(pluginOutput)
+    : (JSON.parse(pluginOutput) as AuditOutputs);
 
   // create runner result
   return {
