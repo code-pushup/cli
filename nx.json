@@ -31,10 +31,18 @@
       }
     },
     "unit-test": {
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.unit.ts"
+      }
     },
     "integration-test": {
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.integration.ts"
+      }
     },
     "e2e": {
       "dependsOn": ["^build"],
