@@ -10,6 +10,7 @@ import {
   create as fileSizePlugin,
   recommendedRef as fileSizeRecommendedRef,
 } from './examples/plugins/file-size.plugin';
+import { create as lighthousePlugin } from './examples/plugins/lighthouse.plugin';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
@@ -59,10 +60,10 @@ const envSchema = z.object({
   CP_PROJECT: z.string().min(1),
 });
 const env = await envSchema.parseAsync(process.env);
-
+const outputDir = '.code-pushup';
 const config: CoreConfig = {
   persist: {
-    outputDir: '.code-pushup',
+    outputDir,
     filename: 'report',
     format: ['json', 'md'],
   },
@@ -80,6 +81,12 @@ const config: CoreConfig = {
       directory: join(process.cwd(), 'dist/packages'),
       pattern: /\.js$/,
       budget: 42000,
+    }),
+    await lighthousePlugin({
+      url: 'http://127.0.0.1:4211',
+      verbose: true,
+      outputFile: join(outputDir, 'lighthouse-report.json'),
+      //  onlyAudits: 'largest-contentful-paint',
     }),
   ],
 

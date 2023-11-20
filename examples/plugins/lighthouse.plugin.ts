@@ -19,8 +19,8 @@ export const pluginSlug = 'lighthouse-plugin';
 export const lighthousePluginRecommended: CategoryRef[] = [
   {
     type: 'group',
-    plugin: pluginSlug,
     slug: 'performance',
+    plugin: pluginSlug,
     weight: 1,
   },
 ];
@@ -1030,7 +1030,7 @@ export const audits = [
   },
 ];
 
-export const categoryPerfGroup: AuditGroup = {
+const categoryPerfGroup: AuditGroup = {
   slug: 'performance',
   title: 'performance',
   refs: [
@@ -1308,6 +1308,7 @@ export async function create(
       'A plugin to measure and assert filesize of files in a directory.',
     runner: runnerConfig(options),
     audits,
+    groups: [categoryPerfGroup],
   };
 }
 
