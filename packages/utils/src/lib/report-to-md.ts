@@ -24,6 +24,7 @@ import {
   detailsTableHeaders,
   formatDuration,
   formatReportScore,
+  getAuditsFromAllPlugins,
   getRoundScoreMarker,
   getSeverityIcon,
   getSquaredScoreMarker,
@@ -31,6 +32,7 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
+  sortAudits,
 } from './report';
 import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
 import { slugify } from './transformation';
@@ -187,64 +189,64 @@ function groupRefItemToCategorySection(
 }
 
 function reportToAuditsSection(report: ScoredReport): string {
-  const auditsData = report.plugins.reduce((acc, plugin) => {
-    const audits = plugin.audits.reduce((acc, audit) => {
-      const auditTitle = `${audit.title} (${plugin.title})`;
-      const detailsTitle = `${getSquaredScoreMarker(
-        audit.score,
-      )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
-        audit.score,
-      )})`;
-      const docsItem = getDocsAndDescription(audit);
+  const auditsFromAllPlugins = getAuditsFromAllPlugins(report).sort((a, b) =>
+    sortAudits(a, b),
+  );
 
-      acc += h3(auditTitle);
+  const auditsData = auditsFromAllPlugins.reduce((acc, audit) => {
+    const auditTitle = `${audit.title} (${audit.plugin})`;
+    const detailsTitle = `${getSquaredScoreMarker(
+      audit.score,
+    )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
+      audit.score,
+    )})`;
+    const docsItem = getDocsAndDescription(audit);
 
-      acc += NEW_LINE;
-      acc += NEW_LINE;
+    acc += h3(auditTitle);
 
-      if (!audit.details?.issues?.length) {
-        acc += detailsTitle;
-        acc += NEW_LINE;
-        acc += NEW_LINE;
-        acc += docsItem;
-        return acc;
-      }
+    acc += NEW_LINE;
+    acc += NEW_LINE;
 
-      const detailsTableData = [
-        detailsTableHeaders,
-        ...audit.details.issues.map((issue: Issue) => {
-          const severity = `${getSeverityIcon(issue.severity)} <i>${
-            issue.severity
-          }</i>`;
-          const message = issue.message;
-
-          if (!issue.source) {
-            return [severity, message, '', ''];
-          }
-          // TODO: implement file links, ticket #149
-          const file = `<code>${issue.source?.file}</code>`;
-          if (!issue.source.position) {
-            return [severity, message, file, ''];
-          }
-          const { startLine, endLine } = issue.source.position;
-          const line = `${startLine || ''}${
-            endLine && startLine !== endLine ? `-${endLine}` : ''
-          }`;
-
-          return [severity, message, file, line];
-        }),
-      ];
-      const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
-
-      acc += details(detailsTitle, detailsTable);
+    if (!audit.details?.issues?.length) {
+      acc += detailsTitle;
       acc += NEW_LINE;
       acc += NEW_LINE;
       acc += docsItem;
-
       return acc;
-    }, '');
+    }
 
-    return acc + audits;
+    const detailsTableData = [
+      detailsTableHeaders,
+      ...audit.details.issues.map((issue: Issue) => {
+        const severity = `${getSeverityIcon(issue.severity)} <i>${
+          issue.severity
+        }</i>`;
+        const message = issue.message;
+
+        if (!issue.source) {
+          return [severity, message, '', ''];
+        }
+        // TODO: implement file links, ticket #149
+        const file = `<code>${issue.source?.file}</code>`;
+        if (!issue.source.position) {
+          return [severity, message, file, ''];
+        }
+        const { startLine, endLine } = issue.source.position;
+        const line = `${startLine || ''}${
+          endLine && startLine !== endLine ? `-${endLine}` : ''
+        }`;
+
+        return [severity, message, file, line];
+      }),
+    ];
+    const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
+
+    acc += details(detailsTitle, detailsTable);
+    acc += NEW_LINE;
+    acc += NEW_LINE;
+    acc += docsItem;
+
+    return acc;
   }, '');
 
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsData;

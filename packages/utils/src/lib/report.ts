@@ -13,7 +13,7 @@ import {
   readJsonFile,
   readTextFile,
 } from './file-system';
-import { ScoredReport } from './scoring';
+import { EnrichedAuditReport, ScoredReport } from './scoring';
 import { pluralize } from './transformation';
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
@@ -159,6 +159,30 @@ export function countCategoryAudits(
     }
     return acc + 1;
   }, 0);
+}
+
+export function getAuditsFromAllPlugins(
+  report: ScoredReport,
+): EnrichedAuditReport[] {
+  return report.plugins.reduce<EnrichedAuditReport[]>(
+    (acc, plugin) => [...acc, ...plugin.audits],
+    [],
+  );
+}
+
+export function sortAudits(
+  a: EnrichedAuditReport,
+  b: EnrichedAuditReport,
+): number {
+  if (a.score !== b.score) {
+    return a.score - b.score;
+  }
+
+  if (a.value !== b.value) {
+    return b.value - a.value;
+  }
+
+  return a.title.localeCompare(b.title);
 }
 
 export function compareIssueSeverity(
