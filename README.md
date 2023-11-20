@@ -45,11 +45,14 @@ Some examples:
 # visualize project graph
 npx nx graph
 
+# run unit tests for all projects
+npx nx run-many -t unit-test
+
+# run integration tests for all projects
+npx nx run-many -t integration-test
+
 # run E2E tests for CLI
 npx nx e2e cli-e2e
-
-# run unit tests for all projects
-npx nx run-many -t test
 
 # build CLI along with packages it depends on
 npx nx build cli
