@@ -15,7 +15,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../coverage/testing-utils"
+        "reportsDirectory": "../coverage/testing-utils/unit-tests"
       }
     }
   },

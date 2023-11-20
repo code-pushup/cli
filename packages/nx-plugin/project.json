@@ -61,14 +61,14 @@
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
-        "reportsDirectory": "../../coverage/packages/models"
+        "reportsDirectory": "../../coverage/packages/models/unit-tests"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
-        "reportsDirectory": "../../coverage/packages/models"
+        "reportsDirectory": "../../coverage/packages/models/integration-tests"
       }
     }
   },
