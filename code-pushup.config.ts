@@ -83,10 +83,9 @@ const config: CoreConfig = {
       budget: 42000,
     }),
     await lighthousePlugin({
-      url: 'http://127.0.0.1:4211',
+      url: 'http://google.com',
       verbose: true,
       outputFile: join(process.cwd(), 'tmp', 'lighthouse-report.json'),
-      //  onlyAudits: 'largest-contentful-paint',
     }),
   ],
 
