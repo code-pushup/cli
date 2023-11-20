@@ -10,7 +10,10 @@ import {
   create as fileSizePlugin,
   recommendedRef as fileSizeRecommendedRef,
 } from './examples/plugins/file-size.plugin';
-import { create as lighthousePlugin } from './examples/plugins/lighthouse.plugin';
+import {
+  create as lighthousePlugin,
+  lighthousePluginRecommended,
+} from './examples/plugins/lighthouse.plugin';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
@@ -59,7 +62,7 @@ const envSchema = z.object({
   CP_ORGANIZATION: z.string().min(1),
   CP_PROJECT: z.string().min(1),
 });
-const env = await envSchema.parseAsync(process.env);
+// const env = await envSchema.parseAsync(process.env);
 const outputDir = join(process.cwd(), '.code-pushup');
 const config: CoreConfig = {
   persist: {
@@ -67,14 +70,14 @@ const config: CoreConfig = {
     filename: 'report',
     format: ['json', 'md'],
   },
-
+  /*
   upload: {
     server: env.CP_SERVER,
     apiKey: env.CP_API_KEY,
     organization: env.CP_ORGANIZATION,
     project: env.CP_PROJECT,
   },
-
+*/
   plugins: [
     await eslintPlugin({ eslintrc, patterns }),
     await fileSizePlugin({
@@ -85,8 +88,8 @@ const config: CoreConfig = {
     await lighthousePlugin({
       url: 'http://google.com',
       verbose: true,
-      headless: true,
-      outputFile: join(process.cwd(), '.code-pushup', 'lighthouse-report.json'),
+      headless: 'new',
+      outputFile: join('.code-pushup', 'lighthouse-report.json'),
     }),
   ],
 
@@ -106,7 +109,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRef],
+      refs: [...fileSizeRecommendedRef, ...lighthousePluginRecommended],
     },
   ],
 };
