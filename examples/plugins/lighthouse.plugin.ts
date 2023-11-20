@@ -16,8 +16,8 @@ export type LighthouseOptions = {
   outputFile?: string;
 };
 
-export const pluginSlug = 'lighthouse-plugin';
-export const lighthousePluginRecommended: CategoryRef[] = [
+export const pluginSlug = 'lighthouse';
+export const recommendedRefs: CategoryRef[] = [
   {
     type: 'group',
     slug: 'performance',
@@ -1031,7 +1031,7 @@ export const audits = [
   },
 ];
 
-const categoryPerfGroup: AuditGroup = {
+const categoryPerfGroup = {
   slug: 'performance',
   title: 'performance',
   refs: [
@@ -1273,18 +1273,14 @@ const categoryPerfGroup: AuditGroup = {
 /**
  * @example
  * // code-pushup.config.ts
- * import {
- * create as lighthousePlugin,
- * pluginSlug as lighthousePluginSlug,
- * } from 'lighthouse.plugin.ts';
+ * import { create as lighthousePlugin } from 'lighthouse.plugin.ts';
+ *
  * export default {
  *   persist: {
  *     outputDir: '.code-pushup',
  *   },
  *   plugins: [
- *     await lighthousePlugin({
- *       url: "angular.dev"
- *     })
+ *     await lighthousePlugin({ url: "angular.dev" })
  *   ],
  *   categories: [
  *     {

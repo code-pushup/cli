@@ -9,43 +9,40 @@ import {
 import { formatBytes, pluralize } from '../../dist/packages/utils';
 import { CategoryRef } from '../../packages/models/src';
 
-export type FileSizeOptions = {
+export type PluginOptions = {
   directory: string;
   pattern?: string | RegExp;
   budget?: number;
 };
 
-export const pluginSlug = 'file-size-plugin';
+type RunnerOptions = PluginOptions;
 
-export const fileSizeAuditSlug = 'file-size-audit';
+export const pluginSlug = 'file-size';
 
-export const fileSizeAudit = {
-  slug: fileSizeAuditSlug,
-  title: 'File Size Audit',
-  description: 'A audit to check JavaScript file size in a directory.',
+const fileSizeAuditSlug = 'file-size-check';
+const audits = {
+  [fileSizeAuditSlug]: {
+    slug: fileSizeAuditSlug,
+    title: 'File Size Audit',
+    description: 'A audit to check JavaScript file size in a directory.',
+  },
 };
 
-export const audits = {
-  [fileSizeAudit.slug]: fileSizeAudit,
-};
-
-export const recommendedCategory = 'performance';
-export const recommendedRef: CategoryRef[] = [
-  {
+export const recommendedRefs: CategoryRef[] = Object.values(audits).map(
+  ({ slug }) => ({
     type: 'audit',
     plugin: pluginSlug,
-    slug: fileSizeAuditSlug,
+    slug,
     weight: 1,
-  },
-];
+  }),
+);
 
 /**
  * @example
  * // code-pushup.config.ts
  * import {
- * create as fileSizePlugin,
- * pluginSlug as fileSizePluginSlug,
- * fileSizeAuditSlug
+ *   create as fileSizePlugin,
+ *   recommendedRef as fileSizeRecommendedRefs
  * } from 'file-size.plugin.ts';
  * export default {
  *   persist: {
@@ -63,19 +60,13 @@ export const recommendedRef: CategoryRef[] = [
  *       slug: 'performance',
  *       title: 'Performance',
  *       refs: [
- *         {
- *           type: 'audit',
- *           plugin: fileSizePluginSlug,
- *           slug: fileSizeAuditSlug,
- *           weight: 1,
- *         }
+ *         ...fileSizeRecommendedRefs
  *       ]
  *     }
  *   ]
  * }
- *
  */
-export async function create(options: FileSizeOptions): Promise<PluginConfig> {
+export async function create(options: PluginOptions): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
     title: 'File Size Plugin',
@@ -87,7 +78,7 @@ export async function create(options: FileSizeOptions): Promise<PluginConfig> {
   };
 }
 
-async function runnerFunction(options: FileSizeOptions): Promise<AuditOutputs> {
+async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
   let fileSizeAuditOutput: AuditOutput = {
     slug: fileSizeAuditSlug,
     score: 0,

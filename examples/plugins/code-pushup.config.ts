@@ -3,11 +3,11 @@ import { join } from 'path';
 import type { CoreConfig } from '../../packages/models/src';
 import {
   create as fileSizePlugin,
-  recommendedRef as fileSizeRecommendedRef,
+  recommendedRefs as fileSizeRecommendedRefs,
 } from './file-size.plugin';
 import {
   create as lighthousePlugin,
-  lighthousePluginRecommended,
+  recommendedRefs as lighthouseRecommendedRefs,
 } from './lighthouse.plugin';
 
 /**
@@ -41,7 +41,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRef, ...lighthousePluginRecommended],
+      refs: [...fileSizeRecommendedRefs, ...lighthouseRecommendedRefs],
     },
   ],
 };

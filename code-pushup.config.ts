@@ -12,7 +12,7 @@ import {
 } from './examples/plugins/file-size.plugin';
 import {
   create as lighthousePlugin,
-  lighthousePluginRecommended,
+  recommendedRefs,
 } from './examples/plugins/lighthouse.plugin';
 import type { CoreConfig } from './packages/models/src';
 
@@ -109,7 +109,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRef, ...lighthousePluginRecommended],
+      refs: [...fileSizeRecommendedRef, ...recommendedRefs],
     },
   ],
 };
