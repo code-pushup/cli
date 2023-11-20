@@ -287,7 +287,7 @@ async function createPlugin(options: FileSizeOptions): Promise<PluginConfig> {
 }
 ```
 
-#### Add detail information to the audit output
+##### Add detail information to the audit output
 
 To have better attribution in your audits you can use the `details` section in the audit output.
 This helps in debugging and makes audit results more actionable.
@@ -367,6 +367,98 @@ function fileSizeInfo(filePath: string, size: number, budget: number): Issue {
 ```
 
 Test the output by running `npx code-pushup collect` again.
+
+#### RunnerConfig
+
+The second way to write a plugin is to use a `RunnerConfig` as plugin runner.
+This option is less flexible but can be used to execute all kind fo CLI toos and other processes than node.
+
+We will implement a performance focused plugin using the lighthouse CLI.
+
+The first thing we should think about is how to get the raw data.
+With lighthouse it is ease as the CLI already provides a report file in json format.
+
+The lighthouse CLI can be executed like this:
+
+`npx lighthouse https://example.com`
+
+You should see console output of the report.
+
+To get better debugging experience we add a couple of more options:
+
+- the format and location of the output can be configured with `--output=json --outputFile=lighthouse-report.json`
+- to reduce the output you can execute only specific audits with the `--onlyAudits` option e.g.: `--onlyAudits=largest-contentful-paint`
+- if we want to run the script in the CI we can execute lighthouse headless with the flag `--chrome-flags="--headless=new"`
+
+The basic implementation of a `RunnerConfig` for the above command looks like this:
+
+```typescript
+import { Result } from 'lighthouse';
+import { join } from 'path';
+import { AuditOutputs } from '@code-pushup/models';
+
+type LighthouseOptions = {
+  url: string;
+};
+
+function runnerConfig(options: LighthouseOptions): RunnerConfig {
+  const { url } = options;
+  const outputFile = join(process.cwd(), 'tmp', 'lighthouse-report.json');
+  return {
+    command: 'npx',
+    // npx lighthouse https://example.com --output=json --outputFile=lighthouse-report.json
+    args: objectToCliArgs({
+      _: ['lighthouse', url],
+      output: 'json',
+      ['output-path']: outputFile,
+    }),
+    outputFile,
+    outputTransform: async (output: string): Promise<AuditOutputs> => lhrToAuditOutputs(JSON.parse(output as Result)),
+  };
+}
+
+function lhrToAuditOutputs(lhr: Result): AuditOutputs {
+  return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
+    slug,
+    score: score || 0,
+    value: value ? parseInt(value.toString()) : 0,
+    displayValue,
+    description,
+  }));
+}
+```
+
+As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
+This is implemented in `lhrToAuditOutputs`.
+
+Next we can use the plugin in our `code-psuhup.config.ts`:
+
+```typescript
+export default {
+  // ...
+  plugins: [
+    await createPlugin({
+      url: `https://example.com`,
+    }),
+  ],
+  // ...
+};
+
+async function createPlugin(options: LighthouseOptions): Promise<PluginConfig> {
+  // ...
+  return {
+    //...
+    runner: runnerConfig(),
+    audits: [
+      {
+        slug: 'largest-contentful-paint',
+        title: 'Largest Contnentful Paint',
+      },
+      // other lighthouse audits you want to provide
+    ],
+  };
+}
+```
 
 ### Add the plugin to the categories
 
