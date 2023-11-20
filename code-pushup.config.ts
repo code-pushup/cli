@@ -85,7 +85,7 @@ const config: CoreConfig = {
     await lighthousePlugin({
       url: 'http://127.0.0.1:4211',
       verbose: true,
-      outputFile: join(outputDir, 'lighthouse-report.json'),
+      outputFile: join(process.cwd(), 'tmp', 'lighthouse-report.json'),
       //  onlyAudits: 'largest-contentful-paint',
     }),
   ],
