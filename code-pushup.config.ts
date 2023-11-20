@@ -7,9 +7,8 @@ import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
 import {
-  fileSizeAuditSlug,
   create as fileSizePlugin,
-  pluginSlug as fileSizePluginSlug,
+  recommendedRef as fileSizeRecommendedRef,
 } from './examples/plugins/file-size.plugin';
 import type { CoreConfig } from './packages/models/src';
 
@@ -100,14 +99,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [
-        {
-          type: 'audit',
-          plugin: fileSizePluginSlug,
-          slug: fileSizeAuditSlug,
-          weight: 1,
-        },
-      ],
+      refs: [...fileSizeRecommendedRef],
     },
   ],
 };
