@@ -46,7 +46,11 @@
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.e2e.ts"
+      }
     },
     "version": {
       "dependsOn": ["^build"],
