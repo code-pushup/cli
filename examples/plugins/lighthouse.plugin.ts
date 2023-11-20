@@ -1,11 +1,7 @@
-import {Result} from 'lighthouse';
-
-import {
-  AuditOutputs,
-  PluginConfig,
-} from '../../dist/packages/models';
-import {objectToCliArgs} from "../../packages/utils/src";
-import {CategoryRef, RunnerConfig} from "../../packages/models/src";
+import { Result } from 'lighthouse';
+import { AuditOutputs, PluginConfig } from '../../dist/packages/models';
+import { CategoryRef, RunnerConfig } from '../../packages/models/src';
+import { objectToCliArgs } from '../../packages/utils/src';
 
 export type LighthouseOptions = {
   url: string;
@@ -13,9 +9,7 @@ export type LighthouseOptions = {
 };
 
 export const pluginSlug = 'lighthouse-plugin';
-export const lighthousePluginRecommended: CategoryRef[] = [
-
-];
+export const lighthousePluginRecommended: CategoryRef[] = [];
 
 /**
  * @example
@@ -46,7 +40,9 @@ export const lighthousePluginRecommended: CategoryRef[] = [
  * }
  *
  */
-export async function create(options: LighthouseOptions): Promise<PluginConfig> {
+export async function create(
+  options: LighthouseOptions,
+): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
     title: 'Lighthouse Plugin',
@@ -59,21 +55,21 @@ export async function create(options: LighthouseOptions): Promise<PluginConfig> 
 }
 
 function runnerConfig(options: LighthouseOptions): PluginConfig['runner'] {
-  const {outputFile, url} = options;
+  const { outputFile, url } = options;
   return {
     command: 'npx',
     args: objectToCliArgs({
       _: url,
       output: 'json',
       'output-path': outputFile,
-      'chrome-flags:"--headless"': true
+      'chrome-flags:"--headless"': true,
     }),
     outputFile,
     outputTransform: async (output: string): Promise<AuditOutputs> => {
-      const lighthouseOutput: Result = JSON.parse((output));
+      const lighthouseOutput: Result = JSON.parse(output);
       console.info(lighthouseOutput);
       return lhrToAuditOutputs(lighthouseOutput) as AuditOutputs;
-    }
+    },
   } satisfies RunnerConfig;
 }
 

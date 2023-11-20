@@ -7,6 +7,7 @@ import {
   PluginConfig,
 } from '../../dist/packages/models';
 import { formatBytes, pluralize } from '../../dist/packages/utils';
+import { CategoryRef } from '../../packages/models/src';
 
 export type FileSizeOptions = {
   directory: string;
@@ -27,6 +28,16 @@ export const fileSizeAudit = {
 export const audits = {
   [fileSizeAudit.slug]: fileSizeAudit,
 };
+
+export const recommendedCategory = 'performance';
+export const recommendedRef: CategoryRef[] = [
+  {
+    type: 'audit',
+    plugin: pluginSlug,
+    slug: fileSizeAuditSlug,
+    weight: 1,
+  },
+];
 
 /**
  * @example
