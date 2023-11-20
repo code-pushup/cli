@@ -1,4 +1,4 @@
-import { readFile, readdir, stat, writeFile } from 'fs/promises';
+import { readdir, stat } from 'fs/promises';
 import { basename, join } from 'path';
 import {
   AuditOutput,
@@ -49,7 +49,7 @@ export const recommendedRef: CategoryRef[] = [
  * } from 'file-size.plugin.ts';
  * export default {
  *   persist: {
- *     outputDir: '.code-pushup'
+ *     outputDir: '.code-pushup',
  *   },
  *   plugins: [
  *     await fileSizePlugin({
@@ -76,7 +76,6 @@ export const recommendedRef: CategoryRef[] = [
  *
  */
 export async function create(options: FileSizeOptions): Promise<PluginConfig> {
-  console.log('create file-size: ', options);
   return {
     slug: pluginSlug,
     title: 'File Size Plugin',
