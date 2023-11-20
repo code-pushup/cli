@@ -50,8 +50,10 @@ describe('executePlugin', () => {
       ...validPluginCfg,
       runner: {
         ...runnerConfig,
-        outputTransform: (audits: unknown) =>
-          Promise.resolve(audits as AuditOutputs),
+        outputTransform: (output: unknown) => {
+          const audits = JSON.parse(output as string);
+          return audits as AuditOutputs;
+        },
       },
     };
     const pluginResult = await executePlugin(pluginCfg);
@@ -137,8 +139,9 @@ describe('executePlugins', () => {
         runner: {
           ...processRunner,
           outputTransform: (outputs: unknown): Promise<AuditOutputs> => {
+            const audits = JSON.parse(outputs as string);
             return Promise.resolve(
-              (outputs as AuditOutputs).map(output => {
+              (audits as AuditOutputs).map(output => {
                 return {
                   ...output,
                   displayValue:

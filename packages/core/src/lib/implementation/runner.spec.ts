@@ -29,11 +29,13 @@ describe('executeRunnerConfig', () => {
   it('should use transform if provided', async () => {
     const runnerCfgWithTransform = {
       ...validRunnerCfg,
-      outputTransform: (audits: unknown) =>
-        (audits as AuditOutputs).map(a => ({
+      outputTransform: (output: unknown) => {
+        const audits = JSON.parse(output as string);
+        return (audits as AuditOutputs).map(a => ({
           ...a,
           displayValue: `transformed - ${a.slug}`,
-        })),
+        }));
+      },
     };
 
     const runnerResult = await executeRunnerConfig(runnerCfgWithTransform);

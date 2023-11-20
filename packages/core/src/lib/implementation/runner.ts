@@ -5,12 +5,7 @@ import {
   RunnerConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import {
-  calcDuration,
-  executeProcess,
-  readJsonFile,
-  readTextFile,
-} from '@code-pushup/utils';
+import { calcDuration, executeProcess, readTextFile } from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
