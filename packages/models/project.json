@@ -35,11 +35,17 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/models"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
         "reportsDirectory": "../../coverage/models"
       }
     }
