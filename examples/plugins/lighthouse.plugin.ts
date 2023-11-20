@@ -12,6 +12,7 @@ export type LighthouseOptions = {
   url: string;
   onlyAudits?: string;
   verbose?: boolean;
+  headless?: boolean | 'new';
   outputFile?: string;
 };
 
@@ -1316,8 +1317,9 @@ function runnerConfig(options: LighthouseOptions): PluginConfig['runner'] {
   const {
     url,
     outputFile = 'lighthouse-report.json',
-    verbose = false,
     onlyAudits,
+    verbose = false,
+    headless = false,
   } = options;
   const { log } = verboseUtils(verbose);
   let argsObj: Record<string, any> = {
@@ -1326,6 +1328,13 @@ function runnerConfig(options: LighthouseOptions): PluginConfig['runner'] {
     output: 'json',
     ['output-path']: outputFile,
   };
+
+  if (headless) {
+    argsObj = {
+      ...argsObj,
+      ['chrome-flags']: `--headless=${headless === 'new' ? 'new' : true}`,
+    };
+  }
 
   if (onlyAudits) {
     argsObj = {

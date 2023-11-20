@@ -85,6 +85,7 @@ const config: CoreConfig = {
     await lighthousePlugin({
       url: 'http://google.com',
       verbose: true,
+      headless: true,
       outputFile: join(process.cwd(), '.code-pushup', 'lighthouse-report.json'),
     }),
   ],

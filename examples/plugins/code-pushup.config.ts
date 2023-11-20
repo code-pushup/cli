@@ -10,6 +10,13 @@ import {
   lighthousePluginRecommended,
 } from './lighthouse.plugin';
 
+/**
+ *
+ * Run it with:
+ * `nx run-collect cli --config=./examples/plugins/code-pushup.config.ts --verbose --no-progress`
+ *
+ */
+
 const outputDir = '.code-pushup';
 const config: CoreConfig = {
   persist: {
@@ -25,6 +32,7 @@ const config: CoreConfig = {
     await lighthousePlugin({
       url: 'http://127.0.0.1:4211',
       verbose: true,
+      headless: 'new',
       outputFile: join(outputDir, 'lighthouse-report.json'),
       //  onlyAudits: 'largest-contentful-paint',
     }),
