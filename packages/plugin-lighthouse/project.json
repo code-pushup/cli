@@ -31,12 +31,18 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/plugin-lighthouse"
+        "reportsDirectory": "../../coverage/packages/plugin-lighthouse/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
+      "options": {
+        "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
     }
   },

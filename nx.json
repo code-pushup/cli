@@ -22,6 +22,31 @@
       "cache": true,
       "inputs": ["default", "^production"]
     },
+    "unit-test": {
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.unit.ts"
+      },
+      "cache": true
+    },
+    "integration-test": {
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.integration.ts"
+      },
+      "cache": true
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.e2e.ts"
+      },
+      "cache": true
+    },
     "version": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
@@ -54,12 +79,12 @@
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.test.json",
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.[jt]s",
+      "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
       "!{projectRoot}/test/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s"

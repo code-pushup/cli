@@ -3,25 +3,15 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/cli',
-
+  cacheDir: '../../node_modules/.vite/plugin-lighthouse',
   plugins: [nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-
   test: {
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
     },
     environment: 'node',
-    include: [
-      'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      'test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-    ],
+    include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['global-setup.ts'],
   },
 });

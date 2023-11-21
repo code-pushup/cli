@@ -38,12 +38,18 @@
     "perf": {
       "command": "npx tsx ./packages/utils/perf --tsconfig=packages/utils/tsconfig.perf.json"
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/utils"
+        "reportsDirectory": "../../coverage/utils/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/utils/integration-tests"
       }
     }
   },

@@ -19,9 +19,8 @@ export const execCli = (
   processOptions?: Omit<ProcessConfig, 'args' | 'command' | 'observer'>,
 ) =>
   executeProcess({
-    command: 'npx',
+    command: 'code-pushup',
     args: [
-      './dist/packages/cli',
       command,
       ...objectToCliArgs({
         verbose: true,
