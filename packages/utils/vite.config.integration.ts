@@ -4,14 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/cli',
-
   plugins: [nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-
   test: {
     globals: true,
     cache: {
@@ -19,6 +12,6 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['global-setup.e2e.ts'],
+    globalSetup: ['global-setup.ts'],
   },
 });
