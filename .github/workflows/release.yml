@@ -1,14 +1,27 @@
 name: Release Packages
 
-on: push
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        type: choice
+        description: 'Dry run'
+        required: true
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 env:
   NX_NON_NATIVE_HASHER: true
 
 jobs:
-  release:
+  dry-run-release:
     # This line is critical for copy paste issues
-    if: github.repository == 'code-pushup/cli'
+    if: github.repository == 'code-pushup/cli' && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'true')
     name: Version libraries
     runs-on: ubuntu-latest
     steps:
@@ -21,18 +34,39 @@ jobs:
         with:
           node-version: 18
           cache: npm
-      #      - name: Setup Git
-      #        run: |
-      #          git config user.name "GitHub Bot"
-      #          git config user.email "gituser@example.com"
       - name: Install dependencies
         run: npm ci
       - name: Execute version target on all affected packages and release them
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx nx affected --base=last-release --target=version --dryRun
-#      - name: Tag last-release
-#        shell: bash
-#        run: |
-#          git tag -f last-release
-#          git push origin last-release --force
+  release:
+    # This line is critical for copy paste issues
+    if: github.repository == 'code-pushup/cli' && (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'false')
+    name: Version libraries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Bot"
+          git config user.email "gituser@example.com"
+      - name: Install dependencies
+        run: npm ci
+      - name: Execute version target on all affected packages and release them
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx nx affected --base=last-release --target=version
+      - name: Tag last-release
+        shell: bash
+        run: |
+          git tag -f last-release
+          git push origin last-release --force
