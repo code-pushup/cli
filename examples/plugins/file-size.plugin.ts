@@ -69,7 +69,7 @@ export const recommendedRefs: CategoryRef[] = Object.values(audits).map(
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
-    title: 'File Size Plugin',
+    title: 'File Size',
     icon: 'file',
     description:
       'A plugin to measure and assert filesize of files in a directory.',

@@ -1299,9 +1299,9 @@ export async function create(
 ): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
-    title: 'Lighthouse Plugin',
+    title: 'Lighthouse',
     icon: 'lighthouse',
-    description: 'Lighthouse CLI wrapped as code-pushup plugin',
+    description: 'Chrome lighthouse CLI as code-pushup plugin',
     runner: runnerConfig(options),
     audits,
     groups: [categoryPerfGroup],
