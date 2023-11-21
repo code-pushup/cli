@@ -21,7 +21,7 @@ describe('executeRunner', () => {
       fileURLToPath(dirname(import.meta.url)),
       '..',
       '..',
-      'test',
+      'mocks',
       'fixtures',
       'todos-app',
     );

@@ -10,7 +10,7 @@ describe('listRules', () => {
     '..',
     '..',
     '..',
-    'test',
+    'mocks',
     'fixtures',
   );
 

@@ -11,7 +11,7 @@ describe('eslintPlugin', () => {
     fileURLToPath(dirname(import.meta.url)),
     '..',
     '..',
-    'test',
+    'mocks',
     'fixtures',
   );
 
