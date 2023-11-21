@@ -4,7 +4,7 @@ import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
-import { yargsConfigCommandObject } from './command-object';
+import { yargsConfigCommandObject } from './print-config-command';
 
 const baseArgs = [
   ...objectToCliArgs({
