@@ -222,9 +222,12 @@ export function getGroupWithAudits(
     },
     [],
   ) as WeighedAuditReport[];
-  groupWithAudits.audits = groupAudits.sort((a, b) => sortCategoryAudits(a, b));
+  const audits = groupAudits.sort(sortCategoryAudits);
 
-  return groupWithAudits;
+  return {
+    ...groupWithAudits,
+    audits,
+  };
 }
 
 export function sortCategoryAudits(
