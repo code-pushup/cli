@@ -21,7 +21,7 @@ env:
 jobs:
   dry-run-release:
     # This line is critical for copy paste issues
-    if: github.repository == 'code-pushup/cli' && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'true')
+    if: github.repository == 'code-pushup/cli' && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'true'))
     name: Version libraries
     runs-on: ubuntu-latest
     steps:
