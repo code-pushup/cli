@@ -1,5 +1,9 @@
 # Code PushUp CLI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
+
 🔎🔬 **Quality metrics for your software project.** 📉🔍
 
 1. ⚙️ **Configure what you want to track using your favourite tools.**
@@ -41,11 +45,14 @@ Some examples:
 # visualize project graph
 npx nx graph
 
+# run unit tests for all projects
+npx nx run-many -t unit-test
+
+# run integration tests for all projects
+npx nx run-many -t integration-test
+
 # run E2E tests for CLI
 npx nx e2e cli-e2e
-
-# run unit tests for all projects
-npx nx run-many -t test
 
 # build CLI along with packages it depends on
 npx nx build cli
@@ -74,16 +81,17 @@ Therefore, PRs are merged via one of two strategies:
 
 Projects are tagged in two different dimensions - scope and type:
 
-| tag             | description                                                                  | allowed dependencies           |
-| :-------------- | :--------------------------------------------------------------------------- | :----------------------------- |
-| `scope:core`    | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared` |
-| `scope:plugin`  | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                 |
-| `scope:shared`  | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                 |
-| `scope:tooling` | supplementary tooling, e.g. code generation                                  | `scope:shared`                 |
-| `type:app`      | application, e.g. CLI or example web app                                     | `type:feature` or `type:util`  |
-| `type:feature`  | library with business logic for a specific feature                           | `type:util`                    |
-| `type:util`     | general purpose utilities and types intended for reuse                       | `type:util`                    |
-| `type:e2e`      | E2E testing                                                                  | `type:app` or `type:feature`   |
+| tag                 | description                                                                  | allowed dependencies                               |
+| :------------------ | :--------------------------------------------------------------------------- | :------------------------------------------------- |
+| `scope:core`        | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared`                     |
+| `scope:plugin`      | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                                     |
+| `scope:shared`      | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                                     |
+| `scope:tooling`     | supplementary tooling, e.g. code generation                                  | `scope:shared`                                     |
+| `type:app`          | application, e.g. CLI or example web app                                     | `type:feature`, `type:util` or `type:testing-util` |
+| `type:feature`      | library with business logic for a specific feature                           | `type:util` or `type:testing-util`                 |
+| `type:util`         | general purpose utilities and types intended for reuse                       | `type:util` or `type:testing-util`                 |
+| `type:e2e`          | E2E testing                                                                  | `type:app`, `type:feature` or `type:testing-util`  |
+| `type:testing-util` | testing utilities                                                            | `type:util`                                        |
 
 #### Special Targets
 

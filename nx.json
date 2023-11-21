@@ -4,7 +4,13 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "unit-test",
+          "integration-test",
+          "e2e"
+        ]
       }
     }
   },
@@ -24,12 +30,53 @@
         "reportUnusedDisableDirectives": "warn"
       }
     },
-    "test": {
-      "inputs": ["default", "^production"]
+    "unit-test": {
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.integration.ts"
+      }
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true,
+        "config": "{projectRoot}/vite.config.e2e.ts"
+      }
+    },
+    "version": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "commitMessageFormat": "release(${projectName}): ${version}",
+        "tagPrefix": "{projectName}@",
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "build", "section": "Dependency updates" },
+            { "type": "docs", "section": "Documentation" },
+            { "type": "refactor", "section": "Code Refactoring" },
+            { "type": "perf", "section": "Performance Improvements" }
+          ]
+        }
+      }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}"
+      }
     }
   },
   "namedInputs": {
@@ -37,12 +84,12 @@
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.test.json",
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.[jt]s",
+      "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
       "!{projectRoot}/test/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s"
