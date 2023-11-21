@@ -12,7 +12,7 @@ import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
 import { setupFolder } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './command-object';
+import { yargsUploadCommandObject } from './upload-command';
 
 // This in needed to mock the API client used inside the upload function
 vi.mock('@code-pushup/portal-client', async () => {

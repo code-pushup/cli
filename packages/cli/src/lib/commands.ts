@@ -1,8 +1,8 @@
 import { CommandModule } from 'yargs';
-import { yargsAutorunCommandObject } from './autorun/command-object';
-import { yargsCollectCommandObject } from './collect/command-object';
-import { yargsConfigCommandObject } from './print-config/command-object';
-import { yargsUploadCommandObject } from './upload/command-object';
+import { yargsAutorunCommandObject } from './autorun/autorun-command';
+import { yargsCollectCommandObject } from './collect/collect-command';
+import { yargsConfigCommandObject } from './print-config/print-config-command';
+import { yargsUploadCommandObject } from './upload/upload-command';
 
 export const commands: CommandModule[] = [
   {

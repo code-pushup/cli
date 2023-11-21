@@ -5,7 +5,7 @@ import { objectToCliArgs } from '@code-pushup/utils';
 import { mockConsole, unmockConsole } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
-import { yargsCollectCommandObject } from './command-object';
+import { yargsCollectCommandObject } from './collect-command';
 
 const getFilename = () => 'report';
 const baseArgs = [
