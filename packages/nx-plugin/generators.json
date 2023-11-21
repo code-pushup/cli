@@ -5,10 +5,10 @@
       "schema": "./src/generators/init/schema.json",
       "description": "init generator"
     },
-    "add-to-project": {
-      "factory": "./src/generators/add-to-project/generator",
-      "schema": "./src/generators/add-to-project/schema.json",
-      "description": "add-to-project generator"
+    "configuration": {
+      "factory": "./src/generators/configuration/generator",
+      "schema": "./src/generators/configuration/schema.json",
+      "description": "configuration generator"
     }
   }
 }

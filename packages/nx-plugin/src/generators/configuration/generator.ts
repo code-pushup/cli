@@ -28,13 +28,13 @@ export async function addToProjectGenerator(
     ...projectConfiguration,
     targets: {
       ...projectConfiguration.targets,
-      collect: {
+      'code-pushup': {
         executor: 'nx:run-commands',
         options: {
-          command: `code-pushup collect --no-progress --config=${join(
+          command: `code-pushup autorun --no-progress --config=${join(
             './',
             root,
-            'code-pushup.config.json',
+            'code-pushup.config.js',
           )}`,
         },
       },

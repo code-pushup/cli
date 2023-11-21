@@ -16,14 +16,14 @@ describe('init generator', () => {
     tree = createTreeWithEmptyWorkspace();
 
     addProjectConfiguration(tree, testProjectName, {
-      root: `apps/${testProjectName}`,
+      root: `${testProjectName}`,
       projectType: 'library',
-      sourceRoot: `apps/${testProjectName}/src`,
+      sourceRoot: `${testProjectName}/src`,
       targets: {},
     });
   });
 
-  it('should add code-pushuo.config.json to the project root', async () => {
+  it('should add code-pushup.config.js to the project root', async () => {
     await addToProjectGenerator(tree, { project: testProjectName });
 
     const projectConfiguration = readProjectConfiguration(
@@ -31,14 +31,14 @@ describe('init generator', () => {
       testProjectName,
     );
 
-    expect(tree.exists('apps/test-app/code-pushup.config.json')).toBe(true);
-    expect(projectConfiguration.targets?.collect).toEqual({
+    expect(tree.exists('test-app/code-pushup.config.js')).toBe(true);
+    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
       executor: 'nx:run-commands',
       options: {
-        command: `code-pushup collect --no-progress --config=${join(
+        command: `code-pushup autorun --no-progress --config=${join(
           './',
           projectConfiguration.root,
-          'code-pushup.config.json',
+          'code-pushup.config.js',
         )}`,
       },
     });

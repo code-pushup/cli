@@ -1,0 +1,12 @@
+export default {
+  persist: {
+    outputDir: '.code-pushup',
+    format: ['json', 'md', 'stdout'],
+  },
+  plugins: [
+    // ...
+  ],
+  categories: [
+    // ...
+  ],
+};
