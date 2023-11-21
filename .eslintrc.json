@@ -238,6 +238,7 @@
         "*.test.ts",
         "*.mock.ts",
         "test/**/*.ts",
+        "mocks/**/*.ts",
         "testing-utils/**/*.ts"
       ],
       "extends": ["plugin:vitest/recommended"],
