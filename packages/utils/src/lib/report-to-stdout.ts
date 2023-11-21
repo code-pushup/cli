@@ -1,6 +1,6 @@
+import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import cliui from 'cliui';
 import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,

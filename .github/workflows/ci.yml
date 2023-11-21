@@ -60,7 +60,7 @@ jobs:
       - name: Lint affected projects
         run: npx nx affected:lint --parallel=3
 
-  test:
+  unit-test:
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,34 @@ jobs:
       - name: Unit test affected projects
         uses: Wandalen/wretry.action@master
         with:
-          command: npx nx affected:test --parallel=3 --coverage
+          command: npx nx affected -t unit-test --parallel=3 --coverage
+          attempt_limit: 2
+
+  integration-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: Integration tests
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Integration test affected projects
+        uses: Wandalen/wretry.action@master
+        with:
+          command: npx nx affected -t integration-test --parallel=3 --coverage
           attempt_limit: 2
 
   e2e:

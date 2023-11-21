@@ -21,6 +21,10 @@
         "notesFile": "./packages/core/CHANGELOG.md"
       }
     },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -31,12 +35,18 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/core"
+        "reportsDirectory": "../../coverage/core/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/core/integration-tests"
       }
     }
   },
