@@ -90,7 +90,7 @@
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
-      "!{projectRoot}/test/**/*",
+      "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s"
     ],
