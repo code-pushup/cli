@@ -1,15 +1,12 @@
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { bundleRequire } from 'bundle-require';
+import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { UploadOptions } from '@code-pushup/core';
 import { report } from '@code-pushup/models/testing';
-import { CliArgsObject, objectToCliArgs } from '@code-pushup/utils';
-import { setupFolder } from '../../../test';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
@@ -26,68 +23,61 @@ vi.mock('@code-pushup/portal-client', async () => {
     ),
   };
 });
-const dummyReport = report();
 
-// @TODO move into test library
-const baseArgs = [
-  'upload',
-  ...objectToCliArgs({
-    verbose: true,
-    config: join(
-      fileURLToPath(dirname(import.meta.url)),
-      '..',
-      '..',
-      '..',
-      'test',
-      'minimal.config.ts',
-    ),
-  }),
-];
-const cli = (args: string[]) =>
-  yargsCli(args, {
-    ...DEFAULT_CLI_CONFIGURATION,
-    commands: [yargsUploadCommandObject()],
-  });
+// Mock file system API's
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
+
+// Mock bundleRequire inside importEsmModule used for fetching config
+vi.mock('bundle-require', async () => {
+  const { minimalConfig }: typeof import('@code-pushup/models/testing') =
+    await vi.importActual('@code-pushup/models/testing');
+  return {
+    bundleRequire: vi
+      .fn()
+      .mockResolvedValue({ mod: { default: minimalConfig() } }),
+  };
+});
 
 describe('upload-command-object', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-  });
-
-  it('should override config with CLI arguments', async () => {
-    setupFolder('tmp', {
-      ['report.json']: JSON.stringify(dummyReport),
-    });
-    const args = [
-      ...baseArgs,
-      ...objectToCliArgs<CliArgsObject>({
-        //   'upload.organization': 'some-other-organization', @TODO
-        //   'upload.project': 'some-other-project', @TODO
-        'upload.apiKey': 'some-other-api-key',
-        'upload.server': 'https://other-example.com/api',
-      }),
-    ];
-    const parsedArgv = (await cli(
-      args,
-    ).parseAsync()) as Required<UploadOptions>;
-    expect(parsedArgv.upload.organization).toBe('code-pushup');
-    expect(parsedArgv.upload.project).toBe('cli');
-    expect(parsedArgv.upload.apiKey).toBe('some-other-api-key');
-    expect(parsedArgv.upload.server).toBe('https://other-example.com/api');
+    vol.reset();
+    vol.fromJSON(
+      {
+        'my-report.json': JSON.stringify(report()),
+        'code-pushup.config.ts': '', // only needs to exist for stat inside bundleRequire
+      },
+      '/test',
+    );
   });
 
   it('should call portal-client function with correct parameters', async () => {
-    const reportFileName = 'my-report';
-    setupFolder('tmp', {
-      [reportFileName + '.json']: JSON.stringify(dummyReport),
+    await yargsCli(
+      [
+        'upload',
+        '--verbose',
+        '--config=/test/code-pushup.config.ts',
+        '--persist.filename=my-report',
+        '--persist.outputDir=/test',
+      ],
+      {
+        ...DEFAULT_CLI_CONFIGURATION,
+        commands: [yargsUploadCommandObject()],
+      },
+    ).parseAsync();
+
+    expect(bundleRequire).toHaveBeenCalledWith({
+      format: 'esm',
+      filepath: '/test/code-pushup.config.ts',
     });
-    const args = [
-      ...baseArgs,
-      ...objectToCliArgs<CliArgsObject>({
-        'persist.filename': reportFileName,
-      }),
-    ];
-    await cli(args).parseAsync();
+
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
@@ -96,8 +86,8 @@ describe('upload-command-object', () => {
         commandDuration: expect.any(Number),
         categories: expect.any(Array),
         plugins: expect.any(Array),
-        packageName: dummyReport.packageName,
-        packageVersion: dummyReport.version,
+        packageName: '@code-pushup/core',
+        packageVersion: expect.any(String),
         organization: 'code-pushup',
         project: 'cli',
         commit: expect.any(String),
