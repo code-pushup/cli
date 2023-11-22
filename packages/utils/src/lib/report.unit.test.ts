@@ -9,7 +9,10 @@ import {
   formatBytes,
   formatCount,
   loadReport,
+  sortAudits,
+  sortCategoryAudits,
 } from './report';
+import { EnrichedAuditReport, WeighedAuditReport } from './scoring';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -180,5 +183,88 @@ describe('loadReport', () => {
     await expect(
       loadReport({ outputDir, filename: 'report', format: 'json' }),
     ).rejects.toThrow('validation');
+  });
+});
+
+describe('audits sorting', () => {
+  it('should sort audits with weight', () => {
+    const audits: WeighedAuditReport[] = [
+      {
+        slug: 'a1',
+        weight: 3,
+        plugin: 'a',
+        score: 1,
+        value: 1,
+        title: 'a1',
+      },
+      {
+        slug: 'a2',
+        weight: 5,
+        plugin: 'a',
+        score: 1,
+        value: 1,
+        title: 'a2',
+      },
+      {
+        slug: 'a1',
+        weight: 0,
+        plugin: 'a',
+        score: 1,
+        value: 1,
+        title: 'a1',
+      },
+      {
+        slug: 'a2',
+        weight: 10,
+        plugin: 'a',
+        score: 1,
+        value: 1,
+        title: 'a2',
+      },
+    ];
+    const sortedAudits = [...audits].sort(sortCategoryAudits);
+    expect(sortedAudits[0]).toEqual(audits[3]);
+    expect(sortedAudits[1]).toEqual(audits[1]);
+    expect(sortedAudits[2]).toEqual(audits[0]);
+    expect(sortedAudits[3]).toEqual(audits[2]);
+  });
+
+  it('should sort enriched audits', () => {
+    const audits: EnrichedAuditReport[] = [
+      {
+        slug: 'a1',
+        plugin: 'a',
+        score: 1,
+        value: 1,
+        title: 'Audit 1',
+      },
+      {
+        slug: 'a2',
+        plugin: 'a',
+        score: 0,
+        value: 1,
+        title: 'Audit 2',
+      },
+      {
+        slug: 'a3',
+        plugin: 'a',
+        score: 0.75,
+        value: 1,
+        title: 'Audit 3',
+      },
+      {
+        slug: 'a4',
+        plugin: 'a',
+        score: 0.98,
+        value: 1,
+        title: 'Audit 4',
+      },
+    ];
+
+    const sortedAudits = [...audits].sort(sortAudits);
+    expect(sortedAudits[0]).toEqual(audits[1]);
+    expect(sortedAudits[1]).toEqual(audits[2]);
+    expect(sortedAudits[2]).toEqual(audits[3]);
+    expect(sortedAudits[3]).toEqual(audits[0]);
   });
 });

@@ -34,6 +34,7 @@ import {
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
   sortAudits,
+  sortCategoryAudits,
 } from './report';
 import {
   EnrichedScoredAuditGroupWithAudits,
@@ -115,11 +116,13 @@ function reportToCategoriesSection(report: ScoredReport): string {
       { groups: [], audits: [] },
     );
 
-    const audits = auditsAndGroups.audits.reduce((acc, audit) => {
-      acc += auditItemToCategorySection(audit);
-      acc += NEW_LINE;
-      return acc;
-    }, '');
+    const audits = auditsAndGroups.audits
+      .sort(sortCategoryAudits)
+      .reduce((acc, audit) => {
+        acc += auditItemToCategorySection(audit);
+        acc += NEW_LINE;
+        return acc;
+      }, '');
     const groups = auditsAndGroups.groups.reduce(
       (acc: string, group: EnrichedScoredAuditGroupWithAudits) => {
         acc += groupItemToCategorySection(group);
