@@ -30,7 +30,7 @@ describe('logMultipleResults', () => {
     vi.restoreAllMocks();
   });
 
-  it('should call logPluginExecution with successfull plugin result', async () => {
+  it('should call logPromiseResults with successfull plugin result', async () => {
     logMultipleResults(
       [
         {
@@ -47,7 +47,7 @@ describe('logMultipleResults', () => {
     expect(failedCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPluginExecution with failed plugin result', async () => {
+  it('should call logPromiseResults with failed plugin result', async () => {
     logMultipleResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports',
@@ -59,7 +59,7 @@ describe('logMultipleResults', () => {
     expect(succeededCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPluginExecution twice', async () => {
+  it('should call logPromiseResults twice', async () => {
     logMultipleResults(
       [
         {
@@ -78,7 +78,7 @@ describe('logMultipleResults', () => {
   });
 });
 
-describe('logPluginExecution', () => {
+describe('logPromiseResults', () => {
   let logs: string[];
   const setupConsole = async () => {
     logs = [];
@@ -98,7 +98,7 @@ describe('logPluginExecution', () => {
     teardownConsole();
   });
 
-  it('should log success plugins', async () => {
+  it('should log on success', async () => {
     logPromiseResults(
       [
         {
@@ -115,7 +115,7 @@ describe('logPluginExecution', () => {
     expect(logs[1]).toContain('- [1mout.json[22m');
   });
 
-  it('should log failed plugins', async () => {
+  it('should log on fail', async () => {
     logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed: ',
