@@ -7,7 +7,21 @@ export function filterKebabCaseKeys<T extends Record<string, unknown>>(
     if (key.includes('-')) {
       return;
     }
-    newObj[key] = obj[key];
+
+    if (
+      typeof obj[key] === 'string' ||
+      (typeof obj[key] === 'object' && Array.isArray(obj[key]))
+    ) {
+      newObj[key] = obj[key];
+    }
+
+    if (
+      typeof obj[key] === 'object' &&
+      !Array.isArray(obj[key]) &&
+      obj[key] != null
+    ) {
+      newObj[key] = filterKebabCaseKeys(obj[key] as Record<string, unknown>);
+    }
   });
 
   return newObj as T;
