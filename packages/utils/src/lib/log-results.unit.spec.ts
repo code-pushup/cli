@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockConsole, unmockConsole } from '../../test';
 import { FileResult } from './file-system';
-import { logMultipleResults, logPluginExecution } from './log-results';
+import { logMultipleResults, logPromiseResults } from './log-results';
 import { formatBytes } from './report';
 
 const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
@@ -99,7 +99,7 @@ describe('logPluginExecution', () => {
   });
 
   it('should log success plugins', async () => {
-    logPluginExecution(
+    logPromiseResults(
       [
         {
           status: 'fulfilled',
@@ -116,7 +116,7 @@ describe('logPluginExecution', () => {
   });
 
   it('should log failed plugins', async () => {
-    logPluginExecution(
+    logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed: ',
       failedCallback,

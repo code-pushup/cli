@@ -43,7 +43,7 @@ export type FileResult = readonly [string] | readonly [string, number];
 export type MultipleFileResults = PromiseSettledResult<FileResult>[];
 
 export function logMultipleFileResults(
-  persistResult: MultipleFileResults,
+  fileResults: MultipleFileResults,
   messagePrefix: string,
 ): void {
   const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
@@ -58,7 +58,7 @@ export function logMultipleFileResults(
   };
 
   logMultipleResults<FileResult>(
-    persistResult,
+    fileResults,
     messagePrefix,
     succeededCallback,
     failedCallback,

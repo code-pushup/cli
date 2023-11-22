@@ -1,7 +1,7 @@
-type PromiseFulfilledResult<T> = {
-  status: 'fulfilled';
-  value: T;
-};
+import {
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+} from './promise-result';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
@@ -10,12 +10,9 @@ export function logMultipleResults<T>(
   failedCallback?: (result: PromiseRejectedResult) => void,
 ) {
   if (succeededCallback) {
-    const succeededResults = results.filter(
-      (result): result is PromiseFulfilledResult<T> =>
-        result.status === 'fulfilled',
-    );
+    const succeededResults = results.filter(isPromiseFulfilledResult);
 
-    logPluginExecution(
+    logPromiseResults(
       succeededResults,
       `${messagePrefix} successfully: `,
       succeededCallback,
@@ -23,11 +20,9 @@ export function logMultipleResults<T>(
   }
 
   if (failedCallback) {
-    const failedResults = results.filter(
-      (result): result is PromiseRejectedResult => result.status === 'rejected',
-    );
+    const failedResults = results.filter(isPromiseRejectedResult);
 
-    logPluginExecution(
+    logPromiseResults(
       failedResults,
       `${messagePrefix} failed: `,
       failedCallback,
@@ -35,19 +30,11 @@ export function logMultipleResults<T>(
   }
 }
 
-export function logPluginExecution<T>(
-  results: (PromiseFulfilledResult<T> | PromiseRejectedResult)[],
-  logMessage: string,
-  callback:
-    | ((result: PromiseFulfilledResult<T>) => void)
-    | ((result: PromiseRejectedResult) => void),
-): void {
+export function logPromiseResults<
+  T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
+>(results: T[], logMessage: string, callback: (result: T) => void): void {
   if (results.length) {
     console.log(logMessage);
-    results.forEach(
-      callback as (
-        result: PromiseFulfilledResult<T> | PromiseRejectedResult,
-      ) => void,
-    );
+    results.forEach(callback);
   }
 }

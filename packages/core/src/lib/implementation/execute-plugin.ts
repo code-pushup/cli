@@ -9,10 +9,13 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { getProgressBar, logMultipleResults } from '@code-pushup/utils';
+import {
+  getProgressBar,
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+  logMultipleResults,
+} from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
-
-type ExecutePluginResult = PluginReport | string;
 
 /**
  * Error thrown when plugin output is invalid.
@@ -135,7 +138,7 @@ export async function executePlugins(
         Promise.reject(e instanceof Error ? e.message : String(e)),
       );
     }
-  }, Promise.resolve([] as Promise<ExecutePluginResult>[]));
+  }, Promise.resolve([] as Promise<PluginReport>[]));
 
   progressBar?.endProgress('Done running plugins');
 
@@ -147,11 +150,7 @@ export async function executePlugins(
 
   // TODO: add groupBy method for promiseSettledResult by status, #287
 
-  const failedResults = results.filter(
-    (
-      result: PromiseSettledResult<ExecutePluginResult>,
-    ): result is PromiseRejectedResult => result.status === 'rejected',
-  );
+  const failedResults = results.filter(isPromiseRejectedResult);
   if (failedResults.length) {
     const errorMessages = failedResults
       .map(({ reason }: PromiseRejectedResult) => reason)
@@ -162,12 +161,7 @@ export async function executePlugins(
   }
 
   return results
-    .filter(
-      (
-        result: PromiseSettledResult<ExecutePluginResult>,
-      ): result is PromiseFulfilledResult<PluginReport> =>
-        result.status === 'fulfilled',
-    )
+    .filter(isPromiseFulfilledResult)
     .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
 }
 

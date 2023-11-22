@@ -44,3 +44,7 @@ export {
 } from './lib/transformation';
 export { NEW_LINE } from './lib/md';
 export { logMultipleResults } from './lib/log-results';
+export {
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+} from './lib/promise-result';
