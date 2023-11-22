@@ -46,13 +46,13 @@ vi.mock('bundle-require', async () => {
 });
 
 describe('upload-command-object', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
     vol.reset();
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(report()),
-        'code-pushup.config.ts': '', // only needs to exist for stat inside bundleRequire
+        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
       '/test',
     );

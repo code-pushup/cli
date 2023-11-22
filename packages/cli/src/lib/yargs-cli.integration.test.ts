@@ -26,9 +26,7 @@ describe('yargsCli', () => {
   it('should parse a single config argument as a string', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(
       ['--config=./config.a.ts'],
-      {
-        options,
-      },
+      { options },
     ).parseAsync();
     expect(parsedArgv.config).toBe('./config.a.ts');
   });
@@ -36,9 +34,7 @@ describe('yargsCli', () => {
   it('should parse an array argument', async () => {
     const parsedArgv = await yargsCli<CoreConfig>(
       ['--persist.format=md', '--persist.format=json'],
-      {
-        options,
-      },
+      { options },
     ).parseAsync();
     expect(parsedArgv.persist.format).toEqual(['md', 'json']);
   });
@@ -46,9 +42,7 @@ describe('yargsCli', () => {
   it('should parse global options correctly', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(
       ['--verbose', '--no-progress'],
-      {
-        options,
-      },
+      { options },
     ).parseAsync();
     expect(parsedArgv.verbose).toBe(true);
     expect(parsedArgv.progress).toBe(false);
@@ -57,9 +51,7 @@ describe('yargsCli', () => {
   it('should use the last occurrence of an argument if config is passed multiple times', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(
       ['--config=./config.a.ts', '--config=./config.b.ts'],
-      {
-        options,
-      },
+      { options },
     ).parseAsync();
     expect(parsedArgv.config).toBe('./config.b.ts');
   });
@@ -76,9 +68,7 @@ describe('yargsCli', () => {
         '--upload.server=https://code-pushdown.com/api',
         '--upload.apiKey=some-api-key',
       ],
-      {
-        options,
-      },
+      { options },
     ).parseAsync();
     expect(parsedArgv).toEqual(
       expect.objectContaining({
