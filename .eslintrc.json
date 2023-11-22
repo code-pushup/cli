@@ -235,6 +235,7 @@
     },
     {
       "files": [
+        "*.spec.ts", // <- so that vitest/consistent-test-filename reports .spec.ts files
         "*.test.ts",
         "*.mock.ts",
         "test/**/*.ts",
