@@ -1,6 +1,7 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
 import { mkdir, readFile } from 'fs/promises';
+import { logMultipleResults } from './log-results';
 import { formatBytes } from './report';
 
 export function toUnixPath(
@@ -42,35 +43,26 @@ export type FileResult = readonly [string] | readonly [string, number];
 export type MultipleFileResults = PromiseSettledResult<FileResult>[];
 
 export function logMultipleFileResults(
-  persistResult: MultipleFileResults,
+  fileResults: MultipleFileResults,
   messagePrefix: string,
-) {
-  const succeededPersistedResults = persistResult.filter(
-    (result): result is PromiseFulfilledResult<[string, number]> =>
-      result.status === 'fulfilled',
+): void {
+  const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
+    const [fileName, size] = result.value;
+    console.log(
+      `- ${chalk.bold(fileName)}` +
+        (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
+    );
+  };
+  const failedCallback = (result: PromiseRejectedResult) => {
+    console.log(`- ${chalk.bold(result.reason)}`);
+  };
+
+  logMultipleResults<FileResult>(
+    fileResults,
+    messagePrefix,
+    succeededCallback,
+    failedCallback,
   );
-
-  if (succeededPersistedResults.length) {
-    console.log(`${messagePrefix} successfully: `);
-    succeededPersistedResults.forEach(res => {
-      const [fileName, size] = res.value;
-      console.log(
-        `- ${chalk.bold(fileName)}` +
-          (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
-      );
-    });
-  }
-
-  const failedPersistedResults = persistResult.filter(
-    (result): result is PromiseRejectedResult => result.status === 'rejected',
-  );
-
-  if (failedPersistedResults.length) {
-    console.log(`${messagePrefix} failed: `);
-    failedPersistedResults.forEach(result => {
-      console.log(`- ${chalk.bold(result.reason)}`);
-    });
-  }
 }
 
 export class NoExportError extends Error {
