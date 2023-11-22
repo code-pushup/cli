@@ -8,7 +8,7 @@ import { yargsConfigCommandObject } from './print-config-command';
 describe('print-config-command', () => {
   let logSpy: SpyInstance;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     logSpy = vi.spyOn(console, 'log');
   });
 
