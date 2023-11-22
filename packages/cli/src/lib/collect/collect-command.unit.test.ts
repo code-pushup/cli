@@ -27,12 +27,10 @@ vi.mock('@code-pushup/core', async () => {
 
 // Mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
-  const { minimalConfig }: typeof import('@code-pushup/models/testing') =
+  const { config }: typeof import('@code-pushup/models/testing') =
     await vi.importActual('@code-pushup/models/testing');
   return {
-    bundleRequire: vi
-      .fn()
-      .mockResolvedValue({ mod: { default: minimalConfig() } }),
+    bundleRequire: vi.fn().mockResolvedValue({ mod: { default: config() } }),
   };
 });
 
@@ -77,6 +75,32 @@ describe('collect-command', () => {
           filename: 'my-report',
           outputDir: '/test',
         }),
+      }),
+    );
+  });
+
+  it('should call collect only for the specified plugin', async () => {
+    await yargsCli(
+      [
+        'collect',
+        '--config=/test/code-pushup.config.ts',
+        '--onlyPlugins=lighthouse',
+      ],
+      {
+        ...DEFAULT_CLI_CONFIGURATION,
+        commands: [yargsCollectCommandObject()],
+      },
+    ).parseAsync();
+
+    expect(bundleRequire).toHaveBeenCalledWith({
+      format: 'esm',
+      filepath: '/test/code-pushup.config.ts',
+    });
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: '/test/code-pushup.config.ts',
+        plugins: [expect.objectContaining({ slug: 'lighthouse' })],
       }),
     );
   });

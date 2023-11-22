@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import { readCodePushupConfig } from '@code-pushup/core';
 import { CoreConfig } from '@code-pushup/models';
-import { GeneralCliOptions } from './model';
-import { OnlyPluginsOptions } from './only-plugins-options';
+import { GeneralCliOptions, OnlyPluginsOptions } from './model';
 
 export async function configMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,

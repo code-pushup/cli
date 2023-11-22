@@ -18,3 +18,7 @@ export type UploadConfigCliOptions = {
 
 export type CoreConfigCliOptions = PersistConfigCliOptions &
   UploadConfigCliOptions;
+
+export type OnlyPluginsOptions = {
+  onlyPlugins: string[];
+};
