@@ -16,7 +16,7 @@ describe('init generator', () => {
     tree = createTreeWithEmptyWorkspace();
 
     addProjectConfiguration(tree, testProjectName, {
-      root: `${testProjectName}`,
+      root: testProjectName,
       projectType: 'library',
       sourceRoot: `${testProjectName}/src`,
       targets: {},
@@ -31,14 +31,14 @@ describe('init generator', () => {
       testProjectName,
     );
 
-    expect(tree.exists('test-app/code-pushup.config.js')).toBe(true);
+    expect(tree.exists('test-app/code-pushup.config.ts')).toBe(true);
     expect(projectConfiguration.targets?.['code-pushup']).toEqual({
       executor: 'nx:run-commands',
       options: {
         command: `code-pushup autorun --no-progress --config=${join(
           './',
           projectConfiguration.root,
-          'code-pushup.config.js',
+          'code-pushup.config.ts',
         )}`,
       },
     });

@@ -17,7 +17,7 @@ export async function addToProjectGenerator(
 
   const { root } = projectConfiguration;
 
-  if (tree.exists(path.join(root, 'code-pushup.config.json'))) {
+  if (tree.exists(path.join(root, 'code-pushup.config.ts'))) {
     console.log('Code PushUp already configured for this project');
     return;
   }
@@ -34,7 +34,7 @@ export async function addToProjectGenerator(
           command: `code-pushup autorun --no-progress --config=${join(
             './',
             root,
-            'code-pushup.config.js',
+            'code-pushup.config.ts',
           )}`,
         },
       },

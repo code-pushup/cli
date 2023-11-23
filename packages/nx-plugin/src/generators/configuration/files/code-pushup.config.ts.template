@@ -1,4 +1,6 @@
-export default {
+import type { CoreConfig } from '@code-pushup/models';
+
+const config: CoreConfig = {
   persist: {
     outputDir: '.code-pushup',
     format: ['json', 'md', 'stdout'],
@@ -10,3 +12,5 @@ export default {
     // ...
   ],
 };
+
+export default config;
