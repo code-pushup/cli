@@ -57,7 +57,7 @@
       "inputs": ["production", "^production"],
       "executor": "@jscutlery/semver:version",
       "options": {
-        "commitMessageFormat": "release(${projectName}): ${version}",
+        "commitMessageFormat": "release({projectName}): {version} [skip ci]",
         "tagPrefix": "{projectName}@",
         "preset": {
           "name": "conventionalcommits",
@@ -75,7 +75,7 @@
     "github": {
       "executor": "@jscutlery/semver:github",
       "options": {
-        "tag": "${tag}"
+        "tag": "{tag}"
       }
     }
   },
