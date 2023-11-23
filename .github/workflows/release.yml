@@ -71,7 +71,8 @@ jobs:
       - name: Execute version target on all affected packages and release them
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx nx affected --base=latest --target=version
+        # un-exclude packages when they're ready for public release
+        run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin
       - name: Tag latest
         shell: bash
         run: |
