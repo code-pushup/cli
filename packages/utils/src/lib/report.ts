@@ -5,7 +5,6 @@ import {
   IssueSeverity as CliIssueSeverity,
   Format,
   PersistConfig,
-  PluginReport,
   Report,
   reportSchema,
 } from '@code-pushup/models';

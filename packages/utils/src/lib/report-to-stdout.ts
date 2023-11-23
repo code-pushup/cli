@@ -11,7 +11,7 @@ import {
   reportRawOverviewTableHeaders,
   sortAudits,
 } from './report';
-import { EnrichedAuditReport, ScoredReport } from './scoring';
+import { ScoredReport } from './scoring';
 
 function addLine(line = ''): string {
   return line + NEW_LINE;
