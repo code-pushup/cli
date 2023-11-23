@@ -1,4 +1,5 @@
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SpyInstance, describe, expect } from 'vitest';
 import { configMiddleware } from './config-middleware';
 
@@ -8,7 +9,19 @@ describe('configMiddleware', () => {
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd');
     cwdSpy.mockReturnValue(
-      join(process.cwd(), 'testing-utils', 'src', 'lib', 'fixtures', 'configs'),
+      join(
+        fileURLToPath(dirname(import.meta.url)),
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'testing-utils',
+        'src',
+        'lib',
+        'fixtures',
+        'configs',
+      ),
     );
   });
 

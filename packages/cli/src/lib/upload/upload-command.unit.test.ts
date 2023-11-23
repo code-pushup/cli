@@ -7,7 +7,7 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { report } from '@code-pushup/models/testing';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
 
@@ -36,12 +36,12 @@ vi.mock('fs/promises', async () => {
 
 // Mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
-  const { minimalConfig }: typeof import('@code-pushup/models/testing') =
-    await vi.importActual('@code-pushup/models/testing');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
+    await vi.importActual('@code-pushup/testing-utils');
   return {
     bundleRequire: vi
       .fn()
-      .mockResolvedValue({ mod: { default: minimalConfig() } }),
+      .mockResolvedValue({ mod: { default: CORE_CONFIG_MOCK } }),
   };
 });
 

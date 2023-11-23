@@ -1,35 +1,45 @@
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { SpyInstance, describe, expect } from 'vitest';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../test/constants';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
 
 describe('print-config-command', () => {
   let logSpy: SpyInstance;
+  let cwdSpy: SpyInstance;
 
   beforeEach(() => {
     logSpy = vi.spyOn(console, 'log');
+    cwdSpy = vi.spyOn(process, 'cwd');
+    cwdSpy.mockReturnValue(
+      join(
+        fileURLToPath(dirname(import.meta.url)),
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'testing-utils',
+        'src',
+        'lib',
+        'fixtures',
+        'configs',
+      ),
+    );
   });
 
   afterEach(() => {
     logSpy.mockRestore();
+    cwdSpy.mockRestore();
   });
 
   it('should filter out meta arguments and kebab duplicates', async () => {
-    const configPath = join(
-      fileURLToPath(dirname(import.meta.url)),
-      '..',
-      '..',
-      '..',
-      'test',
-      'all-values.config.ts',
-    );
     await yargsCli(
       [
         'print-config',
         '--verbose',
-        `--config=${configPath}`,
+        `--config=code-pushup.config.ts`,
         '--persist.outputDir=destinationDir',
       ],
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
