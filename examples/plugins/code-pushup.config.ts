@@ -9,6 +9,10 @@ import {
   create as lighthousePlugin,
   recommendedRefs as lighthouseRecommendedRefs,
 } from './lighthouse.plugin';
+import {
+  create as packageVersionPlugin,
+  recommendedRefs as packageVersionRecommendedRefs,
+} from './package-version.plugin';
 
 /**
  *
@@ -36,12 +40,22 @@ const config: CoreConfig = {
       outputFile: join(outputDir, 'lighthouse-report.json'),
       //  onlyAudits: 'largest-contentful-paint',
     }),
+    await packageVersionPlugin({
+      directory: join(process.cwd(), './packages/models'),
+      packages: {
+        "zod": "^3.22.21",
+      }
+    })
   ],
   categories: [
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs, ...lighthouseRecommendedRefs],
+      refs: [
+        ...fileSizeRecommendedRefs,
+        ...lighthouseRecommendedRefs,
+        ...packageVersionRecommendedRefs
+      ],
     },
   ],
 };
