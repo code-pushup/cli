@@ -4,7 +4,7 @@ import { describe, expect } from 'vitest';
 import { configMiddleware } from './config-middleware';
 
 describe('configMiddleware', () => {
-  const configPath = join(
+  const configDirPath = join(
     fileURLToPath(dirname(import.meta.url)),
     '..',
     '..',
@@ -18,29 +18,16 @@ describe('configMiddleware', () => {
     'configs',
   );
 
-  it('should load valid .ts config', async () => {
-    const config = await configMiddleware({
-      config: join(configPath, 'code-pushup.config.ts'),
-    });
-    expect(config.config).toContain('code-pushup.config.ts');
-    expect(config.upload?.project).toContain('ts');
-  });
-
-  it('should load valid .mjs config', async () => {
-    const config = await configMiddleware({
-      config: join(configPath, 'code-pushup.config.mjs'),
-    });
-    expect(config.config).toContain('code-pushup.config.mjs');
-    expect(config.upload?.project).toContain('mjs');
-  });
-
-  it('should load valid .js config', async () => {
-    const config = await configMiddleware({
-      config: join(configPath, 'code-pushup.config.js'),
-    });
-    expect(config.config).toContain('code-pushup.config.js');
-    expect(config.upload?.project).toContain('js');
-  });
+  it.each(['ts', 'mjs', 'js'])(
+    'should load a valid .%s config',
+    async extension => {
+      const config = await configMiddleware({
+        config: join(configDirPath, `code-pushup.config.${extension}`),
+      });
+      expect(config.config).toContain(`code-pushup.config.${extension}`);
+      expect(config.upload?.project).toContain(extension);
+    },
+  );
 
   it('should throw with invalid config path', async () => {
     await expect(
