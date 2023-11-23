@@ -31,12 +31,10 @@ export async function persistReport(
   const outputDir = persist.outputDir;
   const filename = persist.filename;
   const format =
-    persist.format && persist.format.length !== 0 ? persist.format : ['stdout'];
-  let scoredReport;
-  if (format.includes('stdout')) {
-    scoredReport = scoreReport(report);
-    console.log(reportToStdout(scoredReport));
-  }
+    persist.format && persist.format.length !== 0 ? persist.format : [];
+
+  let scoredReport = scoreReport(report);
+  console.log(reportToStdout(scoredReport));
 
   // collect physical format outputs
   const results: { format: string; content: string }[] = [

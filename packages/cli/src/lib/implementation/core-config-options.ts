@@ -14,7 +14,7 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       type: 'string',
     },
     'persist.format': {
-      describe: 'Format of the report output. e.g. `md`, `json`, `stdout`',
+      describe: 'Format of the report output. e.g. `md`, `json`',
       type: 'array',
     },
     // upload
