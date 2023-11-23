@@ -6,7 +6,7 @@ import {
   ReportFragment,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { REPORT_MOCK } from '@code-pushup/testing-utils';
+import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
@@ -51,7 +51,7 @@ describe('upload-command-object', () => {
     vol.reset();
     vol.fromJSON(
       {
-        'my-report.json': JSON.stringify(REPORT_MOCK),
+        'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
       '/test',
