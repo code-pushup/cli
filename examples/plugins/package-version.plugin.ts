@@ -128,14 +128,14 @@ async function packageVersionCheck(options: PluginOptions): Promise<Issue[]> {
     const pkgGiven = Object.keys(pkg.dependencies).find(n => n === name);
 
     if (!pkgGiven) {
-      issues.push(packageNotGiven(name));
+      issues.push(packageNotGiven( pkgs[0], name));
     } else {
       const targetVersion = packages[name];
       const givenVersion = pkg.dependencies[name];
 
       const pkgVersionGiven = targetVersion === givenVersion;
       if (!pkgVersionGiven) {
-        issues.push(packageWrongVersion(name, targetVersion, givenVersion));
+        issues.push(packageWrongVersion( pkgs[0], name, targetVersion, givenVersion));
       }
     }
   });
@@ -143,17 +143,18 @@ async function packageVersionCheck(options: PluginOptions): Promise<Issue[]> {
   return issues;
 }
 
-function packageNotGiven(packageName: string): Issue {
+function packageNotGiven(file: string, packageName: string): Issue {
   return {
     message: `Package ${packageName} is not installed.`,
     severity: 'error',
     source: {
-      file: packageName,
+      file,
     },
   };
 }
 
 function packageWrongVersion(
+  file: string,
   packageName: string,
   targetVersion: string,
   givenVersion: string,
@@ -162,7 +163,7 @@ function packageWrongVersion(
     message: `Package ${packageName} has wrong version. Wanted ${targetVersion} but got ${givenVersion}`,
     severity: 'error',
     source: {
-      file: packageName,
+      file,
     },
   };
 }
