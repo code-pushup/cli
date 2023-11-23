@@ -2,7 +2,6 @@ import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectAndPersistReports } from '@code-pushup/core';
-import { report } from '@code-pushup/models/testing';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
@@ -42,7 +41,6 @@ describe('collect-command', () => {
     vol.reset();
     vol.fromJSON(
       {
-        'my-report.json': JSON.stringify(report()),
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
       '/test',
