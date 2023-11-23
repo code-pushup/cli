@@ -62,7 +62,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
-      - name: Setup Git
+      - name: Set up Git
         run: |
           git config user.name "GitHub Bot"
           git config user.email "gituser@example.com"
