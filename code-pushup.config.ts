@@ -14,6 +14,10 @@ import {
   create as lighthousePlugin,
   recommendedRefs as lighthouseRecommendedRefs,
 } from './examples/plugins/lighthouse.plugin';
+import {
+  create as packageVersionPlugin,
+  recommendedRefs as packageVersionRecommendedRefs,
+} from './examples/plugins/package-version.plugin';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
@@ -91,13 +95,22 @@ const config: CoreConfig = {
       headless: 'new',
       outputFile: join('.code-pushup', 'lighthouse-report.json'),
     }),
+    await packageVersionPlugin({
+      directory: join(process.cwd(), './packages/models'),
+      packages: {
+        zod: '^3.22.21',
+      },
+    }),
   ],
 
   categories: [
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+        ...packageVersionRecommendedRefs,
+      ],
     },
     {
       slug: 'code-style',

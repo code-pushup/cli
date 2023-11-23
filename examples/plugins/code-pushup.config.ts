@@ -43,9 +43,9 @@ const config: CoreConfig = {
     await packageVersionPlugin({
       directory: join(process.cwd(), './packages/models'),
       packages: {
-        "zod": "^3.22.21",
-      }
-    })
+        zod: '^3.22.21',
+      },
+    }),
   ],
   categories: [
     {
@@ -54,7 +54,7 @@ const config: CoreConfig = {
       refs: [
         ...fileSizeRecommendedRefs,
         ...lighthouseRecommendedRefs,
-        ...packageVersionRecommendedRefs
+        ...packageVersionRecommendedRefs,
       ],
     },
   ],

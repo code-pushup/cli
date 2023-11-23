@@ -1,12 +1,12 @@
-import {readdir} from 'fs/promises';
+import { readdir } from 'fs/promises';
 import {
   AuditOutput,
   AuditOutputs,
   Issue,
   PluginConfig,
 } from '../../dist/packages/models';
-import {pluralize, readJsonFile} from '../../dist/packages/utils';
-import {CategoryRef} from '../../packages/models/src';
+import { pluralize, readJsonFile } from '../../dist/packages/utils';
+import { CategoryRef } from '../../packages/models/src';
 
 export type PluginOptions = {
   directory: string;
@@ -27,7 +27,7 @@ const audits = {
 };
 
 export const recommendedRefs: CategoryRef[] = Object.values(audits).map(
-  ({slug}) => ({
+  ({ slug }) => ({
     type: 'audit',
     plugin: pluginSlug,
     slug,
@@ -67,8 +67,7 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
     slug: pluginSlug,
     title: 'Package Version',
     icon: 'javascript',
-    description:
-      'A audit to check NPM package versions.',
+    description: 'A audit to check NPM package versions.',
     runner: () => runnerFunction(options),
     audits: Object.values(audits),
   };
@@ -114,58 +113,56 @@ async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
 }
 
 async function packageVersionCheck(options: PluginOptions): Promise<Issue[]> {
-  const {directory, packages} = options;
+  const { directory, packages } = options;
 
   let issues: Issue[] = [];
   const files = await readdir(directory);
 
   const pkgs = files.filter(f => f === 'package.json');
 
-  const pkg = await readJsonFile<{dependencies: Record<string, string>}>(pkgs[0]);
+  const pkg = await readJsonFile<{ dependencies: Record<string, string> }>(
+    pkgs[0],
+  );
 
-  Object.entries(packages)
-    .forEach(([name, version]) => {
-       const pkgGiven = Object.keys(pkg.dependencies).find((n) => n === name);
+  Object.entries(packages).forEach(([name, version]) => {
+    const pkgGiven = Object.keys(pkg.dependencies).find(n => n === name);
 
-      if (!pkgGiven) {
-        issues.push(packageNotGiven(name));
-      } else {
-        const targetVersion = packages[name];
-        const givenVersion = pkg.dependencies[name];
+    if (!pkgGiven) {
+      issues.push(packageNotGiven(name));
+    } else {
+      const targetVersion = packages[name];
+      const givenVersion = pkg.dependencies[name];
 
-        const pkgVersionGiven = targetVersion === givenVersion;
-        if (!pkgVersionGiven) {
-          issues.push(packageWrongVersion(name, targetVersion, givenVersion));
-        }
+      const pkgVersionGiven = targetVersion === givenVersion;
+      if (!pkgVersionGiven) {
+        issues.push(packageWrongVersion(name, targetVersion, givenVersion));
       }
-    });
+    }
+  });
 
   return issues;
 }
 
-function packageNotGiven(
-  packageName: string,
-): Issue {
+function packageNotGiven(packageName: string): Issue {
   return {
     message: `Package ${packageName} is not installed.`,
     severity: 'error',
     source: {
       file: packageName,
-    }
+    },
   };
 }
-
 
 function packageWrongVersion(
   packageName: string,
   targetVersion: string,
-  givenVersion: string
+  givenVersion: string,
 ): Issue {
   return {
     message: `Package ${packageName} has wrong version. Wanted ${targetVersion} but got ${givenVersion}`,
     severity: 'error',
     source: {
       file: packageName,
-    }
+    },
   };
 }
