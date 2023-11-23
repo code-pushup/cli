@@ -7,7 +7,7 @@ import {
   uploadToPortal,
 } from '@code-pushup/portal-client';
 import { collectAndPersistReports } from '@code-pushup/core';
-import { report } from '@code-pushup/models/testing';
+import { REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
@@ -60,7 +60,7 @@ describe('autorun-command', () => {
     vol.reset();
     vol.fromJSON(
       {
-        'my-report.json': JSON.stringify(report()),
+        'my-report.json': JSON.stringify(REPORT_MOCK),
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
       '/test',
