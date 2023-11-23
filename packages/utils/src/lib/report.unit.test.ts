@@ -200,10 +200,12 @@ describe('sortCategoryAudits', () => {
       { weight: 10, score: 1 },
     ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
-    expect(sortedAudits[0]).toEqual(mockAudits[3]);
-    expect(sortedAudits[1]).toEqual(mockAudits[1]);
-    expect(sortedAudits[2]).toEqual(mockAudits[0]);
-    expect(sortedAudits[3]).toEqual(mockAudits[2]);
+    expect(sortedAudits).toEqual([
+      { weight: 10, score: 1 },
+      { weight: 5, score: 1 },
+      { weight: 0, score: 0.1 },
+      { weight: 0, score: 0.7 },
+    ]);
   });
 
   it('should sort audits by score and value', () => {
@@ -214,10 +216,12 @@ describe('sortCategoryAudits', () => {
       { score: 0, value: 1 },
     ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
-    expect(sortedAudits[0]).toEqual(mockAudits[3]);
-    expect(sortedAudits[1]).toEqual(mockAudits[0]);
-    expect(sortedAudits[2]).toEqual(mockAudits[2]);
-    expect(sortedAudits[3]).toEqual(mockAudits[1]);
+    expect(sortedAudits).toEqual([
+      { score: 0, value: 1 },
+      { score: 0.7, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 1, value: 1 },
+    ]);
   });
 
   it('should sort audits by value and title', () => {
@@ -228,10 +232,12 @@ describe('sortCategoryAudits', () => {
       { value: 1, title: 'd' },
     ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
-    expect(sortedAudits[0]).toEqual(mockAudits[0]);
-    expect(sortedAudits[1]).toEqual(mockAudits[3]);
-    expect(sortedAudits[2]).toEqual(mockAudits[2]);
-    expect(sortedAudits[3]).toEqual(mockAudits[1]);
+    expect(sortedAudits).toEqual([
+      { value: 1, title: 'c' },
+      { value: 1, title: 'd' },
+      { value: 0, title: 'a' },
+      { value: 0, title: 'b' },
+    ]);
   });
 });
 
@@ -244,10 +250,12 @@ describe('sortAudits', () => {
       { score: 0, value: 1 },
     ] as EnrichedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortAudits);
-    expect(sortedAudits[0]).toEqual(mockAudits[3]);
-    expect(sortedAudits[1]).toEqual(mockAudits[0]);
-    expect(sortedAudits[2]).toEqual(mockAudits[2]);
-    expect(sortedAudits[3]).toEqual(mockAudits[1]);
+    expect(sortedAudits).toEqual([
+      { score: 0, value: 1 },
+      { score: 0.7, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 1, value: 1 },
+    ]);
   });
 
   it('should sort audits by value and title', () => {
@@ -258,10 +266,12 @@ describe('sortAudits', () => {
       { value: 1, title: 'd' },
     ] as EnrichedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortAudits);
-    expect(sortedAudits[0]).toEqual(mockAudits[0]);
-    expect(sortedAudits[1]).toEqual(mockAudits[3]);
-    expect(sortedAudits[2]).toEqual(mockAudits[2]);
-    expect(sortedAudits[3]).toEqual(mockAudits[1]);
+    expect(sortedAudits).toEqual([
+      { value: 1, title: 'c' },
+      { value: 1, title: 'd' },
+      { value: 0, title: 'a' },
+      { value: 0, title: 'b' },
+    ]);
   });
 });
 
