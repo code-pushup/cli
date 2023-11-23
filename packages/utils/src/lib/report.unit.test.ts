@@ -193,12 +193,12 @@ describe('loadReport', () => {
 
 describe('sortCategoryAudits', () => {
   it('should sort audits by weight and score', () => {
-    const mockAudits: WeighedAuditReport[] = [
-      { slug: 'a1', weight: 0, plugin: 'a', score: 0.1, value: 1, title: 'A1' },
-      { slug: 'a2', weight: 5, plugin: 'a', score: 1, value: 1, title: 'A2' },
-      { slug: 'a3', weight: 0, plugin: 'a', score: 0.7, value: 1, title: 'A3' },
-      { slug: 'a4', weight: 10, plugin: 'a', score: 1, value: 1, title: 'A4' },
-    ];
+    const mockAudits = [
+      { weight: 0, score: 0.1 },
+      { weight: 5, score: 1 },
+      { weight: 0, score: 0.7 },
+      { weight: 10, score: 1 },
+    ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
     expect(sortedAudits[0]).toEqual(mockAudits[3]);
     expect(sortedAudits[1]).toEqual(mockAudits[1]);
@@ -207,12 +207,12 @@ describe('sortCategoryAudits', () => {
   });
 
   it('should sort audits by score and value', () => {
-    const mockAudits: WeighedAuditReport[] = [
-      { slug: 'a1', weight: 0, plugin: 'a', score: 0.7, value: 1, title: 'A1' },
-      { slug: 'a2', weight: 0, plugin: 'a', score: 1, value: 1, title: 'A2' },
-      { slug: 'a3', weight: 0, plugin: 'a', score: 0.7, value: 0, title: 'A3' },
-      { slug: 'a4', weight: 0, plugin: 'a', score: 0, value: 1, title: 'A4' },
-    ];
+    const mockAudits = [
+      { score: 0.7, value: 1 },
+      { score: 1, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 0, value: 1 },
+    ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
     expect(sortedAudits[0]).toEqual(mockAudits[3]);
     expect(sortedAudits[1]).toEqual(mockAudits[0]);
@@ -221,12 +221,12 @@ describe('sortCategoryAudits', () => {
   });
 
   it('should sort audits by value and title', () => {
-    const mockAudits: WeighedAuditReport[] = [
-      { slug: 'a1', weight: 0, plugin: 'a', score: 0.1, value: 1, title: 'c' },
-      { slug: 'a2', weight: 0, plugin: 'a', score: 0.1, value: 0, title: 'b' },
-      { slug: 'a3', weight: 0, plugin: 'a', score: 0.1, value: 0, title: 'a' },
-      { slug: 'a4', weight: 0, plugin: 'a', score: 0.1, value: 1, title: 'd' },
-    ];
+    const mockAudits = [
+      { value: 1, title: 'c' },
+      { value: 0, title: 'b' },
+      { value: 0, title: 'a' },
+      { value: 1, title: 'd' },
+    ] as WeighedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
     expect(sortedAudits[0]).toEqual(mockAudits[0]);
     expect(sortedAudits[1]).toEqual(mockAudits[3]);
@@ -237,12 +237,12 @@ describe('sortCategoryAudits', () => {
 
 describe('sortAudits', () => {
   it('should sort audits by score and value', () => {
-    const mockAudits: EnrichedAuditReport[] = [
-      { slug: 'a1', plugin: 'a', score: 0.7, value: 1, title: 'A1' },
-      { slug: 'a2', plugin: 'a', score: 1, value: 1, title: 'A2' },
-      { slug: 'a3', plugin: 'a', score: 0.7, value: 0, title: 'A3' },
-      { slug: 'a4', plugin: 'a', score: 0, value: 1, title: 'A4' },
-    ];
+    const mockAudits = [
+      { score: 0.7, value: 1 },
+      { score: 1, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 0, value: 1 },
+    ] as EnrichedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortAudits);
     expect(sortedAudits[0]).toEqual(mockAudits[3]);
     expect(sortedAudits[1]).toEqual(mockAudits[0]);
@@ -252,11 +252,11 @@ describe('sortAudits', () => {
 
   it('should sort audits by value and title', () => {
     const mockAudits: EnrichedAuditReport[] = [
-      { slug: 'a1', plugin: 'a', score: 0.1, value: 1, title: 'c' },
-      { slug: 'a2', plugin: 'a', score: 0.1, value: 0, title: 'b' },
-      { slug: 'a3', plugin: 'a', score: 0.1, value: 0, title: 'a' },
-      { slug: 'a4', plugin: 'a', score: 0.1, value: 1, title: 'd' },
-    ];
+      { value: 1, title: 'c' },
+      { value: 0, title: 'b' },
+      { value: 0, title: 'a' },
+      { value: 1, title: 'd' },
+    ] as EnrichedAuditReport[];
     const sortedAudits = [...mockAudits].sort(sortAudits);
     expect(sortedAudits[0]).toEqual(mockAudits[0]);
     expect(sortedAudits[1]).toEqual(mockAudits[3]);
@@ -267,26 +267,10 @@ describe('sortAudits', () => {
 
 describe('getPluginNameFromSlug', () => {
   it('should return plugin name', () => {
-    const plugins: ScoredReport['plugins'] = [
-      {
-        slug: 'plugin-a',
-        title: 'Plugin A',
-        date: '',
-        duration: 0,
-        icon: 'todo',
-        audits: [],
-        groups: [],
-      },
-      {
-        slug: 'plugin-b',
-        title: 'Plugin B',
-        date: '',
-        duration: 0,
-        icon: 'todo',
-        audits: [],
-        groups: [],
-      },
-    ];
+    const plugins = [
+      { slug: 'plugin-a', title: 'Plugin A' },
+      { slug: 'plugin-b', title: 'Plugin B' },
+    ] as ScoredReport['plugins'];
     expect(getPluginNameFromSlug('plugin-a', plugins)).toBe('Plugin A');
     expect(getPluginNameFromSlug('plugin-b', plugins)).toBe('Plugin B');
   });

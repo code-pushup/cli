@@ -150,17 +150,15 @@ function auditItemToCategorySection(
   audit: WeighedAuditReport,
   plugins: ScoredReport['plugins'],
 ): string {
+  const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
-    `#${slugify(audit.title)}-${slugify(audit.plugin)}`,
+    `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
     audit?.title,
   );
   return li(
     `${getSquaredScoreMarker(
       audit.score,
-    )} ${auditTitle} (_${getPluginNameFromSlug(
-      audit.plugin,
-      plugins,
-    )}_) - ${getAuditResult(audit)}`,
+    )} ${auditTitle} (_${pluginTitle}_) - ${getAuditResult(audit)}`,
   );
 }
 
@@ -168,15 +166,14 @@ function groupItemToCategorySection(
   group: EnrichedScoredAuditGroupWithAudits,
   plugins: ScoredReport['plugins'],
 ): string {
+  const pluginTitle = getPluginNameFromSlug(group.plugin, plugins);
   const groupScore = Number(formatReportScore(group?.score || 0));
   const groupTitle = li(
-    `${getRoundScoreMarker(groupScore)} ${
-      group.title
-    } (_${getPluginNameFromSlug(group.plugin, plugins)}_)`,
+    `${getRoundScoreMarker(groupScore)} ${group.title} (_${pluginTitle}_)`,
   );
   const groupAudits = group.audits.reduce((acc, audit) => {
     const auditTitle = link(
-      `#${slugify(audit.title)}-${slugify(group.plugin)}`,
+      `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
       audit?.title,
     );
     acc += `  ${li(

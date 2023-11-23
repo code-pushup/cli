@@ -166,15 +166,6 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getAuditsFromAllPlugins(
-  report: ScoredReport,
-): EnrichedAuditReport[] {
-  return report.plugins.reduce<EnrichedAuditReport[]>(
-    (acc, plugin) => [...acc, ...plugin.audits],
-    [],
-  );
-}
-
 export function getAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
