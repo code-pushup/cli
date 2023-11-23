@@ -1,8 +1,8 @@
 import {
   AuditReport,
   CategoryConfig,
+  CategoryRef,
   Issue,
-  PluginReport,
 } from '@code-pushup/models';
 import { CommitData } from './git';
 import {
@@ -24,6 +24,9 @@ import {
   detailsTableHeaders,
   formatDuration,
   formatReportScore,
+  getAuditByRef,
+  getGroupWithAudits,
+  getPluginNameFromSlug,
   getRoundScoreMarker,
   getSeverityIcon,
   getSquaredScoreMarker,
@@ -31,8 +34,14 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
+  sortAudits,
+  sortCategoryAudits,
 } from './report';
-import { EnrichedScoredAuditGroup, ScoredReport } from './scoring';
+import {
+  EnrichedScoredAuditGroupWithAudits,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
 import { slugify } from './transformation';
 
 export function reportToMd(
@@ -87,14 +96,37 @@ function reportToCategoriesSection(report: ScoredReport): string {
     )} Score:  ${style(formatReportScore(category.score))}`;
     const categoryDocs = getDocsAndDescription(category);
 
-    const refs = category.refs.reduce((acc, ref) => {
-      if (ref.type === 'group') {
-        acc += groupRefItemToCategorySection(ref.slug, ref.plugin, plugins);
-      } else {
-        acc += auditRefItemToCategorySection(ref.slug, ref.plugin, plugins);
-      }
-      return acc;
-    }, '');
+    const auditsAndGroups = category.refs.reduce(
+      (
+        acc: {
+          audits: WeighedAuditReport[];
+          groups: EnrichedScoredAuditGroupWithAudits[];
+        },
+        ref: CategoryRef,
+      ) => ({
+        ...acc,
+        ...(ref.type === 'group'
+          ? {
+              groups: [
+                ...acc.groups,
+                getGroupWithAudits(ref.slug, ref.plugin, plugins),
+              ],
+            }
+          : {
+              audits: [...acc.audits, getAuditByRef(ref, plugins)],
+            }),
+      }),
+      { groups: [], audits: [] },
+    );
+
+    const audits = auditsAndGroups.audits
+      .sort(sortCategoryAudits)
+      .map(audit => auditItemToCategorySection(audit, plugins))
+      .join(NEW_LINE);
+
+    const groups = auditsAndGroups.groups
+      .map(group => groupItemToCategorySection(group, plugins))
+      .join('');
 
     return (
       acc +
@@ -105,73 +137,43 @@ function reportToCategoriesSection(report: ScoredReport): string {
       categoryDocs +
       categoryScore +
       NEW_LINE +
+      groups +
       NEW_LINE +
-      refs
+      audits
     );
   }, '');
 
   return h2('🏷 Categories') + NEW_LINE + categoryDetails;
 }
 
-function auditRefItemToCategorySection(
-  refSlug: string,
-  refPlugin: string,
+function auditItemToCategorySection(
+  audit: WeighedAuditReport,
   plugins: ScoredReport['plugins'],
 ): string {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const pluginAudit = plugin?.audits.find(({ slug }) => slug === refSlug);
-
-  if (!pluginAudit) {
-    throwIsNotPresentError(`Audit ${refSlug}`, plugin?.slug);
-  }
-
+  const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
-    `#${slugify(pluginAudit.title)}-${slugify(plugin.title)}`,
-    pluginAudit?.title,
+    `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
+    audit?.title,
   );
-
-  return (
-    li(
-      `${getSquaredScoreMarker(pluginAudit.score)} ${auditTitle} (_${
-        plugin.title
-      }_) - ${getAuditResult(pluginAudit)}`,
-    ) + NEW_LINE
+  return li(
+    `${getSquaredScoreMarker(
+      audit.score,
+    )} ${auditTitle} (_${pluginTitle}_) - ${getAuditResult(audit)}`,
   );
 }
 
-function groupRefItemToCategorySection(
-  refSlug: string,
-  refPlugin: string,
+function groupItemToCategorySection(
+  group: EnrichedScoredAuditGroupWithAudits,
   plugins: ScoredReport['plugins'],
 ): string {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const group = plugin?.groups?.find(
-    ({ slug }) => slug === refSlug,
-  ) as EnrichedScoredAuditGroup;
+  const pluginTitle = getPluginNameFromSlug(group.plugin, plugins);
   const groupScore = Number(formatReportScore(group?.score || 0));
-
-  if (!group) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
-  }
-
   const groupTitle = li(
-    `${getRoundScoreMarker(groupScore)} ${group.title} (_${plugin.title}_)`,
+    `${getRoundScoreMarker(groupScore)} ${group.title} (_${pluginTitle}_)`,
   );
-  const foundAudits = group.refs.reduce<AuditReport[]>((acc, ref) => {
-    const audit = plugin?.audits.find(
-      ({ slug: auditSlugInPluginAudits }) =>
-        auditSlugInPluginAudits === ref.slug,
-    );
-    if (audit) {
-      return [...acc, audit];
-    }
-
-    return acc;
-  }, []);
-
-  const groupAudits = foundAudits.reduce((acc, audit) => {
+  const groupAudits = group.audits.reduce((acc, audit) => {
     const auditTitle = link(
-      `#${slugify(audit.title)}-${slugify(plugin.title)}`,
+      `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
       audit?.title,
     );
     acc += `  ${li(
@@ -187,9 +189,12 @@ function groupRefItemToCategorySection(
 }
 
 function reportToAuditsSection(report: ScoredReport): string {
-  const auditsData = report.plugins.reduce((acc, plugin) => {
-    const audits = plugin.audits.reduce((acc, audit) => {
-      const auditTitle = `${audit.title} (${plugin.title})`;
+  const auditsSection = report.plugins.reduce((acc, plugin) => {
+    const auditsData = plugin.audits.sort(sortAudits).reduce((acc, audit) => {
+      const auditTitle = `${audit.title} (${getPluginNameFromSlug(
+        audit.plugin,
+        report.plugins,
+      )})`;
       const detailsTitle = `${getSquaredScoreMarker(
         audit.score,
       )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
@@ -243,11 +248,10 @@ function reportToAuditsSection(report: ScoredReport): string {
 
       return acc;
     }, '');
-
-    return acc + audits;
+    return acc + auditsData;
   }, '');
 
-  return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsData;
+  return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsSection;
 }
 
 function reportToAboutSection(
@@ -324,8 +328,4 @@ function getAuditResult(audit: AuditReport, isHtml = false): string {
   return isHtml
     ? `<b>${displayValue || value}</b>`
     : style(String(displayValue || value));
-}
-
-function throwIsNotPresentError(itemName: string, presentPlace: string): never {
-  throw new Error(`${itemName} is not present in ${presentPlace}`);
 }

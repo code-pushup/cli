@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { afterEach, describe, expect, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CategoryRef, IssueSeverity, PluginReport } from '@code-pushup/models';
 import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
@@ -8,8 +8,16 @@ import {
   countWeightedRefs,
   formatBytes,
   formatCount,
+  getPluginNameFromSlug,
   loadReport,
+  sortAudits,
+  sortCategoryAudits,
 } from './report';
+import {
+  EnrichedAuditReport,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -180,5 +188,100 @@ describe('loadReport', () => {
     await expect(
       loadReport({ outputDir, filename: 'report', format: 'json' }),
     ).rejects.toThrow('validation');
+  });
+});
+
+describe('sortCategoryAudits', () => {
+  it('should sort audits by weight and score', () => {
+    const mockAudits = [
+      { weight: 0, score: 0.1 },
+      { weight: 5, score: 1 },
+      { weight: 0, score: 0.7 },
+      { weight: 10, score: 1 },
+    ] as WeighedAuditReport[];
+    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    expect(sortedAudits).toEqual([
+      { weight: 10, score: 1 },
+      { weight: 5, score: 1 },
+      { weight: 0, score: 0.1 },
+      { weight: 0, score: 0.7 },
+    ]);
+  });
+
+  it('should sort audits by score and value', () => {
+    const mockAudits = [
+      { score: 0.7, value: 1 },
+      { score: 1, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 0, value: 1 },
+    ] as WeighedAuditReport[];
+    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    expect(sortedAudits).toEqual([
+      { score: 0, value: 1 },
+      { score: 0.7, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 1, value: 1 },
+    ]);
+  });
+
+  it('should sort audits by value and title', () => {
+    const mockAudits = [
+      { value: 1, title: 'c' },
+      { value: 0, title: 'b' },
+      { value: 0, title: 'a' },
+      { value: 1, title: 'd' },
+    ] as WeighedAuditReport[];
+    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    expect(sortedAudits).toEqual([
+      { value: 1, title: 'c' },
+      { value: 1, title: 'd' },
+      { value: 0, title: 'a' },
+      { value: 0, title: 'b' },
+    ]);
+  });
+});
+
+describe('sortAudits', () => {
+  it('should sort audits by score and value', () => {
+    const mockAudits = [
+      { score: 0.7, value: 1 },
+      { score: 1, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 0, value: 1 },
+    ] as EnrichedAuditReport[];
+    const sortedAudits = [...mockAudits].sort(sortAudits);
+    expect(sortedAudits).toEqual([
+      { score: 0, value: 1 },
+      { score: 0.7, value: 1 },
+      { score: 0.7, value: 0 },
+      { score: 1, value: 1 },
+    ]);
+  });
+
+  it('should sort audits by value and title', () => {
+    const mockAudits: EnrichedAuditReport[] = [
+      { value: 1, title: 'c' },
+      { value: 0, title: 'b' },
+      { value: 0, title: 'a' },
+      { value: 1, title: 'd' },
+    ] as EnrichedAuditReport[];
+    const sortedAudits = [...mockAudits].sort(sortAudits);
+    expect(sortedAudits).toEqual([
+      { value: 1, title: 'c' },
+      { value: 1, title: 'd' },
+      { value: 0, title: 'a' },
+      { value: 0, title: 'b' },
+    ]);
+  });
+});
+
+describe('getPluginNameFromSlug', () => {
+  it('should return plugin name', () => {
+    const plugins = [
+      { slug: 'plugin-a', title: 'Plugin A' },
+      { slug: 'plugin-b', title: 'Plugin B' },
+    ] as ScoredReport['plugins'];
+    expect(getPluginNameFromSlug('plugin-a', plugins)).toBe('Plugin A');
+    expect(getPluginNameFromSlug('plugin-b', plugins)).toBe('Plugin B');
   });
 });

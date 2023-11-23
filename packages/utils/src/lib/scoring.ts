@@ -10,6 +10,10 @@ import {
 import { deepClone } from './transformation';
 
 export type EnrichedAuditReport = AuditReport & { plugin: string };
+export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
+export type EnrichedScoredAuditGroupWithAudits = EnrichedScoredAuditGroup & {
+  audits: AuditReport[];
+};
 type ScoredCategoryConfig = CategoryConfig & { score: number };
 
 export type EnrichedScoredAuditGroup = AuditGroup & {
