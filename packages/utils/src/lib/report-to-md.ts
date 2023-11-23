@@ -26,6 +26,7 @@ import {
   formatReportScore,
   getAuditByRef,
   getGroupWithAudits,
+  getPluginNameFromSlug,
   getRoundScoreMarker,
   getSeverityIcon,
   getSquaredScoreMarker,
@@ -102,34 +103,30 @@ function reportToCategoriesSection(report: ScoredReport): string {
           groups: EnrichedScoredAuditGroupWithAudits[];
         },
         ref: CategoryRef,
-      ) => {
-        if (ref.type === 'group') {
-          acc.groups = [
-            ...acc.groups,
-            getGroupWithAudits(ref.slug, ref.plugin, plugins),
-          ];
-        } else {
-          acc.audits = [...acc.audits, getAuditByRef(ref, plugins)];
-        }
-        return { ...acc };
-      },
+      ) => ({
+        ...acc,
+        ...(ref.type === 'group'
+          ? {
+              groups: [
+                ...acc.groups,
+                getGroupWithAudits(ref.slug, ref.plugin, plugins),
+              ],
+            }
+          : {
+              audits: [...acc.audits, getAuditByRef(ref, plugins)],
+            }),
+      }),
       { groups: [], audits: [] },
     );
 
     const audits = auditsAndGroups.audits
       .sort(sortCategoryAudits)
-      .reduce((acc, audit) => {
-        acc += auditItemToCategorySection(audit);
-        acc += NEW_LINE;
-        return acc;
-      }, '');
-    const groups = auditsAndGroups.groups.reduce(
-      (acc: string, group: EnrichedScoredAuditGroupWithAudits) => {
-        acc += groupItemToCategorySection(group);
-        return acc;
-      },
-      '',
-    );
+      .map(audit => auditItemToCategorySection(audit, plugins))
+      .join(NEW_LINE);
+
+    const groups = auditsAndGroups.groups
+      .map(group => groupItemToCategorySection(group, plugins))
+      .join('');
 
     return (
       acc +
@@ -149,24 +146,33 @@ function reportToCategoriesSection(report: ScoredReport): string {
   return h2('🏷 Categories') + NEW_LINE + categoryDetails;
 }
 
-function auditItemToCategorySection(audit: WeighedAuditReport): string {
+function auditItemToCategorySection(
+  audit: WeighedAuditReport,
+  plugins: ScoredReport['plugins'],
+): string {
   const auditTitle = link(
     `#${slugify(audit.title)}-${slugify(audit.plugin)}`,
     audit?.title,
   );
   return li(
-    `${getSquaredScoreMarker(audit.score)} ${auditTitle} (_${
-      audit.plugin
-    }_) - ${getAuditResult(audit)}`,
+    `${getSquaredScoreMarker(
+      audit.score,
+    )} ${auditTitle} (_${getPluginNameFromSlug(
+      audit.plugin,
+      plugins,
+    )}_) - ${getAuditResult(audit)}`,
   );
 }
 
 function groupItemToCategorySection(
   group: EnrichedScoredAuditGroupWithAudits,
+  plugins: ScoredReport['plugins'],
 ): string {
   const groupScore = Number(formatReportScore(group?.score || 0));
   const groupTitle = li(
-    `${getRoundScoreMarker(groupScore)} ${group.title} (_${group.plugin}_)`,
+    `${getRoundScoreMarker(groupScore)} ${
+      group.title
+    } (_${getPluginNameFromSlug(group.plugin, plugins)}_)`,
   );
   const groupAudits = group.audits.reduce((acc, audit) => {
     const auditTitle = link(
@@ -187,63 +193,64 @@ function groupItemToCategorySection(
 
 function reportToAuditsSection(report: ScoredReport): string {
   const auditsSection = report.plugins.reduce((acc, plugin) => {
-    const auditsData = plugin.audits
-      .sort((a, b) => sortAudits(a, b))
-      .reduce((acc, audit) => {
-        const auditTitle = `${audit.title} (${audit.plugin})`;
-        const detailsTitle = `${getSquaredScoreMarker(
-          audit.score,
-        )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
-          audit.score,
-        )})`;
-        const docsItem = getDocsAndDescription(audit);
+    const auditsData = plugin.audits.sort(sortAudits).reduce((acc, audit) => {
+      const auditTitle = `${audit.title} (${getPluginNameFromSlug(
+        audit.plugin,
+        report.plugins,
+      )})`;
+      const detailsTitle = `${getSquaredScoreMarker(
+        audit.score,
+      )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
+        audit.score,
+      )})`;
+      const docsItem = getDocsAndDescription(audit);
 
-        acc += h3(auditTitle);
+      acc += h3(auditTitle);
 
-        acc += NEW_LINE;
-        acc += NEW_LINE;
+      acc += NEW_LINE;
+      acc += NEW_LINE;
 
-        if (!audit.details?.issues?.length) {
-          acc += detailsTitle;
-          acc += NEW_LINE;
-          acc += NEW_LINE;
-          acc += docsItem;
-          return acc;
-        }
-
-        const detailsTableData = [
-          detailsTableHeaders,
-          ...audit.details.issues.map((issue: Issue) => {
-            const severity = `${getSeverityIcon(issue.severity)} <i>${
-              issue.severity
-            }</i>`;
-            const message = issue.message;
-
-            if (!issue.source) {
-              return [severity, message, '', ''];
-            }
-            // TODO: implement file links, ticket #149
-            const file = `<code>${issue.source?.file}</code>`;
-            if (!issue.source.position) {
-              return [severity, message, file, ''];
-            }
-            const { startLine, endLine } = issue.source.position;
-            const line = `${startLine || ''}${
-              endLine && startLine !== endLine ? `-${endLine}` : ''
-            }`;
-
-            return [severity, message, file, line];
-          }),
-        ];
-        const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
-
-        acc += details(detailsTitle, detailsTable);
+      if (!audit.details?.issues?.length) {
+        acc += detailsTitle;
         acc += NEW_LINE;
         acc += NEW_LINE;
         acc += docsItem;
-
         return acc;
-      }, '');
+      }
+
+      const detailsTableData = [
+        detailsTableHeaders,
+        ...audit.details.issues.map((issue: Issue) => {
+          const severity = `${getSeverityIcon(issue.severity)} <i>${
+            issue.severity
+          }</i>`;
+          const message = issue.message;
+
+          if (!issue.source) {
+            return [severity, message, '', ''];
+          }
+          // TODO: implement file links, ticket #149
+          const file = `<code>${issue.source?.file}</code>`;
+          if (!issue.source.position) {
+            return [severity, message, file, ''];
+          }
+          const { startLine, endLine } = issue.source.position;
+          const line = `${startLine || ''}${
+            endLine && startLine !== endLine ? `-${endLine}` : ''
+          }`;
+
+          return [severity, message, file, line];
+        }),
+      ];
+      const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
+
+      acc += details(detailsTitle, detailsTable);
+      acc += NEW_LINE;
+      acc += NEW_LINE;
+      acc += docsItem;
+
+      return acc;
+    }, '');
     return acc + auditsData;
   }, '');
 

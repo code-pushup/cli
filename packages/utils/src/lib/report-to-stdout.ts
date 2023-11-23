@@ -74,28 +74,24 @@ function reportToDetailSection(report: ScoredReport): string {
 
     const ui = cliui({ width: 80 });
 
-    audits
-      .sort((a: EnrichedAuditReport, b: EnrichedAuditReport) =>
-        sortAudits(a, b),
-      )
-      .forEach(({ score, title, displayValue, value }) => {
-        ui.div(
-          {
-            text: withColor({ score, text: '●' }),
-            width: 2,
-            padding: [0, 1, 0, 0],
-          },
-          {
-            text: title,
-            padding: [0, 3, 0, 0],
-          },
-          {
-            text: chalk.cyanBright(displayValue || `${value}`),
-            width: 10,
-            padding: [0, 0, 0, 0],
-          },
-        );
-      });
+    audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
+      ui.div(
+        {
+          text: withColor({ score, text: '●' }),
+          width: 2,
+          padding: [0, 1, 0, 0],
+        },
+        {
+          text: title,
+          padding: [0, 3, 0, 0],
+        },
+        {
+          text: chalk.cyanBright(displayValue || `${value}`),
+          width: 10,
+          padding: [0, 0, 0, 0],
+        },
+      );
+    });
 
     output += addLine(ui.toString());
     output += addLine();

@@ -180,9 +180,10 @@ export function getAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
 ): WeighedAuditReport {
-  const auditPlugin = plugins.find(
-    ({ slug }) => slug === plugin,
-  ) as PluginReport;
+  const auditPlugin = plugins.find(({ slug }) => slug === plugin);
+  if (!auditPlugin) {
+    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
+  }
   const audit = auditPlugin?.audits.find(
     ({ slug: auditSlug }) => auditSlug === slug,
   );
@@ -201,10 +202,11 @@ export function getGroupWithAudits(
   refPlugin: string,
   plugins: ScoredReport['plugins'],
 ): EnrichedScoredAuditGroupWithAudits {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin) as PluginReport;
-  const groupWithAudits = plugin?.groups?.find(
-    ({ slug }) => slug === refSlug,
-  ) as EnrichedScoredAuditGroupWithAudits;
+  const plugin = plugins.find(({ slug }) => slug === refPlugin);
+  if (!plugin) {
+    throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
+  }
+  const groupWithAudits = plugin?.groups?.find(({ slug }) => slug === refSlug);
 
   if (!groupWithAudits) {
     throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
@@ -301,4 +303,13 @@ export function throwIsNotPresentError(
   presentPlace: string,
 ): never {
   throw new Error(`${itemName} is not present in ${presentPlace}`);
+}
+
+export function getPluginNameFromSlug(
+  slug: string,
+  plugins: ScoredReport['plugins'],
+): string {
+  return (
+    plugins.find(({ slug: pluginSlug }) => pluginSlug === slug)?.title || slug
+  );
 }
