@@ -1,21 +1,19 @@
 {
   "name": "example-plugins",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples/plugins",
+  "sourceRoot": "examples/plugins/src",
   "projectType": "application",
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "examples/plugins/**/*.ts"
-        ]
+        "lintFilePatterns": ["examples/plugins/**/*.ts"]
       }
     },
     "run-collect": {
-      "command": "npx ../../dist/packages/cli collect --persist.format=stdout --persist.format=md",
-      "dependsOn": ["cli:build"]
+      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
+      "dependsOn": ["build"]
     }
   },
   "tags": []
