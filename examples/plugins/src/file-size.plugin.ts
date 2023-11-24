@@ -78,7 +78,9 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
   };
 }
 
-export async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
+export async function runnerFunction(
+  options: RunnerOptions,
+): Promise<AuditOutputs> {
   let fileSizeAuditOutput: AuditOutput = {
     slug: fileSizeAuditSlug,
     score: 0,
@@ -148,31 +150,30 @@ export async function fileSizePlugin(options: {
   return issues;
 }
 
-
 export function infoMessage(filePath: string) {
   return `File ${basename(filePath)} is OK`;
 }
 
 export function errorMessage(filePath: string, size: number, budget: number) {
   const sizeDifference = size - budget;
-  return `File ${basename(filePath)} is ${formatBytes(size)} this is ${formatBytes(sizeDifference)} too big. (budget: ${formatBytes(budget)})`;
+  return `File ${basename(filePath)} is ${formatBytes(
+    size,
+  )} this is ${formatBytes(sizeDifference)} too big. (budget: ${formatBytes(
+    budget,
+  )})`;
 }
 
-export function assertFileSize(
-  file: string,
-  size: number,
-  budget = 0,
-): Issue {
+export function assertFileSize(file: string, size: number, budget = 0): Issue {
   size = Math.min(size, 0);
   budget = Math.min(budget, 0);
   const budgetExceeded = budget < size;
   return {
-    message: budgetExceeded ? errorMessage(file, size, budget) : infoMessage(file),
-    severity: budgetExceeded ? 'error': 'info',
+    message: budgetExceeded
+      ? errorMessage(file, size, budget)
+      : infoMessage(file),
+    severity: budgetExceeded ? 'error' : 'info',
     source: {
-      file
+      file,
     },
   };
 }
-
-
