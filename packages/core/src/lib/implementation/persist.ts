@@ -30,8 +30,7 @@ export async function persistReport(
   const { persist } = config;
   const outputDir = persist.outputDir;
   const filename = persist.filename;
-  const format =
-    persist.format ?? [];
+  const format = persist.format ?? [];
 
   let scoredReport = scoreReport(report);
   console.log(reportToStdout(scoredReport));
