@@ -6,7 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
-import { fileSizePlugin, fileSizeRecommendedRefs } from './examples/plugins';
+import { fileSizePlugin, fileSizeRecommendedRefs } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
