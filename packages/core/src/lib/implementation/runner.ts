@@ -5,7 +5,7 @@ import {
   RunnerConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { calcDuration, executeProcess, readTextFile } from '@code-pushup/utils';
+import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
@@ -27,7 +27,7 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  const pluginOutput: string = await readTextFile(
+  let audits = await readJsonFile<AuditOutputs>(
     join(process.cwd(), outputFile),
   );
 

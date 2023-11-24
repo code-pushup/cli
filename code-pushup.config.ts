@@ -3,21 +3,8 @@ import 'dotenv/config';
 import type { Linter } from 'eslint';
 import { jsonc } from 'jsonc';
 import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
-import {
-  create as fileSizePlugin,
-  recommendedRefs as fileSizeRecommendedRef,
-} from './examples/plugins/file-size.plugin';
-import {
-  create as lighthousePlugin,
-  recommendedRefs as lighthouseRecommendedRefs,
-} from './examples/plugins/lighthouse.plugin';
-import {
-  create as packageVersionPlugin,
-  recommendedRefs as packageVersionRecommendedRefs,
-} from './examples/plugins/package-version.plugin';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
@@ -67,10 +54,10 @@ const envSchema = z.object({
   CP_PROJECT: z.string().min(1),
 });
 const env = await envSchema.parseAsync(process.env);
-const outputDir = join(process.cwd(), '.code-pushup');
+
 const config: CoreConfig = {
   persist: {
-    outputDir,
+    outputDir: '.code-pushup',
     filename: 'report',
     format: ['json', 'md'],
   },
@@ -82,35 +69,13 @@ const config: CoreConfig = {
     project: env.CP_PROJECT,
   },
 
-  plugins: [
-    await eslintPlugin({ eslintrc, patterns }),
-    await fileSizePlugin({
-      directory: join(process.cwd(), 'dist/packages'),
-      pattern: /\.js$/,
-      budget: 42000,
-    }),
-    await lighthousePlugin({
-      url: 'http://google.com',
-      verbose: true,
-      headless: 'new',
-      outputFile: join('.code-pushup', 'lighthouse-report.json'),
-    }),
-    await packageVersionPlugin({
-      directory: join(process.cwd(), './packages/models'),
-      packages: {
-        zod: '^3.22.21',
-      },
-    }),
-  ],
+  plugins: [await eslintPlugin({ eslintrc, patterns })],
 
   categories: [
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [
-        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
-        ...packageVersionRecommendedRefs,
-      ],
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
@@ -118,11 +83,6 @@ const config: CoreConfig = {
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
-    },
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [...fileSizeRecommendedRef, ...lighthouseRecommendedRefs],
     },
   ],
 };

@@ -56,7 +56,10 @@
       "dependsOn": ["build"]
     },
     "run-collect": {
-      "command": "npx dist/packages/cli collect",
+      "command": "npx ../../dist/packages/cli collect --persist.format=stdout --persist.format=md",
+      "options": {
+        "cwd": "examples/react-todos-app"
+      },
       "dependsOn": ["build"]
     },
     "run-print-config": {
