@@ -128,14 +128,16 @@ async function packageVersionCheck(options: PluginOptions): Promise<Issue[]> {
     const pkgGiven = Object.keys(pkg.dependencies).find(n => n === name);
 
     if (!pkgGiven) {
-      issues.push(packageNotGiven( pkgs[0], name));
+      issues.push(packageNotGiven(pkgs[0], name));
     } else {
       const targetVersion = packages[name];
       const givenVersion = pkg.dependencies[name];
 
       const pkgVersionGiven = targetVersion === givenVersion;
       if (!pkgVersionGiven) {
-        issues.push(packageWrongVersion( pkgs[0], name, targetVersion, givenVersion));
+        issues.push(
+          packageWrongVersion(pkgs[0], name, targetVersion, givenVersion),
+        );
       }
     }
   });
