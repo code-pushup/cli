@@ -160,7 +160,7 @@ async function create(): PluginConfig {
   return {
     slug: 'my-plugin',
     title: 'My plugin',
-    icon: 'javascript', // icon name from @TODO add link to icon list
+    icon: 'javascript', // icon name from [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme/tree/main/icons)
     description: 'My custom plugin.',
     audits: [audit],
     runner: (): AuditOutputs => {
@@ -194,9 +194,11 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
-The CLI argument `--no-progress` is used to get better debugging experience in the console, as the progress bar can interfere with debugging logs.
+The CLI argument `--no-progress` is used to get better debugging experience in the console, as the progress bar can
+interfere with debugging logs.
 
-The categories are empty for now. But under the audit listing you can see your plugin title `My plugin` it's listed audit `My audit` and the resulting value `0`.
+The categories are empty for now. But under the audit listing you can see your plugin title `My plugin` it's listed
+audit `My audit` and the resulting value `0`.
 
 ### Plugin Runner
 
@@ -209,10 +211,12 @@ Your preferred way should be the `RunnerFunction` as it is more flexible and eas
 
 #### RunnerFunction
 
-The `RunnerFunction` is the entry point of your plugin. It is called by the CLI and should return the audit results as `AuditOutputs`.
+The `RunnerFunction` is the entry point of your plugin. It is called by the CLI and should return the audit results
+as `AuditOutputs`.
 
 Let's write a real implementation to get familiar with the runner function.
-We will implement a simple file size audit for JavaScript files that tracks the size of specified files in your codebase.
+We will implement a simple file size audit for JavaScript files that tracks the size of specified files in your
+codebase.
 
 Let's start by creating a create function with the correct description for our file size plugin:
 
@@ -248,6 +252,7 @@ type Options = {
 };
 
 type FileSizeInfo = { file: string; size: number };
+
 // get raw file size data
 async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
   const { directory } = options;
@@ -277,7 +282,8 @@ async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
 
 The above code will recursively get the file size info for all files in the specified directory and it's subdirectories.
 
-Let's create a runner function that uses the above code to get the file size data and turns it into the shape of `AuditOutputs`:
+Let's create a runner function that uses the above code to get the file size data and turns it into the shape
+of `AuditOutputs`:
 
 ```typescript
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
@@ -326,7 +332,7 @@ Now we can execute the CLI with `npx code-pushup collect --no-progress` and see 
 Code PushUp Report - @code-pushup/core@x.y.z
 
 File size plugin audits
-● File size audit                                                            5
+● File size audit                                                            2
 
 Categories
 ┌──────────┬───────┬────────┐
@@ -341,7 +347,8 @@ Made with ❤ by code-pushup.dev
 To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
 This helps to make the plugin results more actionable and valuable for the user.
 
-We will extend the `Options` type with a size `budget` property and see how we can use `details` in `AuditOutput` to show which files exceed the defined budget.
+We will extend the `Options` type with a size `budget` property and see how we can use `details` in `AuditOutput` to
+show which files exceed the defined budget.
 
 ```typescript
 import { Issue } from '@code-pushup/models';
@@ -423,7 +430,7 @@ The CLI argument `--format=md` will create an additional file containing our cre
 
 You should see a newly created file `report.md` crated in the folder `.code-pushup` in your current working directory.
 
-`report.md` should containing a similar content like the following:
+The `report.md` file should contain a similar content like the following:
 
 ```md
 ### File Size Audit (File Size)
@@ -457,7 +464,8 @@ You should see a newly created file `report.md` crated in the folder `.code-push
 ### RunnerConfig
 
 The second way to write a plugin runner is a `RunnerConfig`.
-This option is less flexible but can be used in cases where a `RunnerFunction` is not applicable. @TODO giv an example why runnerfunction cant be used...
+This option is less flexible but can be used in cases where a `RunnerFunction` is not applicable. @TODO giv an example
+why runnerfunction cant be used...
 
 We will implement a performance focused plugin using the [lighthouse](@TODO) CLI as real life example.
 
@@ -476,7 +484,7 @@ async function create(): Promise<PluginConfig> {
   return {
     slug: 'lighthouse',
     title: 'Chrome Lighthouse plugin',
-    icon: 'javascript',
+    icon: 'lighthouse',
     description: 'Plugin to check webperformance of a given url',
     audits: [
       lcpAudit,
@@ -497,10 +505,13 @@ You should see console output of the audits created by the CLI.
 To get better debugging experience we add a couple of more options:
 
 - The format and location of the output can be configured with `--output=json --outputFile=lighthouse-report.json`.  
-  This ensures we avoid overwrites of other existing files and is needed to be able to load the generated lighthouse report.
-- To reduce the output you can execute only specific audits with the `--onlyAudits` option e.g.: `--onlyAudits=largest-contentful-paint`.  
+  This ensures we avoid overwrites of other existing files and is needed to be able to load the generated lighthouse
+  report.
+- To reduce the output you can execute only specific audits with the `--onlyAudits` option
+  e.g.: `--onlyAudits=largest-contentful-paint`.  
   This will significantly reduce the time lighthouse takes to run.
-- If we want to run the script in the background we can execute lighthouse headless with the flag `--chrome-flags="--headless=new"`.  
+- If we want to run the script in the background we can execute lighthouse headless with the
+  flag `--chrome-flags="--headless=new"`.  
   It also is helpfun when executing lighthouse in th CI.
 
 The basic implementation of a `RunnerConfig` for the above command looks like this:
@@ -585,16 +596,14 @@ Made with ❤ by code-pushup.dev
 
 #### implement a `outputTransform` function
 
-As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
-This is implemented in `lhrToAuditOutputs`.
-
-Next we can use the plugin in our `code-psuhup.config.ts`:
+As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add
+a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
 
 ```typescript
 import { Result } from 'lighthouse';
 import { AuditOutputs } from './plugin-process-output';
 
-function outputTransform(output: string): Promise<AuditOutputs> {
+function outputTransform(output: string): AuditOutputs {
   const lhr = JSON.parse(output as Result);
   return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
     slug,
@@ -603,6 +612,18 @@ function outputTransform(output: string): Promise<AuditOutputs> {
     displayValue,
     description,
   }));
+}
+```
+
+We can use the plugin in our `code-psuhup.config.ts`:
+
+```typescript
+function runnerConfig(options: Options): RunnerConfig {
+  // ...
+  return {
+    // ...
+    outputTransform,
+  };
 }
 ```
 
@@ -616,29 +637,8 @@ It should contain a similar content like the following:
 ```md
 ### Largest Contentful Paint (Lighthouse)
 
-🟨 <b>3.2 s</b> (score: 71)
+🟨 <b>3.2 s</b> (score: 71)
 
-Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
-```
-
-### Add the plugin to the categories
-
-```typescript
-{
-  // ...
-  categories: [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [
-        {
-          type: 'audit',
-          plugin: 'file-size-plugin',
-          slug: 'file-size-audit',
-          weight: 1,
-        },
-      ],
-    },
-  ];
-}
+Largest Contentful Paint marks the time at which the largest text or image is
+painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 ```
