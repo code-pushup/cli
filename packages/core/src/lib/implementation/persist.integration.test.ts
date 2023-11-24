@@ -85,7 +85,7 @@ describe('persistReport', () => {
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
-  it('should log to console when format is stdout`', async () => {
+  it('should log to console regardless of format`', async () => {
     const persist = persistConfig({ outputDir, format: [] });
 
     await persistReport(dummyReport, {
