@@ -8,7 +8,7 @@ describe('infoMessage', () => {
   it.each([['index.js'], [join('src', 'index.js')]])(
     'should return info message',
     file => {
-      expect(infoMessage(file)).toEqual(`File ${basename(file)} is OK`);
+      expect(infoMessage(file)).toBe(`File ${basename(file)} is OK`);
     },
   );
 });
@@ -17,9 +17,9 @@ describe('errorMessage', () => {
     [1, 0],
     [2, 1],
   ])('should return error message', (size, budget) => {
-    const sizeDifference = Math.min(size - budget, 0);
-    expect(errorMessage('test.js', size, budget)).toEqual(
-      `File ${file} is ${size} B this is ${sizeDifference} B too big. (budget: ${budget} B)`,
+    const sizeDifference = size - budget;
+    expect(errorMessage('test.js', size, budget)).toBe(
+      `File ${file} is ${size} B this is ${1} B too big. (budget: ${budget} B)`,
     );
   });
 });
@@ -40,7 +40,7 @@ describe('assertFileSize', () => {
     [0, 1],
     [1, 1],
   ])(
-    'should return informative Issue with with budgets not exceeding (size: %s, budget: %s)',
+    'should return informative Issue with budgets not exceeding (size: %s, budget: %s)',
     (size, budget) => {
       expect(assertFileSize(file, size, budget)).toEqual({
         message: infoMessage(file),
@@ -54,7 +54,7 @@ describe('assertFileSize', () => {
     [1, 0],
     [2, 1],
   ])(
-    'should return error Issue with with budgets exceeding (size: %s, budget: %s)',
+    'should return error Issue with budgets exceeding (size: %s, budget: %s)',
     (size, budget) => {
       console.log('size: ', size, 'budget', budget);
       expect(assertFileSize(file, size, budget)).toEqual({
@@ -64,16 +64,4 @@ describe('assertFileSize', () => {
       });
     },
   );
-});
-
-describe('errorMessage', () => {
-  it.each([
-    [1, 0],
-    [2, 1],
-  ])('should return error message', (size, budget) => {
-    const sizeDifference = Math.min(size - budget, 0);
-    expect(errorMessage('test.js', size, budget)).toEqual(
-      `File ${file} is ${size} B this is ${sizeDifference} B too big. (budget: ${budget} B)`,
-    );
-  });
 });
