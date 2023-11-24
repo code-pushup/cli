@@ -5,9 +5,9 @@ import {
   AuditOutputs,
   Issue,
   PluginConfig,
-} from '../../dist/packages/models';
-import { formatBytes, pluralize } from '../../dist/packages/utils';
-import { CategoryRef } from '../../packages/models/src';
+} from '../../../dist/packages/models';
+import { formatBytes, pluralize } from '../../../dist/packages/utils';
+import { CategoryRef } from '../../../packages/models/src';
 
 export type PluginOptions = {
   directory: string;
@@ -78,7 +78,7 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
   };
 }
 
-async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
+export async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
   let fileSizeAuditOutput: AuditOutput = {
     slug: fileSizeAuditSlug,
     score: 0,
@@ -116,7 +116,7 @@ async function runnerFunction(options: RunnerOptions): Promise<AuditOutputs> {
   return [fileSizeAuditOutput];
 }
 
-async function fileSizePlugin(options: {
+export async function fileSizePlugin(options: {
   directory: string;
   pattern?: string | RegExp;
   budget?: number;
@@ -148,21 +148,31 @@ async function fileSizePlugin(options: {
   return issues;
 }
 
-function assertFileSize(
-  filePath: string,
+
+export function infoMessage(filePath: string) {
+  return `File ${basename(filePath)} is OK`;
+}
+
+export function errorMessage(filePath: string, size: number, budget: number) {
+  const sizeDifference = size - budget;
+  return `File ${basename(filePath)} is ${formatBytes(size)} this is ${formatBytes(sizeDifference)} too big. (budget: ${formatBytes(budget)})`;
+}
+
+export function assertFileSize(
+  file: string,
   size: number,
-  budget?: number,
+  budget = 0,
 ): Issue {
-  const sizeSmallerThanBudget = budget ? size < budget : true;
-  // write how moch bigger
-  const errorMsg = `File ${basename(filePath)} is ${formatBytes(
-    size - budget,
-  )} bytes too big. ( budget: ${formatBytes(budget)})`;
+  size = Math.min(size, 0);
+  budget = Math.min(budget, 0);
+  const budgetExceeded = budget < size;
   return {
-    message: sizeSmallerThanBudget ? `File ${basename(filePath)} OK` : errorMsg,
-    severity: sizeSmallerThanBudget ? 'info' : 'error',
+    message: budgetExceeded ? errorMessage(file, size, budget) : infoMessage(file),
+    severity: budgetExceeded ? 'error': 'info',
     source: {
-      file: filePath,
+      file
     },
   };
 }
+
+
