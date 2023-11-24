@@ -408,15 +408,11 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 // assert file size info with budget
 function assertFileSizeInfo(fileSizeInfo: FileSizeInfo, budget?: number): Issue {
   const { size, filePath } = fileSizeInfo;
-  const smallerThanBudget = budget ? size < budget : true;
+  const budgetExceeded = budget ? size < budget : true;
+  const errorMsg = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
   return {
-    message: `File ${basename(filePath)} is ${
-      smallerThanBudget
-        ? 'ok'
-        : // format size with helper function `formatBytes`
-          'bigger than ' + formatBytes(budget)
-    }`,
-    severity: smallerThanBudget ? 'info' : 'error',
+    message: budgetExceeded ? `File ${basename(filePath)} OK` : errorMsg,
+    severity: budgetExceeded ? 'info' : 'error',
     source: {
       file: filePath,
     },
@@ -538,7 +534,6 @@ function runnerConfig(options: Options): RunnerConfig {
       onlyAudits,
     }),
     outputFile,
-    // implementation follows below
     outputTransform: async (output: string) => {
       // return dummy audit outputs. Correct implementation follows below
       return [
