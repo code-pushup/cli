@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { join } from 'path';
 // @TODO use NPM package
-import type { CoreConfig } from '../../packages/models/src';
+import type { CoreConfig } from '../../../packages/models/src';
 import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
