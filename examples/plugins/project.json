@@ -14,7 +14,7 @@
     },
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
-      "dependsOn": ["build"]
+      "dependsOn": ["cli:build"]
     }
   },
   "tags": []
