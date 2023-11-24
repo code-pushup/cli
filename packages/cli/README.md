@@ -127,3 +127,86 @@ jobs:
       - run: npm ci
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
+
+# CLI
+
+## Global Options
+
+| Option           | Type      | Default                 | Description                                                            |
+| ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
+| **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
+| **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
+| **`--config`**   | `string`  | `code-pushup.config.js` | Path the the config file, e.g. code-pushup.config.js                   |
+
+## Commands
+
+### `collect` command
+
+Run commands over:
+`code-pushup collect [options]`
+
+Description:  
+Run Plugins and collect results.
+
+| Option                    | Type       | Default | Description                                     |
+| ------------------------- | ---------- | ------- | ----------------------------------------------- |
+| **`--onlyPlugins`**       | `string[]` | `[]`    | Only run the specified plugins.                 |
+| **`--persist.outputDir`** | `string`   | n/a     | Directory for the produced reports.             |
+| **`--persist.filename`**  | `string`   | n/a     | Filename for the produced reports.              |
+| **`--persist.format`**    | `enum`     | n/a     | Format of the report output. e.g. `md`, `json`. |
+
+### `upload` command
+
+Run commands over:
+`code-pushup upload [options]`
+
+Description:
+Upload reports to the Code PushUp portal.
+
+| Option                      | Type     | Default | Description                                     |
+| --------------------------- | -------- | ------- | ----------------------------------------------- |
+| **`--persist.outputDir`**   | `string` | n/a     | Directory for the produced reports.             |
+| **`--persist.filename`**    | `string` | n/a     | Filename for the produced reports.              |
+| **`--persist.format`**      | `enum`   | n/a     | Format of the report output. e.g. `md`, `json`. |
+| **`--upload.organization`** | `string` | n/a     | Organization slug from portal.                  |
+| **`--upload.project`**      | `string` | n/a     | Project slug from portal.                       |
+| **`--upload.server`**       | `string` | n/a     | URL to your portal server.                      |
+| **`--upload.apiKey`**       | `string` | n/a     | API key for the portal server.                  |
+
+### `autorun` command
+
+Run commands over:
+`code-pushup autorun [options]`
+
+Description:
+Run Plugins, collect results and upload reports to the Code PushUp portal.
+
+| Option                      | Type       | Default | Description                                     |
+| --------------------------- | ---------- | ------- | ----------------------------------------------- |
+| **`--onlyPlugins`**         | `string[]` | `[]`    | Only run the specified plugins.                 |
+| **`--persist.outputDir`**   | `string`   | n/a     | Directory for the produced reports.             |
+| **`--persist.filename`**    | `string`   | n/a     | Filename for the produced reports.              |
+| **`--persist.format`**      | `enum`     | n/a     | Format of the report output. e.g. `md`, `json`. |
+| **`--upload.organization`** | `string`   | n/a     | Organization slug from portal.                  |
+| **`--upload.project`**      | `string`   | n/a     | Project slug from portal.                       |
+| **`--upload.server`**       | `string`   | n/a     | URL to your portal server.                      |
+| **`--upload.apiKey`**       | `string`   | n/a     | API key for the portal server.                  |
+
+### `print-config` command
+
+Run commands over:
+`code-pushup print-config [options]`
+
+Description:
+Print the resolved configuration.
+
+| Option                      | Type       | Default | Description                                     |
+| --------------------------- | ---------- | ------- | ----------------------------------------------- |
+| **`--onlyPlugins`**         | `string[]` | `[]`    | Only run the specified plugins.                 |
+| **`--persist.outputDir`**   | `string`   | n/a     | Directory for the produced reports.             |
+| **`--persist.filename`**    | `string`   | n/a     | Filename for the produced reports.              |
+| **`--persist.format`**      | `enum`     | n/a     | Format of the report output. e.g. `md`, `json`. |
+| **`--upload.organization`** | `string`   | n/a     | Organization slug from portal.                  |
+| **`--upload.project`**      | `string`   | n/a     | Project slug from portal.                       |
+| **`--upload.server`**       | `string`   | n/a     | URL to your portal server.                      |
+| **`--upload.apiKey`**       | `string`   | n/a     | API key for the portal server.                  |
