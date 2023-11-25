@@ -17,14 +17,16 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/utils/unit-tests"
-      }
+      },
+      "dependsOn": ["cli:build"]
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
-      }
+      },
+      "dependsOn": ["cli:build"]
     },
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.js --persist.format=md",
