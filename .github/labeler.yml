@@ -10,3 +10,5 @@
   - packages/**/*.spec.ts
   - e2e/**
   - testing-utils/**
+
+🦾 CI/CD: .github/**
