@@ -11,7 +11,7 @@
       "options": {
         "lintFilePatterns": ["examples/plugins/**/*.ts"]
       },
-      "dependsOn": ["cli:build"]
+      "dependsOn": ["^build"]
     },
     "unit-test": {
       "executor": "@nx/vite:test",
@@ -19,7 +19,7 @@
       "options": {
         "reportsDirectory": "../../coverage/utils/unit-tests"
       },
-      "dependsOn": ["cli:build"]
+      "dependsOn": ["^build"]
     },
     "integration-test": {
       "executor": "@nx/vite:test",
@@ -27,11 +27,11 @@
       "options": {
         "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
       },
-      "dependsOn": ["cli:build"]
+      "dependsOn": ["^build"]
     },
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.js --persist.format=md",
-      "dependsOn": ["cli:build"]
+      "dependsOn": ["^build"]
     }
   },
   "tags": []
