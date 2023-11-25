@@ -406,15 +406,28 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 }
 
 // assert file size info with budget
-function assertFileSizeInfo(fileSizeInfo: FileSizeInfo, budget?: number): Issue {
-  const { size, filePath } = fileSizeInfo;
-  const budgetExceeded = budget ? size < budget : true;
-  const errorMsg = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
+
+export function assertFileSize(
+  file: string,
+  size: number,
+  budget?: number,
+): Issue {
+  let severity: IssueSeverity = 'info';
+  let message = `File ${basename(filePath)} OK`;
+
+  if (budget !== undefined) {
+    // set severity to error if budget exceeded
+    if(budget < size) {
+        severity = 'error';
+        message = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
+    }
+  }
+
   return {
-    message: budgetExceeded ? `File ${basename(filePath)} OK` : errorMsg,
-    severity: budgetExceeded ? 'info' : 'error',
+    message,
+    severity,
     source: {
-      file: filePath,
+      file,
     },
   };
 }
