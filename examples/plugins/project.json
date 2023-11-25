@@ -10,7 +10,8 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["examples/plugins/**/*.ts"]
-      }
+      },
+      "dependsOn": ["cli:build"]
     },
     "unit-test": {
       "executor": "@nx/vite:test",
