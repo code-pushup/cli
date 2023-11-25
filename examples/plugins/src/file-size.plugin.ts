@@ -145,7 +145,7 @@ export async function fileSizeIssues(options: {
     const filePath = join(directory, file);
     const stats = await stat(filePath);
 
-    // early exit if directory
+    // depth first crawling
     if (stats.isDirectory()) {
       return fileSizeIssues({ directory: filePath, pattern, budget });
     }
