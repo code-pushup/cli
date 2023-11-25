@@ -12,8 +12,7 @@ The Code PushUp CLI serves to **collect audit results**, and optionally **upload
 
 It can be used locally in your repository, or integrated in your CI environment.
 
-_If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package
-instead._
+_If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package instead._
 
 ## Getting started
 
