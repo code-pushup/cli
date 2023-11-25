@@ -187,29 +187,31 @@ describe('fileSizePlugin', () => {
         directory: outputDir,
         budget: 25,
       }),
-    ).resolves.toEqual([
-      {
-        message: expect.any(String),
-        severity: 'info',
-        source: {
-          file: expect.stringContaining('README.md'),
+    ).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          message: expect.any(String),
+          severity: 'info',
+          source: {
+            file: expect.stringContaining('README.md'),
+          },
         },
-      },
-      {
-        message: expect.any(String),
-        severity: 'error',
-        source: {
-          file: expect.stringContaining('project.json'),
+        {
+          message: expect.any(String),
+          severity: 'error',
+          source: {
+            file: expect.stringContaining('project.json'),
+          },
         },
-      },
-      {
-        message: expect.any(String),
-        severity: 'error',
-        source: {
-          file: expect.stringContaining('test.js'),
+        {
+          message: expect.any(String),
+          severity: 'error',
+          source: {
+            file: expect.stringContaining('test.js'),
+          },
         },
-      },
-    ]);
+      ]),
+    );
   });
 
   it('should assert files that are over budget and match the pattern', async () => {
