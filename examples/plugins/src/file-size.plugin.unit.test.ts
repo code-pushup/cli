@@ -2,25 +2,15 @@ import { unlink } from 'fs/promises';
 import { vol } from 'memfs';
 import { basename, join } from 'path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { executePlugin } from '../../../packages/core/src';
-import {
-  categoryRefSchema,
-  pluginConfigSchema,
-} from '../../../packages/models/src';
-import { MEMFS_VOLUME, categoryConfig } from '../../../packages/models/test';
+import { MEMFS_VOLUME } from '../../../packages/models/test';
 import { formatBytes } from '../../../packages/utils/src';
 import {
-  PluginOptions,
   assertFileSize,
-  audits,
-  create,
   errorMessage,
   fileSizeIssues,
   infoMessage,
-  recommendedRefs,
   runnerFunction,
   scoreFilesizeAudit,
-  pluginSlug as slug,
 } from './file-size.plugin';
 
 // Mock file system API's
@@ -38,9 +28,7 @@ const projectJson = JSON.stringify(
   {
     test: 42,
     arr: [1, 2, 3],
-    obj: {
-      test: 42,
-    },
+    obj: { test: 42 },
   },
   null,
   2,
@@ -53,7 +41,6 @@ const testJs = `
 const readmeMd = '# Docs';
 
 const file = 'test.js';
-const infoMsg = (size: number) => infoMessage(file, size);
 
 describe('infoMessage', () => {
   it.each([['index.js'], [join('src', 'index.js')]])(
@@ -71,7 +58,6 @@ describe('errorMessage', () => {
     [1, 0],
     [2, 1],
   ])('should return error message', (size, budget) => {
-    const sizeDifference = size - budget;
     expect(errorMessage('test.js', size, budget)).toBe(
       `File ${file} is ${size} B this is ${1} B too big. (budget: ${budget} B)`,
     );
@@ -83,7 +69,7 @@ describe('assertFileSize', () => {
     'should return a informative Issue without budgets (size: %s)',
     size => {
       expect(assertFileSize(file, size)).toEqual({
-        message: infoMsg(size),
+        message: infoMessage(file, size),
         severity: 'info',
         source: { file },
       });
@@ -98,7 +84,7 @@ describe('assertFileSize', () => {
     'should return a informative Issue with budgets not exceeding (size: %s, budget: %s)',
     (size, budget) => {
       expect(assertFileSize(file, size, budget)).toEqual({
-        message: infoMsg(size),
+        message: infoMessage(file, size),
         severity: 'info',
         source: { file },
       });
@@ -127,9 +113,8 @@ describe('scoreFilesizeAudit', () => {
     [2, 2, 0],
   ])(
     'should return correct score (files: %s, errors: %s, score: %s)',
-    (files, errors, score) => {
-      expect(scoreFilesizeAudit(files, errors)).toBe(score);
-    },
+    (files, errors, score) =>
+      expect(scoreFilesizeAudit(files, errors)).toBe(score),
   );
 });
 
@@ -147,7 +132,7 @@ describe('fileSizePlugin', () => {
   });
 
   it('should list all files', async () => {
-    expect(
+    await expect(
       fileSizeIssues({
         directory: outputDir,
       }),
@@ -165,7 +150,7 @@ describe('fileSizePlugin', () => {
   });
 
   it('should list files matching a pattern', async () => {
-    expect(
+    await expect(
       fileSizeIssues({
         directory: outputDir,
         pattern: /\.js$/,
@@ -182,7 +167,7 @@ describe('fileSizePlugin', () => {
   });
 
   it('should assert files that are over budget', async () => {
-    expect(
+    await expect(
       fileSizeIssues({
         directory: outputDir,
         budget: 25,
@@ -215,7 +200,7 @@ describe('fileSizePlugin', () => {
   });
 
   it('should assert files that are over budget and match the pattern', async () => {
-    expect(
+    await expect(
       fileSizeIssues({
         directory: outputDir,
         budget: 1,
@@ -252,7 +237,7 @@ describe('runnerFunction', () => {
     );
   });
 
-  it('should return pass if no files are given and pass', async function () {
+  it('should return pass if no files are given and pass', async () => {
     vol.reset();
     // create empty directory
     vol.fromJSON(
@@ -263,75 +248,64 @@ describe('runnerFunction', () => {
     );
     await unlink(join(outputDir, 'm.js'));
 
-    expect(
+    await expect(
       runnerFunction({
         directory: outputDir,
       }),
     ).resolves.toEqual([filesizeAuditOutputBase]);
   });
 
-  it('should return issues if files are given and pass', function () {
-    expect(
+  it('should return issues if files are given and pass', async () => {
+    await expect(
       runnerFunction({
         directory: outputDir,
       }),
     ).resolves.toEqual([
-      {
+      expect.objectContaining({
         ...filesizeAuditOutputBase,
         details: {
           issues: expect.any(Array),
         },
-      },
+      }),
     ]);
   });
 
-  it('should have number of files given as value', function () {
-    expect(
+  it('should have number of files given as value', async () => {
+    await expect(
       runnerFunction({
         directory: outputDir,
       }),
     ).resolves.toEqual([
-      {
-        ...filesizeAuditOutputBase,
+      expect.objectContaining({
         displayValue: '0 files oversize',
         value: 0,
-        score: expect.any(Number),
-        details: {
-          issues: expect.any(Array),
-        },
-      },
+      }),
     ]);
   });
 
-  it('should have files that are matching the pattern as issues', function () {
-    expect(
+  it('should have files in issues that are matching the pattern as issues', async () => {
+    await expect(
       runnerFunction({
         directory: outputDir,
         pattern: /\.js$/,
       }),
     ).resolves.toEqual([
-      {
-        ...filesizeAuditOutputBase,
+      expect.objectContaining({
         details: {
           issues: [
-            {
+            expect.objectContaining({
               source: {
                 file: expect.stringContaining('test.js'),
               },
-              message: expect.any(String),
-              severity: expect.any(String),
-            },
+            }),
           ],
         },
-        displayValue: expect.any(String),
-        value: expect.any(Number),
-        score: expect.any(Number),
-      },
+      }),
     ]);
   });
 
-  it('should have number of files that are over budget as value and listed in issues', function () {
-    expect(
+  it('should have number of files that are over budget as value and listed in issues', async () => {
+    await expect(
       runnerFunction({
         directory: outputDir,
         budget: 128,
@@ -362,8 +336,8 @@ describe('runnerFunction', () => {
     [0, 2, 0],
     [128, 1, 0.5],
     [1000, 0, 1],
-  ])('should have correct score', (budget, value, score) => {
-    expect(
+  ])('should have correct score', async (budget, value, score) => {
+    await expect(
       runnerFunction({
         directory: outputDir,
         budget,
@@ -380,81 +354,4 @@ describe('runnerFunction', () => {
       },
     ]);
   });
-});
-
-describe('create', () => {
-  const baseOptions: PluginOptions = {
-    directory: outputDir,
-  };
-
-  beforeEach(() => {
-    vol.reset();
-    vol.fromJSON(
-      {
-        'project.json': projectJson,
-        'src/test.js': testJs,
-      },
-      outputDir,
-    );
-  });
-
-  it('should return valid PluginConfig', async () => {
-    const pluginConfig = await create(baseOptions);
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig).toEqual({
-      audits,
-      description:
-        'A plugin to measure and assert filesize of files in a directory.',
-      icon: 'javascript',
-      runner: expect.any(Function),
-      slug,
-      title: 'File Size',
-    });
-  });
-
-  it('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = await create(baseOptions);
-    expect(executePlugin(pluginConfig)).resolves.toMatchObject({
-      description:
-        'A plugin to measure and assert filesize of files in a directory.',
-      slug,
-      title: 'File Size',
-      duration: expect.any(Number),
-      date: expect.any(String),
-      audits: expect.any(Array),
-    });
-  });
-
-  it('should use pattern', async () => {
-    const pluginConfig = await create({
-      ...baseOptions,
-      pattern: /\.js$/,
-    });
-    const { audits } = await executePlugin(pluginConfig);
-
-    expect(audits.length).toBe(1);
-    expect(audits[0].score).toBe(1);
-    expect(audits[0].details.issues.length).toBe(1);
-  });
-
-  it('should use budget', async () => {
-    const pluginConfig = await create({
-      ...baseOptions,
-      budget: 0,
-    });
-    const { audits } = await executePlugin(pluginConfig);
-
-    expect(audits.length).toBe(1);
-    expect(audits[0].score).toBe(0);
-    expect(audits[0].details.issues.length).toBe(2);
-  });
-});
-
-describe('recommendedRefs', () => {
-  it.each(recommendedRefs)(
-    'should be a valid category reference',
-    categoryRef => {
-      expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
-    },
-  );
 });

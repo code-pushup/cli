@@ -1,15 +1,14 @@
-import 'dotenv/config';
 import { join } from 'path';
 // @TODO use NPM package
-import type { CoreConfig } from '../../../packages/models/src';
+import { CoreConfig } from '../../packages/models/src';
 import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
-} from './file-size.plugin';
+} from './src/file-size.plugin';
 
 /**
  * Run it with:
- * `nx run-collect example-plugins`
+ * `nx run-collect examples-plugins`
  *
  * - For all formats use `--persist.format=md,json`
  * - For better debugging use `--verbose --no-progress`

@@ -3,10 +3,11 @@ import { basename, join } from 'path';
 import {
   AuditOutput,
   AuditOutputs,
+  CategoryRef,
   Issue,
+  IssueSeverity,
   PluginConfig,
-} from '../../../dist/packages/models';
-import { CategoryRef } from '../../../packages/models/src';
+} from '../../../packages/models/src';
 import { formatBytes, pluralize } from '../../../packages/utils/src';
 
 export type PluginOptions = {
@@ -139,29 +140,33 @@ export async function fileSizeIssues(options: {
 }): Promise<Issue[]> {
   const { directory, pattern, budget } = options;
 
-  let issues: Issue[] = [];
   const files = await readdir(directory);
-
-  for (const file of files) {
+  const issuesPromises = files.map(async file => {
     const filePath = join(directory, file);
     const stats = await stat(filePath);
 
-    if (stats.isFile()) {
-      if (pattern) {
-        if (file.match(pattern)) {
-          issues.push(assertFileSize(filePath, stats.size, budget));
-        }
-        continue;
-      }
-      issues.push(assertFileSize(filePath, stats.size, budget));
-    } else if (stats.isDirectory()) {
-      issues.push(
-        ...(await fileSizeIssues({ directory: filePath, pattern, budget })),
-      );
+    // early exit if directory
+    if (stats.isDirectory()) {
+      return fileSizeIssues({ directory: filePath, pattern, budget });
     }
-  }
 
-  return issues;
+    if (stats.isFile()) {
+      if (pattern !== undefined) {
+        if (new RegExp(pattern).test(file)) {
+          return assertFileSize(filePath, stats.size, budget);
+        }
+      } else {
+        return assertFileSize(filePath, stats.size, budget);
+      }
+    }
+
+    // flatMap will remove empty arrays
+    return [];
+  });
+
+  // Resolve all promises and flatten the array of issues
+  const issuesNestedArray = await Promise.all(issuesPromises);
+  return issuesNestedArray.flat();
 }
 
 export function infoMessage(filePath: string, size: number) {
@@ -182,15 +187,23 @@ export function assertFileSize(
   size: number,
   budget?: number,
 ): Issue {
-  // ensure size and budget if given is positive numbers
+  let severity: IssueSeverity = 'info';
+  // ensure size positive numbers
   size = Math.max(size, 0);
-  budget = budget !== undefined ? Math.max(budget, 0) : budget;
-  const budgetExceeded = budget !== undefined ? budget < size : false;
+  let message = infoMessage(file, size);
+
+  if (budget !== undefined) {
+    // ensure budget is positive numbers
+    budget = Math.max(budget, 0);
+    // set severity to error if budget exceeded
+    const budgetExceeded = budget < size;
+    severity = budgetExceeded ? 'error' : 'info';
+    message = budgetExceeded ? errorMessage(file, size, budget) : message;
+  }
+
   return {
-    message: budgetExceeded
-      ? errorMessage(file, size, budget)
-      : infoMessage(file, size),
-    severity: budgetExceeded ? 'error' : 'info',
+    message,
+    severity,
     source: {
       file,
     },
