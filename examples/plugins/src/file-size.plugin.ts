@@ -196,11 +196,12 @@ export function assertFileSize(
     // ensure budget is positive numbers
     budget = Math.max(budget, 0);
     // set severity to error if budget exceeded
-    const budgetExceeded = budget < size;
-    severity = budgetExceeded ? 'error' : 'info';
-    message = budgetExceeded ? errorMessage(file, size, budget) : message;
+    if (budget < size) {
+      severity = 'error';
+      message = errorMessage(file, size, budget);
+    }
   }
-
+  // return Issue
   return {
     message,
     severity,
