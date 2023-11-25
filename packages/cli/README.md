@@ -136,7 +136,7 @@ jobs:
 | ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
 | **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
-| **`--config`**   | `string`  | `code-pushup.config.js` | Path the the config file, e.g. code-pushup.config.js                   |
+| **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
 
 ## Commands
 
