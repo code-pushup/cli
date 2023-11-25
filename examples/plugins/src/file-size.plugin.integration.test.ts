@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
 import { categoryRefSchema, pluginConfigSchema } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '../../../packages/models/test';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   PluginOptions,
   audits,

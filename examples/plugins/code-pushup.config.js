@@ -18,7 +18,6 @@ const config = await (async () => {
   return {
     persist: {
       outputDir,
-      filename: 'report',
     },
     plugins: [
       await fileSizePlugin({
