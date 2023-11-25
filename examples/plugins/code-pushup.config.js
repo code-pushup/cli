@@ -1,6 +1,4 @@
 import { join } from 'path';
-// @TODO use NPM package
-import { CoreConfig } from '../../packages/models/src';
 import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
@@ -16,7 +14,7 @@ import {
  */
 
 const outputDir = '.code-pushup';
-const config: CoreConfig = await (async () => {
+const config = await (async () => {
   return {
     persist: {
       outputDir,
