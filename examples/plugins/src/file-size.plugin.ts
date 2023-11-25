@@ -174,12 +174,12 @@ export function infoMessage(filePath: string, size: number) {
 }
 
 export function errorMessage(filePath: string, size: number, budget: number) {
-  const sizeDifference = size - budget;
-  return `File ${basename(filePath)} is ${formatBytes(
-    size,
-  )} this is ${formatBytes(sizeDifference)} too big. (budget: ${formatBytes(
-    budget,
-  )})`;
+  const sizeDifference = formatBytes(size - budget);
+  const byteSize = formatBytes(size);
+  const byteBudget = formatBytes(budget);
+  return `File ${basename(
+    filePath,
+  )} has ${byteSize} this is ${sizeDifference} too big. (budget: ${byteBudget})`;
 }
 
 export function assertFileSize(
