@@ -59,7 +59,7 @@ describe('errorMessage', () => {
     [2, 1],
   ])('should return error message', (size, budget) => {
     expect(errorMessage('test.js', size, budget)).toBe(
-      `File ${file} is ${size} B this is ${1} B too big. (budget: ${budget} B)`,
+      `File ${file} has ${size} B this is ${1} B too big. (budget: ${budget} B)`,
     );
   });
 });
