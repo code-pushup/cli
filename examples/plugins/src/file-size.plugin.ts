@@ -1,5 +1,6 @@
 import { readdir, stat } from 'fs/promises';
 import { basename, join } from 'path';
+import { formatBytes, pluralize } from '../../../dist/packages/utils';
 import {
   AuditOutput,
   AuditOutputs,
@@ -8,7 +9,6 @@ import {
   IssueSeverity,
   PluginConfig,
 } from '../../../packages/models/src';
-import { formatBytes, pluralize } from '../../../dist/packages/utils';
 
 export type PluginOptions = {
   directory: string;
