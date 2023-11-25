@@ -7,8 +7,8 @@ import {
   Issue,
   IssueSeverity,
   PluginConfig,
-} from '../../../packages/models/src';
-import { formatBytes, pluralize } from '../../../packages/utils/src';
+} from '../../../dist/packages/models/src';
+import { formatBytes, pluralize } from '../../../dist/packages/utils';
 
 export type PluginOptions = {
   directory: string;

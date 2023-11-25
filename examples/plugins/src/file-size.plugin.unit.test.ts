@@ -2,8 +2,8 @@ import { unlink } from 'fs/promises';
 import { vol } from 'memfs';
 import { basename, join } from 'path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '../../../packages/models/test';
-import { formatBytes } from '../../../packages/utils/src';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { formatBytes } from '@code-pushup/utils';
 import {
   assertFileSize,
   errorMessage,
