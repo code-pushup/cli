@@ -320,7 +320,7 @@ describe('runnerFunction', () => {
           issues: expect.arrayContaining([
             {
               message:
-                'File test.js is 154 B this is 26 B too big. (budget: 128 B)',
+                'File test.js has 154 B this is 26 B too big. (budget: 128 B)',
               severity: 'error',
               source: {
                 file: expect.stringContaining('test.js'),
