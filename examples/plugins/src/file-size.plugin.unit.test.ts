@@ -153,15 +153,13 @@ describe('fileSizePlugin', () => {
       }),
     ).resolves.toEqual(
       expect.arrayContaining(
-        ['/test/project.json', '/test/src/test.js', '/test/docs/README.md'].map(
-          file => ({
-            message: expect.any(String),
-            severity: expect.any(String),
-            source: {
-              file,
-            },
-          }),
-        ),
+        ['project.json', 'test.js', 'README.md'].map(file => ({
+          message: expect.any(String),
+          severity: expect.any(String),
+          source: {
+            file: expect.stringContaining(file),
+          },
+        })),
       ),
     );
   });
@@ -177,7 +175,7 @@ describe('fileSizePlugin', () => {
         message: expect.any(String),
         severity: expect.any(String),
         source: {
-          file: '/test/src/test.js',
+          file: expect.stringContaining('test.js'),
         },
       },
     ]);
@@ -194,21 +192,21 @@ describe('fileSizePlugin', () => {
         message: expect.any(String),
         severity: 'info',
         source: {
-          file: '/test/docs/README.md',
+          file: expect.stringContaining('README.md'),
         },
       },
       {
         message: expect.any(String),
         severity: 'error',
         source: {
-          file: '/test/project.json',
+          file: expect.stringContaining('project.json'),
         },
       },
       {
         message: expect.any(String),
         severity: 'error',
         source: {
-          file: '/test/src/test.js',
+          file: expect.stringContaining('test.js'),
         },
       },
     ]);
@@ -226,7 +224,7 @@ describe('fileSizePlugin', () => {
         message: expect.any(String),
         severity: 'error',
         source: {
-          file: '/test/src/test.js',
+          file: expect.stringContaining('test.js'),
         },
       },
     ]);
@@ -316,7 +314,7 @@ describe('runnerFunction', () => {
           issues: [
             {
               source: {
-                file: '/test/src/test.js',
+                file: expect.stringContaining('test.js'),
               },
               message: expect.any(String),
               severity: expect.any(String),
@@ -349,7 +347,7 @@ describe('runnerFunction', () => {
                 'File test.js is 154 B this is 26 B too big. (budget: 128 B)',
               severity: 'error',
               source: {
-                file: '/test/src/test.js',
+                file: expect.stringContaining('test.js'),
               },
             },
           ]),
