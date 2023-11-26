@@ -134,23 +134,19 @@ One of the main features of Code PushUp is the ability to write custom plugins t
 It enables you to implement neraly any kind of metric you want to track with minimum effort.
 In this section we will go through the steps to create a custom plugin and integrate it in your project.
 
-### Set up the custom plugin `create` function
+### Set up
 
 To start crafting custom plugins you need a minimum `code-pushup.config.ts` file including the `persist` and `plugins`
 property.
 
+**config and plugin template**
+
 ```typescript
+// code-pushup.config.ts
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 
-export default {
-  persist: {
-    outputDir: '.code-pushup',
-  },
-  plugins: [await create()],
-  categories: [],
-};
-
-async function create(): PluginConfig {
+type Options = {};
+async function create(options: Options): PluginConfig {
   const audit = {
     slug: 'my-audit',
     title: 'My audit',
@@ -175,9 +171,19 @@ async function create(): PluginConfig {
     },
   };
 }
+
+export default {
+  persist: {
+    outputDir: '.code-pushup',
+  },
+  plugins: [await create()],
+  categories: [],
+};
 ```
 
 Execute the CLI with `npx code-pushup collect --no-progress` and you should the following output:
+
+**stdout of plugin template**
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -219,25 +225,50 @@ codebase.
 
 Let's start by creating a create function with the correct description for our file size plugin:
 
-```typescript
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+**file-size plugin setup**
 
-async function create(): Promise<PluginConfig> {
+```typescript
+// code-pushup.config.ts
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { RunnerFunction } from './plugin-config-runner';
+
+type Options = {
+  directory: string;
+};
+
+async function create(options: Options): Promise<PluginConfig> {
   const fileSizeAudit = {
     slug: 'file-size-audit',
     title: 'File size audit',
-    description: 'Audit to check the file size of JavaScript files.',
   };
   return {
     slug: 'file-size',
     title: 'File size plugin',
     icon: 'javascript',
-    description: 'Plugin to check the file size of JavaScript files.',
     audits: [fileSizeAudit],
-    // implementation follows in the below section
-    runner: () => [] as AuditOutputs,
+    runner: runnerFunction(options),
   };
 }
+
+// we use a closure to pass options to the runner function for better DX
+async function runnerFunction(options: Options): RunnerFunction {
+  return () => {
+    // implementation follows in the below section
+    return [] as AuditOutputs;
+  };
+}
+
+export default {
+  persist: {
+    outputDir: '.code-pushup',
+  },
+  plugins: [
+    await create({
+      directory: './src',
+    }),
+  ],
+  categories: [],
+};
 ```
 
 The first thing we should think about is how to get the raw data to calculate the metrics.
@@ -245,14 +276,15 @@ In our case we need to get the file name and size of all files in a directory.
 
 The basic implementation looks like this:
 
-```typescript
-type Options = {
-  directory: string;
-};
+**get file-size data**
 
-type FileSizeInfo = { file: string; size: number };
+```typescript
+// code-pushup.config.ts
+
+// ...
 
 // get raw file size data
+type FileSizeInfo = { file: string; size: number };
 async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
   const { directory } = options;
 
@@ -270,8 +302,6 @@ async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
     // if directory, recurse
     else if (stats.isDirectory()) {
       results.push(...(await getFileSizeData({ directory: filePath })));
-    } else if (stats.isDirectory()) {
-      results.push(...(await fileSizePlugin({ directory: filePath })));
     }
   }
 
@@ -284,48 +314,34 @@ The above code will recursively get the file size info for all files in the spec
 Let's create a runner function that uses the above code to get the file size data and turns it into the shape
 of `AuditOutputs`:
 
+**file-size `RunnerFunction`**
+
 ```typescript
+// code-pushup.config.ts
+import { pluralize } from '@code-pushup/utils';
+
+// ...
+
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
   const data = await getFileSizeData(options);
+  // We use a helper function of the utils package to pluralize the display value
+  const displayValue = `${data.length} ${data.length === 1 ? 'file' : pluralize('file')}`;
 
   let fileSizeAuditOutput: AuditOutput = {
     slug: fileSizeAudit.slug,
-    // We will calculate the score and also add a display value and more details about the checked files later
-    score: 0,
+    // We have always a score of 1. Proper implementation of scores will be covered in a next section.
+    score: 1,
     value: data.length,
-    // We use a helper function to pluralize the display value
-    displayValue: `${data.length} ${data.length === 1 ? 'file' : pluralize('file')}`,
+    displayValue,
   };
 
   return [fileSizeAuditOutput];
 }
 ```
 
-Now we can use the runner function in our plugin as well as configure it with the `Options` object.
-
-Let's add the `Options` object to the plugin configuration and use the created runner function:
-
-```typescript
-export default {
-  // ...
-  plugins: [
-    await create({
-      directory: './src',
-    }),
-  ],
-  // ...
-};
-
-async function create(options: Options): Promise<PluginConfig> {
-  // ...
-  return {
-    //...
-    runner: await runnerFunction(options),
-  };
-}
-```
-
 Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+
+**stdout of basic file-size plugin**
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -341,18 +357,191 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
-##### Add score and detail information to the plugin output
+### RunnerConfig
 
-To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
-This helps to make the plugin results more actionable and valuable for the user.
+The second way to write a plugin runner is a `RunnerConfig`.
+This option is less flexible but can be used in cases where a `RunnerFunction` is not applicable. @TODO giv an example
+why runner function can't be used...
 
-We will extend the `Options` type with a size `budget` property and see how we can use `details` in `AuditOutput` to
-show which files exceed the defined budget.
+We will implement a performance focused plugin using the [lighthouse](@TODO) CLI as real life example.
+
+Let's start with a `crate` function maintaining the basic information of the `PluginConfig`.
+
+**lighthouse plugin setup**
 
 ```typescript
-import { Issue } from '@code-pushup/models';
+// code-pushup.config.ts
+import { PluginConfig, RunnerConfig } from '@code-pushup/models';
 
-// extend the typing
+type Options = {
+  url: string;
+  onlyAudits: string;
+};
+
+async function create(options: Options): Promise<PluginConfig> {
+  const lcpAudit = {
+    slug: 'largest-contentful-paint',
+    title: 'Largest Contnentful Paint',
+  };
+
+  return {
+    slug: 'lighthouse',
+    title: 'Chrome Lighthouse plugin',
+    icon: 'lighthouse',
+    audits: [
+      lcpAudit,
+      // other lighthouse audits
+    ],
+    runner: runnerConfig(options),
+  };
+}
+
+function runnerConfig(options: Options): RunnerConfig {
+  // implementation follows in the below section
+  return {} as RunnerConfig;
+}
+
+export default {
+  // ...
+  plugins: [
+    await create({
+      url: 'https://example.com',
+      onlyAudits: 'largest-contentful-paint',
+    }),
+  ],
+  // ...
+};
+```
+
+The first thing we should think about is how to get the raw data.
+With the lighthouse CLI it is ease as it already provides a report file in `json` format containing a set of audits.
+
+The lighthouse CLI can be executed like this: `npx lighthouse https://example.com`  
+You should see console output of the audits created by the CLI.
+
+To get better debugging experience we add a couple of more options:
+
+- The format and location of the output can be configured with `--output=json --outputFile=lighthouse-report.json`.  
+  This ensures we avoid overwrites of other existing files and is needed to be able to load the generated lighthouse
+  report.
+- To reduce the output you can execute only specific audits with the `--onlyAudits` option
+  e.g.: `--onlyAudits=largest-contentful-paint`.  
+  This will significantly reduce the time lighthouse takes to run.
+- If we want to run the script in the background we can execute lighthouse headless with the
+  flag `--chrome-flags="--headless=new"`.  
+  It also is helpful when executing lighthouse in th CI.
+
+The basic implementation of a `RunnerConfig` for the above command looks like this:
+
+```typescript
+// code-pushup.config.ts
+import { join } from 'path';
+import { AuditOutputs } from '@code-pushup/models';
+
+function runnerConfig(options: Options): RunnerConfig {
+  const { url, onlyAudits } = options;
+  const outputFile = join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
+  return {
+    // npx lighthouse https://example.com --output=json --outputFile=lighthouse-report.json  --onlyAudits=largest-contentful-paint
+    command: 'npx',
+    args: objectToCliArgs({
+      _: ['lighthouse', url],
+      output: 'json',
+      'output-path': outputFile,
+      onlyAudits,
+    }),
+    outputFile,
+    // implementation follows in the next section
+    outputTransform,
+  };
+}
+
+function outputTransform(output: string): AuditOutputs {
+  // Return dummy audit outputs.
+  // Otherwise the CLI will throw an error as the lighthouse report is not of shape AuditOutputs
+  return [
+    {
+      slug: lcpAudit.slug,
+      score: 0,
+      value: 0,
+    },
+  ] as AuditOutputs;
+}
+```
+
+Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+
+**stdout of basic lighthouse plugin**
+
+```sh
+Code PushUp Report - @code-pushup/core@x.y.z
+
+Chrome Lighthosue audits
+● Largest Contentful Paint                                                0
+
+Categories
+┌──────────┬───────┬────────┐
+│ Category │ Score │ Audits │
+└──────────┴───────┴────────┘
+
+Made with ❤ by code-pushup.dev
+```
+
+#### Implement a `outputTransform` function
+
+As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add
+a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
+
+**outputTransform for lighthouse report**
+
+```typescript
+// code-pushup.config.ts
+import { Result } from 'lighthouse';
+
+// ...
+
+function outputTransform(output: string): AuditOutputs {
+  // output is content of `lighthouse-report.json` as string so we have to parse it
+  const lhr = JSON.parse(output as Result);
+  return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
+    slug,
+    score: score,
+    value: parseInt(value.toString()),
+    displayValue,
+    description,
+  }));
+}
+```
+
+Test the output by running `npx code-pushup collect --no-progress --format=md`.
+The CLI argument `--format=md` will create an additional file containing our created detail information form above.
+
+You should see a newly created file `report.md` crated in the folder `.code-pushup` in your current working directory.
+
+It should contain a similar content like the following:
+
+**report.md**
+
+```md
+### Largest Contentful Paint (Lighthouse)
+
+🟨 <b>3.2 s</b> (score: 71)
+
+Largest Contentful Paint marks the time at which the largest text or image is
+painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
+```
+
+### Scoring of audits
+
+Every audit has a score as floating number between 0 and 1.
+We will extend the file-size example to calculate the score based on a budget.
+
+Let's first extend the options object with a `budget` property and use it in the runner config:
+
+**file-size plugin form section [RunnerFunction](@TODO)**
+
+```typescript
+// code-pushup.config.ts
 type Options = {
   // ...
   budget: number; // in bytes
@@ -370,26 +559,54 @@ export default {
 };
 ```
 
-Now let's extend the runner function to calculate the score and add the details:
+Now let's extend the runner function to calculate the score based on the budget:
+
+**file-size plugin runnerFunction**
 
 ```typescript
+// code-pushup.config.ts
+
+// ...
+
+async function runnerFunction(options: Options): Promise<AuditOutputs> {
+  // ...
+
+  // score audit based on budget
+  const errorCount = data.map(({ size }) => options.budget < size).filter(Boolean).length;
+  if (errorCount) {
+    fileSizeAuditOutput: AuditOutput = {
+      ...fileSizeAuditOutput,
+      // score is factor of overbudget files to total files
+      score: errorCount ? errorCount / issues.length : 1,
+      value: errorCount,
+      displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
+    };
+  }
+
+  return [fileSizeAuditOutput];
+}
+```
+
+### Attribution of audits
+
+To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
+This helps to make the plugin results more actionable and valuable for the user.
+
+We will extend the `Options` type with a size `budget` property and see how we can use `details` in `AuditOutput` to
+show which files exceed the defined budget.
+
+**file-size plugin runnerFunction**
+
+```typescript
+// code-pushup.config.ts
+// ...
 import { formatBytes } from '@code-pushup/utils';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
-  const data = await getFileSizeData(options);
+  // ...
 
   // assert file size information with budget
-  const issues = data.map(fileSizeInfo => assertFileSizeInfo(fileSizeInfo, options.budget));
-
-  // enrich output
-  const errorCount = data.filter(i => i.severity === 'error').length;
-  let fileSizeAuditOutput: AuditOutput = {
-    slug: fileSizeAudit.slug,
-    // score is factor of too big files to total files
-    score: errorCount ? errorCount / issues.length : 0,
-    value: errorCount,
-    displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
-  };
+  const issues = data.map(({ file, size }) => assertFileSizeInfo(file, size, options.budget));
 
   // add details if issues given
   if (issues.length) {
@@ -405,20 +622,15 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 }
 
 // assert file size info with budget
-
-export function assertFileSize(
-  file: string,
-  size: number,
-  budget?: number,
-): Issue {
+export function assertFileSize(file: string, size: number, budget?: number): Issue {
   let severity: IssueSeverity = 'info';
   let message = `File ${basename(filePath)} OK`;
 
   if (budget !== undefined) {
     // set severity to error if budget exceeded
-    if(budget < size) {
-        severity = 'error';
-        message = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
+    if (budget < size) {
+      severity = 'error';
+      message = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
     }
   }
 
@@ -440,7 +652,11 @@ You should see a newly created file `report.md` crated in the folder `.code-push
 
 The `report.md` file should contain a similar content like the following:
 
+**report.md**
+
 ```md
+<!-- ... -->
+
 ### File Size Audit (File Size)
 
 <details>
@@ -469,123 +685,37 @@ The `report.md` file should contain a similar content like the following:
 </details>
 ```
 
-### RunnerConfig
+## Plugins and categories
 
-The second way to write a plugin runner is a `RunnerConfig`.
-This option is less flexible but can be used in cases where a `RunnerFunction` is not applicable. @TODO giv an example
-why runnerfunction cant be used...
-
-We will implement a performance focused plugin using the [lighthouse](@TODO) CLI as real life example.
-
-Let's start with a `crate` function maintaining the basic information of the `PluginConfig`.
+**lighthouse plugin**
 
 ```typescript
-import { PluginConfig, RunnerConfig } from '@code-pushup/models';
-
-async function create(): Promise<PluginConfig> {
-  const lcpAudit = {
-    slug: 'largest-contentful-paint',
-    title: 'Largest Contnentful Paint',
-    description: 'Measures the time of the largest contnentful paint of the given url',
-  };
-
-  return {
-    slug: 'lighthouse',
-    title: 'Chrome Lighthouse plugin',
-    icon: 'lighthouse',
-    description: 'Plugin to check webperformance of a given url',
-    audits: [
-      lcpAudit,
-      // other lighthouse audits you want to provide
-    ],
-    // implementation follows in the below section
-    runner: {} as RunnerConfig,
-  };
-}
-```
-
-The first thing we should think about is how to get the raw data.
-With the lighthouse CLI it is ease as it already provides a report file in `json` format containing a set of audits.
-
-The lighthouse CLI can be executed like this: `npx lighthouse https://example.com`  
-You should see console output of the audits created by the CLI.
-
-To get better debugging experience we add a couple of more options:
-
-- The format and location of the output can be configured with `--output=json --outputFile=lighthouse-report.json`.  
-  This ensures we avoid overwrites of other existing files and is needed to be able to load the generated lighthouse
-  report.
-- To reduce the output you can execute only specific audits with the `--onlyAudits` option
-  e.g.: `--onlyAudits=largest-contentful-paint`.  
-  This will significantly reduce the time lighthouse takes to run.
-- If we want to run the script in the background we can execute lighthouse headless with the
-  flag `--chrome-flags="--headless=new"`.  
-  It also is helpfun when executing lighthouse in th CI.
-
-The basic implementation of a `RunnerConfig` for the above command looks like this:
-
-```typescript
-import { join } from 'path';
-import { AuditOutputs } from '@code-pushup/models';
-
-type Options = {
-  url: string;
-  onlyAudits: string;
-};
-
-function runnerConfig(options: Options): RunnerConfig {
-  const { url, onlyAudits } = options;
-  const outputFile = join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
-  return {
-    // npx lighthouse https://example.com --output=json --outputFile=lighthouse-report.json  --onlyAudits=largest-contentful-paint
-    command: 'npx',
-    args: objectToCliArgs({
-      _: ['lighthouse', url],
-      output: 'json',
-      ['output-path']: outputFile,
-      onlyAudits,
-    }),
-    outputFile,
-    outputTransform: async (output: string) => {
-      // return dummy audit outputs. Correct implementation follows below
-      return [
-        {
-          slug: lcpAudit.slug,
-          score: 0,
-          value: 0,
-        },
-      ] as AuditOutputs;
-    },
-  };
-}
-```
-
-Let's add the `Options` object to the plugin configuration and use the created runner config:
-
-```typescript
-import { runnerConfig } from './runner-config.mock';
+// code-pushup.config.ts
+import { CoreConfig } from '@code-pushup/core';
 
 export default {
   // ...
-  plugins: [
-    await create({
-      url: 'https://example.com',
-      onlyAudits: 'largest-contentful-paint',
-    }),
+  categories: [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      description: 'These encapsulate your app\'s current performance and opportunities to improve it.',
+      refs: [
+        {
+          type: 'audit',
+          slug: 'largest-contentful-paint',
+          plugin: 'lightouse',
+          weight: 1,
+        }
+      ]
+    }
   ],
-  // ...
-};
-
-async function create(options: Options): Promise<PluginConfig> {
-  // ...
-  return {
-    //...
-    runner: await runnerConfig(options),
-  };
-}
+} satisfies: CoreConfig
 ```
 
-Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+Test the output by running `npx code-pushup collect --no-progress`.
+
+**stdout of basic lighthouse plugin**
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -594,58 +724,10 @@ Chrome Lighthosue audits
 ● Largest Contentful Paint                                                0
 
 Categories
-┌──────────┬───────┬────────┐
-│ Category │ Score │ Audits │
-└──────────┴───────┴────────┘
+┌─────────────┬───────┬────────┐
+│ Category    │ Score │ Audits │
+└─────────────┴───────┴────────┘
+│ Performance │ 65    │ 1      │
 
 Made with ❤ by code-pushup.dev
-```
-
-#### implement a `outputTransform` function
-
-As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add
-a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
-
-```typescript
-import { Result } from 'lighthouse';
-import { AuditOutputs } from './plugin-process-output';
-
-function outputTransform(output: string): AuditOutputs {
-  const lhr = JSON.parse(output as Result);
-  return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
-    slug,
-    score: score || 0,
-    value: value ? parseInt(value.toString()) : 0,
-    displayValue,
-    description,
-  }));
-}
-```
-
-We can use the plugin in our `code-psuhup.config.ts`:
-
-```typescript
-function runnerConfig(options: Options): RunnerConfig {
-  // ...
-  return {
-    // ...
-    outputTransform,
-  };
-}
-```
-
-Test the output by running `npx code-pushup collect --no-progress --format=md`.
-The CLI argument `--format=md` will create an additional file containing our created detail information form above.
-
-You should see a newly created file `report.md` crated in the folder `.code-pushup` in your current working directory.
-
-It should contain a similar content like the following:
-
-```md
-### Largest Contentful Paint (Lighthouse)
-
-🟨 <b>3.2 s</b> (score: 71)
-
-Largest Contentful Paint marks the time at which the largest text or image is
-painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 ```
