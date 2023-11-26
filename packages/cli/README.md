@@ -138,6 +138,21 @@ jobs:
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
 | **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
 
+### Common Command Options
+
+| Option                      | Type                 | Default  | Description                                          |
+| --------------------------- | -------------------- | -------- | ---------------------------------------------------- |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                  |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension. |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                        |
+| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                       |
+| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                            |
+| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                           |
+| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                       |
+
+> [!NOTE]  
+> All common options can be specified in the configuration file as well. CLI arguments take precedence over configuration file options.
+
 ### Commands
 
 #### `collect` command
@@ -148,12 +163,11 @@ Run commands over:
 Description:  
 Run plugins and collect results.
 
-| Option                    | Type                 | Default  | Description                                          |
-| ------------------------- | -------------------- | -------- | ---------------------------------------------------- |
-| **`--onlyPlugins`**       | `string[]`           | `[]`     | Only run the specified plugins.                      |
-| **`--persist.outputDir`** | `string`             | n/a      | Directory for the produced reports.                  |
-| **`--persist.filename`**  | `string`             | `report` | Filename for the produced reports without extension. |
-| **`--persist.format`**    | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                        |
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+| Option              | Type       | Default | Description                     |
+| ------------------- | ---------- | ------- | ------------------------------- |
+| **`--onlyPlugins`** | `string[]` | `[]`    | Only run the specified plugins. |
 
 #### `upload` command
 
@@ -163,15 +177,7 @@ Run commands over:
 Description:
 Upload reports to the Code PushUp portal.
 
-| Option                      | Type                 | Default  | Description                                          |
-| --------------------------- | -------------------- | -------- | ---------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                  |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension. |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                        |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                       |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                            |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                           |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                       |
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
 #### `autorun` command
 
@@ -181,16 +187,11 @@ Run commands over:
 Description:
 Run plugins, collect results and upload report to the Code PushUp portal.
 
-| Option                      | Type                 | Default  | Description                                          |
-| --------------------------- | -------------------- | -------- | ---------------------------------------------------- |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins.                      |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                  |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension. |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                        |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                       |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                            |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                           |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                       |
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+| Option              | Type       | Default | Description                     |
+| ------------------- | ---------- | ------- | ------------------------------- |
+| **`--onlyPlugins`** | `string[]` | `[]`    | Only run the specified plugins. |
 
 #### `print-config` command
 
@@ -200,13 +201,8 @@ Run commands over:
 Description:
 Print the resolved configuration.
 
-| Option                      | Type                 | Default  | Description                                          |
-| --------------------------- | -------------------- | -------- | ---------------------------------------------------- |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins.                      |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                  |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension. |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                        |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                       |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                            |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                           |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                       |
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+| Option              | Type       | Default | Description                     |
+| ------------------- | ---------- | ------- | ------------------------------- |
+| **`--onlyPlugins`** | `string[]` | `[]`    | Only run the specified plugins. |
