@@ -36,7 +36,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    export default {
      persist: {
        outputDir: '.code-pushup',
-       format: ['json', 'md', 'stdout'],
+       format: ['json', 'md'],
      },
      plugins: [
        // ...
