@@ -128,9 +128,9 @@ jobs:
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
 
-# CLI
+## CLI
 
-## Global Options
+### Global Options
 
 | Option           | Type      | Default                 | Description                                                            |
 | ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
@@ -138,9 +138,9 @@ jobs:
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
 | **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
 
-## Commands
+### Commands
 
-### `collect` command
+#### `collect` command
 
 Run commands over:
 `code-pushup collect [options]`
@@ -155,7 +155,7 @@ Run Plugins and collect results.
 | **`--persist.filename`**  | `string`   | n/a     | Filename for the produced reports.              |
 | **`--persist.format`**    | `enum`     | n/a     | Format of the report output. e.g. `md`, `json`. |
 
-### `upload` command
+#### `upload` command
 
 Run commands over:
 `code-pushup upload [options]`
@@ -173,7 +173,7 @@ Upload reports to the Code PushUp portal.
 | **`--upload.server`**       | `string` | n/a     | URL to your portal server.                      |
 | **`--upload.apiKey`**       | `string` | n/a     | API key for the portal server.                  |
 
-### `autorun` command
+#### `autorun` command
 
 Run commands over:
 `code-pushup autorun [options]`
@@ -192,7 +192,7 @@ Run Plugins, collect results and upload reports to the Code PushUp portal.
 | **`--upload.server`**       | `string`   | n/a     | URL to your portal server.                      |
 | **`--upload.apiKey`**       | `string`   | n/a     | API key for the portal server.                  |
 
-### `print-config` command
+#### `print-config` command
 
 Run commands over:
 `code-pushup print-config [options]`
