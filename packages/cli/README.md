@@ -146,7 +146,7 @@ Run commands over:
 `code-pushup collect [options]`
 
 Description:  
-Run Plugins and collect results.
+Run plugins and collect results.
 
 | Option                    | Type                 | Default  | Description                                          |
 | ------------------------- | -------------------- | -------- | ---------------------------------------------------- |
@@ -179,7 +179,7 @@ Run commands over:
 `code-pushup autorun [options]`
 
 Description:
-Run Plugins, collect results and upload reports to the Code PushUp portal.
+Run plugins, collect results and upload report to the Code PushUp portal.
 
 | Option                      | Type                 | Default  | Description                                          |
 | --------------------------- | -------------------- | -------- | ---------------------------------------------------- |
