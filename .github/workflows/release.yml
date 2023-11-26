@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Execute version target on all affected packages and release them
-        run: npx nx affected --base=latest --target=version --dryRun
+        run: npx nx affected --base=latest --target=version --parallel=1 --dryRun
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -72,7 +72,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # un-exclude packages when they're ready for public release
-        run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin
+        run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin --parallel=1
       - name: Tag latest
         shell: bash
         run: |
