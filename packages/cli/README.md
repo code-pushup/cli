@@ -128,7 +128,7 @@ jobs:
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
 
-## CLI
+## CLI commands and options
 
 ### Global Options
 
