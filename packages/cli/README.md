@@ -360,10 +360,10 @@ Made with ❤ by code-pushup.dev
 ### RunnerConfig
 
 The second way to write a plugin runner is a `RunnerConfig`.
-This option is less flexible but can be used in cases where a `RunnerFunction` is not applicable. @TODO giv an example
+This option is less flexible but can be used in cases when you have to use another CLI.
 why runner function can't be used...
 
-We will implement a performance focused plugin using the [lighthouse](@TODO) CLI as real life example.
+We will implement a performance focused plugin using the [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli) as real life example.
 
 Let's start with a `crate` function maintaining the basic information of the `PluginConfig`.
 
@@ -435,6 +435,7 @@ The basic implementation of a `RunnerConfig` for the above command looks like th
 
 ```typescript
 // code-pushup.config.ts
+// ...
 import { join } from 'path';
 import { AuditOutputs } from '@code-pushup/models';
 
@@ -538,7 +539,7 @@ We will extend the file-size example to calculate the score based on a budget.
 
 Let's first extend the options object with a `budget` property and use it in the runner config:
 
-**file-size plugin form section [RunnerFunction](@TODO)**
+**file-size plugin form section [RunnerFunction](#RunnerFunction)**
 
 ```typescript
 // code-pushup.config.ts
