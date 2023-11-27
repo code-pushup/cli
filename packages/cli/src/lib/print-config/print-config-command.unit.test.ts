@@ -63,5 +63,6 @@ describe('print-config-command', () => {
     expect(logSpy).not.toHaveBeenCalledWith(
       expect.stringContaining('"output-dir":'),
     );
+    expect(logSpy).not.toHaveBeenCalledWith(expect.stringContaining('sasa'));
   });
 });
