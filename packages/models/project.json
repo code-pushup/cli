@@ -39,6 +39,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/models/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/models/unit-tests"
       }
     },
@@ -46,6 +47,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/models/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/models/integration-tests"
       }
     }

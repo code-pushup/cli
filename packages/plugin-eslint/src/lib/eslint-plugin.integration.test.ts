@@ -2,7 +2,7 @@ import os from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
-import { PluginConfig } from '@code-pushup/models';
+import { PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin';
 
@@ -21,8 +21,8 @@ describe('eslintPlugin', () => {
   const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
     ...plugin,
     runner: {
-      ...plugin.runner,
-      args: plugin.runner.args?.map(arg =>
+      ...(plugin.runner as RunnerConfig),
+      args: (plugin.runner as RunnerConfig).args?.map(arg =>
         toUnixPath(
           arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
         ),

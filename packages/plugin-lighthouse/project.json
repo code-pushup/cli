@@ -35,6 +35,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
       "options": {
+        "config": "packages/plugin-lighthouse/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/unit-tests"
       }
     },
@@ -42,6 +43,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
       "options": {
+        "config": "packages/plugin-lighthouse/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
     }
