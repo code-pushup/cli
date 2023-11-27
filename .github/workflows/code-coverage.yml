@@ -1,0 +1,36 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NX_NON_NATIVE_HASHER: true
+
+jobs:
+  coverage:
+    strategy:
+      fail-fast: false
+      matrix:
+        lib: [cli, core, models, plugin-eslint, utils, testing-utils]
+        scope: [unit, integration]
+    name: Update code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Execute all tests and generate coverage reports
+        run: npx nx run ${{ matrix.lib }}:${{ matrix.scope }}-test --coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          files: ./coverage/${{ matrix.lib }}/${{ matrix.scope }}-tests/coverage-final.json
+          flags: ${{ matrix.lib }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

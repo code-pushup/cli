@@ -16,6 +16,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "version": { "postTargets": ["plugin-eslint:github"] },
+    "github": {
+      "options": {
+        "notesFile": "./packages/plugin-eslint/CHANGELOG.md"
+      }
+    },
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -30,12 +36,18 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/plugin-eslint"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/plugin-eslint"
+        "reportsDirectory": "../../coverage/plugin-eslint/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
     }
   },

@@ -14,7 +14,7 @@
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.spec.json"
+      "path": "./tsconfig.test.json"
     }
   ]
 }

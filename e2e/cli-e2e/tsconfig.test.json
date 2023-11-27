@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"]
+  },
+  "include": [
+    "vite.config.e2e.ts",
+    "tests/**/*.e2e.test.ts",
+    "tests/**/*.e2e.test.tsx",
+    "tests/**/*.e2e.test.js",
+    "tests/**/*.e2e.test.jsx",
+    "tests/**/*.d.ts"
+  ]
+}

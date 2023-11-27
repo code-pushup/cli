@@ -1,6 +1,6 @@
+import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import cliui from 'cliui';
 import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -9,6 +9,7 @@ import {
   formatReportScore,
   reportHeadlineText,
   reportRawOverviewTableHeaders,
+  sortAudits,
 } from './report';
 import { ScoredReport } from './scoring';
 
@@ -73,7 +74,7 @@ function reportToDetailSection(report: ScoredReport): string {
 
     const ui = cliui({ width: 80 });
 
-    audits.forEach(({ score, title, displayValue, value }) => {
+    audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
       ui.div(
         {
           text: withColor({ score, text: '●' }),

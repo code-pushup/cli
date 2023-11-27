@@ -1,0 +1,23 @@
+{
+  "name": "testing-utils",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "testing-utils/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["testing-utils/**/*.ts"]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../coverage/testing-utils/unit-tests"
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:testing-util"]
+}

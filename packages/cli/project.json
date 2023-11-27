@@ -19,6 +19,14 @@
       "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
+    "version": {
+      "postTargets": ["cli:github"]
+    },
+    "github": {
+      "options": {
+        "notesFile": "./packages/cli/CHANGELOG.md"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -29,12 +37,18 @@
         ]
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/cli"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/cli"
+        "reportsDirectory": "../../coverage/cli/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/cli/integration-tests"
       }
     },
     "run-help": {

@@ -9,7 +9,12 @@ import {
   PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { getProgressBar } from '@code-pushup/utils';
+import {
+  getProgressBar,
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+  logMultipleResults,
+} from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
 /**
@@ -123,15 +128,41 @@ export async function executePlugins(
 
     progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
 
-    const pluginReport = await executePlugin(pluginCfg);
-    progressBar?.incrementInSteps(plugins.length);
-
-    return outputs.concat(pluginReport);
-  }, Promise.resolve([] as PluginReport[]));
+    try {
+      const pluginReport = await executePlugin(pluginCfg);
+      progressBar?.incrementInSteps(plugins.length);
+      return outputs.concat(Promise.resolve(pluginReport));
+    } catch (e: unknown) {
+      progressBar?.incrementInSteps(plugins.length);
+      return outputs.concat(
+        Promise.reject(e instanceof Error ? e.message : String(e)),
+      );
+    }
+  }, Promise.resolve([] as Promise<PluginReport>[]));
 
   progressBar?.endProgress('Done running plugins');
 
-  return pluginsResult;
+  const errorsCallback = ({ reason }: PromiseRejectedResult) =>
+    console.error(reason);
+  const results = await Promise.allSettled(pluginsResult);
+
+  logMultipleResults(results, 'Plugins', undefined, errorsCallback);
+
+  // TODO: add groupBy method for promiseSettledResult by status, #287
+
+  const failedResults = results.filter(isPromiseRejectedResult);
+  if (failedResults.length) {
+    const errorMessages = failedResults
+      .map(({ reason }: PromiseRejectedResult) => reason)
+      .join(', ');
+    throw new Error(
+      `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
+    );
+  }
+
+  return results
+    .filter(isPromiseFulfilledResult)
+    .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
 }
 
 function auditOutputsCorrelateWithPluginOutput(

@@ -1,4 +1,5 @@
 const { RuleConfigSeverity } = require('@commitlint/types');
+const { rules } = require('@commitlint/config-conventional');
 const {
   utils: { getProjects },
 } = require('@commitlint/config-nx-scopes');
@@ -16,6 +17,14 @@ const configuration = {
       );
       const scopes = [...projects, 'tools', 'workflows', 'testing'].sort();
       return [RuleConfigSeverity.Error, 'always', scopes];
+    },
+    'type-enum': () => {
+      const defaultTypes = rules['type-enum'][2];
+      const types = [
+        ...defaultTypes,
+        'release', // custom type for release commits
+      ];
+      return [RuleConfigSeverity.Error, 'always', types];
     },
     'tense/subject-tense': [
       RuleConfigSeverity.Error,
