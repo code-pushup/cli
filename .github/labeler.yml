@@ -1,0 +1,14 @@
+🧩 cli: packages/cli/**
+🧩 core: packages/core/**
+🧩 models: packages/models/**
+🧩 nx-plugin: packages/nx-plugin/**
+🧩 eslint-plugin: packages/plugin-eslint/**
+🧩 lighthouse-plugin: packages/plugin-lighthouse/**
+🧩 utils: packages/utils/**
+
+🔬 testing:
+  - '**/*.test.ts'
+  - e2e/**
+  - testing-utils/**
+
+🦾 CI/CD: .github/workflows/**

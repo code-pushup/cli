@@ -1,0 +1,16 @@
+name: PR Title Commitlint Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Check PR title with commitlint
+        run: echo "${{ github.event.pull_request.title }}" | npx commitlint
