@@ -157,11 +157,11 @@ jobs:
 
 #### `collect` command
 
-Run commands over:
+Usage:
 `code-pushup collect [options]`
 
-Description:  
-Run plugins and collect results.
+Description:
+The command initializes the necessary plugins, runs them, and then collects the results. After collecting the results, it generates a comprehensive report.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
@@ -171,7 +171,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 
 #### `upload` command
 
-Run commands over:
+Usage:
 `code-pushup upload [options]`
 
 Description:
@@ -181,7 +181,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 
 #### `autorun` command
 
-Run commands over:
+Usage:
 `code-pushup autorun [options]`
 
 Description:
@@ -195,7 +195,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 
 #### `print-config` command
 
-Run commands over:
+Usage:
 `code-pushup print-config [options]`
 
 Description:
