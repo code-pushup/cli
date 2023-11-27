@@ -3,6 +3,11 @@ import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
 } from './src/file-size.plugin';
+import {
+  documentationGroupRef,
+  create as packageJsonPlugin,
+  versionControlGroupRef,
+} from './src/package-json.plugin/package-json.plugin';
 
 /**
  * Run it with:
@@ -25,12 +30,35 @@ const config = await (async () => {
         pattern: /\.js$/,
         budget: 42000,
       }),
+      await packageJsonPlugin({
+        directory: join(process.cwd(), './dist/packages'),
+        license: 'MIT',
+        type: 'module',
+        documentation: {
+          description: true,
+        },
+        requiredDependencies: {
+          dependencies: {
+            zod: '^3.22.1',
+          },
+        },
+      }),
     ],
     categories: [
       {
         slug: 'performance',
         title: 'Performance',
         refs: [...fileSizeRecommendedRefs],
+      },
+      {
+        slug: 'documentation',
+        title: 'Documentation',
+        refs: [documentationGroupRef],
+      },
+      {
+        slug: 'version-control',
+        title: 'Version Control',
+        refs: [versionControlGroupRef],
       },
     ],
   };

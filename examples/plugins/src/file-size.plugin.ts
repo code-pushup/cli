@@ -69,6 +69,9 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
  *     }
  *   ]
  * }
+ *
+ * // terminal
+ * npx code-pushup --config code-pushup.config.ts
  */
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   return {
