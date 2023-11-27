@@ -10,35 +10,13 @@ export type RequiredDependencies = {
   [key in DependencyTypes]?: Record<string, string>;
 };
 
-const dependenciesAuditSlug = 'package-version-check';
+const dependenciesAuditSlug = 'package-dependencies';
 export const dependenciesAuditMeta: Audit = {
   slug: dependenciesAuditSlug,
   title: 'Dependencies',
   description: 'A audit to check NPM package versions`.',
 };
-/*
-export async function depsFromTarget(filePath: string, deps: RequiredDependencies): Promise<RequiredDependencies> {
-  const {
-    dependencies,
-    devDependencies,
-    optionalDependencies
-  } = await readJsonFile<Record<DependencyTypes, Record<string, string>>>(filePath);
 
-  const newDeps: Record<DependencyTypes, Record<string, string>> = {} as Record<DependencyTypes, Record<string, string>>;
-  // iterate over each deps and create new object with only the deps that are in the target
-  Object.entries(deps).forEach(([depType, depMap]) => {
-    const newDepMap = {} as Record<string, string>;
-    Object.entries(depMap).forEach(([depName, depVersion]) => {
-      if (depName in dependencies) {
-        newDepMap[depName] = depVersion;
-      }
-    });
-    newDeps[depType as DependencyTypes] = newDepMap;
-  })
-
-  return {dependencies, devDependencies, optionalDependencies};
-}
-*/
 export function scoreAudit(issues: number, errors: number): number {
   if (issues < errors) {
     throw new Error(`issues: ${issues} cannot be less than errors ${errors}`);

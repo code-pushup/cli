@@ -2,7 +2,7 @@ import { Audit, AuditOutput, Issue } from '../../../../packages/models/src';
 import { SourceResults } from './types';
 import { displayValueNumPackages, scoreErrorIssues } from './utils';
 
-const packageLicenseAuditSlug = 'package-license-check';
+const packageLicenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {
   slug: packageLicenseAuditSlug,
   title: 'License',
