@@ -25,7 +25,7 @@ export const auditsMap = {
   [fileSizeAuditSlug]: {
     slug: fileSizeAuditSlug,
     title: 'File Size Audit',
-    description: 'A audit to check JavaScript file size in a directory.',
+    description: 'An audit to check JavaScript file size in a directory.',
   },
 };
 export const audits = Object.values(auditsMap);
