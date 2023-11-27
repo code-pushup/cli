@@ -57,11 +57,14 @@ describe('errorMessage', () => {
   it.each([
     [1, 0],
     [2, 1],
-  ])('should return error message for size %i with budget %i', (size, budget) => {
-    expect(errorMessage('test.js', size, budget)).toBe(
-      `File ${file} has ${size} B this is ${1} B too big. (budget: ${budget} B)`,
-    );
-  });
+  ])(
+    'should return error message for size %i with budget %i',
+    (size, budget) => {
+      expect(errorMessage('test.js', size, budget)).toBe(
+        `File ${file} has ${size} B, this is ${1} B too big. (budget: ${budget} B)`,
+      );
+    },
+  );
 });
 
 describe('assertFileSize', () => {
@@ -320,7 +323,7 @@ describe('runnerFunction', () => {
           issues: expect.arrayContaining([
             {
               message:
-                'File test.js has 154 B this is 26 B too big. (budget: 128 B)',
+                'File test.js has 154 B, this is 26 B too big. (budget: 128 B)',
               severity: 'error',
               source: {
                 file: expect.stringContaining('test.js'),
