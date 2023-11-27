@@ -7,8 +7,8 @@
 🧩 utils: packages/utils/**
 
 🔬 testing:
-  - packages/**/*.spec.ts
+  - '**/*.test.ts'
   - e2e/**
   - testing-utils/**
 
-🦾 CI/CD: .github/**
+🦾 CI/CD: .github/workflows/**
