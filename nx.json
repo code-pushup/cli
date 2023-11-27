@@ -28,30 +28,12 @@
         "preset": {
           "name": "conventionalcommits",
           "types": [
-            {
-              "type": "feat",
-              "section": "Features"
-            },
-            {
-              "type": "fix",
-              "section": "Bug Fixes"
-            },
-            {
-              "type": "build",
-              "section": "Dependency updates"
-            },
-            {
-              "type": "docs",
-              "section": "Documentation"
-            },
-            {
-              "type": "refactor",
-              "section": "Code Refactoring"
-            },
-            {
-              "type": "perf",
-              "section": "Performance Improvements"
-            }
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "build", "section": "Dependency updates" },
+            { "type": "docs", "section": "Documentation" },
+            { "type": "refactor", "section": "Code Refactoring" },
+            { "type": "perf", "section": "Performance Improvements" }
           ]
         }
       }
@@ -62,9 +44,15 @@
         "tag": "{tag}"
       }
     },
+    "e2e": {
+      "dependsOn": ["^build"]
+    },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "options": {
+        "passWithNoTests": true
+      }
     }
   },
   "namedInputs": {
