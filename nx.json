@@ -1,23 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "unit-test",
-          "integration-test",
-          "e2e"
-        ]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "cache": true
     },
     "lint": {
       "inputs": [
@@ -28,29 +15,8 @@
       "options": {
         "maxWarnings": 0,
         "reportUnusedDisableDirectives": "warn"
-      }
-    },
-    "unit-test": {
-      "inputs": ["default", "^production"],
-      "options": {
-        "passWithNoTests": true,
-        "config": "{projectRoot}/vite.config.unit.ts"
-      }
-    },
-    "integration-test": {
-      "inputs": ["default", "^production"],
-      "options": {
-        "passWithNoTests": true,
-        "config": "{projectRoot}/vite.config.integration.ts"
-      }
-    },
-    "e2e": {
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^production"],
-      "options": {
-        "passWithNoTests": true,
-        "config": "{projectRoot}/vite.config.e2e.ts"
-      }
+      },
+      "cache": true
     },
     "version": {
       "dependsOn": ["^build"],
@@ -62,12 +28,30 @@
         "preset": {
           "name": "conventionalcommits",
           "types": [
-            { "type": "feat", "section": "Features" },
-            { "type": "fix", "section": "Bug Fixes" },
-            { "type": "build", "section": "Dependency updates" },
-            { "type": "docs", "section": "Documentation" },
-            { "type": "refactor", "section": "Code Refactoring" },
-            { "type": "perf", "section": "Performance Improvements" }
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "build",
+              "section": "Dependency updates"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring"
+            },
+            {
+              "type": "perf",
+              "section": "Performance Improvements"
+            }
           ]
         }
       }
@@ -77,6 +61,10 @@
       "options": {
         "tag": "{tag}"
       }
+    },
+    "@nx/vite:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
