@@ -1,8 +1,7 @@
 import { join } from 'path';
-import { PackageJson } from '../src/package-json.plugin/types';
+import { PackageJson, SourceResult } from '../src/package-json.plugin/types';
 
 export const packageJson: PackageJson = {
-  license: 'MIT',
   dependencies: {
     lib1: '0.0.0',
     types1: '0.0.1',
@@ -28,3 +27,11 @@ export const multiPackageFileStructure = {
   [join('pkg-3', packageJsonName)]: packageJsonContent,
   [join('pkg-3', 'README.md')]: readmeMd,
 };
+
+export function packageResult(packageJson: PackageJson): SourceResult {
+  return {
+    file: packageJsonName,
+    json: packageJson,
+    content: JSON.stringify(packageJson, null, 2),
+  };
+}

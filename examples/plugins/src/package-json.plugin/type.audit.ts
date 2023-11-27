@@ -47,7 +47,8 @@ export async function typeAudit(
 
     let startLine: number | null = null;
     if (json.type === ('' as PackageJson['type'])) {
-      startLine = startLine || (findLineNumberInText(content, '"type":') as number);
+      startLine =
+        startLine || (findLineNumberInText(content, '"type":') as number);
       issue.severity = 'error';
       issue.message = `Type empty`;
       issue.source = {
@@ -58,7 +59,8 @@ export async function typeAudit(
       };
     }
     if (json.type === type) {
-      startLine = startLine || (findLineNumberInText(content, '"type":') as number);
+      startLine =
+        startLine || (findLineNumberInText(content, '"type":') as number);
       issue.severity = 'error';
       issue.message = `Type ${json.type} should be ${type}`;
       issue.source = {

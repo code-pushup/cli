@@ -6,7 +6,7 @@ import {
   scoreErrorIssues,
 } from './utils';
 
-const documentationAuditSlug = 'package-documentation-audit';
+const documentationAuditSlug = 'package-documentation';
 export const documentationAuditMeta = {
   slug: documentationAuditSlug,
   title: 'Documentation',
@@ -26,10 +26,10 @@ export async function documentationAudit(
     displayValue: displayValueNumPackages(0),
   };
 
-  if (!Object.keys(documentation)) {
+  if (!Object.keys(documentation).length) {
     return {
       ...documentationAuditOutput,
-      displayValue: `No documentation required`,
+      displayValue: `No documentation requirements`,
     };
   }
 
@@ -53,7 +53,10 @@ export async function documentationAudit(
           issue.source = {
             file,
             position: {
-              startLine: findLineNumberInText(content, '"description":') as number,
+              startLine: findLineNumberInText(
+                content,
+                '"description":',
+              ) as number,
             },
           };
         }
