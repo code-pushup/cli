@@ -94,7 +94,9 @@ export function getSeverityIcon(
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return '0 B';
+  bytes = Math.max(bytes, 0);
+  // early exit
+  if (!bytes) return '0 B';
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
