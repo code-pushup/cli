@@ -4,12 +4,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
 {
   "audits": [
     {
-      "description": "ESLint rule **adjacent-overload-signatures**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/adjacent-overload-signatures",
-      "slug": "typescript-eslint-adjacent-overload-signatures",
-      "title": "Require that function overload signatures be consecutive",
-    },
-    {
       "description": "ESLint rule **ban-ts-comment**, from _@typescript-eslint_ plugin.",
       "docsUrl": "https://typescript-eslint.io/rules/ban-ts-comment",
       "slug": "typescript-eslint-ban-ts-comment",
@@ -28,16 +22,10 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "title": "Disallow generic \`Array\` constructors",
     },
     {
-      "description": "ESLint rule **no-empty-function**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/no-empty-function",
-      "slug": "typescript-eslint-no-empty-function",
-      "title": "Disallow empty functions",
-    },
-    {
-      "description": "ESLint rule **no-empty-interface**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/no-empty-interface",
-      "slug": "typescript-eslint-no-empty-interface",
-      "title": "Disallow the declaration of empty interfaces",
+      "description": "ESLint rule **no-duplicate-enum-values**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-duplicate-enum-values",
+      "slug": "typescript-eslint-no-duplicate-enum-values",
+      "title": "Disallow duplicate enum member values",
     },
     {
       "description": "ESLint rule **no-explicit-any**, from _@typescript-eslint_ plugin.",
@@ -50,18 +38,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "docsUrl": "https://typescript-eslint.io/rules/no-extra-non-null-assertion",
       "slug": "typescript-eslint-no-extra-non-null-assertion",
       "title": "Disallow extra non-null assertions",
-    },
-    {
-      "description": "ESLint rule **no-extra-semi**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/no-extra-semi",
-      "slug": "typescript-eslint-no-extra-semi",
-      "title": "Disallow unnecessary semicolons",
-    },
-    {
-      "description": "ESLint rule **no-inferrable-types**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/no-inferrable-types",
-      "slug": "typescript-eslint-no-inferrable-types",
-      "title": "Disallow explicit type declarations for variables or parameters initialized to a number, string, or boolean",
     },
     {
       "description": "ESLint rule **no-loss-of-precision**, from _@typescript-eslint_ plugin.",
@@ -88,12 +64,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "title": "Disallow non-null assertions after an optional chain expression",
     },
     {
-      "description": "ESLint rule **no-non-null-assertion**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/no-non-null-assertion",
-      "slug": "typescript-eslint-no-non-null-assertion",
-      "title": "Disallow non-null assertions using the \`!\` postfix operator",
-    },
-    {
       "description": "ESLint rule **no-this-alias**, from _@typescript-eslint_ plugin.",
       "docsUrl": "https://typescript-eslint.io/rules/no-this-alias",
       "slug": "typescript-eslint-no-this-alias",
@@ -104,6 +74,12 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "docsUrl": "https://typescript-eslint.io/rules/no-unnecessary-type-constraint",
       "slug": "typescript-eslint-no-unnecessary-type-constraint",
       "title": "Disallow unnecessary constraints on generic types",
+    },
+    {
+      "description": "ESLint rule **no-unsafe-declaration-merging**, from _@typescript-eslint_ plugin.",
+      "docsUrl": "https://typescript-eslint.io/rules/no-unsafe-declaration-merging",
+      "slug": "typescript-eslint-no-unsafe-declaration-merging",
+      "title": "Disallow unsafe declaration merging",
     },
     {
       "description": "ESLint rule **no-unused-vars**, from _@typescript-eslint_ plugin.",
@@ -122,12 +98,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "docsUrl": "https://typescript-eslint.io/rules/prefer-as-const",
       "slug": "typescript-eslint-prefer-as-const",
       "title": "Enforce the use of \`as const\` over literal type",
-    },
-    {
-      "description": "ESLint rule **prefer-namespace-keyword**, from _@typescript-eslint_ plugin.",
-      "docsUrl": "https://typescript-eslint.io/rules/prefer-namespace-keyword",
-      "slug": "typescript-eslint-prefer-namespace-keyword",
-      "title": "Require using \`namespace\` keyword over \`module\` keyword to declare custom TypeScript modules",
     },
     {
       "description": "ESLint rule **triple-slash-reference**, from _@typescript-eslint_ plugin.",
@@ -260,6 +230,12 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "docsUrl": "https://eslint.org/docs/latest/rules/no-extra-boolean-cast",
       "slug": "no-extra-boolean-cast",
       "title": "Disallow unnecessary boolean casts",
+    },
+    {
+      "description": "ESLint rule **no-extra-semi**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/no-extra-semi",
+      "slug": "no-extra-semi",
+      "title": "Disallow unnecessary semicolons",
     },
     {
       "description": "ESLint rule **no-fallthrough**.",
@@ -406,6 +382,12 @@ exports[`eslintPlugin > should initialize ESLint plugin for Nx project 1`] = `
       "title": "Require calls to \`isNaN()\` when checking for \`NaN\`",
     },
     {
+      "description": "ESLint rule **valid-typeof**.",
+      "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
+      "slug": "valid-typeof",
+      "title": "Enforce comparing \`typeof\` expressions against valid strings",
+    },
+    {
       "description": "ESLint rule **enforce-module-boundaries**, from _@nx_ plugin.
 
 Custom options:
@@ -443,6 +425,10 @@ Custom options:
           "weight": 1,
         },
         {
+          "slug": "typescript-eslint-no-duplicate-enum-values",
+          "weight": 1,
+        },
+        {
           "slug": "typescript-eslint-no-extra-non-null-assertion",
           "weight": 1,
         },
@@ -459,7 +445,7 @@ Custom options:
           "weight": 1,
         },
         {
-          "slug": "typescript-eslint-no-non-null-assertion",
+          "slug": "typescript-eslint-no-unsafe-declaration-merging",
           "weight": 1,
         },
         {
@@ -574,6 +560,10 @@ Custom options:
           "slug": "use-isnan",
           "weight": 1,
         },
+        {
+          "slug": "valid-typeof",
+          "weight": 1,
+        },
       ],
       "slug": "problems",
       "title": "Problems",
@@ -581,10 +571,6 @@ Custom options:
     {
       "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
       "refs": [
-        {
-          "slug": "typescript-eslint-adjacent-overload-signatures",
-          "weight": 1,
-        },
         {
           "slug": "typescript-eslint-ban-types",
           "weight": 1,
@@ -594,23 +580,7 @@ Custom options:
           "weight": 1,
         },
         {
-          "slug": "typescript-eslint-no-empty-function",
-          "weight": 1,
-        },
-        {
-          "slug": "typescript-eslint-no-empty-interface",
-          "weight": 1,
-        },
-        {
           "slug": "typescript-eslint-no-explicit-any",
-          "weight": 1,
-        },
-        {
-          "slug": "typescript-eslint-no-extra-semi",
-          "weight": 1,
-        },
-        {
-          "slug": "typescript-eslint-no-inferrable-types",
           "weight": 1,
         },
         {
@@ -627,10 +597,6 @@ Custom options:
         },
         {
           "slug": "typescript-eslint-prefer-as-const",
-          "weight": 1,
-        },
-        {
-          "slug": "typescript-eslint-prefer-namespace-keyword",
           "weight": 1,
         },
         {
@@ -667,6 +633,10 @@ Custom options:
         },
         {
           "slug": "no-extra-boolean-cast",
+          "weight": 1,
+        },
+        {
+          "slug": "no-extra-semi",
           "weight": 1,
         },
         {
@@ -738,7 +708,7 @@ Custom options:
   "runner": {
     "args": [
       "<dirname>/bin.js",
-      "typescript-eslint-adjacent-overload-signatures,typescript-eslint-ban-ts-comment,typescript-eslint-ban-types,typescript-eslint-no-array-constructor,typescript-eslint-no-empty-function,typescript-eslint-no-empty-interface,typescript-eslint-no-explicit-any,typescript-eslint-no-extra-non-null-assertion,typescript-eslint-no-extra-semi,typescript-eslint-no-inferrable-types,typescript-eslint-no-loss-of-precision,typescript-eslint-no-misused-new,typescript-eslint-no-namespace,typescript-eslint-no-non-null-asserted-optional-chain,typescript-eslint-no-non-null-assertion,typescript-eslint-no-this-alias,typescript-eslint-no-unnecessary-type-constraint,typescript-eslint-no-unused-vars,typescript-eslint-no-var-requires,typescript-eslint-prefer-as-const,typescript-eslint-prefer-namespace-keyword,typescript-eslint-triple-slash-reference,no-var,prefer-const,prefer-rest-params,prefer-spread,for-direction,no-async-promise-executor,no-case-declarations,no-class-assign,no-compare-neg-zero,no-cond-assign,no-constant-condition,no-control-regex,no-debugger,no-delete-var,no-dupe-else-if,no-duplicate-case,no-empty,no-empty-character-class,no-empty-pattern,no-ex-assign,no-extra-boolean-cast,no-fallthrough,no-global-assign,no-inner-declarations,no-invalid-regexp,no-irregular-whitespace,no-misleading-character-class,no-mixed-spaces-and-tabs,no-nonoctal-decimal-escape,no-octal,no-prototype-builtins,no-regex-spaces,no-self-assign,no-shadow-restricted-names,no-sparse-arrays,no-unexpected-multiline,no-unsafe-finally,no-unsafe-optional-chaining,no-unused-labels,no-useless-backreference,no-useless-catch,no-useless-escape,no-with,require-yield,use-isnan,nx-enforce-module-boundaries-9dba9763586d15c6,nx-dependency-checks",
+      "typescript-eslint-ban-ts-comment,typescript-eslint-ban-types,typescript-eslint-no-array-constructor,typescript-eslint-no-duplicate-enum-values,typescript-eslint-no-explicit-any,typescript-eslint-no-extra-non-null-assertion,typescript-eslint-no-loss-of-precision,typescript-eslint-no-misused-new,typescript-eslint-no-namespace,typescript-eslint-no-non-null-asserted-optional-chain,typescript-eslint-no-this-alias,typescript-eslint-no-unnecessary-type-constraint,typescript-eslint-no-unsafe-declaration-merging,typescript-eslint-no-unused-vars,typescript-eslint-no-var-requires,typescript-eslint-prefer-as-const,typescript-eslint-triple-slash-reference,no-var,prefer-const,prefer-rest-params,prefer-spread,for-direction,no-async-promise-executor,no-case-declarations,no-class-assign,no-compare-neg-zero,no-cond-assign,no-constant-condition,no-control-regex,no-debugger,no-delete-var,no-dupe-else-if,no-duplicate-case,no-empty,no-empty-character-class,no-empty-pattern,no-ex-assign,no-extra-boolean-cast,no-extra-semi,no-fallthrough,no-global-assign,no-inner-declarations,no-invalid-regexp,no-irregular-whitespace,no-misleading-character-class,no-mixed-spaces-and-tabs,no-nonoctal-decimal-escape,no-octal,no-prototype-builtins,no-regex-spaces,no-self-assign,no-shadow-restricted-names,no-sparse-arrays,no-unexpected-multiline,no-unsafe-finally,no-unsafe-optional-chaining,no-unused-labels,no-useless-backreference,no-useless-catch,no-useless-escape,no-with,require-yield,use-isnan,valid-typeof,nx-enforce-module-boundaries-9dba9763586d15c6,nx-dependency-checks",
       "./packages/utils/.eslintrc.json",
       "'packages/utils/**/*.ts'",
       "'packages/utils/**/*.json'",
