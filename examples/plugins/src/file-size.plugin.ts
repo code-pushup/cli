@@ -179,7 +179,7 @@ export function errorMessage(filePath: string, size: number, budget: number) {
   const byteBudget = formatBytes(budget);
   return `File ${basename(
     filePath,
-  )} has ${byteSize} this is ${sizeDifference} too big. (budget: ${byteBudget})`;
+  )} has ${byteSize}, this is ${sizeDifference} too big. (budget: ${byteBudget})`;
 }
 
 export function assertFileSize(
