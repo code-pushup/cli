@@ -1,6 +1,5 @@
 import { Tree, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { TargetDefaults } from 'nx/src/config/nx-json';
 import { describe, expect, it } from 'vitest';
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
@@ -9,7 +8,7 @@ type PackageJson = {
   devDependencies: Record<string, string>;
 };
 
-const cpuTargetName = 'code-pushup';
+const cpTargetName = 'code-pushup';
 
 const devDependencyNames = [
   '@code-pushup/cli',
@@ -29,14 +28,12 @@ describe('init generator', () => {
   it('should run successfully', async () => {
     await initGenerator(tree, options);
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults;
-    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
-      cpuTargetName,
-    );
-    const cacheableOperations =
-      readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations;
-    expect(cacheableOperations).toContain(cpuTargetName);
+    const targetDefaults = readNxJson(tree)!.targetDefaults!;
+    expect(targetDefaults).toHaveProperty(cpTargetName);
+    expect(targetDefaults[cpTargetName]).toEqual({
+      inputs: ['default', '^production'],
+      cache: true,
+    });
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
     expect(
@@ -49,14 +46,12 @@ describe('init generator', () => {
   it('should skip packageJson', async () => {
     await initGenerator(tree, { ...options, skipPackageJson: true });
     // nx.json
-    const targetDefaults = readNxJson(tree)?.targetDefaults;
-    expect(Object.keys(targetDefaults as TargetDefaults)).toContain(
-      cpuTargetName,
-    );
-    const cacheableOperations =
-      readNxJson(tree)?.tasksRunnerOptions?.default?.options
-        ?.cacheableOperations;
-    expect(cacheableOperations).toContain(cpuTargetName);
+    const targetDefaults = readNxJson(tree)!.targetDefaults!;
+    expect(targetDefaults).toHaveProperty(cpTargetName);
+    expect(targetDefaults[cpTargetName]).toEqual({
+      inputs: ['default', '^production'],
+      cache: true,
+    });
     // package.json
     const pkgJson = readJson<PackageJson>(tree, 'package.json');
     expect(
