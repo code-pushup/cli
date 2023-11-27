@@ -225,7 +225,8 @@ codebase.
 
 Let's start by creating a create function with the correct description for our file size plugin:
 
-**file-size plugin setup**
+<details>
+<summary> <b>file-size plugin setup</b> (collapsed for brevity) </summary>
 
 ```typescript
 // code-pushup.config.ts
@@ -270,6 +271,8 @@ export default {
   categories: [],
 };
 ```
+
+</details>
 
 The first thing we should think about is how to get the raw data to calculate the metrics.
 In our case we need to get the file name and size of all files in a directory.
@@ -367,7 +370,8 @@ We will implement a performance focused plugin using the [Lighthouse CLI](https:
 
 Let's start with a `crate` function maintaining the basic information of the `PluginConfig`.
 
-**lighthouse plugin setup**
+<details>
+<summary> <b>lighthouse plugin setup</b> (collapsed for brevity) </summary>
 
 ```typescript
 // code-pushup.config.ts
@@ -412,6 +416,8 @@ export default {
   // ...
 };
 ```
+
+</details>
 
 The first thing we should think about is how to get the raw data.
 With the lighthouse CLI it is ease as it already provides a report file in `json` format containing a set of audits.
@@ -466,7 +472,7 @@ function outputTransform(output: string): AuditOutputs {
       score: 0,
       value: 0,
     },
-  ] as AuditOutputs;
+  ] satisfies AuditOutputs;
 }
 ```
 
@@ -507,7 +513,7 @@ function outputTransform(output: string): AuditOutputs {
   return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
     slug,
     score: score,
-    value: parseInt(value.toString()),
+    value: parseInt(value.toString(), 10),
     displayValue,
     description,
   }));
@@ -638,6 +644,7 @@ export function assertFileSize(file: string, size: number, budget?: number): Iss
   return {
     message,
     severity,
+    // add source attributes
     source: {
       file,
     },
@@ -700,18 +707,18 @@ export default {
     {
       slug: 'performance',
       title: 'Performance',
-      description: 'These encapsulate your app\'s current performance and opportunities to improve it.',
+      description: "These encapsulate your app's current performance and opportunities to improve it.",
       refs: [
         {
           type: 'audit',
           slug: 'largest-contentful-paint',
           plugin: 'lightouse',
           weight: 1,
-        }
-      ]
-    }
+        },
+      ],
+    },
   ],
-} satisfies: CoreConfig
+} satisfies CoreConfig;
 ```
 
 Test the output by running `npx code-pushup collect --no-progress`.
