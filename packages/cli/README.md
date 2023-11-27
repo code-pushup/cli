@@ -36,7 +36,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    export default {
      persist: {
        outputDir: '.code-pushup',
-       format: ['json', 'md', 'stdout'],
+       format: ['json', 'md'],
      },
      plugins: [
        // ...
@@ -127,6 +127,78 @@ jobs:
       - run: npm ci
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
+
+## CLI commands and options
+
+### Global Options
+
+| Option           | Type      | Default                 | Description                                                            |
+| ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
+| **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
+| **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
+| **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
+
+### Common Command Options
+
+| Option                      | Type                 | Default  | Description                                                                 |
+| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
+| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
+| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
+| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
+| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
+| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
+
+> [!NOTE]  
+> All common options, expect `--onlyPlugins`, can be specified in the configuration file as well.
+> CLI arguments take precedence over configuration file options.
+
+> [!NOTE]
+> The `--upload.*` group of options is applicable to all commands except `collect`.
+
+### Commands
+
+#### `collect` command
+
+Usage:
+`code-pushup collect [options]`
+
+Description:
+The command initializes the necessary plugins, runs them, and then collects the results. After collecting the results, it generates a comprehensive report.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+#### `upload` command
+
+Usage:
+`code-pushup upload [options]`
+
+Description:
+Upload reports to the Code PushUp portal.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+#### `autorun` command
+
+Usage:
+`code-pushup autorun [options]`
+
+Description:
+Run plugins, collect results and upload report to the Code PushUp portal.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+#### `print-config` command
+
+Usage:
+`code-pushup print-config [options]`
+
+Description:
+Print the resolved configuration.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
 ## Custom Plugins
 
