@@ -1,6 +1,8 @@
 export {
-  audits as fileSizeAudits,
+  create as packageJsonPlugin,
+  recommendedRefs as packageJsonRecommendedRefs,
+} from './package-json.plugin/package-json.plugin';
+export {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
-  PluginOptions as FileSizePluginOptions,
 } from './file-size.plugin';
