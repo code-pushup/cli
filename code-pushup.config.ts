@@ -3,13 +3,8 @@ import 'dotenv/config';
 import type { Linter } from 'eslint';
 import { jsonc } from 'jsonc';
 import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
-import {
-  fileSizePlugin,
-  fileSizeRecommendedRefs,
-} from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
 // remove override with temporarily disabled rules
@@ -74,14 +69,7 @@ const config: CoreConfig = {
     project: env.CP_PROJECT,
   },
 
-  plugins: [
-    await eslintPlugin({ eslintrc, patterns }),
-    await fileSizePlugin({
-      directory: join(process.cwd(), 'dist/packages'),
-      pattern: /\.js$/,
-      budget: 42000,
-    }),
-  ],
+  plugins: [await eslintPlugin({ eslintrc, patterns })],
 
   categories: [
     {
@@ -95,11 +83,6 @@ const config: CoreConfig = {
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
-    },
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
     },
   ],
 };
