@@ -55,6 +55,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
@@ -72,11 +78,13 @@ jobs:
         run: npm ci
       - name: Execute version target on all affected packages and release them
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         # un-exclude packages when they're ready for public release
         run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin --parallel=1
-      - name: Tag latest
-        shell: bash
-        run: |
-          git tag -f latest
-          git push origin latest --force
+      - name: Push changes and tags
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ steps.generate_token.outputs.token }}
+          branch: ${{ github.ref }}
+          force: true
+          tags: true
