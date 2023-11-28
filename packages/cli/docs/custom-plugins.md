@@ -39,6 +39,8 @@ The plugin config maintains:
 
 A minimal plugin object maintaining the required fields looks like the following:
 
+**template for a custom plugin**
+
 ```typescript
 // my-plugin.ts
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
@@ -100,26 +102,50 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
-The CLI argument `--no-progress` can be used to get better debugging experience in the console, as the progress bar can
-interfere with debugging logs.
-
 The categories are empty for now. But under the audit listing you can see your plugin title `My plugin`, it's listed
 audit `My audit` and the resulting value `0`.
 
-## Implementing the plugin logic
+## Debugging custom plugins
 
-### Plugin Runner
+When developing custom plugins you should know a couple of CLI options helpful when debugging.
 
-The core of a plugin is defined under the `runner` property and can get implemented in 2 ways:
+Following options are helpful in debugging:
+
+- use `--verbose` to get more information printed in the terminal
+- use `--no-progress` to get better readability of logs.  
+  The progressbar would otherwise interfere with your logs and makes them harder to read.
+- use `--onlyPlugin` will restrict the execution of plugins to only the listed ones
+- use `--config` to point to a different config file
+- use `--format=md` to see all information provided by plugin outputs
+
+## Plugin Runner - Implementing the plugin logic
+
+The core of a plugin is defined under the `runner` property.
+The `runner` property is the entry point of your plugin and is called by the CLI and should return the audit results
+as [`AuditOutputs`](@TODO), and array of [`AuditOutput`](@TODO)
+
+The minimum output of an audit looks like this:
+
+```typescript
+import { AuditOutput } from '@code-pushup/models';
+
+const auditOutput: AuditOutput = {
+  slug: 'my-audit',
+  title: 'Audit title',
+  score: 0,
+  value: 0,
+};
+```
+
+It can get implemented in 2 ways:
 
 - as a `RunnerFunction`
 - as a `RunnerConfig`
 
 We recommend the `RunnerFunction` for getting started, as it's easier to use for simple plugins and can be written in the config file directly.
+The `RunnerConfig` is suitable for more complex, performance-heavy plugins (runner executed off the main thread), and is more flexible in regard to runtime (can run any shell command, not restricted to JavaScript).
 
-The `RunnerConfig` is suitable for more complex, performance-heavy plugins (runner executed off the main thread), and is more flexible with regards to runtime (can run any shell command, not restricted to JavaScript).
-
-#### RunnerFunction
+### RunnerFunction
 
 The `RunnerFunction` is the entry point of your plugin. It is called by the CLI and should return the audit results
 as `AuditOutputs`.
@@ -128,41 +154,18 @@ Let's write a real implementation to get familiar with the runner function.
 We will implement a simple file size audit for JavaScript files that tracks the size of specified files in your
 codebase.
 
-Let's start by creating a create function with the correct description for our file size plugin:
-
-<details>
-<summary> <b>file-size plugin setup</b> (collapsed for brevity) </summary>
+1. Use the template from the section [Plugin Structure](#Plugin-Structure) as a starting point and fill in the correct information for the plugin metadata.
+2. Add the `directory` to the plugin options and use the plugin in you config file.
 
 ```typescript
 // code-pushup.config.ts
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
-import { RunnerFunction } from './plugin-config-runner';
 
+// add the directory to the plugin options
 type Options = {
   directory: string;
 };
 
-async function create(options: Options): Promise<PluginConfig> {
-  const fileSizeAudit = {
-    slug: 'file-size-audit',
-    title: 'File size audit',
-  };
-  return {
-    slug: 'file-size',
-    title: 'File size plugin',
-    icon: 'javascript',
-    audits: [fileSizeAudit],
-    runner: runnerFunction(options),
-  };
-}
-
-// we use a closure to pass options to the runner function for better DX
-async function runnerFunction(options: Options): RunnerFunction {
-  return () => {
-    // implementation follows in the below section
-    return [] as AuditOutputs;
-  };
-}
+// ...
 
 export default {
   persist: {
@@ -177,10 +180,10 @@ export default {
 };
 ```
 
-</details>
+3. Get the raw data to perform the audit
 
-The first thing we should think about is how to get the raw data to calculate the metrics.
-In our case we need to get the file name and size of all files in a directory.
+We need the raw data to create the `AuditOutput` and calculate the metrics.
+In our case we need to get the file name and size of all files in the provided directory.
 
 The basic implementation looks like this:
 
@@ -445,7 +448,7 @@ Largest Contentful Paint marks the time at which the largest text or image is
 painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 ```
 
-### Scoring of audits
+## Audits and scoring
 
 Every audit has a score as floating number between 0 and 1.
 We will extend the file-size example to calculate the score based on a budget.
@@ -501,7 +504,7 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 }
 ```
 
-### Attribution of audits
+## Audits and attribution
 
 To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
 This helps to make the plugin results more actionable and valuable for the user.
