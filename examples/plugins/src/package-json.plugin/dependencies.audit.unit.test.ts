@@ -71,12 +71,6 @@ describe('dependenciesAudit', () => {
     value: 0,
     displayValue: '0 packages',
   };
-  const baseErrorAuditOutput: AuditOutput = {
-    ...baseAuditOutput,
-    score: 0,
-    value: 1,
-    displayValue: `1 package`,
-  };
 
   it('should list valid dependencies as informative issue', async () => {
     const packageName = 'lib1';
