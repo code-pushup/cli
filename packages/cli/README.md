@@ -131,12 +131,12 @@ jobs:
 ## Custom Plugins
 
 One of the main features of Code PushUp is the ability to write custom plugins to track your own metrics.
-It enables you to implement neraly any kind of metric you want to track with minimum effort.
+It enables you to implement nearly any kind of metric you want to track with minimum effort.
 In this section we will go through the steps to create a custom plugin and integrate it in your project.
 
 ### Set up
 
-To start crafting custom plugins you need a minimum `code-pushup.config.ts` file including the `persist` and `plugins`
+To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file including the `persist` and `plugins`
 property.
 
 **config and plugin template**
@@ -165,7 +165,7 @@ async function create(options: Options): PluginConfig {
         score: 0,
         value: 0,
       };
-      console.log('In plugin runner');
+      console.info('In plugin runner');
       // return dummy data of type `AuditOutputs` as plugin result
       return [auditOutput];
     },
@@ -202,7 +202,7 @@ Made with ❤ by code-pushup.dev
 The CLI argument `--no-progress` is used to get better debugging experience in the console, as the progress bar can
 interfere with debugging logs.
 
-The categories are empty for now. But under the audit listing you can see your plugin title `My plugin` it's listed
+The categories are empty for now. But under the audit listing you can see your plugin title `My plugin`, it's listed
 audit `My audit` and the resulting value `0`.
 
 ### Plugin Runner
@@ -212,7 +212,9 @@ The core of a plugin is defined under the `runner` property and can get implemen
 - as a `RunnerFunction`
 - as a `RunnerConfig`
 
-Your preferred way should be the `RunnerFunction` as it is more flexible and easier to use.
+We recommend the `RunnerFunction` for getting started, as it's easier to use for simple plugins and can be written in the config file directly.
+
+The `RunnerConfig` is suitable for more complex, performance-heavy plugins (runner executed off the main thread), and is more flexible with regards to runtime (can run any shell command, not restricted to JavaScript).
 
 #### RunnerFunction
 
@@ -285,6 +287,9 @@ The basic implementation looks like this:
 // code-pushup.config.ts
 
 // ...
+import { readdir, stat } from 'node:fs/promises';
+import { join } from 'node:path';
+// ...
 
 // get raw file size data
 type FileSizeInfo = { file: string; size: number };
@@ -312,7 +317,7 @@ async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
 }
 ```
 
-The above code will recursively get the file size info for all files in the specified directory and it's subdirectories.
+The above code will recursively get the file size info for all files in the specified directory and its subdirectories.
 
 Let's create a runner function that uses the above code to get the file size data and turns it into the shape
 of `AuditOutputs`:
@@ -350,7 +355,7 @@ Now we can execute the CLI with `npx code-pushup collect --no-progress` and see 
 Code PushUp Report - @code-pushup/core@x.y.z
 
 File size plugin audits
-● File size audit                                                            2
+● File size audit                                                            2 files
 
 Categories
 ┌──────────┬───────┬────────┐
@@ -368,7 +373,7 @@ why runner function can't be used...
 
 We will implement a performance focused plugin using the [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli) as real life example.
 
-Let's start with a `crate` function maintaining the basic information of the `PluginConfig`.
+Let's start with a `create` function maintaining the basic information of the `PluginConfig`.
 
 <details>
 <summary> <b>lighthouse plugin setup</b> (collapsed for brevity) </summary>
@@ -420,7 +425,7 @@ export default {
 </details>
 
 The first thing we should think about is how to get the raw data.
-With the lighthouse CLI it is ease as it already provides a report file in `json` format containing a set of audits.
+With the Lighthouse CLI it is easy as it already provides a report file in `json` format containing a set of audits.
 
 The lighthouse CLI can be executed like this: `npx lighthouse https://example.com`  
 You should see console output of the audits created by the CLI.
@@ -428,14 +433,13 @@ You should see console output of the audits created by the CLI.
 To get better debugging experience we add a couple of more options:
 
 - The format and location of the output can be configured with `--output=json --outputFile=lighthouse-report.json`.  
-  This ensures we avoid overwrites of other existing files and is needed to be able to load the generated lighthouse
-  report.
+  This enables us to load the generated Lighthouse report while ensuring we avoid overwrites of other existing files.
 - To reduce the output you can execute only specific audits with the `--onlyAudits` option
   e.g.: `--onlyAudits=largest-contentful-paint`.  
   This will significantly reduce the time lighthouse takes to run.
-- If we want to run the script in the background we can execute lighthouse headless with the
+- If we want to run the script in the background we can execute Lighthouse in headless mode with the
   flag `--chrome-flags="--headless=new"`.  
-  It also is helpful when executing lighthouse in th CI.
+  It also is helpful when executing Lighthouse in the CI.
 
 The basic implementation of a `RunnerConfig` for the above command looks like this:
 
@@ -494,10 +498,10 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
-#### Implement a `outputTransform` function
+#### Implement an `outputTransform` function
 
-As the result of the lighthouse run has a different shape than the required `AuditOutputs` we need to add
-a `outputTransform` and implement the transform form a lighthouse report to audit outputs.
+As the Lighthouse result has a different shape than the required `AuditOutputs`, we need to add
+an `outputTransform` and implement the transform from a Lighthouse report to audit outputs.
 
 **outputTransform for lighthouse report**
 
@@ -509,7 +513,7 @@ import { Result } from 'lighthouse';
 
 function outputTransform(output: string): AuditOutputs {
   // output is content of `lighthouse-report.json` as string so we have to parse it
-  const lhr = JSON.parse(output as Result);
+  const lhr = JSON.parse(output) as Result;
   return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
     slug,
     score: score,
@@ -523,7 +527,7 @@ function outputTransform(output: string): AuditOutputs {
 Test the output by running `npx code-pushup collect --no-progress --format=md`.
 The CLI argument `--format=md` will create an additional file containing our created detail information form above.
 
-You should see a newly created file `report.md` crated in the folder `.code-pushup` in your current working directory.
+You should see a newly created file `report.md` created in the folder `.code-pushup` in your current working directory.
 
 It should contain a similar content like the following:
 
@@ -583,7 +587,7 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
   if (errorCount) {
     fileSizeAuditOutput: AuditOutput = {
       ...fileSizeAuditOutput,
-      // score is factor of overbudget files to total files
+      // score is percentage of over-budget files
       score: errorCount ? errorCount / issues.length : 1,
       value: errorCount,
       displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
@@ -653,11 +657,8 @@ export function assertFileSize(file: string, size: number, budget?: number): Iss
 ```
 
 Test the output by running `npx code-pushup collect --no-progress --format=md`.
-
 The CLI argument `--format=md` will create an additional file containing our created detail information form above.
-
-You should see a newly created file `report.md` crated in the folder `.code-pushup` in your current working directory.
-
+You should see a new file `report.md` created in the folder `.code-pushup` in your current working directory.
 The `report.md` file should contain a similar content like the following:
 
 **report.md**
@@ -728,7 +729,7 @@ Test the output by running `npx code-pushup collect --no-progress`.
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
 
-Chrome Lighthosue audits
+Chrome Lighthouse audits
 ● Largest Contentful Paint                                                0
 
 Categories
