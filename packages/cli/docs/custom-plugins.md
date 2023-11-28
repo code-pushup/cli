@@ -1,189 +1,90 @@
-# @code-pushup/cli
-
-🔎🔬 **Quality metrics for your software project.** 📉🔍
-
-1. ⚙️ **Configure what you want to track using your favourite tools.**
-2. 🤖 **Integrate it in your CI.**
-3. 🌈 **Visualize reports in a beautiful dashboard.**
-
----
-
-The Code PushUp CLI serves to **collect audit results**, and optionally **upload the report** to the Code PushUp portal.
-
-It can be used locally in your repository, or integrated in your CI environment.
-
-_If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package instead._
-
-## Getting started
-
-1. Install as a dev dependency with your package manager:
-
-   ```sh
-   npm install --save-dev @code-pushup/cli
-   ```
-
-   ```sh
-   yarn add --dev @code-pushup/cli
-   ```
-
-   ```sh
-   pnpm add --save-dev @code-pushup/cli
-   ```
-
-2. Create a `code-pushup.config.js` configuration file (`.ts` or `.mjs` extensions are also supported).
-
-   ```js
-   export default {
-     persist: {
-       outputDir: '.code-pushup',
-       format: ['json', 'md', 'stdout'],
-     },
-     plugins: [
-       // ...
-     ],
-     categories: [
-       // ...
-     ],
-   };
-   ```
-
-3. Add plugins as per your project needs (e.g. [@code-pushup/eslint-plugin](../plugin-eslint/README.md)).
-
-   ```sh
-   npm install --save-dev @code-pushup/eslint-plugin
-   ```
-
-   ```js
-   import eslintPlugin from '@code-pushup/eslint-plugin';
-
-   export default {
-     // ...
-     plugins: [
-       // ...
-       await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
-     ],
-   };
-   ```
-
-4. Define your custom categories.
-
-   ```js
-   export default {
-     // ...
-     categories: [
-       {
-         slug: 'performance',
-         title: 'Performance',
-         refs: [
-           {
-             type: 'audit',
-             plugin: 'eslint',
-             slug: 'react-jsx-key',
-             weight: 1,
-           },
-           // ...
-         ],
-       },
-       // ...
-     ],
-   };
-   ```
-
-5. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
-
-6. View report file(s) in output directory (specified by `persist.outputDir` configuration).
-
-## Portal integration
-
-If you have access to the Code PushUp portal, provide credentials in order to upload reports.
-
-```js
-export default {
-  // ...
-  upload: {
-    server: 'https://ip-or-domain/path/to/portal/api/graphql',
-    apiKey: process.env.PORTAL_API_KEY,
-    organization: 'my-org',
-    project: 'my-project',
-  },
-};
-```
-
-## CI automation
-
-Example for GitHub Actions:
-
-```yml
-name: Code PushUp
-
-on: push
-
-jobs:
-  collect-and-upload:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
-```
-
-## Custom Plugins
+# Integrating a plugin in the CLI (high-level technical section with examples)
 
 One of the main features of Code PushUp is the ability to write custom plugins to track your own metrics.
 It enables you to implement nearly any kind of metric you want to track with minimum effort.
 In this section we will go through the steps to create a custom plugin and integrate it in your project.
 
-### Set up
+## Usage of a plugin in the core config
 
-To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file including the `persist` and `plugins`
+To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file maintaining a `plugins` property.
 property.
 
-**config and plugin template**
+Any plugin is registered in a core config object and can take potential options to configure its behaviour.
+The following example shows where to register the plugin
 
 ```typescript
 // code-pushup.config.ts
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
-
-type Options = {};
-async function create(options: Options): PluginConfig {
-  const audit = {
-    slug: 'my-audit',
-    title: 'My audit',
-    description: 'My custom audit.',
-  };
-  return {
-    slug: 'my-plugin',
-    title: 'My plugin',
-    icon: 'javascript', // icon name from [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme/tree/main/icons)
-    description: 'My custom plugin.',
-    audits: [audit],
-    runner: (): AuditOutputs => {
-      // Dummy audit output
-      const auditOutput: AuditOutput = {
-        slug: audit.slug,
-        score: 0,
-        value: 0,
-      };
-      console.info('In plugin runner');
-      // return dummy data of type `AuditOutputs` as plugin result
-      return [auditOutput];
-    },
-  };
-}
+import { create } from 'my-plugin';
 
 export default {
-  persist: {
-    outputDir: '.code-pushup',
-  },
-  plugins: [await create()],
+  plugins: [
+    // can return `PluginConfig` or `Promise<PluginConfig>`
+    await create({
+      // plugin options here
+    }),
+  ],
   categories: [],
 };
 ```
 
-Execute the CLI with `npx code-pushup collect --no-progress` and you should the following output:
+## Plugin Structure
 
-**stdout of plugin template**
+Every plugin is defined over a [`PluginConfig`](@TODO).
+
+The plugin config maintains:
+
+- metadata about the plugin
+- metadata about the available audits [`Audit`](@TODO)
+- internal logic producing the plugin output as [`AuditOutputs`](@TODO).
+
+A minimal plugin object maintaining the required fields looks like the following:
+
+```typescript
+// my-plugin.ts
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+
+export const pluginMeta = {
+  slug: 'my-plugin',
+  title: 'My plugin',
+  // icon name from [vscode-material-icon-theme](https://github.com/PKief/vscode-material-icon-theme/tree/main/icons)
+  icon: 'javascript',
+};
+
+const auditMeta = {
+  slug: 'my-audit',
+  title: 'My audit',
+};
+
+export const audits = [auditMeta];
+
+export type Options = {
+  // your options here
+};
+
+export async function create(options: Options): PluginConfig {
+  return {
+    ...pluginMeta,
+    audits: [audit],
+    runner: runnerFunction,
+  };
+}
+
+function runnerFunction(): AuditOutputs {
+  // Dummy audit output
+  const auditOutput: AuditOutput = {
+    ...auditMeta,
+    score: 0,
+    value: 0,
+  };
+
+  // return dummy data of type `AuditOutputs` as plugin result
+  return [auditOutput];
+}
+```
+
+Execute the CLI with `npx code-pushup collect` and you should the following output:
+
+**stdout of CLI for the above code**
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -199,11 +100,13 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
-The CLI argument `--no-progress` is used to get better debugging experience in the console, as the progress bar can
+The CLI argument `--no-progress` can be used to get better debugging experience in the console, as the progress bar can
 interfere with debugging logs.
 
 The categories are empty for now. But under the audit listing you can see your plugin title `My plugin`, it's listed
 audit `My audit` and the resulting value `0`.
+
+## Implementing the plugin logic
 
 ### Plugin Runner
 
@@ -697,6 +600,8 @@ The `report.md` file should contain a similar content like the following:
 ```
 
 ## Plugins and categories
+
+@TODO An intro text is missing here. What is this section trying to convey?
 
 **lighthouse plugin**
 
