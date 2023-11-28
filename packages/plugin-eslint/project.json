@@ -16,12 +16,8 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": { "postTargets": ["plugin-eslint:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/plugin-eslint/CHANGELOG.md"
-      }
-    },
+    "version": {},
+    "github": {},
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
       "dependsOn": ["build"]

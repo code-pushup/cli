@@ -15,12 +15,8 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": { "postTargets": ["plugin-lighthouse:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/plugin-lighthouse/CHANGELOG.md"
-      }
-    },
+    "version": {},
+    "github": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

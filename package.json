@@ -54,6 +54,7 @@
     "benchmark": "^2.1.4",
     "commitizen": "^4.3.0",
     "commitlint-plugin-tense": "^1.0.2",
+    "conventional-changelog-angular": "^7.0.0",
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.2",
     "eslint": "~8.46.0",
