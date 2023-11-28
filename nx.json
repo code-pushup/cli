@@ -24,8 +24,7 @@
         "commitMessageFormat": "release({projectName}): {version} [skip ci]",
         "tagPrefix": "{projectName}@",
         "preset": "angular",
-        "postTargets": ["github"],
-        "push": true
+        "postTargets": ["github"]
       }
     },
     "github": {
