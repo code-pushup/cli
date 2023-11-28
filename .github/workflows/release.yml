@@ -65,15 +65,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+      - name: Set up Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: npm
-      - name: Set up Git
-        run: |
-          git config user.name "GitHub Bot"
-          git config user.email "gituser@example.com"
       - name: Install dependencies
         run: npm ci
       - name: Execute version target on all affected packages and release them
@@ -81,10 +82,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         # un-exclude packages when they're ready for public release
         run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin --parallel=1
-      - name: Push changes and tags
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ steps.generate_token.outputs.token }}
-          branch: ${{ github.ref }}
-          force: true
-          tags: true
+      - name: Tag latest
+        shell: bash
+        run: |
+          git tag -f latest
+          git push origin latest --force
