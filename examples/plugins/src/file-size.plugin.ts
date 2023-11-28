@@ -1,6 +1,10 @@
 import { readdir, stat } from 'fs/promises';
 import { basename, join } from 'path';
-import { formatBytes, pluralize } from '../../../dist/packages/utils';
+import {
+  formatBytes,
+  pluralize,
+  toUnixPath,
+} from '../../../dist/packages/utils';
 import {
   AuditOutput,
   AuditOutputs,
@@ -206,7 +210,7 @@ export function assertFileSize(
     message,
     severity,
     source: {
-      file,
+      file: toUnixPath(file, { toRelative: true }),
     },
   };
 }
