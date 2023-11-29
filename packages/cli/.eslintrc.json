@@ -4,7 +4,6 @@
   // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:17 GMT+0100 (Central European Standard Time)
   "rules": {
     "max-lines-per-function": "off", // 1 warning
-    "no-console": "off", // 9 warnings
     "@typescript-eslint/naming-convention": "off", // 7 warnings
     "@typescript-eslint/no-floating-promises": "off", // 1 error
     "@typescript-eslint/no-unnecessary-condition": "off", // 3 warnings
