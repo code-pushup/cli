@@ -36,8 +36,6 @@
         ]
       }
     },
-    "version": {},
-    "github": {},
     "exec:init": {
       "command": "nx g ./dist/packages/nx-plugin:init",
       "dependsOn": ["build"]

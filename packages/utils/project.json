@@ -15,8 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": {},
-    "github": {},
     "publish": {
       "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
       "dependsOn": ["build"]
