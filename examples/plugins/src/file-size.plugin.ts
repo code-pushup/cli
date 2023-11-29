@@ -128,7 +128,9 @@ export function scoreFilesizeAudit(issues: number, errors: number): number {
   }
   const formattedIssues = Math.max(issues, 0);
   const formattedErrors = Math.max(errors, 0);
-  return formattedErrors > 0 ? Math.abs((formattedIssues - formattedErrors) / formattedIssues) : 1;
+  return formattedErrors > 0
+    ? Math.abs((formattedIssues - formattedErrors) / formattedIssues)
+    : 1;
 }
 
 export function displayValue(numberOfFiles: number): string {
@@ -174,7 +176,7 @@ export async function fileSizeIssues(options: {
 }
 
 export function infoMessage(filePath: string, size: number) {
-  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)+''})`;
+  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)})`;
 }
 
 export function errorMessage(filePath: string, size: number, budget: number) {

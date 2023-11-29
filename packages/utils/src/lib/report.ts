@@ -93,7 +93,7 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-export function formatBytes(bytes: number, decimals = 2) {
+export function formatBytes(bytes: number, decimals = 2): string {
   bytes = Math.max(bytes, 0);
   // early exit
   if (!bytes) return '0 B';

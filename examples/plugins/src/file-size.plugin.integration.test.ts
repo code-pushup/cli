@@ -5,8 +5,8 @@ import { categoryRefSchema, pluginConfigSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   PluginOptions,
-  audits as fileSizeAudits,
   create,
+  audits as fileSizeAudits,
   recommendedRefs,
   pluginSlug as slug,
 } from './file-size.plugin';
@@ -55,8 +55,8 @@ describe('create', () => {
     );
   });
 
-  it('should return valid PluginConfig', async () => {
-    const pluginConfig = await create(baseOptions);
+  it('should return valid PluginConfig', () => {
+    const pluginConfig = create(baseOptions);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
       audits: fileSizeAudits,
@@ -70,7 +70,7 @@ describe('create', () => {
   });
 
   it('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = await create(baseOptions);
+    const pluginConfig = create(baseOptions);
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
       description:
         'A plugin to measure and assert filesize of files in a directory.',
@@ -83,7 +83,7 @@ describe('create', () => {
   });
 
   it('should use pattern', async () => {
-    const pluginConfig = await create({
+    const pluginConfig = create({
       ...baseOptions,
       pattern: /\.js$/,
     });
@@ -95,7 +95,7 @@ describe('create', () => {
   });
 
   it('should use budget', async () => {
-    const pluginConfig = await create({
+    const pluginConfig = create({
       ...baseOptions,
       budget: 0,
     });
