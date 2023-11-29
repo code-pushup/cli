@@ -17,8 +17,8 @@ export function yargsCollectCommandObject(): CommandModule {
     },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
-      console.log(chalk.bold(CLI_NAME));
-      console.log(chalk.gray(`Run ${command}...`));
+      console.info(chalk.bold(CLI_NAME));
+      console.info(chalk.gray(`Run ${command}...`));
       await collectAndPersistReports(options);
     },
   } satisfies CommandModule;
