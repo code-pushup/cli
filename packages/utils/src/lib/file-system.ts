@@ -22,7 +22,7 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    console.log((error as { code: string; message: string }).message);
+    console.error((error as { code: string; message: string }).message);
     if ((error as { code: string }).code !== 'EEXIST') {
       throw error;
     }
@@ -48,13 +48,13 @@ export function logMultipleFileResults(
 ): void {
   const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
-    console.log(
+    console.info(
       `- ${chalk.bold(fileName)}` +
         (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
     );
   };
   const failedCallback = (result: PromiseRejectedResult) => {
-    console.log(`- ${chalk.bold(result.reason)}`);
+    console.warn(`- ${chalk.bold(result.reason)}`);
   };
 
   logMultipleResults<FileResult>(

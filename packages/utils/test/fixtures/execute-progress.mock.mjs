@@ -26,7 +26,7 @@ const verbose = Boolean(_arg('verbose', false));
  **/
 (async () => {
   verbose &&
-    console.log(
+    console.info(
       chalk.gray(
         `Start progress with duration: ${chalk.bold(
           duration,
@@ -39,7 +39,7 @@ const verbose = Boolean(_arg('verbose', false));
   const id = setInterval(() => {
     if (i < steps) {
       progress.incrementInSteps(steps);
-      verbose && console.log('Step: ', i);
+      verbose && console.info('Step: ', i);
     } else {
       clearInterval(id);
       progress.endProgress();
