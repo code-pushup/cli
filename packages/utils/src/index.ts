@@ -29,6 +29,8 @@ export {
   MultipleFileResults,
   logMultipleFileResults,
   importEsmModule,
+  crawlFileSystem,
+  findLineNumberInText,
 } from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
 export {
@@ -39,11 +41,11 @@ export {
   distinct,
 } from './lib/transformation';
 export {
-  pluralize,
   slugify,
+  pluralize,
+  pluralizeToken,
   formatBytes,
   formatDuration,
-  pluralizeToken,
 } from './lib/formatting';
 export { NEW_LINE } from './lib/md';
 export {
