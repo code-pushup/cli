@@ -85,8 +85,8 @@ describe('persistReport', () => {
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
-  it('should log to console when format is stdout`', async () => {
-    const persist = persistConfig({ outputDir, format: ['stdout'] });
+  it('should log to console regardless of format`', async () => {
+    const persist = persistConfig({ outputDir, format: [] });
 
     await persistReport(dummyReport, {
       ...dummyConfig,
@@ -109,7 +109,6 @@ describe('persistReport', () => {
     const jsonReport: Report = readReport('json');
     expect(jsonReport.packageName).toBe('@code-pushup/core');
 
-    expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
@@ -124,7 +123,6 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
       'no such file or directory',
     );
@@ -133,7 +131,7 @@ describe('persistReport', () => {
   it('should persist all formats`', async () => {
     const persist = persistConfig({
       outputDir,
-      format: ['json', 'md', 'stdout'],
+      format: ['json', 'md'],
     });
     await persistReport(dummyReport, {
       ...dummyConfig,
@@ -154,7 +152,7 @@ describe('persistReport', () => {
   });
 
   it('should persist some formats`', async () => {
-    const persist = persistConfig({ outputDir, format: ['md', 'stdout'] });
+    const persist = persistConfig({ outputDir, format: ['md'] });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
