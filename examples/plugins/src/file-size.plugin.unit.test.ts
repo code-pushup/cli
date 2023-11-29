@@ -1,5 +1,5 @@
-import { unlink } from 'node:fs/promises';
 import { vol } from 'memfs';
+import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
@@ -116,8 +116,9 @@ describe('scoreFilesizeAudit', () => {
     [2, 2, 0],
   ])(
     'should return correct score (files: %s, errors: %s, score: %s)',
-    (files, errors, score) =>
-      { expect(scoreFilesizeAudit(files, errors)).toBe(score); },
+    (files, errors, score) => {
+      expect(scoreFilesizeAudit(files, errors)).toBe(score);
+    },
   );
 });
 
