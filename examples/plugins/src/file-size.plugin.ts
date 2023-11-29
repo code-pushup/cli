@@ -1,5 +1,5 @@
-import { readdir, stat } from 'fs/promises';
-import { basename, join } from 'path';
+import { readdir, stat } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 import {
   formatBytes,
   pluralize,
@@ -74,7 +74,7 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
  *   ]
  * }
  */
-export async function create(options: PluginOptions): Promise<PluginConfig> {
+export function create(options: PluginOptions): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'File Size',
@@ -98,7 +98,7 @@ export async function runnerFunction(
 
   const issues = await fileSizeIssues(options);
   // early exit if no issues
-  if (!issues.length) {
+  if (issues.length === 0) {
     return [fileSizeAuditOutput];
   }
 
@@ -110,7 +110,7 @@ export async function runnerFunction(
     displayValue: displayValue(errorCount),
   };
 
-  if (issues.length) {
+  if (issues.length > 0) {
     fileSizeAuditOutput = {
       ...fileSizeAuditOutput,
       details: {
@@ -126,9 +126,9 @@ export function scoreFilesizeAudit(issues: number, errors: number): number {
   if (issues < errors) {
     throw new Error(`issues: ${issues} cannot be less than errors ${errors}`);
   }
-  issues = Math.max(issues, 0);
-  errors = Math.max(errors, 0);
-  return errors > 0 ? Math.abs((issues - errors) / issues) : 1;
+  const formattedIssues = Math.max(issues, 0);
+  const formattedErrors = Math.max(errors, 0);
+  return formattedErrors > 0 ? Math.abs((formattedIssues - formattedErrors) / formattedIssues) : 1;
 }
 
 export function displayValue(numberOfFiles: number): string {
@@ -155,12 +155,12 @@ export async function fileSizeIssues(options: {
     }
 
     if (stats.isFile()) {
-      if (pattern !== undefined) {
+      if (pattern === undefined) {
+        return assertFileSize(filePath, stats.size, budget);
+      } else {
         if (new RegExp(pattern).test(file)) {
           return assertFileSize(filePath, stats.size, budget);
         }
-      } else {
-        return assertFileSize(filePath, stats.size, budget);
       }
     }
 
@@ -174,7 +174,7 @@ export async function fileSizeIssues(options: {
 }
 
 export function infoMessage(filePath: string, size: number) {
-  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)})`;
+  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)+''})`;
 }
 
 export function errorMessage(filePath: string, size: number, budget: number) {
@@ -193,16 +193,16 @@ export function assertFileSize(
 ): Issue {
   let severity: IssueSeverity = 'info';
   // ensure size positive numbers
-  size = Math.max(size, 0);
-  let message = infoMessage(file, size);
+  const formattedSize = Math.max(size, 0);
+  let message = infoMessage(file, formattedSize);
 
   if (budget !== undefined) {
     // ensure budget is positive numbers
-    budget = Math.max(budget, 0);
+    const formattedBudget = Math.max(budget, 0);
     // set severity to error if budget exceeded
-    if (budget < size) {
+    if (budget < formattedSize) {
       severity = 'error';
-      message = errorMessage(file, size, budget);
+      message = errorMessage(file, formattedSize, formattedBudget);
     }
   }
   // return Issue

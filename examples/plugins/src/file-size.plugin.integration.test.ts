@@ -5,7 +5,7 @@ import { categoryRefSchema, pluginConfigSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   PluginOptions,
-  audits,
+  audits as fileSizeAudits,
   create,
   recommendedRefs,
   pluginSlug as slug,
@@ -59,7 +59,7 @@ describe('create', () => {
     const pluginConfig = await create(baseOptions);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
-      audits,
+      audits: fileSizeAudits,
       description:
         'A plugin to measure and assert filesize of files in a directory.',
       icon: 'javascript',
@@ -90,8 +90,8 @@ describe('create', () => {
     const { audits } = await executePlugin(pluginConfig);
 
     expect(audits).toHaveLength(1);
-    expect(audits?.[0]?.score).toBe(1);
-    expect(audits?.[0]?.details?.issues).toHaveLength(1);
+    expect(audits[0]?.score).toBe(1);
+    expect(audits[0]?.details?.issues).toHaveLength(1);
   });
 
   it('should use budget', async () => {
@@ -102,8 +102,8 @@ describe('create', () => {
     const { audits } = await executePlugin(pluginConfig);
 
     expect(audits).toHaveLength(1);
-    expect(audits?.[0]?.score).toBe(0);
-    expect(audits?.[0]?.details?.issues).toHaveLength(2);
+    expect(audits[0]?.score).toBe(0);
+    expect(audits[0]?.details?.issues).toHaveLength(2);
   });
 });
 

@@ -2,7 +2,7 @@ import nx from '@nx/devkit';
 import 'dotenv/config';
 import type { Linter } from 'eslint';
 import { jsonc } from 'jsonc';
-import { readFile, writeFile, stat } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';

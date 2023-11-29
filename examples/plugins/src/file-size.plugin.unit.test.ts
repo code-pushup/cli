@@ -1,6 +1,6 @@
-import { unlink } from 'fs/promises';
+import { unlink } from 'node:fs/promises';
 import { vol } from 'memfs';
-import { basename, join } from 'path';
+import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { formatBytes } from '@code-pushup/utils';
@@ -40,7 +40,7 @@ const testJs = `
   `;
 const readmeMd = '# Docs';
 
-const file = 'test.js';
+const testFile = 'test.js';
 
 describe('infoMessage', () => {
   it.each([['index.js'], [join('src', 'index.js')]])(
@@ -61,7 +61,7 @@ describe('errorMessage', () => {
     'should return error message for size %i with budget %i',
     (size, budget) => {
       expect(errorMessage('test.js', size, budget)).toBe(
-        `File ${file} has ${size} B, this is ${1} B too big. (budget: ${budget} B)`,
+        `File ${testFile} has ${size} B, this is ${1} B too big. (budget: ${budget} B)`,
       );
     },
   );
@@ -71,10 +71,10 @@ describe('assertFileSize', () => {
   it.each([[-1], [0], [1]])(
     'should return a informative Issue without budgets (size: %s)',
     size => {
-      expect(assertFileSize(file, size)).toEqual({
-        message: infoMessage(file, size),
+      expect(assertFileSize(testFile, size)).toEqual({
+        message: infoMessage(testFile, size),
         severity: 'info',
-        source: { file },
+        source: { file: testFile },
       });
     },
   );
@@ -86,10 +86,10 @@ describe('assertFileSize', () => {
   ])(
     'should return a informative Issue with budgets not exceeding (size: %s, budget: %s)',
     (size, budget) => {
-      expect(assertFileSize(file, size, budget)).toEqual({
-        message: infoMessage(file, size),
+      expect(assertFileSize(testFile, size, budget)).toEqual({
+        message: infoMessage(testFile, size),
         severity: 'info',
-        source: { file },
+        source: { file: testFile },
       });
     },
   );
@@ -97,10 +97,10 @@ describe('assertFileSize', () => {
   it.each([[1, 0]])(
     'should return error Issue with budgets exceeding (size: %s, budget: %s)',
     (size, budget) => {
-      expect(assertFileSize(file, size, budget)).toEqual({
-        message: errorMessage(file, size, budget),
+      expect(assertFileSize(testFile, size, budget)).toEqual({
+        message: errorMessage(testFile, size, budget),
         severity: 'error',
-        source: { file },
+        source: { file: testFile },
       });
     },
   );
@@ -117,7 +117,7 @@ describe('scoreFilesizeAudit', () => {
   ])(
     'should return correct score (files: %s, errors: %s, score: %s)',
     (files, errors, score) =>
-      expect(scoreFilesizeAudit(files, errors)).toBe(score),
+      { expect(scoreFilesizeAudit(files, errors)).toBe(score); },
   );
 });
 
@@ -141,11 +141,11 @@ describe('fileSizePlugin', () => {
       }),
     ).resolves.toEqual(
       expect.arrayContaining(
-        ['project.json', 'test.js', 'README.md'].map(file => ({
+        ['project.json', 'test.js', 'README.md'].map(f => ({
           message: expect.any(String),
           severity: expect.any(String),
           source: {
-            file: expect.stringContaining(file),
+            file: expect.stringContaining(f),
           },
         })),
       ),

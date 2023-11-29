@@ -27,9 +27,10 @@ export function yargsCli<T = unknown>(
       middlewareFunction: unknown;
       applyBeforeValidation?: boolean;
     }[];
+    noExitProcess?: boolean;
   },
 ): Argv<T> {
-  const { usageMessage, scriptName } = cfg;
+  const { usageMessage, scriptName, noExitProcess } = cfg;
   let { commands, options, middlewares } = cfg;
   commands = Array.isArray(commands) ? commands : [];
   middlewares = Array.isArray(middlewares) ? middlewares : [];
@@ -83,6 +84,13 @@ export function yargsCli<T = unknown>(
       }),
     });
   });
+
+  // this flag should be set for tests and debugging purposes
+  // when there is an error and exitProcess is called, it suppresses the error message
+  // more info here: https://yargs.js.org/docs/#api-reference-exitprocessenable
+  if (noExitProcess) {
+    cli.exitProcess(false);
+  }
 
   // return CLI object
   return cli as unknown as Argv<T>;
