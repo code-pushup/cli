@@ -25,16 +25,16 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    expect(console.log).not.toHaveBeenCalledWith(
+    expect(console.info).not.toHaveBeenCalledWith(
       expect.stringContaining('"$0":'),
     );
-    expect(console.log).not.toHaveBeenCalledWith(
+    expect(console.info).not.toHaveBeenCalledWith(
       expect.stringContaining('"_":'),
     );
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('"outputDir": "destinationDir"'),
     );
-    expect(console.log).not.toHaveBeenCalledWith(
+    expect(console.info).not.toHaveBeenCalledWith(
       expect.stringContaining('"output-dir":'),
     );
   });
