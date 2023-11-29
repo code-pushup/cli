@@ -12,6 +12,5 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['global-setup.ts'],
   },
 });

@@ -1,4 +1,4 @@
-import { SpyInstance, describe, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { CoreConfig } from '@code-pushup/models';
 import {
   filterCategoryByOnlyPluginsOption,
@@ -37,16 +37,6 @@ describe('filterPluginsByOnlyPluginsOption', () => {
 // without the `no-secrets` rule, this would be flagged as a security issue
 // eslint-disable-next-line no-secrets/no-secrets
 describe('filterCategoryByOnlyPluginsOption', () => {
-  let logSpy: SpyInstance;
-
-  beforeEach(() => {
-    logSpy = vi.spyOn(console, 'log');
-  });
-
-  afterEach(() => {
-    logSpy.mockRestore();
-  });
-
   it('should return all categories if no onlyPlugins option', () => {
     expect(
       filterCategoryByOnlyPluginsOption(
@@ -87,26 +77,16 @@ describe('filterCategoryByOnlyPluginsOption', () => {
         onlyPlugins: ['plugin1', 'plugin3'],
       },
     );
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('"category1" is ignored'),
     );
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('skipped plugin "plugin2"'),
     );
   });
 });
 
 describe('validateOnlyPluginsOption', () => {
-  let logSpy: SpyInstance;
-
-  beforeEach(() => {
-    logSpy = vi.spyOn(console, 'log');
-  });
-
-  afterEach(() => {
-    logSpy.mockRestore();
-  });
-
   it('should log if onlyPlugins option contains non-existing plugin', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
@@ -114,7 +94,7 @@ describe('validateOnlyPluginsOption', () => {
         onlyPlugins: ['plugin1', 'plugin3', 'plugin4'],
       },
     );
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining(
         'plugins with "plugin3", "plugin4" slugs, but no such plugins are present',
       ),
@@ -128,6 +108,6 @@ describe('validateOnlyPluginsOption', () => {
         onlyPlugins: ['plugin1'],
       },
     );
-    expect(logSpy).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
   });
 });
