@@ -15,8 +15,6 @@ export {
   README_LINK,
   calcDuration,
   compareIssueSeverity,
-  formatBytes,
-  formatCount,
   loadReport,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
@@ -34,17 +32,22 @@ export {
 } from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
 export {
-  pluralize,
   toArray,
   objectToKeys,
   objectToEntries,
   countOccurrences,
   distinct,
-  slugify,
 } from './lib/transformation';
-export { NEW_LINE } from './lib/md';
-export { logMultipleResults } from './lib/log-results';
 export {
+  pluralize,
+  slugify,
+  formatBytes,
+  formatDuration,
+  pluralizeToken,
+} from './lib/formatting';
+export { NEW_LINE } from './lib/md';
+export {
+  logMultipleResults,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
-} from './lib/promise-result';
+} from './lib/log-results';

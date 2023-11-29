@@ -2,8 +2,13 @@ import chalk from 'chalk';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockConsole, unmockConsole } from '../../test';
 import { FileResult } from './file-system';
-import { logMultipleResults, logPromiseResults } from './log-results';
-import { formatBytes } from './report';
+import { formatBytes } from './formatting';
+import {
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+  logMultipleResults,
+  logPromiseResults,
+} from './log-results';
 
 const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
   const [fileName, size] = result.value;
@@ -125,5 +130,25 @@ describe('logPromiseResults', () => {
     expect(logs).toHaveLength(2);
     expect(logs[0]).toContain('Generated reports failed: ');
     expect(logs[1]).toContain('- [1mfail[22m');
+  });
+});
+
+describe('promise-result', () => {
+  it('should get fulfilled result', () => {
+    const result = {
+      status: 'fulfilled',
+      value: 'value',
+    } as PromiseSettledResult<unknown>;
+    expect(isPromiseFulfilledResult(result)).toBe(true);
+    expect(isPromiseRejectedResult(result)).toBe(false);
+  });
+
+  it('should get rejected result', () => {
+    const result = {
+      status: 'rejected',
+      reason: 'reason',
+    } as PromiseSettledResult<unknown>;
+    expect(isPromiseFulfilledResult(result)).toBe(false);
+    expect(isPromiseRejectedResult(result)).toBe(true);
   });
 });

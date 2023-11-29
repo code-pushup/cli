@@ -3,36 +3,11 @@ import {
   countOccurrences,
   deepClone,
   distinct,
+  factorOf,
   objectToEntries,
   objectToKeys,
-  pluralize,
-  slugify,
   toArray,
 } from './transformation';
-
-describe('slugify', () => {
-  it.each([
-    ['Largest Contentful Paint', 'largest-contentful-paint'],
-    ['cumulative-layout-shift', 'cumulative-layout-shift'],
-    ['max-lines-200', 'max-lines-200'],
-    ['rxjs/finnish', 'rxjs-finnish'],
-    ['@typescript-eslint/no-explicit-any', 'typescript-eslint-no-explicit-any'],
-    ['Code  PushUp ', 'code-pushup'],
-  ])('should transform "%s" to valid slug "%s"', (text, slug) => {
-    expect(slugify(text)).toBe(slug);
-  });
-});
-
-describe('pluralize', () => {
-  it.each([
-    ['warning', 'warnings'],
-    ['error', 'errors'],
-    ['category', 'categories'],
-    ['status', 'statuses'],
-  ])('should pluralize "%s" as "%s"', (singular, plural) => {
-    expect(pluralize(singular)).toBe(plural);
-  });
-});
 
 describe('toArray', () => {
   it('should transform non-array value into array with single value', () => {
@@ -121,5 +96,16 @@ describe('deepClone', () => {
     expect(cloned.c[1]).not.toBe(obj.c[1]);
     expect(cloned.d).toBe(obj.d);
     expect(cloned.e).toBe(obj.e);
+  });
+});
+
+describe('factorOf', () => {
+  it.each([
+    [[], 1],
+    [[0, 0], 0],
+    [[0, 1], 0.5],
+    [[1, 1], 1],
+  ])('should return correct factor items', (items, factor) => {
+    expect(factorOf(items, i => i < 1)).toEqual(factor);
   });
 });

@@ -7,7 +7,9 @@ import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {
   FileResult,
   NoExportError,
+  crawlFileSystem,
   ensureDirectoryExists,
+  findLineNumberInText,
   importEsmModule,
   logMultipleFileResults,
   toUnixPath,
@@ -128,5 +130,88 @@ describe('importEsmModule', () => {
         filepath,
       }),
     ).rejects.toThrow(new NoExportError(filepath));
+  });
+});
+
+describe('crawlFileSystem', () => {
+  beforeEach(() => {
+    vol.reset();
+    vol.fromJSON(
+      {
+        ['README.md']: '# Markdown',
+        ['src/README.md']: '# Markdown',
+        ['src/index.ts']: 'const var = "markdown";',
+      },
+      outputDir,
+    );
+  });
+
+  it('should list all files in file system', async () => {
+    await expect(
+      crawlFileSystem({
+        directory: outputDir,
+      }),
+    ).resolves.toEqual([
+      expect.stringContaining(join('README.md')),
+      expect.stringContaining(join('README.md')),
+      expect.stringContaining(join('index.ts')),
+    ]);
+  });
+
+  it('should list files matching a pattern', async () => {
+    await expect(
+      crawlFileSystem({
+        directory: outputDir,
+        pattern: /\.md$/,
+      }),
+    ).resolves.toEqual([
+      expect.stringContaining(join('README.md')),
+      expect.stringContaining(join('README.md')),
+    ]);
+  });
+
+  it('should apply sync fileTransform function if given', async () => {
+    await expect(
+      crawlFileSystem({
+        directory: outputDir,
+        pattern: /\.md$/,
+        fileTransform: () => '42',
+      }),
+    ).resolves.toEqual([
+      expect.stringContaining('42'),
+      expect.stringContaining('42'),
+    ]);
+  });
+
+  it('should apply async fileTransform function if given', async () => {
+    await expect(
+      crawlFileSystem({
+        directory: outputDir,
+        pattern: /\.md$/,
+        fileTransform: () => Promise.resolve('42'),
+      }),
+    ).resolves.toEqual([
+      expect.stringContaining('42'),
+      expect.stringContaining('42'),
+    ]);
+  });
+});
+
+describe('findLineNumber', () => {
+  it('should return correct line number', () => {
+    expect(
+      findLineNumberInText(
+        `
+    1
+    2 xxx
+    3
+    `,
+        'x',
+      ),
+    ).toBe(3);
+  });
+
+  it('should return null if pattern not in content', () => {
+    expect(findLineNumberInText(``, 'x')).toBeNull();
   });
 });

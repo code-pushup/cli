@@ -6,8 +6,6 @@ import {
   calcDuration,
   compareIssueSeverity,
   countWeightedRefs,
-  formatBytes,
-  formatCount,
   getPluginNameFromSlug,
   loadReport,
   sortAudits,
@@ -36,52 +34,6 @@ const resetFiles = (files?: Record<string, string>) => {
   vol.fromJSON(files || {}, outputDir);
 };
 
-describe('formatBytes', () => {
-  it('should log file sizes in Bytes`', async () => {
-    expect(formatBytes(1000)).toBe('1000 B');
-  });
-
-  it('should log file sizes in KB`', async () => {
-    expect(formatBytes(10000)).toBe('9.77 kB');
-  });
-
-  it('should log file sizes in MB`', async () => {
-    expect(formatBytes(10000000)).toBe('9.54 MB');
-  });
-
-  it('should log file sizes in bytes`', async () => {
-    expect(formatBytes(10000000000)).toBe('9.31 GB');
-  });
-
-  it('should log file sizes in TB`', async () => {
-    expect(formatBytes(10000000000000)).toBe('9.09 TB');
-  });
-
-  it('should log file sizes in PB`', async () => {
-    expect(formatBytes(10000000000000000)).toBe('8.88 PB');
-  });
-
-  it('should log file sizes in EB`', async () => {
-    expect(formatBytes(10000000000000000000)).toBe('8.67 EB');
-  });
-
-  it('should log file sizes in ZB`', async () => {
-    expect(formatBytes(10000000000000000000000)).toBe('8.47 ZB');
-  });
-
-  it('should log file sizes in YB`', async () => {
-    expect(formatBytes(10000000000000000000000000)).toBe('8.27 YB');
-  });
-
-  it('should log file sizes correctly with correct decimal`', async () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 kB');
-  });
-
-  it('should log file sizes of 0 if no size is given`', async () => {
-    expect(formatBytes(0)).toBe('0 B');
-  });
-});
-
 describe('calcDuration', () => {
   it('should calc the duration correctly if start and stop are given', () => {
     const start = performance.now();
@@ -92,20 +44,6 @@ describe('calcDuration', () => {
   it('should calc the duration correctly if only start is given', () => {
     const start = performance.now();
     expect(calcDuration(start)).toBe(0);
-  });
-});
-
-describe('formatCount', () => {
-  it('should pluralize if count is greater than 1', () => {
-    expect(formatCount(5, 'audit')).toBe('5 audits');
-  });
-
-  it('should not pluralize if count is 1', () => {
-    expect(formatCount(1, 'audit')).toBe('1 audit');
-  });
-
-  it('should pluralize if count is 0', () => {
-    expect(formatCount(0, 'audit')).toBe('0 audits');
   });
 });
 

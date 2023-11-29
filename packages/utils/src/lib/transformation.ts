@@ -1,21 +1,3 @@
-export function slugify(text: string): string {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+|\//g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-}
-
-export function pluralize(text: string): string {
-  if (text.endsWith('y')) {
-    return text.slice(0, -1) + 'ies';
-  }
-  if (text.endsWith('s')) {
-    return `${text}es`;
-  }
-  return `${text}s`;
-}
-
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
@@ -54,4 +36,16 @@ export function deepClone<T>(obj: T): T {
     }
   }
   return cloned;
+}
+
+export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
+  const itemCount = items.length;
+  let filterCount = items.filter(filterFn).length;
+  if (itemCount < filterCount) {
+    throw new Error(
+      `Issues: ${itemCount} cannot be less than errors ${filterCount}`,
+    );
+  }
+  filterCount = Math.max(filterCount, 0);
+  return filterCount > 0 ? Math.abs((itemCount - filterCount) / itemCount) : 1;
 }
