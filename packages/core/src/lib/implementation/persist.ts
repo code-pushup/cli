@@ -33,7 +33,7 @@ export async function persistReport(
   const format = persist.format ?? [];
 
   let scoredReport = scoreReport(report);
-  console.log(reportToStdout(scoredReport));
+  console.info(reportToStdout(scoredReport));
 
   // collect physical format outputs
   const results: { format: string; content: string }[] = [
