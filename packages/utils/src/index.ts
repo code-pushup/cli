@@ -48,8 +48,8 @@ export {
   formatDuration,
 } from './lib/formatting';
 export { NEW_LINE } from './lib/md';
+export { logMultipleResults } from './lib/log-results';
 export {
-  logMultipleResults,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
-} from './lib/log-results';
+} from './lib/guards';
