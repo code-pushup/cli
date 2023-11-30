@@ -62,7 +62,8 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:core", "type:app"]
 }

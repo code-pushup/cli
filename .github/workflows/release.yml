@@ -44,6 +44,8 @@ jobs:
         run: npm ci
       - name: Execute version target
         run: npx nx version @code-pushup/cli-source --dryRun
+      - name: Deploy to NPM
+        run: npx nx run-many --target=deploy --dry-run
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -81,3 +83,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: npx nx version @code-pushup/cli-source
+      - name: Deploy to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # un-exclude packages when they're ready for public release
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin

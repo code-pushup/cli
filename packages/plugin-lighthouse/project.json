@@ -40,7 +40,8 @@
         "config": "packages/plugin-lighthouse/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }

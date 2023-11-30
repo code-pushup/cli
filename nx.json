@@ -27,6 +27,14 @@
       "options": {
         "passWithNoTests": true
       }
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "public",
+        "noBuild": true
+      }
     }
   },
   "namedInputs": {

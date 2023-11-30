@@ -44,7 +44,8 @@
         "config": "packages/models/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/models/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:shared", "type:util"]
 }
