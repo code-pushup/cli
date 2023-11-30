@@ -1,6 +1,7 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
 import { mkdir, readFile } from 'fs/promises';
+import { join } from 'path';
 import { logMultipleResults } from './log-results';
 import { formatBytes } from './report';
 
@@ -86,4 +87,8 @@ export async function importEsmModule<T = unknown>(
     throw new NoExportError(options.filepath);
   }
   return parse(mod.default);
+}
+
+export function pluginWorkDir(slug: string): string {
+  return join('node_modules', '.code-pushup', slug);
 }
