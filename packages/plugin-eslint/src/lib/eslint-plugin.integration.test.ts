@@ -21,6 +21,7 @@ describe('eslintPlugin', () => {
       args: (plugin.runner as RunnerConfig).args?.map(arg =>
         toUnixPath(arg.replace(thisDir, '<dirname>')),
       ),
+      outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },
   });
 
