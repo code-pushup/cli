@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/code-pushup/cli/compare/utils@0.1.0...utils@0.2.0) (2023-11-30)
+
+### Features
+
+- **plugin-eslint:** add support for inline eslint config ([67571eb](https://github.com/code-pushup/cli/commit/67571eb529ade91a77e2c739a3995674e52701af))
+
 # 0.1.0 (2023-11-29)
 
 ### Bug Fixes
