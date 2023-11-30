@@ -107,11 +107,11 @@ export async function crawlFileSystem<T = string>(options: {
 
     if (stats.isDirectory()) {
       return crawlFileSystem({ directory: filePath, pattern, fileTransform });
-    } else if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
-      return fileTransform(filePath);
-    } else {
-      return [];
     }
+    if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
+      return fileTransform(filePath);
+    }
+    return [];
   });
 
   const resultsNestedArray = await Promise.all(promises);
