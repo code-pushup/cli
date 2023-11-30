@@ -45,7 +45,7 @@ export class PluginOutputMissingAuditError extends Error {
  *  try {
  *  await executePlugin(pluginCfg);
  *  } catch (e) {
- *  console.log(e.message);
+ *  console.error(e.message);
  *  }
  */
 export async function executePlugin(
@@ -110,7 +110,7 @@ export async function executePlugin(
  * try {
  * await executePlugins(plugins);
  * } catch (e) {
- * console.log(e.message); // Plugin output is invalid
+ * console.error(e.message); // Plugin output is invalid
  * }
  *
  */

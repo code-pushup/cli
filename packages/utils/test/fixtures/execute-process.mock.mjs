@@ -16,7 +16,7 @@ let outputFile = process.argv[5] || './tmp/out-async-runner.json';
  * @arg throwError: '1' | '0' - if the process completes or throws; defaults to '0'
  **/
 (async () => {
-  console.log(
+  console.info(
     `process:start with interval: ${interval}, runs: ${runs}, throwError: ${throwError}, outputFile: ${outputFile}`,
   );
   await new Promise(resolve => {
@@ -30,11 +30,11 @@ let outputFile = process.argv[5] || './tmp/out-async-runner.json';
         }
       } else {
         runs--;
-        console.log('process:update');
+        console.info('process:update');
       }
     }, interval);
   });
 
-  console.log('process:complete');
+  console.info('process:complete');
   writeFileSync(outputFile, JSON.stringify({ audits: ['dummy-result'] }));
 })();

@@ -18,7 +18,7 @@ export async function addToProjectGenerator(
   const { root } = projectConfiguration;
 
   if (tree.exists(path.join(root, 'code-pushup.config.ts'))) {
-    console.log('Code PushUp already configured for this project');
+    console.info('Code PushUp already configured for this project');
     return;
   }
 

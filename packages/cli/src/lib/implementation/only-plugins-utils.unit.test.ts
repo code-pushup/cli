@@ -64,7 +64,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
     ).toEqual([{ refs: [{ slug: 'plugin3' }] }]);
   });
 
-  it('should log ignored category and its first violating plugin', () => {
+  it('should print ignored category and its first violating plugin', () => {
     filterCategoryByOnlyPluginsOption(
       [
         {
@@ -77,24 +77,24 @@ describe('filterCategoryByOnlyPluginsOption', () => {
         onlyPlugins: ['plugin1', 'plugin3'],
       },
     );
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('"category1" is ignored'),
     );
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('skipped plugin "plugin2"'),
     );
   });
 });
 
 describe('validateOnlyPluginsOption', () => {
-  it('should log if onlyPlugins option contains non-existing plugin', () => {
+  it('should warn if onlyPlugins option contains non-existing plugin', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
       {
         onlyPlugins: ['plugin1', 'plugin3', 'plugin4'],
       },
     );
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.warn).toHaveBeenCalledWith(
       expect.stringContaining(
         'plugins with "plugin3", "plugin4" slugs, but no such plugins are present',
       ),
@@ -108,6 +108,6 @@ describe('validateOnlyPluginsOption', () => {
         onlyPlugins: ['plugin1'],
       },
     );
-    expect(console.log).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
   });
 });

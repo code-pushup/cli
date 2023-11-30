@@ -1,8 +1,7 @@
 import nx from '@nx/devkit';
 import 'dotenv/config';
-import type { Linter } from 'eslint';
-import { jsonc } from 'jsonc';
-import { readFile, stat, writeFile } from 'node:fs/promises';
+import type { ESLint } from 'eslint';
+import { stat } from 'node:fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
@@ -23,15 +22,8 @@ const projects = Object.values(
   nx.readProjectsConfigurationFromProjectGraph(graph).projects,
 ).filter(project => 'lint' in (project.targets ?? {}));
 
-// determine plugin parameters
-const eslintrc = 'tmp-eslintrc.json';
-const patterns = projects.flatMap(project => [
-  ...(project.targets?.lint.options.lintFilePatterns ?? []),
-  `${project.sourceRoot}/*.test.ts`, // add test file glob to load vitest rules
-]);
-
 // create single ESLint config with project-specific overrides
-const eslintConfig: Linter.Config = {
+const eslintConfig: ESLint.ConfigData = {
   root: true,
   overrides: await Promise.all(
     projects.map(async project => ({
@@ -42,7 +34,11 @@ const eslintConfig: Linter.Config = {
     })),
   ),
 };
-await writeFile(eslintrc, JSON.stringify(eslintConfig, null, 2));
+// include patterns from each project
+const patterns = projects.flatMap(project => [
+  ...(project.targets?.lint.options.lintFilePatterns ?? []),
+  `${project.sourceRoot}/*.test.ts`, // hack: add test file glob to load vitest rules
+]);
 
 // load upload configuration from environment
 const envSchema = z.object({
@@ -68,7 +64,7 @@ const config: CoreConfig = {
   },
 
   plugins: [
-    await eslintPlugin({ eslintrc, patterns }),
+    await eslintPlugin({ eslintrc: eslintConfig, patterns }),
     await fileSizePlugin({
       directory: join(process.cwd(), 'dist/packages'),
       pattern: /\.js$/,

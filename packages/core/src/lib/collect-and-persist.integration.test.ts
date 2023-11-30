@@ -4,7 +4,6 @@ import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
-import { mockConsole, unmockConsole } from '../../test';
 import { DEFAULT_TESTING_CLI_OPTIONS } from '../../test/constants';
 import { collectAndPersistReports } from './collect-and-persist';
 
@@ -26,13 +25,6 @@ const reportPath = (format: 'json' | 'md' = 'json') =>
   join(outputDir, `report.${format}`);
 
 describe('collectAndPersistReports', () => {
-  beforeEach(async () => {
-    mockConsole();
-  });
-  afterEach(async () => {
-    unmockConsole();
-  });
-
   it('should work', async () => {
     const cfg = minimalConfig(outputDir);
     await collectAndPersistReports({
