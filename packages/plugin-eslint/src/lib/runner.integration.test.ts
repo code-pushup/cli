@@ -1,5 +1,5 @@
 import { ESLint } from 'eslint';
-import { rm, writeFile } from 'fs/promises';
+import { mkdir, rm, writeFile } from 'fs/promises';
 import os from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -48,6 +48,7 @@ describe('executeRunner', () => {
     const config: ESLint.ConfigData = {
       extends: '@code-pushup',
     };
+    await mkdir(dirname(ESLINTRC_PATH), { recursive: true });
     await writeFile(ESLINTRC_PATH, JSON.stringify(config));
   });
 
