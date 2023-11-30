@@ -1,9 +1,9 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
-import { mkdir, readFile } from 'fs/promises';
+import { mkdir, readFile, readdir, stat } from 'fs/promises';
 import { join } from 'path';
+import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
-import { formatBytes } from './report';
 
 export function toUnixPath(
   path: string,
@@ -91,4 +91,43 @@ export async function importEsmModule<T = unknown>(
 
 export function pluginWorkDir(slug: string): string {
   return join('node_modules', '.code-pushup', slug);
+}
+
+export async function crawlFileSystem<T = string>(options: {
+  directory: string;
+  pattern?: string | RegExp;
+  fileTransform?: (filePath: string) => Promise<T> | T;
+}): Promise<T[]> {
+  const {
+    directory,
+    pattern,
+    fileTransform = (filePath: string) => filePath as T,
+  } = options;
+
+  const files = await readdir(directory);
+  const promises = files.map(async (file): Promise<T | T[]> => {
+    const filePath = join(directory, file);
+    const stats = await stat(filePath);
+
+    if (stats.isDirectory()) {
+      return crawlFileSystem({ directory: filePath, pattern, fileTransform });
+    }
+    if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
+      return fileTransform(filePath);
+    }
+    return [];
+  });
+
+  const resultsNestedArray = await Promise.all(promises);
+  return resultsNestedArray.flat() as T[];
+}
+
+export function findLineNumberInText(
+  content: string,
+  pattern: string,
+): number | null {
+  const lines = content.split(/\r?\n/); // Split lines, handle both Windows and UNIX line endings
+
+  const lineNumber = lines.findIndex(line => line.includes(pattern)) + 1; // +1 because line numbers are 1-based
+  return lineNumber === 0 ? null : lineNumber; // If the package isn't found, return null
 }

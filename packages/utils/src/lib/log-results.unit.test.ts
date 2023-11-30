@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FileResult } from './file-system';
+import { formatBytes } from './formatting';
 import { logMultipleResults, logPromiseResults } from './log-results';
-import { formatBytes } from './report';
 
 const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
   const [fileName, size] = result.value;

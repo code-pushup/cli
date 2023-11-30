@@ -1,7 +1,4 @@
-import {
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
-} from './promise-result';
+import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
