@@ -1,4 +1,4 @@
-# Integrating a plugin in the CLI (high-level technical section with examples)
+# Integrating a plugin in the CLI (based on real examples)
 
 One of the main features of Code PushUp is the ability to write custom plugins to track your own metrics.
 It enables you to implement nearly any kind of metric you want to track with minimum effort.
@@ -124,6 +124,9 @@ The core of a plugin is defined under the `runner` property.
 The `runner` property is the entry point of your plugin and is called by the CLI and should return the audit results
 as [`AuditOutputs`](@TODO), and array of [`AuditOutput`](@TODO)
 
+### Runner output - [`AuditOutputs`](@TODO)
+
+Plugin runner return and array of [`AuditOutput`](@TODO).
 The minimum output of an audit looks like this:
 
 ```typescript
@@ -137,12 +140,19 @@ const auditOutput: AuditOutput = {
 };
 ```
 
-It can get implemented in 2 ways:
+Audits are important to calculate a score out of a given metrics and is used to score a category or audit groups. Here you can read more about [audits and scoring](@TODO - in page link).
+They also help with attribution of audit results. This is important as it help the interpreter of the audit to get actionable feedback like where in the code it happened or even how to fix it.
+Here you can read more on [attribution of audits](@TODO - in page link).
+
+Here we focus on the actual implementation that returns the above explained data.
+
+A plugins runner logic can get implemented in 2 ways:
 
 - as a `RunnerFunction`
 - as a `RunnerConfig`
 
-We recommend the `RunnerFunction` for getting started, as it's easier to use for simple plugins and can be written in the config file directly.
+Even if both of them result in [`AuditOutputs`](@TODO), we recommend the `RunnerFunction` for getting started.
+It is easier to use for simple plugins and can be written in the config file directly.
 The `RunnerConfig` is suitable for more complex, performance-heavy plugins (runner executed off the main thread), and is more flexible in regard to runtime (can run any shell command, not restricted to JavaScript).
 
 ### RunnerFunction
@@ -161,67 +171,14 @@ codebase.
 // code-pushup.config.ts
 
 // add the directory to the plugin options
-type Options = {
-  directory: string;
-};
 
-// ...
-
-export default {
-  persist: {
-    outputDir: '.code-pushup',
-  },
-  plugins: [
-    await create({
-      directory: './src',
-    }),
-  ],
-  categories: [],
-};
+// @TODO - runner implementation with dummy audit from above
 ```
 
 3. Get the raw data to perform the audit
 
 We need the raw data to create the `AuditOutput` and calculate the metrics.
 In our case we need to get the file name and size of all files in the provided directory.
-
-The basic implementation looks like this:
-
-**get file-size data**
-
-```typescript
-// code-pushup.config.ts
-// ...
-import { readdir, stat } from 'node:fs/promises';
-import { join } from 'node:path';
-
-// ...
-
-// get raw file size data
-type FileSizeInfo = { file: string; size: number };
-async function getFileSizeData(options: Options): Promise<FileSizeInfo[]> {
-  const { directory } = options;
-
-  let results = [];
-  const files = await readdir(directory);
-
-  for (const file of files) {
-    const filePath = join(directory, file);
-    const stats = await stat(filePath);
-
-    // if file, get file size info
-    if (stats.isFile()) {
-      results.push({ filePath, size: stats.size });
-    }
-    // if directory, recurse
-    else if (stats.isDirectory()) {
-      results.push(...(await getFileSizeData({ directory: filePath })));
-    }
-  }
-
-  return results;
-}
-```
 
 The above code will recursively get the file size info for all files in the specified directory and its subdirectories.
 
@@ -232,21 +189,23 @@ of `AuditOutputs`:
 
 ```typescript
 // code-pushup.config.ts
-import { pluralize } from '@code-pushup/utils';
+import { crawlFileSystem, pluralizeToken } from '@code-pushup/utils';
 
 // ...
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
-  const data = await getFileSizeData(options);
-  // We use a helper function of the utils package to pluralize the display value
-  const displayValue = `${data.length} ${data.length === 1 ? 'file' : pluralize('file')}`;
+  const data = await crawlFileSystem(options, async filePath => {
+    const stats = await stat(filePath);
+    return { filePath, size: stats.size };
+  });
 
   let fileSizeAuditOutput: AuditOutput = {
-    slug: fileSizeAudit.slug,
-    // We have always a score of 1. Proper implementation of scores will be covered in a next section.
-    score: 1,
+    ...auditMeta,
     value: data.length,
-    displayValue,
+    // helper to for a nicer displayValue
+    displayValue: pluralizeToken('file', data.length),
+    // We have always a score of 1 for now
+    score: 1,
   };
 
   return [fileSizeAuditOutput];
@@ -254,6 +213,8 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 ```
 
 Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+
+@TODO wrap with details
 
 **stdout of basic file-size plugin**
 
@@ -278,7 +239,6 @@ This option is less flexible but can be used in cases when you have to use anoth
 why runner function can't be used...
 
 We will implement a performance focused plugin using the [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli) as real life example.
-
 Let's start with a `create` function maintaining the basic information of the `PluginConfig`.
 
 <details>
@@ -321,7 +281,6 @@ export default {
   plugins: [
     await create({
       url: 'https://example.com',
-      onlyAudits: 'largest-contentful-paint',
     }),
   ],
   // ...
@@ -356,7 +315,9 @@ import { join } from 'path';
 import { AuditOutputs } from '@code-pushup/models';
 
 function runnerConfig(options: Options): RunnerConfig {
-  const { url, onlyAudits } = options;
+  const { url } = options;
+  // hard coded to run only the LCP audit
+  const audits = ['largest-contentful-paint'];
   const outputFile = join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
   return {
     // npx lighthouse https://example.com --output=json --outputFile=lighthouse-report.json  --onlyAudits=largest-contentful-paint
@@ -365,29 +326,36 @@ function runnerConfig(options: Options): RunnerConfig {
       _: ['lighthouse', url],
       output: 'json',
       'output-path': outputFile,
-      onlyAudits,
+      onlyAudits: audits,
     }),
     outputFile,
-    // implementation follows in the next section
-    outputTransform,
+    outputTransform: lhrOutputTransform(audits),
   };
 }
 
-function outputTransform(output: string): AuditOutputs {
-  // Return dummy audit outputs.
-  // Otherwise the CLI will throw an error as the lighthouse report is not of shape AuditOutputs
-  return [
-    {
-      slug: lcpAudit.slug,
-      score: 0,
-      value: 0,
-    },
-  ] satisfies AuditOutputs;
+// we use a closure function for better DX in configuration
+function lhrOutputTransform(audits: string[]): OutputTransform {
+  // implementation follows in the next section
+  return (output: string): AuditOutputs => {
+    // Return dummy audit outputs.
+    // Otherwise the CLI will throw an error as the lighthouse report is not of shape AuditOutputs
+    return audits.map(
+      slug =>
+        [
+          {
+            slug,
+            value: 0,
+            score: 1,
+          },
+        ] satisfies AuditOutputs,
+    );
+  };
 }
 ```
 
 Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
 
+@TODO wrap with detail section  
 **stdout of basic lighthouse plugin**
 
 ```sh
@@ -414,19 +382,28 @@ an `outputTransform` and implement the transform from a Lighthouse report to aud
 ```typescript
 // code-pushup.config.ts
 import { Result } from 'lighthouse';
+import { AuditOutput, AuditOutputs, OutputTransform } from '@code-pushup/models';
 
 // ...
 
-function outputTransform(output: string): AuditOutputs {
-  // output is content of `lighthouse-report.json` as string so we have to parse it
-  const lhr = JSON.parse(output) as Result;
-  return Object.values(lhr.audits).map(({ id: slug, score, numericValue: value, displayValue, description }) => ({
-    slug,
-    score: score,
-    value: parseInt(value.toString(), 10),
-    displayValue,
-    description,
-  }));
+function lhrOutputTransform(auditSlugs: string[]): OutputTransform {
+  return (output: string): AuditOutputs => {
+    // output is content of `lighthouse-report.json` as string so we have to parse it
+    const lhr = JSON.parse(output) as Result;
+
+    return auditSlugs
+      .filter(slug => lhr.audits[slug])
+      .map(id => {
+        // map lighthouse audits to code-pushup audits
+        const { id: slug, score, numericValue: value = 0, displayValue } = lhr.audits[id];
+        return {
+          slug,
+          value,
+          displayValue,
+          score,
+        } satisfies AuditOutput;
+      });
+  };
 }
 ```
 
@@ -436,6 +413,8 @@ The CLI argument `--format=md` will create an additional file containing our cre
 You should see a newly created file `report.md` created in the folder `.code-pushup` in your current working directory.
 
 It should contain a similar content like the following:
+
+@TODO wrap with detail section
 
 **report.md**
 
@@ -448,63 +427,7 @@ Largest Contentful Paint marks the time at which the largest text or image is
 painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 ```
 
-## Audits and scoring
-
-Every audit has a score as floating number between 0 and 1.
-We will extend the file-size example to calculate the score based on a budget.
-
-Let's first extend the options object with a `budget` property and use it in the runner config:
-
-**file-size plugin form section [RunnerFunction](#RunnerFunction)**
-
-```typescript
-// code-pushup.config.ts
-type Options = {
-  // ...
-  budget: number; // in bytes
-};
-
-export default {
-  // ...
-  plugins: [
-    await createPlugin({
-      directory: './src',
-      budget: 1000,
-    }),
-  ],
-  // ...
-};
-```
-
-Now let's extend the runner function to calculate the score based on the budget:
-
-**file-size plugin runnerFunction**
-
-```typescript
-// code-pushup.config.ts
-
-// ...
-
-async function runnerFunction(options: Options): Promise<AuditOutputs> {
-  // ...
-
-  // score audit based on budget
-  const errorCount = data.map(({ size }) => options.budget < size).filter(Boolean).length;
-  if (errorCount) {
-    fileSizeAuditOutput: AuditOutput = {
-      ...fileSizeAuditOutput,
-      // score is percentage of over-budget files
-      score: errorCount ? errorCount / issues.length : 1,
-      value: errorCount,
-      displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
-    };
-  }
-
-  return [fileSizeAuditOutput];
-}
-```
-
-## Audits and attribution
+### Attribution of audits
 
 To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
 This helps to make the plugin results more actionable and valuable for the user.
@@ -652,3 +575,63 @@ Categories
 
 Made with ❤ by code-pushup.dev
 ```
+
+### Score Audits
+
+Every audit has a score as floating number between 0 and 1.
+We will extend the file-size example to calculate the score based on a budget.
+
+Let's first extend the options object with a `budget` property and use it in the runner config:
+
+**file-size plugin form section [RunnerFunction](#RunnerFunction)**
+
+```typescript
+// code-pushup.config.ts
+type Options = {
+  // ...
+  budget: number; // in bytes
+};
+
+export default {
+  // ...
+  plugins: [
+    await createPlugin({
+      directory: './src',
+      budget: 1000,
+    }),
+  ],
+  // ...
+};
+```
+
+Now let's extend the runner function to calculate the score based on the budget:
+
+**file-size plugin runnerFunction**
+
+```typescript
+// code-pushup.config.ts
+
+// ...
+
+async function runnerFunction(options: Options): Promise<AuditOutputs> {
+  // ...
+
+  // score audit based on budget
+  const errorCount = data.map(({ size }) => options.budget < size).filter(Boolean).length;
+  if (errorCount) {
+    fileSizeAuditOutput: AuditOutput = {
+      ...fileSizeAuditOutput,
+      // score is percentage of over-budget files
+      score: errorCount ? errorCount / issues.length : 1,
+      value: errorCount,
+      displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
+    };
+  }
+
+  return [fileSizeAuditOutput];
+}
+```
+
+### Score Groups
+
+@TODO
