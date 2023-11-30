@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { PluginConfig } from '@code-pushup/models';
@@ -39,6 +39,7 @@ export async function eslintPlugin(
 
   // save inline config to file so runner can access it later
   if (typeof eslintrc !== 'string') {
+    await mkdir(dirname(ESLINTRC_PATH), { recursive: true });
     await writeFile(ESLINTRC_PATH, JSON.stringify(eslintrc));
   }
   const eslintrcPath = typeof eslintrc === 'string' ? eslintrc : ESLINTRC_PATH;
