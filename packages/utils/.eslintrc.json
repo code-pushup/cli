@@ -6,7 +6,6 @@
     "arrow-body-style": "off", // 1 warning
     "curly": "off", // 1 warning
     "max-lines-per-function": "off", // 6 warnings
-    "no-console": "off", // 14 warnings
     "no-magic-numbers": "off", // 21 warnings
     "no-param-reassign": "off", // 25 errors
     "prefer-template": "off", // 12 warnings

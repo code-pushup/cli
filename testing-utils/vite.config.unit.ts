@@ -12,5 +12,9 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    setupFiles: [
+      'src/lib/setup/console.mock.ts',
+      'src/lib/setup/reset.mocks.ts',
+    ],
   },
 });

@@ -1,6 +1,5 @@
-export { mockConsole, unmockConsole } from './console.mock';
 export {
-  mockProcessConfig,
   getAsyncProcessRunnerConfig,
+  mockProcessConfig,
   spyObserver,
 } from './process-helper.mock';

@@ -3,7 +3,6 @@
   // temporarily disable failing rules so `nx lint` passes
   // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:26 GMT+0100 (Central European Standard Time)
   "rules": {
-    "no-console": "off", // 1 warning
     "no-param-reassign": "off", // 4 errors
     "@typescript-eslint/consistent-type-definitions": "off", // 2 warnings
     "@typescript-eslint/no-unsafe-assignment": "off", // 14 errors

@@ -6,16 +6,6 @@ import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
 
-// Mock file system API's
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
 vi.mock('@code-pushup/core', async () => {
   const core = await vi.importActual('@code-pushup/core');
   return {
@@ -24,21 +14,8 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
-// Mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
-    await vi.importActual('@code-pushup/testing-utils');
-  return {
-    bundleRequire: vi
-      .fn()
-      .mockResolvedValue({ mod: { default: CORE_CONFIG_MOCK } }),
-  };
-});
-
 describe('collect-command', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vol.reset();
     vol.fromJSON(
       {
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig

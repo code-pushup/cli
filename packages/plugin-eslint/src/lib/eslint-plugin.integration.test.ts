@@ -2,18 +2,14 @@ import os from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
-import { PluginConfig, RunnerConfig } from '@code-pushup/models';
+import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin';
 
 describe('eslintPlugin', () => {
-  const fixturesDir = join(
-    fileURLToPath(dirname(import.meta.url)),
-    '..',
-    '..',
-    'mocks',
-    'fixtures',
-  );
+  const thisDir = fileURLToPath(dirname(import.meta.url));
+
+  const fixturesDir = join(thisDir, '..', '..', 'mocks', 'fixtures');
 
   let cwdSpy: SpyInstance;
   let platformSpy: SpyInstance;
@@ -23,10 +19,9 @@ describe('eslintPlugin', () => {
     runner: {
       ...(plugin.runner as RunnerConfig),
       args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(
-          arg.replace(fileURLToPath(dirname(import.meta.url)), '<dirname>'),
-        ),
+        toUnixPath(arg.replace(thisDir, '<dirname>')),
       ),
+      outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },
   });
 
@@ -47,7 +42,10 @@ describe('eslintPlugin', () => {
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     });
-    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
+
+    expect(replaceAbsolutePath(plugin)).toMatchSnapshot({
+      version: expect.any(String),
+    });
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
@@ -56,7 +54,32 @@ describe('eslintPlugin', () => {
       eslintrc: './packages/utils/.eslintrc.json',
       patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
     });
-    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
+
+    // expect rule from extended base .eslintrc.json
+    expect(plugin.audits).toContainEqual({
+      slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
+      title: expect.any(String),
+      description: expect.stringContaining('sourceTag'),
+    } satisfies Audit);
+    // expect rule from utils project's .eslintrc.json
+    expect(plugin.audits).toContainEqual(
+      expect.objectContaining({
+        slug: 'nx-dependency-checks',
+      } satisfies Partial<Audit>),
+    );
+  });
+
+  it('should initialize ESLint plugin using inline config', async () => {
+    cwdSpy.mockReturnValue(thisDir);
+    const plugin = await eslintPlugin({
+      eslintrc: {
+        extends: '@code-pushup',
+      },
+      patterns: '**/*.ts',
+    });
+
+    expect(plugin.groups?.length).toBeGreaterThanOrEqual(3);
+    expect(plugin.audits.length).toBeGreaterThanOrEqual(200);
   });
 
   it('should throw when invalid parameters provided', async () => {

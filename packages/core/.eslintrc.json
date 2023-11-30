@@ -5,7 +5,6 @@
   "rules": {
     "arrow-body-style": "off", // 3 warnings
     "max-lines-per-function": "off", // 1 warning
-    "no-console": "off", // 1 warning
     "prefer-template": "off", // 3 warnings
     "@typescript-eslint/no-confusing-void-expression": "off", // 2 warnings
     "@typescript-eslint/no-floating-promises": "off", // 5 errors

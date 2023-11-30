@@ -1,20 +1,19 @@
 import chalk from 'chalk';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mockConsole, unmockConsole } from '../../test';
 import { FileResult } from './file-system';
 import { formatBytes } from './formatting';
 import { logMultipleResults, logPromiseResults } from './log-results';
 
 const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
   const [fileName, size] = result.value;
-  console.log(
+  console.info(
     `- ${chalk.bold(fileName)}` +
       (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
   );
 };
 
 const failedCallback = (result: PromiseRejectedResult) => {
-  console.log(`- ${chalk.bold(result.reason)}`);
+  console.warn(`- ${chalk.bold(result.reason)}`);
 };
 
 describe('logMultipleResults', () => {
@@ -79,25 +78,6 @@ describe('logMultipleResults', () => {
 });
 
 describe('logPromiseResults', () => {
-  let logs: string[];
-  const setupConsole = async () => {
-    logs = [];
-    mockConsole(msg => logs.push(msg));
-  };
-  const teardownConsole = async () => {
-    logs = [];
-    unmockConsole();
-  };
-
-  beforeEach(async () => {
-    logs = [];
-    setupConsole();
-  });
-
-  afterEach(() => {
-    teardownConsole();
-  });
-
   it('should log on success', async () => {
     logPromiseResults(
       [
@@ -110,9 +90,12 @@ describe('logPromiseResults', () => {
       succeededCallback,
     );
 
-    expect(logs).toHaveLength(2);
-    expect(logs[0]).toContain('Uploaded reports successfully: ');
-    expect(logs[1]).toContain('- [1mout.json[22m');
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('Uploaded reports successfully: '),
+    );
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('- [1mout.json[22m'),
+    );
   });
 
   it('should log on fail', async () => {
@@ -122,8 +105,11 @@ describe('logPromiseResults', () => {
       failedCallback,
     );
 
-    expect(logs).toHaveLength(2);
-    expect(logs[0]).toContain('Generated reports failed: ');
-    expect(logs[1]).toContain('- [1mfail[22m');
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Generated reports failed: '),
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('- [1mfail[22m'),
+    );
   });
 });

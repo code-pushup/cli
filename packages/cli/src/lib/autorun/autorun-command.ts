@@ -20,8 +20,8 @@ export function yargsAutorunCommandObject() {
       onlyPlugins: onlyPluginsOption,
     },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      console.log(chalk.bold(CLI_NAME));
-      console.log(chalk.gray(`Run ${command}...`));
+      console.info(chalk.bold(CLI_NAME));
+      console.info(chalk.gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
       await collectAndPersistReports(options);
       if (!options.upload) {

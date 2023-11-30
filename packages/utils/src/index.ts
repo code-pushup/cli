@@ -7,7 +7,7 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, getLatestCommit } from './lib/git';
+export { getLatestCommit, git } from './lib/git';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
@@ -29,6 +29,7 @@ export {
   MultipleFileResults,
   logMultipleFileResults,
   importEsmModule,
+  pluginWorkDir,
   crawlFileSystem,
   findLineNumberInText,
 } from './lib/file-system';
