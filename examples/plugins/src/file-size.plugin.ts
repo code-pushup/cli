@@ -1,18 +1,18 @@
-import { readdir, stat } from 'node:fs/promises';
+import { stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import {
-  formatBytes,
-  pluralize,
-  toUnixPath,
-} from '../../../dist/packages/utils';
+import { formatBytes, toUnixPath } from '../../../dist/packages/utils';
 import {
   AuditOutput,
   AuditOutputs,
   CategoryRef,
   Issue,
-  IssueSeverity,
   PluginConfig,
 } from '../../../packages/models/src';
+import {
+  crawlFileSystem,
+  factorOf,
+  pluralizeToken,
+} from '../../../packages/utils/src';
 
 export type PluginOptions = {
   directory: string;
@@ -89,7 +89,7 @@ export function create(options: PluginOptions): PluginConfig {
 export async function runnerFunction(
   options: RunnerOptions,
 ): Promise<AuditOutputs> {
-  let fileSizeAuditOutput: AuditOutput = {
+  const fileSizeAuditOutput: AuditOutput = {
     slug: fileSizeAuditSlug,
     score: 1,
     value: 0,
@@ -102,41 +102,26 @@ export async function runnerFunction(
     return [fileSizeAuditOutput];
   }
 
-  const errorCount = issues.filter(i => i.severity === 'error').length;
-  fileSizeAuditOutput = {
-    ...fileSizeAuditOutput,
-    score: scoreFilesizeAudit(issues.length, errorCount),
-    value: errorCount,
-    displayValue: displayValue(errorCount),
-  };
-
-  if (issues.length > 0) {
-    fileSizeAuditOutput = {
+  const errorCount = issues.filter(filterErrorSeverity).length;
+  return [
+    {
       ...fileSizeAuditOutput,
+      score: factorOf(issues, filterErrorSeverity),
+      value: errorCount,
+      displayValue: displayValue(errorCount),
       details: {
         issues,
       },
-    };
-  }
-
-  return [fileSizeAuditOutput];
+    },
+  ];
 }
 
-export function scoreFilesizeAudit(issues: number, errors: number): number {
-  if (issues < errors) {
-    throw new Error(`issues: ${issues} cannot be less than errors ${errors}`);
-  }
-  const formattedIssues = Math.max(issues, 0);
-  const formattedErrors = Math.max(errors, 0);
-  return formattedErrors > 0
-    ? Math.abs((formattedIssues - formattedErrors) / formattedIssues)
-    : 1;
+function filterErrorSeverity(issue: Issue): issue is Issue {
+  return issue.severity === 'error';
 }
 
 export function displayValue(numberOfFiles: number): string {
-  return `${numberOfFiles} ${
-    numberOfFiles === 1 ? 'file' : pluralize('file')
-  } oversize`;
+  return `${pluralizeToken('file', numberOfFiles)} oversize`;
 }
 
 export async function fileSizeIssues(options: {
@@ -146,33 +131,17 @@ export async function fileSizeIssues(options: {
 }): Promise<Issue[]> {
   const { directory, pattern, budget } = options;
 
-  const files = await readdir(directory);
-  const issuesPromises = files.map(async file => {
-    const filePath = join(directory, file);
-    const stats = await stat(filePath);
+  return crawlFileSystem({
+    directory,
+    pattern,
+    fileTransform: async (file: string) => {
+      // get file size of file
+      const filePath = join(directory, file);
+      const stats = await stat(filePath);
 
-    // depth first crawling
-    if (stats.isDirectory()) {
-      return fileSizeIssues({ directory: filePath, pattern, budget });
-    }
-
-    if (stats.isFile()) {
-      if (pattern === undefined) {
-        return assertFileSize(filePath, stats.size, budget);
-      } else {
-        if (new RegExp(pattern).test(file)) {
-          return assertFileSize(filePath, stats.size, budget);
-        }
-      }
-    }
-
-    // flatMap will remove empty arrays
-    return [];
+      return assertFileSize(filePath, stats.size, budget);
+    },
   });
-
-  // Resolve all promises and flatten the array of issues
-  const issuesNestedArray = await Promise.all(issuesPromises);
-  return issuesNestedArray.flat();
 }
 
 export function infoMessage(filePath: string, size: number) {
@@ -193,26 +162,32 @@ export function assertFileSize(
   size: number,
   budget?: number,
 ): Issue {
-  let severity: IssueSeverity = 'info';
   // ensure size positive numbers
   const formattedSize = Math.max(size, 0);
-  let message = infoMessage(file, formattedSize);
+  // informative issue
+  const issue = {
+    source: {
+      file: toUnixPath(file, { toRelative: true }),
+    },
+  } satisfies Pick<Issue, 'source'>;
 
   if (budget !== undefined) {
     // ensure budget is positive numbers
     const formattedBudget = Math.max(budget, 0);
-    // set severity to error if budget exceeded
+    // return error Issue
     if (budget < formattedSize) {
-      severity = 'error';
-      message = errorMessage(file, formattedSize, formattedBudget);
+      return {
+        ...issue,
+        severity: 'error',
+        message: errorMessage(file, formattedSize, formattedBudget),
+      } satisfies Issue;
     }
   }
-  // return Issue
+
+  // return informative Issue
   return {
-    message,
-    severity,
-    source: {
-      file: toUnixPath(file, { toRelative: true }),
-    },
-  };
+    ...issue,
+    severity: 'info',
+    message: infoMessage(file, formattedSize),
+  } satisfies Issue;
 }
