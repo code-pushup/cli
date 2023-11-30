@@ -197,7 +197,7 @@ describe('crawlFileSystem', () => {
   });
 });
 
-describe('findLineNumber', () => {
+describe('findLineNumberInText', () => {
   it('should return correct line number', () => {
     expect(
       findLineNumberInText(
