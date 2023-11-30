@@ -718,7 +718,7 @@ Custom options:
   },
   "slug": "eslint",
   "title": "ESLint",
-  "version": "0.0.1",
+  "version": Any<String>,
 }
 `;
 
@@ -1246,6 +1246,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
   },
   "slug": "eslint",
   "title": "ESLint",
-  "version": "0.0.1",
+  "version": Any<String>,
 }
 `;
