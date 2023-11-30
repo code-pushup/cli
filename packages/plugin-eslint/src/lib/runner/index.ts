@@ -6,9 +6,9 @@ import { pluginWorkDir, readJsonFile, toArray } from '@code-pushup/utils';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 
-const WORKDIR = pluginWorkDir('eslint');
+export const WORKDIR = pluginWorkDir('eslint');
 export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
-export const ESLINTRC_PATH = join(WORKDIR, '.eslintrc.json');
+export const ESLINTRC_PATH = join(process.cwd(), WORKDIR, '.eslintrc.json');
 
 const AUDIT_SLUGS_SEP = ',';
 
