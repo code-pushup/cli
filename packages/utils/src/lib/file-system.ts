@@ -89,7 +89,7 @@ export async function importEsmModule<T = unknown>(
   return parse(mod.default);
 }
 
-export async function crawlFileSystem<T>(options: {
+export async function crawlFileSystem<T = string>(options: {
   directory: string;
   pattern?: string | RegExp;
   fileTransform?: (filePath: string) => Promise<T> | T;
