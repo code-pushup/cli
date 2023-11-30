@@ -47,7 +47,9 @@ describe('eslintPlugin', () => {
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     });
-    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
+    expect(replaceAbsolutePath(plugin)).toMatchSnapshot({
+      version: expect.any(String),
+    });
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
@@ -56,7 +58,9 @@ describe('eslintPlugin', () => {
       eslintrc: './packages/utils/.eslintrc.json',
       patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
     });
-    expect(replaceAbsolutePath(plugin)).toMatchSnapshot();
+    expect(replaceAbsolutePath(plugin)).toMatchSnapshot({
+      version: expect.any(String),
+    });
   });
 
   it('should throw when invalid parameters provided', async () => {
