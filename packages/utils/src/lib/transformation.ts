@@ -41,5 +41,5 @@ export function deepClone<T>(obj: T): T {
 export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
   const itemCount = items.length;
   const filterCount = items.filter(filterFn).length;
-  return filterCount > 0 ? Math.abs((itemCount - filterCount) / itemCount) : 1;
+  return (itemCount - filterCount) / itemCount;
 }
