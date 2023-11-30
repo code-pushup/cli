@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.1.1](https://github.com/code-pushup/cli/compare/plugin-eslint@0.1.0...plugin-eslint@0.1.1) (2023-11-30)
+
 # 0.1.0 (2023-11-29)
 
 ### Bug Fixes
