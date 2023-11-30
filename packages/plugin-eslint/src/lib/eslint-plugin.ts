@@ -1,11 +1,12 @@
-import { ESLint } from 'eslint';
+import { writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
 import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAuditsAndGroups } from './meta';
-import { createRunnerConfig } from './runner';
+import { ESLINTRC_PATH, createRunnerConfig } from './runner';
+import { setupESLint } from './setup';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -32,12 +33,15 @@ export async function eslintPlugin(
 ): Promise<PluginConfig> {
   const { eslintrc, patterns } = eslintPluginConfigSchema.parse(config);
 
-  const eslint = new ESLint({
-    overrideConfigFile: eslintrc,
-    useEslintrc: false,
-  });
+  const eslint = setupESLint(eslintrc);
 
   const { audits, groups } = await listAuditsAndGroups(eslint, patterns);
+
+  // save inline config to file so runner can access it later
+  if (typeof eslintrc !== 'string') {
+    await writeFile(ESLINTRC_PATH, JSON.stringify(eslintrc));
+  }
+  const eslintrcPath = typeof eslintrc === 'string' ? eslintrc : ESLINTRC_PATH;
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -56,6 +60,11 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: createRunnerConfig(runnerScriptPath, audits, eslintrc, patterns),
+    runner: createRunnerConfig(
+      runnerScriptPath,
+      audits,
+      eslintrcPath,
+      patterns,
+    ),
   };
 }

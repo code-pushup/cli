@@ -7,8 +7,25 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, getLatestCommit } from './lib/git';
+export {
+  FileResult,
+  MultipleFileResults,
+  ensureDirectoryExists,
+  importEsmModule,
+  logMultipleFileResults,
+  pluginWorkDir,
+  readJsonFile,
+  readTextFile,
+  toUnixPath,
+} from './lib/file-system';
+export { getLatestCommit, git } from './lib/git';
+export { logMultipleResults } from './lib/log-results';
+export { NEW_LINE } from './lib/md';
 export { ProgressBar, getProgressBar } from './lib/progress';
+export {
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
+} from './lib/promise-result';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -23,28 +40,12 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export { ScoredReport, scoreReport } from './lib/scoring';
 export {
-  readJsonFile,
-  readTextFile,
-  toUnixPath,
-  ensureDirectoryExists,
-  FileResult,
-  MultipleFileResults,
-  logMultipleFileResults,
-  importEsmModule,
-} from './lib/file-system';
-export { verboseUtils } from './lib/verbose-utils';
-export {
-  pluralize,
-  toArray,
-  objectToKeys,
-  objectToEntries,
   countOccurrences,
   distinct,
+  objectToEntries,
+  objectToKeys,
+  pluralize,
   slugify,
+  toArray,
 } from './lib/transformation';
-export { NEW_LINE } from './lib/md';
-export { logMultipleResults } from './lib/log-results';
-export {
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
-} from './lib/promise-result';
+export { verboseUtils } from './lib/verbose-utils';

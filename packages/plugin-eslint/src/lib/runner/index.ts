@@ -1,13 +1,14 @@
 import { mkdir, writeFile } from 'fs/promises';
 import { platform } from 'os';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
-import { toArray } from '@code-pushup/utils';
+import { pluginWorkDir, readJsonFile, toArray } from '@code-pushup/utils';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 
-export const RUNNER_OUTPUT_PATH =
-  'node_modules/.code-pushup/eslint/runner-output.json';
+const WORKDIR = pluginWorkDir('eslint');
+export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
+export const ESLINTRC_PATH = join(WORKDIR, '.eslintrc.json');
 
 const AUDIT_SLUGS_SEP = ',';
 
@@ -23,7 +24,12 @@ export async function executeRunner(argv = process.argv): Promise<void> {
     throw new Error('Invalid runner args - missing patterns argument');
   }
 
-  const lintResults = await lint(eslintrc, patterns);
+  const lintResults = await lint({
+    // if file created from inline object, provide inline to preserve relative links
+    eslintrc:
+      eslintrc === ESLINTRC_PATH ? await readJsonFile(eslintrc) : eslintrc,
+    patterns,
+  });
   const failedAudits = lintResultsToAudits(lintResults);
 
   const audits = slugs.split(AUDIT_SLUGS_SEP).map(
