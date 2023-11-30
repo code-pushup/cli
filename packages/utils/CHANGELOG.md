@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.3.0](https://github.com/code-pushup/cli/compare/utils@0.2.0...utils@0.3.0) (2023-11-30)
+
+### Features
+
+- **utils:** add file-system helper ([#336](https://github.com/code-pushup/cli/issues/336)) ([001498b](https://github.com/code-pushup/cli/commit/001498b1f54460f77f46eaaa9033e4b04629c878))
+
 # [0.2.0](https://github.com/code-pushup/cli/compare/utils@0.1.0...utils@0.2.0) (2023-11-30)
 
 ### Features
