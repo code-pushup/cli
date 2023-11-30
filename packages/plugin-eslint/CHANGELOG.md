@@ -2,6 +2,16 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/code-pushup/cli/compare/plugin-eslint@0.1.1...plugin-eslint@0.2.0) (2023-11-30)
+
+### Bug Fixes
+
+- **plugin-eslint:** ensure working directory exists before writing .eslintrc.json ([3f19d6f](https://github.com/code-pushup/cli/commit/3f19d6f7ecc8fe69dd717cdb2a9912d6a1c53033))
+
+### Features
+
+- **plugin-eslint:** add support for inline eslint config ([67571eb](https://github.com/code-pushup/cli/commit/67571eb529ade91a77e2c739a3995674e52701af))
+
 ## [0.1.1](https://github.com/code-pushup/cli/compare/plugin-eslint@0.1.0...plugin-eslint@0.1.1) (2023-11-30)
 
 # 0.1.0 (2023-11-29)
