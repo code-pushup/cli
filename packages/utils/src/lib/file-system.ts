@@ -97,7 +97,7 @@ export async function crawlFileSystem<T = string>(options: {
   const {
     directory,
     pattern,
-    fileTransform = (filePath: string) => filePath as unknown as T,
+    fileTransform = (filePath: string) => filePath as T,
   } = options;
 
   const files = await readdir(directory);
