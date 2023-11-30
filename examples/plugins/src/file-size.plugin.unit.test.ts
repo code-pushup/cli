@@ -129,7 +129,7 @@ describe('fileSizePlugin', () => {
       {
         'project.json': projectJson,
         'src/test.js': testJs,
-        'docs/README.md': readmeMd,
+        'docs/README.md': '# Docs',
       },
       outputDir,
     );
