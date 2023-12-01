@@ -102,11 +102,11 @@ export async function runnerFunction(
     return [fileSizeAuditOutput];
   }
 
-  const errorCount = issues.filter(filterErrorSeverity).length;
+  const errorCount = issues.filter(filterSeverityError).length;
   return [
     {
       ...fileSizeAuditOutput,
-      score: factorOf(issues, filterErrorSeverity),
+      score: factorOf(issues, filterSeverityError),
       value: errorCount,
       displayValue: displayValue(errorCount),
       details: {
@@ -116,7 +116,7 @@ export async function runnerFunction(
   ];
 }
 
-function filterErrorSeverity(issue: Issue): issue is Issue {
+function filterSeverityError(issue: Issue): issue is Issue {
   return issue.severity === 'error';
 }
 

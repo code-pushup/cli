@@ -323,7 +323,7 @@ describe('runnerFunction', () => {
   ])('should have correct score', async (budget, value, score) => {
     await expect(
       runnerFunction({
-        directory: outputDir,
+        directory: join(process.cwd(), outputDir),
         budget,
       }),
     ).resolves.toEqual([
