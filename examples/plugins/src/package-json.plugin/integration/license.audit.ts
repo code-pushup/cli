@@ -1,11 +1,10 @@
 import {
   factorOf,
-  pluralizeToken,
 } from '../../../../../dist/packages/utils/src';
 import { Audit, AuditOutput, Issue } from '../../../../../packages/models/src';
 import { SourceResults } from './types';
 import {
-  assertPropertyEqual,
+  assertPropertyEqual, baseAuditOutput,
   filterSeverityError,
   pluralizePackage,
 } from './utils';
@@ -21,12 +20,7 @@ export async function licenseAudit(
   packageJsonContents: SourceResults,
   license: string | null = null,
 ): Promise<AuditOutput> {
-  const packageLicenseAuditOutput: AuditOutput = {
-    slug: packageLicenseAuditSlug,
-    score: 1,
-    value: 0,
-    displayValue: pluralizeToken('packages'),
-  };
+  const packageLicenseAuditOutput: AuditOutput = baseAuditOutput(packageLicenseAuditSlug);
 
   if (!license) {
     return {
@@ -52,15 +46,5 @@ export async function licenseAudit(
   if (issues.length === 0) {
     return packageLicenseAuditOutput;
   }
-
-  const errorCount = issues.filter(filterSeverityError).length;
-  return {
-    ...packageLicenseAuditOutput,
-    score: factorOf(issues, filterSeverityError),
-    value: errorCount,
-    displayValue: pluralizePackage(errorCount),
-    details: {
-      issues,
-    },
-  };
+  return scoreByErrorIssues('', issues);
 }
