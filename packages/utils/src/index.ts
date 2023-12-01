@@ -40,6 +40,7 @@ export {
   objectToEntries,
   countOccurrences,
   distinct,
+  factorOf,
 } from './lib/transformation';
 export {
   slugify,

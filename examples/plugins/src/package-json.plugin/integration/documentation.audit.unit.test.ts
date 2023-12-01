@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { AuditOutput } from '@code-pushup/models';
-import { packageJson, packageJsonName, packageResult } from '../../mocks';
 import {
-  assertDependency,
-  dependenciesAudit,
-  packageNotInstalledIssue,
-} from './dependencies.audit';
+  packageJson,
+  packageJsonName,
+  packageResult,
+} from '../../../mocks/constants';
+import {
+  documentationAudit,
+  DocumentationOptions
+} from './documentation.audit';
 
 describe('packageNotInstalledIssue', () => {
   it.each([
@@ -14,9 +17,9 @@ describe('packageNotInstalledIssue', () => {
     [packageJsonName, 'lib1', '0.0.0'],
   ])('should return correct issue', (file, packageName, targetVersion) => {
     expect(
-      packageNotInstalledIssue({ file }, [packageName, targetVersion]),
+      documentationAudit([packageResult(packageJson)], {description: true}),
     ).toEqual({
-      message: `Package ${packageName} is not installed. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
+      message: `docs1`,
       severity: 'error',
       source: {
         file,
@@ -25,8 +28,8 @@ describe('packageNotInstalledIssue', () => {
   });
 });
 
-describe('assertPackageVersion', () => {
-  it('should pass if version ok', () => {
+describe('documentation', () => {
+  it('should pass if docs ok', () => {
     const packageName = 'lib1';
     expect(
       assertDependency(
@@ -64,9 +67,9 @@ describe('assertPackageVersion', () => {
   });
 });
 
-describe('dependenciesAudit', () => {
+describe('documentationAudit', () => {
   const baseAuditOutput: AuditOutput = {
-    slug: 'package-dependencies',
+    slug: 'package-documentation',
     score: 1,
     value: 0,
     displayValue: '0 packages',
@@ -76,10 +79,8 @@ describe('dependenciesAudit', () => {
     const packageName = 'lib1';
     const targetVersion = '0.0.0';
     await expect(
-      dependenciesAudit([packageResult(packageJson)], {
-        dependencies: {
-          [packageName]: targetVersion,
-        },
+      documentationAudit([packageResult(packageJson)], {
+        description: true,
       }),
     ).resolves.toEqual(
       expect.objectContaining({
