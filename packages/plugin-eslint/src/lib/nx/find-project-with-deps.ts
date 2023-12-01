@@ -1,6 +1,7 @@
-import { ProjectGraph, createProjectGraphAsync } from '@nx/devkit';
+import { createProjectGraphAsync } from '@nx/devkit';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
+import { findAllDependencies } from './traverse-graph';
 
 /**
  * Accepts a target Nx projects, finds projects it depends on, and converts lint configurations to Code PushUp ESLint plugin parameters.
@@ -39,30 +40,4 @@ export async function eslintConfigFromNxProject(
       !!project.name &&
       (project.name === projectName || dependencies.has(project.name)),
   );
-}
-
-function findAllDependencies(
-  name: string,
-  projectGraph: ProjectGraph,
-): ReadonlySet<string> {
-  const results = new Set<string>();
-  const queue = [name];
-
-  // eslint-disable-next-line functional/no-loop-statements
-  while (queue.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const source = queue.shift()!;
-    const dependencies = projectGraph.dependencies[source];
-
-    // eslint-disable-next-line functional/no-loop-statements
-    for (const { target } of dependencies ?? []) {
-      // skip duplicates (cycle in graph)
-      if (!results.has(target)) {
-        results.add(target);
-        queue.push(target);
-      }
-    }
-  }
-
-  return results;
 }
