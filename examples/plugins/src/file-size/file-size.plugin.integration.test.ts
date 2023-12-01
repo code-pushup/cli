@@ -1,25 +1,15 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
-import { categoryRefSchema, pluginConfigSchema } from '@code-pushup/models';
+import {auditSchema, categoryRefSchema, pluginConfigSchema} from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   PluginOptions,
   create,
-  audits as fileSizeAudits,
+  audits,
   recommendedRefs,
-  pluginSlug as slug,
+  pluginSlug as slug, pluginSlug,
 } from './file-size.plugin';
-
-// Mock file system API's
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
 
 const outputDir = MEMFS_VOLUME;
 const projectJson = JSON.stringify(
@@ -41,11 +31,10 @@ const testJs = `
 
 describe('create', () => {
   const baseOptions: PluginOptions = {
-    directory: outputDir,
+    directory: '/',
   };
 
   beforeEach(() => {
-    vol.reset();
     vol.fromJSON(
       {
         'project.json': projectJson,
@@ -59,7 +48,7 @@ describe('create', () => {
     const pluginConfig = create(baseOptions);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
-      audits: fileSizeAudits,
+      audits,
       description:
         'A plugin to measure and assert filesize of files in a directory.',
       icon: 'javascript',
@@ -105,6 +94,15 @@ describe('create', () => {
     expect(audits[0]?.score).toBe(0);
     expect(audits[0]?.details?.issues).toHaveLength(2);
   });
+});
+
+describe('audits', () => {
+  it.each(audits)(
+    'should be a valid audit meta info',
+    audit => {
+      expect(() => auditSchema.parse(audit)).not.toThrow();
+    },
+  );
 });
 
 describe('recommendedRefs', () => {

@@ -1,10 +1,10 @@
 import { vol } from 'memfs';
 import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { formatBytes } from '@code-pushup/utils';
 import {
+  PluginOptions,
   assertFileSize,
   errorMessage,
   fileSizeIssues,
@@ -12,17 +12,7 @@ import {
   runnerFunction,
 } from './file-size.plugin';
 
-// Mock file system API's
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
-const outputDir = MEMFS_VOLUME;
+const outputDir = 'test';
 const projectJson = JSON.stringify(
   {
     test: 42,
@@ -102,9 +92,12 @@ describe('assertFileSize', () => {
   );
 });
 
-describe('fileSizePlugin', () => {
+describe('fileSizeIssues', () => {
+  const baseOptions: PluginOptions = {
+    directory: '/',
+  };
+
   beforeEach(() => {
-    vol.reset();
     vol.fromJSON(
       {
         'project.json': projectJson,
@@ -116,11 +109,7 @@ describe('fileSizePlugin', () => {
   });
 
   it('should list all files', async () => {
-    await expect(
-      fileSizeIssues({
-        directory: outputDir,
-      }),
-    ).resolves.toEqual(
+    await expect(fileSizeIssues(baseOptions)).resolves.toEqual(
       expect.arrayContaining(
         ['project.json', 'test.js', 'README.md'].map(f => ({
           message: expect.any(String),
@@ -136,7 +125,7 @@ describe('fileSizePlugin', () => {
   it('should list files matching a pattern', async () => {
     await expect(
       fileSizeIssues({
-        directory: outputDir,
+        ...baseOptions,
         pattern: /\.js$/,
       }),
     ).resolves.toEqual([
@@ -153,7 +142,7 @@ describe('fileSizePlugin', () => {
   it('should assert files that are over budget', async () => {
     await expect(
       fileSizeIssues({
-        directory: outputDir,
+        ...baseOptions,
         budget: 25,
       }),
     ).resolves.toEqual(
@@ -186,7 +175,7 @@ describe('fileSizePlugin', () => {
   it('should assert files that are over budget and match the pattern', async () => {
     await expect(
       fileSizeIssues({
-        directory: outputDir,
+        ...baseOptions,
         budget: 1,
         pattern: /\.js$/,
       }),
@@ -203,6 +192,9 @@ describe('fileSizePlugin', () => {
 });
 
 describe('runnerFunction', () => {
+  const baseOptions: PluginOptions = {
+    directory: '/',
+  };
   const filesizeAuditOutputBase = {
     displayValue: '0 files oversize',
     score: 1,
@@ -211,7 +203,6 @@ describe('runnerFunction', () => {
   };
 
   beforeEach(() => {
-    vol.reset();
     vol.fromJSON(
       {
         'project.json': projectJson,
@@ -232,19 +223,13 @@ describe('runnerFunction', () => {
     );
     await unlink(join(outputDir, 'm.js'));
 
-    await expect(
-      runnerFunction({
-        directory: outputDir,
-      }),
-    ).resolves.toEqual([filesizeAuditOutputBase]);
+    await expect(runnerFunction(baseOptions)).resolves.toEqual([
+      filesizeAuditOutputBase,
+    ]);
   });
 
   it('should return issues if files are given and pass', async () => {
-    await expect(
-      runnerFunction({
-        directory: outputDir,
-      }),
-    ).resolves.toEqual([
+    await expect(runnerFunction(baseOptions)).resolves.toEqual([
       expect.objectContaining({
         ...filesizeAuditOutputBase,
         details: {
@@ -255,11 +240,7 @@ describe('runnerFunction', () => {
   });
 
   it('should have number of files given as value', async () => {
-    await expect(
-      runnerFunction({
-        directory: join(process.cwd(), outputDir),
-      }),
-    ).resolves.toEqual([
+    await expect(runnerFunction(baseOptions)).resolves.toEqual([
       expect.objectContaining({
         displayValue: '0 files oversize',
         value: 0,
@@ -270,7 +251,7 @@ describe('runnerFunction', () => {
   it('should have files in issues that are matching the pattern as issues', async () => {
     await expect(
       runnerFunction({
-        directory: outputDir,
+        ...baseOptions,
         pattern: /\.js$/,
       }),
     ).resolves.toEqual([
@@ -291,7 +272,7 @@ describe('runnerFunction', () => {
   it('should have number of files that are over budget as value and listed in issues', async () => {
     await expect(
       runnerFunction({
-        directory: outputDir,
+        ...baseOptions,
         budget: 128,
       }),
     ).resolves.toEqual([
@@ -323,7 +304,7 @@ describe('runnerFunction', () => {
   ])('should have correct score', async (budget, value, score) => {
     await expect(
       runnerFunction({
-        directory: join(process.cwd(), outputDir),
+        ...baseOptions,
         budget,
       }),
     ).resolves.toEqual([
