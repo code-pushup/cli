@@ -66,7 +66,7 @@ export type Options = {
 export async function create(options: Options): PluginConfig {
   return {
     ...pluginMeta,
-    audits: [audit],
+    audits: [auditMeta],
     runner: runnerFunction,
   };
 }
