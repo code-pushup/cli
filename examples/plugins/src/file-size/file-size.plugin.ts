@@ -1,19 +1,19 @@
 import { stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import {
-  crawlFileSystem,
-  factorOf,
-  formatBytes,
-  pluralizeToken,
-  toUnixPath,
-} from '../../../../dist/packages/utils';
-import {
   AuditOutput,
   AuditOutputs,
   CategoryRef,
   Issue,
   PluginConfig,
-} from '../../../../packages/models/src';
+} from '@code-pushup/models';
+import {
+  crawlFileSystem,
+  factorOf,
+  formatBytes,
+  pluralizeToken,
+  toUnixPath,
+} from '@code-pushup/utils';
 
 export type PluginOptions = {
   directory: string;

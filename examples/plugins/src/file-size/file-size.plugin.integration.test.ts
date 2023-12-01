@@ -11,12 +11,10 @@ import {
   PluginOptions,
   audits,
   create,
-  pluginSlug,
   recommendedRefs,
   pluginSlug as slug,
 } from './file-size.plugin';
 
-const outputDir = MEMFS_VOLUME;
 const projectJson = JSON.stringify(
   {
     test: 42,
@@ -45,7 +43,7 @@ describe('create', () => {
         'project.json': projectJson,
         'src/test.js': testJs,
       },
-      outputDir,
+      MEMFS_VOLUME,
     );
   });
 
