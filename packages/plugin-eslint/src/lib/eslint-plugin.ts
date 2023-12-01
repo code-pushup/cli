@@ -54,7 +54,7 @@ export async function eslintPlugin(
     title: 'ESLint',
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
-    // TODO: docsUrl (package README, once published)
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
     packageName: name,
     version,
 
