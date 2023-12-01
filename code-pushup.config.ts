@@ -66,7 +66,7 @@ const config: CoreConfig = {
   plugins: [
     await eslintPlugin({ eslintrc: eslintConfig, patterns }),
     await fileSizePlugin({
-      directory: join(process.cwd(), 'dist/packages'),
+      directory: './dist/packages',
       pattern: /\.js$/,
       budget: 42000,
     }),

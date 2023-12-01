@@ -1,4 +1,3 @@
-import { join } from 'path';
 import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
@@ -21,7 +20,7 @@ const config = await (async () => {
     },
     plugins: [
       await fileSizePlugin({
-        directory: join(process.cwd(), './dist/packages'),
+        directory: './dist',
         pattern: /\.js$/,
         budget: 42000,
       }),

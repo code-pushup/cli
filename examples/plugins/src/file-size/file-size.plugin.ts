@@ -1,5 +1,5 @@
 import { stat } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { basename } from 'node:path';
 import {
   AuditOutput,
   AuditOutputs,
@@ -13,7 +13,6 @@ import {
   formatBytes,
   pluralizeToken,
   toUnixPath,
-  // eslint-disable-next-line
 } from '../../../../dist/packages/utils';
 
 export type PluginOptions = {
@@ -138,10 +137,10 @@ export async function fileSizeIssues(options: {
     pattern,
     fileTransform: async (file: string) => {
       // get file size of file
-      const filePath = join(directory, file);
-      const stats = await stat(filePath);
+      // const filePath = join(directory, file);
+      const stats = await stat(file);
 
-      return assertFileSize(filePath, stats.size, budget);
+      return assertFileSize(file, stats.size, budget);
     },
   });
 }
