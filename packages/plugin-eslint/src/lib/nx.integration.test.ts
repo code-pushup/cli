@@ -3,7 +3,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
 import { ESLintPluginConfig } from './config';
-import { eslintConfigFromNxProjects } from './nx';
+import { eslintConfigFromNxProject, eslintConfigFromNxProjects } from './nx';
 
 describe('Nx helpers', () => {
   let cwdSpy: SpyInstance;
@@ -88,5 +88,59 @@ describe('Nx helpers', () => {
         ],
       } satisfies ESLintPluginConfig);
     });
+  });
+
+  describe('create config from target Nx project and its dependencies', () => {
+    /*
+     * Project graph:
+     *
+     *   cli
+     *    │
+     *    │
+     *    ▼
+     *   core
+     *    │        nx-plugin
+     *    │           │
+     *    ▼           │
+     *   utils ◄──────┘
+     */
+
+    const allProjects = ['cli', 'core', 'nx-plugin', 'utils'] as const;
+    type Project = (typeof allProjects)[number];
+
+    it.each<[Project, Project[]]>([
+      ['cli', ['cli', 'core', 'utils']],
+      ['core', ['core', 'utils']],
+      ['nx-plugin', ['nx-plugin', 'utils']],
+      ['utils', ['utils']],
+    ])(
+      'project %j - expected configurations for projects %j',
+      async (project, expectedProjects) => {
+        const otherProjects = allProjects.filter(
+          p => !expectedProjects.includes(p),
+        );
+
+        const config = await eslintConfigFromNxProject(project);
+
+        expect(config.eslintrc).toEqual({
+          root: true,
+          overrides: expectedProjects.map(p => ({
+            files: expect.arrayContaining([`packages/${p}/**/*.ts`]),
+            extends: `./packages/${p}/.eslintrc.json`,
+          })),
+        });
+
+        expect(config.patterns).toEqual(
+          expect.arrayContaining(
+            expectedProjects.map(p => `packages/${p}/**/*.ts`),
+          ),
+        );
+        expect(config.patterns).toEqual(
+          expect.not.arrayContaining(
+            otherProjects.map(p => `packages/${p}/**/*.ts`),
+          ),
+        );
+      },
+    );
   });
 });
