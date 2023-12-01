@@ -1,4 +1,4 @@
-# Integrating a plugin in the CLI (based on real examples)
+# Integrating a plugin in the CLI
 
 One of the main features of Code PushUp is the ability to write custom plugins to track your own metrics.
 It enables you to implement nearly any kind of metric you want to track with minimum effort.
