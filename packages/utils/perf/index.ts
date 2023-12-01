@@ -53,12 +53,12 @@ const NUM_GROUPS_P2 = PROCESS_ARGUMENT_NUM_GROUPS_P2 || NUM_AUDITS_P2 / 2;
 // Add listener
 const listeners = {
   cycle: function (event: Benchmark.Event) {
-    console.log(String(event.target));
+    console.info(String(event.target));
   },
   complete: () => {
     if (typeof suite.filter === 'function') {
-      console.log(' ');
-      console.log('Fastest is ' + suite.filter('fastest').map('name'));
+      console.info(' ');
+      console.info('Fastest is ' + suite.filter('fastest').map('name'));
     }
   },
 };
@@ -91,15 +91,15 @@ console.info(
 console.info(
   `numGroupRefs2   Number of groups refs in plugin 2.  --numGroupRefs2=${NUM_GROUPS_P2}`,
 );
-console.log(' ');
-console.log('Start benchmark...');
-console.log(' ');
+console.info(' ');
+console.info('Start benchmark...');
+console.info(' ');
 
 const start = performance.now();
 
 suite.run();
 
-console.log(
+console.info(
   `Total Duration: ${((performance.now() - start) / 1000).toFixed(2)} sec`,
 );
 

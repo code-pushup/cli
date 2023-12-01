@@ -17,7 +17,8 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/utils/unit-tests"
+        "config": "examples/plugins/vite.config.unit.ts",
+        "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
       },
       "dependsOn": ["^build"]
     },
@@ -25,12 +26,13 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "examples/plugins/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
       },
       "dependsOn": ["^build"]
     },
     "run-collect": {
-      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.js --persist.format=md",
+      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
       "dependsOn": ["^build"]
     }
   },

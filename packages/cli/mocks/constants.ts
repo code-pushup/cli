@@ -8,4 +8,5 @@ export const DEFAULT_CLI_CONFIGURATION = {
   options,
   middlewares,
   commands,
+  noExitProcess: true, // exiting process suppresses error message
 };

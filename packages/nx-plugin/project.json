@@ -36,12 +36,8 @@
         ]
       }
     },
-    "version": { "postTargets": ["nx-plugin:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/nx-plugin/CHANGELOG.md"
-      }
-    },
+    "version": {},
+    "github": {},
     "exec:init": {
       "command": "nx g ./dist/packages/nx-plugin:init",
       "dependsOn": ["build"]
@@ -61,6 +57,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
+        "config": "packages/nx-plugin/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/packages/models/unit-tests"
       }
     },
@@ -68,6 +65,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{workspaceRoot}/coverage/packages/models"],
       "options": {
+        "config": "packages/nx-plugin/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/models/integration-tests"
       }
     }

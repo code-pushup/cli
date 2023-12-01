@@ -1,7 +1,7 @@
 import { readFileSync, unlinkSync } from 'fs';
 import { vol } from 'memfs';
 import { join } from 'path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -12,10 +12,8 @@ import {
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
-  NEW_LINE,
   README_LINK,
 } from '@code-pushup/utils';
-import { mockConsole, unmockConsole } from '../../../test';
 import { logPersistedResults, persistReport } from './persist';
 
 // Mock file system API's
@@ -42,7 +40,6 @@ const readReport = (format: 'json' | 'md') => {
 
 const dummyReport = minimalReport();
 const dummyConfig = minimalConfig(outputDir);
-let logs: string[];
 
 const resetFiles = async () => {
   vol.reset();
@@ -56,44 +53,32 @@ const resetFiles = async () => {
   unlinkSync(reportPath('json'));
   unlinkSync(reportPath('md'));
 };
-const setupConsole = async () => {
-  logs = [];
-  mockConsole(msg => logs.push(msg));
-};
-const teardownConsole = async () => {
-  unmockConsole();
-};
 
 // @TODO refactor away from snapshots in favour of disc space and readability
 describe('persistReport', () => {
   beforeEach(async () => {
     resetFiles();
-    setupConsole();
-  });
-
-  afterEach(() => {
-    teardownConsole();
   });
 
   it('should stdout as format by default`', async () => {
     await persistReport(dummyReport, dummyConfig);
-    expect(logs.join(NEW_LINE)).toContain(
-      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
 
     expect(() => readReport('json')).not.toThrow();
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
-  it('should log to console when format is stdout`', async () => {
-    const persist = persistConfig({ outputDir, format: ['stdout'] });
+  it('should log to console regardless of format`', async () => {
+    const persist = persistConfig({ outputDir, format: [] });
 
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
     });
-    expect(logs.join(NEW_LINE)).toContain(
-      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
 
     expect(() => readReport('json')).not.toThrow('no such file or directory');
@@ -109,7 +94,6 @@ describe('persistReport', () => {
     const jsonReport: Report = readReport('json');
     expect(jsonReport.packageName).toBe('@code-pushup/core');
 
-    expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
@@ -124,7 +108,6 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(console.log).toHaveBeenCalledTimes(0);
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
       'no such file or directory',
     );
@@ -133,7 +116,7 @@ describe('persistReport', () => {
   it('should persist all formats`', async () => {
     const persist = persistConfig({
       outputDir,
-      format: ['json', 'md', 'stdout'],
+      format: ['json', 'md'],
     });
     await persistReport(dummyReport, {
       ...dummyConfig,
@@ -148,13 +131,13 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(logs.join(NEW_LINE)).toContain(
-      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
   });
 
   it('should persist some formats`', async () => {
-    const persist = persistConfig({ outputDir, format: ['md', 'stdout'] });
+    const persist = persistConfig({ outputDir, format: ['md'] });
     await persistReport(dummyReport, {
       ...dummyConfig,
       persist,
@@ -169,8 +152,8 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(logs.join(NEW_LINE)).toMatch(
-      `${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`,
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
   });
 
@@ -179,27 +162,21 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
-  beforeEach(async () => {
-    setupConsole();
-  });
-
-  afterEach(() => {
-    teardownConsole();
-  });
-
   it('should log report sizes correctly`', async () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10000] }]);
-    expect(logs).toHaveLength(2);
-    expect(logs).toContain('Generated reports successfully: ');
-    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('Generated reports successfully: '),
+    );
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('- [1mout.json[22m ([90m9.77 kB[39m)'),
+    );
   });
 
   it('should log fails correctly`', async () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    expect(logs).toHaveLength(2);
 
-    expect(logs).toContain('Generated reports failed: ');
-    expect(logs).toContain('- [1mfail[22m');
+    expect(console.warn).toHaveBeenCalledWith('Generated reports failed: ');
+    expect(console.warn).toHaveBeenCalledWith('- [1mfail[22m');
   });
 
   it('should log report sizes and fails correctly`', async () => {
@@ -207,11 +184,19 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    expect(logs).toHaveLength(4);
-    expect(logs).toContain('Generated reports successfully: ');
-    expect(logs).toContain('- [1mout.json[22m ([90m9.77 kB[39m)');
 
-    expect(logs).toContain('Generated reports failed: ');
-    expect(logs).toContain('- [1mfail[22m');
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('Generated reports successfully: '),
+    );
+    expect(console.info).toHaveBeenCalledWith(
+      expect.stringContaining('- [1mout.json[22m ([90m9.77 kB[39m)'),
+    );
+
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Generated reports failed: '),
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('- [1mfail[22m'),
+    );
   });
 });

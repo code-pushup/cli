@@ -19,7 +19,6 @@ import {
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
-import { pluralize } from './transformation';
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -93,35 +92,9 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-export function formatBytes(bytes: number, decimals = 2) {
-  bytes = Math.max(bytes, 0);
-  // early exit
-  if (!bytes) return '0 B';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-}
-
-export function formatDuration(duration: number): string {
-  if (duration < 1000) {
-    return `${duration} ms`;
-  }
-  return `${(duration / 1000).toFixed(2)} s`;
-}
-
 export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);
-}
-
-export function formatCount(count: number, name: string) {
-  const text = count === 1 ? name : pluralize(name);
-  return `${count} ${text}`;
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
