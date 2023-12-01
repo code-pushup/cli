@@ -257,7 +257,7 @@ describe('runnerFunction', () => {
   it('should have number of files given as value', async () => {
     await expect(
       runnerFunction({
-        directory: outputDir,
+        directory: join(process.cwd(), outputDir),
       }),
     ).resolves.toEqual([
       expect.objectContaining({
