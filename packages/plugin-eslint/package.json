@@ -3,8 +3,16 @@
   "version": "0.1.1",
   "dependencies": {
     "@code-pushup/utils": "*",
+    "@code-pushup/models": "*",
     "eslint": "~8.46.0",
-    "zod": "^3.22.4",
-    "@code-pushup/models": "*"
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "@nx/devkit": "^17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nx/devkit": {
+      "optional": true
+    }
   }
 }
