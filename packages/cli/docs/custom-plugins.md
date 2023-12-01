@@ -316,7 +316,7 @@ import { AuditOutputs } from '@code-pushup/models';
 
 function runnerConfig(options: Options): RunnerConfig {
   const { url } = options;
-  // hard coded to run only the LCP audit
+  // hardcoded to run only the LCP audit
   const audits = ['largest-contentful-paint'];
   const outputFile = join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
   return {
