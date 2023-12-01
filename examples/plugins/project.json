@@ -32,7 +32,7 @@
       "dependsOn": ["^build"]
     },
     "run-collect": {
-      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.js --persist.format=md",
+      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
       "dependsOn": ["^build"]
     }
   },
