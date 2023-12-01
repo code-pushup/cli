@@ -7,7 +7,7 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
-export { git, getLatestCommit } from './lib/git';
+export { getLatestCommit, git } from './lib/git';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
@@ -15,8 +15,6 @@ export {
   README_LINK,
   calcDuration,
   compareIssueSeverity,
-  formatBytes,
-  formatCount,
   loadReport,
 } from './lib/report';
 export { reportToMd } from './lib/report-to-md';
@@ -31,20 +29,28 @@ export {
   MultipleFileResults,
   logMultipleFileResults,
   importEsmModule,
+  pluginWorkDir,
+  crawlFileSystem,
+  findLineNumberInText,
 } from './lib/file-system';
 export { verboseUtils } from './lib/verbose-utils';
 export {
-  pluralize,
   toArray,
   objectToKeys,
   objectToEntries,
   countOccurrences,
   distinct,
-  slugify,
 } from './lib/transformation';
+export {
+  slugify,
+  pluralize,
+  pluralizeToken,
+  formatBytes,
+  formatDuration,
+} from './lib/formatting';
 export { NEW_LINE } from './lib/md';
 export { logMultipleResults } from './lib/log-results';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
-} from './lib/promise-result';
+} from './lib/guards';

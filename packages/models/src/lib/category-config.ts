@@ -7,7 +7,7 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
-export const categoryRefSchema = weightedRefSchema(
+const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
 ).merge(

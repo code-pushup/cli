@@ -4,8 +4,8 @@ import { IssueSeverity } from '@code-pushup/models';
 import {
   compareIssueSeverity,
   countOccurrences,
-  formatCount,
   objectToEntries,
+  pluralizeToken,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
@@ -43,7 +43,7 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
   );
   const summaryText = objectToEntries(severityCounts)
     .sort((a, b) => -compareIssueSeverity(a[0], b[0]))
-    .map(([severity, count = 0]) => formatCount(count, severity))
+    .map(([severity, count = 0]) => pluralizeToken(severity, count))
     .join(', ');
   return {
     slug,

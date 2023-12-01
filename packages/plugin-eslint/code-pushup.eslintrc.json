@@ -4,25 +4,14 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@nx/enforce-module-boundaries": ["off"]
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["examples/plugins/tsconfig.*?.json"]
+        "project": ["packages/plugin-eslint/tsconfig.*?.json"]
       },
       "rules": {}
-    },
-    {
-      "files": ["*.test.ts", "*.test.tsx"],
-      "parserOptions": {
-        "project": ["examples/plugins/tsconfig.*?.json"]
-      },
-      "rules": {
-        "max-lines": "off"
-      }
     },
     {
       "files": ["*.js", "*.jsx"],

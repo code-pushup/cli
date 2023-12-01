@@ -1,4 +1,5 @@
 import { ESLint, Linter } from 'eslint';
+import { ESLintPluginConfig } from '../config';
 import { lint } from './lint';
 
 class MockESLint {
@@ -50,12 +51,17 @@ vi.mock('eslint', () => ({
 }));
 
 describe('lint', () => {
+  const config: ESLintPluginConfig = {
+    eslintrc: '.eslintrc.js',
+    patterns: ['**/*.js'],
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should add relativeFilePath to each lint result', async () => {
-    const { results } = await lint('.eslintrc.js', ['**/*.js']);
+    const { results } = await lint(config);
     expect(results).toEqual([
       expect.objectContaining({ relativeFilePath: 'src/app/app.component.ts' }),
       expect.objectContaining({
@@ -68,7 +74,7 @@ describe('lint', () => {
   });
 
   it('should get rule options for each file', async () => {
-    const { ruleOptionsPerFile } = await lint('.eslintrc.js', ['**/*.js']);
+    const { ruleOptionsPerFile } = await lint(config);
     expect(ruleOptionsPerFile).toEqual({
       'src/app/app.component.ts': {
         'max-lines': [500],
@@ -85,7 +91,7 @@ describe('lint', () => {
   });
 
   it('should correctly use ESLint Node API', async () => {
-    await lint('.eslintrc.js', ['**/*.js']);
+    await lint(config);
     expect(ESLint).toHaveBeenCalledWith<ConstructorParameters<typeof ESLint>>({
       overrideConfigFile: '.eslintrc.js',
       useEslintrc: false,

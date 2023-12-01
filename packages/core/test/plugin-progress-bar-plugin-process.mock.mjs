@@ -56,20 +56,20 @@ const outputFile = './' + join(outputDir, `${pluginSlug}-output.json`);
 
 (async () => {
   if (verbose) {
-    console.log('Plugin Progress Bar Mock - Async Plugin Process');
-    console.log(`Duration: ${duration}`);
-    console.log(`Steps: ${steps}`);
-    console.log(`Throw Error: ${throwError}`);
-    console.log(`Plugin Postfix: ${pluginPostfix} - Slug: ${pluginSlug}`);
-    console.log(
+    console.info('Plugin Progress Bar Mock - Async Plugin Process');
+    console.info(`Duration: ${duration}`);
+    console.info(`Steps: ${steps}`);
+    console.error(`Throw Error: ${throwError}`);
+    console.info(`Plugin Postfix: ${pluginPostfix} - Slug: ${pluginSlug}`);
+    console.info(
       `Audit Postfix: ${auditPostfix} - Slug: ${auditSlug}; Title: ${auditTitle}`,
     );
-    console.log(`Output Dir: ${outputDir} - Output File: ${outputFile}`);
-    console.log('');
+    console.info(`Output Dir: ${outputDir} - Output File: ${outputFile}`);
+    console.info('');
   }
 
   await new Promise(resolve => {
-    verbose && console.log('--- plugin-process:start  ---');
+    verbose && console.info('--- plugin-process:start  ---');
     const id = setInterval(() => {
       if (steps === 0) {
         clearInterval(id);
@@ -80,12 +80,12 @@ const outputFile = './' + join(outputDir, `${pluginSlug}-output.json`);
         }
       } else {
         steps--;
-        verbose && console.log(`--- plugin-process:update ${steps}  ---`);
+        verbose && console.info(`--- plugin-process:update ${steps}  ---`);
       }
     }, duration);
   });
 
-  verbose && console.log('--- plugin-process:complete ---');
+  verbose && console.info('--- plugin-process:complete ---');
   if (!existsSync(outputDir)) {
     try {
       mkdirSync(outputDir, { recursive: true });

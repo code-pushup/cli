@@ -4,6 +4,7 @@ import {
   CategoryRef,
   Issue,
 } from '@code-pushup/models';
+import { formatDuration, slugify } from './formatting';
 import { CommitData } from './git';
 import {
   NEW_LINE,
@@ -22,7 +23,6 @@ import {
   README_LINK,
   countCategoryAudits,
   detailsTableHeaders,
-  formatDuration,
   formatReportScore,
   getAuditByRef,
   getGroupWithAudits,
@@ -42,7 +42,6 @@ import {
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
-import { slugify } from './transformation';
 
 export function reportToMd(
   report: ScoredReport,
