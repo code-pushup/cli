@@ -13,7 +13,8 @@ import {
   formatBytes,
   pluralizeToken,
   toUnixPath,
-} from '@code-pushup/utils';
+  // eslint-disable-next-line
+} from '../../../../dist/packages/utils';
 
 export type PluginOptions = {
   directory: string;

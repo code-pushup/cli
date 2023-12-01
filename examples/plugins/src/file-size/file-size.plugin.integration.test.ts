@@ -79,11 +79,11 @@ describe('create', () => {
       ...baseOptions,
       pattern: /\.js$/,
     });
-    const { audits } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
-    expect(audits).toHaveLength(1);
-    expect(audits[0]?.score).toBe(1);
-    expect(audits[0]?.details?.issues).toHaveLength(1);
+    expect(auditOutputs).toHaveLength(1);
+    expect(auditOutputs[0]?.score).toBe(1);
+    expect(auditOutputs[0]?.details?.issues).toHaveLength(1);
   });
 
   it('should use budget', async () => {
@@ -91,11 +91,11 @@ describe('create', () => {
       ...baseOptions,
       budget: 0,
     });
-    const { audits } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
-    expect(audits).toHaveLength(1);
-    expect(audits[0]?.score).toBe(0);
-    expect(audits[0]?.details?.issues).toHaveLength(2);
+    expect(auditOutputs).toHaveLength(1);
+    expect(auditOutputs[0]?.score).toBe(0);
+    expect(auditOutputs[0]?.details?.issues).toHaveLength(2);
   });
 });
 
