@@ -1,4 +1,5 @@
 import type { ProjectConfiguration } from '@nx/devkit';
+import { join } from 'node:path';
 import { fileExists, toArray } from '@code-pushup/utils';
 
 export async function findCodePushupEslintrc(
@@ -11,7 +12,7 @@ export async function findCodePushupEslintrc(
   // eslint-disable-next-line functional/no-loop-statements
   for (const ext of extensions) {
     const filename = `./${project.root}/${name}.${ext}`;
-    if (await fileExists(filename)) {
+    if (await fileExists(join(process.cwd(), filename))) {
       return filename;
     }
   }
@@ -32,5 +33,5 @@ export function getEslintConfig(project: ProjectConfiguration): string {
   const options = project.targets?.['lint']?.options as
     | { eslintConfig?: string }
     | undefined;
-  return options?.eslintConfig ?? `${project.root}/.eslintrc.json`;
+  return options?.eslintConfig ?? `./${project.root}/.eslintrc.json`;
 }
