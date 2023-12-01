@@ -1,14 +1,19 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
-import {auditSchema, categoryRefSchema, pluginConfigSchema} from '@code-pushup/models';
+import {
+  auditSchema,
+  categoryRefSchema,
+  pluginConfigSchema,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   PluginOptions,
-  create,
   audits,
+  create,
+  pluginSlug,
   recommendedRefs,
-  pluginSlug as slug, pluginSlug,
+  pluginSlug as slug,
 } from './file-size.plugin';
 
 const outputDir = MEMFS_VOLUME;
@@ -97,12 +102,9 @@ describe('create', () => {
 });
 
 describe('audits', () => {
-  it.each(audits)(
-    'should be a valid audit meta info',
-    audit => {
-      expect(() => auditSchema.parse(audit)).not.toThrow();
-    },
-  );
+  it.each(audits)('should be a valid audit meta info', audit => {
+    expect(() => auditSchema.parse(audit)).not.toThrow();
+  });
 });
 
 describe('recommendedRefs', () => {
