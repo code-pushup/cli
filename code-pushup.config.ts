@@ -4,6 +4,7 @@ import type { ESLint } from 'eslint';
 import { stat } from 'node:fs/promises';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
+import { fileSizePlugin } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
 const exists = (path: string) =>
@@ -58,7 +59,14 @@ const config: CoreConfig = {
     project: env.CP_PROJECT,
   },
 
-  plugins: [await eslintPlugin({ eslintrc: eslintConfig, patterns })],
+  plugins: [
+    await eslintPlugin({ eslintrc: eslintConfig, patterns }),
+    fileSizePlugin({
+      directory: './dist/packages',
+      pattern: /\.js$/,
+      budget: 42_000,
+    }),
+  ],
 
   categories: [
     {

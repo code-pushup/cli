@@ -8,9 +8,9 @@ export type DependencyMap = {
 };
 
 export type PackageJson = {
-  license: string;
-  description: string;
-  type: string;
+  license?: string;
+  description?: string;
+  type?: string;
 } & DependencyMap;
 export type SourceResult = { file: string; json: PackageJson; content: string };
 export type SourceResults = SourceResult[];

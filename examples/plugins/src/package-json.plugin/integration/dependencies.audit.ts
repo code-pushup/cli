@@ -1,5 +1,6 @@
 import { findLineNumberInText } from '../../../../../dist/packages/utils/src';
 import { Audit, AuditOutput, Issue } from '../../../../../packages/models/src';
+import { factorOf } from '../../../../../packages/utils/src';
 import {
   DependencyMap,
   DependencyTypes,
@@ -7,8 +8,7 @@ import {
   SourceResult,
   SourceResults,
 } from './types';
-import {filterSeverityError, pluralizePackage} from './utils';
-import {factorOf} from "../../../../../packages/utils/src";
+import { filterSeverityError, pluralizePackage } from './utils';
 
 export type RequiredDependencies = DependencyMap;
 

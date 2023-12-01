@@ -10,10 +10,14 @@ export const packageJson: PackageJson = {
   },
 };
 
-export function packageResult(json: PackageJson): SourceResult {
+export function packageResult(json?: Partial<PackageJson>): SourceResult {
+  const jsonData = {
+    ...packageJson,
+    ...json,
+  };
   return {
     file: packageJsonName,
-    json,
+    json: jsonData,
     content: JSON.stringify(json),
   };
 }

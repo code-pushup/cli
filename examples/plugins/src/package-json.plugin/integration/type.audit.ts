@@ -4,7 +4,11 @@ import {
 } from '../../../../../dist/packages/utils/src';
 import { AuditOutput, Issue } from '../../../../../packages/models/src';
 import { PackageJson, SourceResults } from './types';
-import {assertPropertyEmpty, filterSeverityError, pluralizePackage} from './utils';
+import {
+  assertPropertyEmpty,
+  filterSeverityError,
+  pluralizePackage,
+} from './utils';
 
 const typeAuditSlug = 'package-type-check';
 export const typeAuditInfoMeta = {
@@ -48,7 +52,7 @@ export async function typeAudit(
     let startLine: number | null = null;
 
     if (!json.type) {
-      assertPropertyEmpty({json, content, file}, 'type', json.type)
+      assertPropertyEmpty({ json, content, file }, 'type', json.type);
     }
 
     if (json.type === type) {

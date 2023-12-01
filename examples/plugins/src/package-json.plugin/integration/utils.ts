@@ -1,7 +1,7 @@
-import {pluralizeToken} from '../../../../../dist/packages/utils/src';
-import {Issue} from '../../../../../packages/models/src';
-import {PackageJson, SourceResult} from "./types";
-import {findLineNumberInText} from "../../../../../packages/utils/src";
+import { pluralizeToken } from '../../../../../dist/packages/utils/src';
+import { Issue } from '../../../../../packages/models/src';
+import { findLineNumberInText } from '../../../../../packages/utils/src';
+import { PackageJson, SourceResult } from './types';
 
 export function filterSeverityError(issue: Issue): issue is Issue {
   return issue.severity === 'error';
@@ -11,8 +11,12 @@ export function pluralizePackage(num = 0): string {
   return pluralizeToken('package', num);
 }
 
-export function assertPropertyEmpty(result: SourceResult, property: keyof PackageJson = undefined, value: unknown = undefined): Issue {
-  const {file, content} = result;
+export function assertPropertyEmpty(
+  result: SourceResult,
+  property: keyof PackageJson = undefined,
+  value: unknown = undefined,
+): Issue {
+  const { file, content } = result;
   const issue: Issue = {
     message: `${property} OK`,
     severity: 'info',
@@ -27,10 +31,7 @@ export function assertPropertyEmpty(result: SourceResult, property: keyof Packag
       issue.source = {
         file,
         position: {
-          startLine: findLineNumberInText(
-            content,
-            `"${property}":`,
-          ) as number,
+          startLine: findLineNumberInText(content, `"${property}":`) as number,
         },
       };
     }
@@ -38,9 +39,12 @@ export function assertPropertyEmpty(result: SourceResult, property: keyof Packag
   }
 }
 
-
-export function assertPropertyEqual(result: SourceResult, property: keyof PackageJson = undefined, value: unknown = undefined): Issue {
-  const {file, content, json} = result;
+export function assertPropertyEqual(
+  result: SourceResult,
+  property: keyof PackageJson = undefined,
+  value: unknown = undefined,
+): Issue {
+  const { file, content, json } = result;
   const issue: Issue = {
     message: `${property} value is given`,
     severity: 'info',
@@ -54,12 +58,9 @@ export function assertPropertyEqual(result: SourceResult, property: keyof Packag
     issue.source = {
       file,
       position: {
-        startLine: findLineNumberInText(
-          content,
-          `"${property}":`,
-        ) as number,
+        startLine: findLineNumberInText(content, `"${property}":`) as number,
       },
-    }
+    };
     return issue;
   }
 }

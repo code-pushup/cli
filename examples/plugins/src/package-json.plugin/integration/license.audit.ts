@@ -4,7 +4,11 @@ import {
 } from '../../../../../dist/packages/utils/src';
 import { Audit, AuditOutput, Issue } from '../../../../../packages/models/src';
 import { SourceResults } from './types';
-import {assertPropertyEqual, filterSeverityError, pluralizePackage} from './utils';
+import {
+  assertPropertyEqual,
+  filterSeverityError,
+  pluralizePackage,
+} from './utils';
 
 const packageLicenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {
@@ -40,7 +44,7 @@ export async function licenseAudit(
       },
     };
     if (license !== json.license) {
-      return assertPropertyEqual({ file, json, content }, 'license', license)
+      return assertPropertyEqual({ file, json, content }, 'license', license);
     }
     return issue;
   });
