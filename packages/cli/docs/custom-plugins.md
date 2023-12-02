@@ -111,12 +111,12 @@ When developing custom plugins you should know a couple of CLI options helpful w
 
 Following options are helpful in debugging:
 
-- use `--verbose` to get more information printed in the terminal
-- use `--no-progress` to get better readability of logs.  
+- use [`--verbose`](@TODO) to get more information printed in the terminal
+- use [`--no-progress`](@TODO) to get better readability of logs.  
   The progressbar would otherwise interfere with your logs and makes them harder to read.
-- use `--onlyPlugin` will restrict the execution of plugins to only the listed ones
-- use `--config` to point to a different config file
-- use `--format=md` to see all information provided by plugin outputs
+- use [`--onlyPlugin`](@TODO) will restrict the execution of plugins to only the listed ones
+- use [`--config`](@TODO) to point to a different config file
+- use [`--format=md`](@TODO) to see all information provided by plugin outputs
 
 ## Plugin Runner - Implementing the plugin logic
 
@@ -610,8 +610,9 @@ Now let's extend the runner function to calculate the score based on the budget:
 
 ```typescript
 // code-pushup.config.ts
-
 // ...
+import { pluralizeToken } from './formatting';
+import { factorOf } from './transformation';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
   // ...
@@ -621,10 +622,10 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
   if (errorCount) {
     fileSizeAuditOutput: AuditOutput = {
       ...fileSizeAuditOutput,
-      // score is percentage of over-budget files
-      score: errorCount ? errorCount / issues.length : 1,
+      // score is factor of over-budget files to all files
+      score: factorOf(issues, errorCount),
       value: errorCount,
-      displayValue: `${errorCount} ${errorCount === 1 ? 'file' : pluralize('file')}`,
+      displayValue: pluralizeToken('file', errorCount),
     };
   }
 
