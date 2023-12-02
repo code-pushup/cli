@@ -2,8 +2,13 @@ import nx from '@nx/devkit';
 import 'dotenv/config';
 import type { ESLint } from 'eslint';
 import { stat } from 'node:fs/promises';
+import { join } from 'path';
 import { z } from 'zod';
 import eslintPlugin from './dist/packages/plugin-eslint';
+import {
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
+} from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
 const exists = (path: string) =>
@@ -58,7 +63,14 @@ const config: CoreConfig = {
     project: env.CP_PROJECT,
   },
 
-  plugins: [await eslintPlugin({ eslintrc: eslintConfig, patterns })],
+  plugins: [
+    await eslintPlugin({ eslintrc: eslintConfig, patterns }),
+    await fileSizePlugin({
+      directory: './dist/packages',
+      pattern: /\.js$/,
+      budget: 42000,
+    }),
+  ],
 
   categories: [
     {
@@ -72,6 +84,11 @@ const config: CoreConfig = {
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
+    },
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [...fileSizeRecommendedRefs],
     },
   ],
 };

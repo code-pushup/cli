@@ -4,6 +4,7 @@ export {
   PersistDirError,
 } from './lib/implementation/persist';
 export {
+  executePlugin,
   executePlugins,
   PluginOutputMissingAuditError,
 } from './lib/implementation/execute-plugin';
