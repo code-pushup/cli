@@ -1,4 +1,3 @@
-import { createProjectGraphAsync } from '@nx/devkit';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 import { findAllDependencies } from './traverse-graph';
@@ -30,6 +29,7 @@ import { findAllDependencies } from './traverse-graph';
 export async function eslintConfigFromNxProject(
   projectName: string,
 ): Promise<ESLintPluginConfig> {
+  const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
 
   const dependencies = findAllDependencies(projectName, projectGraph);

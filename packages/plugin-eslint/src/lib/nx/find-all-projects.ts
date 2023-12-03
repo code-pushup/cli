@@ -1,4 +1,3 @@
-import { createProjectGraphAsync } from '@nx/devkit';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 
@@ -24,6 +23,7 @@ import { nxProjectsToConfig } from './projects-to-config';
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
 export async function eslintConfigFromNxProjects(): Promise<ESLintPluginConfig> {
+  const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
   return nxProjectsToConfig(projectGraph);
 }

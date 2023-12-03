@@ -1,8 +1,4 @@
-import {
-  ProjectConfiguration,
-  ProjectGraph,
-  readProjectsConfigurationFromProjectGraph,
-} from '@nx/devkit';
+import type { ProjectConfiguration, ProjectGraph } from '@nx/devkit';
 import type { ESLint } from 'eslint';
 import type { ESLintPluginConfig } from '../config';
 import {
@@ -16,6 +12,9 @@ export async function nxProjectsToConfig(
   predicate: (project: ProjectConfiguration) => boolean = () => true,
 ): Promise<ESLintPluginConfig> {
   // find Nx projects with lint target
+  const { readProjectsConfigurationFromProjectGraph } = await import(
+    '@nx/devkit'
+  );
   const projectsConfiguration =
     readProjectsConfigurationFromProjectGraph(projectGraph);
   const projects = Object.values(projectsConfiguration.projects)
