@@ -1,16 +1,15 @@
-# Integrating a plugin in the CLI
+# Integrating a custom plugin in the CLI
 
 One of the main features of Code PushUp is the ability to write custom plugins to track your own metrics.
 It enables you to implement nearly any kind of metric you want to track with minimum effort.
 In this section we will go through the steps to create a custom plugin and integrate it in your project.
 
-## Usage of a plugin in the core config
+## Setup the core config
 
 To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file maintaining a `plugins` property.
 property.
-
-Any plugin is registered in a core config object and can take potential options to configure its behaviour.
-The following example shows where to register the plugin
+All plugins are registered in a core config object and can take potential options to configure its behaviour.
+The following example shows where to register the plugin:
 
 ```typescript
 // code-pushup.config.ts
@@ -86,7 +85,8 @@ function runnerFunction(): AuditOutputs {
 
 Execute the CLI with `npx code-pushup collect` and you should the following output:
 
-**stdout of CLI for the above code**
+<details>
+<summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -102,31 +102,15 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
+</details>
+
 The categories are empty for now. But under the audit listing you can see your plugin title `My plugin`, it's listed
 audit `My audit` and the resulting value `0`.
 
-## Debugging custom plugins
+## Plugin output
 
-When developing custom plugins you should know a couple of CLI options helpful when debugging.
+Every plugin executes audits and returns outcome as [`AuditOutputs`](@TODO), and array of [`AuditOutput`](@TODO).
 
-Following options are helpful in debugging:
-
-- use [`--verbose`](@TODO) to get more information printed in the terminal
-- use [`--no-progress`](@TODO) to get better readability of logs.  
-  The progressbar would otherwise interfere with your logs and makes them harder to read.
-- use [`--onlyPlugin`](@TODO) will restrict the execution of plugins to only the listed ones
-- use [`--config`](@TODO) to point to a different config file
-- use [`--format=md`](@TODO) to see all information provided by plugin outputs
-
-## Plugin Runner - Implementing the plugin logic
-
-The core of a plugin is defined under the `runner` property.
-The `runner` property is the entry point of your plugin and is called by the CLI and should return the audit results
-as [`AuditOutputs`](@TODO), and array of [`AuditOutput`](@TODO)
-
-### Runner output - [`AuditOutputs`](@TODO)
-
-Plugin runner return and array of [`AuditOutput`](@TODO).
 The minimum output of an audit looks like this:
 
 ```typescript
@@ -140,14 +124,20 @@ const auditOutput: AuditOutput = {
 };
 ```
 
-Audits are important to calculate a score out of a given metrics and is used to score a category or audit groups. Here you can read more about [audits and scoring](@TODO - in page link).
-They also help with attribution of audit results. This is important as it help the interpreter of the audit to get actionable feedback like where in the code it happened or even how to fix it.
+Audits are important to calculate a score out of a given metrics.
+they are referenced in a category or audit group.  
+Here you can read more about [audits and scoring](@TODO - in page link).
+
+They also help with attribution of audit results. This is important to get actionable feedback like where in the code it happened or even how to fix it.  
 Here you can read more on [attribution of audits](@TODO - in page link).
 
-Here we focus on the actual implementation that returns the above explained data.
+## Plugin runner
+
+The core of a plugin is defined under the `runner` property.
+The `runner` property is the entry point of your plugin and is called by the CLI. It should return the audit results
+as [`AuditOutputs`](@TODO).
 
 A plugins runner logic can get implemented in 2 ways:
-
 - as a `RunnerFunction`
 - as a `RunnerConfig`
 
@@ -165,14 +155,31 @@ We will implement a simple file size audit for JavaScript files that tracks the 
 codebase.
 
 1. Use the template from the section [Plugin Structure](#Plugin-Structure) as a starting point and fill in the correct information for the plugin metadata.
-2. Add the `directory` to the plugin options and use the plugin in you config file.
+2. Add the `directory` property to the plugin options and use the plugin in you config file.
 
 ```typescript
 // code-pushup.config.ts
+import {AuditOutput, AuditOutputs} from '@code-pushup/models'
 
 // add the directory to the plugin options
 
-// @TODO - runner implementation with dummy audit from above
+const fileSizeAuditMeta: AuditOutput = {
+    slug: 'file-size',
+    title: 'File size',
+};
+
+async function runnerFunction(options: Options): Promise<AuditOutputs> {
+    return [
+        {
+            ...fileSizeAuditMeta,
+            value: 0,
+            // helper to for a nicer displayValue
+            displayValue: pluralizeToken('file', 0),
+            // We have always a score of 1 for now
+            score: 1,
+        } satisfies AuditOutput
+    ];
+}
 ```
 
 3. Get the raw data to perform the audit
@@ -189,34 +196,36 @@ of `AuditOutputs`:
 
 ```typescript
 // code-pushup.config.ts
-import { crawlFileSystem, pluralizeToken } from '@code-pushup/utils';
+import {crawlFileSystem, pluralizeToken} from '@code-pushup/utils';
+import {AuditOutput} from '@code-pushup/models';
+import {RunnerFunction} from "./plugin-config-runner";
 
 // ...
 
-async function runnerFunction(options: Options): Promise<AuditOutputs> {
-  const data = await crawlFileSystem(options, async filePath => {
-    const stats = await stat(filePath);
-    return { filePath, size: stats.size };
-  });
+function runnerFunction(options: Options): RunnerFunction {
+    return async (): Promise<AuditOutputs> => {
 
-  let fileSizeAuditOutput: AuditOutput = {
-    ...auditMeta,
-    value: data.length,
-    // helper to for a nicer displayValue
-    displayValue: pluralizeToken('file', data.length),
-    // We have always a score of 1 for now
-    score: 1,
-  };
+        const data = await crawlFileSystem(options, async filePath => {
+            const stats = await stat(filePath);
+            return {filePath, size: stats.size};
+        });
 
-  return [fileSizeAuditOutput];
+        return [
+            {
+                ...fileSizeAuditMeta,
+                value: data.length,
+                displayValue: pluralizeToken('file', data.length),
+                score: 1
+            } satisfies AuditOutput
+        ];
+    }
 }
 ```
 
-Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+Now we can execute the CLI with `npx code-pushup collect` and see a similar output as the following:
 
-@TODO wrap with details
-
-**stdout of basic file-size plugin**
+<details>
+<summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -231,6 +240,8 @@ Categories
 
 Made with ❤ by code-pushup.dev
 ```
+
+</details>
 
 ### RunnerConfig
 
@@ -335,19 +346,15 @@ function runnerConfig(options: Options): RunnerConfig {
 
 // we use a closure function for better DX in configuration
 function lhrOutputTransform(audits: string[]): OutputTransform {
-  // implementation follows in the next section
   return (output: string): AuditOutputs => {
     // Return dummy audit outputs.
     // Otherwise the CLI will throw an error as the lighthouse report is not of shape AuditOutputs
     return audits.map(
-      slug =>
-        [
-          {
+      slug => ({
             slug,
             value: 0,
             score: 1,
-          },
-        ] satisfies AuditOutputs,
+          })
     );
   };
 }
@@ -355,8 +362,8 @@ function lhrOutputTransform(audits: string[]): OutputTransform {
 
 Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
 
-@TODO wrap with detail section  
-**stdout of basic lighthouse plugin**
+<details>
+<summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -372,10 +379,14 @@ Categories
 Made with ❤ by code-pushup.dev
 ```
 
+</details>
+
 #### Implement an `outputTransform` function
 
-As the Lighthouse result has a different shape than the required `AuditOutputs`, we need to add
-an `outputTransform` and implement the transform from a Lighthouse report to audit outputs.
+The output transform function comes in handy when you want to transform the content of `outputFile` into `AuditOutputs`.
+
+In the current example the Lighthouse result has a different shape than the required `AuditOutputs`,  
+we can use an `outputTransform` and implement the transform from a Lighthouse report to audit outputs.
 
 **outputTransform for lighthouse report**
 
@@ -407,16 +418,15 @@ function lhrOutputTransform(auditSlugs: string[]): OutputTransform {
 }
 ```
 
-Test the output by running `npx code-pushup collect --no-progress --format=md`.
+Test the output by running `npx code-pushup collect --format=md`.
 The CLI argument `--format=md` will create an additional file containing our created detail information form above.
 
 You should see a newly created file `report.md` created in the folder `.code-pushup` in your current working directory.
 
 It should contain a similar content like the following:
 
-@TODO wrap with detail section
-
-**report.md**
+<details>
+<summary> <b>report.md created by the CLI</b> (collapsed for brevity) </summary>
 
 ```md
 ### Largest Contentful Paint (Lighthouse)
@@ -427,7 +437,9 @@ Largest Contentful Paint marks the time at which the largest text or image is
 painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 ```
 
-### Attribution of audits
+</details>
+
+## Audit Issue
 
 To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
 This helps to make the plugin results more actionable and valuable for the user.
@@ -440,59 +452,61 @@ show which files exceed the defined budget.
 ```typescript
 // code-pushup.config.ts
 // ...
-import { basename } from 'path';
-import { formatBytes, toUnixPath } from '@code-pushup/utils';
+import {basename} from 'path';
+import {formatBytes, toUnixPath} from '@code-pushup/utils';
+import {AuditOutput} from "./plugin-process-output";
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
-  // ...
+    // ...
 
-  // assert file size information with budget
-  const issues = data.map(({ file, size }) => assertFileSizeInfo(file, size, options.budget));
+    // assert file size information with budget
+    const issues = data.map(({file, size}) => assertFileSizeInfo(file, size, options.budget));
 
-  // add details if issues given
-  if (issues.length) {
-    fileSizeAuditOutput = {
-      ...fileSizeAuditOutput,
-      details: {
-        issues,
-      },
-    };
-  }
+    // add details if issues given
+    if (issues.length) {
+        fileSizeAuditOutput = {
+            ...fileSizeAuditOutput,
+            details: {
+                issues,
+            },
+        };
+    }
 
-  return [fileSizeAuditOutput];
+    return [fileSizeAuditOutput];
 }
 
 // assert file size info with budget
 export function assertFileSize(file: string, size: number, budget?: number): Issue {
-  let severity: IssueSeverity = 'info';
-  let message = `File ${basename(filePath)} OK`;
-
-  if (budget !== undefined) {
-    // set severity to error if budget exceeded
-    if (budget < size) {
-      severity = 'error';
-      message = `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`;
+    const auditOutputBase = {
+        source: {
+            // format path to be in scope of the repository
+            file: toUnixPath(file, {toRelative: true}),
+        },
+    } satisfies AuditOutput['source']
+  
+    if (budget && budget < size) {
+        return {
+            ...auditOutputBase,
+            severity: 'error',
+            message: `File ${basename(filePath)} is ${formatBytes(size - budget)} bytes too big. ( budget: ${formatBytes(budget)})`
+        }
     }
-  }
-
-  return {
-    message,
-    severity,
-    // add source attributes
-    source: {
-      // format path to be in scope of the repository
-      file: toUnixPath(file, { toRelative: true }),
-    },
-  };
+    
+    return {
+        ...auditOutputBase,
+        severity: 'info',
+        message: `File ${basename(filePath)} OK`
+    };
 }
 ```
 
-Test the output by running `npx code-pushup collect --no-progress --format=md`.
+Test the output by running `npx code-pushup collect --format=md`.
 The CLI argument `--format=md` will create an additional file containing our created detail information form above.
 You should see a new file `report.md` created in the folder `.code-pushup` in your current working directory.
 The `report.md` file should contain a similar content like the following:
 
-**report.md**
+<details>
+<summary> <b>report.md created by the CLI</b> (collapsed for brevity) </summary>
 
 ```md
 <!-- ... -->
@@ -525,9 +539,11 @@ The `report.md` file should contain a similar content like the following:
 </details>
 ```
 
+</details>
+
 ## Plugins and categories
 
-@TODO An intro text is missing here. What is this section trying to convey?
+In this chapter we will see how a plugins results contribute to the category scoring. 
 
 **lighthouse plugin**
 
@@ -557,7 +573,8 @@ export default {
 
 Test the output by running `npx code-pushup collect --no-progress`.
 
-**stdout of basic lighthouse plugin**
+<details>
+<summary> <b>stdout of basic lighthouse plugin</b> (collapsed for brevity) </summary>
 
 ```sh
 Code PushUp Report - @code-pushup/core@x.y.z
@@ -575,6 +592,8 @@ Categories
 
 Made with ❤ by code-pushup.dev
 ```
+
+</details>
 
 ### Score Audits
 
@@ -636,3 +655,16 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 ### Score Groups
 
 @TODO
+
+## Debugging custom plugins
+
+When developing custom plugins you should know a couple of CLI options helpful when debugging.
+
+Following options are helpful in debugging:
+
+- use [`--verbose`](@TODO) to get more information printed in the terminal
+- use [`--no-progress`](@TODO) to get better readability of logs.  
+  The progressbar would otherwise interfere with your logs and makes them harder to read.
+- use [`--onlyPlugin`](@TODO) will restrict the execution of plugins to only the listed ones
+- use [`--config`](@TODO) to point to a different config file
+- use [`--format=md`](@TODO) to see all information provided by plugin outputs
