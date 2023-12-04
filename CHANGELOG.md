@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.2.0](https://github.com/code-pushup/cli/compare/v0.1.1...v0.2.0) (2023-12-04)
+
+### Bug Fixes
+
+- **plugin-eslint:** dynamic import for optional peer dep @nx/devkit ([ab62f2f](https://github.com/code-pushup/cli/commit/ab62f2f38604fc28745b4ef99d7c2d44d93aacf2))
+
+### Features
+
+- **plugin-eslint:** add docs url ([d6a6b2a](https://github.com/code-pushup/cli/commit/d6a6b2ad899f9659b97acfd98c357df8f2c7a2ff))
+- **plugin-eslint:** provide Nx helper to combine eslint config from all projects ([82fa3e1](https://github.com/code-pushup/cli/commit/82fa3e18a5171b7f6f8a3b0b3ca33ec6d4cc2de6))
+- **plugin-eslint:** provide Nx helper to combine eslint configs from project with deps ([29cd887](https://github.com/code-pushup/cli/commit/29cd8876088ac7976bd3d9f484da6e46abafce9a))
+
 ## [0.1.1](https://github.com/code-pushup/cli/compare/v0.1.0...v0.1.1) (2023-12-02)
 
 # 0.1.0 (2023-12-01)
