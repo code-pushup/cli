@@ -9,7 +9,27 @@ export default {
     apiKey: 'e2e-api-key',
     server: 'https://e2e.com/api',
   },
-  categories: [],
+  categories: [
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      // due to duplicate category references, the config is invalid
+      refs: [
+        {
+          type: 'audit',
+          plugin: 'node',
+          slug: 'node-version',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'node',
+          slug: 'node-version',
+          weight: 1,
+        },
+      ],
+    },
+  ],
   plugins: [
     {
       audits: [
