@@ -1,3 +1,5 @@
+import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '@code-pushup/models';
+
 export function slugify(text: string): string {
   return text
     .trim()
@@ -39,4 +41,20 @@ export function formatDuration(duration: number): string {
     return `${duration} ms`;
   }
   return `${(duration / 1000).toFixed(2)} s`;
+}
+
+export function truncateText(text: string, maxChars: number): string {
+  if (text.length <= maxChars) {
+    return text;
+  }
+  const ellipsis = '...';
+  return text.slice(0, maxChars - ellipsis.length) + ellipsis;
+}
+
+export function truncateTitle(text: string): string {
+  return truncateText(text, MAX_TITLE_LENGTH);
+}
+
+export function truncateDescription(text: string): string {
+  return truncateText(text, MAX_DESCRIPTION_LENGTH);
 }

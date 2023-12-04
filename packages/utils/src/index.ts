@@ -27,6 +27,9 @@ export {
   pluralize,
   pluralizeToken,
   slugify,
+  truncateDescription,
+  truncateText,
+  truncateTitle,
 } from './lib/formatting';
 export { getLatestCommit, git } from './lib/git';
 export {
