@@ -105,8 +105,8 @@ describe('Nx helpers', () => {
      *   utils ◄──────┘
      */
 
-    const allProjects = ['cli', 'core', 'nx-plugin', 'utils'] as const;
-    type Project = (typeof allProjects)[number];
+    const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
+    type Project = (typeof ALL_PROJECTS)[number];
 
     it.each<[Project, Project[]]>([
       ['cli', ['cli', 'core', 'utils']],
@@ -116,7 +116,7 @@ describe('Nx helpers', () => {
     ])(
       'project %j - expected configurations for projects %j',
       async (project, expectedProjects) => {
-        const otherProjects = allProjects.filter(
+        const otherProjects = ALL_PROJECTS.filter(
           p => !expectedProjects.includes(p),
         );
 
