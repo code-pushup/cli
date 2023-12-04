@@ -2,7 +2,7 @@
  * This config file is here to demonstrate the progress bar for plugins
  *
  * Usage:
- * npx ./dist/packages/cli collect --config=./packages/core/test/plugin-progress-bar.config.mock.ts
+ * npx ./dist/packages/cli collect --config=./testing-utils/src/lib/fixtures/configs/progress-bar.config.mock.ts
  */
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -18,7 +18,10 @@ const numPlugins = parseInt(
 const outputDir = './tmp';
 const pluginProcess = join(
   fileURLToPath(dirname(import.meta.url)),
-  'plugin-progress-bar-plugin-process.mock.mjs',
+  '..',
+  '..',
+  'utils',
+  'progress-bar-process.mock.mjs',
 );
 const pluginSlug = (id: string): string => 'progress-mock-plugin-' + id;
 const auditSlug = (pId: string, aId: string): string =>

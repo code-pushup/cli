@@ -21,7 +21,6 @@
     "paths": {
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],
-      "@code-pushup/core/testing": ["packages/core/test/index.ts"],
       "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
