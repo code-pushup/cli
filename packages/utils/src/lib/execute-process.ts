@@ -94,7 +94,7 @@ export type ProcessConfig = {
  *
  * @example
  * const observer = {
- *  onStdout: (stdout) => console.log(stdout)
+ *  onStdout: (stdout) => console.info(stdout)
  *  }
  */
 export type ProcessObserver = {
@@ -114,7 +114,7 @@ export type ProcessObserver = {
  *  args: ['--version']
  * });
  *
- * console.log(result);
+ * console.info(result);
  *
  * // async process execution
  * const result = await executeProcess({
@@ -127,7 +127,7 @@ export type ProcessObserver = {
  *    }
  * });
  *
- * console.log(result);
+ * console.info(result);
  *
  * @param cfg - see {@link ProcessConfig}
  */

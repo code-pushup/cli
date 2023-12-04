@@ -16,7 +16,7 @@ export function yargsConfigCommandObject() {
       // it is important to filter out kebab case keys
       // because yargs duplicates options in camel case and kebab case
       const cleanArgs = filterKebabCaseKeys(args);
-      console.log(JSON.stringify(cleanArgs, null, 2));
+      console.info(JSON.stringify(cleanArgs, null, 2));
     },
   } satisfies CommandModule;
 }

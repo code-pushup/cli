@@ -1,8 +1,5 @@
 import { describe } from 'vitest';
-import {
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
-} from './promise-result';
+import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
 
 describe('promise-result', () => {
   it('should get fulfilled result', () => {

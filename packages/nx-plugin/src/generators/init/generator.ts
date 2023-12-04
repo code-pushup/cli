@@ -56,13 +56,8 @@ function updateNxJsonConfig(tree: Tree) {
   nxJson.targetDefaults ??= {};
   nxJson.targetDefaults[targetName] = {
     inputs: ['default', '^production'],
+    cache: true,
   };
-
-  const cacheableOperations =
-    nxJson?.tasksRunnerOptions?.default?.options?.cacheableOperations;
-  if (cacheableOperations) {
-    cacheableOperations.push(targetName);
-  }
 
   updateNxJson(tree, nxJson);
 }

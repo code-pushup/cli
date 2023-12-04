@@ -19,14 +19,6 @@
       "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
-    "version": {
-      "postTargets": ["cli:github"]
-    },
-    "github": {
-      "options": {
-        "notesFile": "./packages/cli/CHANGELOG.md"
-      }
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -41,6 +33,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/cli/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/cli/unit-tests"
       }
     },
@@ -48,6 +41,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/cli/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/cli/integration-tests"
       }
     },
@@ -68,7 +62,8 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:core", "type:app"]
 }

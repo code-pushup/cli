@@ -1,0 +1,40 @@
+{
+  "name": "examples-plugins",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/plugins/src",
+  "projectType": "library",
+  "implicitDependencies": ["cli"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["examples/plugins/**/*.ts"]
+      },
+      "dependsOn": ["^build"]
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "config": "examples/plugins/vite.config.unit.ts",
+        "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
+      },
+      "dependsOn": ["^build"]
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "config": "examples/plugins/vite.config.integration.ts",
+        "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
+      },
+      "dependsOn": ["^build"]
+    },
+    "run-collect": {
+      "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
+      "dependsOn": ["^build"]
+    }
+  },
+  "tags": []
+}

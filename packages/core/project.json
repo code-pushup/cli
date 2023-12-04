@@ -15,12 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": { "postTargets": ["core:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/core/CHANGELOG.md"
-      }
-    },
     "publish": {
       "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -39,6 +33,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/core/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/core/unit-tests"
       }
     },
@@ -46,9 +41,11 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
+        "config": "packages/core/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/core/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:core", "type:feature"]
 }

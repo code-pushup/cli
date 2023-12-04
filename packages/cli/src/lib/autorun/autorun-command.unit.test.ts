@@ -1,39 +1,12 @@
 import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  PortalUploadArgs,
-  ReportFragment,
-  uploadToPortal,
-} from '@code-pushup/portal-client';
+import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports } from '@code-pushup/core';
 import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
-
-// This in needed to mock the API client used inside the upload function
-vi.mock('@code-pushup/portal-client', async () => {
-  const module: typeof import('@code-pushup/portal-client') =
-    await vi.importActual('@code-pushup/portal-client');
-
-  return {
-    ...module,
-    uploadToPortal: vi.fn(
-      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
-    ),
-  };
-});
-
-// Mock file system API's
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
 
 vi.mock('@code-pushup/core', async () => {
   const core = await vi.importActual('@code-pushup/core');
@@ -43,21 +16,8 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
-// Mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
-    await vi.importActual('@code-pushup/testing-utils');
-  return {
-    bundleRequire: vi
-      .fn()
-      .mockResolvedValue({ mod: { default: CORE_CONFIG_MOCK } }),
-  };
-});
-
 describe('autorun-command', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vol.reset();
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
