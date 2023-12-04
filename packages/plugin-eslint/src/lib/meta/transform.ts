@@ -1,4 +1,5 @@
 import type { Audit } from '@code-pushup/models';
+import { truncateDescription, truncateTitle } from '@code-pushup/utils';
 import { ruleIdToSlug } from './hash';
 import { RuleData } from './rules';
 
@@ -17,8 +18,8 @@ export function ruleToAudit({ ruleId, meta, options }: RuleData): Audit {
 
   return {
     slug: ruleIdToSlug(ruleId, options),
-    title: meta.docs?.description ?? name,
-    description: lines.join('\n\n'),
+    title: truncateTitle(meta.docs?.description ?? name),
+    description: truncateDescription(lines.join('\n\n')),
     ...(meta.docs?.url && {
       docsUrl: meta.docs.url,
     }),
