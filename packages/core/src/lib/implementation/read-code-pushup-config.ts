@@ -1,20 +1,18 @@
-import { stat } from 'fs/promises';
 import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
-import { importEsmModule } from '@code-pushup/utils';
+import { fileExists, importEsmModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
-    super(`Config path ${configPath} is not a file.`);
+    super(`Provided path '${configPath}' is not valid.`);
   }
 }
 
 export async function readCodePushupConfig(filepath: string) {
   if (!filepath.length) {
-    throw new Error('No filepath provided');
+    throw new Error('The configuration path is empty.');
   }
 
-  const isFile = (await stat(filepath)).isFile();
-  if (!isFile) {
+  if (!(await fileExists(filepath))) {
     throw new ConfigPathError(filepath);
   }
 
