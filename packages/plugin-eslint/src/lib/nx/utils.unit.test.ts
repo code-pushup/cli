@@ -46,6 +46,21 @@ describe('find code-pushup.eslintrc.* file', () => {
     ).resolves.toBe('./packages/core/code-pushup.eslintrc.js');
   });
 
+  it('should look for JSON extension before JavaScript', async () => {
+    vol.fromJSON(
+      {
+        'libs/utils/code-pushup.eslintrc.js':
+          "module.exports = { extends: '@code-pushup' };",
+        'libs/utils/code-pushup.eslintrc.json': '{ "extends": "@code-pushup" }',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(findCodePushupEslintrc({ root: 'libs/utils' })).resolves.toBe(
+      './libs/utils/code-pushup.eslintrc.json',
+    );
+  });
+
   it('should look for JavaScript extensions before YAML', async () => {
     vol.fromJSON(
       {
