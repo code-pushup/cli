@@ -2,6 +2,16 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.3.0](https://github.com/code-pushup/cli/compare/v0.2.0...v0.3.0) (2023-12-04)
+
+### Bug Fixes
+
+- **plugin-eslint:** truncate rule texts to pass models validations ([a6aac56](https://github.com/code-pushup/cli/commit/a6aac56ed5b6ac73638033ddf5fbba0ab4ec2551))
+
+### Features
+
+- **utils:** add utility function for truncating texts ([bdce572](https://github.com/code-pushup/cli/commit/bdce57299088045ed0af5c0b8129c59d8625e80e))
+
 # [0.2.0](https://github.com/code-pushup/cli/compare/v0.1.1...v0.2.0) (2023-12-04)
 
 ### Bug Fixes
