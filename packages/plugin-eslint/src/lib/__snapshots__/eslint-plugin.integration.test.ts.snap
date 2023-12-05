@@ -287,6 +287,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     },
   ],
   "description": "Official Code PushUp ESLint plugin",
+  "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
   "groups": [
     {
       "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",

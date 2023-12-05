@@ -32,6 +32,6 @@ describe('configMiddleware', () => {
   it('should throw with invalid config path', async () => {
     await expect(
       configMiddleware({ config: 'wrong/path/to/config' }),
-    ).rejects.toThrow(/no such file or directory/);
+    ).rejects.toThrow(/Provided path .* is not valid./);
   });
 });

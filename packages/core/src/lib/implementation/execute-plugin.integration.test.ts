@@ -8,7 +8,6 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { auditReport, pluginConfig } from '@code-pushup/models/testing';
-import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import {
   PluginOutputMissingAuditError,
   executePlugin,
@@ -28,7 +27,7 @@ invalidSlugPluginCfg.audits = [
   },
 ];
 
-const DEFAULT_OPTIONS = { progress: DEFAULT_TESTING_CLI_OPTIONS.progress };
+const DEFAULT_OPTIONS = { progress: false };
 
 describe('executePlugin', () => {
   it('should execute valid plugin config', async () => {

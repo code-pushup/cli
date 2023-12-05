@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { reportSchema } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
-import { DEFAULT_TESTING_CLI_OPTIONS } from '../../../test/constants';
 import { CollectOptions, collect } from './collect';
 
 const baseOptions: CollectOptions = {
   ...minimalConfig(),
-  ...DEFAULT_TESTING_CLI_OPTIONS,
+  verbose: true,
+  progress: false,
 };
 
 describe('collect', () => {

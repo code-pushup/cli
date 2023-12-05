@@ -5,6 +5,25 @@ import { join } from 'path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
 
+export async function readTextFile(path: string): Promise<string> {
+  const buffer = await readFile(path);
+  return buffer.toString();
+}
+
+export async function readJsonFile<T = unknown>(path: string): Promise<T> {
+  const text = await readTextFile(path);
+  return JSON.parse(text);
+}
+
+export async function fileExists(path: string): Promise<boolean> {
+  try {
+    const stats = await stat(path);
+    return stats.isFile();
+  } catch {
+    return false;
+  }
+}
+
 export function toUnixPath(
   path: string,
   options?: { toRelative?: boolean },
@@ -28,16 +47,6 @@ export async function ensureDirectoryExists(baseDir: string) {
       throw error;
     }
   }
-}
-
-export async function readTextFile(path: string): Promise<string> {
-  const buffer = await readFile(path);
-  return buffer.toString();
-}
-
-export async function readJsonFile<T = unknown>(path: string): Promise<T> {
-  const text = await readTextFile(path);
-  return JSON.parse(text);
 }
 
 export type FileResult = readonly [string] | readonly [string, number];

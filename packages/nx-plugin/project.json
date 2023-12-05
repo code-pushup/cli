@@ -36,8 +36,6 @@
         ]
       }
     },
-    "version": {},
-    "github": {},
     "exec:init": {
       "command": "nx g ./dist/packages/nx-plugin:init",
       "dependsOn": ["build"]
@@ -68,7 +66,8 @@
         "config": "packages/nx-plugin/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/models/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:tooling", "type:feature"]
 }

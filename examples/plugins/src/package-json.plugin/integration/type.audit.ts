@@ -1,14 +1,7 @@
-import {
-  factorOf,
-  findLineNumberInText,
-} from '../../../../../dist/packages/utils/src';
-import { AuditOutput, Issue } from '../../../../../packages/models/src';
-import { PackageJson, SourceResults } from './types';
-import {
-  assertPropertyEmpty,
-  filterSeverityError,
-  pluralizePackage,
-} from './utils';
+import {factorOf, findLineNumberInText,} from '@code-pushup/utils';
+import {AuditOutput, Issue} from '@code-pushup/models';
+import {SourceResults} from './types';
+import {assertPropertyEmpty, filterSeverityError, pluralizePackage,} from './utils';
 
 const typeAuditSlug = 'package-type-check';
 export const typeAuditInfoMeta = {

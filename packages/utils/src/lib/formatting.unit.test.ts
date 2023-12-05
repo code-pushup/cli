@@ -5,6 +5,7 @@ import {
   pluralize,
   pluralizeToken,
   slugify,
+  truncateText,
 } from './formatting';
 
 describe('slugify', () => {
@@ -76,5 +77,23 @@ describe('formatDuration', () => {
     [1200, '1.20 s'],
   ])('should log correct plural for %s`', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
+  });
+});
+
+describe('truncateText', () => {
+  it('should replace overflowing text with ellipsis', () => {
+    expect(truncateText('All work and no play makes Jack a dull boy', 32)).toBe(
+      'All work and no play makes Ja...',
+    );
+  });
+
+  it('should produce truncated text which fits within limit', () => {
+    expect(
+      truncateText('All work and no play makes Jack a dull boy', 32).length,
+    ).toBeLessThanOrEqual(32);
+  });
+
+  it('should leave text unchanged when within character limit', () => {
+    expect(truncateText("Here's Johnny!", 32)).toBe("Here's Johnny!");
   });
 });

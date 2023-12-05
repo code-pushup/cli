@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/cli-source",
-  "version": "0.0.0",
+  "version": "0.3.1",
   "license": "MIT",
   "scripts": {
     "prepare": "husky install",
@@ -79,6 +79,7 @@
     "lighthouse": "^11.0.0",
     "memfs": "^4.5.0",
     "moment": "^2.29.4",
+    "ngx-deploy-npm": "^7.1.0",
     "nx": "17.1.3",
     "prettier": "^2.6.2",
     "react": "^18.2.0",

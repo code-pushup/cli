@@ -1,5 +1,10 @@
 import { z } from 'zod';
 import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_SLUG_LENGTH,
+  MAX_TITLE_LENGTH,
+} from './limits';
 import { filenameRegex, slugRegex } from './utils';
 
 /**
@@ -33,8 +38,8 @@ export function slugSchema(
       message:
         'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
     })
-    .max(128, {
-      message: 'slug can be max 128 characters long',
+    .max(MAX_SLUG_LENGTH, {
+      message: `slug can be max ${MAX_SLUG_LENGTH} characters long`,
     });
 }
 
@@ -43,7 +48,7 @@ export function slugSchema(
  * @param description
  */
 export function descriptionSchema(description = 'Description (markdown)') {
-  return z.string({ description }).max(65536).optional();
+  return z.string({ description }).max(MAX_DESCRIPTION_LENGTH).optional();
 }
 
 /**
@@ -67,7 +72,7 @@ export function urlSchema(description: string) {
  * @param description
  */
 export function titleSchema(description = 'Descriptive name') {
-  return z.string({ description }).max(256);
+  return z.string({ description }).max(MAX_TITLE_LENGTH);
 }
 
 /**

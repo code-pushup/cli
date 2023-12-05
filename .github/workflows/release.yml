@@ -42,8 +42,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute version target on all affected packages and release them
-        run: npx nx affected --base=latest --target=version --parallel=1 --dryRun
+      - name: Execute version target
+        run: npx nx version @code-pushup/cli-source --dryRun
+      - name: Deploy to NPM
+        run: npx nx run-many --target=deploy --dry-run
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -80,10 +82,11 @@ jobs:
       - name: Execute version target on all affected packages and release them
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: npx nx version @code-pushup/cli-source
+      - name: Deploy to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         # un-exclude packages when they're ready for public release
-        run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin --parallel=1
-      - name: Tag latest
-        shell: bash
         run: |
-          git tag -f latest
-          git push origin latest --force
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin

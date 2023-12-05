@@ -16,8 +16,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": {},
-    "github": {},
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -47,7 +45,8 @@
         "config": "packages/plugin-eslint/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }

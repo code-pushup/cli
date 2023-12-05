@@ -15,6 +15,7 @@ export default defineConfig({
     globalSetup: ['global-setup.ts'],
     setupFiles: [
       '../../testing-utils/src/lib/setup/console.mock.ts',
+      '../../testing-utils/src/lib/setup/fs.mock.ts',
       '../../testing-utils/src/lib/setup/reset.mocks.ts',
     ],
   },

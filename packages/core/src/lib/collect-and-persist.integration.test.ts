@@ -4,7 +4,6 @@ import { describe, vi } from 'vitest';
 import { ReportFragment } from '@code-pushup/portal-client';
 import { Report } from '@code-pushup/models';
 import { minimalConfig } from '@code-pushup/models/testing';
-import { DEFAULT_TESTING_CLI_OPTIONS } from '../../test/constants';
 import { collectAndPersistReports } from './collect-and-persist';
 
 // This in needed to mock the API client used inside the upload function
@@ -28,7 +27,8 @@ describe('collectAndPersistReports', () => {
   it('should work', async () => {
     const cfg = minimalConfig(outputDir);
     await collectAndPersistReports({
-      ...DEFAULT_TESTING_CLI_OPTIONS,
+      verbose: true,
+      progress: false,
       ...cfg,
     });
     const result = JSON.parse(readFileSync(reportPath()).toString()) as Report;
