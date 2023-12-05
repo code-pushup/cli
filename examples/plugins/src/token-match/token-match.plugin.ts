@@ -15,7 +15,7 @@ const tokenMatchAuditSlug = 'token-match-audit';
 export const auditsMap = {
   [tokenMatchAuditSlug]: {
     slug: tokenMatchAuditSlug,
-    title: 'Token Match Audit',
+    title: 'Token match Audit',
     description: 'An audit to check JavaScript file size in a directory.',
   },
 };
@@ -30,6 +30,37 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
   }),
 );
 
+/**
+ * Plugin to measure and assert filesize of files in a directory.
+ *
+ * @example
+ * // code-pushup.config.ts
+ * import {
+ *   create as tokenMatchPlugin,
+ *   recommendedRef as tokenMatchRecommendedRefs
+ * } from 'file-size.plugin.ts';
+ * export default {
+ *   persist: {
+ *     outputDir: '.code-pushup',
+ *   },
+ *   plugins: [
+ *     await tokenMatchPlugin({
+ *       directory: join(process.cwd(), './dist/packages/utils'),
+ *       pattern: /\.js$/,
+ *       budget: 4200
+ *     })
+ *   ],
+ *   categories: [
+ *     {
+ *       slug: 'performance',
+ *       title: 'Performance',
+ *       refs: [
+ *         ...tokenMatchRecommendedRefs
+ *       ]
+ *     }
+ *   ]
+ * }
+ */
 export function create(options: PluginOptions): PluginConfig {
   return {
     slug: pluginSlug,
@@ -50,14 +81,28 @@ export async function runnerFunction(
     displayValue: pluralizeToken('file'),
   };
 
+  const issues = await crawlFileSystem({
+    directory: options.directory,
+    fileTransform: async (file: string) => {
+      const content = await readFile(file)
+      return tokenIssue(file, content.toString(), options.pattern);
+    },
+  });
+
+  const errorCount = issues.filter(filterSeverityError).length;
   return [
     {
-      ...tokenMatchAuditOutput
+      ...tokenMatchAuditOutput,
+      score: factorOf(issues, filterSeverityError),
+      value: errorCount,
+      displayValue: pluralizeToken('files', errorCount),
+      details: {
+        issues,
+      },
     },
   ];
 }
 
-/*
 function filterSeverityError(issue: Issue): issue is Issue {
   return issue.severity === 'error';
 }
@@ -87,4 +132,3 @@ export function tokenIssue(
     message: `File does not contain token ${token}.`,
   } satisfies Issue;
 }
-*/

@@ -43,7 +43,7 @@ const config: CoreConfig = {
     }),
     tokenMatchPlugin({
       directory: './packages/',
-      pattern: /T/,
+      pattern: /TODO/,
     }),
   ],
 

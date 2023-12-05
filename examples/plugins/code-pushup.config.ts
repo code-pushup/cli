@@ -26,7 +26,7 @@ const config = (() => ({
   plugins: [
     tokenMatchPlugin({
       directory: './packages/',
-      pattern: /T/,
+      pattern: /TODO/,
     }),
   ],
   categories: [
