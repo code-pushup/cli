@@ -6,6 +6,8 @@ import eslintPlugin, {
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  tokenMatchPlugin,
+  tokenMatchRecommendedRefs
 } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
@@ -38,6 +40,10 @@ const config: CoreConfig = {
       directory: './dist/packages',
       pattern: /\.js$/,
       budget: 42000,
+    }),
+    tokenMatchPlugin({
+      directory: './packages/',
+      pattern: /T/,
     }),
   ],
 

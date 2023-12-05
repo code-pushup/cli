@@ -2,6 +2,11 @@ import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
 } from './src/file-size/file-size.plugin';
+import {
+  create as tokenMatchPlugin,
+  recommendedRefs as tokenMatchRecommendedRefs,
+} from './src/token-match/token-match.plugin';
+
 
 /**
  * Run it with:
@@ -19,18 +24,16 @@ const config = (() => ({
     outputDir,
   },
   plugins: [
-    fileSizePlugin({
-      directory: './dist',
-      pattern: /\.js$/,
-      // eslint-disable-next-line no-magic-numbers
-      budget: 42_000,
+    tokenMatchPlugin({
+      directory: './packages/',
+      pattern: /T/,
     }),
   ],
   categories: [
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
+      refs: [...tokenMatchRecommendedRefs],
     },
   ],
 }))();
