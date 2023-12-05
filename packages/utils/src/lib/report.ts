@@ -4,6 +4,7 @@ import {
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
+  Issue,
   PersistConfig,
   Report,
   reportSchema,
@@ -277,4 +278,23 @@ export function getPluginNameFromSlug(
   return (
     plugins.find(({ slug: pluginSlug }) => pluginSlug === slug)?.title || slug
   );
+}
+
+export function sortAuditIssues(a: Issue, b: Issue): number {
+  if (a.severity !== b.severity) {
+    return -compareIssueSeverity(a.severity, b.severity);
+  }
+
+  if (a.source?.file !== b.source?.file) {
+    return a.source?.file.localeCompare(b.source?.file || '') || 0;
+  }
+
+  if (a.source?.position?.startLine !== b.source?.position?.startLine) {
+    return (
+      (a.source?.position?.startLine || 0) -
+      (b.source?.position?.startLine || 0)
+    );
+  }
+
+  return 0;
 }
