@@ -133,10 +133,10 @@ export async function crawlFileSystem<T = string>(options: {
 
 export function findLineNumberInText(
   content: string,
-  pattern: string,
+  pattern: string | RegExp,
 ): number | null {
   const lines = content.split(/\r?\n/); // Split lines, handle both Windows and UNIX line endings
 
-  const lineNumber = lines.findIndex(line => line.includes(pattern)) + 1; // +1 because line numbers are 1-based
+  const lineNumber = lines.findIndex(line => line.match(pattern)) + 1; // +1 because line numbers are 1-based
   return lineNumber === 0 ? null : lineNumber; // If the package isn't found, return null
 }
