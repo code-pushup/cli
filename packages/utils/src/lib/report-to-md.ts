@@ -34,6 +34,7 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
+  sortAuditIssues,
   sortAudits,
   sortCategoryAudits,
 } from './report';
@@ -216,7 +217,7 @@ function reportToAuditsSection(report: ScoredReport): string {
 
       const detailsTableData = [
         detailsTableHeaders,
-        ...audit.details.issues.map((issue: Issue) => {
+        ...audit.details.issues.sort(sortAuditIssues).map((issue: Issue) => {
           const severity = `${getSeverityIcon(issue.severity)} <i>${
             issue.severity
           }</i>`;

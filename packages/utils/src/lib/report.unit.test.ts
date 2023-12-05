@@ -1,6 +1,11 @@
 import { vol } from 'memfs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CategoryRef, IssueSeverity, PluginReport } from '@code-pushup/models';
+import {
+  CategoryRef,
+  Issue,
+  IssueSeverity,
+  PluginReport,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
@@ -8,6 +13,7 @@ import {
   countWeightedRefs,
   getPluginNameFromSlug,
   loadReport,
+  sortAuditIssues,
   sortAudits,
   sortCategoryAudits,
 } from './report';
@@ -221,5 +227,39 @@ describe('getPluginNameFromSlug', () => {
     ] as ScoredReport['plugins'];
     expect(getPluginNameFromSlug('plugin-a', plugins)).toBe('Plugin A');
     expect(getPluginNameFromSlug('plugin-b', plugins)).toBe('Plugin B');
+  });
+});
+
+describe('sortAuditIssues', () => {
+  it('should sort issues by severity and source file', () => {
+    const mockIssues = [
+      { severity: 'warning', source: { file: 'b' } },
+      { severity: 'error', source: { file: 'c' } },
+      { severity: 'error', source: { file: 'a' } },
+      { severity: 'info', source: { file: 'b' } },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(sortAuditIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'error', source: { file: 'a' } },
+      { severity: 'error', source: { file: 'c' } },
+      { severity: 'warning', source: { file: 'b' } },
+      { severity: 'info', source: { file: 'b' } },
+    ]);
+  });
+
+  it('should sort issues by source file and source start line', () => {
+    const mockIssues = [
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(sortAuditIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+    ]);
   });
 });
