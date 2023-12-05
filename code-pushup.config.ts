@@ -63,7 +63,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
+      refs: [...fileSizeRecommendedRefs, ...tokenMatchRecommendedRefs],
     },
   ],
 };
