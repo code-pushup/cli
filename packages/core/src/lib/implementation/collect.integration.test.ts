@@ -28,4 +28,15 @@ describe('collect', () => {
       }),
     );
   });
+
+  it('should execute when no plugins are passed', async () => {
+    await expect(
+      collect({
+        ...MINIMAL_CONFIG_MOCK,
+        plugins: [],
+        verbose: true,
+        progress: false,
+      }),
+    ).rejects.toThrow('No plugins registered');
+  });
 });
