@@ -2,7 +2,10 @@ import { vol } from 'memfs';
 import { describe } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import {
+  ISO_STRING_REGEXP,
+  MINIMAL_REPORT_MOCK,
+} from '@code-pushup/testing-utils';
 import { UploadOptions, upload } from './upload';
 
 describe('upload', () => {
@@ -36,7 +39,7 @@ describe('upload', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: expect.any(String),
+        commandStartDate: expect.stringMatching(ISO_STRING_REGEXP),
         commandDuration: expect.any(Number),
         categories: expect.any(Array),
         plugins: expect.any(Array),

@@ -1,6 +1,9 @@
 import { describe } from 'vitest';
 import { Report } from '@code-pushup/models';
-import { MINIMAL_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import {
+  ISO_STRING_REGEXP,
+  MINIMAL_CONFIG_MOCK,
+} from '@code-pushup/testing-utils';
 import { collectAndPersistReports } from './collect-and-persist';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
@@ -12,7 +15,7 @@ vi.mock('./implementation/collect', async () => {
         ({
           packageName: 'code-pushup',
           version: '0.0.1',
-          date: new Date().toString(),
+          date: new Date().toISOString(),
           duration: 0,
           categories: [],
           plugins: [],
@@ -46,7 +49,7 @@ describe('collectAndPersistReports', () => {
       {
         packageName: 'code-pushup',
         version: '0.0.1',
-        date: expect.any(String),
+        date: expect.stringMatching(ISO_STRING_REGEXP),
         duration: 0,
         categories: [],
         plugins: [],
@@ -78,7 +81,7 @@ describe('collectAndPersistReports', () => {
       {
         packageName: 'code-pushup',
         version: '0.0.1',
-        date: expect.any(String),
+        date: expect.stringMatching(ISO_STRING_REGEXP),
         duration: 0,
         categories: [],
         plugins: [],
