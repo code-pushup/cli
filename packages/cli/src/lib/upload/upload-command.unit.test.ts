@@ -2,7 +2,10 @@ import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import {
+  ISO_STRING_REGEXP,
+  MINIMAL_REPORT_MOCK,
+} from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
@@ -42,7 +45,7 @@ describe('upload-command-object', () => {
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
-        commandStartDate: expect.any(String),
+        commandStartDate: expect.stringMatching(ISO_STRING_REGEXP),
         commandDuration: expect.any(Number),
         categories: expect.any(Array),
         plugins: expect.any(Array),

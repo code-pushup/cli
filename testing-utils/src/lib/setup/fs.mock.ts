@@ -1,5 +1,5 @@
 import { SpyInstance, afterEach, beforeEach, vi } from 'vitest';
-import { MEMFS_VOLUME } from '../memfs';
+import { MEMFS_VOLUME } from '../constants';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
