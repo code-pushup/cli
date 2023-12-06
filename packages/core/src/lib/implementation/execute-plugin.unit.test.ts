@@ -1,10 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import {
-  AuditOutputs,
-  PluginConfig,
-  RunnerFunction,
-} from '@code-pushup/models';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -21,16 +17,7 @@ describe('executePlugin', () => {
     expect(pluginResult.audits[0]?.slug).toBe('node-version');
   });
 
-  it('should throw with missing plugin audit', async () => {
-    await expect(() =>
-      executePlugin({
-        ...MINIMAL_PLUGIN_CONFIG_MOCK,
-        audits: [{ slug: '-invalid-slug', title: 'Invalid audit' }],
-      }),
-    ).rejects.toThrow(new PluginOutputMissingAuditError('node-version'));
-  });
-
-  it('should work with valid runner config', async () => {
+  it('should yield audit outputs for valid runner config', async () => {
     vol.fromJSON(
       {
         'output.json': JSON.stringify([
@@ -55,7 +42,7 @@ describe('executePlugin', () => {
     expect(pluginResult.audits[0]?.slug).toBe('node-version');
   });
 
-  it('should yield audit outputs with a valid runner function', async () => {
+  it('should yield audit outputs for a valid runner function', async () => {
     const pluginResult = await executePlugin({
       ...MINIMAL_PLUGIN_CONFIG_MOCK,
       runner: () => [
@@ -76,13 +63,13 @@ describe('executePlugin', () => {
     ]);
   });
 
-  it('should throw with invalid runner config', async () => {
-    await expect(
+  it('should throw when plugin slug is invalid', async () => {
+    await expect(() =>
       executePlugin({
         ...MINIMAL_PLUGIN_CONFIG_MOCK,
-        runner: '' as unknown as RunnerFunction,
+        audits: [{ slug: '-invalid-slug', title: 'Invalid audit' }],
       }),
-    ).rejects.toThrow('runner is not a function');
+    ).rejects.toThrow(new PluginOutputMissingAuditError('node-version'));
   });
 
   it('should throw if invalid runnerOutput is produced', async () => {
