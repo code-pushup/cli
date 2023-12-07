@@ -272,7 +272,7 @@ describe('sortAuditIssues', () => {
         source: { file: 'a', position: { startLine: 2 } },
       },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
-      { severity: 'info' },
+      { severity: 'info', source: { file: 'b' } },
       { severity: 'error' },
     ] as Issue[];
     const sortedIssues = [...mockIssues].sort(compareIssues);
@@ -282,7 +282,7 @@ describe('sortAuditIssues', () => {
         severity: 'warning',
         source: { file: 'a', position: { startLine: 2 } },
       },
-      { severity: 'info' },
+      { severity: 'info', source: { file: 'b' } },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
       { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
