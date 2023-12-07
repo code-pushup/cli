@@ -297,6 +297,14 @@ export function compareIssues(a: Issue, b: Issue): number {
     return a.source?.file.localeCompare(b.source?.file || '') || 0;
   }
 
+  if (!a.source?.position && b.source?.position) {
+    return -1;
+  }
+
+  if (a.source?.position && !b.source?.position) {
+    return 1;
+  }
+
   if (a.source?.position?.startLine !== b.source?.position?.startLine) {
     return (
       (a.source?.position?.startLine || 0) -
