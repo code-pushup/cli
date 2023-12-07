@@ -10,10 +10,10 @@ import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
+  compareIssues,
   countWeightedRefs,
   getPluginNameFromSlug,
   loadReport,
-  sortAuditIssues,
   sortAudits,
   sortCategoryAudits,
 } from './report';
@@ -238,7 +238,7 @@ describe('sortAuditIssues', () => {
       { severity: 'error', source: { file: 'a' } },
       { severity: 'info', source: { file: 'b' } },
     ] as Issue[];
-    const sortedIssues = [...mockIssues].sort(sortAuditIssues);
+    const sortedIssues = [...mockIssues].sort(compareIssues);
     expect(sortedIssues).toEqual([
       { severity: 'error', source: { file: 'a' } },
       { severity: 'error', source: { file: 'c' } },
@@ -254,9 +254,35 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
     ] as Issue[];
-    const sortedIssues = [...mockIssues].sort(sortAuditIssues);
+    const sortedIssues = [...mockIssues].sort(compareIssues);
     expect(sortedIssues).toEqual([
       { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+    ]);
+  });
+
+  it('should sort issues without source on top of same severity', () => {
+    const mockIssues = [
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+      {
+        severity: 'warning',
+        source: { file: 'a', position: { startLine: 2 } },
+      },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info' },
+      { severity: 'error' },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(compareIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'error' },
+      {
+        severity: 'warning',
+        source: { file: 'a', position: { startLine: 2 } },
+      },
+      { severity: 'info' },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
       { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
