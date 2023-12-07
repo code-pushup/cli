@@ -280,9 +280,17 @@ export function getPluginNameFromSlug(
   );
 }
 
-export function sortAuditIssues(a: Issue, b: Issue): number {
+export function compareIssues(a: Issue, b: Issue): number {
   if (a.severity !== b.severity) {
     return -compareIssueSeverity(a.severity, b.severity);
+  }
+
+  if (!a.source && b.source) {
+    return -1;
+  }
+
+  if (a.source && !b.source) {
+    return 1;
   }
 
   if (a.source?.file !== b.source?.file) {
