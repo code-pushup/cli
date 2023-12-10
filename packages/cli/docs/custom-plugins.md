@@ -174,6 +174,7 @@ codebase.
 ```typescript
 // file-size.plugin.ts
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import { pluralizeToken } from '@code-pushup/utils';
 
 export type Options = {
   // add the directory to the plugin options
@@ -265,8 +266,7 @@ Made with ❤ by code-pushup.dev
 ### RunnerConfig
 
 The second way to write a plugin runner is a `RunnerConfig`.
-This option is less flexible but can be used in cases when you have to use another CLI.
-why runner function can't be used...
+This option is more flexible, but at the cost of more complexity. It can be used in cases when you have to use another CLI, where a runner function can't be used.
 
 We will implement a performance focused plugin using the [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli) as real life example.
 
@@ -343,6 +343,7 @@ The basic implementation of a `RunnerConfig` for the above command looks like th
 // ...
 import { join } from 'path';
 import { AuditOutputs } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
 
 function runnerConfig(options: Options): RunnerConfig {
   const { url } = options;
