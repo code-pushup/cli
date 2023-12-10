@@ -66,4 +66,4 @@ Detailed information about the audits can be found in the docs folder of the plu
 
 The following audits are present:
 
-- [file-size-unmodified](@TODO link to docs/file-size-unmodified.audit.md)
+- [file-size-unmodified](@TODO - link to docs/file-size-unmodified.audit.md)
