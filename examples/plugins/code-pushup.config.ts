@@ -1,6 +1,6 @@
 import fileSizePlugin, {
   recommendedRefs as fileSizeRecommendedRefs,
-} from './src/file-size/file-size.plugin';
+} from './src/file-size/src/file-size.plugin';
 
 /**
  * Run it with:
