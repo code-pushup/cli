@@ -198,7 +198,7 @@ describe('runnerFunction', () => {
   const filesizeAuditOutputBase = {
     displayValue: '0 files oversize',
     score: 1,
-    slug: 'file-size-check',
+    slug: 'file-size-unmodified',
     value: 0,
   };
 
