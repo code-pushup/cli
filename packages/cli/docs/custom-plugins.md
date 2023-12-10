@@ -34,6 +34,7 @@ The plugin configuration contains:
 - metadata about the plugin [`PluginMeta`](@TODO - link models)
 - metadata about the available [audit](#audits) [`Audit`](@TODO - link models)
 - a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](@TODO - link models).
+- optional [`groups`](#audit-groups) to pre score audits
 
 A minimal custom plugin containing the required fields looks like the following:
 
