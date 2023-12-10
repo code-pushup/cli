@@ -3,8 +3,7 @@ import { z } from 'zod';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
-import {
-  fileSizePlugin,
+import fileSizePlugin, {
   fileSizeRecommendedRefs,
 } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';

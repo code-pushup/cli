@@ -192,3 +192,5 @@ export function assertFileSize(
     message: infoMessage(file, formattedSize),
   } satisfies Issue;
 }
+
+export default create;

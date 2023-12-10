@@ -1,5 +1,4 @@
-import {
-  create as fileSizePlugin,
+import fileSizePlugin, {
   recommendedRefs as fileSizeRecommendedRefs,
 } from './src/file-size/file-size.plugin';
 

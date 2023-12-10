@@ -23,7 +23,7 @@ You can configure the plugin with the following options:
    Pass in the path od the directory to crawl (relative to `process.cwd()`), as well as patterns and a budgget.
 
    ```js
-   import { create as fileSizePlugin } from './file-size.plugin';
+   import fileSizePlugin from './file-size.plugin';
 
    export default {
      // ...
@@ -43,7 +43,7 @@ You can configure the plugin with the following options:
    Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
 
    ```js
-   import { recommendedRefs as fileSizeRecommendedRefs } from './file-size.plugin';
+   import fileSizePlugin, { recommendedRefs as fileSizeRecommendedRefs } from './file-size.plugin';
 
    export default {
      // ...

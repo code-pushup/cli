@@ -13,7 +13,7 @@ The following example shows where to register the plugin:
 
 ```typescript
 // code-pushup.config.ts
-import { create as myPlugin } from 'my-plugin';
+import myPlugin from 'my-plugin';
 
 export default {
   plugins: [
@@ -82,6 +82,8 @@ function runnerFunction(options: Options) {
     return [myAuditOutput];
   };
 }
+
+export default create;
 ```
 
 Execute the CLI with `npx code-pushup collect` and you should the following output:
