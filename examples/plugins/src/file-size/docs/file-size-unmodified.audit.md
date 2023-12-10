@@ -20,7 +20,6 @@ The audit provides details in cases a file result is given.
 A `Issue` with severity `info` is present and names to the given file.
 
 ```md
-<details>
   <table>
     <tr>
       <th>Severity</th>
@@ -35,7 +34,6 @@ A `Issue` with severity `info` is present and names to the given file.
       <td></td>
     </tr>
   </table>
-</details>
 ```
 
 **Audit failed**
@@ -43,7 +41,6 @@ A `Issue` with severity `error` is present and names to the given file.
 The file sizes of the given file, the budget as well as the size difference is mentioned in the message.
 
 ```md
-<details>
   <table>
     <tr>
       <th>Severity</th>
@@ -58,5 +55,4 @@ The file sizes of the given file, the budget as well as the size difference is m
       <td></td>
     </tr>
   </table>
-</details>
 ```
