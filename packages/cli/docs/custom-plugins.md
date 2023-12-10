@@ -27,13 +27,13 @@ export default {
 
 ## Plugin Structure
 
-Every plugin is defined in [`PluginConfig`](@TODO) object.
+Every plugin is defined in [`PluginConfig`](@TODO - link models) object.
 
 The plugin configuration contains:
 
-- metadata about the plugin [`PluginMeta`](@TODO)
-- metadata about the available audits [`Audit`](@TODO)
-- a [runner](#plugin-runner) that maintains the internal logic that produces the plugin output as [`AuditOutputs`](@TODO).
+- metadata about the plugin [`PluginMeta`](@TODO - link models)
+- metadata about the available [audit](#audits) [`Audit`](@TODO - link models)
+- a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](@TODO - link models).
 
 A minimal custom plugin containing the required fields looks like the following:
 
@@ -112,7 +112,7 @@ audit `My audit` and the resulting value `0`.
 
 ## Plugin output
 
-Every plugin executes audits and returns the outcome as [`AuditOutputs`](@TODO), which is an array of [`AuditOutput`s](@TODO).
+Every plugin executes audits and returns the outcome as `AuditOutputs`, which is an array of `AuditOutput`s.
 
 The minimum output of an audit looks like this:
 
@@ -127,7 +127,7 @@ const myAuditOutput: AuditOutput = {
 };
 ```
 
-- An audit output always includes the metadata of the audit. [`Audit`](@TODO)
+- An audit output always includes the metadata of the audit. [`Audit`](@TODO - link models)
 
 - `score` and `value` are important to calculate a score from a given metric and display it.
   Here you can read more about [audits and scoring](@TODO - in page link).
@@ -147,14 +147,14 @@ const pluginOutput: AuditOutputs = [myAuditOutput];
 
 The core of a plugin is defined under the `runner` property.
 The `runner` property is the entry point of your plugin and is called by the CLI. It should return the audit results
-as [`AuditOutputs`](@TODO).
+as [`AuditOutputs`](@TODO - link models).
 
 A plugins runner logic can get implemented in 2 ways:
 
 - as a [`RunnerFunction`](#runnerfunction)
 - as a [`RunnerConfig`](#runnerconfig)
 
-Even if both of them result in [`AuditOutputs`](@TODO), we recommend the `RunnerFunction` for getting started.
+Even if both of them result in `AuditOutputs`, we recommend the `RunnerFunction` for getting started.
 It is easier to use for simple plugins and can be written in the config file directly.
 The `RunnerConfig` is suitable for more complex, performance-heavy plugins (runner executed off the main thread), and is more flexible in regard to runtime (can run any shell command, not restricted to JavaScript).
 
