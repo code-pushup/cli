@@ -33,7 +33,7 @@ The plugin configuration contains:
 
 - metadata about the plugin [`PluginMeta`](@TODO)
 - metadata about the available audits [`Audit`](@TODO)
-- internal logic that produces the plugin output as [`AuditOutputs`](@TODO).
+- a [runner](#plugin-runner) that maintains the internal logic that produces the plugin output as [`AuditOutputs`](@TODO).
 
 A minimal custom plugin containing the required fields looks like the following:
 
