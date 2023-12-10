@@ -128,6 +128,17 @@ jobs:
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
 
+## Custom Plugins
+
+We provide comprehensive documentation on [how to create a custom plugin](@TODO).
+
+The repository also maintains a set of plugin examples showcasing different scenarios.  
+Each example is fully tested to give demonstrate best practices for plugin testing.
+
+**Example for custom plugins:**
+
+- [File Size](@TODO) -
+
 ## CLI commands and options
 
 ### Global Options
