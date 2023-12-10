@@ -59,3 +59,11 @@ You can configure the plugin with the following options:
    ```
 
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+## Audits
+
+Detailed information about the audits can be found in the docs folder of the plugin.
+
+The following audits are present:
+
+- [file-size-unmodified](@TODO link to docs/file-size-unmodified.audit.md)

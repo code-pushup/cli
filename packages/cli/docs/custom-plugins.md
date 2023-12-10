@@ -615,7 +615,7 @@ The `report.md` file should contain a similar content like the following:
     </tr>
     <tr>
       <td>🚨 <i>error</i></td>
-      <td>File file-a.js is 17.31 kB bytes too big. ( budget: 41.02 kB)</td>
+      <td>File file-a.js is 17.31 kB bytes too big. (budget: 41.02 kB)</td>
       <td><code>src/file-a.js</code></td>
       <td></td>
     </tr>

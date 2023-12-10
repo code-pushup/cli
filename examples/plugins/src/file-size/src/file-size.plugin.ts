@@ -13,7 +13,7 @@ import {
   formatBytes,
   pluralizeToken,
   toUnixPath,
-} from '../../../../dist/packages/utils';
+} from '../../../../../dist/packages/utils';
 
 export type PluginOptions = {
   directory: string;
@@ -25,12 +25,13 @@ type RunnerOptions = PluginOptions;
 
 export const pluginSlug = 'file-size';
 
-const fileSizeAuditSlug = 'file-size-check';
+const fileSizeAuditSlug = 'file-size-unmodified';
 export const auditsMap = {
   [fileSizeAuditSlug]: {
     slug: fileSizeAuditSlug,
-    title: 'File Size Audit',
-    description: 'An audit to check JavaScript file size in a directory.',
+    title: 'File Size Audit - Unmodified',
+    description:
+      'An audit to check JavaScript file size in a directory. The files are not modified and takes as they are.',
   },
 };
 export const audits = Object.values(auditsMap);
