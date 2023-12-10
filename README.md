@@ -107,6 +107,6 @@ This helps to organize and share target related code.
 The following optional folders can be present in a project root;
 
 - `perf` - micro benchmarks related code
-- `test` - testing related code
+- `mocks` - testing related code
 - `docs` - docs related files
 - `tooling` - tooling related code
