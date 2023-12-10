@@ -1,18 +1,18 @@
 import {describe, expect, it} from 'vitest';
 import {packageResult,} from '../../../mocks/constants';
-import {licenseAudit,} from './license.audit';
+import {typeAudit,} from './type.audit';
 
 
-describe('licenseAudit', () => {
+describe('typeAudit', () => {
   it('should pass if not configured', () => {
     expect(
-      licenseAudit([packageResult({
-        license: 'MIT'
+      typeAudit([packageResult({
+        type: 'MIT'
       })], undefined),
     ).toEqual({
-      "displayValue": "No license required",
+      "displayValue": "No type required",
       "score": 1,
-      "slug": "package-license",
+      "slug": "package-type",
       "value": 0,
     });
   });
@@ -20,49 +20,50 @@ describe('licenseAudit', () => {
   it.each([
     [undefined],
     ['']
-  ])('should error for %s', (license) => {
-    const targetPackageJson = license ? {
-      license
+  ])('should sserror for %s', (type) => {
+    const targetPackageJson = type ? {
+      type
     } : {};
     expect(
-      licenseAudit([packageResult(targetPackageJson)], 'ANY-LICENSE')
+      typeAudit([packageResult(targetPackageJson)], 'CommonJS')
     ).toEqual({
       displayValue: "1 package",
       score: 0,
-      slug: "package-license",
+      slug: "package-type",
       value: 1,
       details: {
         issues: [
           {
-            message: `license should be ANY-LICENSE but is ${license || 'undefined'}`,
+            message: `type should be CommonJS but is ${type || 'undefined'}`,
             severity: "error",
             source: {
-              file: "package.json",
               position: {
                 startLine: null,
               },
+              file: "package.json"
             }
           }
         ]
       }
-    });
+    })
+    ;
   });
 
-  it('should error for different license', () => {
+  it('should error for different type', () => {
     const targetPackageJson = {
-      license: 'WTF'
+      type: 'WTF'
     };
     expect(
-      licenseAudit([packageResult(targetPackageJson)], 'MIT')
+      typeAudit([packageResult(targetPackageJson)], 'Esm')
     ).toEqual({
       displayValue: "1 package",
       score: 0,
-      slug: "package-license",
+      slug: "package-type",
       value: 1,
       details: {
         issues: [
           {
-            message: `license should be MIT but is ${targetPackageJson.license}`,
+            message: `type should be Esm but is ${targetPackageJson.type}`,
             severity: "error",
             source: {
               file: "package.json",

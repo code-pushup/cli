@@ -1,26 +1,19 @@
-import {
-  factorOf,
-} from '../../../../../dist/packages/utils/src';
-import { Audit, AuditOutput, Issue } from '../../../../../packages/models/src';
-import { SourceResults } from './types';
-import {
-  assertPropertyEqual, baseAuditOutput,
-  filterSeverityError,
-  pluralizePackage,
-} from './utils';
+import {Audit, AuditOutput, Issue} from '../../../../../packages/models/src';
+import {SourceResults} from './types';
+import {assertPropertyEmpty, assertPropertyEqual, baseAuditOutput, scoreByErrorIssues} from './utils';
 
-const packageLicenseAuditSlug = 'package-license';
+const licenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {
-  slug: packageLicenseAuditSlug,
+  slug: licenseAuditSlug,
   title: 'License',
   description: 'A audit to check NPM package license`.',
 };
 
-export async function licenseAudit(
+export function licenseAudit(
   packageJsonContents: SourceResults,
   license: string | null = null,
-): Promise<AuditOutput> {
-  const packageLicenseAuditOutput: AuditOutput = baseAuditOutput(packageLicenseAuditSlug);
+): AuditOutput {
+  const packageLicenseAuditOutput: AuditOutput = baseAuditOutput(licenseAuditSlug);
 
   if (!license) {
     return {
@@ -29,22 +22,32 @@ export async function licenseAudit(
     };
   }
 
-  const issues = packageJsonContents.map(({ file, json, content }) => {
-    const issue: Issue = {
+  const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
+
+    if (!license || license === '') {
+      return assertPropertyEmpty({ file, json, content }, 'license', license);
+    }
+    if (license !== json.license) {
+      return assertPropertyEqual({ file, json, content }, 'license', license);
+    }
+
+    return {
       message: `License is ${json.license}`,
       severity: 'info',
       source: {
         file,
       },
     };
-    if (license !== json.license) {
-      return assertPropertyEqual({ file, json, content }, 'license', license);
-    }
-    return issue;
   });
 
   if (issues.length === 0) {
-    return packageLicenseAuditOutput;
+    return {
+      ...packageLicenseAuditOutput,
+      details: {
+        issues
+      }
+    };
   }
-  return scoreByErrorIssues('', issues);
+
+  return scoreByErrorIssues(packageLicenseAuditOutput.slug, issues);
 }

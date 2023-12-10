@@ -1,9 +1,9 @@
-import { vol } from 'memfs';
-import { join } from 'path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
-import { multiPackageFileStructure, packageJsonName } from '../../mocks';
-import { crawlFileSystem, findLineNumberInText } from '@code-pushup/utils';
+import {vol} from 'memfs';
+import {join} from 'path';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {MEMFS_VOLUME} from '@code-pushup/testing-utils';
+import {packageJson, packageJsonName} from '../../../mocks';
+import {crawlFileSystem, findLineNumberInText} from '@code-pushup/utils';
 
 // Mock file system API's
 vi.mock('fs', async () => {
@@ -20,7 +20,9 @@ const outputDir = MEMFS_VOLUME;
 describe('crawlFileSystem', () => {
   beforeEach(() => {
     vol.reset();
-    vol.fromJSON(multiPackageFileStructure, outputDir);
+    vol.fromJSON({
+      [packageJsonName]: JSON.stringify(packageJson, null, 2)
+    }, outputDir);
   });
 
   it('should list all files in file system', async () => {

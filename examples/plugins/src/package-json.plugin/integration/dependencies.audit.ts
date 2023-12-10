@@ -1,6 +1,5 @@
-import { findLineNumberInText } from '../../../../../dist/packages/utils/src';
-import { Audit, AuditOutput, Issue } from '../../../../../packages/models/src';
-import { factorOf } from '../../../../../packages/utils/src';
+import { Audit, AuditOutput, Issue } from '@code-pushup/models';
+import { factorOf, findLineNumberInText } from '@code-pushup/utils';
 import {
   DependencyMap,
   DependencyTypes,
@@ -19,10 +18,10 @@ export const dependenciesAuditMeta: Audit = {
   description: 'A audit to check NPM package versions`.',
 };
 
-export async function dependenciesAudit(
+export function dependenciesAudit(
   packageResults: SourceResults,
   requiredDependencies: RequiredDependencies = {},
-): Promise<AuditOutput> {
+): AuditOutput {
   const packageVersionsAuditOutput: AuditOutput = {
     slug: dependenciesAuditSlug,
     score: 1,
@@ -30,7 +29,7 @@ export async function dependenciesAudit(
     displayValue: pluralizePackage(),
   };
 
-  const issues = await dependenciesIssues(requiredDependencies, packageResults);
+  const issues = dependenciesIssues(requiredDependencies, packageResults);
 
   // early exit if no issues
   if (!issues.length) {
@@ -49,10 +48,10 @@ export async function dependenciesAudit(
   };
 }
 
-export async function dependenciesIssues(
+export function dependenciesIssues(
   requiredDependencies: RequiredDependencies,
   packageResults: SourceResults,
-): Promise<Issue[]> {
+): Issue[] {
   return packageResults.flatMap(packageResult => {
     // iterate dependency types to check
     return (
@@ -132,7 +131,7 @@ export function assertDependency(
     issue.source = {
       file,
       position: {
-        startLine: findLineNumberInText(content, `"${packageName}":`) as number,
+        startLine: findLineNumberInText(content, `"${packageName}":`) || 0,
       },
     };
   }

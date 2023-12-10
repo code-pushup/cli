@@ -7,6 +7,30 @@ export {
   executeProcess,
   objectToCliArgs,
 } from './lib/execute-process';
+export {
+  FileResult,
+  MultipleFileResults,
+  crawlFileSystem,
+  ensureDirectoryExists,
+  fileExists,
+  findLineNumberInText,
+  importEsmModule,
+  logMultipleFileResults,
+  pluginWorkDir,
+  readJsonFile,
+  readTextFile,
+  toUnixPath,
+} from './lib/file-system';
+export {
+  formatBytes,
+  formatDuration,
+  pluralize,
+  pluralizeToken,
+  slugify,
+  truncateDescription,
+  truncateText,
+  truncateTitle,
+} from './lib/formatting';
 export { getLatestCommit, git } from './lib/git';
 export {
   isPromiseFulfilledResult,
