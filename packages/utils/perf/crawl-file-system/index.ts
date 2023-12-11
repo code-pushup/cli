@@ -1,22 +1,29 @@
 import * as Benchmark from 'benchmark';
-import {crawlFileSystem, CrawlFileSystemOptions} from '../../src/lib/file-system';
-import {crawlFileSystemOptimized0} from './optimized0';
-import {join} from "path";
+import { join } from 'path';
+import {
+  CrawlFileSystemOptions,
+  crawlFileSystem,
+} from '../../src/lib/file-system';
+import { crawlFileSystemOptimized0 } from './optimized0';
 
 const PROCESS_ARGUMENT_TARGET_DIRECTORY = String(
   process.argv
     .find(arg => arg.startsWith('--directory'))
     ?.split('=')
-    .pop() || '');
+    .pop() || '',
+);
 const PROCESS_ARGUMENT_PATTERN = String(
   process.argv
     .find(arg => arg.startsWith('--pattern'))
     ?.split('=')
-    .pop() || '');
+    .pop() || '',
+);
 
 const suite = new Benchmark.Suite('report-scoring');
 
-const TARGET_DIRECTORY = PROCESS_ARGUMENT_TARGET_DIRECTORY || join(process.cwd(), '..', '..', '..', 'node_modules');
+const TARGET_DIRECTORY =
+  PROCESS_ARGUMENT_TARGET_DIRECTORY ||
+  join(process.cwd(), '..', '..', '..', 'node_modules');
 const PATTERN = PROCESS_ARGUMENT_PATTERN || /.json$/;
 
 // ==================
@@ -32,7 +39,9 @@ const listeners = {
     if (typeof suite.filter === 'function') {
       console.info(' ');
       console.info(
-        `Total Duration: ${((performance.now() - start) / 1000).toFixed(2)} sec`,
+        `Total Duration: ${((performance.now() - start) / 1000).toFixed(
+          2,
+        )} sec`,
       );
       console.info('Fastest is ' + suite.filter('fastest').map('name'));
     }
@@ -44,7 +53,7 @@ const listeners = {
 // Add tests
 const options = {
   directory: TARGET_DIRECTORY,
-  pattern: PATTERN
+  pattern: PATTERN,
 };
 suite.add('Base', wrapWithDefer(crawlFileSystem));
 suite.add('Optimized 0', wrapWithDefer(crawlFileSystemOptimized0));
@@ -60,7 +69,7 @@ Object.entries(listeners).forEach(([name, fn]) => {
 
 console.info('You can adjust the test with the following arguments:');
 console.info(
-  `directory      target directory of test       --directory=${TARGET_DIRECTORY}`,
+  `directory      target directory of test      --directory=${TARGET_DIRECTORY}`,
 );
 console.info(
   `pattern        pattern to search             --pattern=${PATTERN}`,
@@ -69,18 +78,20 @@ console.info(' ');
 console.info('Start benchmark...');
 console.info(' ');
 
-
 suite.run({
-  async: true
+  async: true,
 });
 
 // ==============================================================
 
-function wrapWithDefer<T>(asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<unknown[]>) {
+function wrapWithDefer<T>(
+  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<any[]>,
+) {
   return {
     defer: true, // important for async functions
     fn: function (deferred: { resolve: () => void }) {
       return asyncFn(options)
+        .catch(() => [])
         .then((result: unknown[]) => {
           if (result.length === 0) {
             throw new Error(`Result length is ${result.length}`);
@@ -89,6 +100,6 @@ function wrapWithDefer<T>(asyncFn: (options: CrawlFileSystemOptions<T>) => Promi
           }
           return void 0;
         });
-    }
-  }
+    },
+  };
 }

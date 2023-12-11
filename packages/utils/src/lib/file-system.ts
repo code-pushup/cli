@@ -106,7 +106,9 @@ export type CrawlFileSystemOptions<T> = {
   pattern?: string | RegExp;
   fileTransform?: (filePath: string) => Promise<T> | T;
 };
-export async function crawlFileSystem<T = string>(options: CrawlFileSystemOptions<T>): Promise<T[]> {
+export async function crawlFileSystem<T = string>(
+  options: CrawlFileSystemOptions<T>,
+): Promise<T[]> {
   const {
     directory,
     pattern,
