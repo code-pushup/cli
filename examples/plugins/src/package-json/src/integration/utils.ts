@@ -3,7 +3,7 @@ import {
   factorOf,
   findLineNumberInText,
   pluralizeToken,
-} from '@code-pushup/utils';
+} from '../../../../../../dist/packages/utils/src';
 import { PackageJson, SourceResult } from './types';
 
 export function baseAuditOutput(slug: string): AuditOutput {
