@@ -85,7 +85,7 @@ suite.run({
 // ==============================================================
 
 function wrapWithDefer<T>(
-  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<any[]>,
+  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<unknown[]>,
 ) {
   return {
     defer: true, // important for async functions
