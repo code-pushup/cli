@@ -21,12 +21,8 @@ describe('typeAudit', () => {
     });
   });
 
-  it.each([[undefined], ['']])('should sserror for %s', type => {
-    const targetPackageJson = type
-      ? {
-          type,
-        }
-      : {};
+  it('should error for undefined', () => {
+    const targetPackageJson = {};
     expect(typeAudit([packageResult(targetPackageJson)], 'CommonJS')).toEqual({
       displayValue: '1 package',
       score: 0,
@@ -35,13 +31,34 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be CommonJS but is ${type || 'undefined'}`,
+            message: `type should be CommonJS but is undefined`,
             severity: 'error',
             source: {
-              position: {
-                startLine: null,
-              },
               file: 'package.json',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('should error for ""', () => {
+    const targetPackageJson = { type: '' };
+    expect(typeAudit([packageResult(targetPackageJson)], 'CommonJS')).toEqual({
+      displayValue: '1 package',
+      score: 0,
+      slug: 'package-type',
+      value: 1,
+      details: {
+        issues: [
+          {
+            message: `type should be CommonJS but is `,
+            severity: 'error',
+            source: {
+              file: 'package.json',
+              position: {
+                startLine: 1,
+              },
             },
           },
         ],

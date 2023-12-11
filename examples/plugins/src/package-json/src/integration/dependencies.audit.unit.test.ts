@@ -35,11 +35,11 @@ describe('assertPackageVersion', () => {
     expect(
       assertDependency(
         packageResult(packageJson),
-        [packageName, '1'],
+        [packageName, '0.0.0'],
         'dependencies',
       ),
     ).toEqual({
-      message: `Package ${packageName}@1 is installed as dependencies.`,
+      message: `Package ${packageName}@0.0.0 is installed as dependencies.`,
       severity: 'info',
       source: {
         file: packageJsonName,
@@ -61,7 +61,7 @@ describe('assertPackageVersion', () => {
       source: {
         file: packageJsonName,
         position: {
-          startLine: 3,
+          startLine: 1,
         },
       },
     });
@@ -76,16 +76,16 @@ describe('dependenciesAudit', () => {
     displayValue: '0 packages',
   };
 
-  it('should list valid dependencies as informative issue', async () => {
+  it('should list valid dependencies as informative issue', () => {
     const packageName = 'lib1';
     const targetVersion = '0.0.0';
-    await expect(
+    expect(
       dependenciesAudit([packageResult(packageJson)], {
         dependencies: {
           [packageName]: targetVersion,
         },
       }),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
         ...baseAuditOutput,
         details: {

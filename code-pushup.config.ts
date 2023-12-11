@@ -6,6 +6,7 @@ import eslintPlugin, {
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  packageJsonPlugin, packageJsonDocumentationGroupRef, packageJsonPerformanceGroupRef, packageJsonVersionControlGroupRef
 } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
@@ -39,13 +40,26 @@ const config: CoreConfig = {
       pattern: /\.js$/,
       budget: 42_000,
     }),
+    packageJsonPlugin({
+      directory: './packages',
+      license: 'MIT',
+      type: 'module',
+      requiredDependencies: {
+        dependencies: {
+          zod: '^3.22.4',
+        },
+      },
+    }),
   ],
 
   categories: [
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+        packageJsonVersionControlGroupRef
+      ],
     },
     {
       slug: 'code-style',
@@ -57,8 +71,16 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
+      refs: [
+        ...fileSizeRecommendedRefs,
+        packageJsonPerformanceGroupRef
+      ],
     },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
+    }
   ],
 };
 

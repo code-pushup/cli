@@ -64,7 +64,7 @@ export type PluginOptions = {
  * // terminal
  * npx code-pushup --config code-pushup.config.ts
  */
-export function create(options: PluginOptions): Promise<PluginConfig> {
+export function create(options: PluginOptions): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'Package Json',
