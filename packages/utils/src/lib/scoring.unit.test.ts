@@ -39,6 +39,12 @@ describe('calculateScore', () => {
       ),
     ).toBeCloseTo(0.92);
   });
+
+  it('works for empty refs (weight 0 is ignored internally)', () => {
+    expect(
+      calculateScore([{ slug: 'uses-long-cache-ttl', weight: 0 }], scoreFn),
+    ).toBe(0);
+  });
 });
 
 describe('scoreReport', () => {
