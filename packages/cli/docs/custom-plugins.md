@@ -637,6 +637,9 @@ The `report.md` file should contain a similar content like the following:
 In this chapter we will see how plugin results contribute to the category scoring.
 
 **basic categories setup**
+In this example we create a Performance category which contains one audit and one group.
+
+Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
 
 ```typescript
 // code-pushup.config.ts
