@@ -43,6 +43,9 @@ export function calculateScore<T extends { weight: number }>(
     },
     { numerator: 0, denominator: 0 },
   );
+  if (!numerator && !denominator) {
+    return 0; // otherwise we produce NaN
+  }
   return numerator / denominator;
 }
 

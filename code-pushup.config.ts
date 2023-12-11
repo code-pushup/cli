@@ -6,6 +6,10 @@ import eslintPlugin, {
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  packageJsonDocumentationGroupRef,
+  packageJsonPerformanceGroupRef,
+  packageJsonPlugin,
+  packageJsonVersionControlGroupRef,
 } from './examples/plugins/src';
 import type { CoreConfig } from './packages/models/src';
 
@@ -34,10 +38,20 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-    await fileSizePlugin({
+    fileSizePlugin({
       directory: './dist/packages',
       pattern: /\.js$/,
-      budget: 42000,
+      budget: 42_000,
+    }),
+    packageJsonPlugin({
+      directory: './packages',
+      license: 'MIT',
+      type: 'module',
+      requiredDependencies: {
+        dependencies: {
+          zod: '^3.22.4',
+        },
+      },
     }),
   ],
 
@@ -45,7 +59,10 @@ const config: CoreConfig = {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+        packageJsonVersionControlGroupRef,
+      ],
     },
     {
       slug: 'code-style',
@@ -57,7 +74,12 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
+      refs: [...fileSizeRecommendedRefs, packageJsonPerformanceGroupRef],
+    },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
     },
   ],
 };
