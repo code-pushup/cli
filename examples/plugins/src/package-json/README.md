@@ -54,31 +54,51 @@ You can configure the plugin with the following options:
 
    Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
 
-   ```js
-   import packageJsonPlugin, { packageJsonDocumentationGroupRef, packageJsonPerformanceGroupRef, packageJsonVersionControlGroupRef } from './file-size.plugin';
+Use the recommendedRefs as quick starting point:
 
-   export default {
-     // ...
-     categories: [
-       // ...
-       {
-         slug: 'bug-prevention',
-         title: 'Bug prevention',
-         refs: [packageJsonVersionControlGroupRef],
-       },
-       {
-         slug: 'performance',
-         title: 'Performance',
-         refs: [packageJsonPerformanceGroupRef],
-       },
-       {
-         slug: 'documentation',
-         title: 'Documentation',
-         refs: [packageJsonDocumentationGroupRef],
-       },
-     ],
-   };
-   ```
+```js
+import packageJsonPlugin, { recommendedRefs } from './package-json.plugin';
+
+export default {
+  // ...
+  categories: [
+    // ...
+    {
+      slug: 'package-json',
+      title: 'Package Json',
+      refs: [...recommendedRefs],
+    },
+  ],
+};
+```
+
+Or set up more fine-grained categories over the exported group references:
+
+```js
+import packageJsonPlugin, { packageJsonDocumentationGroupRef, packageJsonPerformanceGroupRef, packageJsonVersionControlGroupRef } from './file-size.plugin';
+
+export default {
+  // ...
+  categories: [
+    // ...
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [packageJsonVersionControlGroupRef],
+    },
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [packageJsonPerformanceGroupRef],
+    },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
+    },
+  ],
+};
+```
 
 4. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
@@ -90,22 +110,32 @@ The following audits are present:
 
 **Documentation**:
 
-- [package-json-license](@TODO - link to docs/package-json-license.audit.md)
+- [package-json-license](./docs/license.audit.md)
 
 **Performance**:
 
-- [package-json-type](@TODO - link to docs/package-json-type.audit.md)
+- [package-json-type](./docs/type.audit.md)
 
 **Bug Prevention**:
 
-- [package-json-dependencies](@TODO - link to docs/package-json-dependencies.audit.md)
+- [package-json-dependencies](./docs/dependencies.audit.md)
 
-## Groups
+## Helper
 
-Preconfigured groups are available
+You can use the following exports:
+
+### Constants:
+
+- [`packageSlug`](./src/constants.ts#L5)
+- [`audits`](./src/constants.ts#L6)
+
+### References:
+
+Preconfigured audit and group references are available
 
 The following groups can be referenced are present:
 
-- [`packageJsonVersionControlGroupRef`](@TODO - link to line of code)
-- [`packageJsonPerformanceGroupRef`](@TODO - link to line of code)
-- [`packageJsonVersionControlGroupRef`](@TODO - link to line of code)
+- [`reccomendedRefs`](./src/scoring.ts#L65)
+- [`packageJsonVersionControlGroupRef`](./src/scoring.ts#L20)
+- [`packageJsonPerformanceGroupRef`](./src/scoring.ts#L39)
+- [`packageJsonVersionControlGroupRef`](./src/scoring.ts#L58)

@@ -1,18 +1,18 @@
-# 📦 Package Json Audit - License
+# 📦 Package Json Audit - Dependencies
 
-🕵️ **An audit to check the `license` settings in `package.json` files.** 📦
+🕵️ **An audit to check the `dependencies`, `devDependencies` and `optionalDependencies` settings in `package.json` files.** 📦
 
 ---
 
-The audit evaluates the `license` property of a `package.json` file.
+The audit evaluates the dependency related properties of a `package.json` file.
 
 You can configure the plugin with the following options:
 
-- `license` as string naming the license type
+- `type` as string naming the module type
 
 ## Details
 
-The audit provides additional details on the `license` property in cases a file result is given.
+The audit provides additional details on the `type` property in cases a file result is given.
 
 ### Issues
 
@@ -29,7 +29,7 @@ A `Issue` with severity `info` is present and names to the given file.
     </tr>
     <tr>
       <td>ℹ️ <i>info</i></td>
-      <td>No license required</td>
+      <td>No dependencies required</td>
       <td><code>src/package.json</code></td>
       <td></td>
     </tr>
@@ -49,7 +49,7 @@ A `Issue` with severity `info` is present and names to the given file.
     </tr>
     <tr>
       <td>ℹ️ <i>info</i></td>
-      <td>license OK</td>
+      <td>Package PACKAGE_NAME@VERSION is installed as DEPENDENCY_TYPE.</td>
       <td><code>src/package.json</code></td>
       <td></td>
     </tr>
@@ -58,7 +58,7 @@ A `Issue` with severity `info` is present and names to the given file.
 
 **Audit failed**
 A `Issue` with severity `error` is present and names to the given file.  
-The `license` of the given file, the target `license` as well as the given `license` are mentioned in the message.
+The dependencies of the given file, the target version as well as the given version are mentioned in the message.
 
 ```md
   <table>
@@ -70,7 +70,7 @@ The `license` of the given file, the target `license` as well as the given `lice
     </tr>
     <tr>
        <td>🚨 <i>error</i></td>
-      <td>license should be TARGET_LICENSE but is GIVEN_LICENSE</td>
+      <td>Package PACKAGE_NAME in DEPENDENCY_TYPE has wrong version. Wanted TARGET_VERSION but got GIVEN_VERSION</td>
       <td><code>src/file.js</code></td>
       <td></td>
     </tr>

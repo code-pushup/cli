@@ -76,6 +76,15 @@ describe('dependenciesAudit', () => {
     displayValue: '0 packages',
   };
 
+  it('should pass if no dependencies are set', () => {
+    expect(dependenciesAudit([packageResult(packageJson)], {})).toEqual(
+      expect.objectContaining({
+        ...baseAuditOutput,
+        displayValue: 'No dependencies required',
+      }),
+    );
+  });
+
   it('should list valid dependencies as informative issue', () => {
     const packageName = 'lib1';
     const targetVersion = '0.0.0';

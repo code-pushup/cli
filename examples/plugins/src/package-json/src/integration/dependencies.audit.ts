@@ -32,6 +32,13 @@ export function dependenciesAudit(
     displayValue: pluralizePackage(),
   };
 
+  if (!Object.keys(requiredDependencies).length) {
+    return {
+      ...packageVersionsAuditOutput,
+      displayValue: `No dependencies required`,
+    };
+  }
+
   const issues = dependenciesIssues(requiredDependencies, packageResults);
 
   // early exit if no issues
