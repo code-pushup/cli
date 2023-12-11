@@ -15,8 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": {},
-    "github": {},
     "publish": {
       "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -46,7 +44,8 @@
         "config": "packages/models/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/models/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:shared", "type:util"]
 }

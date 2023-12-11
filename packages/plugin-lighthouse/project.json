@@ -15,8 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": {},
-    "github": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -42,7 +40,8 @@
         "config": "packages/plugin-lighthouse/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }

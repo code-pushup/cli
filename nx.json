@@ -18,23 +18,6 @@
       },
       "cache": true
     },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "commitMessageFormat": "release({projectName}): {version} [skip ci]",
-        "tagPrefix": "{projectName}@",
-        "preset": "angular",
-        "postTargets": ["github"],
-        "push": true
-      }
-    },
-    "github": {
-      "executor": "@jscutlery/semver:github",
-      "options": {
-        "tag": "{tag}",
-        "notes": "{notes}"
-      }
-    },
     "e2e": {
       "dependsOn": ["^build"]
     },
@@ -43,6 +26,14 @@
       "inputs": ["default", "^production"],
       "options": {
         "passWithNoTests": true
+      }
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "public",
+        "noBuild": true
       }
     }
   },

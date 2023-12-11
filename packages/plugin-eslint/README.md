@@ -35,6 +35,8 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    Remember that Code PushUp only collects and uploads the results, it doesn't fail if errors are found.
    So you can be more strict than in most linter setups, the idea is to set aspirational goals and track your progress.
 
+   > 💡 We recommend extending our own [`@code-pushup/eslint-config`](https://www.npmjs.com/package/@code-pushup/eslint-config). 😇
+
 4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
    Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
@@ -50,6 +52,34 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      ],
    };
    ```
+
+   If you're using an Nx monorepo, additional helper functions are provided to simplify your configuration:
+
+   - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromNxProjects` helper:
+
+     ```js
+     import eslintPlugin, { eslintConfigFromNxProjects } from '@code-pushup/eslint-plugin';
+
+     export default {
+       plugins: [
+         // ...
+         await eslintPlugin(await eslintConfigFromNxProjects()),
+       ],
+     };
+     ```
+
+   - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProject` helper and pass in in your project name:
+
+     ```js
+     import eslintPlugin, { eslintConfigFromNxProject } from '@code-pushup/eslint-plugin';
+
+     export default {
+       plugins: [
+         // ...
+         await eslintPlugin(await eslintConfigFromNxProject('<PROJECT-NAME>')),
+       ],
+     };
+     ```
 
 5. (Optional) Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 

@@ -12,6 +12,6 @@
     "src/**/*.test.js",
     "src/**/*.test.jsx",
     "src/**/*.d.ts",
-    "test/**/*.ts"
+    "mocks/**/*.ts"
   ]
 }
