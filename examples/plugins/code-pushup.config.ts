@@ -26,13 +26,13 @@ const config = (() => ({
   },
   plugins: [
     fileSizePlugin({
-      directory: './dist',
+      directory: './dist/packages',
       pattern: /\.js$/,
       // eslint-disable-next-line no-magic-numbers
       budget: 42_000,
     }),
     packageJsonPlugin({
-      directory: './dist',
+      directory: './packages',
       license: 'MIT',
       type: 'module',
       dependencies: {
