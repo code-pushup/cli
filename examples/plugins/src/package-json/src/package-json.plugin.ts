@@ -1,20 +1,33 @@
-import {crawlFileSystem, readJsonFile, readTextFile,} from '../../../../dist/packages/utils/src';
-import {AuditOutputs, PluginConfig, RunnerFunction,} from '../../../../packages/models/src';
-import {dependenciesAudit, dependenciesAuditMeta, RequiredDependencies,} from './integration/dependencies.audit';
-import {DocumentationOptions,} from './integration/documentation.audit';
-import {licenseAudit, licenseAuditMeta} from './integration/license.audit';
-import {typeAudit, typeAuditInfoMeta} from './integration/type.audit';
-import {PackageJson, SourceResult, SourceResults} from './integration/types';
-import {documentationGroup, performanceGroup, versionControlGroup,} from './scoring';
-
-export const pluginSlug = 'package-json';
+import {
+  AuditOutputs,
+  PluginConfig,
+  RunnerFunction,
+} from '@code-pushup/models';
+import {
+  crawlFileSystem,
+  readJsonFile,
+  readTextFile,
+} from '../../../../../dist/packages/utils/src';
+import { pluginSlug } from './constants';
+import {
+  RequiredDependencies,
+  dependenciesAudit,
+  dependenciesAuditMeta,
+} from './integration/dependencies.audit';
+import { licenseAudit, licenseAuditMeta } from './integration/license.audit';
+import { typeAudit, typeAuditInfoMeta } from './integration/type.audit';
+import { PackageJson, SourceResult, SourceResults } from './integration/types';
+import {
+  documentationGroup,
+  performanceGroup,
+  versionControlGroup,
+} from './scoring';
 
 export type PluginOptions = {
   directory: string;
   requiredDependencies?: RequiredDependencies;
   license?: PackageJson['license'];
   type?: PackageJson['type'];
-  documentation?: DocumentationOptions;
 };
 
 /**
@@ -51,29 +64,22 @@ export type PluginOptions = {
  * // terminal
  * npx code-pushup --config code-pushup.config.ts
  */
-export async function create(options: PluginOptions): Promise<PluginConfig> {
+export function create(options: PluginOptions): Promise<PluginConfig> {
   return {
     slug: pluginSlug,
     title: 'Package Json',
     icon: 'javascript',
     description: 'A plugin to validate package.json files.',
-    runner: await runnerFunction(options),
-    audits: [
-      licenseAuditMeta,
-      dependenciesAuditMeta,
-      typeAuditInfoMeta,
-    ],
+    runner: runnerFunction(options),
+    audits: [licenseAuditMeta, dependenciesAuditMeta, typeAuditInfoMeta],
     groups: [documentationGroup, versionControlGroup, performanceGroup],
   };
 }
 
 type RunnerOptions = PluginOptions;
-export async function runnerFunction(
-  options: RunnerOptions,
-): Promise<RunnerFunction> {
+export function runnerFunction(options: RunnerOptions): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const { directory, license, requiredDependencies, type } =
-      options;
+    const { directory, license, requiredDependencies, type } = options;
 
     const packageJsonContents: SourceResults = await crawlFileSystem({
       directory,
@@ -87,7 +93,7 @@ export async function runnerFunction(
 
     return [
       licenseAudit(packageJsonContents, license),
-      await typeAudit(packageJsonContents, type),
+      typeAudit(packageJsonContents, type),
       dependenciesAudit(packageJsonContents, requiredDependencies),
     ];
   };

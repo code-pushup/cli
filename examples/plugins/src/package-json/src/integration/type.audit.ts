@@ -1,6 +1,11 @@
-import {AuditOutput, Issue} from '@code-pushup/models';
-import {PackageJson, SourceResults} from './types';
-import {assertPropertyEmpty, assertPropertyEqual, baseAuditOutput, scoreByErrorIssues,} from './utils';
+import { AuditOutput, Issue } from '@code-pushup/models';
+import { PackageJson, SourceResults } from './types';
+import {
+  assertPropertyEmpty,
+  assertPropertyEqual,
+  baseAuditOutput,
+  scoreByErrorIssues,
+} from './utils';
 
 const typeAuditSlug = 'package-type';
 export const typeAuditInfoMeta = {
@@ -22,14 +27,13 @@ export function typeAudit(
     };
   }
 
-  const issues: Issue[] = packageJsonContents.map(({file, json, content}) => {
-
+  const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
     if (!type || type === '') {
-      return assertPropertyEmpty({file, json, content}, 'type', type);
+      return assertPropertyEmpty({ file, json, content }, 'type', type);
     }
 
     if (type !== json.type) {
-      return assertPropertyEqual({file, json, content}, 'type', type);
+      return assertPropertyEqual({ file, json, content }, 'type', type);
     }
 
     return {
@@ -37,7 +41,7 @@ export function typeAudit(
       severity: 'info',
       source: {
         file,
-      }
+      },
     };
   });
 
@@ -45,8 +49,8 @@ export function typeAudit(
     return {
       ...typeAuditOutput,
       details: {
-        issues
-      }
+        issues,
+      },
     };
   }
 

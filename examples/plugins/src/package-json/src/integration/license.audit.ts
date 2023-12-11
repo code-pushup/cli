@@ -1,6 +1,15 @@
-import {Audit, AuditOutput, Issue} from '../../../../../packages/models/src';
-import {SourceResults} from './types';
-import {assertPropertyEmpty, assertPropertyEqual, baseAuditOutput, scoreByErrorIssues} from './utils';
+import {
+  Audit,
+  AuditOutput,
+  Issue,
+} from '../../../../../../packages/models/src';
+import { SourceResults } from './types';
+import {
+  assertPropertyEmpty,
+  assertPropertyEqual,
+  baseAuditOutput,
+  scoreByErrorIssues,
+} from './utils';
 
 const licenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {
@@ -13,7 +22,8 @@ export function licenseAudit(
   packageJsonContents: SourceResults,
   license: string | null = null,
 ): AuditOutput {
-  const packageLicenseAuditOutput: AuditOutput = baseAuditOutput(licenseAuditSlug);
+  const packageLicenseAuditOutput: AuditOutput =
+    baseAuditOutput(licenseAuditSlug);
 
   if (!license) {
     return {
@@ -23,7 +33,6 @@ export function licenseAudit(
   }
 
   const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
-
     if (!license || license === '') {
       return assertPropertyEmpty({ file, json, content }, 'license', license);
     }
@@ -44,8 +53,8 @@ export function licenseAudit(
     return {
       ...packageLicenseAuditOutput,
       details: {
-        issues
-      }
+        issues,
+      },
     };
   }
 

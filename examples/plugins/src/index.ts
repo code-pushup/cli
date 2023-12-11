@@ -4,9 +4,4 @@ export {
   recommendedRefs as fileSizeRecommendedRefs,
   PluginOptions as FileSizePluginOptions,
 } from './file-size/file-size.plugin';
-export {
-  create as packageJsonPlugin,
-  audits as packageJsonAudits,
-  recommendedRefs as packageJsonRecommendedRefs,
-  PluginOptions as PackageJsonPluginOptions,
-} from './package-json.plugin/package-json.plugin';
+export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';

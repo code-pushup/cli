@@ -1,6 +1,10 @@
-import {AuditOutput, Issue} from '@code-pushup/models';
-import {factorOf, findLineNumberInText, pluralizeToken} from '@code-pushup/utils';
-import {PackageJson, SourceResult} from './types';
+import { AuditOutput, Issue } from '@code-pushup/models';
+import {
+  factorOf,
+  findLineNumberInText,
+  pluralizeToken,
+} from '@code-pushup/utils';
+import { PackageJson, SourceResult } from './types';
 
 export function baseAuditOutput(slug: string): AuditOutput {
   return {
@@ -8,7 +12,7 @@ export function baseAuditOutput(slug: string): AuditOutput {
     score: 1,
     value: 0,
     displayValue: pluralizePackage(),
-  } satisfies AuditOutput
+  } satisfies AuditOutput;
 }
 
 export function filterSeverityError(issue: Issue): issue is Issue {
@@ -24,54 +28,67 @@ export function assertPropertyEmpty(
   property: keyof PackageJson,
   value: unknown = undefined,
 ): Issue {
-  const {file, content} = result;
-  const issue: Issue = {
-    message: `${property} OK`,
-    severity: 'info',
-    source: {
-      file,
-    },
+  const { file, content } = result;
+  const source: Issue['source'] = {
+    file,
   };
-  if (value === undefined || value === '') {
-    issue.severity = 'error';
-    issue.message = `${property} empty`;
-    if (value === '') {
-      issue.source = {
-        file,
+
+  if (value === undefined) {
+    return {
+      message: `${property} undefined`,
+      severity: 'error',
+      source,
+    };
+  }
+
+  if (value === '') {
+    return {
+      message: `${property} empty`,
+      severity: 'error',
+      source: {
+        ...source,
         position: {
           startLine: findLineNumberInText(content, `"${property}":`) as number,
         },
-      };
-    }
-    return issue;
+      },
+    };
   }
-  return issue;
+
+  return {
+    message: `${property} OK`,
+    severity: 'info',
+    source,
+  };
 }
 
 export function assertPropertyEqual(
   result: SourceResult,
   property: keyof PackageJson,
-  value: unknown
+  value: unknown,
 ): Issue {
-  const {file, content, json} = result;
+  const { file, content, json } = result;
   if (json[property] !== value) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const startLine: null | number = findLineNumberInText(content, `"${property}":`);
+    const startLine: null | number = findLineNumberInText(
+      content,
+      `"${property}":`,
+    );
     return {
       severity: 'error',
-      message: `${property} should be ${value?.toString()} but is ${json[property]?.toString()}`,
+      message: `${property} should be ${value?.toString()} but is ${json[
+        property
+      ]?.toString()}`,
       source: {
         file,
-      ...(startLine != null ? {position: { startLine }} : {})
-      }
+        ...(startLine == null ? {} : { position: { startLine } }),
+      },
     };
   }
   return {
     message: `${property} value is given`,
     severity: 'info',
     source: {
-      file
-    }
+      file,
+    },
   };
 }
 
@@ -87,4 +104,3 @@ export function scoreByErrorIssues(slug: string, issues: Issue[]): AuditOutput {
     },
   };
 }
-

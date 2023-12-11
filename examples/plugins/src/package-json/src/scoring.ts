@@ -1,9 +1,8 @@
-import { AuditGroup, CategoryRef } from '../../../../packages/models/src';
+import { AuditGroup, CategoryRef } from '../../../../../packages/models/src';
+import { pluginSlug } from './constants';
 import { dependenciesAuditMeta } from './integration/dependencies.audit';
-import { documentationAuditMeta } from './integration/documentation.audit';
 import { licenseAuditMeta } from './integration/license.audit';
 import { typeAuditInfoMeta } from './integration/type.audit';
-import { pluginSlug } from './package-json.plugin';
 
 const documentationGroupSlug = 'documentation';
 export const documentationGroup: AuditGroup = {
@@ -12,10 +11,6 @@ export const documentationGroup: AuditGroup = {
   description:
     'A set of audits focusing on the documentation specific properties in package json as well as their relations',
   refs: [
-    {
-      ...documentationAuditMeta,
-      weight: 1,
-    },
     {
       ...licenseAuditMeta,
       weight: 1,

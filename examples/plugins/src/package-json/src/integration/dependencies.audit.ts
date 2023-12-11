@@ -3,7 +3,6 @@ import { factorOf, findLineNumberInText } from '@code-pushup/utils';
 import {
   DependencyMap,
   DependencyTypes,
-  PackageJson,
   SourceResult,
   SourceResults,
 } from './types';
@@ -32,7 +31,7 @@ export function dependenciesAudit(
   const issues = dependenciesIssues(requiredDependencies, packageResults);
 
   // early exit if no issues
-  if (!issues.length) {
+  if (issues.length === 0) {
     return packageVersionsAuditOutput;
   }
 
@@ -52,49 +51,42 @@ export function dependenciesIssues(
   requiredDependencies: RequiredDependencies,
   packageResults: SourceResults,
 ): Issue[] {
-  return packageResults.flatMap(packageResult => {
+  return packageResults.flatMap(packageResult =>
     // iterate dependency types to check
-    return (
-      Object.entries(requiredDependencies)
-        // filter for relevant dependency types
-        .filter(
-          ([dependencyTypes]) =>
-            packageResult.json[dependencyTypes as unknown as DependencyTypes],
-        )
-        // iterate over each dependency type
-        .flatMap(([type, requiredDependencies]) => {
-          const dependencyType = type as DependencyTypes;
-          const existingDependencies = packageResult.json[
-            dependencyType
-          ] as Record<string, string>;
-          // iterate over each required dependency and check if it is installed
-          return Object.entries(requiredDependencies).map(
-            requiredDependency => {
-              // package in dependencies
-              if (existingDependencies[requiredDependency[0]] !== undefined) {
-                return assertDependency(
-                  packageResult,
-                  requiredDependency,
-                  dependencyType,
-                );
-              }
-              return packageNotInstalledIssue(
-                packageResult,
-                requiredDependency,
-              );
-            },
-          );
-        })
-    );
-  });
+    Object.entries(requiredDependencies)
+      // filter for relevant dependency types
+      .filter(
+        ([dependencyTypes]) =>
+          packageResult.json[dependencyTypes as unknown as DependencyTypes],
+      )
+      // iterate over each dependency type
+      .flatMap(([type, dependencies]) => {
+        const dependencyType = type as DependencyTypes;
+        const existingDependencies = packageResult.json[
+          dependencyType
+        ] as Record<string, string>;
+        // iterate over each required dependency and check if it is installed
+        return Object.entries(dependencies).map(requiredDependency => {
+          // package in dependencies
+          if (existingDependencies[requiredDependency[0]] !== undefined) {
+            return assertDependency(
+              packageResult,
+              requiredDependency,
+              dependencyType,
+            );
+          }
+          return packageNotInstalledIssue(packageResult, requiredDependency);
+        });
+      }),
+  );
 }
 
 export function packageNotInstalledIssue(
   packageResult: Pick<SourceResult, 'file'>,
   requiredDependency: [string, string],
 ): Issue {
-  const { file } = packageResult || {};
-  const [packageName, targetVersion] = requiredDependency || [];
+  const { file } = packageResult;
+  const [packageName, targetVersion] = requiredDependency;
   return {
     message: `Package ${packageName} is not installed. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
     severity: 'error',
@@ -109,32 +101,30 @@ export function assertDependency(
   requiredDependency: [string, string],
   dependencyType: DependencyTypes,
 ) {
-  const {
-    file = '',
-    json = {} as PackageJson,
-    content = '',
-  } = packageResult || {};
-  const [packageName, targetVersion] = requiredDependency || [];
+  const { file = '', json = {}, content = '' } = packageResult;
+  const [packageName, targetVersion] = requiredDependency;
 
-  const issue: Issue = {
-    message: `Package ${packageName}@${targetVersion} is installed as ${dependencyType}.`,
-    severity: 'info',
-    source: {
-      file,
-    },
+  const source: Issue['source'] = {
+    file,
   };
 
   const existingVersion = json[dependencyType]?.[packageName];
   if (targetVersion !== existingVersion) {
-    issue.severity = 'error';
-    issue.message = `Package ${packageName} in ${dependencyType} has wrong version. Wanted ${targetVersion} but got ${existingVersion}`;
-    issue.source = {
-      file,
-      position: {
-        startLine: findLineNumberInText(content, `"${packageName}":`) || 0,
+    return {
+      severity: 'error',
+      message: `Package ${packageName} in ${dependencyType} has wrong version. Wanted ${targetVersion} but got ${existingVersion}`,
+      source: {
+        ...source,
+        position: {
+          startLine: findLineNumberInText(content, `"${packageName}":`) ?? 0,
+        },
       },
     };
   }
 
-  return issue;
+  return {
+    message: `Package ${packageName}@${targetVersion} is installed as ${dependencyType}.`,
+    severity: 'info',
+    source,
+  };
 }

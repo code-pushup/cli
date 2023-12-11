@@ -4,7 +4,7 @@ import {
   packageJson,
   packageJsonName,
   packageResult,
-} from '../../../mocks/constants';
+} from '../../../../mocks/constants';
 import {
   assertDependency,
   dependenciesAudit,
