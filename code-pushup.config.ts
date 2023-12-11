@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {z} from 'zod';
+import { z } from 'zod';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
@@ -11,7 +11,7 @@ import {
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from './examples/plugins/src';
-import type {CoreConfig} from './packages/models/src';
+import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z.object({
@@ -58,7 +58,7 @@ const config: CoreConfig = {
       slug: 'bug-prevention',
       title: 'Bug prevention',
       refs: [
-        {type: 'group', plugin: 'eslint', slug: 'problems', weight: 1},
+        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
         packageJsonVersionControlGroupRef,
       ],
     },
@@ -66,7 +66,7 @@ const config: CoreConfig = {
       slug: 'code-style',
       title: 'Code style',
       refs: [
-        {type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1},
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
     {
