@@ -2,7 +2,7 @@ import { Audit, AuditOutput, Issue } from '@code-pushup/models';
 import {
   factorOf,
   findLineNumberInText,
-} from '../../../../../../dist/packages/utils/src';
+} from '../../../../../../dist/packages/utils';
 import {
   DependencyMap,
   DependencyTypes,
