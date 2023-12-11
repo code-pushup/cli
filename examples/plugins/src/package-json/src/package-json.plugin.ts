@@ -25,10 +25,9 @@ import {
 
 export type PluginOptions = {
   directory: string;
-  requiredDependencies?: RequiredDependencies;
   license?: PackageJson['license'];
   type?: PackageJson['type'];
-};
+} & RequiredDependencies;
 
 /**
  * Plugin to validate and assert package.json files in a directory.
@@ -79,7 +78,14 @@ export function create(options: PluginOptions): PluginConfig {
 type RunnerOptions = PluginOptions;
 export function runnerFunction(options: RunnerOptions): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const { directory, license, requiredDependencies, type } = options;
+    const {
+      directory,
+      license,
+      dependencies = {},
+      devDependencies = {},
+      optionalDependencies = {},
+      type,
+    } = options;
 
     const packageJsonContents: SourceResults = await crawlFileSystem({
       directory,
@@ -94,7 +100,11 @@ export function runnerFunction(options: RunnerOptions): RunnerFunction {
     return [
       licenseAudit(packageJsonContents, license),
       typeAudit(packageJsonContents, type),
-      dependenciesAudit(packageJsonContents, requiredDependencies),
+      dependenciesAudit(packageJsonContents, {
+        dependencies,
+        devDependencies,
+        optionalDependencies,
+      }),
     ];
   };
 }

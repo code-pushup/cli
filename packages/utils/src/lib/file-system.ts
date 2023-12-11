@@ -112,7 +112,6 @@ export async function crawlFileSystem<T = string>(options: {
     pattern,
     fileTransform = (filePath: string) => filePath as T,
   } = options;
-
   const files = await readdir(directory);
   const promises = files.map(async (file): Promise<T | T[]> => {
     const filePath = join(directory, file);

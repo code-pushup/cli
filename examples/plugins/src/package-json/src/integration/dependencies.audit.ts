@@ -6,6 +6,7 @@ import {
 import {
   DependencyMap,
   DependencyTypes,
+  PackageJson,
   SourceResult,
   SourceResults,
 } from './types';
@@ -54,44 +55,51 @@ export function dependenciesIssues(
   requiredDependencies: RequiredDependencies,
   packageResults: SourceResults,
 ): Issue[] {
-  return packageResults.flatMap(packageResult =>
-    // iterate dependency types to check
-    Object.entries(requiredDependencies)
-      // filter for relevant dependency types
-      .filter(
-        ([dependencyTypes]) =>
-          packageResult.json[dependencyTypes as unknown as DependencyTypes],
-      )
-      // iterate over each dependency type
-      .flatMap(([type, dependencies]) => {
-        const dependencyType = type as DependencyTypes;
-        const existingDependencies = packageResult.json[
-          dependencyType
-        ] as Record<string, string>;
-        // iterate over each required dependency and check if it is installed
-        return Object.entries(dependencies).map(requiredDependency => {
-          // package in dependencies
-          if (existingDependencies[requiredDependency[0]] !== undefined) {
-            return assertDependency(
-              packageResult,
-              requiredDependency,
-              dependencyType,
-            );
-          }
-          return packageNotInstalledIssue(packageResult, requiredDependency);
-        });
-      }),
+  return packageResults.flatMap((packageResult: SourceResult) =>
+    Object.entries(requiredDependencies).flatMap(
+      ([dependencyType, dependencies]) => {
+        const existingDependencies: Record<string, string> = ((
+          packageResult.json as Record<string, string>
+        )[dependencyType] || {}) as Record<string, string>;
+
+        // Map over each required dependency and check if it exists
+        return Object.entries(dependencies).map(
+          ([dependencyName, requiredVersion]) => {
+            const existingVersion: string | undefined =
+              existingDependencies[dependencyName];
+
+            // Generate the appropriate issue based on whether the dependency exists
+            if (existingVersion !== undefined) {
+              // Assert the dependency
+              return assertDependency(
+                packageResult,
+                [dependencyName, requiredVersion],
+                dependencyType as DependencyTypes,
+              );
+            } else {
+              // Generate issue for not installed package
+              return packageNotInstalledIssue(
+                packageResult,
+                [dependencyName, requiredVersion],
+                dependencyType as DependencyTypes,
+              );
+            }
+          },
+        );
+      },
+    ),
   );
 }
 
 export function packageNotInstalledIssue(
   packageResult: Pick<SourceResult, 'file'>,
   requiredDependency: [string, string],
+  dependencyType: DependencyTypes,
 ): Issue {
   const { file } = packageResult;
   const [packageName, targetVersion] = requiredDependency;
   return {
-    message: `Package ${packageName} is not installed. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
+    message: `Package ${packageName} is not installed under ${dependencyType}. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
     severity: 'error',
     source: {
       file,
