@@ -1,8 +1,4 @@
-import {
-  Audit,
-  AuditOutput,
-  Issue,
-} from '../../../../../../packages/models/src';
+import { Audit, AuditOutput, Issue } from '@code-pushup/models';
 import { SourceResults } from './types';
 import {
   assertPropertyEmpty,

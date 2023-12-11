@@ -7,7 +7,7 @@ import {
   crawlFileSystem,
   readJsonFile,
   readTextFile,
-} from '../../../../../dist/packages/utils/src';
+} from '../../../../../dist/packages/utils';
 import { pluginSlug } from './constants';
 import {
   RequiredDependencies,
@@ -45,8 +45,8 @@ export type PluginOptions = {
  *   },
  *   plugins: [
  *     await packageJsonPlugin({
- *       directory: join(process.cwd(), './dist/packages'),
- *       directory: join(process.cwd(), './dist/packages'),
+ *       directory: './dist/packages',
+ *       directory: './dist/packages',
  *             license: 'MIT'
  *     })
  *   ],

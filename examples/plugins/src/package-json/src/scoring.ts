@@ -1,4 +1,4 @@
-import { AuditGroup, CategoryRef } from '../../../../../packages/models/src';
+import { AuditGroup, CategoryRef } from '@code-pushup/models';
 import { pluginSlug } from './constants';
 import { dependenciesAuditMeta } from './integration/dependencies.audit';
 import { licenseAuditMeta } from './integration/license.audit';
