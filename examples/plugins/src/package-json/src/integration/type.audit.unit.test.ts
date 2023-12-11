@@ -32,7 +32,7 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be CommonJS but is undefined`,
+            message: `type should be commonjs but is undefined`,
             severity: 'error',
             source: {
               file: 'package.json',
@@ -53,7 +53,7 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be CommonJS but is `,
+            message: `type should be commonjs but is `,
             severity: 'error',
             source: {
               file: 'package.json',
@@ -79,7 +79,7 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be Esm but is ${targetPackageJson.type}`,
+            message: `type should be module but is ${targetPackageJson.type}`,
             severity: 'error',
             source: {
               file: 'package.json',
