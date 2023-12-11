@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { packageResult } from '../../../../mocks/constants';
 import { typeAudit } from './type.audit';
+import { PackageJson } from './types';
 
 describe('typeAudit', () => {
   it('should pass if not configured', () => {
@@ -8,7 +9,7 @@ describe('typeAudit', () => {
       typeAudit(
         [
           packageResult({
-            type: 'MIT',
+            type: 'module',
           }),
         ],
         undefined,
@@ -23,7 +24,7 @@ describe('typeAudit', () => {
 
   it('should error for undefined', () => {
     const targetPackageJson = {};
-    expect(typeAudit([packageResult(targetPackageJson)], 'CommonJS')).toEqual({
+    expect(typeAudit([packageResult(targetPackageJson)], 'commonjs')).toEqual({
       displayValue: '1 package',
       score: 0,
       slug: 'package-type',
@@ -43,8 +44,8 @@ describe('typeAudit', () => {
   });
 
   it('should error for ""', () => {
-    const targetPackageJson = { type: '' };
-    expect(typeAudit([packageResult(targetPackageJson)], 'CommonJS')).toEqual({
+    const targetPackageJson = { type: '' } as unknown as PackageJson;
+    expect(typeAudit([packageResult(targetPackageJson)], 'commonjs')).toEqual({
       displayValue: '1 package',
       score: 0,
       slug: 'package-type',
@@ -69,8 +70,8 @@ describe('typeAudit', () => {
   it('should error for different type', () => {
     const targetPackageJson = {
       type: 'WTF',
-    };
-    expect(typeAudit([packageResult(targetPackageJson)], 'Esm')).toEqual({
+    } as unknown as PackageJson;
+    expect(typeAudit([packageResult(targetPackageJson)], 'module')).toEqual({
       displayValue: '1 package',
       score: 0,
       slug: 'package-type',

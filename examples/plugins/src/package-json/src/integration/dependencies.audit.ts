@@ -6,7 +6,6 @@ import {
 import {
   DependencyMap,
   DependencyTypes,
-  PackageJson,
   SourceResult,
   SourceResults,
 } from './types';
@@ -32,7 +31,7 @@ export function dependenciesAudit(
     displayValue: pluralizePackage(),
   };
 
-  if (!Object.keys(requiredDependencies).length) {
+  if (Object.keys(requiredDependencies).length === 0) {
     return {
       ...packageVersionsAuditOutput,
       displayValue: `No dependencies required`,
@@ -76,21 +75,17 @@ export function dependenciesIssues(
               existingDependencies[dependencyName];
 
             // Generate the appropriate issue based on whether the dependency exists
-            if (existingVersion !== undefined) {
-              // Assert the dependency
-              return assertDependency(
-                packageResult,
-                [dependencyName, requiredVersion],
-                dependencyType as DependencyTypes,
-              );
-            } else {
-              // Generate issue for not installed package
-              return packageNotInstalledIssue(
-                packageResult,
-                [dependencyName, requiredVersion],
-                dependencyType as DependencyTypes,
-              );
-            }
+            return existingVersion === undefined
+              ? packageNotInstalledIssue(
+                  packageResult,
+                  [dependencyName, requiredVersion],
+                  dependencyType as DependencyTypes,
+                )
+              : assertDependency(
+                  packageResult,
+                  [dependencyName, requiredVersion],
+                  dependencyType as DependencyTypes,
+                );
           },
         );
       },

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { AuditOutput } from '@code-pushup/models';
-import { packageJson, packageJsonName, packageResult } from '../../../../mocks';
+import {
+  packageJson,
+  packageJsonName,
+  packageResult,
+} from '../../../../mocks/constants';
 import {
   assertDependency,
   dependenciesAudit,
