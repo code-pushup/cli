@@ -28,7 +28,7 @@ export function typeAudit(
   }
 
   const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
-    if (type === '' as unknown) {
+    if (type === ('' as unknown)) {
       return assertPropertyEmpty({ file, json, content }, 'type', type);
     }
 

@@ -93,14 +93,14 @@ export function packageNotInstalledIssue(
     source: {
       file,
     },
-  };
+  } satisfies Issue;
 }
 
 export function assertDependency(
   packageResult: SourceResult,
   requiredDependency: [string, string],
   dependencyType: DependencyTypes,
-) {
+): Issue {
   const { file = '', json = {}, content = '' } = packageResult;
   const [packageName, targetVersion] = requiredDependency;
 
