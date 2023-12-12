@@ -101,12 +101,14 @@ export async function importEsmModule<T = unknown>(
 export function pluginWorkDir(slug: string): string {
   return join('node_modules', '.code-pushup', slug);
 }
-
-export async function crawlFileSystem<T = string>(options: {
+export type CrawlFileSystemOptions<T> = {
   directory: string;
   pattern?: string | RegExp;
   fileTransform?: (filePath: string) => Promise<T> | T;
-}): Promise<T[]> {
+};
+export async function crawlFileSystem<T = string>(
+  options: CrawlFileSystemOptions<T>,
+): Promise<T[]> {
   const {
     directory,
     pattern,
