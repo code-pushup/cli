@@ -93,7 +93,6 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-
 export function startDuration(): number {
   return performance.now();
 }

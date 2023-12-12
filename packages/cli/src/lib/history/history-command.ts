@@ -13,8 +13,7 @@ import {
   calcDuration,
   getCurrentBranchOrTag,
   getProgressBar,
-  git,
-  // guardAgainstDirtyRepo,
+  git, // guardAgainstDirtyRepo,
   startDuration,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
