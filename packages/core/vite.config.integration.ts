@@ -12,5 +12,10 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    setupFiles: [
+      '../../testing-utils/src/lib/setup/console.mock.ts',
+      '../../testing-utils/src/lib/setup/reset.mocks.ts',
+      '../../testing-utils/src/lib/setup/portal-client.mock.ts',
+    ],
   },
 });

@@ -4,6 +4,7 @@ import {
   CategoryRef,
   Issue,
 } from '@code-pushup/models';
+import { formatDuration, slugify } from './formatting';
 import { CommitData } from './git';
 import {
   NEW_LINE,
@@ -20,9 +21,9 @@ import {
 import {
   FOOTER_PREFIX,
   README_LINK,
+  compareIssues,
   countCategoryAudits,
   detailsTableHeaders,
-  formatDuration,
   formatReportScore,
   getAuditByRef,
   getGroupWithAudits,
@@ -42,7 +43,6 @@ import {
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
-import { slugify } from './transformation';
 
 export function reportToMd(
   report: ScoredReport,
@@ -217,7 +217,7 @@ function reportToAuditsSection(report: ScoredReport): string {
 
       const detailsTableData = [
         detailsTableHeaders,
-        ...audit.details.issues.map((issue: Issue) => {
+        ...audit.details.issues.sort(compareIssues).map((issue: Issue) => {
           const severity = `${getSeverityIcon(issue.severity)} <i>${
             issue.severity
           }</i>`;

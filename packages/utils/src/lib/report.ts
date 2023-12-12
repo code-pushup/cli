@@ -4,6 +4,7 @@ import {
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
+  Issue,
   PersistConfig,
   Report,
   reportSchema,
@@ -19,7 +20,6 @@ import {
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
-import { pluralize } from './transformation';
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -93,40 +93,9 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-export function formatBytes(bytes: number, decimals = 2) {
-  bytes = Math.max(bytes, 0);
-  // early exit
-  if (!bytes) return '0 B';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-}
-
-export function formatDuration(duration: number): string {
-  if (duration < 1000) {
-    return `${duration} ms`;
-  }
-  return `${(duration / 1000).toFixed(2)} s`;
-}
-
-export function startDuration(): number {
-  // @TODO mark with symbol to detact Date.now vs perofmance.now
-  return performance.now();
-}
-
 export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);
-}
-
-export function formatCount(count: number, name: string) {
-  const text = count === 1 ? name : pluralize(name);
-  return `${count} ${text}`;
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
@@ -309,4 +278,39 @@ export function getPluginNameFromSlug(
   return (
     plugins.find(({ slug: pluginSlug }) => pluginSlug === slug)?.title || slug
   );
+}
+
+export function compareIssues(a: Issue, b: Issue): number {
+  if (a.severity !== b.severity) {
+    return -compareIssueSeverity(a.severity, b.severity);
+  }
+
+  if (!a.source && b.source) {
+    return -1;
+  }
+
+  if (a.source && !b.source) {
+    return 1;
+  }
+
+  if (a.source?.file !== b.source?.file) {
+    return a.source?.file.localeCompare(b.source?.file || '') || 0;
+  }
+
+  if (!a.source?.position && b.source?.position) {
+    return -1;
+  }
+
+  if (a.source?.position && !b.source?.position) {
+    return 1;
+  }
+
+  if (a.source?.position?.startLine !== b.source?.position?.startLine) {
+    return (
+      (a.source?.position?.startLine || 0) -
+      (b.source?.position?.startLine || 0)
+    );
+  }
+
+  return 0;
 }

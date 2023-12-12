@@ -42,8 +42,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute version target on all affected packages and release them
-        run: npx nx affected --base=latest --target=version --parallel=1 --dryRun
+      - name: Execute version target
+        run: npx nx version @code-pushup/cli-source --dryRun
+      - name: Deploy to NPM
+        run: npx nx run-many --target=deploy --dry-run
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -55,28 +57,36 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+      - name: Set up Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: npm
-      - name: Set up Git
-        run: |
-          git config user.name "GitHub Bot"
-          git config user.email "gituser@example.com"
       - name: Install dependencies
         run: npm ci
       - name: Execute version target on all affected packages and release them
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: npx nx version @code-pushup/cli-source
+      - name: Deploy to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         # un-exclude packages when they're ready for public release
-        run: npx nx affected --base=latest --target=version --exclude=plugin-lighthouse,nx-plugin --parallel=1
-      - name: Tag latest
-        shell: bash
         run: |
-          git tag -f latest
-          git push origin latest --force
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin

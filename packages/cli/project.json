@@ -19,14 +19,6 @@
       "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
-    "version": {
-      "postTargets": ["cli:github"]
-    },
-    "github": {
-      "options": {
-        "notesFile": "./packages/cli/CHANGELOG.md"
-      }
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -77,7 +69,8 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:core", "type:app"]
 }

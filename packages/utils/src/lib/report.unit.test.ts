@@ -1,13 +1,17 @@
 import { vol } from 'memfs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CategoryRef, IssueSeverity, PluginReport } from '@code-pushup/models';
+import {
+  CategoryRef,
+  Issue,
+  IssueSeverity,
+  PluginReport,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
+  compareIssues,
   countWeightedRefs,
-  formatBytes,
-  formatCount,
   getPluginNameFromSlug,
   loadReport,
   sortAudits,
@@ -36,52 +40,6 @@ const resetFiles = (files?: Record<string, string>) => {
   vol.fromJSON(files || {}, outputDir);
 };
 
-describe('formatBytes', () => {
-  it('should log file sizes in Bytes`', async () => {
-    expect(formatBytes(1000)).toBe('1000 B');
-  });
-
-  it('should log file sizes in KB`', async () => {
-    expect(formatBytes(10000)).toBe('9.77 kB');
-  });
-
-  it('should log file sizes in MB`', async () => {
-    expect(formatBytes(10000000)).toBe('9.54 MB');
-  });
-
-  it('should log file sizes in bytes`', async () => {
-    expect(formatBytes(10000000000)).toBe('9.31 GB');
-  });
-
-  it('should log file sizes in TB`', async () => {
-    expect(formatBytes(10000000000000)).toBe('9.09 TB');
-  });
-
-  it('should log file sizes in PB`', async () => {
-    expect(formatBytes(10000000000000000)).toBe('8.88 PB');
-  });
-
-  it('should log file sizes in EB`', async () => {
-    expect(formatBytes(10000000000000000000)).toBe('8.67 EB');
-  });
-
-  it('should log file sizes in ZB`', async () => {
-    expect(formatBytes(10000000000000000000000)).toBe('8.47 ZB');
-  });
-
-  it('should log file sizes in YB`', async () => {
-    expect(formatBytes(10000000000000000000000000)).toBe('8.27 YB');
-  });
-
-  it('should log file sizes correctly with correct decimal`', async () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 kB');
-  });
-
-  it('should log file sizes of 0 if no size is given`', async () => {
-    expect(formatBytes(0)).toBe('0 B');
-  });
-});
-
 describe('calcDuration', () => {
   it('should calc the duration correctly if start and stop are given', () => {
     const start = performance.now();
@@ -92,20 +50,6 @@ describe('calcDuration', () => {
   it('should calc the duration correctly if only start is given', () => {
     const start = performance.now();
     expect(calcDuration(start)).toBe(0);
-  });
-});
-
-describe('formatCount', () => {
-  it('should pluralize if count is greater than 1', () => {
-    expect(formatCount(5, 'audit')).toBe('5 audits');
-  });
-
-  it('should not pluralize if count is 1', () => {
-    expect(formatCount(1, 'audit')).toBe('1 audit');
-  });
-
-  it('should pluralize if count is 0', () => {
-    expect(formatCount(0, 'audit')).toBe('0 audits');
   });
 });
 
@@ -283,5 +227,65 @@ describe('getPluginNameFromSlug', () => {
     ] as ScoredReport['plugins'];
     expect(getPluginNameFromSlug('plugin-a', plugins)).toBe('Plugin A');
     expect(getPluginNameFromSlug('plugin-b', plugins)).toBe('Plugin B');
+  });
+});
+
+describe('sortAuditIssues', () => {
+  it('should sort issues by severity and source file', () => {
+    const mockIssues = [
+      { severity: 'warning', source: { file: 'b' } },
+      { severity: 'error', source: { file: 'c' } },
+      { severity: 'error', source: { file: 'a' } },
+      { severity: 'info', source: { file: 'b' } },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(compareIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'error', source: { file: 'a' } },
+      { severity: 'error', source: { file: 'c' } },
+      { severity: 'warning', source: { file: 'b' } },
+      { severity: 'info', source: { file: 'b' } },
+    ]);
+  });
+
+  it('should sort issues by source file and source start line', () => {
+    const mockIssues = [
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(compareIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+    ]);
+  });
+
+  it('should sort issues without source on top of same severity', () => {
+    const mockIssues = [
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+      {
+        severity: 'warning',
+        source: { file: 'a', position: { startLine: 2 } },
+      },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'b' } },
+      { severity: 'error' },
+    ] as Issue[];
+    const sortedIssues = [...mockIssues].sort(compareIssues);
+    expect(sortedIssues).toEqual([
+      { severity: 'error' },
+      {
+        severity: 'warning',
+        source: { file: 'a', position: { startLine: 2 } },
+      },
+      { severity: 'info', source: { file: 'b' } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
+      { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
+      { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
+    ]);
   });
 });

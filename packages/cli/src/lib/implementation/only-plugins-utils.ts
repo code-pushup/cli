@@ -26,7 +26,7 @@ export function filterCategoryByOnlyPluginsOption(
       const isNotSkipped = onlyPlugins.includes(ref.slug);
 
       if (!isNotSkipped) {
-        console.log(
+        console.info(
           `${chalk.yellow('⚠')} Category "${
             category.title
           }" is ignored because it references audits from skipped plugin "${
@@ -49,7 +49,7 @@ export function validateOnlyPluginsOption(
     : [];
 
   if (missingPlugins.length > 0) {
-    console.log(
+    console.warn(
       `${chalk.yellow(
         '⚠',
       )} The --onlyPlugin argument references plugins with "${missingPlugins.join(

@@ -18,32 +18,6 @@
       },
       "cache": true
     },
-    "version": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "commitMessageFormat": "release({projectName}): {version} [skip ci]",
-        "tagPrefix": "{projectName}@",
-        "preset": {
-          "name": "conventionalcommits",
-          "types": [
-            { "type": "feat", "section": "Features" },
-            { "type": "fix", "section": "Bug Fixes" },
-            { "type": "build", "section": "Dependency updates" },
-            { "type": "docs", "section": "Documentation" },
-            { "type": "refactor", "section": "Code Refactoring" },
-            { "type": "perf", "section": "Performance Improvements" }
-          ]
-        }
-      }
-    },
-    "github": {
-      "executor": "@jscutlery/semver:github",
-      "options": {
-        "tag": "{tag}"
-      }
-    },
     "e2e": {
       "dependsOn": ["^build"]
     },
@@ -52,6 +26,14 @@
       "inputs": ["default", "^production"],
       "options": {
         "passWithNoTests": true
+      }
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "public",
+        "noBuild": true
       }
     }
   },

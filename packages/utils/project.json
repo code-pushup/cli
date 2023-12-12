@@ -15,12 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": { "postTargets": ["utils:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/utils/CHANGELOG.md"
-      }
-    },
     "publish": {
       "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -36,7 +30,16 @@
       }
     },
     "perf": {
-      "command": "npx tsx ./packages/utils/perf --tsconfig=packages/utils/tsconfig.perf.json"
+      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
+      "options": {
+        "cwd": "./packages/utils/perf"
+      }
+    },
+    "perf:list": {
+      "command": "ls -l | grep \"^d\" | awk '{print $9}'",
+      "options": {
+        "cwd": "./packages/utils/perf"
+      }
     },
     "unit-test": {
       "executor": "@nx/vite:test",
@@ -53,7 +56,8 @@
         "config": "packages/utils/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/utils/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:shared", "type:util"]
 }

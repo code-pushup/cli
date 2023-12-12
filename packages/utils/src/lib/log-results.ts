@@ -1,7 +1,4 @@
-import {
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
-} from './promise-result';
+import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
@@ -34,7 +31,12 @@ export function logPromiseResults<
   T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
 >(results: T[], logMessage: string, callback: (result: T) => void): void {
   if (results.length) {
-    console.log(logMessage);
+    if (results[0]?.status === 'fulfilled') {
+      console.info(logMessage);
+    } else {
+      console.warn(logMessage);
+    }
+
     results.forEach(callback);
   }
 }

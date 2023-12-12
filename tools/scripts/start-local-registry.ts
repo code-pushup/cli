@@ -66,7 +66,7 @@ function startLocalRegistry({
         const port = parseInt(
           data.toString().match(/localhost:(?<port>\d+)/)?.groups?.port,
         );
-        console.log('Local registry started on port ' + port);
+        console.info('Local registry started on port ' + port);
 
         const registry = `http://localhost:${port}`;
         process.env.npm_config_registry = registry;
@@ -80,7 +80,7 @@ function startLocalRegistry({
         process.env.YARN_NPM_REGISTRY_SERVER = registry;
         process.env.YARN_UNSAFE_HTTP_WHITELIST = 'localhost';
 
-        console.log('Set npm and yarn config registry to ' + registry);
+        console.info('Set npm and yarn config registry to ' + registry);
 
         resolve(() => {
           childProcess.kill();
@@ -94,11 +94,11 @@ function startLocalRegistry({
       process.stderr.write(data);
     });
     childProcess.on('error', err => {
-      console.log('local registry error', err);
+      console.error('local registry error', err);
       reject(err);
     });
     childProcess.on('exit', code => {
-      console.log('local registry exit', code);
+      console.info('local registry exit', code);
       if (code !== 0) {
         reject(code);
       } else {

@@ -1,7 +1,7 @@
 function getLogVerbose(verbose: boolean) {
   return (...args: unknown[]) => {
     if (verbose) {
-      console.log(...args);
+      console.info(...args);
     }
   };
 }

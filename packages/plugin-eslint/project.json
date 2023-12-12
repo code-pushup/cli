@@ -16,12 +16,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "version": { "postTargets": ["plugin-eslint:github"] },
-    "github": {
-      "options": {
-        "notesFile": "./packages/plugin-eslint/CHANGELOG.md"
-      }
-    },
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
       "dependsOn": ["build"]
@@ -51,7 +45,8 @@
         "config": "packages/plugin-eslint/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
-    }
+    },
+    "deploy": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }

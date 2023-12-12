@@ -65,15 +65,10 @@
       "files": ["*.ts", "*.tsx"],
       "extends": [
         "plugin:@nx/typescript",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:@typescript-eslint/strict",
-        "plugin:import/recommended",
-        "plugin:sonarjs/recommended",
-        "plugin:unicorn/recommended",
-        "plugin:deprecation/recommended",
-        "plugin:promise/recommended"
+        "@code-pushup/eslint-config/typescript",
+        "@code-pushup/eslint-config/node",
+        "@code-pushup/eslint-config/vitest"
       ],
-      "plugins": ["n", "functional", "no-secrets"],
       "settings": {
         "import/resolver": {
           "typescript": {
@@ -82,291 +77,21 @@
         }
       },
       "rules": {
-        // override rules from extended configs
-        "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
-        "@typescript-eslint/prefer-nullish-coalescing": [
+        "vitest/consistent-test-filename": [
           "warn",
-          { "ignorePrimitives": { "string": true } }
-        ],
-        "@typescript-eslint/consistent-indexed-object-style": "off",
-        "@typescript-eslint/unbound-method": "off",
-        "unicorn/prevent-abbreviations": "off",
-        "unicorn/no-array-for-each": "off",
-        "unicorn/no-array-reduce": "off",
-        "unicorn/no-array-callback-reference": "off",
-        "unicorn/no-null": "off",
-        "unicorn/prefer-export-from": "off",
-        "unicorn/no-object-as-default-parameter": "off",
-        "unicorn/switch-case-braces": ["warn", "avoid"],
-        "unicorn/catch-error-name": ["warn", { "ignore": ["^err$"] }],
-        "unicorn/no-negated-condition": "warn",
-        "unicorn/import-style": "warn",
-        "unicorn/prefer-node-protocol": "warn",
-        "unicorn/consistent-destructuring": "warn",
-        "unicorn/no-await-expression-member": "warn",
-        "unicorn/no-new-array": "warn",
-        "unicorn/numeric-separators-style": "warn",
-        "unicorn/prefer-spread": "warn",
-        "unicorn/prefer-ternary": "warn",
-        "unicorn/better-regex": "warn",
-        "unicorn/prefer-string-replace-all": "warn",
-        "unicorn/prefer-number-properties": "warn",
-        "unicorn/prefer-logical-operator-over-ternary": "warn",
-        "unicorn/explicit-length-check": "warn",
-        "unicorn/no-empty-file": "warn",
-        "unicorn/prefer-at": "warn",
-        "unicorn/prefer-top-level-await": "warn",
-        "unicorn/consistent-function-scoping": "warn",
-        "unicorn/no-useless-undefined": "warn",
-        // additional rules
-        "arrow-body-style": ["warn", "as-needed"],
-        "complexity": "warn",
-        "curly": "warn",
-        "eqeqeq": ["error", "always", { "null": "never" }],
-        "guard-for-in": "error",
-        "max-depth": "warn",
-        "max-lines": ["warn", { "skipBlankLines": true, "skipComments": true }],
-        "max-lines-per-function": [
-          "warn",
-          { "skipBlankLines": true, "skipComments": true }
-        ],
-        "max-nested-callbacks": ["warn", { "max": 3 }],
-        "no-bitwise": "warn",
-        "no-console": ["warn", { "allow": ["error", "warn", "info"] }],
-        "no-duplicate-imports": "warn",
-        "no-eval": "error",
-        "no-magic-numbers": [
-          "warn",
-          {
-            "ignore": [-1, 0, 1, 2, 7, 10, 24, 60, 100, 1000, 3600],
-            "ignoreDefaultValues": true,
-            "enforceConst": true,
-            "detectObjects": true
-          }
-        ],
-        "no-param-reassign": ["error", { "props": true }],
-        "no-sequences": "error",
-        "no-template-curly-in-string": "error",
-        "no-undef-init": "warn",
-        "no-unreachable-loop": "error",
-        "prefer-template": "warn",
-        "radix": "warn",
-        "yoda": "warn",
-        "n/no-unsupported-features/node-builtins": "error",
-        "n/no-process-exit": "warn",
-        "n/no-sync": "warn",
-        "n/prefer-promises/fs": "warn",
-        "no-secrets/no-secrets": [
-          "error",
-          { "additionalDelimiters": ["-"], "ignoreContent": "https://" }
-        ],
-        "functional/immutable-data": [
-          "error",
-          { "ignoreImmediateMutation": true }
-        ],
-        "functional/no-let": "warn",
-        "functional/no-loop-statements": "warn",
-        "functional/prefer-property-signatures": "warn",
-        "functional/prefer-tacit": "warn",
-        "import/extensions": ["warn", "never", { "json": "always" }],
-        "import/max-dependencies": ["warn", { "ignoreTypeImports": true }],
-        "import/no-absolute-path": "error",
-        "import/no-amd": "error",
-        "import/no-anonymous-default-export": "warn",
-        "import/no-commonjs": "error",
-        "import/no-cycle": "error",
-        "import/no-deprecated": "warn",
-        "import/no-mutable-exports": "error",
-        "import/no-named-default": "warn",
-        "import/no-self-import": "error",
-        "import/no-unassigned-import": "warn",
-        "import/no-useless-path-segments": "warn",
-        "@typescript-eslint/no-require-imports": "error",
-        "@typescript-eslint/default-param-last": "warn",
-        "@typescript-eslint/method-signature-style": "warn",
-        "@typescript-eslint/no-confusing-void-expression": "warn",
-        "@typescript-eslint/no-shadow": "warn",
-        "@typescript-eslint/no-unused-expressions": "warn",
-        "@typescript-eslint/naming-convention": [
-          "warn",
-          {
-            "selector": [
-              "variableLike",
-              "method",
-              "typeProperty",
-              "parameterProperty",
-              "classProperty"
-            ],
-            "format": ["camelCase"]
-          },
-          {
-            "selector": "variable",
-            "format": ["camelCase", "UPPER_CASE"]
-          },
-          {
-            "selector": "typeLike",
-            "format": ["PascalCase"]
-          },
-          {
-            "selector": "enumMember",
-            "format": ["PascalCase"]
-          },
-          {
-            "selector": "parameter",
-            "modifiers": ["unused"],
-            "format": null,
-            "custom": {
-              "regex": "^(_+|[a-z][a-zA-Z0-9]*)$",
-              "match": true
-            }
-          },
-          {
-            "selector": "objectLiteralProperty",
-            "modifiers": ["requiresQuotes"],
-            "format": null
-          },
-          {
-            "selector": ["variable", "parameter"],
-            "modifiers": ["destructured"],
-            "format": null
-          }
+          { "pattern": ".*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$" }
         ]
       }
     },
     {
-      "files": [
-        "*.spec.ts", // <- so that vitest/consistent-test-filename reports .spec.ts files
-        "*.test.ts",
-        "*.mock.ts",
-        "test/**/*.ts",
-        "mocks/**/*.ts",
-        "testing-utils/**/*.ts"
-      ],
-      "extends": ["plugin:vitest/recommended"],
-      "rules": {
-        // add and customize vitest rules
-        "vitest/prefer-to-be": "warn",
-        "vitest/consistent-test-filename": [
-          "warn",
-          { "pattern": ".*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$" }
-        ],
-        "vitest/consistent-test-it": "warn",
-        "vitest/prefer-to-have-length": "warn",
-        "vitest/no-alias-methods": "warn",
-        "vitest/no-conditional-tests": "warn",
-        "vitest/no-conditional-expect": "warn",
-        "vitest/require-hook": "warn",
-        "vitest/no-focused-tests": "warn",
-        "vitest/no-disabled-tests": "warn",
-        "vitest/require-to-throw-message": "warn",
-        "vitest/max-nested-describe": ["warn", { "max": 2 }],
-        "vitest/no-done-callback": "warn",
-        "vitest/no-duplicate-hooks": "warn",
-        "vitest/no-mocks-import": "warn",
-        "vitest/no-standalone-expect": "warn",
-        "vitest/no-test-return-statement": "warn",
-        "vitest/prefer-comparison-matcher": "warn",
-        "vitest/prefer-each": "warn",
-        "vitest/prefer-equality-matcher": "warn",
-        "vitest/prefer-hooks-on-top": "warn",
-        "vitest/prefer-mock-promise-shorthand": "warn",
-        "vitest/prefer-spy-on": "warn",
-        "vitest/prefer-to-contain": "warn",
-        "vitest/prefer-todo": "warn",
-        "vitest/require-top-level-describe": "warn",
-        // less strict rules for tests
-        "no-magic-numbers": "off",
-        "max-lines-per-function": "off",
-        "curly": "off",
-        "sonarjs/no-duplicate-string": "off",
-        "unicorn/consistent-function-scoping": "off",
-        "functional/no-let": "off",
-        "functional/immutable-data": [
-          "warn",
-          { "ignoreImmediateMutation": true }
-        ],
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/require-await": "warn"
-      }
-    },
-    {
       "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nx/javascript"],
+      "extends": ["plugin:@nx/javascript", "@code-pushup"],
       "rules": {}
     },
     {
       "files": "*.json",
       "parser": "jsonc-eslint-parser",
       "rules": {}
-    },
-    {
-      "files": "*.ts",
-      "rules": {
-        // turn off failing rules until they're fixed in codebase
-        // TODO: remove a rule when it no longer fails
-        "no-param-reassign": "off",
-        "max-lines-per-function": "off",
-        "no-console": "off",
-        "no-magic-numbers": "off",
-        "prefer-template": "off",
-        "arrow-body-style": "off",
-        "curly": "off",
-        "no-duplicate-imports": "off",
-        "n/no-sync": "off",
-        "functional/immutable-data": "off",
-        "functional/no-let": "off",
-        "import/no-useless-path-segments": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-argument": "off",
-        "@typescript-eslint/require-await": "off",
-        "@typescript-eslint/no-floating-promises": "off",
-        "@typescript-eslint/prefer-nullish-coalescing": "off",
-        "@typescript-eslint/naming-convention": "off",
-        "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/no-unnecessary-type-arguments": "off",
-        "@typescript-eslint/no-unnecessary-type-assertion": "off",
-        "@typescript-eslint/consistent-type-definitions": "off",
-        "@typescript-eslint/no-shadow": "off",
-        "@typescript-eslint/non-nullable-type-assertion-style": "off",
-        "@typescript-eslint/no-unused-expressions": "off",
-        "@typescript-eslint/restrict-plus-operands": "off",
-        "@typescript-eslint/restrict-template-expressions": "off",
-        "@typescript-eslint/no-confusing-void-expression": "off",
-        "@typescript-eslint/dot-notation": "off",
-        "sonarjs/no-duplicate-string": "off",
-        "sonarjs/no-nested-template-literals": "off",
-        "sonarjs/cognitive-complexity": "off",
-        "sonarjs/no-unused-collection": "off",
-        "unicorn/error-message": "off",
-        "unicorn/prefer-module": "off",
-        "unicorn/switch-case-braces": "off",
-        "unicorn/catch-error-name": "off",
-        "unicorn/no-negated-condition": "off",
-        "unicorn/import-style": "off",
-        "unicorn/prefer-node-protocol": "off",
-        "unicorn/consistent-destructuring": "off",
-        "unicorn/no-await-expression-member": "off",
-        "unicorn/no-new-array": "off",
-        "unicorn/numeric-separators-style": "off",
-        "unicorn/prefer-spread": "off",
-        "unicorn/prefer-ternary": "off",
-        "unicorn/better-regex": "off",
-        "unicorn/prefer-string-replace-all": "off",
-        "unicorn/prefer-number-properties": "off",
-        "unicorn/prefer-logical-operator-over-ternary": "off",
-        "unicorn/explicit-length-check": "off",
-        "unicorn/no-empty-file": "off",
-        "unicorn/prefer-at": "off",
-        "unicorn/prefer-top-level-await": "off",
-        "unicorn/consistent-function-scoping": "off",
-        "unicorn/no-useless-undefined": "off"
-      }
     }
   ]
 }
