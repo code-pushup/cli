@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { CommandModule } from 'yargs';
 import {
   CollectAndPersistReportsOptions,
@@ -14,7 +14,7 @@ import {
   getCurrentBranchOrTag,
   getProgressBar,
   git,
-  guardAgainstDirtyRepo,
+  // guardAgainstDirtyRepo,
   startDuration,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
@@ -25,7 +25,9 @@ export function yargsHistoryCommandObject() {
     command,
     describe: 'Create history of commits',
     handler: async args => {
+      // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
+      // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}...`));
       const config = args as unknown as CollectAndPersistReportsOptions;
 
@@ -33,10 +35,12 @@ export function yargsHistoryCommandObject() {
 
       git.checkout('main');
 
-      const current = await getCurrentBranchOrTag();
+      const current: string = await getCurrentBranchOrTag();
+      // eslint-disable-next-line no-console
       console.log('Current Branch:', current);
 
       const log = await git.log();
+      // eslint-disable-next-line no-console
       console.log('All Log:', log.all.length);
 
       const commitsToAudit = log.all
@@ -86,7 +90,9 @@ export function yargsHistoryCommandObject() {
       progress.endProgress('History generated!');
 
       await git.checkout(current);
+      // eslint-disable-next-line no-console
       console.log('Current Branch:', current);
+      // eslint-disable-next-line no-console
       console.log('Reports:', reports);
       await writeFile('history.json', JSON.stringify(reports, null, 2));
     },

@@ -51,8 +51,8 @@ export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
-  calcDuration,
   startDuration,
+  calcDuration,
   compareIssueSeverity,
   loadReport,
 } from './lib/report';
