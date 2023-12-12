@@ -1,6 +1,6 @@
 import {executeProcess, objectToCliArgs} from "@code-pushup/utils";
 
-export function makeStatusDirty(): Promise<void> {
+export async function makeStatusDirty(): Promise<void> {
   await executeProcess({
     command: 'echo',
     args: objectToCliArgs({
@@ -9,7 +9,7 @@ export function makeStatusDirty(): Promise<void> {
   });
 }
 
-export function makeStatusClean(): Promise<void> {
+export async function makeStatusClean(): Promise<void> {
   await executeProcess({
     command: 'echo',
     args: objectToCliArgs({
