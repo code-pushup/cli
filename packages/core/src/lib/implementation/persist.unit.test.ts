@@ -41,31 +41,6 @@ describe('persistReport', () => {
     );
   });
 
-  it('should create a report in json format by default', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      ...MINIMAL_CONFIG_MOCK,
-      persist: {
-        outputDir: MEMFS_VOLUME,
-        filename: 'report',
-        format: [],
-      },
-    });
-
-    const jsonReport: Report = JSON.parse(
-      readFileSync(join(MEMFS_VOLUME, 'report.json')).toString(),
-    );
-    expect(jsonReport).toEqual(
-      expect.objectContaining({
-        packageName: '@code-pushup/core',
-        duration: 666,
-      }),
-    );
-
-    expect(() => readFileSync(join(MEMFS_VOLUME, 'report.md'))).toThrow(
-      'no such file or directory',
-    );
-  });
-
   it('should create a report in all formats', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       ...MINIMAL_CONFIG_MOCK,

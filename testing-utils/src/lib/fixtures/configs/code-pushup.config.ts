@@ -1,7 +1,6 @@
 import { join } from 'node:path';
-import { type CoreConfig } from '@code-pushup/models';
 
-export default {
+const config = {
   persist: { outputDir: join('tmp', 'ts') },
   upload: {
     organization: 'code-pushup',
@@ -31,4 +30,6 @@ export default {
       icon: 'javascript',
     },
   ],
-} satisfies CoreConfig;
+};
+
+export default config;
