@@ -1,4 +1,5 @@
 import { Options } from 'yargs';
+import { CONFIG_FILE_NAME } from '@code-pushup/models';
 import { GeneralCliOptions } from './model';
 
 export function yargsGlobalOptionsDefinition(): Record<
@@ -20,7 +21,7 @@ export function yargsGlobalOptionsDefinition(): Record<
     config: {
       describe: 'Path the the config file, e.g. code-pushup.config.js',
       type: 'string',
-      default: 'code-pushup.config.js',
+      default: `${CONFIG_FILE_NAME}.ts`,
     },
   };
 }

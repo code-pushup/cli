@@ -15,6 +15,7 @@ export {
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
+export { CONFIG_FILE_NAME } from './lib/implementation/configuration';
 export { materialIconSchema } from './lib/implementation/schemas';
 export {
   Format,

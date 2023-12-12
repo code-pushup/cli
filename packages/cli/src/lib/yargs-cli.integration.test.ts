@@ -20,7 +20,7 @@ describe('yargsCli', () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>([], {
       options,
     }).parseAsync();
-    expect(parsedArgv.config).toBe('code-pushup.config.js');
+    expect(parsedArgv.config).toBe('code-pushup.config.ts');
   });
 
   it('should parse a single boolean negated argument', async () => {

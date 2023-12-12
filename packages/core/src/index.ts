@@ -16,6 +16,7 @@ export {
   CollectAndPersistReportsOptions,
 } from './lib/collect-and-persist';
 export {
-  readCodePushupConfig,
+  readRc,
+  readRcByPath,
   ConfigPathError,
-} from './lib/implementation/read-code-pushup-config';
+} from './lib/implementation/read-rc-file';
