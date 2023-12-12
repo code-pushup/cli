@@ -28,7 +28,7 @@ export async function branchHasChanges(): Promise<boolean> {
   return await git.status(['-s']).then(r => Boolean(r.files.length));
 }
 
-export async function guardAgainstDirtyRepo() {
+export async function guardAgainstDirtyRepo(): Promise<void> {
   const isDirty = await branchHasChanges();
   if (isDirty) {
     throw new Error(`
@@ -38,7 +38,7 @@ export async function guardAgainstDirtyRepo() {
   }
 }
 
-export async function getCurrentBranchOrTag() {
+export async function getCurrentBranchOrTag(): Promise<string> {
   return (
     (await git.branch().then(r => r.current)) ||
     // @TODO replace with simple git

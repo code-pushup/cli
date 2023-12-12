@@ -15,6 +15,7 @@ export {
   collectAndPersistReports,
   CollectAndPersistReportsOptions,
 } from './lib/collect-and-persist';
+export { history, HistoryOptions } from './lib/history';
 export {
   readCodePushupConfig,
   ConfigPathError,
