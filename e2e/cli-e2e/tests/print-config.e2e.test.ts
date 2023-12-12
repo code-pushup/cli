@@ -14,7 +14,7 @@ describe('print-config', () => {
           '--no-progress',
           `--config=${configFile(ext)}`,
           '--persist.outputDir=my-dir',
-          '--persist.format=md',
+          '--persist.format=md,json',
           '--persist.filename=my-report',
         ],
       });
@@ -32,7 +32,7 @@ describe('print-config', () => {
           },
           persist: {
             outputDir: 'my-dir',
-            format: ['md'],
+            format: ['md', 'json'],
             filename: 'my-report',
           },
           plugins: expect.arrayContaining([
