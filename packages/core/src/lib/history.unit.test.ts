@@ -1,11 +1,10 @@
 import {describe} from 'vitest';
 import {Report} from '@code-pushup/models';
-import {ISO_STRING_REGEXP, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
-import {executeProcess, guardAgainstDirtyRepo, objectToCliArgs} from '@code-pushup/utils';
+import {ISO_STRING_REGEXP, makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
+import {guardAgainstDirtyRepo} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
 import {collect} from './implementation/collect';
 import {persistReport} from './implementation/persist';
-import {writeFile} from "fs/promises";
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
@@ -82,5 +81,6 @@ describe('guardAgainstDirtyRepo', () => {
     await expect(guardAgainstDirtyRepo()).rejects.toThrow(
       'Repository should be clean before we you can proceed.',
     );
+    await makeStatusClean();
   });
 });

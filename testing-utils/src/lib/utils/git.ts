@@ -11,9 +11,9 @@ export async function makeStatusDirty(): Promise<void> {
 
 export async function makeStatusClean(): Promise<void> {
   await executeProcess({
-    command: 'echo',
+    command: 'git',
     args: objectToCliArgs({
-      _: ["Some changes", ">>", "some-file.txt"]
+      _: ["clean -fd"]
     })
   });
 }
