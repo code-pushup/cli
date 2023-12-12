@@ -1,7 +1,5 @@
-import { join } from 'path';
-
 export default {
-  persist: { outputDir: join('tmp', 'js') },
+  persist: {},
   upload: {
     organization: 'code-pushup',
     project: 'cli-js',

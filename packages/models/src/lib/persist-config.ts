@@ -5,7 +5,7 @@ export const formatSchema = z.enum(['json', 'md']);
 export type Format = z.infer<typeof formatSchema>;
 
 export const persistConfigSchema = z.object({
-  outputDir: filePathSchema('Artifacts folder'),
+  outputDir: filePathSchema('Artifacts folder').default('.code-pushup'),
   filename: fileNameSchema('Artifacts file name (without extension)').default(
     'report',
   ),

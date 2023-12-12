@@ -1,5 +1,5 @@
 import { readCodePushupConfig } from '@code-pushup/core';
-import { CoreConfig } from '@code-pushup/models';
+import { CoreConfig, RcConfig } from '@code-pushup/models';
 import { GeneralCliOptions, OnlyPluginsOptions } from './model';
 import {
   filterCategoryByOnlyPluginsOption,

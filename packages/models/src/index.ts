@@ -5,6 +5,7 @@ export {
   categoryRefSchema,
 } from './lib/category-config';
 export {
+  RcConfig,
   CoreConfig,
   coreConfigSchema,
   refineCoreConfig,

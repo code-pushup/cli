@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
@@ -8,9 +9,9 @@ describe('print-config-command', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
+        'code-pushup.config.ts': '{persist: {}}', // only needs to exist for stat inside readCodePushupConfig
       },
-      '/test',
+      MEMFS_VOLUME,
     );
   });
 

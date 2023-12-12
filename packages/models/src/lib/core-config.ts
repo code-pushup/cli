@@ -5,7 +5,7 @@ import {
   hasDuplicateStrings,
   hasMissingStrings,
 } from './implementation/utils';
-import { persistConfigSchema } from './persist-config';
+import { PersistConfig, persistConfigSchema } from './persist-config';
 import { pluginConfigSchema } from './plugin-config';
 import { uploadConfigSchema } from './upload-config';
 
@@ -52,6 +52,9 @@ export function refineCoreConfig(schema: Schema): Schema {
 }
 
 export type CoreConfig = z.infer<typeof unrefinedCoreConfigSchema>;
+export type RcConfig = Omit<CoreConfig, 'persist'> & {
+  persist?: Partial<PersistConfig>;
+};
 
 // helper for validator: categories point to existing audit or group refs
 function missingRefsForCategoriesErrorMsg(coreCfg: CoreConfig) {
