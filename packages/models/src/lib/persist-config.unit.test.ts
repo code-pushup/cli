@@ -11,6 +11,7 @@ describe('persistConfigSchema', () => {
   it('should fill defaults', () => {
     const persistConfigMock = persistConfigSchema.parse(persistConfig());
     expect(persistConfigMock.filename).toBe('report');
+    expect(persistConfigMock.format).toEqual(['json']);
   });
 
   it('should throw if outputDir is invalid', () => {

@@ -60,13 +60,14 @@ describe('persistReport', () => {
     resetFiles();
   });
 
-  it('should stdout as format by default`', async () => {
+  it('should stdout as format always`', async () => {
     await persistReport(dummyReport, dummyConfig);
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
 
-    expect(() => readReport('json')).not.toThrow();
+    // default format is json
+    expect(() => readReport('json')).not.toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
@@ -81,7 +82,7 @@ describe('persistReport', () => {
       expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
 
-    expect(() => readReport('json')).not.toThrow('no such file or directory');
+    expect(() => readReport('json')).toThrow('no such file or directory');
     expect(() => readReport('md')).toThrow('no such file or directory');
   });
 
@@ -108,9 +109,7 @@ describe('persistReport', () => {
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
     );
 
-    expect(() => readFileSync(reportPath('json'))).not.toThrow(
-      'no such file or directory',
-    );
+    expect(() => readReport('json')).toThrow('no such file or directory');
   });
 
   it('should persist all formats`', async () => {
@@ -143,9 +142,7 @@ describe('persistReport', () => {
       persist,
     });
 
-    expect(() => readFileSync(reportPath('json'))).not.toThrow(
-      'no such file or directory',
-    );
+    expect(() => readReport('json')).toThrow('no such file or directory');
 
     const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain(

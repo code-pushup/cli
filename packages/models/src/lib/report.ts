@@ -39,6 +39,7 @@ export const reportSchema = packageVersionSchema({
   .merge(
     z.object(
       {
+        commit: z.string().optional(),
         categories: z.array(categoryConfigSchema),
         plugins: z.array(pluginReportSchema),
       },

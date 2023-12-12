@@ -32,26 +32,33 @@ export async function persistReport(
   const filename = persist.filename;
   const format = persist.format ?? [];
 
-  let scoredReport = scoreReport(report);
-  console.info(reportToStdout(scoredReport));
+  let scoredReport;
 
   // collect physical format outputs
-  const results: { format: string; content: string }[] = [
-    // JSON is always persisted
-    { format: 'json', content: JSON.stringify(report, null, 2) },
-  ];
+  const results: { format: string; content: string }[] = [];
+
+  if (format.includes('json')) {
+    scoredReport = scoreReport(report);
+
+    results.push({
+      format: 'json',
+      content: JSON.stringify(report, null, 2),
+    });
+  }
 
   if (format.includes('md')) {
     scoredReport = scoredReport || scoreReport(report);
     const commitData = await getLatestCommit();
-    if (!commitData) {
-      console.warn('no commit data available');
-    }
+    validateCommitData(commitData);
+
     results.push({
       format: 'md',
       content: reportToMd(scoredReport, commitData),
     });
   }
+
+  scoredReport = scoredReport || scoreReport(report);
+  console.info(reportToStdout(scoredReport));
 
   if (!existsSync(outputDir)) {
     try {
@@ -83,4 +90,10 @@ export async function persistReport(
 
 export function logPersistedResults(persistResults: MultipleFileResults) {
   logMultipleFileResults(persistResults, 'Generated reports');
+}
+
+function validateCommitData(commitData?: unknown) {
+  if (!commitData) {
+    console.warn('no commit data available');
+  }
 }
