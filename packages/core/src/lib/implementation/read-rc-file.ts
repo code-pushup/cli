@@ -1,3 +1,4 @@
+import { join } from 'path';
 import {
   CONFIG_FILE_NAME,
   CoreConfig,
@@ -42,6 +43,9 @@ export async function readRc(): Promise<CoreConfig> {
   }
 
   return readRcByPath(
-    ext ? `${CONFIG_FILE_NAME}.${ext}` : `${CONFIG_FILE_NAME}.ts`,
+    join(
+      process.cwd(),
+      ext ? `${CONFIG_FILE_NAME}.${ext}` : `${CONFIG_FILE_NAME}.ts`,
+    ),
   );
 }
