@@ -1,6 +1,6 @@
 import type {
+  AuditOutput,
   CoreConfig,
-  Issue,
   PluginConfig,
   RunnerConfig,
   RunnerFunction,
@@ -17,9 +17,6 @@ export const MINIMAL_RUNNER_CONFIG_MOCK: RunnerConfig = {
 export const MINIMAL_RUNNER_FUNCTION_MOCK: RunnerFunction = () => [
   {
     slug: 'node-version',
-    title: 'Node version',
-    description: 'Returns node version',
-    docsUrl: 'https://nodejs.org/',
     score: 0.3,
     value: 16,
     displayValue: '16.0.0',
@@ -28,10 +25,10 @@ export const MINIMAL_RUNNER_FUNCTION_MOCK: RunnerFunction = () => [
         {
           severity: 'error',
           message: 'The required Node version to run Code PushUp CLI is 18.',
-        } satisfies Issue,
+        },
       ],
     },
-  },
+  } satisfies AuditOutput,
 ];
 
 export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
@@ -50,7 +47,7 @@ export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
 };
 
 export const MINIMAL_CONFIG_MOCK: CoreConfig = {
-  persist: { outputDir: 'test', filename: 'report.json' },
+  persist: { outputDir: '/test', filename: 'report.json' },
   upload: {
     organization: 'code-pushup',
     project: 'cli',
