@@ -1,4 +1,4 @@
-import { type RcConfig } from '../../../../../packages/models/src';
+import { type RcConfig } from '@code-pushup/models';
 
 export const CORE_CONFIG_MOCK = {
   persist: { outputDir: 'test', filename: 'output.json' },

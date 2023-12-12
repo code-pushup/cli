@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { type CoreConfig } from '@code-pushup/models';
+import { type RcConfig } from '@code-pushup/models';
 
 export default {
   persist: { outputDir: join('tmp', 'ts'), filename: 'output.json' },
@@ -51,4 +51,4 @@ export default {
       icon: 'javascript',
     },
   ],
-} satisfies CoreConfig;
+} satisfies RcConfig;

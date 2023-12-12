@@ -8,8 +8,11 @@ import { yargsConfigCommandObject } from './print-config-command';
 describe('print-config-command', () => {
   beforeEach(() => {
     vol.fromJSON(
+      // the real value comes form vitest mocks configured in vitest.config.ts
+
       {
-        'code-pushup.config.ts': '{persist: {}}', // only needs to exist for stat inside readCodePushupConfig
+        // only needs to exist for stat inside readCodePushupConfig
+        'code-pushup.config.ts': '',
       },
       MEMFS_VOLUME,
     );

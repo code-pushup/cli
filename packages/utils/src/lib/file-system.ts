@@ -83,7 +83,8 @@ export class NoExportError extends Error {
 
 export async function importEsmModule<T = unknown>(
   options: Options,
-  parse?: (d: unknown) => T,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parse?: (d: any) => T,
 ) {
   parse = parse || (v => v as T);
   options = {

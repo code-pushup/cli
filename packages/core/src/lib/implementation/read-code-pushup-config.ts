@@ -1,4 +1,4 @@
-import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
+import { CoreConfig, RcConfig, coreConfigSchema } from '@code-pushup/models';
 import { fileExists, importEsmModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
@@ -7,7 +7,9 @@ export class ConfigPathError extends Error {
   }
 }
 
-export async function readCodePushupConfig(filepath: string) {
+export async function readCodePushupConfig(
+  filepath: string,
+): Promise<CoreConfig> {
   if (!filepath.length) {
     throw new Error('The configuration path is empty.');
   }
@@ -20,6 +22,6 @@ export async function readCodePushupConfig(filepath: string) {
     {
       filepath,
     },
-    coreConfigSchema.parse,
+    (d: RcConfig) => coreConfigSchema.parse(d),
   );
 }
