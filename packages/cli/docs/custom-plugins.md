@@ -7,7 +7,6 @@ In this section we will go through the steps needed to create a custom plugin an
 ## Set up the core config
 
 To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file maintaining a `plugins` property.
-property.
 All plugins are registered in a core configuration object and can take potential options to configure its behaviour.
 The following example shows where to register the plugin:
 
