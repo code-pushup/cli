@@ -29,7 +29,7 @@ describe('collect', () => {
     );
   });
 
-  it('should execute when no plugins are passed', async () => {
+  it('should throw when no plugins are passed', async () => {
     await expect(
       collect({
         ...MINIMAL_CONFIG_MOCK,
