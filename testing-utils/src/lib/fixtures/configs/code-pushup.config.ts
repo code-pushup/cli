@@ -1,6 +1,7 @@
 import { type RcConfig } from '@code-pushup/models';
 
 export default {
+  // @TODO remove ad we have defaults
   persist: { filename: 'output.json' },
   upload: {
     organization: 'code-pushup',
