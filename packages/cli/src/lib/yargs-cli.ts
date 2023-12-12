@@ -52,7 +52,9 @@ export function yargsCli<T = unknown>(
       }
       return config;
     })
-    .options(options);
+    .options(options)
+    // take full width of the terminal
+    .wrap(cli.terminalWidth());
 
   // usage message
   if (usageMessage) {
