@@ -1,22 +1,27 @@
-import { Result } from 'lighthouse';
-import { objectToCliArgs } from '../../../../dist/packages/utils';
+import Result from 'lighthouse/types/lhr/lhr';
+import {
+  objectToCliArgs,
+  toArray,
+  verboseUtils,
+} from '../../../../../dist/packages/utils';
 import {
   AuditOutput,
   AuditOutputs,
   Issue,
+  MAX_ISSUE_MESSAGE_LENGTH,
   PluginConfig,
   RunnerConfig,
-} from '../../../../packages/models/src';
+} from '../../../../../packages/models/src';
 import {
   audits,
   categoryPerfGroup,
   lighthouseReportName,
   pluginSlug,
-} from './constants';
+} from './constants.generated';
 
 export type LighthouseOptions = {
   url: string;
-  onlyAudits?: string;
+  onlyAudits?: string | string[];
   verbose?: boolean;
   headless?: boolean | 'new';
   outputFile?: string;
@@ -46,9 +51,7 @@ export type LighthouseOptions = {
  * }
  *
  */
-export async function create(
-  options: LighthouseOptions,
-): Promise<PluginConfig> {
+export function create(options: LighthouseOptions): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'Lighthouse',
@@ -61,16 +64,21 @@ export async function create(
 }
 
 function runnerConfig(options: LighthouseOptions): RunnerConfig {
+  const { log } = verboseUtils(options.verbose);
   const { outputFile = lighthouseReportName } = options;
+  log(
+    `Run npx ${getLighthouseCliArguments({ ...options, outputFile }).join(
+      ' ',
+    )}`,
+  );
   return {
     command: 'npx',
     args: getLighthouseCliArguments({ ...options, outputFile }),
     outputFile,
     outputTransform: (output: unknown) => {
-      throw new Error(JSON.stringify(output));
-      const lighthouseOutput: Result = JSON.parse(
+      const lighthouseOutput = JSON.parse(
         (output as string).toString(),
-      );
+      ) as Result;
       return lhrToAuditOutputs(lighthouseOutput);
     },
   } satisfies RunnerConfig;
@@ -84,7 +92,7 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
     verbose = false,
     headless = false,
   } = options;
-  let argsObj: Record<string, unknown> = {
+  const argsObj: Record<string, unknown> = {
     _: ['lighthouse', url],
     verbose,
     output: 'json',
@@ -92,17 +100,17 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
   };
 
   if (headless) {
-    argsObj = {
+    return objectToCliArgs({
       ...argsObj,
       ['chrome-flags']: `--headless=${headless}`,
-    };
+    });
   }
 
   if (onlyAudits) {
-    argsObj = {
+    return objectToCliArgs({
       ...argsObj,
-      onlyAudits,
-    };
+      onlyAudits: toArray(onlyAudits).join(','),
+    });
   }
 
   return objectToCliArgs(argsObj);
@@ -117,16 +125,16 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
       displayValue,
       details,
     }) => {
-      let auditOutput: AuditOutput = {
+      const auditOutput: AuditOutput = {
         slug,
-        score: score || 0, // score can be null
-        value: parseInt(value.toString()),
+        score: score ?? 0, // score can be null
+        value: Number.parseInt(value.toString(), 10),
         displayValue: displayValue,
       };
 
       const issues = lhrDetailsToIssueDetails(details);
       if (issues) {
-        auditOutput = {
+        return {
           ...auditOutput,
           details: {
             issues,
@@ -140,24 +148,24 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
 }
 
 function lhrDetailsToIssueDetails(
-  details = {} as Result['audits'][string]['details'],
+  details = {} as unknown as Result['audits'][string]['details'],
 ): Issue[] | null {
   const { type, items } = details as {
     type: string;
     items: Record<string, string>[];
+    /**
+     * @TODO implement cases
+     * - undefined,
+     * - 'table',
+     * - 'filmstrip',
+     * - 'screenshot',
+     * - 'debugdata',
+     * - 'opportunity',
+     * - 'criticalrequestchain',
+     * - 'list',
+     * - 'treemap-data'
+     */
   };
-  /**
-   * @TODO implement cases
-   * - 'table',
-   * - undefined,
-   * - 'filmstrip',
-   * - 'screenshot',
-   * - 'debugdata',
-   * - 'opportunity',
-   * - 'criticalrequestchain',
-   * - 'list',
-   * - 'treemap-data'
-   */
   if (type === 'table') {
     return [
       {
@@ -166,7 +174,7 @@ function lhrDetailsToIssueDetails(
             Object.entries(item).map(([key, value]) => `${key}-${value}`),
           )
           .join(',')
-          .slice(0, 505),
+          .slice(0, MAX_ISSUE_MESSAGE_LENGTH),
         severity: 'info',
         source: {
           file: 'file-name',

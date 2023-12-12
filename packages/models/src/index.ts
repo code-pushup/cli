@@ -3,7 +3,6 @@ export {
   CategoryRef,
   categoryRefSchema,
   categoryConfigSchema,
-  categoryRefSchema,
 } from './lib/category-config';
 export {
   CoreConfig,
@@ -15,6 +14,7 @@ export {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
+  MAX_ISSUE_MESSAGE_LENGTH,
 } from './lib/implementation/limits';
 export { materialIconSchema } from './lib/implementation/schemas';
 export {
