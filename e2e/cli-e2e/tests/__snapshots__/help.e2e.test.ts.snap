@@ -16,7 +16,7 @@ Options:
                                                        [boolean] [default: true]
       --verbose              When true creates more verbose output. This is help
                              ful when debugging.      [boolean] [default: false]
-      --config               Path the the config file, e.g. code-pushup.config.j
+      --config               Path the the config file, e.g. code-pushup.config.t
                              s       [string] [default: \\"code-pushup.config.js\\"]
       --persist.outputDir    Directory for the produced reports         [string]
       --persist.filename     Filename for the produced reports.         [string]
