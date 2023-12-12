@@ -1,6 +1,6 @@
 import {describe} from 'vitest';
 import {Report} from '@code-pushup/models';
-import {ISO_STRING_REGEXP, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
+import {ISO_STRING_REGEXP, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
 import {executeProcess, guardAgainstDirtyRepo, objectToCliArgs} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
 import {collect} from './implementation/collect';
@@ -78,6 +78,7 @@ describe('guardAgainstDirtyRepo', () => {
   });
 
   it('should throw for dirty repo', async () => {
+    await makeStatusDirty();
     await expect(guardAgainstDirtyRepo()).rejects.toThrow(
       'Repository should be clean before we you can proceed.',
     );
