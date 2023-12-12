@@ -8,13 +8,19 @@
 
 ---
 
+|                              📊 Getting Started                              |                           🌐 Portal integration                            |                          🛠️ CI automation                          |
+| :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :----------------------------------------------------------------: |
+| **[How to setup](./packages/cli/README.md#getting-started)** a basic project | Sort, filter **[your goals](./packages/cli/README.md#portal-integration)** | Updates **[on every PR](./packages/cli/README.md#ci-integration)** |
+
+---
+
 The Code PushUp CLI serves to **collect audit results**, and optionally **upload the report** to the Code PushUp portal.
 
 It can be used locally in your repository, or integrated in your CI environment.
 
 _If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package instead._
 
-## Getting started
+## 📊 Getting started
 
 1. Install as a dev dependency with your package manager:
 
@@ -93,7 +99,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 6. View report file(s) in output directory (specified by `persist.outputDir` configuration).
 
-## Portal integration
+## 🌐 Portal integration
 
 If you have access to the Code PushUp portal, provide credentials in order to upload reports.
 
@@ -109,7 +115,7 @@ export default {
 };
 ```
 
-## CI automation
+## 🛠 CI automation
 
 Example for GitHub Actions:
 
@@ -128,7 +134,7 @@ jobs:
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
 
-## CLI commands and options
+## 🤖 CLI commands and options
 
 ### Global Options
 
