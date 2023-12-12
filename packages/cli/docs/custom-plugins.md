@@ -131,10 +131,10 @@ const myAuditOutput: AuditOutput = {
 - An audit output always includes the metadata of the audit. [`Audit`](@TODO - link models)
 
 - `score` and `value` are important to calculate a score from a given metric and display it.
-  Here you can read more about [audits and scoring](@TODO - in page link).
+  Here you can read more about [audits and scoring](#audit-score).
 
 - `details` helps with attribution of audit results. This is important to get actionable feedback like the line of code or how to fix it.  
-  Here you can read more on [attribution of audits](@TODO - in page link).
+  Here you can read more on [attribution of audits](#audit-details).
 
 Here's an example of using the above audit for the plugin output:
 
@@ -503,7 +503,7 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 ### Audit groups
 
 As an optional property a plugin can maintain `groups` as an array of [`AuditGroup`s](@TODO).
-While [categories](@TODO) can score audits across plugins, groups are only targeting plugins within a plugin.
+While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting plugins within a plugin.
 For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
 
 An audit group maintains:
@@ -701,9 +701,9 @@ When developing custom plugins you should know a couple of CLI options that are 
 
 Following options are helpful in debugging:
 
-- use [`--verbose`](@TODO) to get more information printed in the terminal
-- use [`--no-progress`](@TODO) to get better readability of logs.  
+- use [`--config`](../README.md#global-options) to point to a different config file
+- use [`--verbose`](../README.md#global-options) to get more information printed in the terminal
+- use [`--no-progress`](../README.md#global-options) to get better readability of logs.  
   The progressbar would otherwise interfere with your logs and makes them harder to read.
-- use [`--onlyPlugin`](@TODO) to restrict the execution of plugins to only the listed ones
-- use [`--config`](@TODO) to point to a different config file
-- use [`--format=md`](@TODO) to see all information provided by plugin outputs
+- use [`--format=md`](../README.md#common-command-options) to see all information provided by plugin outputs
+- use [`--onlyPlugin`](../README.md#common-command-options) to restrict the execution of plugins to only the listed ones
