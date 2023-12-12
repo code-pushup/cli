@@ -20,7 +20,7 @@ You can configure the plugin with the following options:
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass in the path od the directory to crawl (relative to `process.cwd()`), as well as patterns and a budgget.
+   Pass in the path on the directory to crawl (relative to `process.cwd()`), as well as patterns and a budget.
 
    ```js
    import fileSizePlugin from './file-size.plugin';
