@@ -8,42 +8,32 @@ import { collectAndPersistReports } from './collect-and-persist';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 
-vi.mock('./implementation/collect', async () => {
-  return {
-    collect: vi.fn().mockImplementation(
-      async () =>
-        ({
-          packageName: 'code-pushup',
-          version: '0.0.1',
-          date: new Date().toISOString(),
-          duration: 0,
-          categories: [],
-          plugins: [],
-        } as Report),
-    ),
-  };
-});
+vi.mock('./implementation/collect', () => ({
+  collect: vi.fn().mockResolvedValue({
+    packageName: 'code-pushup',
+    version: '0.0.1',
+    date: new Date().toISOString(),
+    duration: 0,
+    categories: [],
+    plugins: [],
+  } as Report),
+}));
 
-vi.mock('./implementation/persist', async () => {
-  return {
-    persistReport: vi.fn().mockImplementation(async () => ({})),
-    logPersistedResults: vi.fn().mockReturnValue(undefined),
-  };
-});
+vi.mock('./implementation/persist', () => ({
+  persistReport: vi.fn(),
+  logPersistedResults: vi.fn(),
+}));
 
 describe('collectAndPersistReports', () => {
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
-    await collectAndPersistReports({
+    const nonVerboseConfig = {
       ...MINIMAL_CONFIG_MOCK,
       verbose: false,
       progress: false,
-    });
+    };
+    await collectAndPersistReports(nonVerboseConfig);
 
-    expect(collect).toHaveBeenCalledWith({
-      ...MINIMAL_CONFIG_MOCK,
-      verbose: false,
-      progress: false,
-    });
+    expect(collect).toHaveBeenCalledWith(nonVerboseConfig);
 
     expect(persistReport).toHaveBeenCalledWith(
       {
@@ -54,28 +44,21 @@ describe('collectAndPersistReports', () => {
         categories: [],
         plugins: [],
       },
-      {
-        ...MINIMAL_CONFIG_MOCK,
-        verbose: false,
-        progress: false,
-      },
+      nonVerboseConfig,
     );
 
     expect(logPersistedResults).not.toHaveBeenCalled();
   });
 
   it('should call collect and persistReport with correct parameters in verbose mode', async () => {
-    await collectAndPersistReports({
+    const verboseConfig = {
       ...MINIMAL_CONFIG_MOCK,
       verbose: true,
       progress: false,
-    });
+    };
+    await collectAndPersistReports(verboseConfig);
 
-    expect(collect).toHaveBeenCalledWith({
-      ...MINIMAL_CONFIG_MOCK,
-      verbose: true,
-      progress: false,
-    });
+    expect(collect).toHaveBeenCalledWith(verboseConfig);
 
     expect(persistReport).toHaveBeenCalledWith(
       {
@@ -86,11 +69,7 @@ describe('collectAndPersistReports', () => {
         categories: [],
         plugins: [],
       } as Report,
-      {
-        ...MINIMAL_CONFIG_MOCK,
-        verbose: true,
-        progress: false,
-      },
+      verboseConfig,
     );
 
     expect(logPersistedResults).toHaveBeenCalled();

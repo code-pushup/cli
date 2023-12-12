@@ -6,7 +6,7 @@ import {
   ISO_STRING_REGEXP,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
-import { UploadOptions, upload } from './upload';
+import { upload } from './upload';
 
 describe('upload', () => {
   it('upload should be called with correct data', async () => {
@@ -31,9 +31,9 @@ describe('upload', () => {
         filename: 'report',
         format: ['json'],
       },
-    } as UploadOptions);
+    });
 
-    expect(result).toEqual({ packageName: '@code-pushup/cli' }); // TODO is this correct?
+    expect(result).toEqual({ packageName: '@code-pushup/cli' });
 
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
