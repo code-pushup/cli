@@ -10,6 +10,7 @@ export {
 export {
   FileResult,
   MultipleFileResults,
+  CrawlFileSystemOptions,
   crawlFileSystem,
   ensureDirectoryExists,
   fileExists,
