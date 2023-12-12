@@ -65,6 +65,8 @@ export type PluginOptions = {
  */
 export function create(options: PluginOptions): PluginConfig {
   return {
+    packageName: '@code-pushup/example-plugins/package.json',
+    version: '0.0.0',
     slug: pluginSlug,
     title: 'Package Json',
     icon: 'javascript',
