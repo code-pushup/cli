@@ -1,10 +1,8 @@
 import {describe} from 'vitest';
 import {Report} from '@code-pushup/models';
-import {ISO_STRING_REGEXP, makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
+import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
 import {guardAgainstDirtyRepo} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
-import {collect} from './implementation/collect';
-import {persistReport} from './implementation/persist';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
@@ -34,15 +32,7 @@ describe('history', () => {
 
   });
 
-  it('should throw for invalid targetBranch', async () => {
-    const verboseConfig: HistoryOptions = {
-      ...MINIMAL_CONFIG_MOCK,
-      verbose: true,
-      progress: false,
-      targetBranch: 'test',
-    };
-    await expect(history(verboseConfig)).rejects.toThrow("pathspec 'test' did not match any file(s) known to git");
-  });
+
 });
 
 describe('guardAgainstDirtyRepo', () => {

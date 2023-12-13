@@ -1,63 +1,28 @@
-import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { CoreConfig } from '@code-pushup/models';
-import {
-  calcDuration,
-  getCurrentBranchOrTag,
-  getProgressBar,
-  git,
-  guardAgainstDirtyRepo,
-  startDuration,
-} from '@code-pushup/utils';
-import {
-  CollectAndPersistReportsOptions,
-  collectAndPersistReports,
-} from './collect-and-persist';
-import { GlobalOptions } from './types';
-import { UploadOptions, upload } from './upload';
+import {writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {CoreConfig, Report} from '@code-pushup/models';
+import {calcDuration, getProgressBar, git, startDuration,} from '@code-pushup/utils';
+import {collectAndPersistReports, CollectAndPersistReportsOptions,} from './collect-and-persist';
+import {GlobalOptions} from './types';
+import {upload, UploadOptions} from './upload';
 
 export type HistoryOptions = {
   targetBranch: string;
 } & Pick<CoreConfig, 'persist' | 'plugins' | 'categories'> &
   GlobalOptions;
 
-export async function history(options: HistoryOptions): Promise<void> {
-  const { targetBranch, ...config } = options;
+export async function history(config: HistoryOptions, commits: string[]): Promise<Record<string, unknown>[]> {
+  const reports: Record<string, unknown>[] = [];
 
-  const initialBranch: string = await getCurrentBranchOrTag();
-  // eslint-disable-next-line no-console
-  console.log('Initial Branch:', initialBranch);
-
- // await guardAgainstDirtyRepo();
-
-  await git.checkout(targetBranch);
-
-  const current: string = await getCurrentBranchOrTag();
-  // eslint-disable-next-line no-console
-  console.log('Current Branch:', current);
-
-  const log = await git.log();
-
-  const commitsToAudit = log.all
-    .map(({ hash }) => hash)
-    // crawl from oldest to newest
-    .reverse();
-
-  const reports: unknown[] = [];
-// eslint-disable-next-line no-console
-  console.log('All Log:', commitsToAudit.length);
-
-  await git.checkout(initialBranch);
-  return;
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
-  for (const commit of commitsToAudit) {
+  for (const commit of commits) {
     const start = startDuration();
     const result: Record<string, unknown> = {
       commit,
       start,
     };
-    progress.incrementInSteps(commitsToAudit.length);
+    progress.incrementInSteps(commits.length);
 
     await git.checkout(commit);
     const commitConfig = {
@@ -86,12 +51,6 @@ export async function history(options: HistoryOptions): Promise<void> {
       [join(config.persist.filename)]: result,
     });
   }
-  progress.endProgress('History generated!');
 
-  await git.checkout(current);
-  // eslint-disable-next-line no-console
-  console.log('Current Branch:', current);
-  // eslint-disable-next-line no-console
-  console.log('Reports:', reports);
-  await writeFile('history.json', JSON.stringify(reports, null, 2));
+  return reports;
 }
