@@ -1,22 +1,25 @@
-import {join} from 'node:path';
-import {CoreConfig} from '@code-pushup/models';
-import {getProgressBar, git, getStartDuration} from '@code-pushup/utils';
-import {collectAndPersistReports,} from './collect-and-persist';
-import {GlobalOptions} from './types';
-import {upload as uploadToServer, UploadOptions} from './upload';
+import { join } from 'node:path';
+import { CoreConfig } from '@code-pushup/models';
+import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
+import { collectAndPersistReports } from './collect-and-persist';
+import { GlobalOptions } from './types';
+import { UploadOptions, upload as uploadToServer } from './upload';
 
 export type HistoryOptions = {
   targetBranch: string;
 } & Pick<CoreConfig, 'persist' | 'plugins' | 'categories'> &
   GlobalOptions;
 
-export async function history(config: Omit<HistoryOptions, 'targetBranch'>, commits: string[]): Promise<Record<string, unknown>[]> {
+export async function history(
+  config: Omit<HistoryOptions, 'targetBranch'>,
+  commits: string[],
+): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
 
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
     const start: number = getStartDuration();
     const result: Record<string, unknown> = {
       commit,
@@ -36,7 +39,7 @@ export async function history(config: Omit<HistoryOptions, 'targetBranch'>, comm
       },
     });
 
-    const {upload} = config;
+    const { upload } = config;
     if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {

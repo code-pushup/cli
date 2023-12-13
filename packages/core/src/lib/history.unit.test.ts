@@ -1,8 +1,12 @@
-import {describe} from 'vitest';
-import {Report} from '@code-pushup/models';
-import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
-import {guardAgainstDirtyRepo} from '@code-pushup/utils';
-import {history, HistoryOptions} from './history';
+import { describe } from 'vitest';
+import { Report } from '@code-pushup/models';
+import {
+  MINIMAL_CONFIG_MOCK,
+  makeStatusClean,
+  makeStatusDirty,
+} from '@code-pushup/testing-utils';
+import { guardAgainstDirtyRepo } from '@code-pushup/utils';
+import { HistoryOptions, history } from './history';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
@@ -29,10 +33,7 @@ describe('history', () => {
       targetBranch: 'main',
     };
     await history(nonVerboseConfig);
-
   });
-
-
 });
 
 describe('guardAgainstDirtyRepo', () => {

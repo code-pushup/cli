@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import {CommandModule} from 'yargs';
-import {HistoryOptions, history} from '@code-pushup/core';
-import {CLI_NAME} from '../cli';
-import {getCurrentBranchOrTag, git} from "@code-pushup/utils";
-import {writeFile} from "node:fs/promises";
+import { writeFile } from 'node:fs/promises';
+import { CommandModule } from 'yargs';
+import { HistoryOptions, history } from '@code-pushup/core';
+import { getCurrentBranchOrTag, git } from '@code-pushup/utils';
+import { CLI_NAME } from '../cli';
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -14,8 +14,8 @@ export function yargsHistoryCommandObject() {
       targetBranch: {
         describe: 'Branch to crawl history of',
         type: 'string',
-        default: 'main'
-      }
+        default: 'main',
+      },
     },
     handler: async args => {
       // eslint-disable-next-line no-console
@@ -23,7 +23,7 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}...`));
       // await guardAgainstDirtyRepo();
-      const {targetBranch, ...config} = args as unknown as HistoryOptions;
+      const { targetBranch, ...config } = args as unknown as HistoryOptions;
 
       const initialBranch: string = await getCurrentBranchOrTag();
       // eslint-disable-next-line no-console
@@ -36,14 +36,13 @@ export function yargsHistoryCommandObject() {
       const log = await git.log();
 
       const commitsToAudit = log.all
-        .map(({hash}) => hash)
+        .map(({ hash }) => hash)
         // crawl from oldest to newest
         .reverse();
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
 
-
-     const reports = await history(config, commitsToAudit.slice(-3));
+      const reports = await history(config, commitsToAudit.slice(-3));
       // eslint-disable-next-line no-console
       console.log('Reports:', reports);
       await writeFile('history.json', JSON.stringify(reports, null, 2));

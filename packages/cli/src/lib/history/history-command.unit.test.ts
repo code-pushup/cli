@@ -1,11 +1,11 @@
-import {vol} from 'memfs';
-import {beforeEach, describe} from 'vitest';
-import {HistoryOptions} from "@code-pushup/core";
-import {MINIMAL_CONFIG_MOCK} from "@code-pushup/testing-utils";
-import {yargsCli} from "../yargs-cli";
-import {DEFAULT_CLI_CONFIGURATION} from "../../../mocks/constants";
-import {yargsConfigCommandObject} from "../print-config/print-config-command";
-import {objectToCliArgs} from "@code-pushup/utils";
+import { vol } from 'memfs';
+import { beforeEach, describe } from 'vitest';
+import { HistoryOptions } from '@code-pushup/core';
+import { MINIMAL_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
+import { yargsConfigCommandObject } from '../print-config/print-config-command';
+import { yargsCli } from '../yargs-cli';
 
 describe('history-command', () => {
   beforeEach(() => {
@@ -24,9 +24,10 @@ describe('history-command', () => {
       progress: false,
       targetBranch: 'test',
     };
-    await yargsCli(objectToCliArgs({
-      ...verboseConfig,
-      _ :'history',
+    await yargsCli(
+      objectToCliArgs({
+        ...verboseConfig,
+        _: 'history',
       }),
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
