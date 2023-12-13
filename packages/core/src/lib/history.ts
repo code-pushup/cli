@@ -46,6 +46,8 @@ export async function history(options: HistoryOptions): Promise<void> {
   const reports: unknown[] = [];
 // eslint-disable-next-line no-console
   console.log('All Log:', commitsToAudit.length);
+
+  git.checkout(initialBranch);
   return;
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
