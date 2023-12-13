@@ -51,7 +51,7 @@ export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
-  startDuration,
+  getStartDuration,
   calcDuration,
   compareIssueSeverity,
   loadReport,

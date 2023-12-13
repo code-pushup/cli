@@ -1,10 +1,9 @@
-import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {CoreConfig, Report} from '@code-pushup/models';
-import {calcDuration, getProgressBar, git, startDuration,} from '@code-pushup/utils';
-import {collectAndPersistReports, CollectAndPersistReportsOptions,} from './collect-and-persist';
+import {CoreConfig} from '@code-pushup/models';
+import {getProgressBar, git, getStartDuration} from '@code-pushup/utils';
+import {collectAndPersistReports,} from './collect-and-persist';
 import {GlobalOptions} from './types';
-import {upload, UploadOptions} from './upload';
+import {upload as uploadToServer, UploadOptions} from './upload';
 
 export type HistoryOptions = {
   targetBranch: string;
@@ -17,7 +16,8 @@ export async function history(config: Omit<HistoryOptions, 'targetBranch'>, comm
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    const start = startDuration();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const start: number = getStartDuration();
     const result: Record<string, unknown> = {
       commit,
       start,
@@ -25,25 +25,23 @@ export async function history(config: Omit<HistoryOptions, 'targetBranch'>, comm
     progress.incrementInSteps(commits.length);
 
     await git.checkout(commit);
-    const commitConfig = {
+
+    progress.updateTitle(`Collect ${commit}`);
+    await collectAndPersistReports({
       ...config,
       persist: {
         ...config.persist,
         format: [],
         filename: `${commit}-report`,
       },
-    } satisfies CoreConfig;
-    progress.updateTitle(`Collect ${commit}`);
-    await collectAndPersistReports(
-      commitConfig as unknown as CollectAndPersistReportsOptions,
-    );
-    result['duration'] = calcDuration(start);
+    });
 
-    if (!(commitConfig as unknown as UploadOptions)?.upload) {
+    const {upload} = config;
+    if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
       progress.updateTitle(`Upload ${commit}`);
-      await upload(commitConfig as unknown as UploadOptions);
+      await uploadToServer(config as unknown as UploadOptions);
       result['upload'] = new Date().toISOString();
     }
 
