@@ -11,7 +11,7 @@ export type HistoryOptions = {
 } & Pick<CoreConfig, 'persist' | 'plugins' | 'categories'> &
   GlobalOptions;
 
-export async function history(config: HistoryOptions, commits: string[]): Promise<Record<string, unknown>[]> {
+export async function history(config: Omit<HistoryOptions, 'targetBranch'>, commits: string[]): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
 
   const progress = getProgressBar('History');
