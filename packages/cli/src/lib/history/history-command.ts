@@ -8,6 +8,13 @@ export function yargsHistoryCommandObject() {
   return {
     command,
     describe: 'Create history of commits',
+    builder: {
+      targetBranch: {
+        describe: 'Branch to crawl history of',
+        type: 'string',
+        default: 'main'
+      }
+    },
     handler: async args => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
@@ -15,10 +22,7 @@ export function yargsHistoryCommandObject() {
       console.log(chalk.gray(`Run ${command}...`));
       const config = args as unknown as HistoryOptions;
 
-      await history({
-        ...config,
-        targetBranch: 'main',
-      });
+      await history(config);
     },
   } satisfies CommandModule;
 }

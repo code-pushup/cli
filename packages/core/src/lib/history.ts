@@ -37,8 +37,6 @@ export async function history(options: HistoryOptions): Promise<void> {
   console.log('Current Branch:', current);
 
   const log = await git.log();
-  // eslint-disable-next-line no-console
-  console.log('All Log:', log.all.length);
 
   const commitsToAudit = log.all
     .map(({ hash }) => hash)
@@ -46,7 +44,8 @@ export async function history(options: HistoryOptions): Promise<void> {
     .reverse();
 
   const reports: unknown[] = [];
-
+// eslint-disable-next-line no-console
+  console.log('All Log:', commitsToAudit.length);
   return;
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
