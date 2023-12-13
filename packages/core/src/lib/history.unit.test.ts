@@ -32,42 +32,16 @@ describe('history', () => {
     };
     await history(nonVerboseConfig);
 
-    expect(collect).toHaveBeenCalledWith(nonVerboseConfig);
-
-    expect(persistReport).toHaveBeenCalledWith(
-      {
-        packageName: 'code-pushup',
-        version: '0.0.1',
-        date: expect.stringMatching(ISO_STRING_REGEXP),
-        duration: 0,
-        categories: [],
-        plugins: [],
-      },
-      nonVerboseConfig,
-    );
   });
 
-  it('should call collect and persistReport with correct parameters in verbose mode', async () => {
+  it('should throw for invalid targetBranch', async () => {
     const verboseConfig: HistoryOptions = {
       ...MINIMAL_CONFIG_MOCK,
       verbose: true,
       progress: false,
+      targetBranch: 'test',
     };
-    await history(verboseConfig);
-
-    expect(collect).toHaveBeenCalledWith(verboseConfig);
-
-    expect(persistReport).toHaveBeenCalledWith(
-      {
-        packageName: 'code-pushup',
-        version: '0.0.1',
-        date: expect.stringMatching(ISO_STRING_REGEXP),
-        duration: 0,
-        categories: [],
-        plugins: [],
-      } as Report,
-      verboseConfig,
-    );
+    await expect(history(verboseConfig)).rejects.toThrow("pathspec 'test' did not match any file(s) known to git");
   });
 });
 

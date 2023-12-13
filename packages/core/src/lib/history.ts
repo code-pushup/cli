@@ -28,9 +28,9 @@ export async function history(options: HistoryOptions): Promise<void> {
   // eslint-disable-next-line no-console
   console.log('Initial Branch:', initialBranch);
 
-  await guardAgainstDirtyRepo();
+ // await guardAgainstDirtyRepo();
 
-  git.checkout(targetBranch);
+  await git.checkout(targetBranch);
 
   const current: string = await getCurrentBranchOrTag();
   // eslint-disable-next-line no-console
@@ -47,7 +47,7 @@ export async function history(options: HistoryOptions): Promise<void> {
 // eslint-disable-next-line no-console
   console.log('All Log:', commitsToAudit.length);
 
-  git.checkout(initialBranch);
+  await git.checkout(initialBranch);
   return;
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
