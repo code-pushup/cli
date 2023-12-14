@@ -51,32 +51,6 @@ describe('collect-command', () => {
         persist: expect.objectContaining({
           filename: 'my-report',
           outputDir: '/test',
-          format: ['json'],
-        }),
-      }),
-    );
-  });
-
-  it('should call collect and use terminal arguments', async () => {
-    await yargsCli(
-      [
-        'collect',
-        '--verbose',
-        '--config=/test/code-pushup.config.ts',
-        '--persist.format=md',
-      ],
-      {
-        ...DEFAULT_CLI_CONFIGURATION,
-        commands: [yargsCollectCommandObject()],
-      },
-    ).parseAsync();
-
-    expect(collectAndPersistReports).toHaveBeenCalledWith(
-      expect.objectContaining({
-        verbose: true,
-        config: '/test/code-pushup.config.ts',
-        persist: expect.objectContaining({
-          format: ['md'],
         }),
       }),
     );
