@@ -22,6 +22,7 @@ export const unrefinedCoreConfigSchema = z.object({
     .array(categoryConfigSchema, {
       description: 'Categorization of individual audits',
     })
+    .min(1)
     // categories slugs are unique
     .refine(
       categories => !getDuplicateSlugCategories(categories),
