@@ -73,7 +73,7 @@ describe('autoloadRc', () => {
     );
   });
 
-  it('should load .js configuration file if no ts or .mjs and .ts exists', async () => {
+  it('should load a .js configuration file if no other valid extension exists', async () => {
     vol.fromJSON(
       {
         [`${CONFIG_FILE_NAME}.js`]: '',
