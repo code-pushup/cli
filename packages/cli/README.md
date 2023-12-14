@@ -138,7 +138,8 @@ jobs:
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
 | **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
 
-By default, the CLI loads `code-pushup.config.(js|ts|mjs)` if no config path is provided over `--config`.
+> [!NOTE]  
+> By default, the CLI loads `code-pushup.config.(js|ts|mjs)` if no config path is provided over `--config`.
 
 ### Common Command Options
 
