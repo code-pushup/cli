@@ -126,7 +126,7 @@ export function displayValue(numberOfFiles: number): string {
   return `${pluralizeToken('file', numberOfFiles)} oversize`;
 }
 
-export async function fileSizeIssues(options: {
+export function fileSizeIssues(options: {
   directory: string;
   pattern?: string | RegExp;
   budget?: number;
