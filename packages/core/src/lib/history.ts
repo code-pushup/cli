@@ -8,6 +8,7 @@ import { UploadOptions, upload as uploadToServer } from './upload';
 
 export type HistoryOptions = {
   targetBranch: string;
+  gitRestore: string;
 } & Pick<CoreConfig, 'persist' | 'plugins' | 'categories'> &
   GlobalOptions;
 

@@ -22,7 +22,7 @@ export function yargsHistoryCommandObject() {
         default: 'main',
       },
       gitRestore: {
-        describe: 'Folder t restore',
+        describe: 'Folder to restore using "git restore [folder]"',
         type: 'string',
         default: '.',
       },
@@ -44,7 +44,7 @@ export function yargsHistoryCommandObject() {
       console.log('Target Branch:', targetBranch);
 
       if (gitRestore) {
-        git.raw(['restore', '.']);
+        git.raw(['restore', '.'])
       }
 
       guardAgainstDirtyRepo();
