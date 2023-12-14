@@ -1,11 +1,8 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { describe, expect } from 'vitest';
-import { CoreConfig } from '@code-pushup/models';
-import { objectToCliArgs } from '@code-pushup/utils';
-import { yargsCli } from '../yargs-cli';
-import { configMiddleware } from './config-middleware';
-import { yargsCoreConfigOptionsDefinition } from './core-config-options';
+import {describe, expect} from 'vitest';
+import {CoreConfig} from '@code-pushup/models';
+import {objectToCliArgs} from '@code-pushup/utils';
+import {yargsCli} from '../yargs-cli';
+import {yargsCoreConfigOptionsDefinition} from './core-config-options';
 
 describe('configOptions', () => {
   function cli(args: Record<string, unknown>): Promise<CoreConfig> {
