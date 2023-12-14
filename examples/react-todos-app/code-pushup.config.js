@@ -11,6 +11,7 @@ const eslintAuditRef = (slug, weight) => ({
 export default {
   persist: {
     outputDir: '../../tmp/react-todos-app',
+    filename: 'report',
   },
   plugins: [
     await eslintPlugin({
