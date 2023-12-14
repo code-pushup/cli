@@ -130,14 +130,14 @@ jobs:
 
 ## Custom Plugins
 
-We provide comprehensive documentation on [how to create a custom plugin](@TODO).
+We provide comprehensive documentation on [how to create a custom plugin](./docs/custom-plugins.md).
 
 The repository also maintains a set of plugin examples showcasing different scenarios.  
 Each example is fully tested to give demonstrate best practices for plugin testing.
 
 **Example for custom plugins:**
 
-- [File Size](@TODO) -
+- [File Size](../../examples/plugins/src/file-size)
 
 ## CLI commands and options
 
