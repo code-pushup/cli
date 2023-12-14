@@ -76,6 +76,7 @@ describe('autoloadRc', () => {
   it('should load a .js configuration file if no other valid extension exists', async () => {
     vol.fromJSON(
       {
+        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.js`]: '',
       },
       MEMFS_VOLUME,
