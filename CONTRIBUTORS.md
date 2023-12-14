@@ -70,7 +70,7 @@ Projects are tagged in two different dimensions - scope and type:
 | `type:e2e`          | E2E testing                                                                  | `type:app`, `type:feature` or `type:testing-util`  |
 | `type:testing-util` | testing utilities                                                            | `type:util`                                        |
 
-#### Special Targets
+#### Special targets
 
 The repository includes a couple of common optional targets:
 
