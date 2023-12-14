@@ -34,7 +34,7 @@ export async function readRc(): Promise<CoreConfig> {
   // eslint-disable-next-line functional/no-loop-statements
   for (const extension of ['ts', 'mjs', 'js']) {
     const path = `${CONFIG_FILE_NAME}.${extension}`;
-    const exists = await fileExists(path).catch(() => false);
+    const exists = await fileExists(path);
 
     if (exists) {
       ext = extension;
