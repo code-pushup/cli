@@ -141,14 +141,7 @@ describe('groupsFromRuleTypes', () => {
           { slug: 'no-var', weight: 1 },
           { slug: 'typescript-eslint-no-array-constructor', weight: 1 },
         ],
-      },
-      {
-        slug: 'formatting',
-        title: 'Formatting',
-        description:
-          'Primarily about whitespace, semicolons, commas, and parentheses, all the parts of the program that determine how the code looks rather than how it executes.',
-        refs: [],
-      },
+      }
     ]);
   });
 });
