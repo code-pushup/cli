@@ -29,14 +29,6 @@ describe('configMiddleware', () => {
     },
   );
 
-  it('should provide config defaults for .ts config', async () => {
-    const config = await configMiddleware({
-      config: join(configDirPath, `code-pushup.config.ts`),
-    });
-    expect(config.config).toContain(`code-pushup.config.ts`);
-    expect(config.persist.outputDir).toContain('.code-pushup');
-  });
-
   it('should throw with invalid config path', async () => {
     await expect(
       configMiddleware({ config: 'wrong/path/to/config' }),

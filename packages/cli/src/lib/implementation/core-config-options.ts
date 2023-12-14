@@ -8,10 +8,12 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
     'persist.outputDir': {
       describe: 'Directory for the produced reports',
       type: 'string',
+      default: '.code-pushup',
     },
     'persist.filename': {
       describe: 'Filename for the produced reports.',
       type: 'string',
+      default: 'report',
     },
     'persist.format': {
       describe: 'Format of the report output. e.g. `md`, `json`',

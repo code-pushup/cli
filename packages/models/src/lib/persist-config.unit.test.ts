@@ -8,12 +8,6 @@ describe('persistConfigSchema', () => {
     expect(() => persistConfigSchema.parse(persistConfigMock)).not.toThrow();
   });
 
-  it('should fill defaults', () => {
-    const persistConfigMock = persistConfigSchema.parse({});
-    expect(persistConfigMock.filename).toBe('report');
-    expect(persistConfigMock.outputDir).toBe('.code-pushup');
-  });
-
   it('should throw if outputDir is invalid', () => {
     const persistConfigMock = persistConfig();
     persistConfigMock.outputDir = ' ';

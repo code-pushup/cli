@@ -1,5 +1,5 @@
 export default {
-  persist: {},
+  persist: { outputDir: 'tmp', filename: 'output.json' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',
