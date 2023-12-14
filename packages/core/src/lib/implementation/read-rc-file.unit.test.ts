@@ -59,7 +59,7 @@ describe('autoloadRc', () => {
     );
   });
 
-  it('should load .mjs configuration file if no .ts exists', async () => {
+  it('should prioritise .mjs configuration file over .js', async () => {
     vol.fromJSON(
       {
         [`${CONFIG_FILE_NAME}.js`]: '',
