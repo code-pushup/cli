@@ -44,7 +44,7 @@ describe('readRcByPath', () => {
 });
 
 describe('autoloadRc', () => {
-  it('should load ts', async () => {
+  it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
       {
         [`${CONFIG_FILE_NAME}.js`]: '',
@@ -59,7 +59,7 @@ describe('autoloadRc', () => {
     );
   });
 
-  it('should load mjs if no ts exists', async () => {
+  it('should load .mjs configuration file if no .ts exists', async () => {
     vol.fromJSON(
       {
         [`${CONFIG_FILE_NAME}.js`]: '',
@@ -73,7 +73,7 @@ describe('autoloadRc', () => {
     );
   });
 
-  it('should load js if no ts or mjs exists', async () => {
+  it('should load .js configuration file if no ts or .mjs and .ts exists', async () => {
     vol.fromJSON(
       {
         [`${CONFIG_FILE_NAME}.js`]: '',
@@ -86,7 +86,7 @@ describe('autoloadRc', () => {
     );
   });
 
-  it('should throw if no config file is present', async () => {
+  it('should throw if no configuration file is present', async () => {
     await expect(autoloadRc()).rejects.toThrow(
       'No file code-pushup.config.(ts|mjs|js) present in',
     );
