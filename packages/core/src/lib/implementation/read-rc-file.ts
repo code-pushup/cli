@@ -54,7 +54,7 @@ export async function readRc(): Promise<CoreConfig> {
   return readRcByPath(
     join(
       process.cwd(),
-      ext ? `${CONFIG_FILE_NAME}.${ext}` : `${CONFIG_FILE_NAME}.ts`,
+      `${CONFIG_FILE_NAME}.${ext}`,
     ),
   );
 }
