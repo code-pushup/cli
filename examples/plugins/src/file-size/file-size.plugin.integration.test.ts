@@ -58,6 +58,8 @@ describe('create', () => {
       runner: expect.any(Function),
       slug,
       title: 'File Size',
+      packageName: '@code-pushup/example-plugins/file-size',
+      version: '0.0.0',
     });
   });
 
