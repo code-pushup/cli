@@ -17,10 +17,10 @@ export default {
           type: 'audit',
           plugin: 'node',
           slug: 'node-version',
-          weight: 1
-        }
-      ]
-    }
+          weight: 1,
+        },
+      ],
+    },
   ],
   plugins: [
     {

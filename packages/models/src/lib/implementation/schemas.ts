@@ -197,12 +197,9 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
           }),
         )
         // categories weights are correct
-        .refine(
-          hasWeightedRefsInCategories,
-          () => ({
-            message: `In a category there has to be at lease one ref with weight > 0`,
-          }),
-        ),
+        .refine(hasWeightedRefsInCategories, () => ({
+          message: `In a category there has to be at lease one ref with weight > 0`,
+        })),
     },
     { description },
   );

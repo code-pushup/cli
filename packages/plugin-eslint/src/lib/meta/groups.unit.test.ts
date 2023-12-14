@@ -141,7 +141,7 @@ describe('groupsFromRuleTypes', () => {
           { slug: 'no-var', weight: 1 },
           { slug: 'typescript-eslint-no-array-constructor', weight: 1 },
         ],
-      }
+      },
     ]);
   });
 });
