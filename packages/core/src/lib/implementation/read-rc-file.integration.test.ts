@@ -18,6 +18,12 @@ describe('readRcByPath', () => {
     'configs',
   );
 
+  it('should load the configuration', async () => {
+    await expect(
+      readRcByPath(join(configDirPath, 'code-pushup.config.js')),
+    ).resolves.not.toThrow();
+  });
+
   it('should throw if the configuration is empty', async () => {
     await expect(
       readRcByPath(join(configDirPath, 'code-pushup.empty.config.js')),

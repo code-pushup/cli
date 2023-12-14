@@ -86,7 +86,9 @@ describe('readRc', () => {
     );
   });
 
-  it('should throw if the file does not exist', async () => {
-    await expect(readRc()).rejects.toThrow(/Provided path .* is not valid./);
+  it('should throw if no config file is present', async () => {
+    await expect(readRc()).rejects.toThrow(
+      'No file code-pushup.config.(ts|mjs|js) present in',
+    );
   });
 });

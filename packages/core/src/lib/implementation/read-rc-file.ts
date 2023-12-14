@@ -2,6 +2,7 @@ import { join } from 'path';
 import {
   CONFIG_FILE_NAME,
   CoreConfig,
+  SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';
 import { fileExists, importEsmModule } from '@code-pushup/utils';
@@ -40,6 +41,14 @@ export async function readRc(): Promise<CoreConfig> {
       ext = extension;
       break;
     }
+  }
+
+  if (!ext) {
+    throw new Error(
+      `No file ${CONFIG_FILE_NAME}.(${SUPPORTED_CONFIG_FILE_FORMATS.join(
+        '|',
+      )}) present in ${process.cwd()}`,
+    );
   }
 
   return readRcByPath(
