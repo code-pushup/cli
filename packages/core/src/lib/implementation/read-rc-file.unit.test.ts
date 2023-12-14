@@ -43,7 +43,7 @@ describe('readRcByPath', () => {
   });
 });
 
-describe('readRc', () => {
+describe('autoloadRc', () => {
   it('should load ts', async () => {
     vol.fromJSON(
       {

@@ -51,10 +51,5 @@ export async function autoloadRc(): Promise<CoreConfig> {
     );
   }
 
-  return readRcByPath(
-    join(
-      process.cwd(),
-      `${CONFIG_FILE_NAME}.${ext}`,
-    ),
-  );
+  return readRcByPath(join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`));
 }
