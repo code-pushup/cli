@@ -1,6 +1,6 @@
-## Contributing
+# Contributing
 
-### Setup
+## Setup
 
 Prerequisites:
 
@@ -12,7 +12,7 @@ Make sure to install dependencies:
 npm install
 ```
 
-### Development
+## Development
 
 Refer to docs on [how to run tasks in Nx](https://nx.dev/core-features/run-tasks).
 
@@ -38,7 +38,7 @@ npx nx build cli
 npx nx affected:lint
 ```
 
-### Git
+## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.
 In order to be prompted with supported types and scopes, stage your changes and run `npm run commit`.
@@ -52,7 +52,7 @@ Therefore, PRs are merged via one of two strategies:
 - rebase - branch cannot contain merge commits ([rebase instead of merge](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)),
 - squash - single commit whose message is the PR title (should be in conventional commit format).
 
-### Project tags
+## Project tags
 
 [Nx tags](https://nx.dev/core-features/enforce-module-boundaries) are used to enforce module boundaries in the project graph when linting.
 
@@ -70,13 +70,13 @@ Projects are tagged in two different dimensions - scope and type:
 | `type:e2e`          | E2E testing                                                                  | `type:app`, `type:feature` or `type:testing-util`  |
 | `type:testing-util` | testing utilities                                                            | `type:util`                                        |
 
-#### Special targets
+## Special targets
 
 The repository includes a couple of common optional targets:
 
 - `perf` - runs micro benchmarks of a project e.g. `nx perf utils` or `nx affected -t perf`
 
-#### Special folders
+## Special folders
 
 The repository standards organize reusable code specific to a target in dedicated folders at project root level.
 This helps to organize and share target related code.
