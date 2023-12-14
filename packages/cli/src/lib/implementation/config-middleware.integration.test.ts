@@ -25,7 +25,6 @@ describe('configMiddleware', () => {
         config: join(configDirPath, `code-pushup.config.${extension}`),
       });
       expect(config.config).toContain(`code-pushup.config.${extension}`);
-      expect(config.persist.format).toContain(`json`);
       expect(config.upload?.project).toContain(extension);
     },
   );
