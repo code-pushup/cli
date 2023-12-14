@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { coreConfigSchema } from '@code-pushup/models';
+import { config } from '@code-pushup/models/testing';
 import { categoryConfig } from '../../test/fixtures/categories.mock';
 import { categoryConfigSchema } from './category-config';
 
@@ -14,6 +16,16 @@ describe('categoryConfigSchema', () => {
     categoryCfg.refs = [...refs, refs[0]];
     expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(
       'the following audit or group refs are duplicates',
+    );
+  });
+
+  it('should throw if only refs with weight 0 are included', () => {
+    const categoryCfg = categoryConfig();
+    const ref = { ...categoryCfg.refs[0], weight: 0 };
+    categoryCfg.refs = [ref];
+
+    expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(
+      `In a category there has to be at lease one ref with weight > 0`,
     );
   });
 });

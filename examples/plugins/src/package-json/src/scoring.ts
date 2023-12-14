@@ -21,7 +21,7 @@ export const documentationGroupRef: CategoryRef = {
   slug: documentationGroupSlug,
   type: 'group',
   plugin: pluginSlug,
-  weight: 1,
+  weight: 0,
 };
 
 const performanceGroupSlug = 'performance';
