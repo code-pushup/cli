@@ -3,7 +3,7 @@ import { join } from 'path';
 import { describe, expect } from 'vitest';
 import { CONFIG_FILE_NAME } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
-import { readRc, readRcByPath } from './read-rc-file';
+import { autoloadRc, readRcByPath } from './read-rc-file';
 
 describe('readRcByPath', () => {
   it('should load a valid configuration file', async () => {
@@ -54,7 +54,7 @@ describe('readRc', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(readRc()).resolves.toEqual(
+    await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({ upload: expect.any(Object) }),
     );
   });
@@ -68,7 +68,7 @@ describe('readRc', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(readRc()).resolves.toEqual(
+    await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({ upload: expect.any(Object) }),
     );
   });
@@ -81,13 +81,13 @@ describe('readRc', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(readRc()).resolves.toEqual(
+    await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({ upload: expect.any(Object) }),
     );
   });
 
   it('should throw if no config file is present', async () => {
-    await expect(readRc()).rejects.toThrow(
+    await expect(autoloadRc()).rejects.toThrow(
       'No file code-pushup.config.(ts|mjs|js) present in',
     );
   });

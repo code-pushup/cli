@@ -1,4 +1,4 @@
-import { readRc, readRcByPath } from '@code-pushup/core';
+import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import { CoreConfig } from '@code-pushup/models';
 import { GeneralCliOptions, OnlyPluginsOptions } from './model';
 import {
@@ -16,7 +16,7 @@ export async function configMiddleware<
     OnlyPluginsOptions;
 
   // if config path is given use it otherwise auto-load
-  const importedRc = config ? await readRcByPath(config) : await readRc();
+  const importedRc = config ? await readRcByPath(config) : await autoloadRc();
 
   validateOnlyPluginsOption(importedRc.plugins, cliOptions);
 

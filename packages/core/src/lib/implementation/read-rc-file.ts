@@ -30,7 +30,7 @@ export async function readRcByPath(filepath: string): Promise<CoreConfig> {
   );
 }
 
-export async function readRc(): Promise<CoreConfig> {
+export async function autoloadRc(): Promise<CoreConfig> {
   let ext = '';
   // eslint-disable-next-line functional/no-loop-statements
   for (const extension of SUPPORTED_CONFIG_FILE_FORMATS) {

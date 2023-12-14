@@ -16,7 +16,7 @@ export {
   CollectAndPersistReportsOptions,
 } from './lib/collect-and-persist';
 export {
-  readRc,
+  autoloadRc,
   readRcByPath,
   ConfigPathError,
 } from './lib/implementation/read-rc-file';
