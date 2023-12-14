@@ -16,13 +16,6 @@ describe('yargsCli', () => {
     expect(parsedArgv.progress).toBe(true);
   });
 
-  it('should provide no default value for the config', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>([], {
-      options,
-    }).parseAsync();
-    expect(parsedArgv.config).toBeUndefined();
-  });
-
   it('should parse a single boolean negated argument', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(['--no-progress'], {
       options,
