@@ -44,7 +44,9 @@ describe('autorun-command', () => {
   });
 
   it('should call collect and upload with correct parameters', async () => {
-    await cli().parseAsync();
+    await cli({
+      'persist.filename': 'my-report'
+    }).parseAsync();
 
     expect(bundleRequire).toHaveBeenCalledWith({
       format: 'esm',
