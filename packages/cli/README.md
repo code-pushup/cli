@@ -8,9 +8,9 @@
 
 ---
 
-|                              📊 Getting Started                              |                           🌐 Portal Integration                            |                          🛠️ CI Automation                          |
-| :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :----------------------------------------------------------------: |
-| **[How to setup](./packages/cli/README.md#getting-started)** a basic project | Track progress on **[your goals](./packages/cli/README.md#portal-integration)** | Updates **[on every PR](./packages/cli/README.md#ci-integration)** |
+|                  📊 Getting Started                  |               🌐 Portal Integration                |              🛠️ CI Automation              |
+| :--------------------------------------------------: | :------------------------------------------------: | :----------------------------------------: |
+| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#ci-integration)** |
 
 ---
 
