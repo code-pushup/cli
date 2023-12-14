@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { writeFile } from 'node:fs/promises';
 import { CommandModule } from 'yargs';
+import { z } from 'zod';
 import { HistoryOptions, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, git } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
@@ -25,6 +26,7 @@ export function yargsHistoryCommandObject() {
       // await guardAgainstDirtyRepo();
       const { targetBranch, ...config } = args as unknown as HistoryOptions;
 
+      // load upload configuration from environment
       const initialBranch: string = await getCurrentBranchOrTag();
       // eslint-disable-next-line no-console
       console.log('Initial Branch:', initialBranch);

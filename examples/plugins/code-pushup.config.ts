@@ -1,3 +1,4 @@
+import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 import {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
@@ -18,6 +19,7 @@ const config = (() => ({
   persist: {
     outputDir,
   },
+  upload: uploadConfigFromEnv(),
   plugins: [
     fileSizePlugin({
       directory: './dist',

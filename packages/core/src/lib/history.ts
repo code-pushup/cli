@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { z } from 'zod';
 import { CoreConfig } from '@code-pushup/models';
 import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
@@ -15,7 +16,6 @@ export async function history(
   commits: string[],
 ): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
-
   const progress = getProgressBar('History');
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
@@ -39,12 +39,12 @@ export async function history(
       },
     });
 
-    const { upload } = config;
+    const { upload } = config as unknown as UploadOptions;
     if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
       progress.updateTitle(`Upload ${commit}`);
-      await uploadToServer(config as unknown as UploadOptions);
+      // await uploadToServer(config as unknown as UploadOptions);
       result['upload'] = new Date().toISOString();
     }
 
