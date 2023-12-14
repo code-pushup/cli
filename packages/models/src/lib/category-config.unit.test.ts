@@ -1,6 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { coreConfigSchema } from '@code-pushup/models';
-import { config } from '@code-pushup/models/testing';
 import { categoryConfig } from '../../test/fixtures/categories.mock';
 import { categoryConfigSchema } from './category-config';
 
