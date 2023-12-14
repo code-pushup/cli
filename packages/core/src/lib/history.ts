@@ -1,19 +1,13 @@
 import { join } from 'node:path';
-import { z } from 'zod';
 import { CoreConfig } from '@code-pushup/models';
 import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
 import { GlobalOptions } from './types';
-import { UploadOptions, upload as uploadToServer } from './upload';
 
-export type HistoryOptions = {
-  targetBranch: string;
-  gitRestore: string;
-} & Pick<CoreConfig, 'persist' | 'plugins' | 'categories'> &
-  GlobalOptions;
+export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
 
 export async function history(
-  config: Omit<HistoryOptions, 'targetBranch'>,
+  config: HistoryOptions,
   commits: string[],
 ): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
