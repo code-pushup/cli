@@ -10,7 +10,7 @@
 
 |                  📊 Getting Started                  |               🌐 Portal Integration                |              🛠️ CI Automation              |
 | :--------------------------------------------------: | :------------------------------------------------: | :----------------------------------------: |
-| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#ci-integration)** |
+| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#-ci-automation)** |
 
 ---
 
