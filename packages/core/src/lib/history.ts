@@ -30,7 +30,7 @@ export async function history(
     await git.checkout(commit);
 
     progress.updateTitle(`Collect ${commit}`);
-    /*await collectAndPersistReports({
+    await collectAndPersistReports({
       ...config,
       persist: {
         ...config.persist,
@@ -38,7 +38,7 @@ export async function history(
         filename: `${commit}-report`,
       },
     });
-
+    /*
     const { upload } = config as unknown as UploadOptions;
     if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
