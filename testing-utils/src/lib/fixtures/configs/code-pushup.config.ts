@@ -2,7 +2,7 @@ import { type RcConfig } from '@code-pushup/models';
 
 export default {
   // @TODO remove ad we have defaults
-  persist: { outputDir: 'tmp', filename: 'output.json' },
+  persist: { outputDir: 'tmp', filename: 'report' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',

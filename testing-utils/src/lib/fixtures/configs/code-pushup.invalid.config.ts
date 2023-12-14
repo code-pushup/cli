@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { type RcConfig } from '@code-pushup/models';
 
 export default {
-  persist: { outputDir: join('tmp', 'ts'), filename: 'output.json' },
+  persist: { outputDir: join('tmp', 'ts'), filename: 'report' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',

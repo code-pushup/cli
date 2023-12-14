@@ -1,5 +1,5 @@
 export default {
-  persist: { outputDir: 'tmp', filename: 'output.json' },
+  persist: { outputDir: 'tmp', filename: 'report' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-js',
