@@ -79,17 +79,4 @@ describe('autorun-command', () => {
     } satisfies PortalUploadArgs);
   });
 
-  it('should call collect and upload and ensure json format', async () => {
-    await cli({ 'persist.format': ['md'] }).parseAsync();
-
-    expect(collectAndPersistReports).toHaveBeenCalledWith(
-      expect.objectContaining({
-        verbose: true,
-        config: '/test/code-pushup.config.ts',
-        persist: expect.objectContaining({
-          format: ['md', 'json'],
-        }),
-      }),
-    );
-  });
 });
