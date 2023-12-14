@@ -3,7 +3,11 @@ import { writeFile } from 'node:fs/promises';
 import { CommandModule } from 'yargs';
 import { z } from 'zod';
 import { HistoryOptions, history } from '@code-pushup/core';
-import { getCurrentBranchOrTag, git } from '@code-pushup/utils';
+import {
+  getCurrentBranchOrTag,
+  git,
+  guardAgainstDirtyRepo,
+} from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
 
 export function yargsHistoryCommandObject() {
@@ -17,6 +21,11 @@ export function yargsHistoryCommandObject() {
         type: 'string',
         default: 'main',
       },
+      gitRestore: {
+        describe: 'Folder t restore',
+        type: 'string',
+        default: '.',
+      },
     },
     handler: async args => {
       // eslint-disable-next-line no-console
@@ -24,7 +33,8 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}...`));
       // await guardAgainstDirtyRepo();
-      const { targetBranch, ...config } = args as unknown as HistoryOptions;
+      const { targetBranch, gitRestore, ...config } =
+        args as unknown as HistoryOptions;
 
       // load upload configuration from environment
       const initialBranch: string = await getCurrentBranchOrTag();
@@ -33,6 +43,11 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log('Target Branch:', targetBranch);
 
+      if (gitRestore) {
+        git.raw(['restore', '.']);
+      }
+
+      guardAgainstDirtyRepo();
       await git.checkout(targetBranch);
 
       const log = await git.log();
