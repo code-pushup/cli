@@ -30,7 +30,7 @@ export async function history(
     await git.checkout(commit);
 
     progress.updateTitle(`Collect ${commit}`);
-    await collectAndPersistReports({
+    /*await collectAndPersistReports({
       ...config,
       persist: {
         ...config.persist,
@@ -47,7 +47,7 @@ export async function history(
       // await uploadToServer(config as unknown as UploadOptions);
       result['upload'] = new Date().toISOString();
     }
-
+*/
     reports.push({
       [join(config.persist.filename)]: result,
     });

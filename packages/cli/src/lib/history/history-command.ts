@@ -46,8 +46,8 @@ export function yargsHistoryCommandObject() {
 
       const reports = await history(config, commitsToAudit.slice(-3));
       // eslint-disable-next-line no-console
-      console.log('Reports:', reports);
-      await writeFile('history.json', JSON.stringify(reports, null, 2));
+      console.log('Reports:', reports.length);
+      // await writeFile('history.json', JSON.stringify(reports, null, 2));
       /* */
       await git.checkout(initialBranch);
       // eslint-disable-next-line no-console
