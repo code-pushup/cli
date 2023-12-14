@@ -45,7 +45,7 @@ describe('autorun-command', () => {
 
   it('should call collect and upload with correct parameters', async () => {
     await cli({
-      'persist.filename': 'my-report'
+      'persist.filename': 'my-report',
     }).parseAsync();
 
     expect(bundleRequire).toHaveBeenCalledWith({
@@ -80,5 +80,4 @@ describe('autorun-command', () => {
       },
     } satisfies PortalUploadArgs);
   });
-
 });
