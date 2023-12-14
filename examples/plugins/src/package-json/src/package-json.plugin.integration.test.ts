@@ -35,7 +35,7 @@ describe('create-package-json', () => {
     const pluginConfig = create(baseOptions);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
-      packageName: '@code-pushup/example-plugins/package.json',
+      packageName: '@code-pushup/package-json',
       version: '0.0.0',
       slug,
       description: 'A plugin to validate package.json files.',
