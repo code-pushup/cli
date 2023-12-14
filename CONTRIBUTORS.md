@@ -76,7 +76,7 @@ The repository includes a couple of common optional targets:
 
 - `perf` - runs micro benchmarks of a project e.g. `nx perf utils` or `nx affected -t perf`
 
-#### Special Folder
+#### Special folders
 
 The repository standards organize reusable code specific to a target in dedicated folders at project root level.
 This helps to organize and share target related code.
