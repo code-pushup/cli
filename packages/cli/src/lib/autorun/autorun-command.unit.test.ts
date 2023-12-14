@@ -56,7 +56,7 @@ describe('autorun-command', () => {
         verbose: true,
         config: '/test/code-pushup.config.ts',
         persist: expect.objectContaining({
-          filename: 'report',
+          filename: 'my-report',
           outputDir: '/test',
         }),
       }),
