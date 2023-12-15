@@ -33,7 +33,11 @@ export {
   formatSchema,
   persistConfigSchema,
 } from './lib/persist-config';
-export { PluginConfig, pluginConfigSchema } from './lib/plugin-config';
+export {
+  PluginConfig,
+  pluginConfigSchema,
+  PluginMeta,
+} from './lib/plugin-config';
 export {
   Audit,
   auditSchema,

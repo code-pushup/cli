@@ -3,6 +3,8 @@ const { execSync } = require('child_process');
 const { readFileSync, writeFileSync } = require('fs');
 
 const project = process.env.NX_TASK_TARGET_PROJECT;
+const isPublishable = project !== 'testing-utils';
+const projectPath = isPublishable ? `packages/${project}` : project;
 
 esbuild.build({
   plugins: [
@@ -14,7 +16,7 @@ esbuild.build({
 
           try {
             execSync(
-              `tsc --emitDeclarationOnly --project packages/${project}/tsconfig.lib.json --outDir dist`,
+              `tsc --emitDeclarationOnly --project ${projectPath}/tsconfig.lib.json --outDir dist`,
             );
           } catch (err) {
             console.error(err);
@@ -22,27 +24,31 @@ esbuild.build({
         });
       },
     },
-    {
-      name: 'PackageJSON',
-      setup(build) {
-        build.onEnd(result => {
-          if (result.errors.length > 0) return;
+    ...(isPublishable
+      ? [
+          {
+            name: 'PackageJSON',
+            setup(build) {
+              build.onEnd(result => {
+                if (result.errors.length > 0) return;
 
-          /** @type {import('type-fest').PackageJson} */
-          const packageJson = JSON.parse(
-            readFileSync(`packages/${project}/package.json`).toString(),
-          );
+                /** @type {import('type-fest').PackageJson} */
+                const packageJson = JSON.parse(
+                  readFileSync(`${projectPath}/package.json`).toString(),
+                );
 
-          packageJson.type = 'module';
-          packageJson.main = './index.js';
-          packageJson.types = './src/index.d.ts';
+                packageJson.type = 'module';
+                packageJson.main = './index.js';
+                packageJson.types = './src/index.d.ts';
 
-          writeFileSync(
-            `dist/packages/${project}/package.json`,
-            JSON.stringify(packageJson, null, 2),
-          );
-        });
-      },
-    },
+                writeFileSync(
+                  `dist/${projectPath}/package.json`,
+                  JSON.stringify(packageJson, null, 2),
+                );
+              });
+            },
+          },
+        ]
+      : []),
   ],
 });
