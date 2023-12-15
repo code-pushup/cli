@@ -4,6 +4,17 @@
   "sourceRoot": "testing-utils/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/testing-utils",
+        "main": "testing-utils/src/index.ts",
+        "tsConfig": "testing-utils/tsconfig.lib.json",
+        "assets": ["testing-utils/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
