@@ -3,9 +3,7 @@ import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
 import {
-  GlobalOptions,
-  persistConfigPresetSchema,
-  uploadConfigPresetSchema,
+  GlobalOptions, normalizePersistConfig, normalizeUploadConfig,
 } from './types';
 
 export type UploadOptions = { upload: Required<UploadConfig> } & {
@@ -20,8 +18,8 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
-  const persist = persistConfigPresetSchema.parse(options.persist);
-  const upload = uploadConfigPresetSchema.parse(options.upload);
+  const persist = normalizePersistConfig(options?.persist);
+  const upload = normalizeUploadConfig(options?.upload);
   const { apiKey, server, organization, project } = upload;
   const report: Report = await loadReport({
     ...persist,

@@ -1,13 +1,10 @@
-import { z } from 'zod';
 import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
+  PersistConfig,
   UPLOAD_SERVER,
-  fileNameSchema,
-  filePathSchema,
-  formatSchema,
-  urlSchema,
+  UploadConfig,
 } from '@code-pushup/models';
 
 export type GlobalOptions = {
@@ -17,15 +14,14 @@ export type GlobalOptions = {
   verbose: boolean;
 };
 
-export const persistConfigPresetSchema = z.object({
-  outputDir: filePathSchema('').default(PERSIST_OUTPUT_DIR),
-  filename: fileNameSchema('').default(PERSIST_FILENAME),
-  format: z.array(formatSchema).default(['json']).default(PERSIST_FORMAT),
-});
+export const normalizePersistConfig = (cfg?: Partial<PersistConfig>): Required<PersistConfig> => ({
+  outputDir: PERSIST_OUTPUT_DIR,
+  filename: PERSIST_FILENAME,
+  format: PERSIST_FORMAT,
+  ...cfg,
+} as unknown as Required<PersistConfig>);
 
-export const uploadConfigPresetSchema = z.object({
-  server: urlSchema('').default(UPLOAD_SERVER),
-  apiKey: z.string(),
-  organization: z.string(),
-  project: z.string(),
-});
+export const normalizeUploadConfig = (cfg?: Partial<UploadConfig>): Required<UploadConfig> => ({
+  server: UPLOAD_SERVER,
+ ...cfg,
+} as unknown as Required<UploadConfig>);

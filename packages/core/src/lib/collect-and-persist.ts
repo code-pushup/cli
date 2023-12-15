@@ -7,7 +7,7 @@ import {
 import { verboseUtils } from '@code-pushup/utils';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
-import { GlobalOptions, persistConfigPresetSchema } from './types';
+import { GlobalOptions, normalizePersistConfig } from './types';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -22,7 +22,7 @@ export async function collectAndPersistReports(
   const { exec } = verboseUtils(options.verbose);
   const report = await collect(options);
 
-  const persist = persistConfigPresetSchema.parse(options.persist);
+  const persist = normalizePersistConfig(options.persist);
   const persistResults = await persistReport(report, persist);
   exec(() => logPersistedResults(persistResults));
 

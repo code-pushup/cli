@@ -59,7 +59,7 @@ describe('persistReport', () => {
   });
 
   it('should stdout as format by default`', async () => {
-    await persistReport(dummyReport, persistConfig());
+    await persistReport(dummyReport, persistConfig({outputDir}));
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
