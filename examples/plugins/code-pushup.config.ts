@@ -12,12 +12,8 @@ import {
  *
  */
 
-const outputDir = '.code-pushup';
 // eslint-disable-next-line unicorn/no-unreadable-iife
 const config = (() => ({
-  persist: {
-    outputDir,
-  },
   plugins: [
     fileSizePlugin({
       directory: './dist',

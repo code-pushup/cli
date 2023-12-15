@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
-  minimalConfig,
   minimalReport,
   persistConfig,
 } from '@code-pushup/models/testing';
@@ -39,7 +38,6 @@ const readReport = (format: 'json' | 'md') => {
 };
 
 const dummyReport = minimalReport();
-const dummyConfig = minimalConfig(outputDir);
 
 const resetFiles = async () => {
   vol.reset();
@@ -57,11 +55,11 @@ const resetFiles = async () => {
 // @TODO refactor away from snapshots in favour of disc space and readability
 describe('persistReport', () => {
   beforeEach(async () => {
-    resetFiles();
+    await resetFiles();
   });
 
   it('should stdout as format by default`', async () => {
-    await persistReport(dummyReport, dummyConfig);
+    await persistReport(dummyReport, persistConfig());
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
@@ -73,10 +71,7 @@ describe('persistReport', () => {
   it('should log to console regardless of format`', async () => {
     const persist = persistConfig({ outputDir, format: [] });
 
-    await persistReport(dummyReport, {
-      ...dummyConfig,
-      persist,
-    });
+    await persistReport(dummyReport, persist);
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`),
     );
@@ -87,10 +82,7 @@ describe('persistReport', () => {
 
   it('should persist json format`', async () => {
     const persist = persistConfig({ outputDir, format: ['json'] });
-    await persistReport(dummyReport, {
-      ...dummyConfig,
-      persist,
-    });
+    await persistReport(dummyReport, persist);
     const jsonReport: Report = readReport('json');
     expect(jsonReport.packageName).toBe('@code-pushup/core');
 
@@ -99,10 +91,7 @@ describe('persistReport', () => {
 
   it('should persist md format`', async () => {
     const persist = persistConfig({ outputDir, format: ['md'] });
-    await persistReport(dummyReport, {
-      ...dummyConfig,
-      persist,
-    });
+    await persistReport(dummyReport, persist);
     const mdReport = readFileSync(reportPath('md')).toString();
     expect(mdReport).toContain(
       `${FOOTER_PREFIX} [Code PushUp](${README_LINK})`,
@@ -118,10 +107,7 @@ describe('persistReport', () => {
       outputDir,
       format: ['json', 'md'],
     });
-    await persistReport(dummyReport, {
-      ...dummyConfig,
-      persist,
-    });
+    await persistReport(dummyReport, persist);
 
     const jsonReport: Report = readReport('json');
     expect(jsonReport.packageName).toBe('@code-pushup/core');
@@ -138,10 +124,7 @@ describe('persistReport', () => {
 
   it('should persist some formats`', async () => {
     const persist = persistConfig({ outputDir, format: ['md'] });
-    await persistReport(dummyReport, {
-      ...dummyConfig,
-      persist,
-    });
+    await persistReport(dummyReport, persist);
 
     expect(() => readFileSync(reportPath('json'))).not.toThrow(
       'no such file or directory',

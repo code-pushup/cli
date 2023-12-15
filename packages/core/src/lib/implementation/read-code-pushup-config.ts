@@ -1,4 +1,4 @@
-import { CoreConfig, RcConfig, coreConfigSchema } from '@code-pushup/models';
+import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
 import { fileExists, importEsmModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
@@ -22,6 +22,6 @@ export async function readCodePushupConfig(
     {
       filepath,
     },
-    (d: RcConfig) => coreConfigSchema.parse(d),
+    (d: CoreConfig) => coreConfigSchema.parse(d),
   );
 }

@@ -1,7 +1,7 @@
-import { type RcConfig } from '@code-pushup/models';
+import { type CoreConfig } from '@code-pushup/models';
 
 export const CORE_CONFIG_MOCK = {
-  persist: { outputDir: 'test', filename: 'output.json' },
+  persist: { outputDir: 'test' },
   upload: {
     organization: 'code-pushup',
     project: 'cli',
@@ -70,4 +70,4 @@ export const CORE_CONFIG_MOCK = {
       },
     },
   ],
-} satisfies RcConfig;
+} satisfies CoreConfig;

@@ -5,7 +5,6 @@ export {
   categoryRefSchema,
 } from './lib/category-config';
 export {
-  RcConfig,
   CoreConfig,
   coreConfigSchema,
   refineCoreConfig,
@@ -16,7 +15,18 @@ export {
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
-export { materialIconSchema } from './lib/implementation/schemas';
+export {
+  PERSIST_FILENAME,
+  PERSIST_OUTPUT_DIR,
+  PERSIST_FORMAT,
+  UPLOAD_SERVER,
+} from './lib/implementation/constants';
+export {
+  materialIconSchema,
+  filePathSchema,
+  fileNameSchema,
+  urlSchema,
+} from './lib/implementation/schemas';
 export {
   Format,
   PersistConfig,

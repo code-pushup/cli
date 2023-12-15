@@ -1,8 +1,7 @@
-import { join } from 'node:path';
-import { type RcConfig } from '@code-pushup/models';
+import { type CoreConfig } from '@code-pushup/models';
 
 export default {
-  persist: { outputDir: join('tmp', 'ts'), filename: 'report' },
+  persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',
@@ -51,4 +50,4 @@ export default {
       icon: 'javascript',
     },
   ],
-} satisfies RcConfig;
+} satisfies CoreConfig;
