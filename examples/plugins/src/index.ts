@@ -10,3 +10,4 @@ export {
   documentationGroupRef as packageJsonDocumentationGroupRef,
   performanceGroupRef as packageJsonPerformanceGroupRef,
 } from './package-json/src/scoring';
+export {create as packageJsonPlugin} from './package-json/src/package-json.plugin';
