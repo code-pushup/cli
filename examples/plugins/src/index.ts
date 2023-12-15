@@ -3,8 +3,7 @@ export {
   audits as fileSizeAudits,
   recommendedRefs as fileSizeRecommendedRefs,
   PluginOptions as FileSizePluginOptions,
-} from './file-size/file-size.plugin';
-export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
+} from './file-size/src/file-size.plugin';
 export {
   recommendedRefs as packageJsonRecommendedRefs,
   versionControlGroupRef as packageJsonVersionControlGroupRef,
