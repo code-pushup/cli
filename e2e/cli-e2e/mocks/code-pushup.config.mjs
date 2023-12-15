@@ -4,7 +4,7 @@ import eslintPlugin from '../../../dist/packages/plugin-eslint';
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputDir: join('tmp', 'mjs'), filename: 'report', },
+  persist: { outputDir: join('tmp', 'mjs'), },
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',

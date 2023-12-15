@@ -4,7 +4,7 @@ import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 import { CoreConfig } from '../../../packages/models/src';
 
 export default {
-  persist: { outputDir: 'tmp', filename: 'report', },
+  persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',
