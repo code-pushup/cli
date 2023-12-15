@@ -8,6 +8,12 @@
 
 ---
 
+|                  📊 Getting Started                  |               🌐 Portal Integration                |              🛠️ CI Automation              |
+| :--------------------------------------------------: | :------------------------------------------------: | :----------------------------------------: |
+| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#-ci-automation)** |
+
+---
+
 The Code PushUp CLI serves to **collect audit results**, and optionally **upload the report** to the Code PushUp portal.
 
 It can be used locally in your repository, or integrated in your CI environment.
@@ -109,7 +115,7 @@ export default {
 };
 ```
 
-## CI automation
+## 🛠 CI automation
 
 Example for GitHub Actions:
 
