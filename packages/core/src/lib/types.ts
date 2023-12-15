@@ -14,14 +14,20 @@ export type GlobalOptions = {
   verbose: boolean;
 };
 
-export const normalizePersistConfig = (cfg?: Partial<PersistConfig>): Required<PersistConfig> => ({
-  outputDir: PERSIST_OUTPUT_DIR,
-  filename: PERSIST_FILENAME,
-  format: PERSIST_FORMAT,
-  ...cfg,
-} as unknown as Required<PersistConfig>);
+export const normalizePersistConfig = (
+  cfg?: Partial<PersistConfig>,
+): Required<PersistConfig> =>
+  ({
+    outputDir: PERSIST_OUTPUT_DIR,
+    filename: PERSIST_FILENAME,
+    format: PERSIST_FORMAT,
+    ...cfg,
+  } as unknown as Required<PersistConfig>);
 
-export const normalizeUploadConfig = (cfg?: Partial<UploadConfig>): Required<UploadConfig> => ({
-  server: UPLOAD_SERVER,
- ...cfg,
-} as unknown as Required<UploadConfig>);
+export const normalizeUploadConfig = (
+  cfg?: Partial<UploadConfig>,
+): Required<UploadConfig> =>
+  ({
+    server: UPLOAD_SERVER,
+    ...cfg,
+  } as unknown as Required<UploadConfig>);

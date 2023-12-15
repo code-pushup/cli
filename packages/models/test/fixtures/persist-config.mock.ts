@@ -1,4 +1,10 @@
-import {PERSIST_FILENAME, PERSIST_FORMAT, PERSIST_OUTPUT_DIR, PersistConfig, persistConfigSchema} from '../../src';
+import {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+  PersistConfig,
+  persistConfigSchema,
+} from '../../src';
 
 export function persistConfig(
   opt?: Partial<PersistConfig>,

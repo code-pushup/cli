@@ -3,7 +3,9 @@ import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
 import {
-  GlobalOptions, normalizePersistConfig, normalizeUploadConfig,
+  GlobalOptions,
+  normalizePersistConfig,
+  normalizeUploadConfig,
 } from './types';
 
 export type UploadOptions = { upload: Required<UploadConfig> } & {

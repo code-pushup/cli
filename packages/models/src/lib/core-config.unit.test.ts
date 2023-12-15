@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CategoryConfig, CategoryRef } from './category-config';
 import { config } from '../../test';
+import { CategoryConfig, CategoryRef } from './category-config';
 import { coreConfigSchema } from './core-config';
 
 /*
