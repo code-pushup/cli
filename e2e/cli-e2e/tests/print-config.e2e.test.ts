@@ -28,7 +28,7 @@ describe('print-config', () => {
             organization: 'code-pushup',
             project: `cli-${ext}`,
             apiKey: 'e2e-api-key',
-            server: 'https://e2e.com/api',
+            server: 'https://example.com/api',
           },
           persist: {
             outputDir: 'my-dir',

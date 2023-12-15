@@ -23,10 +23,11 @@ Options:
       --persist.filename     Filename for the produced reports.
                                                     [string] [default: \\"report\\"]
       --persist.format       Format of the report output. e.g. \`md\`, \`json\`
-                                                                         [array]
+                                                     [array] [default: [\\"json\\"]]
       --upload.organization  Organization slug from portal              [string]
       --upload.project       Project slug from portal                   [string]
-      --upload.server        URL to your portal server                  [string]
+      --upload.server        URL to your portal server
+                                   [string] [default: \\"https://example.com/api\\"]
       --upload.apiKey        API key for the portal server              [string]
       --onlyPlugins          List of plugins to run. If not set all plugins are
                              run.                          [array] [default: []]
