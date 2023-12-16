@@ -17,7 +17,7 @@ const dependenciesAuditSlug = 'package-dependencies';
 export const dependenciesAuditMeta: Audit = {
   slug: dependenciesAuditSlug,
   title: 'Dependencies',
-  description: 'A audit to check NPM package versions`.',
+  description: 'An audit to check NPM package versions.',
 };
 
 export function dependenciesAudit(
