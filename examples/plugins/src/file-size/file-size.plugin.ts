@@ -97,7 +97,7 @@ export async function runnerFunction(
     displayValue: displayValue(0),
   };
 
-  const issues = await fileSizeIssues(options);
+  const issues = fileSizeIssues(options);
   // early exit if no issues
   if (issues.length === 0) {
     return [fileSizeAuditOutput];
@@ -125,7 +125,7 @@ export function displayValue(numberOfFiles: number): string {
   return `${pluralizeToken('file', numberOfFiles)} oversize`;
 }
 
-export async function fileSizeIssues(options: {
+export function fileSizeIssues(options: {
   directory: string;
   pattern?: string | RegExp;
   budget?: number;
