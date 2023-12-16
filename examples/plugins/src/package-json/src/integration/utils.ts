@@ -15,7 +15,7 @@ export function baseAuditOutput(slug: string): AuditOutput {
   } satisfies AuditOutput;
 }
 
-export function filterSeverityError(issue: Issue): issue is Issue {
+export function filterSeverityError(issue: Issue): boolean {
   return issue.severity === 'error';
 }
 
