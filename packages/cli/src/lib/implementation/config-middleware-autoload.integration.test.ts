@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { configMiddleware } from './config-middleware';
 
 vi.mock('fs', async () => {
@@ -17,7 +18,7 @@ describe('configMiddleware-autoload', () => {
       {
         ['code-pushup.config.ts']: '{}',
       },
-      '',
+      MEMFS_VOLUME,
     );
   });
 
