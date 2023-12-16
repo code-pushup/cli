@@ -107,3 +107,5 @@ export function runnerFunction(options: RunnerOptions): RunnerFunction {
     ];
   };
 }
+
+export default create;

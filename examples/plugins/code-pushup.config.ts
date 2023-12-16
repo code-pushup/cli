@@ -1,7 +1,6 @@
-import {
+import packageJsonPlugin, {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
-  packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from './src';
 import fileSizePlugin, {
