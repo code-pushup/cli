@@ -3,4 +3,4 @@ export {
   create as fileSizePlugin,
   recommendedRefs as fileSizeRecommendedRefs,
   PluginOptions as FileSizePluginOptions,
-} from './file-size/file-size.plugin';
+} from './file-size/src/file-size.plugin';
