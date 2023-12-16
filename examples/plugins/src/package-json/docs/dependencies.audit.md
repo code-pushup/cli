@@ -17,7 +17,7 @@ The audit provides additional details on the `type` property in cases a file res
 ### Issues
 
 **Audit not configured**
-A `Issue` with severity `info` is present and names to the given file.
+An `Issue` with severity `info` is present and names to the given file.
 
 ```md
   <table>
