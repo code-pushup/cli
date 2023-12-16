@@ -19,7 +19,7 @@ You can configure the plugin with the following options:
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Copy the [plugin source](../file-size) as is into your project
+2. Copy the [plugin source](../package-json) as is into your project
 
    1. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
@@ -75,7 +75,7 @@ export default {
 Or set up more fine-grained categories over the exported group references:
 
 ```js
-import packageJsonPlugin, { packageJsonDocumentationGroupRef, packageJsonPerformanceGroupRef, packageJsonVersionControlGroupRef } from './file-size.plugin';
+import packageJsonPlugin, { packageJsonDocumentationGroupRef, packageJsonPerformanceGroupRef, packageJsonVersionControlGroupRef } from './package-json.plugin';
 
 export default {
   // ...

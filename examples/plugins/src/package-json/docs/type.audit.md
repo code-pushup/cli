@@ -10,6 +10,10 @@ You can configure the plugin with the following options:
 
 - `type` as string naming the module type
 
+> [!NOTE]
+> If the `type` property is not set in the `package.json` file, it defaults to `commonjs`.
+> See: https://nodejs.org/docs/latest-v13.x/api/esm.html#esm_package_json_type_field
+
 ## Details
 
 The audit provides additional details on the `type` property in cases a file result is given.
