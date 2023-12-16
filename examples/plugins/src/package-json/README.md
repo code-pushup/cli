@@ -21,7 +21,7 @@ You can configure the plugin with the following options:
 
 2. Copy the [plugin source](../file-size) as is into your project
 
-   3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
+   1. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
       Pass in the path or the directory to crawl (relative to `process.cwd()`).
 
