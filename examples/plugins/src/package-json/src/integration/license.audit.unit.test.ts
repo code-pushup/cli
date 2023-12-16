@@ -43,6 +43,7 @@ describe('licenseAudit', () => {
       },
     });
   });
+
   it('should error for ""', () => {
     const targetPackageJson = { license: '' };
     expect(
