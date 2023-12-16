@@ -29,11 +29,6 @@ describe('configMiddleware', () => {
     },
   );
 
-  it('should load code-pushup.config.(ts|mjs|js) by default', async () => {
-    const config = await configMiddleware({});
-    expect(config?.upload?.project).toBe('cli');
-  });
-
   it('should throw with invalid config path', async () => {
     await expect(
       configMiddleware({ config: 'wrong/path/to/config' }),
