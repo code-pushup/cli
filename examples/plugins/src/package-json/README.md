@@ -37,13 +37,13 @@ You can configure the plugin with the following options:
             license: 'MIT',
             type: 'module',
             dependencies: {
-              packge1: '0.0.1',
+              package1: '0.0.1',
             },
             devDependencies: {
-              packge2: '0.0.1',
+              package2: '0.0.1',
             },
             optionalDependencies: {
-              packge3: '0.0.1',
+              package3: '0.0.1',
             },
           }),
         ],
