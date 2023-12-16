@@ -43,10 +43,9 @@ export type PluginOptions = {
  *     outputDir: '.code-pushup',
  *   },
  *   plugins: [
- *     await packageJsonPlugin({
+ *     packageJsonPlugin({
  *       directory: './dist/packages',
- *       directory: './dist/packages',
- *             license: 'MIT'
+ *       license: 'MIT',
  *     })
  *   ],
  *   categories: [
