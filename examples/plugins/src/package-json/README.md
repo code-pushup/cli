@@ -4,7 +4,7 @@
 
 ---
 
-The plugin crawls the file base depending on your configuration and reports about their containing `package.json` files`.
+The plugin crawls the file base depending on your configuration and checks the content `package.json` files.
 
 You can configure the plugin with the following options:
 
