@@ -30,7 +30,7 @@ export function licenseAudit(
 
   const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
     if (!license || license === '') {
-      return assertPropertyEmpty({ file, json, content }, 'license', license);
+      return assertPropertyEmpty({ file, json, content }, 'license');
     }
     if (license !== json.license) {
       return assertPropertyEqual({ file, json, content }, 'license', license);

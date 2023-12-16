@@ -23,7 +23,7 @@ describe('categoryConfigSchema', () => {
     categoryCfg.refs = [ref];
 
     expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(
-      `In a category there has to be at lease one ref with weight > 0`,
+      `In a category there has to be at least one ref with weight > 0`,
     );
   });
 });

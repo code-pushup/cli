@@ -5,7 +5,7 @@ import {
 } from '../../../../../../dist/packages/utils';
 import {
   DependencyMap,
-  DependencyTypes,
+  DependencyType,
   SourceResult,
   SourceResults,
 } from './types';
@@ -79,12 +79,12 @@ export function dependenciesIssues(
               ? packageNotInstalledIssue(
                   packageResult,
                   [dependencyName, requiredVersion],
-                  dependencyType as DependencyTypes,
+                  dependencyType as DependencyType,
                 )
               : assertDependency(
                   packageResult,
                   [dependencyName, requiredVersion],
-                  dependencyType as DependencyTypes,
+                  dependencyType as DependencyType,
                 );
           },
         );
@@ -96,7 +96,7 @@ export function dependenciesIssues(
 export function packageNotInstalledIssue(
   packageResult: Pick<SourceResult, 'file'>,
   requiredDependency: [string, string],
-  dependencyType: DependencyTypes,
+  dependencyType: DependencyType,
 ): Issue {
   const { file } = packageResult;
   const [packageName, targetVersion] = requiredDependency;
@@ -112,7 +112,7 @@ export function packageNotInstalledIssue(
 export function assertDependency(
   packageResult: SourceResult,
   requiredDependency: [string, string],
-  dependencyType: DependencyTypes,
+  dependencyType: DependencyType,
 ): Issue {
   const { file = '', json = {}, content = '' } = packageResult;
   const [packageName, targetVersion] = requiredDependency;

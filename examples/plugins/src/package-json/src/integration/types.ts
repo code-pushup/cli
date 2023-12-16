@@ -4,7 +4,7 @@ export type DependencyType =
   | 'optionalDependencies';
 
 export type DependencyMap = {
-  [key in DependencyTypes]?: Record<string, string>;
+  [key in DependencyType]?: Record<string, string>;
 };
 
 export type PackageJson = {

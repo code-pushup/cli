@@ -78,8 +78,6 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
  */
 export function create(options: PluginOptions): PluginConfig {
   return {
-    packageName: '@code-pushup/file-size',
-    version: '0.0.0',
     slug: pluginSlug,
     title: 'File Size',
     icon: 'javascript',

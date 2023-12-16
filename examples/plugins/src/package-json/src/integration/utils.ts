@@ -26,9 +26,9 @@ export function pluralizePackage(num = 0): string {
 export function assertPropertyEmpty(
   result: SourceResult,
   property: keyof PackageJson,
-  value: unknown = undefined,
 ): Issue {
-  const { file, content } = result;
+  const { file, content, json } = result;
+  const value = json[property] as string | undefined;
   const source: Issue['source'] = {
     file,
   };
