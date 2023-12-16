@@ -98,7 +98,7 @@ export async function runnerFunction(
     displayValue: displayValue(0),
   };
 
-  const issues = fileSizeIssues(options);
+  const issues = await fileSizeIssues(options);
   // early exit if no issues
   if (issues.length === 0) {
     return [fileSizeAuditOutput];
