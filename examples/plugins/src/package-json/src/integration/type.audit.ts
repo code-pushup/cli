@@ -1,5 +1,5 @@
 import { AuditOutput, Issue } from '@code-pushup/models';
-import { findLineNumberInText } from '@code-pushup/utils';
+import { findLineNumberInText } from '../../../../../../dist/packages/utils';
 import { PackageJson, SourceResult, SourceResults } from './types';
 import {
   assertPropertyEmpty,
