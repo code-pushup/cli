@@ -69,7 +69,7 @@ The dependencies of the given file, the target version as well as the given vers
       <th>Line(s)</th>
     </tr>
     <tr>
-       <td>🚨 <i>error</i></td>
+      <td>🚨 <i>error</i></td>
       <td>Package PACKAGE_NAME in DEPENDENCY_TYPE has wrong version. Wanted TARGET_VERSION but got GIVEN_VERSION</td>
       <td><code>src/file.js</code></td>
       <td></td>
