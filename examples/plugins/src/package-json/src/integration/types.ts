@@ -1,4 +1,4 @@
-export type DependencyTypes =
+export type DependencyType =
   | 'dependencies'
   | 'devDependencies'
   | 'optionalDependencies';
