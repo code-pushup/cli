@@ -11,7 +11,7 @@ const licenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {
   slug: licenseAuditSlug,
   title: 'License',
-  description: 'A audit to check NPM package license`.',
+  description: 'An audit to check NPM package license`.',
 };
 
 export function licenseAudit(
