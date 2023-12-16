@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {
-  MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
 import { logPersistedResults, persistReport } from './persist';
@@ -18,10 +17,7 @@ describe('persistReport', () => {
   });
 
   it('should print a summary to stdout when no format is specified`', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      ...MINIMAL_CONFIG_MOCK,
-      persist: { outputDir: MEMFS_VOLUME, filename: 'report', format: [] },
-    });
+    await persistReport(MINIMAL_REPORT_MOCK, { outputDir: MEMFS_VOLUME, filename: 'report', format: [] });
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
@@ -29,12 +25,9 @@ describe('persistReport', () => {
 
   it('should print a summary to stdout when all formats are specified`', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
-      ...MINIMAL_CONFIG_MOCK,
-      persist: {
         outputDir: MEMFS_VOLUME,
         filename: 'report',
         format: ['md', 'json'],
-      },
     });
     expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
@@ -43,12 +36,9 @@ describe('persistReport', () => {
 
   it('should create a report in json format by default', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
-      ...MINIMAL_CONFIG_MOCK,
-      persist: {
         outputDir: MEMFS_VOLUME,
         filename: 'report',
         format: [],
-      },
     });
 
     const jsonReport: Report = JSON.parse(
@@ -68,12 +58,9 @@ describe('persistReport', () => {
 
   it('should create a report in all formats', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
-      ...MINIMAL_CONFIG_MOCK,
-      persist: {
         outputDir: MEMFS_VOLUME,
         format: ['md', 'json'],
         filename: 'report',
-      },
     });
 
     const mdReport = readFileSync(join(MEMFS_VOLUME, 'report.md')).toString();

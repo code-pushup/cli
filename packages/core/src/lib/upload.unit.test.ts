@@ -1,14 +1,43 @@
-import { vol } from 'memfs';
-import { describe } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
-import {
-  ISO_STRING_REGEXP,
-  MINIMAL_REPORT_MOCK,
-} from '@code-pushup/testing-utils';
-import { upload } from './upload';
+import {vol} from 'memfs';
+import {describe, expect} from 'vitest';
+import {PortalUploadArgs, uploadToPortal} from '@code-pushup/portal-client';
+import {MEMFS_VOLUME} from '@code-pushup/models/testing';
+import {ISO_STRING_REGEXP, MINIMAL_REPORT_MOCK,} from '@code-pushup/testing-utils';
+import {upload} from './upload';
+import {UploadConfig} from "@code-pushup/models";
 
 describe('upload', () => {
+  it('should normalize options internally (default values)', async () => {
+
+    vol.fromJSON(
+      {
+        'report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await upload({
+      verbose: false,
+      progress: false,
+      upload: {
+        apiKey: 'dummy-api-key',
+        organization: 'code-pushup',
+        project: 'cli',
+      } as UploadConfig,
+      persist: {
+        outputDir: MEMFS_VOLUME,
+        filename: 'report',
+        format: ['json'],
+      },
+    });
+
+
+    expect(uploadToPortal).toHaveBeenCalledWith(expect.objectContaining({
+      server: 'https://example.com/api'
+    }));
+
+  });
+
   it('upload should be called with correct data', async () => {
     vol.fromJSON(
       {
@@ -33,7 +62,7 @@ describe('upload', () => {
       },
     });
 
-    expect(result).toEqual({ packageName: '@code-pushup/cli' });
+    expect(result).toEqual({packageName: '@code-pushup/cli'});
 
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
