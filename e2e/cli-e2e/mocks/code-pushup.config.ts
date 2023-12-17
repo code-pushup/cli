@@ -8,7 +8,7 @@ export default {
     organization: 'code-pushup',
     project: 'cli-ts',
     apiKey: 'e2e-api-key',
-    server: 'https://example.com/api',
+    server: 'https://e2e.com/api',
   },
   categories: [
     {

@@ -36,7 +36,7 @@ describe('print-config', () => {
             organization: 'code-pushup',
             project: `cli-${ext}`,
             apiKey: 'e2e-api-key',
-            server: 'https://example.com/api',
+            server: 'https://e2e.com/api',
           },
           plugins: expect.arrayContaining([
             expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
