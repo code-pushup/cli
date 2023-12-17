@@ -11,6 +11,6 @@ export async function multiselect<T extends string>(options: {
     type: 'list',
     message,
     choices,
-  })) as { [key: typeof name]: string[] };
-  return (answer[name] as T[]) || [];
+  })) as T[];
+  return answer || [];
 }
