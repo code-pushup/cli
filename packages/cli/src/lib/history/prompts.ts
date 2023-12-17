@@ -6,11 +6,11 @@ export async function multiselect<T extends string>(options: {
   choices: T[] ;
 }): Promise<T[]> {
   const { name, message = 'Pick a choice:', choices } = options;
-  const answer = (await inquirer.prompt({
+  const answer = (await inquirer.prompts([{
     name,
     type: 'list',
     message,
     choices,
-  })) as T[];
+  }])) as T[];
   return answer || [];
 }
