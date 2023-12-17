@@ -105,7 +105,7 @@ export function metaSchema(options?: {
  * Schema for a generalFilePath
  * @param description
  */
-export function filePathSchema(description: string): z.ZodString {
+export function filePathSchema(description: string) {
   return z
     .string({ description })
     .trim()
@@ -116,7 +116,7 @@ export function filePathSchema(description: string): z.ZodString {
  * Schema for a fileNameSchema
  * @param description
  */
-export function fileNameSchema(description: string): z.ZodString {
+export function fileNameSchema(description: string) {
   return z
     .string({ description })
     .trim()
