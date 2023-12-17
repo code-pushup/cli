@@ -8,6 +8,7 @@ import {
 } from '@code-pushup/utils';
 import {CLI_NAME} from '../cli';
 import {multiselect} from './prompts';
+import inquirer from "inquirer";
 
 export type HistoryCommandOptions = {
   targetBranch: string;
@@ -46,11 +47,15 @@ export function yargsHistoryCommandObject() {
       console.log('Initial Branch:', initialBranch);
       // eslint-disable-next-line no-console
       console.log('Target Branch:', targetBranch);
-      multiselect({
-        name: 'targetCommit',
-        message: 'Select:',
-        choices: ['1', '2']
-      }).then(console.log)
+      await inquirer.prompt([{
+        name: 'item',
+        type: 'list',
+        message: 'message',
+        choices: async () => {
+          return ['1'];
+        },
+        // default: '1'
+      }]);
       return ;
 
       if (gitRestore) {
