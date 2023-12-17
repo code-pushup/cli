@@ -144,6 +144,7 @@ Each example is fully tested to give demonstrate best practices for plugin testi
 **Example for custom plugins:**
 
 - [File Size](../../examples/plugins/src/file-size)
+- [Package Json](../../examples/plugins/src/package-json)
 
 ## CLI commands and options
 

@@ -174,6 +174,7 @@ export function weightedRefSchema(
     { description },
   );
 }
+
 export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
 
 export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
@@ -187,13 +188,18 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
       slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
       refs: z
         .array(refSchema)
+        .min(1)
         // refs are unique
         .refine(
           refs => !duplicateCheckFn(refs),
           refs => ({
             message: duplicateMessageFn(refs),
           }),
-        ),
+        )
+        // categories weights are correct
+        .refine(hasWeightedRefsInCategories, () => ({
+          message: `In a category there has to be at least one ref with weight > 0`,
+        })),
     },
     { description },
   );
@@ -203,3 +209,9 @@ export const materialIconSchema = z.enum(
   MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
   { description: 'Icon from VSCode Material Icons extension' },
 );
+
+type Ref = { weight: number };
+
+function hasWeightedRefsInCategories(categoryRefs: Ref[]) {
+  return categoryRefs.reduce((acc, { weight }) => weight + acc, 0) !== 0;
+}
