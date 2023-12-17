@@ -3,12 +3,11 @@ import eslintPlugin from '../../../dist/packages/plugin-eslint';
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',
     apiKey: 'e2e-api-key',
-    server: 'https://e2e.com/api',
+    server: 'https://example.com/api',
   },
   categories: [
     {
