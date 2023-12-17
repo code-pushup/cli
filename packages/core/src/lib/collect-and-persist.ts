@@ -1,13 +1,14 @@
-import {CoreConfig, pluginReportSchema,} from '@code-pushup/models';
-import {verboseUtils} from '@code-pushup/utils';
-import {collect} from './implementation/collect';
-import {logPersistedResults, persistReport} from './implementation/persist';
-import {GlobalOptions, normalizePersistConfig} from './types';
+import { CoreConfig, pluginReportSchema } from '@code-pushup/models';
+import { verboseUtils } from '@code-pushup/utils';
+import { collect } from './implementation/collect';
+import { logPersistedResults, persistReport } from './implementation/persist';
+import { GlobalOptions, normalizePersistConfig } from './types';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
   'plugins' | 'categories' | 'persist'
-> & GlobalOptions;
+> &
+  GlobalOptions;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,

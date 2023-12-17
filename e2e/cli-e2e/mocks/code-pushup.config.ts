@@ -11,7 +11,20 @@ export default {
     apiKey: 'e2e-api-key',
     server: 'https://example.com/api',
   },
-  categories: [],
+  categories: [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [
+        {
+          plugin: 'lighthouse',
+          type: 'audit',
+          slug: 'largest-contentful-paint',
+          weight: 1,
+        },
+      ],
+    },
+  ],
   plugins: [
     await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
     lighthousePlugin({ config: '.lighthouserc.json' }),

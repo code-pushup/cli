@@ -1,13 +1,16 @@
-import {describe} from 'vitest';
-import {Report} from '@code-pushup/models';
+import { describe } from 'vitest';
+import { Report } from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
 } from '@code-pushup/testing-utils';
-import {collectAndPersistReports, CollectAndPersistReportsOptions} from './collect-and-persist';
-import {collect} from './implementation/collect';
-import {logPersistedResults, persistReport} from './implementation/persist';
-import {normalizePersistConfig} from "./types";
+import {
+  CollectAndPersistReportsOptions,
+  collectAndPersistReports,
+} from './collect-and-persist';
+import { collect } from './implementation/collect';
+import { logPersistedResults, persistReport } from './implementation/persist';
+import { normalizePersistConfig } from './types';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({

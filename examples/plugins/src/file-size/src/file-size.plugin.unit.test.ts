@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { formatBytes } from '@code-pushup/utils';
+import { formatBytes } from '../../../../../dist/packages/utils';
 import {
   PluginOptions,
   assertFileSize,

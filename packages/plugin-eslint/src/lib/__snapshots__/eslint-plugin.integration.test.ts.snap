@@ -408,12 +408,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "title": "Suggestions",
     },
     {
-      "description": "Primarily about whitespace, semicolons, commas, and parentheses, all the parts of the program that determine how the code looks rather than how it executes.",
-      "refs": [],
-      "slug": "formatting",
-      "title": "Formatting",
-    },
-    {
       "refs": [
         {
           "slug": "react-prop-types",

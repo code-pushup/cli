@@ -1,3 +1,9 @@
+import {
+  packageJsonDocumentationGroupRef,
+  packageJsonPerformanceGroupRef,
+  packageJsonPlugin,
+  packageJsonVersionControlGroupRef,
+} from './src';
 import fileSizePlugin, {
   recommendedRefs as fileSizeRecommendedRefs,
 } from './src/file-size/src/file-size.plugin';
@@ -15,17 +21,35 @@ import fileSizePlugin, {
 const config = (() => ({
   plugins: [
     fileSizePlugin({
-      directory: './dist',
+      directory: './dist/packages',
       pattern: /\.js$/,
       // eslint-disable-next-line no-magic-numbers
       budget: 42_000,
+    }),
+    packageJsonPlugin({
+      directory: './packages',
+      license: 'MIT',
+      type: 'module',
+      dependencies: {
+        zod: '^3.22.4',
+      },
     }),
   ],
   categories: [
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...fileSizeRecommendedRefs],
+      refs: [...fileSizeRecommendedRefs, packageJsonPerformanceGroupRef],
+    },
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [packageJsonVersionControlGroupRef],
+    },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
     },
   ],
 }))();
