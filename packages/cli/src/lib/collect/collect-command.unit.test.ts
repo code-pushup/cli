@@ -2,6 +2,7 @@ import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectAndPersistReports } from '@code-pushup/core';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
@@ -20,7 +21,30 @@ describe('collect-command', () => {
       {
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
-      '/test',
+      MEMFS_VOLUME,
+    );
+  });
+
+  it('should call collect with default parameters', async () => {
+    await yargsCli(['collect', '--config=/test/code-pushup.config.ts'], {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsCollectCommandObject()],
+    }).parseAsync();
+
+    expect(bundleRequire).toHaveBeenCalledWith({
+      format: 'esm',
+      filepath: '/test/code-pushup.config.ts',
+    });
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: '/test/code-pushup.config.ts',
+        persist: expect.objectContaining({
+          filename: 'report',
+          outputDir: 'test',
+          format: ['json'],
+        }),
+      }),
     );
   });
 
