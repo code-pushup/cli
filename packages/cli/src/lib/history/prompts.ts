@@ -10,7 +10,7 @@ export async function multiselect<T extends string>(options: {
     name,
     type: 'list',
     message,
-    choices: ['1','2','3'],
+    choices,
   })) as T[];
   return answer || [];
 }
