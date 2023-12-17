@@ -40,14 +40,11 @@ describe('collectAndPersistReports', () => {
 
     expect(collect).toHaveBeenCalledWith(partialConfig);
 
-    expect(persistReport).toHaveBeenCalledWith(
-      expect.any(Object),
-      {
-        outputDir: PERSIST_OUTPUT_DIR,
-        filename: PERSIST_FILENAME,
-        format: PERSIST_FORMAT,
-      },
-    );
+    expect(persistReport).toHaveBeenCalledWith(expect.any(Object), {
+      outputDir: PERSIST_OUTPUT_DIR,
+      filename: PERSIST_FILENAME,
+      format: PERSIST_FORMAT,
+    });
 
     expect(logPersistedResults).not.toHaveBeenCalled();
   });
