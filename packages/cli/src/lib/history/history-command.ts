@@ -1,18 +1,19 @@
 import chalk from 'chalk';
-import { CommandModule } from 'yargs';
-import { HistoryOptions, history } from '@code-pushup/core';
+import {CommandModule} from 'yargs';
+import {HistoryOptions, history} from '@code-pushup/core';
 import {
   getCurrentBranchOrTag,
   git,
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../cli';
-import { multiselect } from './prompts';
+import {CLI_NAME} from '../cli';
+import {multiselect} from './prompts';
 
 export type HistoryCommandOptions = {
   targetBranch: string;
   gitRestore: string;
 };
+
 export function yargsHistoryCommandObject() {
   const command = 'history';
   return {
@@ -36,7 +37,7 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}...`));
       // await guardAgainstDirtyRepo();
-      const { targetBranch, gitRestore, ...config } =
+      const {targetBranch, gitRestore, ...config} =
         args as unknown as HistoryCommandOptions;
 
       // load upload configuration from environment
@@ -56,7 +57,7 @@ export function yargsHistoryCommandObject() {
       const log = await git.log();
 
       const commitsToAudit = log.all
-        .map(({ hash }) => hash)
+        .map(({hash}) => hash)
         // crawl from oldest to newest
         .reverse();
       // eslint-disable-next-line no-console
@@ -64,7 +65,7 @@ export function yargsHistoryCommandObject() {
       await multiselect({
         name: 'targetCommit',
         message: 'Select:',
-
+        choices: commitsToAudit.slice(-3)
       })
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
