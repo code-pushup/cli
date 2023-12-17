@@ -7,6 +7,7 @@ import {
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
+import { multiselect } from './prompts';
 
 export type HistoryCommandOptions = {
   targetBranch: string;
@@ -60,7 +61,11 @@ export function yargsHistoryCommandObject() {
         .reverse();
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
+      await multiselect({
+        name: 'targetCommit',
+        message: 'Select:',
 
+      })
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
         commitsToAudit.slice(-3),
