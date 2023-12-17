@@ -1,5 +1,10 @@
 import { describe } from 'vitest';
-import { Report } from '@code-pushup/models';
+import {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+  Report,
+} from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
@@ -41,9 +46,9 @@ describe('collectAndPersistReports', () => {
     expect(collect).toHaveBeenCalledWith(partialConfig);
 
     expect(persistReport).toHaveBeenCalledWith(expect.any(Object), {
-      outputDir: PERSIST_OUTPUT_DIR,
       filename: PERSIST_FILENAME,
       format: PERSIST_FORMAT,
+      outputDir: PERSIST_OUTPUT_DIR,
     });
 
     expect(logPersistedResults).not.toHaveBeenCalled();
