@@ -6,7 +6,7 @@ import { GlobalOptions, normalizePersistConfig } from './types';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
-  'plugins' | 'categories' | 'persist'
+  'persist' | 'plugins' | 'categories'
 > &
   GlobalOptions;
 
