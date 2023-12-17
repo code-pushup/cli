@@ -1,11 +1,11 @@
-import {bundleRequire} from 'bundle-require';
-import {vol} from 'memfs';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {collectAndPersistReports} from '@code-pushup/core';
-import {MEMFS_VOLUME} from '@code-pushup/testing-utils';
-import {DEFAULT_CLI_CONFIGURATION} from '../../../mocks/constants';
-import {yargsCli} from '../yargs-cli';
-import {yargsCollectCommandObject} from './collect-command';
+import { bundleRequire } from 'bundle-require';
+import { vol } from 'memfs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { collectAndPersistReports } from '@code-pushup/core';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
+import { yargsCli } from '../yargs-cli';
+import { yargsCollectCommandObject } from './collect-command';
 
 vi.mock('@code-pushup/core', async () => {
   const core = await vi.importActual('@code-pushup/core');
@@ -102,7 +102,7 @@ describe('collect-command', () => {
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
         config: '/test/code-pushup.config.ts',
-        plugins: [expect.objectContaining({slug: 'cypress'})],
+        plugins: [expect.objectContaining({ slug: 'cypress' })],
       }),
     );
   });
