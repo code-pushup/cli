@@ -62,11 +62,11 @@ export function yargsHistoryCommandObject() {
         .reverse();
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
-      await multiselect({
+      multiselect({
         name: 'targetCommit',
         message: 'Select:',
         choices: commitsToAudit.slice(-3)
-      })
+      }).catch(console.error).then(console.log)
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
         commitsToAudit.slice(-3),
