@@ -65,7 +65,7 @@ export function yargsHistoryCommandObject() {
       await multiselect({
         name: 'targetCommit',
         message: 'Select:',
-        choices: commitsToAudit.slice(-3).filter(v => !v).map(s => s.toString())
+        choices: commitsToAudit.slice(-3).filter(v => !!v).map(s => s.toString())
       })
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
