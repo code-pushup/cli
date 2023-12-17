@@ -53,6 +53,7 @@ describe('print-config', () => {
     },
     120000,
   );
+
   it('should load .ts config file and overwrite it with CLI arguments', async ext => {
     const { code, stderr, stdout } = await executeProcess({
       command: 'code-pushup',
