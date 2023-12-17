@@ -63,7 +63,7 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
       // eslint-disable-next-line no-console
-      console.log('All Log:', commitsToAudit.slice(-2));
+      console.log('choices:', commitsToAudit.slice(-2));
       await multiselect({
         name: 'targetCommit',
         message: 'Select:',
