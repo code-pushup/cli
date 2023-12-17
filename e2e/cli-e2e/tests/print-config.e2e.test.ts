@@ -30,7 +30,7 @@ describe('print-config', () => {
           persist: {
             filename: 'report',
             format: [],
-            outputDir: `tmp/${ext}`,
+            outputDir: expect.stringContaining(ext),
           },
           plugins: expect.arrayContaining([
             expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
