@@ -22,7 +22,7 @@ export const normalizePersistConfig = (
     filename: PERSIST_FILENAME,
     format: PERSIST_FORMAT,
     ...cfg,
-  } as unknown as Required<PersistConfig>);
+  });
 
 export const normalizeUploadConfig = (
   cfg?: Partial<UploadConfig>,
