@@ -3,8 +3,6 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
   PersistConfig,
-  UPLOAD_SERVER,
-  UploadConfig,
 } from '@code-pushup/models';
 
 export type GlobalOptions = {
@@ -16,18 +14,9 @@ export type GlobalOptions = {
 
 export const normalizePersistConfig = (
   cfg?: Partial<PersistConfig>,
-): Required<PersistConfig> =>
-  ({
-    outputDir: PERSIST_OUTPUT_DIR,
-    filename: PERSIST_FILENAME,
-    format: PERSIST_FORMAT,
-    ...cfg,
-  });
-
-export const normalizeUploadConfig = (
-  cfg?: Partial<UploadConfig>,
-): Required<UploadConfig> =>
-  ({
-    server: UPLOAD_SERVER,
-    ...cfg,
-  } as unknown as Required<UploadConfig>);
+): Required<PersistConfig> => ({
+  outputDir: PERSIST_OUTPUT_DIR,
+  filename: PERSIST_FILENAME,
+  format: PERSIST_FORMAT,
+  ...cfg,
+});
