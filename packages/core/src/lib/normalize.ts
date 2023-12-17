@@ -1,9 +1,15 @@
-import { UPLOAD_SERVER, UploadConfig } from '@code-pushup/models';
+import {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+  PersistConfig,
+} from '@code-pushup/models';
 
-export const normalizeUploadConfig = (
-  cfg?: Partial<UploadConfig>,
-): Required<UploadConfig> =>
-  ({
-    server: UPLOAD_SERVER,
-    ...cfg,
-  } as unknown as Required<UploadConfig>);
+export const normalizePersistConfig = (
+  cfg?: Partial<PersistConfig>,
+): Required<PersistConfig> => ({
+  outputDir: PERSIST_OUTPUT_DIR,
+  filename: PERSIST_FILENAME,
+  format: PERSIST_FORMAT,
+  ...cfg,
+});

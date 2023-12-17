@@ -22,6 +22,7 @@ describe('upload', () => {
       verbose: false,
       progress: false,
       upload: {
+        server: 'https://example.com/api',
         apiKey: 'dummy-api-key',
         organization: 'code-pushup',
         project: 'cli',

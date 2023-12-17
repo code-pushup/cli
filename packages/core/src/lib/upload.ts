@@ -2,8 +2,8 @@ import { uploadToPortal } from '@code-pushup/portal-client';
 import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
-import { normalizeUploadConfig } from './normalize';
-import { GlobalOptions, normalizePersistConfig } from './types';
+import { normalizePersistConfig } from './normalize';
+import { GlobalOptions } from './types';
 
 export type UploadOptions = { upload: Required<UploadConfig> } & {
   persist: Required<PersistConfig>;
@@ -18,7 +18,7 @@ export async function upload(
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
   const persist = normalizePersistConfig(options?.persist);
-  const upload = normalizeUploadConfig(options?.upload);
+  const upload = options?.upload || {};
   const { apiKey, server, organization, project } = upload;
   const report: Report = await loadReport({
     ...persist,

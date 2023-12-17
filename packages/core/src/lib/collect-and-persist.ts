@@ -2,7 +2,8 @@ import { CoreConfig, pluginReportSchema } from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
-import { GlobalOptions, normalizePersistConfig } from './types';
+import { normalizePersistConfig } from './normalize';
+import { GlobalOptions } from './types';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,

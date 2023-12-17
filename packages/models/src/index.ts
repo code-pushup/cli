@@ -19,7 +19,6 @@ export {
   PERSIST_FILENAME,
   PERSIST_OUTPUT_DIR,
   PERSIST_FORMAT,
-  UPLOAD_SERVER,
 } from './lib/implementation/constants';
 export {
   materialIconSchema,

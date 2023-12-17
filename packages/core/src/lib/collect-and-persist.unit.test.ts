@@ -10,7 +10,7 @@ import {
 } from './collect-and-persist';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
-import { normalizePersistConfig } from './types';
+import { normalizePersistConfig } from './normalize';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
