@@ -42,13 +42,15 @@ export function groupsFromRuleTypes(rules: RuleData[]): AuditGroup[] {
     {},
   );
 
-  return allTypes.map(type => ({
-    ...typeGroups[type],
-    refs:
-      auditSlugsMap[type]?.map(
-        (slug): AuditGroupRef => ({ slug, weight: 1 }),
-      ) ?? [],
-  }));
+  return allTypes
+    .map(type => ({
+      ...typeGroups[type],
+      refs:
+        auditSlugsMap[type]?.map(
+          (slug): AuditGroupRef => ({ slug, weight: 1 }),
+        ) ?? [],
+    }))
+    .filter(group => group.refs.length);
 }
 
 export function groupsFromRuleCategories(rules: RuleData[]): AuditGroup[] {
