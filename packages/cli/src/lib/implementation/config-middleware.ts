@@ -6,7 +6,7 @@ import {
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
 } from './only-plugins-utils';
-import {coerceArray} from "./utils";
+import { coerceArray } from './utils';
 
 export async function configMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
@@ -31,7 +31,7 @@ export async function configMiddleware<
       persist: {
         ...importedRc?.persist,
         ...cliOptions.persist,
-        format: coerceArray<Format>(cliOptions?.persist?.format)
+        format: coerceArray<Format>(cliOptions?.persist?.format),
       },
       plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
       categories: filterCategoryByOnlyPluginsOption(

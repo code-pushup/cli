@@ -1,6 +1,6 @@
 // log error and flush stdout so that Yargs doesn't suppress it
 // related issue: https://github.com/yargs/yargs/issues/2118
-import {toArray} from "@code-pushup/utils";
+import { toArray } from '@code-pushup/utils';
 
 export function logErrorBeforeThrow<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,5 +19,7 @@ export function logErrorBeforeThrow<
 }
 
 export function coerceArray<T extends string>(param: T | T[] = []): T[] {
-  return [...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]) || [])]
+  return [
+    ...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]) || []),
+  ];
 }

@@ -28,7 +28,7 @@ describe('filterPluginsByOnlyPluginsOption', () => {
           { slug: 'plugin2' },
           { slug: 'plugin3' },
         ] as CoreConfig['plugins'],
-        { onlyPlugins: ['plugin1', 'plugin3']},
+        { onlyPlugins: ['plugin1', 'plugin3'] },
       ),
     ).toEqual([{ slug: 'plugin1' }, { slug: 'plugin3' }]);
   });
@@ -74,7 +74,8 @@ describe('filterCategoryByOnlyPluginsOption', () => {
         { title: 'category2', refs: [{ slug: 'plugin3' }] },
       ] as CoreConfig['categories'],
       {
-        onlyPlugins: ['plugin1', 'plugin3'], verbose: true
+        onlyPlugins: ['plugin1', 'plugin3'],
+        verbose: true,
       },
     );
     expect(console.info).toHaveBeenCalledWith(
@@ -91,7 +92,8 @@ describe('validateOnlyPluginsOption', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
       {
-        onlyPlugins: ['plugin1', 'plugin3', 'plugin4'], verbose: true
+        onlyPlugins: ['plugin1', 'plugin3', 'plugin4'],
+        verbose: true,
       },
     );
     expect(console.warn).toHaveBeenCalledWith(
@@ -105,7 +107,8 @@ describe('validateOnlyPluginsOption', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
       {
-        onlyPlugins: ['plugin1'], verbose: true
+        onlyPlugins: ['plugin1'],
+        verbose: true,
       },
     );
     expect(console.info).not.toHaveBeenCalled();
