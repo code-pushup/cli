@@ -1,5 +1,4 @@
 export default {
-  persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-js',
