@@ -41,15 +41,12 @@ describe('collectAndPersistReports', () => {
     expect(collect).toHaveBeenCalledWith(partialConfig);
 
     expect(persistReport).toHaveBeenCalledWith(
+      expect.any(Object),
       {
-        packageName: 'code-pushup',
-        version: '0.0.1',
-        date: expect.stringMatching(ISO_STRING_REGEXP),
-        duration: 0,
-        categories: [],
-        plugins: [],
+        outputDir: PERSIST_OUTPUT_DIR,
+        filename: PERSIST_FILENAME,
+        format: PERSIST_FORMAT,
       },
-      normalizePersistConfig(partialConfig?.persist),
     );
 
     expect(logPersistedResults).not.toHaveBeenCalled();
