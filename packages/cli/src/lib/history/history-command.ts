@@ -28,7 +28,7 @@ export function yargsHistoryCommandObject() {
       gitRestore: {
         describe: 'Folder to restore using "git restore [folder]"',
         type: 'string',
-        default: '.',
+        default: '.', // @TODO remove after debugging
       },
     },
     handler: async args => {
@@ -52,7 +52,7 @@ export function yargsHistoryCommandObject() {
       }
 
       await guardAgainstDirtyRepo();
-    //  await git.checkout(targetBranch);
+      await git.checkout(targetBranch);
 
       const log = await git.log();
 
@@ -65,7 +65,7 @@ export function yargsHistoryCommandObject() {
       await multiselect({
         name: 'targetCommit',
         message: 'Select:',
-        choices: commitsToAudit.slice(-3)
+        choices: commitsToAudit.slice(-3).filter(v => !v).map(s => s.toString())
       })
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
