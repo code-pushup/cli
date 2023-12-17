@@ -17,7 +17,6 @@ export function yargsCoreConfigOptionsDefinition(): Record<ArgNames, Options> {
       describe: 'Format of the report output. e.g. `md`, `json`',
       type: 'array',
       default: [],
-      coerce: (arg: string[]) => arg.flatMap(v => v.split(',')),
     },
     // upload
     'upload.organization': {

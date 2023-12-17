@@ -1,11 +1,12 @@
 import { readCodePushupConfig } from '@code-pushup/core';
-import { CoreConfig } from '@code-pushup/models';
+import { CoreConfig, Format } from '@code-pushup/models';
 import { GeneralCliOptions, OnlyPluginsOptions } from './model';
 import {
   filterCategoryByOnlyPluginsOption,
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
 } from './only-plugins-utils';
+import {coerceArray} from "./utils";
 
 export async function configMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
@@ -28,8 +29,9 @@ export async function configMiddleware<
         ...cliOptions.upload,
       },
       persist: {
-        ...importedRc.persist,
+        ...importedRc?.persist,
         ...cliOptions.persist,
+        format: coerceArray<Format>(cliOptions?.persist?.format)
       },
       plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
       categories: filterCategoryByOnlyPluginsOption(

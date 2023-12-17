@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { CoreConfig } from '@code-pushup/models';
+import {CoreConfig} from '@code-pushup/models';
 
 export function filterPluginsByOnlyPluginsOption(
   plugins: CoreConfig['plugins'],
@@ -15,7 +15,7 @@ export function filterPluginsByOnlyPluginsOption(
 // see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
 export function filterCategoryByOnlyPluginsOption(
   categories: CoreConfig['categories'],
-  { onlyPlugins }: { onlyPlugins?: string[] },
+  { onlyPlugins, verbose = false }: { onlyPlugins?: string[], verbose?:boolean },
 ): CoreConfig['categories'] {
   if (!onlyPlugins?.length) {
     return categories;
@@ -26,7 +26,7 @@ export function filterCategoryByOnlyPluginsOption(
       const isNotSkipped = onlyPlugins.includes(ref.slug);
 
       if (!isNotSkipped) {
-        console.info(
+        verbose && console.info(
           `${chalk.yellow('⚠')} Category "${
             category.title
           }" is ignored because it references audits from skipped plugin "${
@@ -42,14 +42,14 @@ export function filterCategoryByOnlyPluginsOption(
 
 export function validateOnlyPluginsOption(
   plugins: CoreConfig['plugins'],
-  { onlyPlugins }: { onlyPlugins?: string[] },
+  { onlyPlugins, verbose = false }: { onlyPlugins?: string[], verbose?: boolean },
 ): void {
   const missingPlugins = onlyPlugins?.length
     ? onlyPlugins.filter(plugin => !plugins.some(({ slug }) => slug === plugin))
     : [];
 
   if (missingPlugins.length > 0) {
-    console.warn(
+    verbose && console.warn(
       `${chalk.yellow(
         '⚠',
       )} The --onlyPlugin argument references plugins with "${missingPlugins.join(
