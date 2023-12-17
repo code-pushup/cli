@@ -51,7 +51,7 @@ export function yargsHistoryCommandObject() {
         git.raw(['restore', '.']);
       }
 
-      guardAgainstDirtyRepo();
+      await guardAgainstDirtyRepo();
     //  await git.checkout(targetBranch);
 
       const log = await git.log();
