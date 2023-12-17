@@ -46,6 +46,12 @@ export function yargsHistoryCommandObject() {
       console.log('Initial Branch:', initialBranch);
       // eslint-disable-next-line no-console
       console.log('Target Branch:', targetBranch);
+      multiselect({
+        name: 'targetCommit',
+        message: 'Select:',
+        choices: ['1', '2']
+      }).then(console.log)
+      return ;
 
       if (gitRestore) {
         git.raw(['restore', '.']);
@@ -64,11 +70,11 @@ export function yargsHistoryCommandObject() {
       console.log('All Log:', commitsToAudit.length);
       // eslint-disable-next-line no-console
       console.log('choices:', commitsToAudit.slice(-2));
-      await multiselect({
+      multiselect({
         name: 'targetCommit',
         message: 'Select:',
         choices: commitsToAudit.slice(-2).filter(v => !!v).map(s => s.toString())
-      })
+      }).then(console.log)
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
         commitsToAudit.slice(-3),
