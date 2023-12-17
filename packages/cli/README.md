@@ -157,7 +157,7 @@ Each example is fully tested to give demonstrate best practices for plugin testi
 | **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
 
 > [!NOTE]  
-> By default, the CLI loads `code-pushup.config.(js|ts|mjs)` if no config path is provided over `--config`.
+> By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided over `--config`.
 
 ### Common Command Options
 
