@@ -8,7 +8,7 @@ import { yargsConfigCommandObject } from './print-config-command';
 describe('print-config-command', () => {
   beforeEach(() => {
     vol.fromJSON(
-      // the real value comes form vitest mocks configured in vitest.config.ts
+      // the real value comes from vitest mocks configured in vitest.config.ts
 
       {
         // only needs to exist for stat inside readCodePushupConfig
