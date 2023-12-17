@@ -26,6 +26,7 @@ describe('collect-command', () => {
   });
 
   it('should call collect with default parameters', async () => {
+    // It's hard to test the defaults for `config` so we skipped it as there are other integration tests already
     await yargsCli(['collect', '--config=/test/code-pushup.config.ts'], {
       ...DEFAULT_CLI_CONFIGURATION,
       commands: [yargsCollectCommandObject()],

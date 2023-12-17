@@ -32,6 +32,9 @@ export async function configMiddleware<
         ...importedRc.upload,
         ...cliOptions.upload,
       },
+      // we can't use a async rc file as yargs does not support it. see: https://github.com/yargs/yargs/issues/2234
+      // therefor this can't live in option defaults as the order would be `config`->`provided options`->default
+      // so we have to manually implement the order
       persist: {
         outputDir:
           cliOptions?.persist?.outputDir ||

@@ -14,7 +14,7 @@ describe('configOptions', () => {
   it('should fill defaults', async () => {
     const config = await cli({});
     expect(config).toBeDefined();
-    // expect(config.persist.outputDir).toBe('.code-pushup');
-    // expect(config.persist.filename).toBe('report');
+    // only _ and $0
+    expect(Object.keys(config).length).toBe(2);
   });
 });
