@@ -16,4 +16,14 @@ describe('categoryConfigSchema', () => {
       'the following audit or group refs are duplicates',
     );
   });
+
+  it('should throw if only refs with weight 0 are included', () => {
+    const categoryCfg = categoryConfig();
+    const ref = { ...categoryCfg.refs[0], weight: 0 };
+    categoryCfg.refs = [ref];
+
+    expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(
+      `In a category there has to be at least one ref with weight > 0`,
+    );
+  });
 });

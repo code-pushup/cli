@@ -39,6 +39,20 @@ describe('calculateScore', () => {
       ),
     ).toBeCloseTo(0.92);
   });
+
+  it('throws for empty refs (weight 0 is ignored internally)', () => {
+    expect(() =>
+      calculateScore([{ slug: 'uses-long-cache-ttl', weight: 0 }], scoreFn),
+    ).toThrow(
+      '0 division for score. This can be caused by refs only weighted with 0 or empty refs',
+    );
+  });
+
+  it('works for 0 scores', () => {
+    expect(
+      calculateScore([{ slug: 'uses-long-cache-ttl', weight: 1 }], scoreFn),
+    ).toBe(0);
+  });
 });
 
 describe('scoreReport', () => {
