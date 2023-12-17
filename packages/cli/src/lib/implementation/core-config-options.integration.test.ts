@@ -15,6 +15,6 @@ describe('configOptions', () => {
     const config = await cli({});
     expect(config).toBeDefined();
     // only _ and $0
-    expect(Object.keys(config).length).toBe(2);
+    expect(Object.keys(config)).toHaveLength(2);
   });
 });

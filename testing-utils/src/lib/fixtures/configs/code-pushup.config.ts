@@ -1,7 +1,7 @@
 import { type CoreConfig } from '@code-pushup/models';
 
 export default {
-  // @TODO remove ad we have defaults
+  // @TODO remove as we have defaults
   persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
