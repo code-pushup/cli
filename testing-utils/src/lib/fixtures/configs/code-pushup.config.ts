@@ -1,14 +1,24 @@
-import { join } from 'node:path';
-
 const config = {
-  persist: { outputDir: join('tmp', 'ts') },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',
     apiKey: 'e2e-api-key',
     server: 'https://e2e.com/api',
   },
-  categories: [],
+  categories: [
+    {
+      slug: 'category-1',
+      title: 'Category 1',
+      refs: [
+        {
+          type: 'audit',
+          plugin: 'node',
+          slug: 'node-version',
+          weight: 1,
+        },
+      ],
+    },
+  ],
   plugins: [
     {
       audits: [

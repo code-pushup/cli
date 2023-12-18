@@ -1,7 +1,5 @@
-import { join } from 'node:path';
-
 const config = {
-  persist: { outputDir: join('tmp', 'ts') },
+  persist: { outputDir: 'tmp' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',

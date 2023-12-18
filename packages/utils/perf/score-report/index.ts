@@ -1,10 +1,10 @@
 import * as Benchmark from 'benchmark';
 import { Report } from '@code-pushup/models';
-import { scoreReport } from './implementations/base';
-import { scoreReportOptimized0 } from './implementations/optimized0';
-import { scoreReportOptimized1 } from './implementations/optimized1';
-import { scoreReportOptimized2 } from './implementations/optimized2';
-import { scoreReportOptimized3 } from './implementations/optimized3';
+import { scoreReport } from '../../src/lib/scoring';
+import { scoreReportOptimized0 } from './optimized0';
+import { scoreReportOptimized1 } from './optimized1';
+import { scoreReportOptimized2 } from './optimized2';
+import { scoreReportOptimized3 } from './optimized3';
 
 interface MinimalReportOptions {
   numAuditsP1?: number;
@@ -66,7 +66,7 @@ const listeners = {
 // ==================
 
 // Add tests
-suite.add('scoreReport', _scoreReport);
+suite.add('scoreReport', scoreReport);
 suite.add('scoreReportOptimized0', _scoreReportOptimized0);
 suite.add('scoreReportOptimized1', _scoreReportOptimized1);
 suite.add('scoreReportOptimized2', _scoreReportOptimized2);
@@ -97,17 +97,15 @@ console.info(' ');
 
 const start = performance.now();
 
-suite.run();
-
-console.info(
-  `Total Duration: ${((performance.now() - start) / 1000).toFixed(2)} sec`,
-);
+suite.run({
+  onComplete: () => {
+    console.info(
+      `Total Duration: ${((performance.now() - start) / 1000).toFixed(2)} sec`,
+    );
+  },
+});
 
 // ==============================================================
-
-function _scoreReport() {
-  scoreReport(minimalReport());
-}
 
 function _scoreReportOptimized0() {
   scoreReportOptimized0(minimalReport());

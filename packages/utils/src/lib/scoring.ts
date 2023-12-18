@@ -43,6 +43,16 @@ export function calculateScore<T extends { weight: number }>(
     },
     { numerator: 0, denominator: 0 },
   );
+  // No division by 0, otherwise we produce NaN
+  // This can be caused by:
+  // - empty category refs
+  // - categories with refs only containing weight of `0`
+  // both should get caught when validating the model
+  if (!numerator && !denominator) {
+    throw new Error(
+      '0 division for score. This can be caused by refs only weighted with 0 or empty refs',
+    );
+  }
   return numerator / denominator;
 }
 

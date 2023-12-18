@@ -2,6 +2,26 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.5.1](https://github.com/code-pushup/cli/compare/v0.5.0...v0.5.1) (2023-12-18)
+
+# [0.5.0](https://github.com/code-pushup/cli/compare/v0.4.5...v0.5.0) (2023-12-17)
+
+### Features
+
+- **examples-plugins:** add package-json plugin 📦 ([#354](https://github.com/code-pushup/cli/issues/354)) ([e2f2abe](https://github.com/code-pushup/cli/commit/e2f2abe1cbf523359d76f6b27e8e2715977546a2))
+
+## [0.4.5](https://github.com/code-pushup/cli/compare/v0.4.4...v0.4.5) (2023-12-15)
+
+## [0.4.4](https://github.com/code-pushup/cli/compare/v0.4.3...v0.4.4) (2023-12-15)
+
+## [0.4.3](https://github.com/code-pushup/cli/compare/v0.4.2...v0.4.3) (2023-12-14)
+
+## [0.4.2](https://github.com/code-pushup/cli/compare/v0.4.1...v0.4.2) (2023-12-12)
+
+### Performance Improvements
+
+- **utils:** setup microbenchmark for crawlFileSystem ([#355](https://github.com/code-pushup/cli/issues/355)) ([33d6e25](https://github.com/code-pushup/cli/commit/33d6e25c92161c305bf12334ee9e490b927ef71d))
+
 ## [0.4.1](https://github.com/code-pushup/cli/compare/v0.4.0...v0.4.1) (2023-12-12)
 
 # [0.4.0](https://github.com/code-pushup/cli/compare/v0.3.2...v0.4.0) (2023-12-11)

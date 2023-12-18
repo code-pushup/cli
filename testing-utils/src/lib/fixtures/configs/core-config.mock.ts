@@ -1,3 +1,5 @@
+import { type CoreConfig } from '@code-pushup/models';
+
 export const CORE_CONFIG_MOCK = {
   persist: { outputDir: 'test' },
   upload: {

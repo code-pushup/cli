@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { CoreConfig, Report } from '@code-pushup/models';
+import { PersistConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
   getLatestCommit,
@@ -25,12 +25,9 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
-  config: CoreConfig,
+  options: Required<PersistConfig>,
 ): Promise<MultipleFileResults> {
-  const { persist } = config;
-  const outputDir = persist.outputDir;
-  const filename = persist.filename;
-  const format = persist.format ?? [];
+  const { outputDir, filename, format } = options;
 
   let scoredReport;
 

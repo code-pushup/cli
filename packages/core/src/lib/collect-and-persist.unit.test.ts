@@ -1,12 +1,21 @@
 import { describe } from 'vitest';
-import { Report } from '@code-pushup/models';
+import {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+  Report,
+} from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
 } from '@code-pushup/testing-utils';
-import { collectAndPersistReports } from './collect-and-persist';
+import {
+  CollectAndPersistReportsOptions,
+  collectAndPersistReports,
+} from './collect-and-persist';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
+import { normalizePersistConfig } from './normalize';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
@@ -25,6 +34,26 @@ vi.mock('./implementation/persist', () => ({
 }));
 
 describe('collectAndPersistReports', () => {
+  it('should normalize options internally (default values)', async () => {
+    const partialConfig: CollectAndPersistReportsOptions = {
+      plugins: MINIMAL_CONFIG_MOCK.plugins,
+      categories: MINIMAL_CONFIG_MOCK.categories,
+      verbose: false,
+      progress: false,
+    };
+    await collectAndPersistReports(partialConfig);
+
+    expect(collect).toHaveBeenCalledWith(partialConfig);
+
+    expect(persistReport).toHaveBeenCalledWith(expect.any(Object), {
+      filename: PERSIST_FILENAME,
+      format: PERSIST_FORMAT,
+      outputDir: PERSIST_OUTPUT_DIR,
+    });
+
+    expect(logPersistedResults).not.toHaveBeenCalled();
+  });
+
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
     const nonVerboseConfig = {
       ...MINIMAL_CONFIG_MOCK,
@@ -44,7 +73,7 @@ describe('collectAndPersistReports', () => {
         categories: [],
         plugins: [],
       },
-      nonVerboseConfig,
+      normalizePersistConfig(nonVerboseConfig.persist),
     );
 
     expect(logPersistedResults).not.toHaveBeenCalled();
@@ -69,7 +98,7 @@ describe('collectAndPersistReports', () => {
         categories: [],
         plugins: [],
       } as Report,
-      verboseConfig,
+      normalizePersistConfig(verboseConfig.persist),
     );
 
     expect(logPersistedResults).toHaveBeenCalled();

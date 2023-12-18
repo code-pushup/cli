@@ -1,4 +1,9 @@
 import { expect } from 'vitest';
+import {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+} from '@code-pushup/models';
 import { executeProcess } from '@code-pushup/utils';
 import { configFile, extensions } from '../mocks/utils';
 
@@ -13,9 +18,6 @@ describe('print-config', () => {
           '--verbose',
           '--no-progress',
           `--config=${configFile(ext)}`,
-          '--persist.outputDir=my-dir',
-          '--persist.format=md',
-          '--persist.filename=my-report',
         ],
       });
 
@@ -24,16 +26,17 @@ describe('print-config', () => {
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
+          // filled by command options
+          persist: {
+            outputDir: PERSIST_OUTPUT_DIR,
+            filename: PERSIST_FILENAME,
+            format: PERSIST_FORMAT,
+          },
           upload: {
             organization: 'code-pushup',
             project: `cli-${ext}`,
             apiKey: 'e2e-api-key',
             server: 'https://e2e.com/api',
-          },
-          persist: {
-            outputDir: 'my-dir',
-            format: ['md'],
-            filename: 'my-report',
           },
           plugins: expect.arrayContaining([
             expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
@@ -50,4 +53,32 @@ describe('print-config', () => {
     },
     120000,
   );
+
+  it('should load .ts config file and overwrite it with CLI arguments', async ext => {
+    const { code, stderr, stdout } = await executeProcess({
+      command: 'code-pushup',
+      args: [
+        'print-config',
+        '--verbose',
+        '--no-progress',
+        `--config=${configFile('ts')}`,
+        '--persist.outputDir=my-dir',
+        '--persist.format=md',
+        '--persist.filename=my-report',
+      ],
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+    expect(JSON.parse(stdout)).toEqual(
+      expect.objectContaining({
+        config: expect.stringContaining(`code-pushup.config.ts`),
+        persist: {
+          outputDir: 'my-dir',
+          format: ['md'],
+          filename: 'my-report',
+        },
+      }),
+    );
+  }, 120000);
 });

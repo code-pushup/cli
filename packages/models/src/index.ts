@@ -15,14 +15,28 @@ export {
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
-export { materialIconSchema } from './lib/implementation/schemas';
+export {
+  PERSIST_FILENAME,
+  PERSIST_OUTPUT_DIR,
+  PERSIST_FORMAT,
+} from './lib/implementation/constants';
+export {
+  materialIconSchema,
+  filePathSchema,
+  fileNameSchema,
+  urlSchema,
+} from './lib/implementation/schemas';
 export {
   Format,
   PersistConfig,
   formatSchema,
   persistConfigSchema,
 } from './lib/persist-config';
-export { PluginConfig, pluginConfigSchema } from './lib/plugin-config';
+export {
+  PluginConfig,
+  pluginConfigSchema,
+  PluginMeta,
+} from './lib/plugin-config';
 export {
   Audit,
   auditSchema,
