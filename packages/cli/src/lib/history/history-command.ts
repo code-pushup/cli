@@ -48,7 +48,7 @@ export function yargsHistoryCommandObject() {
         name: 'sdf',
         message: 'msg',
         choices: ['a', 'b']
-      };
+      });
 
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
