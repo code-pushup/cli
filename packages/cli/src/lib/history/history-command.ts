@@ -67,7 +67,7 @@ export function yargsHistoryCommandObject() {
 
       const reports: unknown[] = await history(
         args as unknown as HistoryOptions,
-        commitsToAudit.slice(-3),
+        commitsToAudit.slice(-1),
       );
       // eslint-disable-next-line no-console
       console.log('Reports:', reports.length);

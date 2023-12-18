@@ -34,6 +34,11 @@ const config = (() => ({
       title: 'Performance',
       refs: [...fileSizeRecommendedRefs],
     },
+    {
+      slug: 'new category',
+      title: 'Performance',
+      refs: [...fileSizeRecommendedRefs],
+    },
   ],
 }))();
 
