@@ -1,4 +1,6 @@
-const config = {
+import { type CoreConfig } from '@code-pushup/models';
+
+export default {
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',
@@ -40,6 +42,4 @@ const config = {
       icon: 'javascript',
     },
   ],
-};
-
-export default config;
+} satisfies CoreConfig;
