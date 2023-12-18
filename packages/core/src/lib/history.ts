@@ -43,9 +43,9 @@ export async function history(
     if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
-     // progressBar?.updateTitle(`Upload ${commit}`);
+      // progressBar?.updateTitle(`Upload ${commit}`);
       //await uploadCommandLogic(currentConfig as unknown as UploadOptions);
-     // result['uploadDate'] = new Date().toISOString();
+      // result['uploadDate'] = new Date().toISOString();
     }
     /**/
     reports.push({
