@@ -54,7 +54,6 @@ export function yargsHistoryCommandObject() {
       if (!options.upload) {
         throw new Error('Upload configuration not set');
       }
-      await upload(options);
 
       // load upload configuration from environment
       const initialBranch: string = await getCurrentBranchOrTag();
