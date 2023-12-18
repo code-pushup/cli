@@ -13,6 +13,7 @@ import inquirer from "inquirer";
 export type HistoryCommandOptions = {
   targetBranch: string;
   gitRestore: string;
+  numSteps: number;
 };
 
 export function yargsHistoryCommandObject() {
