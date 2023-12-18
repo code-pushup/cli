@@ -30,7 +30,6 @@ export async function history(
 
     const currentConfig = {
       ...config,
-      upload: {},
       persist: {
         ...config.persist,
         format: [],
