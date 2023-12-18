@@ -15,6 +15,6 @@ describe('globalOptions', () => {
     const config = await cli({});
     expect(config.verbose).toBe(false);
     expect(config.progress).toBe(true);
-    expect(config.config).toBe('code-pushup.config.js');
+    expect(config.config).toBeUndefined();
   });
 });
