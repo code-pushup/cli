@@ -84,7 +84,7 @@ describe('print-config', () => {
     [
       {},
       {
-        format: [],
+        format: PERSIST_FORMAT,
         filename: 'report',
       },
     ],
