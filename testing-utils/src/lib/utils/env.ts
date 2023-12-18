@@ -21,9 +21,9 @@ export function uploadConfigFromEnv(): UploadConfig {
 
 export function envToUploadConfig(env?: Env): UploadConfig {
   return {
-    server: env?.CP_SERVER,
-    apiKey: env?.CP_API_KEY,
-    organization: env?.CP_ORGANIZATION,
-    project: env?.CP_PROJECT,
+    server: env?.CP_SERVER || '',
+    apiKey: env?.CP_API_KEY || '',
+    organization: env?.CP_ORGANIZATION || '',
+    project: env?.CP_PROJECT || '',
   };
 }
