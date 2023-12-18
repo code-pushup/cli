@@ -42,7 +42,7 @@ export async function history(
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
       progressBar?.updateTitle(`Upload ${commit}`);
-      await uploadCommandLogic(config as unknown as UploadOptions);
+      await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       result['uploadDate'] = new Date().toISOString();
     }
     /**/
