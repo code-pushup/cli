@@ -18,8 +18,10 @@ export async function upload(
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
   const persist = normalizePersistConfig(options?.persist);
-  const upload = options?.upload || {};
-  const { apiKey, server, organization, project } = upload;
+  if (!options?.upload) {
+    throw new Error('upload config must be set');
+  }
+  const { apiKey, server, organization, project } = options.upload;
   const report: Report = await loadReport({
     ...persist,
     format: 'json',
