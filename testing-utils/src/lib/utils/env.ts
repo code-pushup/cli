@@ -12,7 +12,12 @@ export type Env = z.infer<typeof envSchema>;
 export function uploadConfigFromEnv(): UploadConfig {
  // throw new Error(JSON.stringify(process.env));
   const env = envSchema.parse(process.env as Env);
-  throw new Error(JSON.stringify(env));
+  throw new Error(JSON.stringify({
+    server: env.CP_SERVER,
+    apiKey: env.CP_API_KEY,
+    organization: env.CP_ORGANIZATION,
+    project: env.CP_PROJECT,
+  }));
 
   return {
     server: env.CP_SERVER,
