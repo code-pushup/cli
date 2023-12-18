@@ -3,7 +3,8 @@ import {CoreConfig} from '@code-pushup/models';
 import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
 import {collectAndPersistReports} from './collect-and-persist';
 import {GlobalOptions} from './types';
-import {upload as uploadCommandLogic, UploadOptions} from "./upload";
+// import {upload as uploadCommandLogic} from "./upload";
+import {UploadOptions} from "./upload";
 
 export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
 
@@ -42,7 +43,7 @@ export async function history(
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
       progressBar?.updateTitle(`Upload ${commit}`);
-      await uploadCommandLogic(currentConfig as unknown as UploadOptions);
+      //await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       result['uploadDate'] = new Date().toISOString();
     }
     /**/

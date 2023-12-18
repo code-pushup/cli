@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {CommandModule} from 'yargs';
-import {HistoryOptions, history} from '@code-pushup/core';
+import {HistoryOptions, history, UploadOptions, upload} from '@code-pushup/core';
 import {
   getCurrentBranchOrTag,
   git,
@@ -31,6 +31,11 @@ export function yargsHistoryCommandObject() {
         type: 'string',
         default: '.', // @TODO remove after debugging
       },
+      numSteps: {
+        describe: 'Number of steps in history',
+        type: 'number',
+        default: 1,
+      },
     },
     handler: async args => {
       // eslint-disable-next-line no-console
@@ -38,8 +43,14 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}...`));
       // await guardAgainstDirtyRepo();
-      const {targetBranch, gitRestore, ...config} =
+      const {targetBranch, gitRestore, numSteps, ...config} =
         args as unknown as HistoryCommandOptions;
+
+      const options = args as unknown as UploadOptions;
+      if (!options.upload) {
+        throw new Error('Upload configuration not set');
+      }
+      await upload(options);
 
       // load upload configuration from environment
       const initialBranch: string = await getCurrentBranchOrTag();
@@ -66,8 +77,8 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
 
       const reports: unknown[] = await history(
-        args as unknown as HistoryOptions,
-        commitsToAudit.slice(-1),
+        config as unknown as HistoryOptions,
+        commitsToAudit.slice(-numSteps),
       );
       // eslint-disable-next-line no-console
       console.log('Reports:', reports.length);
