@@ -10,7 +10,7 @@ export const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 export function uploadConfigFromEnv(): UploadConfig {
-  const env = envSchema.parse(envToUploadConfig);
+  const env = envSchema.parse(envToUploadConfig(process.env as Env));
   return {
     server: env.CP_SERVER,
     apiKey: env.CP_API_KEY,
@@ -19,11 +19,11 @@ export function uploadConfigFromEnv(): UploadConfig {
   };
 }
 
-export function envToUploadConfig(env: Env): UploadConfig {
+export function envToUploadConfig(env?: Env): UploadConfig {
   return {
-    server: env.CP_SERVER,
-    apiKey: env.CP_API_KEY,
-    organization: env.CP_ORGANIZATION,
-    project: env.CP_PROJECT,
+    server: env?.CP_SERVER,
+    apiKey: env?.CP_API_KEY,
+    organization: env?.CP_ORGANIZATION,
+    project: env?.CP_PROJECT,
   };
 }
