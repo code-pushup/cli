@@ -1,10 +1,8 @@
-import { join } from 'path';
 // TODO: import plugins using NPM package names using local registry: https://github.com/flowup/quality-metrics-cli/issues/33
 import eslintPlugin from '../../../dist/packages/plugin-eslint';
 import lighthousePlugin from '../../../dist/packages/plugin-lighthouse';
 
 export default {
-  persist: { outputDir: join('tmp', 'mjs') },
   upload: {
     organization: 'code-pushup',
     project: 'cli-mjs',
@@ -20,10 +18,10 @@ export default {
           plugin: 'lighthouse',
           type: 'audit',
           slug: 'largest-contentful-paint',
-          weight: 1
-        }
-      ]
-    }
+          weight: 1,
+        },
+      ],
+    },
   ],
   plugins: [
     await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),

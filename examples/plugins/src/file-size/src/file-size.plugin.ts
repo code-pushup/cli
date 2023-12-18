@@ -137,7 +137,7 @@ export function fileSizeIssues(options: {
     directory,
     pattern,
     fileTransform: async (file: string) => {
-      // get file size of file
+      // get size of file
       // const filePath = join(directory, file);
       const stats = await stat(file);
 
