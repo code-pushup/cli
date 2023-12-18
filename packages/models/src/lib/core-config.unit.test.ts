@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { config } from '../../test';
+import { CategoryConfig, CategoryRef } from './category-config';
 import { coreConfigSchema } from './core-config';
 
 /*
@@ -44,8 +45,11 @@ describe('CoreConfig', () => {
 
   it('should throw if ref in a category does not exist in groups', () => {
     const coreConfig = config();
-    const categoryConfig = coreConfig.categories[0];
-    const ref = { ...categoryConfig.refs[0], slug: 'missing-slug' };
+    const categoryConfig = coreConfig.categories[0] as CategoryConfig;
+    const ref = {
+      ...categoryConfig.refs[0],
+      slug: 'missing-slug',
+    } as CategoryRef;
     coreConfig.categories[1].refs.push(ref);
 
     expect(() => coreConfigSchema.parse(coreConfig)).toThrow(

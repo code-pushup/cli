@@ -1,11 +1,13 @@
 import { uploadToPortal } from '@code-pushup/portal-client';
-import { CoreConfig, Report } from '@code-pushup/models';
+import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonToGql } from './implementation/json-to-gql';
+import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
-export type UploadOptions = Required<Pick<CoreConfig, 'upload' | 'persist'>> &
-  GlobalOptions;
+export type UploadOptions = { upload: Required<UploadConfig> } & {
+  persist: Required<PersistConfig>;
+} & GlobalOptions;
 
 /**
  * Uploads collected audits to the portal
@@ -15,18 +17,16 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
-  if (options?.upload === undefined) {
-    throw new Error('upload config needs to be set');
+  const persist = normalizePersistConfig(options?.persist);
+  if (!options?.upload) {
+    throw new Error('upload config must be set');
   }
   const { apiKey, server, organization, project } = options.upload;
-  const { outputDir, filename } = options.persist;
   const report: Report = await loadReport({
-    outputDir,
-    filename,
+    ...persist,
     format: 'json',
   });
   const commitData = await getLatestCommit();
-
   if (!commitData) {
     throw new Error('no commit data available');
   }

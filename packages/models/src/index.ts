@@ -16,10 +16,20 @@ export {
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
 export {
+  PERSIST_FILENAME,
+  PERSIST_OUTPUT_DIR,
+  PERSIST_FORMAT,
+} from './lib/implementation/constants';
+export {
   CONFIG_FILE_NAME,
   SUPPORTED_CONFIG_FILE_FORMATS,
 } from './lib/implementation/configuration';
-export { materialIconSchema } from './lib/implementation/schemas';
+export {
+  materialIconSchema,
+  filePathSchema,
+  fileNameSchema,
+  urlSchema,
+} from './lib/implementation/schemas';
 export {
   Format,
   PersistConfig,
