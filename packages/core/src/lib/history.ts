@@ -41,7 +41,8 @@ export async function history(
     } else {
       progressBar?.updateTitle(`Upload ${commit}`);
       await uploadCommandLogic(config as unknown as UploadOptions);
-      result['upload'] = new Date().toISOString();
+      console.log('upload');
+      result['uploadDate'] = new Date().toISOString();
     }
     /**/
     reports.push({
