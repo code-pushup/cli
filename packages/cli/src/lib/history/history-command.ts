@@ -12,6 +12,7 @@ import {
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../cli';
+import {multiselect} from "./prompts";
 
 export type HistoryCommandOptions = {
   targetBranch: string;
@@ -42,6 +43,13 @@ export function yargsHistoryCommandObject() {
       },
     },
     handler: async args => {
+
+      await multiselect({
+        name: 'sdf',
+        message: 'msg',
+        choices: ['a', 'b']
+      };
+
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
       // eslint-disable-next-line no-console
