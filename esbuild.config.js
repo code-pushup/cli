@@ -43,6 +43,12 @@ esbuild.build({
                 );
 
                 packageJson.license = rootPackageJson.license;
+                packageJson.homepage = rootPackageJson.homepage;
+                packageJson.bugs = rootPackageJson.bugs;
+                packageJson.repository = {
+                  ...rootPackageJson.repository,
+                  directory: projectPath,
+                };
                 packageJson.type = 'module';
                 packageJson.main = './index.js';
                 packageJson.types = './src/index.d.ts';

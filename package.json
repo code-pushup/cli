@@ -2,6 +2,14 @@
   "name": "@code-pushup/cli-source",
   "version": "0.5.4",
   "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-pushup/cli.git"
+  },
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz"
