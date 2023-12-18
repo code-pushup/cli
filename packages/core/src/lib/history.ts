@@ -30,6 +30,7 @@ export async function history(
 
     const currentConfig = {
       ...config,
+      upload: {},
       persist: {
         ...config.persist,
         format: [],
@@ -39,7 +40,7 @@ export async function history(
     await collectAndPersistReports(currentConfig);
 
     const {upload} = currentConfig as unknown as UploadOptions;
-    if (true) {
+    if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
       progressBar?.updateTitle(`Upload ${commit}`);
