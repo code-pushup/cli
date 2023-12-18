@@ -17,20 +17,21 @@ export const auditGroupRefSchema = weightedRefSchema(
 );
 export type AuditGroupRef = z.infer<typeof auditGroupRefSchema>;
 
+export const auditGroupMetaSchema = metaSchema({
+  titleDescription: 'Descriptive name for the group',
+  descriptionDescription: 'Description of the group (markdown)',
+  docsUrlDescription: 'Group documentation site',
+  description: 'Group metadata',
+});
+export type AuditGroupMeta = z.infer<typeof auditGroupMetaSchema>;
+
 export const auditGroupSchema = scorableSchema(
   'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
     'E.g. the group slug "performance" groups audits and can be referenced in a category',
   auditGroupRefSchema,
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
-).merge(
-  metaSchema({
-    titleDescription: 'Descriptive name for the group',
-    descriptionDescription: 'Description of the group (markdown)',
-    docsUrlDescription: 'Group documentation site',
-    description: 'Group metadata',
-  }),
-);
+).merge(auditGroupMetaSchema);
 export type AuditGroup = z.infer<typeof auditGroupSchema>;
 
 export const auditGroupsSchema = z
