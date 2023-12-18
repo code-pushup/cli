@@ -7,7 +7,7 @@ import {
   getLatestCommit,
   logMultipleFileResults,
   reportToMd,
-  reportToStdout,
+//  reportToStdout,
   scoreReport,
 } from '@code-pushup/utils';
 
