@@ -1,8 +1,6 @@
-import { join } from 'node:path';
 import { type CoreConfig } from '@code-pushup/models';
 
 export default {
-  persist: { outputDir: join('tmp', 'ts'), filename: 'output.json' },
   upload: {
     organization: 'code-pushup',
     project: 'cli-ts',
