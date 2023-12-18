@@ -7,8 +7,6 @@ import {
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
 import {CLI_NAME} from '../cli';
-import {multiselect} from './prompts';
-import inquirer from "inquirer";
 
 export type HistoryCommandOptions = {
   targetBranch: string;
@@ -30,7 +28,7 @@ export function yargsHistoryCommandObject() {
       gitRestore: {
         describe: 'Folder to restore using "git restore [folder]"',
         type: 'string',
-        default: '.', // @TODO remove after debugging
+        // default: '.', // @TODO remove after debugging
       },
       numSteps: {
         describe: 'Number of steps in history',
