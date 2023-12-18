@@ -49,7 +49,7 @@ export async function history(
     }
     /**/
     reports.push({
-      [join(config.persist.filename)]: result,
+      [join(currentConfig.persist.filename)]: result,
     });
   }
 
