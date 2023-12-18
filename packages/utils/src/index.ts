@@ -32,7 +32,14 @@ export {
   truncateText,
   truncateTitle,
 } from './lib/formatting';
-export { getLatestCommit, git } from './lib/git';
+export {
+  git,
+  getLatestCommit,
+  getCurrentBranchOrTag,
+  branchHasChanges,
+  guardAgainstDirtyRepo,
+  GitTag,
+} from './lib/git';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
@@ -44,6 +51,7 @@ export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
+  getStartDuration,
   calcDuration,
   compareIssueSeverity,
   loadReport,

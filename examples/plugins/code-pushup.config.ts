@@ -1,3 +1,4 @@
+import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
@@ -23,6 +24,7 @@ const config = (() => ({
   persist: {
     outputDir,
   },
+  upload: uploadConfigFromEnv(),
   plugins: [
     fileSizePlugin({
       directory: './dist/packages',
@@ -54,6 +56,11 @@ const config = (() => ({
       slug: 'documentation',
       title: 'Documentation',
       refs: [packageJsonDocumentationGroupRef],
+    },
+    {
+      slug: 'new-category',
+      title: 'Performance',
+      refs: [...fileSizeRecommendedRefs],
     },
   ],
 }))();

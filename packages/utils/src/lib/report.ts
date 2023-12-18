@@ -93,6 +93,9 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
+export function getStartDuration(): number {
+  return performance.now();
+}
 export function calcDuration(start: number, stop?: number): number {
   stop = stop !== undefined ? stop : performance.now();
   return Math.floor(stop - start);
