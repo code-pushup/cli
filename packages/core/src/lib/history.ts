@@ -11,7 +11,7 @@ export async function history(
   commits: string[],
 ): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
-  const progress = getProgressBar('History');
+  const progressBar = config?.progress ? getProgressBar('history') : null;
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
@@ -20,11 +20,11 @@ export async function history(
       commit,
       start,
     };
-    progress.incrementInSteps(commits.length);
+    progressBar?.incrementInSteps(commits.length);
 
     await git.checkout(commit);
 
-    progress.updateTitle(`Collect ${commit}`);
+    progressBar?.updateTitle(`Collect ${commit}`);
     await collectAndPersistReports({
       ...config,
       persist: {
