@@ -6,8 +6,10 @@ export type Format = z.infer<typeof formatSchema>;
 
 export const persistConfigSchema = z.object({
   outputDir: filePathSchema('Artifacts folder').optional(),
-  filename: fileNameSchema('Artifacts file name (without extension)'),
-  format: z.array(formatSchema).default(['json']).optional(), // @TODO remove default or optional value and otherwise it will not set defaults.
+  filename: fileNameSchema(
+    'Artifacts file name (without extension)',
+  ).optional(),
+  format: z.array(formatSchema).optional(),
 });
 
 export type PersistConfig = z.infer<typeof persistConfigSchema>;

@@ -46,7 +46,6 @@ export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
 };
 
 export const MINIMAL_CONFIG_MOCK = {
-  persist: { outputDir: '/test' },
   upload: {
     organization: 'code-pushup',
     project: 'cli',

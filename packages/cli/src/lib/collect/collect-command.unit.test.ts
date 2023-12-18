@@ -42,7 +42,7 @@ describe('collect-command', () => {
         config: '/test/code-pushup.config.ts',
         persist: expect.objectContaining({
           filename: 'report',
-          outputDir: '.code-pushup',
+          outputDir: 'test',
           format: ['json'],
         }),
       }),

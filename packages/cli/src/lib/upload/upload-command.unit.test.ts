@@ -15,7 +15,7 @@ describe('upload-command-object', () => {
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
+        'code-pushup.config.ts': '{}', // only needs to exist for stat inside readCodePushupConfig
       },
       '/test',
     );
