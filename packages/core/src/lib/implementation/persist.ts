@@ -28,6 +28,7 @@ export async function persistReport(
   config: CoreConfig,
 ): Promise<MultipleFileResults> {
   const { persist } = config;
+  console.log('persist: ', persist);
   const outputDir = persist.outputDir;
   const filename = persist.filename;
   const format = persist.format ?? [];
