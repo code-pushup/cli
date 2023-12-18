@@ -1,10 +1,10 @@
-import {join} from 'node:path';
-import {CoreConfig} from '@code-pushup/models';
-import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
-import {collectAndPersistReports} from './collect-and-persist';
-import {GlobalOptions} from './types';
+import { join } from 'node:path';
+import { CoreConfig } from '@code-pushup/models';
+import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
+import { collectAndPersistReports } from './collect-and-persist';
+import { GlobalOptions } from './types';
 // import {upload as uploadCommandLogic} from "./upload";
-import {UploadOptions} from "./upload";
+import { UploadOptions } from './upload';
 
 export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
 
@@ -35,11 +35,11 @@ export async function history(
         ...config.persist,
         format: [],
         filename: `${commit}-report`,
-      }
+      },
     };
     await collectAndPersistReports(currentConfig);
 
-    const {upload} = currentConfig as unknown as UploadOptions;
+    const { upload } = currentConfig as unknown as UploadOptions;
     if (upload) {
       console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     } else {
