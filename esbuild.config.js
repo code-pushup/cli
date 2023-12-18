@@ -49,6 +49,7 @@ esbuild.build({
                   ...rootPackageJson.repository,
                   directory: projectPath,
                 };
+                packageJson.contributors = rootPackageJson.contributors;
                 packageJson.type = 'module';
                 packageJson.main = './index.js';
                 packageJson.types = './src/index.d.ts';
