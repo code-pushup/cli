@@ -1,6 +1,5 @@
 import type {
   AuditOutput,
-  CoreConfig,
   PluginConfig,
   RunnerConfig,
   RunnerFunction,
@@ -46,8 +45,7 @@ export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
   runner: MINIMAL_RUNNER_FUNCTION_MOCK,
 };
 
-export const MINIMAL_CONFIG_MOCK: CoreConfig = {
-  persist: { outputDir: '/test' },
+export const MINIMAL_CONFIG_MOCK = {
   upload: {
     organization: 'code-pushup',
     project: 'cli',

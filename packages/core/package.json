@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.5.1",
+  "version": "0.5.3",
   "dependencies": {
     "@code-pushup/models": "*",
     "@code-pushup/utils": "*",

@@ -36,11 +36,11 @@ describe('persistReport', () => {
     );
   });
 
-  it('should create a report in json format by default', async () => {
+  it('should create a report in json format', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
-      format: [],
+      format: ['json'],
     });
 
     const jsonReport: Report = JSON.parse(
@@ -54,6 +54,21 @@ describe('persistReport', () => {
     );
 
     expect(() => readFileSync(join(MEMFS_VOLUME, 'report.md'))).toThrow(
+      'no such file or directory',
+    );
+  });
+
+  it('should create a report in md format', async () => {
+    await persistReport(MINIMAL_REPORT_MOCK, {
+      outputDir: MEMFS_VOLUME,
+      filename: 'report',
+      format: ['md'],
+    });
+
+    const mdReport = readFileSync(join(MEMFS_VOLUME, 'report.md')).toString();
+    expect(mdReport).toContain('Code PushUp Report');
+
+    expect(() => readFileSync(join(MEMFS_VOLUME, 'report.json'))).toThrow(
       'no such file or directory',
     );
   });

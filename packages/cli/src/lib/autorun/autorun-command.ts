@@ -23,7 +23,19 @@ export function yargsAutorunCommandObject() {
       console.info(chalk.bold(CLI_NAME));
       console.info(chalk.gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
-      await collectAndPersistReports(options);
+
+      // we need to ensure `json` is part of the formats as we want to upload
+      const optionsWithFormat: AutorunOptions = {
+        ...options,
+        persist: {
+          ...options.persist,
+          format: [
+            ...new Set([...options.persist.format, 'json']),
+          ] as AutorunOptions['persist']['format'],
+        },
+      };
+
+      await collectAndPersistReports(optionsWithFormat);
       if (!options.upload) {
         console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
       } else {
