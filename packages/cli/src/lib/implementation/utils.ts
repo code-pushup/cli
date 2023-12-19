@@ -1,3 +1,5 @@
+import { toArray } from '@code-pushup/utils';
+
 // log error and flush stdout so that Yargs doesn't suppress it
 // related issue: https://github.com/yargs/yargs/issues/2118
 export function logErrorBeforeThrow<
@@ -14,4 +16,10 @@ export function logErrorBeforeThrow<
       throw err;
     }
   }) as T;
+}
+
+export function coerceArray<T extends string>(param: T | T[] = []): T[] {
+  return [
+    ...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]) || []),
+  ];
 }

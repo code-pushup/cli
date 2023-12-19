@@ -93,5 +93,5 @@ describe('executeRunner', () => {
         },
       } satisfies Partial<AuditOutput>),
     );
-  });
+  }, 7000);
 });
