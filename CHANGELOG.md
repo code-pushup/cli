@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.5.4](https://github.com/code-pushup/cli/compare/v0.5.3...v0.5.4) (2023-12-19)
+
+### Bug Fixes
+
+- **cli:** adjust persist.format options ([#363](https://github.com/code-pushup/cli/issues/363)) ([b5b3bc6](https://github.com/code-pushup/cli/commit/b5b3bc69151091c6e75d7b64a19e4f559ad50ee1))
+
 ## [0.5.3](https://github.com/code-pushup/cli/compare/v0.5.2...v0.5.3) (2023-12-19)
 
 ### Bug Fixes
