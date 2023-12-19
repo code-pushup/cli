@@ -17,6 +17,7 @@ describe('onlyPlugin option', () => {
     const args = await argsFromCli({});
     expect(args).toBeDefined();
     // "_" and "$0" are in by default
+    // camelCase and kebab-case of each option value
     expect(Object.keys(args)).toHaveLength(4);
   });
 
