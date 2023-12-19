@@ -45,7 +45,6 @@ export function yargsHistoryCommandObject() {
     handler: async args => {
 
       await multiselect({
-        name: 'sdf',
         message: 'msg',
         choices: ['a', 'b']
       });

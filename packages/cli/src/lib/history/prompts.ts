@@ -1,18 +1,24 @@
-import inquirer from 'inquirer';
+import {select, Separator} from '@inquirer/prompts';
 
-export async function multiselect<T extends string>(options: {
-  name: string;
+type Choice<T> = {
+  value: T;
+  name?: string;
+  description?: string;
+  disabled?: boolean | string;
+  type?: never;
+}
+
+export async function multiselect<T>(options: {
   message: string;
   choices: T[];
 }): Promise<T[]> {
-  const { name, message = 'Pick a choice:', choices } = options;
-  const answer = (await inquirer.prompt([
+  const { message = 'Choices:', choices } = options;
+  const answer = await select<T[]>(
     {
-      name,
-      type: 'list',
       message,
-      choices,
-    },
-  ])) as T[];
-  return answer || [];
+      choices: choices.map((value) => ({
+        value
+      } satisfies Choice<T>)) as unknown as readonly Separator[],
+    });
+  return answer;
 }
