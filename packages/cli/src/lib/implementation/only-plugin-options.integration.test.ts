@@ -27,7 +27,7 @@ describe('onlyPlugin option', () => {
     [{ onlyPlugins: ['lighthouse', 'eslint'] }, ['lighthouse', 'eslint']],
     [{ onlyPlugins: 'lighthouse,eslint' }, ['lighthouse', 'eslint']],
   ])(
-    'should parse onlyPlugins options %s correctly as %j correctly',
+    'should parse onlyPlugins options %j correctly as %j correctly',
     async (options, result) => {
       const parsedArgs = await argsFromCli(options);
       expect(parsedArgs?.onlyPlugins).toEqual(result);
