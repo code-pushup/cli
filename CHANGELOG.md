@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.5.3](https://github.com/code-pushup/cli/compare/v0.5.2...v0.5.3) (2023-12-19)
+
+### Bug Fixes
+
+- **cli:** fix json format handling ([#360](https://github.com/code-pushup/cli/issues/360)) ([bc9f101](https://github.com/code-pushup/cli/commit/bc9f10198d821d2359b72d8f8506d5c98d55d7bb))
+
 ## [0.5.2](https://github.com/code-pushup/cli/compare/v0.5.1...v0.5.2) (2023-12-19)
 
 ## [0.5.1](https://github.com/code-pushup/cli/compare/v0.5.0...v0.5.1) (2023-12-18)
