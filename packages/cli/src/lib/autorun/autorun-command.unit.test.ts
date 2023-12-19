@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports } from '@code-pushup/core';
 import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
@@ -15,6 +16,21 @@ vi.mock('@code-pushup/core', async () => {
     collectAndPersistReports: vi.fn().mockResolvedValue({}),
   };
 });
+
+const cli = (options = {}) =>
+  yargsCli(
+    objectToCliArgs({
+      _: 'autorun',
+      verbose: true,
+      config: '/test/code-pushup.config.ts',
+      'persist.outputDir': '/test',
+      ...options,
+    }),
+    {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsAutorunCommandObject()],
+    },
+  );
 
 describe('autorun-command', () => {
   beforeEach(() => {
@@ -28,19 +44,9 @@ describe('autorun-command', () => {
   });
 
   it('should call collect and upload with correct parameters', async () => {
-    await yargsCli(
-      [
-        'autorun',
-        '--verbose',
-        '--config=/test/code-pushup.config.ts',
-        '--persist.filename=my-report',
-        '--persist.outputDir=/test',
-      ],
-      {
-        ...DEFAULT_CLI_CONFIGURATION,
-        commands: [yargsAutorunCommandObject()],
-      },
-    ).parseAsync();
+    await cli({
+      'persist.filename': 'my-report',
+    }).parseAsync();
 
     expect(bundleRequire).toHaveBeenCalledWith({
       format: 'esm',
