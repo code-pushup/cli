@@ -29,14 +29,13 @@ export async function persistReport(
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
-  let scoredReport;
+  const scoredReport = scoreReport(report);
+  console.info(reportToStdout(scoredReport));
 
   // collect physical format outputs
   const results: { format: string; content: string }[] = [];
 
   if (format.includes('json')) {
-    scoredReport = scoreReport(report);
-
     results.push({
       format: 'json',
       content: JSON.stringify(report, null, 2),
@@ -44,7 +43,6 @@ export async function persistReport(
   }
 
   if (format.includes('md')) {
-    scoredReport = scoredReport || scoreReport(report);
     const commitData = await getLatestCommit();
     validateCommitData(commitData);
 
@@ -53,9 +51,6 @@ export async function persistReport(
       content: reportToMd(scoredReport, commitData),
     });
   }
-
-  scoredReport = scoredReport || scoreReport(report);
-  console.info(reportToStdout(scoredReport));
 
   if (!existsSync(outputDir)) {
     try {
