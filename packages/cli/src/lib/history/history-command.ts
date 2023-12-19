@@ -4,7 +4,6 @@ import {
   HistoryOptions,
   UploadOptions,
   history,
-  upload,
 } from '@code-pushup/core';
 import {
   getCurrentBranchOrTag,
