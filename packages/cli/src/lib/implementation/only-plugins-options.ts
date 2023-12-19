@@ -7,12 +7,11 @@ export const onlyPluginsOption: Options = {
   coerce: (arg: string[]) => arg.flatMap(v => v.split(',')),
 };
 
-
 export function yargsOnlyPluginsOptionsDefinition(): Record<
   'onlyPlugins',
   Options
 > {
   return {
-    onlyPlugins: onlyPluginsOption
-  }
+    onlyPlugins: onlyPluginsOption,
+  };
 }

@@ -1,12 +1,13 @@
-import {describe, expect} from 'vitest';
-import {objectToCliArgs} from '@code-pushup/utils';
-import {yargsCli} from '../yargs-cli';
-import {yargsOnlyPluginsOptionsDefinition} from './only-plugins-options';
-
+import { describe, expect } from 'vitest';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { yargsCli } from '../yargs-cli';
+import { yargsOnlyPluginsOptionsDefinition } from './only-plugins-options';
 
 describe('onlyPlugin option', () => {
-  type OnlyPluginsOptions = { onlyPlugins?: string | string[] }
-  function argsFromCli<T extends OnlyPluginsOptions>(args: Record<string, unknown>) {
+  type OnlyPluginsOptions = { onlyPlugins?: string | string[] };
+  function argsFromCli<T extends OnlyPluginsOptions>(
+    args: Record<string, unknown>,
+  ) {
     return yargsCli<T>(objectToCliArgs(args), {
       options: yargsOnlyPluginsOptionsDefinition(),
     }).parseAsync() as unknown as Promise<OnlyPluginsOptions>;
@@ -29,7 +30,6 @@ describe('onlyPlugin option', () => {
     async (options, result) => {
       const parsedArgs = await argsFromCli(options);
       expect(parsedArgs?.onlyPlugins).toEqual(result);
-    }
+    },
   );
-
 });
