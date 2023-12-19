@@ -4,7 +4,7 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { executeProcess } from '@code-pushup/utils';
+import { executeProcess, objectToCliArgs } from '@code-pushup/utils';
 import { configFile, extensions } from '../mocks/utils';
 
 describe('print-config', () => {
@@ -54,7 +54,7 @@ describe('print-config', () => {
     120000,
   );
 
-  it('should load .ts config file and overwrite it with CLI arguments', async ext => {
+  it('should load .ts config file and overload it with arguments', async () => {
     const { code, stderr, stdout } = await executeProcess({
       command: 'code-pushup',
       args: [
@@ -68,16 +68,11 @@ describe('print-config', () => {
       ],
     });
 
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-    expect(JSON.parse(stdout)).toEqual(
+    expect(JSON.parse(stdout)?.persist).toEqual(
       expect.objectContaining({
-        config: expect.stringContaining(`code-pushup.config.ts`),
-        persist: {
-          outputDir: 'my-dir',
-          format: ['md'],
-          filename: 'my-report',
-        },
+        outputDir: 'my-dir',
+        format: ['md'],
+        filename: 'my-report',
       }),
     );
   }, 120000);

@@ -1,6 +1,7 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   CoreConfig,
+  Format,
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
@@ -11,6 +12,7 @@ import {
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
 } from './only-plugins-utils';
+import { coerceArray } from './utils';
 
 export async function configMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
@@ -46,10 +48,11 @@ export async function configMiddleware<
           cliOptions?.persist?.filename ||
           importedRc?.persist?.filename ||
           PERSIST_FILENAME,
-        format:
+        format: coerceArray<Format>(
           cliOptions?.persist?.format ||
-          importedRc?.persist?.format ||
-          PERSIST_FORMAT,
+            importedRc?.persist?.format ||
+            PERSIST_FORMAT,
+        ),
       },
       plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
       categories: filterCategoryByOnlyPluginsOption(

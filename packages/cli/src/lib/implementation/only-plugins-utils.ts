@@ -15,7 +15,10 @@ export function filterPluginsByOnlyPluginsOption(
 // see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
 export function filterCategoryByOnlyPluginsOption(
   categories: CoreConfig['categories'],
-  { onlyPlugins }: { onlyPlugins?: string[] },
+  {
+    onlyPlugins,
+    verbose = false,
+  }: { onlyPlugins?: string[]; verbose?: boolean },
 ): CoreConfig['categories'] {
   if (!onlyPlugins?.length) {
     return categories;
@@ -25,7 +28,7 @@ export function filterCategoryByOnlyPluginsOption(
     category.refs.every(ref => {
       const isNotSkipped = onlyPlugins.includes(ref.slug);
 
-      if (!isNotSkipped) {
+      if (!isNotSkipped && verbose) {
         console.info(
           `${chalk.yellow('⚠')} Category "${
             category.title
@@ -42,13 +45,16 @@ export function filterCategoryByOnlyPluginsOption(
 
 export function validateOnlyPluginsOption(
   plugins: CoreConfig['plugins'],
-  { onlyPlugins }: { onlyPlugins?: string[] },
+  {
+    onlyPlugins,
+    verbose = false,
+  }: { onlyPlugins?: string[]; verbose?: boolean },
 ): void {
   const missingPlugins = onlyPlugins?.length
     ? onlyPlugins.filter(plugin => !plugins.some(({ slug }) => slug === plugin))
     : [];
 
-  if (missingPlugins.length > 0) {
+  if (missingPlugins.length > 0 && verbose) {
     console.warn(
       `${chalk.yellow(
         '⚠',
