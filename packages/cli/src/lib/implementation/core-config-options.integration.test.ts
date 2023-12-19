@@ -37,7 +37,7 @@ describe('configOptions', () => {
     [{ 'persist.format': ['md', 'json'] }, { format: ['md', 'json'] }],
     // [{ 'persist.format': 'md,json' }, { format: ['md', 'json'] }], @TODO comment in when config auto-loading is implemented
   ])(
-    'should parse persist options %s correctly as %j',
+    'should parse persist options %j correctly as %j',
     async (options, result) => {
       const args = await argsFromCli(options);
 
