@@ -29,21 +29,23 @@ export async function persistReport(
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
-  let scoredReport = scoreReport(report);
+  const scoredReport = scoreReport(report);
   console.info(reportToStdout(scoredReport));
 
   // collect physical format outputs
-  const results: { format: string; content: string }[] = [
-    // JSON is always persisted
-    { format: 'json', content: JSON.stringify(report, null, 2) },
-  ];
+  const results: { format: string; content: string }[] = [];
+
+  if (format.includes('json')) {
+    results.push({
+      format: 'json',
+      content: JSON.stringify(report, null, 2),
+    });
+  }
 
   if (format.includes('md')) {
-    scoredReport = scoredReport || scoreReport(report);
     const commitData = await getLatestCommit();
-    if (!commitData) {
-      console.warn('no commit data available');
-    }
+    validateCommitData(commitData);
+
     results.push({
       format: 'md',
       content: reportToMd(scoredReport, commitData),
@@ -80,4 +82,10 @@ export async function persistReport(
 
 export function logPersistedResults(persistResults: MultipleFileResults) {
   logMultipleFileResults(persistResults, 'Generated reports');
+}
+
+function validateCommitData(commitData?: unknown) {
+  if (!commitData) {
+    console.warn('no commit data available');
+  }
 }
