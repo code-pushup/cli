@@ -19,6 +19,7 @@ describe('onlyPlugin option', () => {
     // "_" and "$0" are in by default
     expect(Object.keys(args)).toHaveLength(4);
   });
+
   it.each([
     // defaults
     [{}, []],
