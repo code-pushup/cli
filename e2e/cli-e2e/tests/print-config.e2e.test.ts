@@ -54,7 +54,7 @@ describe('print-config', () => {
     120000,
   );
 
-  it('should load .ts config file with overloads arguments', async () => {
+  it('should load .ts config file and overload it with arguments', async () => {
     const { code, stderr, stdout } = await executeProcess({
       command: 'code-pushup',
       args: [
