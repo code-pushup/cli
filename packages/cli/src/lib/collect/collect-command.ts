@@ -14,12 +14,6 @@ export function yargsCollectCommandObject(): CommandModule {
     describe: 'Run Plugins and collect results',
     builder: {
       onlyPlugins: onlyPluginsOption,
-      'persist.format': {
-        describe: 'Format of the report output. e.g. `md`, `json`',
-        type: 'array',
-        default: [],
-        coerce: (arg: string[]) => arg.flatMap(v => v.split(',')),
-      },
     },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;

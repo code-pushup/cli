@@ -43,7 +43,7 @@ describe('collect-command', () => {
         persist: expect.objectContaining({
           filename: 'report',
           outputDir: '.code-pushup',
-          format: [],
+          format: ['json'],
         }),
       }),
     );
