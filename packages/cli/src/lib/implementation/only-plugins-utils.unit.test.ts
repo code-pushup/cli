@@ -111,6 +111,6 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    expect(console.info).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
   });
 });
