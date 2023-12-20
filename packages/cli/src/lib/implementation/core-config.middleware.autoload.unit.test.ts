@@ -7,7 +7,7 @@ describe('configMiddleware-autoload', () => {
   it('should load code-pushup.config.(ts|mjs|js) by default', async () => {
     vol.fromJSON({
       // this is only needed to pass the file API's, the config is mocked in bundleRequire
-      ['code-pushup.config.ts']: JSON.stringify(MINIMAL_CONFIG_MOCK),
+      ['code-pushup.config.ts']: '',
     });
     const config = await coreConfigMiddleware({});
     expect(config?.upload?.project).toBe('cli');
