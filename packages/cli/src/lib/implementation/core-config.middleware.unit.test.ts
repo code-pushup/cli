@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { configMiddleware } from './config-middleware';
+import { coreConfigMiddleware } from './core-config.middleware';
 
 // Mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -16,7 +16,7 @@ describe('configMiddleware', () => {
   it('should load code-pushup.config.(ts|mjs|js)', async () => {
     // It is indirectly testing if code-pushup.config.(ts|mjs|ts) is used.
     // The reason for this is a hard to setup test
-    await expect(configMiddleware({})).rejects.toThrow(
+    await expect(coreConfigMiddleware({})).rejects.toThrow(
       'No file code-pushup.config',
     );
   });

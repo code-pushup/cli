@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
-import { configMiddleware } from './config-middleware';
+import { coreConfigMiddleware } from './core-config.middleware';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');
@@ -27,7 +27,7 @@ describe('configMiddleware-autoload', () => {
   });
 
   it('should load code-pushup.config.(ts|mjs|js) by default', async () => {
-    const config = await configMiddleware({});
+    const config = await coreConfigMiddleware({});
     expect(config?.upload?.project).toBe('cli');
   });
 });

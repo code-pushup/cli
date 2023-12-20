@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from '../yargs-cli';
-import { yargsOnlyPluginsOptionsDefinition } from './only-plugins-options';
+import { yargsOnlyPluginsOptionsDefinition } from './only-plugins.options';
 
 describe('onlyPlugin option', () => {
   type OnlyPluginsOptions = { onlyPlugins?: string | string[] };

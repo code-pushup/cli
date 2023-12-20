@@ -17,12 +17,14 @@ Options:
       --verbose              When true creates more verbose output. This is help
                              ful when debugging.      [boolean] [default: false]
       --config               Path the the config file, e.g. code-pushup.config.t
-                             s. By default it loads code-pushup.config.(js|ts|mj
+                             s. By default it loads code-pushup.config.(ts|mjs|j
                              s).                                        [string]
-      --persist.outputDir    Directory for the produced reports         [string]
-      --persist.filename     Filename for the produced reports.         [string]
+      --persist.outputDir    Directory for the produced reports
+                                              [string] [default: \\".code-pushup\\"]
+      --persist.filename     Filename for the produced reports.
+                                                    [string] [default: \\"report\\"]
       --persist.format       Format of the report output. e.g. \`md\`, \`json\`
-                                                                         [array]
+                                                     [array] [default: [\\"json\\"]]
       --upload.organization  Organization slug from portal              [string]
       --upload.project       Project slug from portal                   [string]
       --upload.server        URL to your portal server                  [string]

@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from '../yargs-cli';
-import { yargsGlobalOptionsDefinition } from './global-options';
+import { yargsGlobalOptionsDefinition } from './global.options';
 import { GeneralCliOptions } from './model';
 
 describe('globalOptions', () => {

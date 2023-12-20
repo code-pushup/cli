@@ -7,7 +7,7 @@ import {
   upload,
 } from '@code-pushup/core';
 import { CLI_NAME } from '../cli';
-import { onlyPluginsOption } from '../implementation/only-plugins-options';
+import { onlyPluginsOption } from '../implementation/only-plugins.options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 

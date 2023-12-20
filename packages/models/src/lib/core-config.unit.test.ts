@@ -21,10 +21,10 @@ describe('CoreConfig', () => {
 
   it('should throw if the category slugs are not unique', () => {
     const coreConfig = config();
-    const duplicatedSlug = coreConfig.categories[0].slug;
+    const duplicatedSlug = coreConfig.categories?.[0]?.slug;
     coreConfig.categories = [
       ...coreConfig.categories,
-      coreConfig.categories[0],
+      coreConfig.categories[0] as CategoryConfig,
     ];
     expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
       `In the categories, the following slugs are duplicated: ${duplicatedSlug}`,
@@ -33,7 +33,8 @@ describe('CoreConfig', () => {
 
   it('should throw if ref in a category does not exist in audits', () => {
     const coreConfig = config();
-    const ref = coreConfig.categories[1].refs[0];
+    const ref = (coreConfig.categories[1] as CategoryConfig)
+      .refs[0] as CategoryRef;
     const pluginSlug = ref.plugin;
 
     const missingAuditSlug = 'missing-audit-ref';
@@ -50,7 +51,7 @@ describe('CoreConfig', () => {
       ...categoryConfig.refs[0],
       slug: 'missing-slug',
     } as CategoryRef;
-    coreConfig.categories[1].refs.push(ref);
+    (coreConfig.categories[1] as CategoryConfig).refs.push(ref);
 
     expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
       `In the categories, the following plugin refs do not exist in the provided plugins: lighthouse#missing-slug (group)`,

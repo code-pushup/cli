@@ -1,6 +1,14 @@
 import { MiddlewareFunction } from 'yargs';
-import { configMiddleware } from './implementation/config-middleware';
+import { coreConfigMiddleware } from './implementation/core-config.middleware';
+import { onlyPluginsMiddleware } from './implementation/only-plugins.middleware';
 
 export const middlewares = [
-  { middlewareFunction: configMiddleware as unknown as MiddlewareFunction },
+  {
+    middlewareFunction: coreConfigMiddleware as unknown as MiddlewareFunction,
+    applyBeforeValidation: true,
+  },
+  {
+    middlewareFunction: onlyPluginsMiddleware as unknown as MiddlewareFunction,
+    applyBeforeValidation: false,
+  },
 ];
