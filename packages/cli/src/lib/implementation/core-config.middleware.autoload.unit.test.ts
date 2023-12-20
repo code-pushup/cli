@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { MINIMAL_CONFIG_MOCK } from '@code-pushup/testing-utils';
 import { coreConfigMiddleware } from './core-config.middleware';
 
 describe('configMiddleware-autoload', () => {
