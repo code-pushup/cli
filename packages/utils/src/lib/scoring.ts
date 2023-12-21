@@ -14,7 +14,7 @@ export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
 export type EnrichedScoredAuditGroupWithAudits = EnrichedScoredAuditGroup & {
   audits: AuditReport[];
 };
-type ScoredCategoryConfig = CategoryConfig & { score: number };
+export type ScoredCategoryConfig = CategoryConfig & { score: number };
 
 export type EnrichedScoredAuditGroup = AuditGroup & {
   plugin: string;

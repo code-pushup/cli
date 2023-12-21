@@ -24,10 +24,10 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 
 - 🟥 [Disallow missing \`key\` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
+
 ### Bug prevention
 
 🟡 Score:  **68**
-
 - 🟥 [verifies the list of dependencies for Hooks like useEffect and similar](#verifies-the-list-of-dependencies-for-hooks-like-useeffect-and-similar-eslint) (_ESLint_) - **2 warnings**
 - 🟥 [Disallow missing \`key\` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
 - 🟩 [enforces the Rules of Hooks](#enforces-the-rules-of-hooks-eslint) (_ESLint_) - **0**
@@ -44,10 +44,10 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed](#disallow-use-of-optional-chaining-in-contexts-where-the-undefined-value-is-not-allowed-eslint) (_ESLint_) - **0**
 - 🟩 [Enforce comparing \`typeof\` expressions against valid strings](#enforce-comparing-typeof-expressions-against-valid-strings-eslint) (_ESLint_) - **0**
 - 🟩 [Require calls to \`isNaN()\` when checking for \`NaN\`](#require-calls-to-isnan-when-checking-for-nan-eslint) (_ESLint_) - **0**
+
 ### Code style
 
 🟡 Score:  **54**
-
 - 🟥 [Require or disallow method and property shorthand syntax for object literals](#require-or-disallow-method-and-property-shorthand-syntax-for-object-literals-eslint) (_ESLint_) - **3 warnings**
 - 🟥 [Disallow unused variables](#disallow-unused-variables-eslint) (_ESLint_) - **1 warning**
 - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) (_ESLint_) - **1 warning**
@@ -61,6 +61,7 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Require \`let\` or \`const\` instead of \`var\`](#require-let-or-const-instead-of-var-eslint) (_ESLint_) - **0**
 - 🟩 [Require or disallow \\"Yoda\\" conditions](#require-or-disallow-yoda-conditions-eslint) (_ESLint_) - **0**
 - 🟩 [Require using arrow functions for callbacks](#require-using-arrow-functions-for-callbacks-eslint) (_ESLint_) - **0**
+
 
 ## 🛡️ Audits
 
