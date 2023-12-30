@@ -24,7 +24,7 @@ const outputDir = 'test';
 const inlineStylesComponentFileName = 'inline-styles.component.ts';
 const separateCssStylesComponentFileName = 'separate-css-styles.component.ts';
 const separateCssStylesFileName = 'separate-css-styles.component.css';
-const separateScssStylesComponentFileName = 'separate-scss-styles.component.ts';
+//const separateScssStylesComponentFileName = 'separate-scss-styles.component.ts';
 const separateScssStylesFileName = 'separate-scss-styles.component.scss';
 const generatedStylesScssFileName = 'generated-styles.scss';
 
@@ -148,18 +148,14 @@ describe('angularDsComponentStylesIssues', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
+        [generatedStylesScssFileName]: generatedComponentStyles,
         [inlineStylesComponentFileName]: inlineStylesComponentContent(
           validStyles(),
         ),
+        [separateCssStylesFileName]: validStyles('test'),
         [separateCssStylesComponentFileName]: separateStylesComponentContent(
           separateCssStylesFileName,
         ),
-        [separateScssStylesComponentFileName]: separateStylesComponentContent(
-          separateScssStylesFileName,
-        ),
-        [separateCssStylesFileName]: validStyles(),
-        [separateScssStylesFileName]: invalidStyles,
-        [generatedStylesScssFileName]: generatedComponentStyles,
       },
       outputDir,
     );
@@ -178,24 +174,6 @@ describe('angularDsComponentStylesIssues', () => {
       ),
     );
   });
-
-  /*
-    it('should list ts files containing @Component', async () => {
-      await expect(
-        angularDsComponentStylesIssues({
-          ...baseOptions,
-        }),
-      ).resolves.toEqual([
-        {
-          message: expect.any(String),
-          severity: expect.any(String),
-          source: {
-            file: expect.stringContaining('styles.component.scss'),
-          },
-        },
-      ]);
-    });
-  */
 
   it('should assert files that don`t include generated styles', async () => {
     await expect(

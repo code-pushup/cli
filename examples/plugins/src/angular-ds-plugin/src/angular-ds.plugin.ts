@@ -13,7 +13,13 @@ import {
   pluralizeToken,
   toUnixPath,
 } from '../../../../../dist/packages/utils';
-import { getCssVariableUsage, loadGeneratedStyles } from './utils';
+import {
+  angularComponentSelectorRegex,
+  angularComponentStylesRegex,
+  getCssVariableUsage,
+  loadGeneratedStyles
+} from './utils';
+import {readTextFile} from "@code-pushup/utils";
 
 export type PluginOptions = {
   directory: string;
@@ -132,19 +138,34 @@ export function angularDsComponentStylesIssues(options: {
     directory,
     // @TODO also scan inline styles
     // @TODO also only scan files linked to components
-    pattern: /.(scss|css)$/,
-    // @TODO implement pattern matching for file content to filter out interesting files and avoid a second apply of filter later
-    // See: https://github.com/code-pushup/cli/issues/350
+    pattern: /.(ts)$/,
     fileTransform: async (filePath: string) => {
-      const stylesContent = await readFile(filePath, { encoding: 'utf8' });
+      const componentContent = await readFile(filePath, { encoding: 'utf8' });
+      const selector = componentContent.match(angularComponentSelectorRegex);
+
+      // @TODO implement pattern matching for file content to filter out interesting files and avoid a second apply of filter later
+      // See: https://github.com/code-pushup/cli/issues/350
+      // filter out later
+      if(!selector) {
+        return false;
+      }
+
+      // @TODO support multiple external style sheets
+      const externalStylePaths = componentContent.match(angularComponentStylesRegex);
+
+      // inline or external styles
+      const stylesContent = externalStylePaths?.[0] ? await readTextFile(externalStylePaths[0]) : componentContent;
+
       return assertComponentStyles(
         filePath,
-        'selector',
+        selector?.[0],
         stylesContent,
         variableImportPattern,
       );
     },
-  });
+  })
+     // remove after https://github.com/code-pushup/cli/issues/350
+    .then((arr) => arr.filter((v): v is Issue => !v));
 }
 
 export function infoMessage(filePath: string, selector: string) {
@@ -198,7 +219,7 @@ export async function assertComponentStyles(
   );
   const { unused } = getCssVariableUsage(variablesContent, stylesContent);
 
-  // missing variables
+  // missing variables in styles
   if (unused.length) {
     return {
       ...issue,
