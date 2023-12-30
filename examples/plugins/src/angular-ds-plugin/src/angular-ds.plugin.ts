@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { basename } from 'node:path';
 import {
   AuditOutput,
   AuditOutputs,
@@ -13,11 +13,11 @@ import {
   pluralizeToken,
   toUnixPath,
 } from '../../../../../dist/packages/utils';
+import { getCssVariableUsage, loadGeneratedStyles } from './utils';
 
 export type PluginOptions = {
   directory: string;
-  pattern?: string | RegExp;
-  budget?: number;
+  variableImportPattern: string;
 };
 
 type RunnerOptions = PluginOptions;
@@ -124,29 +124,27 @@ export function displayValue(numberOfFiles: number): string {
 
 export function angularDsComponentStylesIssues(options: {
   directory: string;
+  variableImportPattern: string;
 }): Promise<Issue[]> {
-  const { directory } = options;
+  const { directory, variableImportPattern } = options;
 
   return crawlFileSystem({
     directory,
-    // @TODO  also scan inline styles
+    // @TODO also scan inline styles
     // @TODO also only scan files linked to components
     pattern: /.(scss|css)$/,
-    // @TODO implement pattern matching for file content to filter out interesting files to avoid a seconf apply of filter later
+    // @TODO implement pattern matching for file content to filter out interesting files and avoid a second apply of filter later
     // See: https://github.com/code-pushup/cli/issues/350
-    fileTransform: async (file: string) => {
-      const filePath = join(directory, file);
+    fileTransform: async (filePath: string) => {
       const stylesContent = await readFile(filePath, { encoding: 'utf8' });
-      // exclude from checks
-      /* if(!stylesContent.includes('/generated/styles/components')) {
-        return false;
-      }*/
-      return assertComponentStyles(file, 'selector', stylesContent);
+      return assertComponentStyles(
+        filePath,
+        'selector',
+        stylesContent,
+        variableImportPattern,
+      );
     },
   });
-  // filter out false => files not containing imports
-  // remove after https://github.com/code-pushup/cli/issues/350 is implemented
-  //  .then(arr => arr.filter((v): v is Issue => !!v));
 }
 
 export function infoMessage(filePath: string, selector: string) {
@@ -155,15 +153,29 @@ export function infoMessage(filePath: string, selector: string) {
   )} uses design system tokens in styles`;
 }
 
-export function errorMessage(filePath: string, selector: string) {
-  return `⚠️ ${selector} in file ${filePath} does not use design system tokens in styles`;
+export function errorMessageNoUsageOfVariables(
+  filePath: string,
+  selector: string,
+) {
+  return `${selector} in file ${filePath} does not use design system tokens in styles`;
 }
 
-export function assertComponentStyles(
+export function errorMessageMissingVariableUsage(
+  filePath: string,
+  selector: string,
+  unusedVariables: string[],
+) {
+  return `${selector} in file ${filePath} has missing variables: ${unusedVariables.join(
+    ', ',
+  )}`;
+}
+
+export async function assertComponentStyles(
   file: string,
   selector: string,
   stylesContent: string,
-): Issue {
+  variableImportPattern: string,
+): Promise<Issue> {
   // informative issue (component styles are OK)
   const issue = {
     source: {
@@ -172,12 +184,26 @@ export function assertComponentStyles(
   } satisfies Pick<Issue, 'source'>;
 
   // no usage of generated styles
-  // @TODO make import path configurable in options
-  if (!stylesContent.includes('generated/styles/components')) {
+  if (!stylesContent.includes(variableImportPattern)) {
     return {
       ...issue,
       severity: 'error',
-      message: errorMessage(file, selector),
+      message: errorMessageNoUsageOfVariables(file, selector),
+    } satisfies Issue;
+  }
+
+  const variablesContent = await loadGeneratedStyles(
+    stylesContent,
+    variableImportPattern,
+  );
+  const { unused } = getCssVariableUsage(variablesContent, stylesContent);
+
+  // missing variables
+  if (unused.length) {
+    return {
+      ...issue,
+      severity: 'error',
+      message: errorMessageMissingVariableUsage(file, selector, unused),
     } satisfies Issue;
   }
 
