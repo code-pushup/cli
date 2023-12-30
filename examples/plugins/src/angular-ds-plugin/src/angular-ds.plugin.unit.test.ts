@@ -4,9 +4,9 @@ import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   PluginOptions,
+  angularDsComponentStylesIssues,
   assertComponentStyles,
   errorMessage,
-  angularDsComponentStylesIssues,
   infoMessage,
   runnerFunction,
 } from './angular-ds.plugin';
@@ -17,9 +17,10 @@ const separateCssStylesComponentFileName = 'separate-css-styles.component.ts';
 const separateCssStylesFileName = 'separate-css-styles.component.css';
 const separateScssStylesComponentFileName = 'separate-scss-styles.component.ts';
 const separateScssStylesFileName = 'separate-scss-styles.component.scss';
+const generatedStylesScssFileName = 'generated-styles.scss';
 
 const validStyles = `
-@Import '/generated/styles/components';
+@import '/generated/styles/components/generated-styles.scss';
 
 .my-class {
   background: red;
@@ -27,6 +28,11 @@ const validStyles = `
 `;
 
 const invalidStyles = `
+.my-class {
+  background: red;
+}
+`;
+const generatedComponentStyles = `
 .my-class {
   background: red;
 }
@@ -52,35 +58,31 @@ export class SeparateCssStylesComponent {}
 describe('infoMessage for correct styles', () => {
   it.each([
     ['any.component.ts', 'any-selector'],
-    [join('src', 'any.component.ts'), 'any-other-selector']
-  ])(
-    'should return info message',
-    (file, selector) => {
-      expect(infoMessage(file, selector)).toBe(
-        `${selector} in file ${basename(file)} uses design system tokens in styles`,
-      );
-    },
-  );
+    [join('src', 'any.component.ts'), 'any-other-selector'],
+  ])('should return info message', (file, selector) => {
+    expect(infoMessage(file, selector)).toBe(
+      `${selector} in file ${basename(
+        file,
+      )} uses design system tokens in styles`,
+    );
+  });
 });
 
 describe('errorMessage for incorrect styles', () => {
   it.each([
     ['any.component.ts', 'any-selector'],
-    [join('src', 'any.component.ts'), 'any-other-selector']
-  ])(
-    'should return error message for size %i with budget %i',
-    (selector) => {
-      expect(errorMessage('any.component.ts', selector)).toBe(
-        `⚠️ ${selector} in file ${basename('any.component.ts')} does not use design system tokens in styles`
-      );
-    },
-  );
+    [join('src', 'any.component.ts'), 'any-other-selector'],
+  ])('should return error message for size %i with budget %i', selector => {
+    expect(errorMessage('any.component.ts', selector)).toBe(
+      `⚠️ ${selector} in file ${basename(
+        'any.component.ts',
+      )} does not use design system tokens in styles`,
+    );
+  });
 });
 
 describe('assertComponentStyles', () => {
-  it.each([
-    ['styles.component.scss', 'selector-1', validStyles],
-  ])(
+  it.each([['styles.component.scss', 'selector-1', validStyles]])(
     'should return a informative issues for file %s with selector %s',
     (filePath, selector, content) => {
       expect(assertComponentStyles(filePath, selector, content)).toEqual({
@@ -91,9 +93,7 @@ describe('assertComponentStyles', () => {
     },
   );
 
-  it.each([
-    ['styles.component.scss', 'selector-1', validStyles],
-  ])(
+  it.each([['styles.component.scss', 'selector-1', validStyles]])(
     'should return a informative Issue for file %s with selector %s and valid styles',
     (filePath, selector, content) => {
       expect(assertComponentStyles(filePath, selector, content)).toEqual({
@@ -104,12 +104,16 @@ describe('assertComponentStyles', () => {
     },
   );
 
-  it.each([
-    ['styles.component.scss', 'selector-1', invalidStyles]
-  ])(
+  it.each([['styles.component.scss', 'selector-1', invalidStyles]])(
     'should return error Issue for file %s with selector %s and invalid styles',
     () => {
-      expect(assertComponentStyles('styles.component.scss', 'selector', '.class { color: red; }')).toEqual({
+      expect(
+        assertComponentStyles(
+          'styles.component.scss',
+          'selector',
+          '.class { color: red; }',
+        ),
+      ).toEqual({
         message: errorMessage('styles.component.scss', 'selector'),
         severity: 'error',
         source: { file: 'styles.component.scss' },
@@ -127,47 +131,53 @@ describe('angularDsComponentStylesIssues', () => {
     vol.fromJSON(
       {
         [inlineStylesComponentFileName]: inlineStylesComponent(validStyles),
-        [separateCssStylesComponentFileName]: separateStylesComponent(separateCssStylesFileName),
-        [separateScssStylesComponentFileName]: separateStylesComponent(separateScssStylesFileName),
+        [separateCssStylesComponentFileName]: separateStylesComponent(
+          separateCssStylesFileName,
+        ),
+        [separateScssStylesComponentFileName]: separateStylesComponent(
+          separateScssStylesFileName,
+        ),
+        [separateCssStylesFileName]: validStyles,
+        [separateScssStylesFileName]: invalidStyles,
+        [generatedStylesScssFileName]: generatedComponentStyles,
       },
       outputDir,
     );
   });
 
-  it('should list all component files', async () => {
+  it('should list all css and scss files', async () => {
     await expect(angularDsComponentStylesIssues(baseOptions)).resolves.toEqual(
       expect.arrayContaining(
-        [
-          separateScssStylesFileName,
-          separateCssStylesFileName
-        ].map(f => ({
+        [separateCssStylesFileName, separateScssStylesFileName].map(f => ({
           message: expect.any(String),
           severity: expect.any(String),
           source: {
             file: expect.stringContaining(f),
-          }
+          },
         })),
       ),
     );
   });
 
-  it('should list component files matching a pattern', async () => {
-    await expect(
-      angularDsComponentStylesIssues({
-        ...baseOptions,
-      }),
-    ).resolves.toEqual([
-      {
-        message: expect.any(String),
-        severity: expect.any(String),
-        source: {
-          file: expect.stringContaining('styles.component.scss'),
+  /*
+    it('should list ts files containing @Component', async () => {
+      await expect(
+        angularDsComponentStylesIssues({
+          ...baseOptions,
+        }),
+      ).resolves.toEqual([
+        {
+          message: expect.any(String),
+          severity: expect.any(String),
+          source: {
+            file: expect.stringContaining('styles.component.scss'),
+          },
         },
-      },
-    ]);
-  });
+      ]);
+    });
+  */
 
-  it('should assert files that are over budget', async () => {
+  it('should assert files that don`t include generated styles', async () => {
     await expect(
       angularDsComponentStylesIssues({
         ...baseOptions,
@@ -176,30 +186,16 @@ describe('angularDsComponentStylesIssues', () => {
       expect.arrayContaining([
         {
           message: expect.any(String),
-          severity: 'info',
-          source: {
-            file: expect.stringContaining('README.md'),
-          },
-        },
-        {
-          message: expect.any(String),
           severity: 'error',
           source: {
-            file: expect.stringContaining('project.json'),
-          },
-        },
-        {
-          message: expect.any(String),
-          severity: 'error',
-          source: {
-            file: expect.stringContaining('styles.component.scss'),
+            file: expect.stringContaining(separateScssStylesFileName),
           },
         },
       ]),
     );
   });
 
-  it('should assert files that are over budget and match the pattern', async () => {
+  it('should assert files that import general styles but have unused variables', async () => {
     await expect(
       angularDsComponentStylesIssues({
         ...baseOptions,
@@ -231,8 +227,12 @@ describe('runnerFunction', () => {
     vol.fromJSON(
       {
         [inlineStylesComponentFileName]: inlineStylesComponent(validStyles),
-        [separateCssStylesComponentFileName]: separateStylesComponent(separateCssStylesFileName),
-        [separateScssStylesComponentFileName]: separateStylesComponent(separateScssStylesFileName),
+        [separateCssStylesComponentFileName]: separateStylesComponent(
+          separateCssStylesFileName,
+        ),
+        [separateScssStylesComponentFileName]: separateStylesComponent(
+          separateScssStylesFileName,
+        ),
       },
       outputDir,
     );

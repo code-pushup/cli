@@ -1,5 +1,7 @@
+import fs from 'fs/promises';
 import { readFile } from 'node:fs/promises';
-import {basename, join} from 'node:path';
+import { basename, join } from 'node:path';
+import path from 'path';
 import {
   AuditOutput,
   AuditOutputs,
@@ -11,8 +13,10 @@ import {
   crawlFileSystem,
   factorOf,
   pluralizeToken,
+  readTextFile,
   toUnixPath,
 } from '../../../../../dist/packages/utils';
+import { generatedStylesRegex } from './utils';
 
 export type PluginOptions = {
   directory: string;
@@ -29,8 +33,7 @@ export const auditsMap = {
   [angularDsAuditSlug]: {
     slug: angularDsAuditSlug,
     title: 'Component Styles Audit',
-    description:
-      'An audit to check style usage in a Angular projcet.',
+    description: 'An audit to check style usage in a Angular projcet.',
   },
 };
 export const audits = Object.values(auditsMap);
@@ -137,21 +140,23 @@ export function angularDsComponentStylesIssues(options: {
     // See: https://github.com/code-pushup/cli/issues/350
     fileTransform: async (file: string) => {
       const filePath = join(directory, file);
-      const stylesContent = await readFile(filePath, {encoding: 'utf8'});
+      const stylesContent = await readFile(filePath, { encoding: 'utf8' });
       // exclude from checks
-      if(!stylesContent.includes('/generated/styles/components')) {
+      /* if(!stylesContent.includes('/generated/styles/components')) {
         return false;
-      }
+      }*/
       return assertComponentStyles(file, 'selector', stylesContent);
     },
-  })
-    // filter out false => files not containing imports
-    // remove after https://github.com/code-pushup/cli/issues/350 is implemented
-    .then(arr => arr.filter((v): v is Issue => !!v));
+  });
+  // filter out false => files not containing imports
+  // remove after https://github.com/code-pushup/cli/issues/350 is implemented
+  //  .then(arr => arr.filter((v): v is Issue => !!v));
 }
 
 export function infoMessage(filePath: string, selector: string) {
-  return `${selector} in file ${basename(filePath)} uses design system tokens in styles`;
+  return `${selector} in file ${basename(
+    filePath,
+  )} uses design system tokens in styles`;
 }
 
 export function errorMessage(filePath: string, selector: string) {
@@ -163,7 +168,6 @@ export function assertComponentStyles(
   selector: string,
   stylesContent: string,
 ): Issue {
-
   // informative issue (component styles are OK)
   const issue = {
     source: {
@@ -173,7 +177,7 @@ export function assertComponentStyles(
 
   // no usage of generated styles
   // @TODO make import path configurable in options
-  if (!stylesContent.includes('/generated/styles/components')) {
+  if (!stylesContent.includes('generated/styles/components')) {
     return {
       ...issue,
       severity: 'error',

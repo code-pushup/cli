@@ -61,10 +61,14 @@ async function check() {
   for (const item of componentsWithStylesheets) {
     console.log(`\n\n----------------------- \n\n`);
     const fullPath = path.join(UI_COMPONENTS_PATH, item.scssPath);
-    const scssContent = (await fs.readFile(fullPath, { encoding: 'utf8' })) || '';
+    const scssContent =
+      (await fs.readFile(fullPath, { encoding: 'utf8' })) || '';
 
     if (!scssContent.includes('/generated/styles/components')) {
-      console.log('\x1b[33m%s\x1b[0m', `\n\n⚠️ ${item.selector} is not using generated tokens!\n\n`);
+      console.log(
+        '\x1b[33m%s\x1b[0m',
+        `\n\n⚠️ ${item.selector} is not using generated tokens!\n\n`,
+      );
       continue;
     }
 
@@ -72,11 +76,19 @@ async function check() {
 
     const regex = /@import\s+['"]([^'"]+)['"]/g;
 
-    const scssImportPath = scssContent.match(regex)?.[0].replace(`@import '../../`, '').slice(0, -1); // remove last '
+    const scssImportPath = scssContent
+      .match(regex)?.[0]
+      .replace(`@import '../../`, '')
+      .slice(0, -1); // remove last '
 
-    const generatedStylePath = path.join(UI_COMPONENTS_PATH, scssImportPath + '.scss');
+    const generatedStylePath = path.join(
+      UI_COMPONENTS_PATH,
+      scssImportPath + '.scss',
+    );
 
-    const generatedStyleContent = await fs.readFile(generatedStylePath, { encoding: 'utf8' });
+    const generatedStyleContent = await fs.readFile(generatedStylePath, {
+      encoding: 'utf8',
+    });
 
     const generatedStylesVariables = getAllCssVariables(generatedStyleContent);
     const componentStyleCssVariables = getAllCssVariables(scssContent);
@@ -88,7 +100,9 @@ async function check() {
       }
     }
 
-    const notUsedPercentage = Math.floor((notUsedVars.length / generatedStylesVariables.length) * 100);
+    const notUsedPercentage = Math.floor(
+      (notUsedVars.length / generatedStylesVariables.length) * 100,
+    );
 
     console.log(`Not used css variables - ${notUsedPercentage}% :
              ${notUsedVars.reduce((acc, curr) => `${acc} \n ${curr}`, '')}
