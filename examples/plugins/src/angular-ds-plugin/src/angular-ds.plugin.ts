@@ -1,7 +1,5 @@
-import fs from 'fs/promises';
 import { readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import path from 'path';
 import {
   AuditOutput,
   AuditOutputs,
@@ -13,10 +11,8 @@ import {
   crawlFileSystem,
   factorOf,
   pluralizeToken,
-  readTextFile,
   toUnixPath,
 } from '../../../../../dist/packages/utils';
-import { generatedStylesRegex } from './utils';
 
 export type PluginOptions = {
   directory: string;
