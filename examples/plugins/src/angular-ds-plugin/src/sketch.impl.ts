@@ -5,6 +5,41 @@
 // if yes read the generated/styles file and create a set of all css variables
 // then read the component css file and create a set of all used css variables
 // compare the variables and print how much are used/not used
+
+/*
+*
+* Expected outpur:
+*
+ds-badge
+Not used css variables - 33%
+--badge-size-icon
+- -badge-color-border
+- -badge-color-icon
+-badge-color-success-icon
+
+ds-bottom-nav-tab
+Not used css variables - 83% :
+-bottom-nav-tabs-pressed-border
+--bottom-nav-tabs-pressed-bg
+-bottom-nav-tabs-disabled-border
+--bottom-nav-tabs-disabled-bg
+-bottom-nav-tabs-default-border
+--bottom-nav-tabs-default-bg
+-bottom-nav-tabs-active-border
+--bottom-nav-tabs-active-bg
+--bottom-nav-tabs-space-stack
+--bottom-nav-tabs-space-padding-top
+-bottom-nav-tabs-space-padding-right
+• -bottom-nav-tabs-space-padding-left
+- -bottom-nav-tabs-space-padding-bottom
+--bottom-nav-tabs-size-tap-target
+- -bottom-nav-tabs-disabled-text
+-bottom-nav-tabs-disabled-icon
+--bottom-nav-tabs-pressed-text
+--bottom-nav-tabs-pressed-icon
+-bottom-nav-tabs-default-text
+-bottom-nav-tabs-active-text
+* */
 import fs from 'fs/promises';
 import * as path from 'path';
 

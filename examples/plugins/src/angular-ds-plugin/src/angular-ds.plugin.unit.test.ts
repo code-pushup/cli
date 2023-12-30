@@ -12,84 +12,107 @@ import {
 } from './angular-ds.plugin';
 
 const outputDir = 'test';
-const inlineStylesComponent = `
-@Component({
-selector: 'inline-styles-comp',
-styles: [\`
+const inlineStylesComponentFileName = 'inline-styles.component.ts';
+const separateCssStylesComponentFileName = 'separate-css-styles.component.ts';
+const separateCssStylesFileName = 'separate-css-styles.component.css';
+const separateScssStylesComponentFileName = 'separate-scss-styles.component.ts';
+const separateScssStylesFileName = 'separate-scss-styles.component.scss';
+
+const validStyles = `
+@Import '/generated/styles/components';
+
 .my-class {
   background: red;
 }
-  \`]
+`;
+
+const invalidStyles = `
+.my-class {
+  background: red;
+}
+`;
+
+const inlineStylesComponent = (stylesContent: string) => `
+@Component({
+selector: 'inline-styles-comp',
+styles: [\`${stylesContent}\`]
 })
 export class InlineStylesComponent {
 
 }
 `;
-const stylesForComponent = `
-.my-class {
-  background: red;
-}
+const separateStylesComponent = (stylesPath: string) => `
+@Component({
+selector: 'separate-styles-comp',
+styleFile: '${stylesPath}'
+})
+export class SeparateCssStylesComponent {}
 `;
 
-describe('infoMessage', () => {
-  it.each([['index.js'], [join('src', 'index.js')]])(
+describe('infoMessage for correct styles', () => {
+  it.each([
+    ['any.component.ts', 'any-selector'],
+    [join('src', 'any.component.ts'), 'any-other-selector']
+  ])(
     'should return info message',
-    file => {
-      expect(infoMessage(file)).toBe(
-        `File ${basename(file)} has OK. styles`,
+    (file, selector) => {
+      expect(infoMessage(file, selector)).toBe(
+        `${selector} in file ${basename(file)} uses design system tokens in styles`,
       );
     },
   );
 });
 
-describe('errorMessage', () => {
+describe('errorMessage for incorrect styles', () => {
   it.each([
-    [1, 0],
-    [2, 1],
+    ['any.component.ts', 'any-selector'],
+    [join('src', 'any.component.ts'), 'any-other-selector']
   ])(
     'should return error message for size %i with budget %i',
-    () => {
-      expect(errorMessage('test.js')).toBe(
-        `File test.js has wrong styles`,
+    (selector) => {
+      expect(errorMessage('any.component.ts', selector)).toBe(
+        `⚠️ ${selector} in file ${basename('any.component.ts')} does not use design system tokens in styles`
       );
     },
   );
 });
 
 describe('assertComponentStyles', () => {
-  it.each([[-1], [0], [1]])(
-    'should return a informative Issue without budgets (size: %s)',
-    () => {
-      expect(assertComponentStyles('test.js')).toEqual({
-        message: infoMessage('test.js'),
+  it.each([
+    ['styles.component.scss', 'selector-1', validStyles],
+  ])(
+    'should return a informative issues for file %s with selector %s',
+    (filePath, selector, content) => {
+      expect(assertComponentStyles(filePath, selector, content)).toEqual({
+        message: infoMessage(filePath, selector),
         severity: 'info',
-        source: { file: 'test.js' },
+        source: { file: filePath },
       });
     },
   );
 
   it.each([
-    [0, 0],
-    [0, 1],
-    [1, 1],
+    ['styles.component.scss', 'selector-1', validStyles],
   ])(
-    'should return a informative Issue with budgets not exceeding (size: %s, budget: %s)',
-    () => {
-      expect(assertComponentStyles('test.js')).toEqual({
-        message: infoMessage('test.js'),
+    'should return a informative Issue for file %s with selector %s and valid styles',
+    (filePath, selector, content) => {
+      expect(assertComponentStyles(filePath, selector, content)).toEqual({
+        message: infoMessage(filePath, selector),
         severity: 'info',
-        source: { file: 'test.js' },
+        source: { file: 'styles.component.scss' },
       });
     },
   );
 
-  it.each([[1, 0]])(
-    'should return error Issue with budgets exceeding (size: %s, budget: %s)',
+  it.each([
+    ['styles.component.scss', 'selector-1', invalidStyles]
+  ])(
+    'should return error Issue for file %s with selector %s and invalid styles',
     () => {
-      expect(assertComponentStyles('test.js')).toEqual({
-        message: errorMessage('test.js'),
+      expect(assertComponentStyles('styles.component.scss', 'selector', '.class { color: red; }')).toEqual({
+        message: errorMessage('styles.component.scss', 'selector'),
         severity: 'error',
-        source: { file: 'test.js' },
+        source: { file: 'styles.component.scss' },
       });
     },
   );
@@ -103,29 +126,32 @@ describe('angularDsComponentStylesIssues', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        'inline-styles.component.ts': inlineStylesComponent,
-        'styles.component.scss': stylesForComponent,
-        'styles.component.css': stylesForComponent,
+        [inlineStylesComponentFileName]: inlineStylesComponent(validStyles),
+        [separateCssStylesComponentFileName]: separateStylesComponent(separateCssStylesFileName),
+        [separateScssStylesComponentFileName]: separateStylesComponent(separateScssStylesFileName),
       },
       outputDir,
     );
   });
 
-  it('should list all files', async () => {
+  it('should list all component files', async () => {
     await expect(angularDsComponentStylesIssues(baseOptions)).resolves.toEqual(
       expect.arrayContaining(
-        ['styles.component.scss'].map(f => ({
+        [
+          separateScssStylesFileName,
+          separateCssStylesFileName
+        ].map(f => ({
           message: expect.any(String),
           severity: expect.any(String),
           source: {
             file: expect.stringContaining(f),
-          },
+          }
         })),
       ),
     );
   });
 
-  it('should list files matching a pattern', async () => {
+  it('should list component files matching a pattern', async () => {
     await expect(
       angularDsComponentStylesIssues({
         ...baseOptions,
@@ -135,7 +161,7 @@ describe('angularDsComponentStylesIssues', () => {
         message: expect.any(String),
         severity: expect.any(String),
         source: {
-          file: expect.stringContaining('test.js'),
+          file: expect.stringContaining('styles.component.scss'),
         },
       },
     ]);
@@ -166,7 +192,7 @@ describe('angularDsComponentStylesIssues', () => {
           message: expect.any(String),
           severity: 'error',
           source: {
-            file: expect.stringContaining('test.js'),
+            file: expect.stringContaining('styles.component.scss'),
           },
         },
       ]),
@@ -183,7 +209,7 @@ describe('angularDsComponentStylesIssues', () => {
         message: expect.any(String),
         severity: 'error',
         source: {
-          file: expect.stringContaining('test.js'),
+          file: expect.stringContaining('styles.component.scss'),
         },
       },
     ]);
@@ -204,9 +230,9 @@ describe('runnerFunction', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        'inline-styles.component.ts': inlineStylesComponent,
-        'styles.component.scss': stylesForComponent,
-        'styles.component.css': stylesForComponent,
+        [inlineStylesComponentFileName]: inlineStylesComponent(validStyles),
+        [separateCssStylesComponentFileName]: separateStylesComponent(separateCssStylesFileName),
+        [separateScssStylesComponentFileName]: separateStylesComponent(separateScssStylesFileName),
       },
       outputDir,
     );
@@ -260,7 +286,7 @@ describe('runnerFunction', () => {
           issues: [
             expect.objectContaining({
               source: {
-                file: expect.stringContaining('test.js'),
+                file: expect.stringContaining('styles.component.scss'),
               },
             }),
           ],
@@ -285,10 +311,10 @@ describe('runnerFunction', () => {
           issues: expect.arrayContaining([
             {
               message:
-                'File test.js has 154 B, this is 26 B too big. (budget: 128 B)',
+                'File styles.component.scss has 154 B, this is 26 B too big. (budget: 128 B)',
               severity: 'error',
               source: {
-                file: expect.stringContaining('test.js'),
+                file: expect.stringContaining('styles.component.scss'),
               },
             },
           ]),
