@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { basename } from 'node:path';
 import {
   AuditOutput,
@@ -7,6 +6,7 @@ import {
   Issue,
   PluginConfig,
 } from '@code-pushup/models';
+import { readTextFile } from '@code-pushup/utils';
 import {
   crawlFileSystem,
   factorOf,
@@ -14,12 +14,12 @@ import {
   toUnixPath,
 } from '../../../../../dist/packages/utils';
 import {
+  angularComponentRegex,
   angularComponentSelectorRegex,
-  angularComponentStylesRegex,
   getCssVariableUsage,
-  loadGeneratedStyles
+  loadComponentStyles,
+  loadGeneratedStylesFromImports,
 } from './utils';
-import {readTextFile} from "@code-pushup/utils";
 
 export type PluginOptions = {
   directory: string;
@@ -125,7 +125,7 @@ function filterSeverityError(issue: Issue): issue is Issue {
 }
 
 export function displayValue(numberOfFiles: number): string {
-  return `${pluralizeToken('file', numberOfFiles)} oversize`;
+  return `${pluralizeToken('component', numberOfFiles)}`;
 }
 
 export function angularDsComponentStylesIssues(options: {
@@ -134,38 +134,41 @@ export function angularDsComponentStylesIssues(options: {
 }): Promise<Issue[]> {
   const { directory, variableImportPattern } = options;
 
-  return crawlFileSystem({
-    directory,
-    // @TODO also scan inline styles
-    // @TODO also only scan files linked to components
-    pattern: /.(ts)$/,
-    fileTransform: async (filePath: string) => {
-      const componentContent = await readFile(filePath, { encoding: 'utf8' });
-      const selector = componentContent.match(angularComponentSelectorRegex);
+  return (
+    crawlFileSystem({
+      directory,
+      // @TODO also scan inline styles
+      // @TODO also only scan files linked to components
+      pattern: /.(ts)$/,
+      fileTransform: async (filePath: string) => {
+        const componentContent = await readTextFile(filePath);
+        // Only process files with Angular components inside. Filter out later.
+        // @TODO implement pattern matching for file content to filter out interesting files and avoid a second apply of filter later. See: https://github.com/code-pushup/cli/issues/350
+        const isComponentFile = Boolean(
+          componentContent.match(angularComponentRegex),
+        );
+        if (!isComponentFile) {
+          return false;
+        }
+        const selector =
+          componentContent.match(angularComponentSelectorRegex)?.[3] || false;
+        if (!selector) {
+          throw new Error('Component without selector is not supported');
+        }
 
-      // @TODO implement pattern matching for file content to filter out interesting files and avoid a second apply of filter later
-      // See: https://github.com/code-pushup/cli/issues/350
-      // filter out later
-      if(!selector) {
-        return false;
-      }
+        const componentStyles = await loadComponentStyles(componentContent);
 
-      // @TODO support multiple external style sheets
-      const externalStylePaths = componentContent.match(angularComponentStylesRegex);
-
-      // inline or external styles
-      const stylesContent = externalStylePaths?.[0] ? await readTextFile(externalStylePaths[0]) : componentContent;
-
-      return assertComponentStyles(
-        filePath,
-        selector?.[0],
-        stylesContent,
-        variableImportPattern,
-      );
-    },
-  })
-     // remove after https://github.com/code-pushup/cli/issues/350
-    .then((arr) => arr.filter((v): v is Issue => !v));
+        return assertComponentStyles(
+          filePath,
+          selector,
+          componentStyles,
+          variableImportPattern,
+        );
+      },
+    })
+      // remove after https://github.com/code-pushup/cli/issues/350
+      .then(arr => arr.filter((v): v is Issue => !!v))
+  );
 }
 
 export function infoMessage(filePath: string, selector: string) {
@@ -213,7 +216,7 @@ export async function assertComponentStyles(
     } satisfies Issue;
   }
 
-  const variablesContent = await loadGeneratedStyles(
+  const variablesContent = await loadGeneratedStylesFromImports(
     stylesContent,
     variableImportPattern,
   );

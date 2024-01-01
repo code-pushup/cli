@@ -2,13 +2,21 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
-import { inlineStylesComponentContent } from '../mock/fixtures.mock';
 import {
+  inlineStylesComponentContent,
+  separateCssStylesComponentFileName,
+  separateStylesComponentContent,
+} from '../mock/fixtures.mock';
+import {
+  angularComponentInlineStylesRegex,
+  angularComponentRegex,
   angularComponentSelectorRegex,
+  angularComponentStyleUrlsRegex,
   cssVariablesRegex,
   generatedStylesRegex,
   getCssVariableUsage,
-  loadGeneratedStyles,
+  loadComponentStyles,
+  loadGeneratedStylesFromImports,
 } from './utils';
 
 const validStyles = (root = '.') => `
@@ -90,18 +98,96 @@ describe('cssVariablesRegex', () => {
   });
 });
 
+describe('angularComponentRegex', () => {
+  it.each([
+    inlineStylesComponentContent('b { color: red }'),
+    separateStylesComponentContent('any.component.scss'), // @TODO make it pass
+  ])(`should match valid component %p`, stylesContent => {
+    expect(stylesContent).toMatch(angularComponentRegex);
+  });
+
+  it.each(['', ' ', `class Component({standalone: true})`])(
+    `should not match invalid component %p`,
+    invalidStylesContent => {
+      expect(invalidStylesContent).not.toMatch(angularComponentRegex);
+    },
+  );
+});
+
 describe('angularComponentSelectorRegex', () => {
   it.each([
     inlineStylesComponentContent('b { color: red }'),
-    // separateStylesComponentContent('any.component.scss') @TODO make it pass
+    separateStylesComponentContent('any.component.scss'), // @TODO make it pass
   ])(`should match valid component %p`, stylesContent => {
     expect(stylesContent).toMatch(angularComponentSelectorRegex);
   });
 
-  it.each(['', ' ', `@Component({standalone: true})`])(
+  it.each(['', ' ', `class Component({standalone: true})`])(
     `should not match invalid component %p`,
     invalidStylesContent => {
       expect(invalidStylesContent).not.toMatch(angularComponentSelectorRegex);
+    },
+  );
+});
+
+describe('angularComponentStyleUrlsRegex', () => {
+  it.each([separateStylesComponentContent(separateCssStylesComponentFileName)])(
+    `should match valid component inline styles %p`,
+    stylesContent => {
+      expect(stylesContent).toMatch(angularComponentStyleUrlsRegex);
+    },
+  );
+
+  it.each([
+    '',
+    ' ',
+    `class Component({standalone: true})`,
+    inlineStylesComponentContent(validStyles()),
+  ])(
+    `should not match invalid component inline styles %p`,
+    invalidStylesContent => {
+      expect(invalidStylesContent).not.toMatch(angularComponentStyleUrlsRegex);
+    },
+  );
+});
+describe('angularComponentInlineStylesRegex', () => {
+  it.each([
+    inlineStylesComponentContent('b { color: red }'),
+    inlineStylesComponentContent(validStyles(generatedStylesScssFileName)),
+  ])(`should match valid component inline styles %p`, stylesContent => {
+    expect(stylesContent).toMatch(angularComponentInlineStylesRegex);
+  });
+
+  it.each([
+    '',
+    ' ',
+    `class Component({standalone: true})`,
+    separateStylesComponentContent('any.component.scss'),
+  ])(
+    `should not match invalid component inline styles %p`,
+    invalidStylesContent => {
+      expect(invalidStylesContent).not.toMatch(
+        angularComponentInlineStylesRegex,
+      );
+    },
+  );
+});
+
+describe('loadComponentStyles', () => {
+  const styles = validStyles();
+  it.each([
+    [
+      separateStylesComponentContent(separateCssStylesComponentFileName),
+      { [separateCssStylesComponentFileName]: styles },
+    ],
+    [inlineStylesComponentContent(styles), {}],
+  ])(
+    'should load component styles (g: %s, fs: %s)',
+    async (stylesContent, fsContent) => {
+      // setup file system
+      vol.fromJSON(fsContent, MEMFS_VOLUME);
+
+      await expect(loadComponentStyles(stylesContent)).resolves.toBe(styles);
     },
   );
 });
@@ -127,15 +213,15 @@ describe('loadGeneratedStyles', () => {
     async (stylesContent, fsContent, pattern) => {
       vol.fromJSON(fsContent, MEMFS_VOLUME);
 
-      await expect(loadGeneratedStyles(stylesContent, pattern)).resolves.toBe(
-        generatedComponentStyles,
-      );
+      await expect(
+        loadGeneratedStylesFromImports(stylesContent, pattern),
+      ).resolves.toBe(generatedComponentStyles);
     },
   );
 });
 
 describe('getCssVariableUsage', () => {
-  it('should load generated styles', () => {
+  it('should return correct result', () => {
     expect(
       getCssVariableUsage(generatedComponentStyles, validStyles()),
     ).toEqual({

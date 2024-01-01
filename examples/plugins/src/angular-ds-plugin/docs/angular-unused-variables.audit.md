@@ -57,7 +57,6 @@ The missing import is mentioned in the message.
   </table>
 ```
 
-
 **Audit failed because of missing variable usage**
 A `Issue` with severity `error` is present and names to the given file.  
 The missing variables are mentioned in the message.

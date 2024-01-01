@@ -30,6 +30,7 @@ const projectJson = JSON.stringify(
 describe('create', () => {
   const baseOptions: PluginOptions = {
     directory: '/',
+    variableImportPattern: 'generated',
   };
 
   beforeEach(() => {
@@ -68,28 +69,16 @@ describe('create', () => {
     });
   });
 
-  it('should use pattern', async () => {
+  it('should use variableImportPattern', async () => {
     const pluginConfig = create({
       ...baseOptions,
-      pattern: /\.js$/,
+      variableImportPattern: 'generated',
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
     expect(auditOutputs).toHaveLength(1);
     expect(auditOutputs[0]?.score).toBe(1);
     expect(auditOutputs[0]?.details?.issues).toHaveLength(1);
-  });
-
-  it('should use budget', async () => {
-    const pluginConfig = create({
-      ...baseOptions,
-      budget: 0,
-    });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
-
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.score).toBe(0);
-    expect(auditOutputs[0]?.details?.issues).toHaveLength(2);
   });
 });
 

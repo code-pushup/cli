@@ -5,8 +5,14 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   generatedComponentStyles,
+  generatedStylesScssFileName,
   inlineStylesComponentContent,
+  inlineStylesComponentFileName,
   invalidStyles,
+  separateCssStylesComponentFileName,
+  separateCssStylesFileName,
+  separateScssStylesComponentFileName,
+  separateScssStylesFileName,
   separateStylesComponentContent,
   validStyles,
 } from '../mock/fixtures.mock';
@@ -19,14 +25,6 @@ import {
   infoMessage,
   runnerFunction,
 } from './angular-ds.plugin';
-
-const outputDir = 'test';
-const inlineStylesComponentFileName = 'inline-styles.component.ts';
-const separateCssStylesComponentFileName = 'separate-css-styles.component.ts';
-const separateCssStylesFileName = 'separate-css-styles.component.css';
-//const separateScssStylesComponentFileName = 'separate-scss-styles.component.ts';
-const separateScssStylesFileName = 'separate-scss-styles.component.scss';
-const generatedStylesScssFileName = 'generated-styles.scss';
 
 describe('infoMessage for correct styles', () => {
   it.each([
@@ -46,19 +44,17 @@ describe('errorMessageNoUsageOfVariables for incorrect styles', () => {
     ['any.component.ts', 'any-selector'],
     [join('src', 'any.component.ts'), 'any-other-selector'],
   ])(
-    'should return error message for size %i with budget %i',
+    'should return error message for no usage of variables',
     (path, selector) => {
       expect(errorMessageNoUsageOfVariables(path, selector)).toBe(
-        `${selector} in file ${basename(
-          path,
-        )} does not use design system tokens in styles`,
+        `${selector} in file ${path} does not use design system tokens in styles`,
       );
     },
   );
 });
 
 describe('errorMessageMissingVariableUsage for missing styles', () => {
-  it('should return error message for size %i with budget %i', () => {
+  it('should return error message inc unused variables', () => {
     const selector = 'my-selector';
     expect(
       errorMessageMissingVariableUsage('any.component.ts', 'my-selector', [
@@ -145,37 +141,48 @@ describe('angularDsComponentStylesIssues', () => {
     variableImportPattern: 'generated',
   };
 
-  beforeEach(() => {
+  it('should list all css and scss files', async () => {
     vol.fromJSON(
       {
         [generatedStylesScssFileName]: generatedComponentStyles,
-        [inlineStylesComponentFileName]: inlineStylesComponentContent(
-          validStyles(),
-        ),
-        [separateCssStylesFileName]: validStyles('test'),
         [separateCssStylesComponentFileName]: separateStylesComponentContent(
           separateCssStylesFileName,
         ),
+        [separateCssStylesFileName]: validStyles(),
+        [inlineStylesComponentFileName]: inlineStylesComponentContent(
+          validStyles(),
+        ),
       },
-      outputDir,
+      MEMFS_VOLUME,
     );
-  });
-
-  it('should list all css and scss files', async () => {
     await expect(angularDsComponentStylesIssues(baseOptions)).resolves.toEqual(
       expect.arrayContaining(
-        [separateCssStylesFileName, separateScssStylesFileName].map(f => ({
-          message: expect.any(String),
-          severity: expect.any(String),
-          source: {
-            file: expect.stringContaining(f),
-          },
-        })),
+        [inlineStylesComponentFileName, separateCssStylesComponentFileName].map(
+          f => ({
+            message: expect.any(String),
+            severity: expect.any(String),
+            source: {
+              file: expect.stringContaining(f),
+            },
+          }),
+        ),
       ),
     );
   });
 
   it('should assert files that don`t include generated styles', async () => {
+    vol.fromJSON(
+      {
+        [separateCssStylesComponentFileName]: separateStylesComponentContent(
+          separateCssStylesFileName,
+        ),
+        [separateCssStylesFileName]: generatedComponentStyles,
+        [inlineStylesComponentFileName]: inlineStylesComponentContent(
+          generatedComponentStyles,
+        ),
+      },
+      MEMFS_VOLUME,
+    );
     await expect(
       angularDsComponentStylesIssues({
         ...baseOptions,
@@ -186,7 +193,7 @@ describe('angularDsComponentStylesIssues', () => {
           message: expect.any(String),
           severity: 'error',
           source: {
-            file: expect.stringContaining(separateScssStylesFileName),
+            file: expect.stringContaining(separateCssStylesComponentFileName),
           },
         },
       ]),
@@ -194,6 +201,17 @@ describe('angularDsComponentStylesIssues', () => {
   });
 
   it('should assert files that import general styles but have unused variables', async () => {
+    vol.fromJSON(
+      {
+        [separateCssStylesComponentFileName]: separateStylesComponentContent(
+          separateCssStylesFileName,
+        ),
+        [separateCssStylesFileName]: invalidStyles,
+        [inlineStylesComponentFileName]:
+          inlineStylesComponentContent(invalidStyles),
+      },
+      MEMFS_VOLUME,
+    );
     await expect(
       angularDsComponentStylesIssues({
         ...baseOptions,
@@ -203,7 +221,14 @@ describe('angularDsComponentStylesIssues', () => {
         message: expect.any(String),
         severity: 'error',
         source: {
-          file: expect.stringContaining('styles.component.scss'),
+          file: expect.stringContaining(inlineStylesComponentFileName),
+        },
+      },
+      {
+        message: expect.any(String),
+        severity: 'error',
+        source: {
+          file: expect.stringContaining(separateCssStylesComponentFileName),
         },
       },
     ]);
@@ -240,8 +265,11 @@ describe('runnerFunction', () => {
   it('should return issues if files are given and pass', async () => {
     vol.fromJSON(
       {
-        [join('src', generatedStylesScssFileName)]: generatedComponentStyles,
-        [separateCssStylesFileName]: validStyles('..'),
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [separateScssStylesComponentFileName]: separateStylesComponentContent(
+          separateScssStylesFileName,
+        ),
+        [separateScssStylesFileName]: validStyles(),
       },
       MEMFS_VOLUME,
     );
@@ -264,7 +292,17 @@ describe('runnerFunction', () => {
     ]);
   });
 
-  it('should have files that are matching the pattern as issues', async () => {
+  it('should have component files in the directory as issues', async () => {
+    vol.fromJSON(
+      {
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [separateScssStylesComponentFileName]: separateStylesComponentContent(
+          separateScssStylesFileName,
+        ),
+        [separateScssStylesFileName]: validStyles(),
+      },
+      MEMFS_VOLUME,
+    );
     await expect(
       runnerFunction({
         ...baseOptions,
@@ -276,7 +314,9 @@ describe('runnerFunction', () => {
           issues: [
             expect.objectContaining({
               source: {
-                file: expect.stringContaining('styles.component.scss'),
+                file: expect.stringContaining(
+                  separateScssStylesComponentFileName,
+                ),
               },
             }),
           ],
@@ -285,7 +325,17 @@ describe('runnerFunction', () => {
     ]);
   });
 
-  it('should have number of files that are over budget as value and listed in issues', async () => {
+  it('should have number of component files that as value and listed in issues', async () => {
+    vol.fromJSON(
+      {
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [separateScssStylesComponentFileName]: separateStylesComponentContent(
+          separateScssStylesFileName,
+        ),
+        [separateScssStylesFileName]: invalidStyles,
+      },
+      MEMFS_VOLUME,
+    );
     await expect(
       runnerFunction({
         ...baseOptions,
@@ -294,17 +344,19 @@ describe('runnerFunction', () => {
     ).resolves.toEqual([
       {
         ...variableUsageAuditOutputBase,
-        displayValue: '1 file oversize',
+        displayValue: '1 component',
         value: 1,
         score: expect.any(Number),
         details: {
           issues: expect.arrayContaining([
             {
               message:
-                'File styles.component.scss has 154 B, this is 26 B too big. (budget: 128 B)',
+                'ui-backdrop in file /test/separate-scss-styles.component.ts does not use design system tokens in styles',
               severity: 'error',
               source: {
-                file: expect.stringContaining('styles.component.scss'),
+                file: expect.stringContaining(
+                  separateScssStylesComponentFileName,
+                ),
               },
             },
           ]),
@@ -314,10 +366,47 @@ describe('runnerFunction', () => {
   });
 
   it.each([
-    [0, 2, 0],
-    [128, 1, 0.5],
-    [1000, 0, 1],
-  ])('should have correct score', async (budget, value, score) => {
+    [
+      {
+        [separateScssStylesComponentFileName]: separateStylesComponentContent(
+          separateScssStylesFileName,
+        ),
+        [separateScssStylesFileName]: invalidStyles,
+      },
+      1,
+      0,
+    ],
+    [
+      {
+        [inlineStylesComponentFileName]:
+          inlineStylesComponentContent(invalidStyles),
+      },
+      1,
+      0,
+    ],
+    [
+      {
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [separateScssStylesFileName]: validStyles(),
+        [separateScssStylesComponentFileName]: separateStylesComponentContent(
+          separateScssStylesFileName,
+        ),
+      },
+      1,
+      1,
+    ],
+    [
+      {
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [inlineStylesComponentFileName]: inlineStylesComponentContent(
+          validStyles(),
+        ),
+      },
+      1,
+      1,
+    ],
+  ])('should have correct score for %s', async (fsContent, value, score) => {
+    vol.fromJSON(fsContent, MEMFS_VOLUME);
     await expect(
       runnerFunction({
         ...baseOptions,
@@ -326,7 +415,7 @@ describe('runnerFunction', () => {
     ).resolves.toEqual([
       {
         ...variableUsageAuditOutputBase,
-        displayValue: expect.stringContaining(value.toString()),
+        displayValue: expect.stringContaining(value + ''),
         value,
         score,
         details: {

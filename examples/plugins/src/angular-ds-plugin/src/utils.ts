@@ -10,18 +10,38 @@ export const generatedStylesRegex = (importPath: string): RegExp => {
   return new RegExp(`@import +['"](?:.)*(${escapedPath})[^'"]+['"]`, 'g');
 };
 
-export const cssVariablesRegex = /(--(?!semantic)[\w-]+)/g;
+export const cssVariablesRegex = /(--(?!semantic)[\w-]+)/gm;
+export const angularComponentRegex = /@Component\s*\(\s*\{/m;
 export const angularComponentSelectorRegex =
-  /@Component\s*\(\s*\{\s*(?:.)*selector\s*:\s*['"]([^'"]+)['"]/g;
-export const angularComponentStylesRegex =
-  /@Component\s*\(\s*\{\s*(?:.)*styles\s*:\s*['"]([^'"]+)['"]/g;
+  /(selector)(\s*:\s*['"])([^'"]+)(['"])/m;
+export const angularComponentStyleUrlsRegex =
+  /styleUrls\s*:\s*\[['"]([^'"]+)['"]\]/m;
+export const angularComponentInlineStylesRegex =
+  /styles:\s*\[\s*`([^`]+)`\s*\]/m;
 
-export async function loadGeneratedStyles(
-  content: string,
+export async function loadComponentStyles(
+  componentContent: string,
+): Promise<string> {
+  // @TODO support multiple external style sheets
+  const externalStylePaths =
+    componentContent.match(angularComponentStyleUrlsRegex)?.[1] || false;
+  if (externalStylePaths) {
+    return readTextFile(externalStylePaths);
+  }
+  const inlineStyles =
+    componentContent.match(angularComponentInlineStylesRegex)?.[1] || false;
+  if (!inlineStyles) {
+    throw new Error(`inlineStyles not present in ${componentContent}`);
+  }
+  return inlineStyles;
+}
+
+export async function loadGeneratedStylesFromImports(
+  stylesContent: string,
   importPattern: string,
   root = process.cwd(),
 ): Promise<string> {
-  const scssImportStatement = content.match(
+  const scssImportStatement = stylesContent.match(
     generatedStylesRegex(importPattern),
   );
   const scssImportPath = (scssImportStatement as [string])[0]

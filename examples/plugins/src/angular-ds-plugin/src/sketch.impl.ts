@@ -8,7 +8,7 @@
 
 /*
 *
-* Expected outpur:
+* Expected output:
 *
 ds-badge
 Not used css variables - 33%
