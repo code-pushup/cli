@@ -241,7 +241,7 @@ describe('runnerFunction', () => {
     variableImportPattern: 'generated',
   };
   const variableUsageAuditOutputBase = {
-    displayValue: '0 files oversize',
+    displayValue: '0 components',
     score: 1,
     slug: 'angular-ds-component-styles',
     value: 0,
@@ -286,7 +286,7 @@ describe('runnerFunction', () => {
   it('should have number of files given as value', async () => {
     await expect(runnerFunction(baseOptions)).resolves.toEqual([
       expect.objectContaining({
-        displayValue: '0 files oversize',
+        displayValue: '0 components',
         value: 0,
       }),
     ]);
@@ -392,7 +392,7 @@ describe('runnerFunction', () => {
           separateScssStylesFileName,
         ),
       },
-      1,
+      0,
       1,
     ],
     [
@@ -402,7 +402,7 @@ describe('runnerFunction', () => {
           validStyles(),
         ),
       },
-      1,
+      0,
       1,
     ],
   ])('should have correct score for %s', async (fsContent, value, score) => {

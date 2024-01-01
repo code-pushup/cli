@@ -35,7 +35,7 @@ export const auditsMap = {
   [angularDsAuditSlug]: {
     slug: angularDsAuditSlug,
     title: 'Component Styles Audit',
-    description: 'An audit to check style usage in a Angular projcet.',
+    description: 'An audit to check style usage in a Angular project.',
   },
 };
 export const audits = Object.values(auditsMap);

@@ -8,6 +8,13 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
+  generatedComponentStyles,
+  generatedStylesScssFileName,
+  inlineStylesComponentContent,
+  inlineStylesComponentFileName,
+  validStyles,
+} from '../mock/fixtures.mock';
+import {
   PluginOptions,
   audits,
   create,
@@ -36,7 +43,10 @@ describe('create', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        'project.json': projectJson,
+        [generatedStylesScssFileName]: generatedComponentStyles,
+        [inlineStylesComponentFileName]: inlineStylesComponentContent(
+          validStyles(),
+        ),
       },
       MEMFS_VOLUME,
     );
@@ -48,11 +58,11 @@ describe('create', () => {
     expect(pluginConfig).toEqual({
       audits,
       description:
-        'A plugin to measure and assert filesize of files in a directory.',
+        'A plugin to measure and assert usage of styles in a Angular project.',
       icon: 'javascript',
       runner: expect.any(Function),
       slug,
-      title: 'File Size',
+      title: 'Angular Design System',
     });
   });
 
@@ -60,9 +70,9 @@ describe('create', () => {
     const pluginConfig = create(baseOptions);
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
       description:
-        'A plugin to measure and assert filesize of files in a directory.',
+        'A plugin to measure and assert usage of styles in a Angular project.',
       slug,
-      title: 'File Size',
+      title: 'Angular Design System',
       duration: expect.any(Number),
       date: expect.any(String),
       audits: expect.any(Array),
