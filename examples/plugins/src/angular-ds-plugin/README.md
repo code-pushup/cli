@@ -8,7 +8,8 @@ The plugin crawls the file base depending on your configuration and reports abou
 
 You can configure the plugin with the following options:
 
-- directory to crawl
+- `directory` to crawl 
+- `variableImportPattern` to detect
 
 ## Getting started
 
