@@ -4,6 +4,9 @@ import {
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from './src';
+import cssTokenUsagePlugin, {
+  recommendedRefs as cssTokenUsageRecommendedRefs,
+} from './src/css-tokens/src/css-token.plugin';
 import fileSizePlugin, {
   recommendedRefs as fileSizeRecommendedRefs,
 } from './src/file-size/src/file-size.plugin';
@@ -34,6 +37,9 @@ const config = (() => ({
         zod: '^3.22.4',
       },
     }),
+    cssTokenUsagePlugin({
+      directory: './examples',
+    }),
   ],
   categories: [
     {
@@ -44,7 +50,10 @@ const config = (() => ({
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [packageJsonVersionControlGroupRef],
+      refs: [
+        packageJsonVersionControlGroupRef,
+        ...cssTokenUsageRecommendedRefs,
+      ],
     },
     {
       slug: 'documentation',
