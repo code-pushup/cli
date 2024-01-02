@@ -33,10 +33,23 @@ esbuild.build({
                 if (result.errors.length > 0) return;
 
                 /** @type {import('type-fest').PackageJson} */
+                const rootPackageJson = JSON.parse(
+                  readFileSync(`${__dirname}/package.json`).toString(),
+                );
+
+                /** @type {import('type-fest').PackageJson} */
                 const packageJson = JSON.parse(
                   readFileSync(`${projectPath}/package.json`).toString(),
                 );
 
+                packageJson.license = rootPackageJson.license;
+                packageJson.homepage = rootPackageJson.homepage;
+                packageJson.bugs = rootPackageJson.bugs;
+                packageJson.repository = {
+                  ...rootPackageJson.repository,
+                  directory: projectPath,
+                };
+                packageJson.contributors = rootPackageJson.contributors;
                 packageJson.type = 'module';
                 packageJson.main = './index.js';
                 packageJson.types = './src/index.d.ts';
