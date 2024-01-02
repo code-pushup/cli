@@ -22,18 +22,6 @@ import {
   pluginSlug as slug,
 } from './angular-ds.plugin';
 
-const projectJson = JSON.stringify(
-  {
-    test: 42,
-    arr: [1, 2, 3],
-    obj: {
-      test: 42,
-    },
-  },
-  null,
-  2,
-);
-
 describe('create', () => {
   const baseOptions: PluginOptions = {
     directory: '/',

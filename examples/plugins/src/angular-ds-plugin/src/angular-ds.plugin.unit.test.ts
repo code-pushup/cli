@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   generatedComponentStyles,
