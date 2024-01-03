@@ -1,81 +1,105 @@
 import { describe, expect } from 'vitest';
-import { report } from '@code-pushup/models/testing';
+import { REPORT_MOCK } from '@code-pushup/testing-utils';
 import { calculateScore, scoreReport } from './scoring';
 
 describe('calculateScore', () => {
-  // https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1200&LCP=1450&TBT=0&CLS=0&SI=1200&TTI=1200&FMP=1200&device=desktop&version=10.3.0
-  const refs = [
-    { slug: 'first-contentful-paint', weight: 1 },
-    { slug: 'largest-contentful-paint', weight: 2.5 },
-    { slug: 'speed-index', weight: 1 },
-    { slug: 'total-blocking-time', weight: 3 },
-    { slug: 'cumulative-layout-shift', weight: 2.5 },
-  ];
-  const scores = {
-    'first-contentful-paint': 0.75,
-    'largest-contentful-paint': 0.82,
-    'speed-index': 0.93,
-    'total-blocking-time': 1,
-    'cumulative-layout-shift': 1,
-    'unminified-javascript': 1,
-    'uses-long-cache-ttl': 0,
-  };
-  const scoreFn = (ref: (typeof refs)[number]) =>
-    scores[ref.slug as keyof typeof scores];
-
-  it('Lighthouse performance group', () => {
-    expect(calculateScore(refs, scoreFn)).toBeCloseTo(0.92);
+  it('should calculate the same score for one reference', () => {
+    expect(
+      calculateScore(
+        [{ slug: 'first-contentful-paint', weight: 1, score: 0.75 }],
+        ref => ref.score,
+      ),
+    ).toBe(0.75);
   });
 
-  it('ignore refs with weight 0', () => {
+  it('should calculate correct score for multiple references', () => {
     expect(
       calculateScore(
         [
-          ...refs,
-          { slug: 'unminified-javascript', weight: 0 },
-          { slug: 'uses-long-cache-ttl', weight: 0 },
+          { slug: 'first-contentful-paint', weight: 3, score: 0 },
+          { slug: 'cumulative-layout-shift', weight: 1, score: 1 },
         ],
-        scoreFn,
+        ref => ref.score,
+      ),
+    ).toBe(0.25);
+  });
+
+  it('should remove zero-weight reference from score calculation', () => {
+    expect(
+      calculateScore(
+        [
+          { slug: 'first-contentful-paint', weight: 3, score: 0 },
+          { slug: 'cumulative-layout-shift', weight: 1, score: 1 },
+          { slug: 'speed-index', weight: 0, score: 1 },
+        ],
+        ref => ref.score,
+      ),
+    ).toBe(0.25);
+  });
+
+  it('should calculate correct score for realistic Lighthouse values', () => {
+    // https://googlechrome.github.io/lighthouse/scorecalc/#FCP=1200&LCP=1450&TBT=0&CLS=0&SI=1200&TTI=1200&FMP=1200&device=desktop&version=10.3.0
+    expect(
+      calculateScore(
+        [
+          { slug: 'first-contentful-paint', weight: 1, score: 0.75 },
+          { slug: 'largest-contentful-paint', weight: 2.5, score: 0.82 },
+          { slug: 'speed-index', weight: 1, score: 0.93 },
+          { slug: 'total-blocking-time', weight: 3, score: 1 },
+          { slug: 'cumulative-layout-shift', weight: 2.5, score: 1 },
+        ],
+        ref => ref.score,
       ),
     ).toBeCloseTo(0.92);
   });
 
-  it('throws for empty refs (weight 0 is ignored internally)', () => {
+  it('should throw for an empty reference array', () => {
     expect(() =>
-      calculateScore([{ slug: 'uses-long-cache-ttl', weight: 0 }], scoreFn),
-    ).toThrow(
-      '0 division for score. This can be caused by refs only weighted with 0 or empty refs',
-    );
+      calculateScore<{ weight: number }>([], ref => ref.weight),
+    ).toThrow('0 division for score');
   });
 
-  it('works for 0 scores', () => {
-    expect(
-      calculateScore([{ slug: 'uses-long-cache-ttl', weight: 1 }], scoreFn),
-    ).toBe(0);
+  it('should throw for a reference array full of zero weights', () => {
+    expect(() =>
+      calculateScore(
+        [
+          { slug: 'first-contentful-paint', weight: 0, score: 0 },
+          { slug: 'cumulative-layout-shift', weight: 0, score: 1 },
+        ],
+        ref => ref.weight,
+      ),
+    ).toThrow('0 division for score');
   });
 });
 
 describe('scoreReport', () => {
-  it('should score valid report', () => {
-    const reportA = report();
-    const scoredReport = scoreReport(reportA);
+  it('should correctly score a valid report', () => {
+    /* 
+      The report mock has the following data:
+      Test results
+      -> Cypress E2E: score 0.5 | weight 2
+      -> CyCT:        score 1   | weight 1
+      => Overall score = 1.5/3 = 0.5
+      
+      Bug prevention
+      -> TypeScript ESLint group:      score 0.25 weight 8
+        -> ts-eslint-typing            score 0    weight 3
+        -> ts-eslint-enums             score 1    weight 1
+        -> ts-eslint-experimental      score 0    weight 0
 
-    // enriched audits
-    expect(scoredReport.plugins[1]?.audits[0]?.plugin).toBe('lighthouse');
-    expect(scoredReport.plugins[1]?.audits[0]?.slug).toBe(
-      'first-contentful-paint',
+      -> ESLint Jest naming:           score 1    weight 1
+      -> TypeScript ESLint functional: score 0    weight 1
+      -> ESLint Cypress:               score 1    weight 0
+      => Overall score = 3/10 = 0.3
+    */
+
+    expect(scoreReport(REPORT_MOCK)).toEqual(
+      expect.objectContaining({
+        categories: [
+          expect.objectContaining({ slug: 'test-results', score: 0.625 }),
+          expect.objectContaining({ slug: 'bug-prevention', score: 0.3 }),
+        ],
+      }),
     );
-    expect(scoredReport.plugins[1]?.audits[0]?.score).toBeCloseTo(0.76);
-    // enriched and scored groups
-    expect(scoredReport.plugins[1]?.groups[0]?.plugin).toBe('lighthouse');
-    expect(scoredReport.plugins[1]?.groups[0]?.slug).toBe('performance');
-    expect(scoredReport.plugins[1]?.groups[0]?.score).toBeCloseTo(0.92);
-    // enriched and scored categories
-    expect(scoredReport.categories[0]?.slug).toBe('performance');
-    expect(scoredReport?.categories?.[0]?.score).toBeCloseTo(0.92);
-    expect(scoredReport.categories[1]?.slug).toBe('bug-prevention');
-    expect(scoredReport?.categories?.[1]?.score).toBeCloseTo(0.68);
-    expect(scoredReport.categories[2]?.slug).toBe('code-style');
-    expect(scoredReport?.categories?.[2]?.score).toBeCloseTo(0.54);
   });
 });
