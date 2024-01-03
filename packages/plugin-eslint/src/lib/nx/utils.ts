@@ -25,7 +25,7 @@ export function getLintFilePatterns(project: ProjectConfiguration): string[] {
     | { lintFilePatterns?: string | string[] }
     | undefined;
   return options?.lintFilePatterns == null
-    ? [project.root] // lintFilePatterns defaults to ["{projectRoot}"] - https://github.com/nrwl/nx/pull/20313
+    ? [`${project.root}/**/*`] // lintFilePatterns defaults to ["{projectRoot}"] - https://github.com/nrwl/nx/pull/20313
     : toArray(options.lintFilePatterns);
 }
 
