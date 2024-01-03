@@ -8,7 +8,7 @@ let throwError = process.argv[4] === '1';
  * The number of runs is also configurable and defaults to 4.
  * We can decide if the process should error or complete. By default, it completes.
  *
- * @arg interval: number - interval of updates in ms; defaults to 100
+ * @arg interval: number - delay between updates in ms; defaults to 100
  * @arg runs: number - number of updates; defaults to 4
  * @arg throwError: '1' | '0' - if the process completes or throws; defaults to '0'
  **/
