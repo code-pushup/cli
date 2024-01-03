@@ -8,6 +8,12 @@
 
 ---
 
+|                  📊 Getting Started                  |               🌐 Portal Integration                |              🛠️ CI Automation              |
+| :--------------------------------------------------: | :------------------------------------------------: | :----------------------------------------: |
+| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#-ci-automation)** |
+
+---
+
 The Code PushUp CLI serves to **collect audit results**, and optionally **upload the report** to the Code PushUp portal.
 
 It can be used locally in your repository, or integrated in your CI environment.
@@ -109,7 +115,7 @@ export default {
 };
 ```
 
-## CI automation
+## 🛠 CI automation
 
 Example for GitHub Actions:
 
@@ -127,6 +133,18 @@ jobs:
       - run: npm ci
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
+
+## Custom Plugins
+
+We provide comprehensive documentation on [how to create a custom plugin](./docs/custom-plugins.md).
+
+The repository also maintains a set of plugin examples showcasing different scenarios.  
+Each example is fully tested to give demonstrate best practices for plugin testing.
+
+**Example for custom plugins:**
+
+- 📏 [File Size](../../examples/plugins/src/file-size)
+- 📦 [Package Json](../../examples/plugins/src/package-json)
 
 ## CLI commands and options
 

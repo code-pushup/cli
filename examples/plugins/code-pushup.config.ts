@@ -1,7 +1,12 @@
 import {
-  create as fileSizePlugin,
+  packageJsonDocumentationGroupRef,
+  packageJsonPerformanceGroupRef,
+  packageJsonPlugin,
+  packageJsonVersionControlGroupRef,
+} from './src';
+import fileSizePlugin, {
   recommendedRefs as fileSizeRecommendedRefs,
-} from './src/file-size/file-size.plugin';
+} from './src/file-size/src/file-size.plugin';
 import {
   create as lighthousePlugin, //  recommendedRefs as lighthouseRecommendedRefs,
 } from './src/lighthouse/src/lighthouse.plugin';
@@ -15,18 +20,22 @@ import {
  *
  */
 
-const outputDir = '.code-pushup';
 // eslint-disable-next-line unicorn/no-unreadable-iife
 const config = (() => ({
-  persist: {
-    outputDir,
-  },
   plugins: [
     fileSizePlugin({
-      directory: './dist',
+      directory: './dist/packages',
       pattern: /\.js$/,
       // eslint-disable-next-line no-magic-numbers
       budget: 42_000,
+    }),
+    packageJsonPlugin({
+      directory: './packages',
+      license: 'MIT',
+      type: 'module',
+      dependencies: {
+        zod: '^3.22.4',
+      },
     }),
     lighthousePlugin({
       url: 'https://example.com',
@@ -39,6 +48,7 @@ const config = (() => ({
       title: 'Performance',
       refs: [
         ...fileSizeRecommendedRefs,
+        packageJsonPerformanceGroupRef,
         {
           plugin: 'lighthouse',
           slug: 'largest-contentful-paint',
@@ -46,6 +56,16 @@ const config = (() => ({
           weight: 1,
         },
       ],
+    },
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [packageJsonVersionControlGroupRef],
+    },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
     },
   ],
 }))();

@@ -57,8 +57,34 @@ export function duplicateRefsInCategoryMetricsErrorMsg(metrics: CategoryRef[]) {
     duplicateRefs,
   )}`;
 }
+
 function getDuplicateRefsInCategoryMetrics(metrics: CategoryRef[]) {
   return hasDuplicateStrings(
     metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
   );
+}
+
+export const categoriesSchema = z
+  .array(categoryConfigSchema, {
+    description: 'Categorization of individual audits',
+  })
+  .min(1)
+  // categories slugs are unique
+  .refine(
+    categoryCfg => !getDuplicateSlugCategories(categoryCfg),
+    categoryCfg => ({
+      message: duplicateSlugCategoriesErrorMsg(categoryCfg),
+    }),
+  );
+
+// helper for validator: categories slugs are unique
+function duplicateSlugCategoriesErrorMsg(categories: CategoryConfig[]) {
+  const duplicateStringSlugs = getDuplicateSlugCategories(categories);
+  return `In the categories, the following slugs are duplicated: ${errorItems(
+    duplicateStringSlugs,
+  )}`;
+}
+
+function getDuplicateSlugCategories(categories: CategoryConfig[]) {
+  return hasDuplicateStrings(categories.map(({ slug }) => slug));
 }

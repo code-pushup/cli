@@ -1,20 +1,42 @@
+import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { reportSchema } from '@code-pushup/models';
-import { minimalConfig } from '@code-pushup/models/testing';
-import { CollectOptions, collect } from './collect';
-
-const baseOptions: CollectOptions = {
-  ...minimalConfig(),
-  verbose: true,
-  progress: false,
-};
+import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import { collect } from './collect';
 
 describe('collect', () => {
   it('should execute with valid options', async () => {
-    const report = await collect(baseOptions);
-    expect(() =>
-      reportSchema.omit({ packageName: true, version: true }).parse(report),
-    ).not.toThrow();
-    expect(report.plugins[0]?.audits[0]?.slug).toBe('audit-1');
+    vol.fromJSON({}, MEMFS_VOLUME);
+    const report = await collect({
+      ...MINIMAL_CONFIG_MOCK,
+      verbose: true,
+      progress: false,
+    });
+
+    expect(report.plugins[0]?.audits[0]).toEqual(
+      expect.objectContaining({
+        slug: 'node-version',
+        displayValue: '16.0.0',
+        details: {
+          issues: [
+            {
+              severity: 'error',
+              message:
+                'The required Node version to run Code PushUp CLI is 18.',
+            },
+          ],
+        },
+      }),
+    );
+  });
+
+  it('should throw when no plugins are passed', async () => {
+    await expect(
+      collect({
+        ...MINIMAL_CONFIG_MOCK,
+        plugins: [],
+        verbose: true,
+        progress: false,
+      }),
+    ).rejects.toThrow('No plugins registered');
   });
 });
