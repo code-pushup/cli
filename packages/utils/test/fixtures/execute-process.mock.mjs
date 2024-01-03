@@ -1,9 +1,6 @@
-import { writeFileSync } from 'fs';
-
 const interval = parseInt(process.argv[2] || 100);
 let runs = parseInt(process.argv[3] || 4);
 let throwError = process.argv[4] === '1';
-let outputFile = process.argv[5] || './tmp/out-async-runner.json';
 
 /**
  * Custom runner implementation that simulates asynchronous situations.
@@ -17,7 +14,7 @@ let outputFile = process.argv[5] || './tmp/out-async-runner.json';
  **/
 (async () => {
   console.info(
-    `process:start with interval: ${interval}, runs: ${runs}, throwError: ${throwError}, outputFile: ${outputFile}`,
+    `process:start with interval: ${interval}, runs: ${runs}, throwError: ${throwError}`,
   );
   await new Promise(resolve => {
     const id = setInterval(() => {
@@ -36,5 +33,4 @@ let outputFile = process.argv[5] || './tmp/out-async-runner.json';
   });
 
   console.info('process:complete');
-  writeFileSync(outputFile, JSON.stringify({ audits: ['dummy-result'] }));
 })();
