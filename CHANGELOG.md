@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.6.1](https://github.com/code-pushup/cli/compare/v0.6.0...v0.6.1) (2024-01-03)
+
+### Bug Fixes
+
+- **plugin-eslint:** fix default Nx lint patterns - directory not valid for "files" in eslintrc ([6865800](https://github.com/code-pushup/cli/commit/68658003f295989b0587986e87a0e17711e7430c))
+
 # [0.6.0](https://github.com/code-pushup/cli/compare/v0.5.7...v0.6.0) (2024-01-03)
 
 ### Features
