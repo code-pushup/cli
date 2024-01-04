@@ -1,6 +1,7 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { MAX_SCREEN_WIDTH } from '@code-pushup/models';
 import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -42,11 +43,12 @@ function reportToOverviewSection({
   output += addLine();
 
   const table = new Table({
-    head: reportRawOverviewTableHeaders,
+    colWidths: [null, 8, 8],
     colAligns: ['left', 'right', 'right'],
     style: {
       head: ['cyan'],
     },
+    head: reportRawOverviewTableHeaders,
   });
 
   table.push(
@@ -72,7 +74,7 @@ function reportToDetailSection(report: ScoredReport): string {
     output += addLine(chalk.magentaBright.bold(`${title} audits`));
     output += addLine();
 
-    const ui = cliui({ width: 150 });
+    const ui = cliui({ width: MAX_SCREEN_WIDTH });
 
     audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
       ui.div(

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
+import { MAX_SCREEN_WIDTH } from '@code-pushup/models';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
@@ -29,6 +30,7 @@ export function getSingletonProgressBars(
 ): MultiProgressBars {
   if (!mpb) {
     mpb = new MultiProgressBars({
+      progressWidth: MAX_SCREEN_WIDTH,
       initMessage: '',
       border: true,
       ...options,

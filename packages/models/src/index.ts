@@ -14,6 +14,7 @@ export {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
+  MAX_SCREEN_WIDTH,
 } from './lib/implementation/limits';
 export {
   PERSIST_FILENAME,
