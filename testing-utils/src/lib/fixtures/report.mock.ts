@@ -75,8 +75,24 @@ export const REPORT_MOCK = {
         {
           slug: 'cypress-e2e-tests',
           title: 'Cypress e2e tests',
-          value: 5,
+          value: 3,
           score: 0.5,
+          details: {
+            issues: [
+              {
+                message: 'Test `Display progress for selected commit` failed.',
+                severity: 'error',
+              },
+              {
+                message: 'Test `Sort audit table based on value` failed.',
+                severity: 'error',
+              },
+              {
+                message: 'Test `Open Bug prevention category detail` failed.',
+                severity: 'error',
+              },
+            ],
+          },
         },
         {
           slug: 'cypress-component-tests',
@@ -116,8 +132,38 @@ export const REPORT_MOCK = {
         {
           slug: 'typescript-eslint-typing',
           title: 'Type checking',
-          value: 1,
+          value: 2,
           score: 0,
+          details: {
+            issues: [
+              {
+                message: 'outputFile does not exist in type Cli',
+                severity: 'error',
+                source: {
+                  file: 'packages/cli/cli.ts',
+                  position: {
+                    startLine: 1,
+                    startColumn: 1,
+                    endLine: 5,
+                    endColumn: 10,
+                  },
+                },
+              },
+              {
+                message: 'command might be undefined',
+                severity: 'warning',
+                source: {
+                  file: 'packages/cli/cli.ts',
+                  position: {
+                    startLine: 5,
+                    startColumn: 10,
+                    endLine: 5,
+                    endColumn: 20,
+                  },
+                },
+              },
+            ],
+          },
         },
         {
           slug: 'typescript-eslint-enums',
@@ -130,12 +176,26 @@ export const REPORT_MOCK = {
           title: 'TypeScript experimental checks',
           value: 1,
           score: 0,
+          details: {
+            issues: [{ message: 'Use better-enums.', severity: 'info' }],
+          },
         },
         {
           slug: 'eslint-functional',
           title: 'Functional principles',
           value: 1,
           score: 0,
+          details: {
+            issues: [
+              {
+                message: 'Unexpected let, use const instead.',
+                severity: 'error',
+                source: {
+                  file: 'packages/core/report.ts',
+                },
+              },
+            ],
+          },
         },
         {
           slug: 'eslint-jest-consistent-naming',
