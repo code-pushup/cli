@@ -18,7 +18,8 @@ The Code PushUp CLI serves to **collect audit results**, and optionally **upload
 
 It can be used locally in your repository, or integrated in your CI environment.
 
-_If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package instead._
+_If you're looking for programmatic usage, then refer to the underlying [@code-pushup/core](../core/README.md) package
+instead._
 
 ## Getting started
 
@@ -40,10 +41,6 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
    ```js
    export default {
-     persist: {
-       outputDir: '.code-pushup',
-       format: ['json', 'md'],
-     },
      plugins: [
        // ...
      ],
@@ -154,23 +151,23 @@ Each example is fully tested to give demonstrate best practices for plugin testi
 | ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
 | **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
-| **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
+| **`--config`**   | `string`  | `code-pushup.config.ts` | Path to the config file, e.g. code-pushup.config.(ts\mjs\js)           |
 
 > [!NOTE]  
 > By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided over `--config`.
 
 ### Common Command Options
 
-| Option                      | Type                 | Default  | Description                                                                 |
-| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
+| Option                      | Type              | Default        | Description                                                                 |
+| --------------------------- | ----------------- | -------------- | --------------------------------------------------------------------------- |
+| **`--persist.outputDir`**   | `string`          | `.code-pushup` | Directory for the produced reports.                                         |
+| **`--persist.filename`**    | `string`          | `report`       | Filename for the produced reports without extension.                        |
+| **`--persist.format`**      | `('json','md')[]` | `json`         | Format(s) of the report file.                                               |
+| **`--upload.organization`** | `string`          | n/a            | Organization slug from portal.                                              |
+| **`--upload.project`**      | `string`          | n/a            | Project slug from portal.                                                   |
+| **`--upload.server`**       | `string`          | n/a            | URL to your portal server.                                                  |
+| **`--upload.apiKey`**       | `string`          | n/a            | API key for the portal server.                                              |
+| **`--onlyPlugins`**         | `string[]`        | `[]`           | Only run the specified plugins. Applicable to all commands except `upload`. |
 
 > [!NOTE]  
 > All common options, expect `--onlyPlugins`, can be specified in the configuration file as well.
@@ -187,7 +184,8 @@ Usage:
 `code-pushup collect [options]`
 
 Description:
-The command initializes the necessary plugins, runs them, and then collects the results. After collecting the results, it generates a comprehensive report.
+The command initializes the necessary plugins, runs them, and then collects the results. After collecting the results,
+it generates a comprehensive report.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
