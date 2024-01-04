@@ -129,12 +129,12 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
   return Object.values(lhr.audits).map(
     ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      displayValue,
-      details,
-    }) => {
+       id: slug,
+       score,
+       numericValue: value = 0, // not every audit has a numericValue
+       displayValue,
+       details,
+     }) => {
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 0, // score can be null
@@ -194,4 +194,14 @@ function lhrDetailsToIssueDetails(
   }
 
   return null;
+}
+
+function codePushupAuditOutputToLhrAudit(
+  issue = {} as unknown as Issue,
+): Result['audits'][string] | null {
+  const {slug} = issue;
+  return {
+    id: slug,
+
+  } satisfies Result['audits'][string];
 }
