@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { describe } from 'vitest';
+import { describe, expect } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {

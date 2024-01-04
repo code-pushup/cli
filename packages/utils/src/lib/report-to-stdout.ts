@@ -72,7 +72,7 @@ function reportToDetailSection(report: ScoredReport): string {
     output += addLine(chalk.magentaBright.bold(`${title} audits`));
     output += addLine();
 
-    const ui = cliui({ width: 80 });
+    const ui = cliui({ width: 150 });
 
     audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
       ui.div(
@@ -87,7 +87,6 @@ function reportToDetailSection(report: ScoredReport): string {
         },
         {
           text: chalk.cyanBright(displayValue || `${value}`),
-          width: 10,
           padding: [0, 0, 0, 0],
         },
       );

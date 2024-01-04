@@ -53,9 +53,8 @@ export function yargsCli<T = unknown>(
       return config;
     })
     .options(options)
-    // take full width of the terminal
-    .wrap(cli.terminalWidth());
-
+    // take full width of the terminal `cli.terminalWidth()`
+    .wrap(150);
   // usage message
   if (usageMessage) {
     cli.usage(chalk.bold(usageMessage));

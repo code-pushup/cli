@@ -78,8 +78,7 @@ describe('CLI collect', () => {
     expect(stderr).toBe('');
 
     expect(stdout).toContain('Code PushUp Report');
-    expect(stdout).toContain('Generated reports');
-    expect(stdout).toContain('report.json');
+    expect(stdout).not.toContain('Generated reports');
     expect(stdout).toContain(exampleCategoryTitle);
     expect(stdout).toContain(exampleAuditTitle);
   }, 120000);

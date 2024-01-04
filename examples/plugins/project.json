@@ -34,6 +34,18 @@
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
       "dependsOn": ["^build"]
+    },
+    "run-print-config": {
+      "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
+      "dependsOn": ["^build"]
+    },
+    "run-print-config": {
+      "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
+      "dependsOn": ["^build"]
+    },
+    "run-help": {
+      "command": "npx dist/packages/cli help --config=examples/plugins/code-pushup.config.ts",
+      "dependsOn": ["^build"]
     }
   },
   "tags": []

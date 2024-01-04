@@ -30,6 +30,7 @@ export const pluginMetaSchema = packageVersionSchema({
       icon: materialIconSchema,
     }),
   );
+export type PluginMeta = z.infer<typeof pluginMetaSchema>;
 
 export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),

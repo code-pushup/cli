@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import { stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { CoreConfig, Report } from '@code-pushup/models';
+import { PersistConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
   getLatestCommit,
@@ -25,28 +25,27 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
-  config: CoreConfig,
+  options: Required<PersistConfig>,
 ): Promise<MultipleFileResults> {
-  const { persist } = config;
-  const outputDir = persist.outputDir;
-  const filename = persist.filename;
-  const format = persist.format ?? [];
+  const { outputDir, filename, format } = options;
 
-  let scoredReport = scoreReport(report);
+  const scoredReport = scoreReport(report);
   console.info(reportToStdout(scoredReport));
 
   // collect physical format outputs
-  const results: { format: string; content: string }[] = [
-    // JSON is always persisted
-    { format: 'json', content: JSON.stringify(report, null, 2) },
-  ];
+  const results: { format: string; content: string }[] = [];
+
+  if (format.includes('json')) {
+    results.push({
+      format: 'json',
+      content: JSON.stringify(report, null, 2),
+    });
+  }
 
   if (format.includes('md')) {
-    scoredReport = scoredReport || scoreReport(report);
     const commitData = await getLatestCommit();
-    if (!commitData) {
-      console.warn('no commit data available');
-    }
+    validateCommitData(commitData);
+
     results.push({
       format: 'md',
       content: reportToMd(scoredReport, commitData),
@@ -83,4 +82,10 @@ export async function persistReport(
 
 export function logPersistedResults(persistResults: MultipleFileResults) {
   logMultipleFileResults(persistResults, 'Generated reports');
+}
+
+function validateCommitData(commitData?: unknown) {
+  if (!commitData) {
+    console.warn('no commit data available');
+  }
 }

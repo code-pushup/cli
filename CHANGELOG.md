@@ -2,6 +2,38 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.5.6](https://github.com/code-pushup/cli/compare/v0.5.5...v0.5.6) (2023-12-29)
+
+## [0.5.5](https://github.com/code-pushup/cli/compare/v0.5.4...v0.5.5) (2023-12-26)
+
+## [0.5.4](https://github.com/code-pushup/cli/compare/v0.5.3...v0.5.4) (2023-12-19)
+
+### Bug Fixes
+
+- **cli:** adjust persist.format options ([#363](https://github.com/code-pushup/cli/issues/363)) ([b5b3bc6](https://github.com/code-pushup/cli/commit/b5b3bc69151091c6e75d7b64a19e4f559ad50ee1))
+
+## [0.5.3](https://github.com/code-pushup/cli/compare/v0.5.2...v0.5.3) (2023-12-19)
+
+### Bug Fixes
+
+- **cli:** fix json format handling ([#360](https://github.com/code-pushup/cli/issues/360)) ([bc9f101](https://github.com/code-pushup/cli/commit/bc9f10198d821d2359b72d8f8506d5c98d55d7bb))
+
+## [0.5.2](https://github.com/code-pushup/cli/compare/v0.5.1...v0.5.2) (2023-12-19)
+
+## [0.5.1](https://github.com/code-pushup/cli/compare/v0.5.0...v0.5.1) (2023-12-18)
+
+# [0.5.0](https://github.com/code-pushup/cli/compare/v0.4.5...v0.5.0) (2023-12-17)
+
+### Features
+
+- **examples-plugins:** add package-json plugin 📦 ([#354](https://github.com/code-pushup/cli/issues/354)) ([e2f2abe](https://github.com/code-pushup/cli/commit/e2f2abe1cbf523359d76f6b27e8e2715977546a2))
+
+## [0.4.5](https://github.com/code-pushup/cli/compare/v0.4.4...v0.4.5) (2023-12-15)
+
+## [0.4.4](https://github.com/code-pushup/cli/compare/v0.4.3...v0.4.4) (2023-12-15)
+
+## [0.4.3](https://github.com/code-pushup/cli/compare/v0.4.2...v0.4.3) (2023-12-14)
+
 ## [0.4.2](https://github.com/code-pushup/cli/compare/v0.4.1...v0.4.2) (2023-12-12)
 
 ### Performance Improvements

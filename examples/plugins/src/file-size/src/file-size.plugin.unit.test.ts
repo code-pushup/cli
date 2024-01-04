@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { formatBytes } from '@code-pushup/utils';
+import { formatBytes } from '../../../../../dist/packages/utils';
 import {
   PluginOptions,
   assertFileSize,
@@ -198,7 +198,7 @@ describe('runnerFunction', () => {
   const filesizeAuditOutputBase = {
     displayValue: '0 files oversize',
     score: 1,
-    slug: 'file-size-check',
+    slug: 'file-size-unmodified',
     value: 0,
   };
 
