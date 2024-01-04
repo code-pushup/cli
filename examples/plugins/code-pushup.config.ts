@@ -39,7 +39,7 @@ const config = (() => ({
     }),
     lighthousePlugin({
       url: 'https://example.com',
-      onlyAudits: ['largest-contentful-paint'],
+      // onlyAudits: ['largest-contentful-paint'],
     }),
   ],
   categories: [

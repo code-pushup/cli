@@ -52,6 +52,7 @@ export type LighthouseOptions = {
  *
  */
 export function create(options: LighthouseOptions): PluginConfig {
+  const { onlyAudits = [] } = options;
   return {
     slug: pluginSlug,
     title: 'Lighthouse',
@@ -59,7 +60,18 @@ export function create(options: LighthouseOptions): PluginConfig {
     description: 'Chrome lighthouse CLI as code-pushup plugin',
     runner: runnerConfig(options),
     audits,
-    groups: [categoryPerfGroup],
+    groups: [
+      {
+        ...categoryPerfGroup,
+        // @TODO don't fail collect if the result does not contain all listed audits
+        refs:
+          onlyAudits.length === 0
+            ? categoryPerfGroup.refs
+            : categoryPerfGroup.refs.filter(({ slug }) =>
+                onlyAudits.includes(slug),
+              ),
+      },
+    ],
   };
 }
 
@@ -75,11 +87,8 @@ function runnerConfig(options: LighthouseOptions): RunnerConfig {
     command: 'npx',
     args: getLighthouseCliArguments({ ...options, outputFile }),
     outputFile,
-    outputTransform: (output: unknown) => {
-      const lighthouseOutput = JSON.parse(
-        (output as string).toString(),
-      ) as Result;
-      return lhrToAuditOutputs(lighthouseOutput);
+    outputTransform: (lighthouseOutput: unknown) => {
+      return lhrToAuditOutputs(lighthouseOutput as Result);
     },
   } satisfies RunnerConfig;
 }

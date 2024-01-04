@@ -75,6 +75,9 @@ export function scoreReport(report: Report): ScoredReport {
         `${plugin.slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
+        // @TODO error message is not well written
+        // suggestion:
+        // `Group has invalid ref - audit with slug ${ref.slug} from plugin ${plugin.slug} not found`,
         throw new Error(
           `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
         );
