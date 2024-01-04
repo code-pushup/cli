@@ -6,6 +6,7 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
+import { MAX_SCREEN_WIDTH } from '@code-pushup/models';
 import { logErrorBeforeThrow } from './implementation/utils';
 
 /**
@@ -52,8 +53,9 @@ export function yargsCli<T = unknown>(
       }
       return config;
     })
-    .options(options);
-
+    .options(options)
+    // take full width of the terminal `cli.terminalWidth()`
+    .wrap(MAX_SCREEN_WIDTH);
   // usage message
   if (usageMessage) {
     cli.usage(chalk.bold(usageMessage));

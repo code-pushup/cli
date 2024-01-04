@@ -1,6 +1,7 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { MAX_SCREEN_WIDTH } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants';
 import { NEW_LINE } from './md';
 import {
@@ -43,11 +44,12 @@ function reportToOverviewSection({
   output += addLine();
 
   const table = new Table({
-    head: reportRawOverviewTableHeaders,
+    colWidths: [null, 8, 8],
     colAligns: ['left', 'right', 'right'],
     style: {
       head: ['cyan'],
     },
+    head: reportRawOverviewTableHeaders,
   });
 
   table.push(
@@ -73,7 +75,7 @@ function reportToDetailSection(report: ScoredReport): string {
     output += addLine(chalk.magentaBright.bold(`${title} audits`));
     output += addLine();
 
-    const ui = cliui({ width: 80 });
+    const ui = cliui({ width: MAX_SCREEN_WIDTH });
 
     audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
       ui.div(
@@ -88,7 +90,6 @@ function reportToDetailSection(report: ScoredReport): string {
         },
         {
           text: chalk.cyanBright(displayValue || `${value}`),
-          width: 10,
           padding: [0, 0, 0, 0],
         },
       );
