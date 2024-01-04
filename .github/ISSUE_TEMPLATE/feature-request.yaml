@@ -20,8 +20,8 @@ body:
       description: Please list a set of criteria to help us determine whether the scope of the request was fully addressed.
       placeholder: |
         For example:
-        - All packages have a comprehensive documentation in place.
-        - Cross references to relevant models or files are added as links.
+        - [ ] All packages have a comprehensive documentation in place.
+        - [ ] Cross references to relevant models or files are added as links.
     validations:
       required: true
   - type: textarea
