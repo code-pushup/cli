@@ -66,7 +66,7 @@ export function create(options: PluginOptions): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'Package Json',
-    icon: 'javascript',
+    icon: 'npm',
     description: 'A plugin to validate package.json files.',
     runner: runnerFunction(options),
     audits: [licenseAuditMeta, dependenciesAuditMeta, typeAuditInfoMeta],

@@ -37,7 +37,7 @@ describe('create-package-json', () => {
     expect(pluginConfig).toEqual({
       slug,
       description: 'A plugin to validate package.json files.',
-      icon: 'javascript',
+      icon: 'npm',
       runner: expect.any(Function),
       title: 'Package Json',
       audits: expect.arrayContaining(audits),
@@ -54,7 +54,7 @@ describe('create-package-json', () => {
       expect.objectContaining({
         slug,
         description: 'A plugin to validate package.json files.',
-        icon: 'javascript',
+        icon: 'npm',
         duration: expect.any(Number),
         date: expect.any(String),
         title: 'Package Json',

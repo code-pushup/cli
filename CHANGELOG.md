@@ -2,6 +2,32 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.6.5](https://github.com/code-pushup/cli/compare/v0.6.4...v0.6.5) (2024-01-04)
+
+## [0.6.4](https://github.com/code-pushup/cli/compare/v0.6.3...v0.6.4) (2024-01-04)
+
+## [0.6.3](https://github.com/code-pushup/cli/compare/v0.6.2...v0.6.3) (2024-01-04)
+
+## [0.6.2](https://github.com/code-pushup/cli/compare/v0.6.1...v0.6.2) (2024-01-04)
+
+## [0.6.1](https://github.com/code-pushup/cli/compare/v0.6.0...v0.6.1) (2024-01-03)
+
+### Bug Fixes
+
+- **plugin-eslint:** fix default Nx lint patterns - directory not valid for "files" in eslintrc ([6865800](https://github.com/code-pushup/cli/commit/68658003f295989b0587986e87a0e17711e7430c))
+
+# [0.6.0](https://github.com/code-pushup/cli/compare/v0.5.7...v0.6.0) (2024-01-03)
+
+### Features
+
+- **plugin-eslint:** set "passed" displayValue for ESLint audits ([40f61a4](https://github.com/code-pushup/cli/commit/40f61a44ec5157a9f6e39218838c5c038fcb495a))
+
+## [0.5.7](https://github.com/code-pushup/cli/compare/v0.5.6...v0.5.7) (2024-01-03)
+
+### Bug Fixes
+
+- **plugin-eslint:** set default lint file patterns for Nx projects ([9db19d0](https://github.com/code-pushup/cli/commit/9db19d01c27b2c577268ae4ccac76c64e2341523))
+
 ## [0.5.6](https://github.com/code-pushup/cli/compare/v0.5.5...v0.5.6) (2023-12-29)
 
 ## [0.5.5](https://github.com/code-pushup/cli/compare/v0.5.4...v0.5.5) (2023-12-26)
