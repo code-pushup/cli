@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { categoryConfig } from '../../test/fixtures/categories.mock';
-import { categoryConfigSchema } from './category-config';
+import { CategoryRef, categoryConfigSchema } from './category-config';
 
 describe('categoryConfigSchema', () => {
   it('should parse if configuration with valid audit and refs', () => {
@@ -11,7 +11,7 @@ describe('categoryConfigSchema', () => {
   it('should throw if duplicate refs to audits or groups in references are given', () => {
     const categoryCfg = categoryConfig();
     const refs = categoryCfg.refs;
-    categoryCfg.refs = [...refs, refs[0]];
+    categoryCfg.refs = [...refs, refs[0] as CategoryRef];
     expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(
       'the following audit or group refs are duplicates',
     );
@@ -19,7 +19,7 @@ describe('categoryConfigSchema', () => {
 
   it('should throw if only refs with weight 0 are included', () => {
     const categoryCfg = categoryConfig();
-    const ref = { ...categoryCfg.refs[0], weight: 0 };
+    const ref = { ...categoryCfg.refs[0], weight: 0 } as CategoryRef;
     categoryCfg.refs = [ref];
 
     expect(() => categoryConfigSchema.parse(categoryCfg)).toThrow(

@@ -45,7 +45,9 @@ export function yargsCli<T = unknown>(
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
+    // @TODO should be configures over options or other arguments. Not hardcoded.
     .array('persist.format')
+    // @TODO should be configures over options or other arguments. Not hardcoded.
     .coerce('config', (config: string | string[]) => {
       if (Array.isArray(config)) {
         return config[config.length - 1];

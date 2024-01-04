@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { configMiddleware } from './config-middleware';
+import { coreConfigMiddleware } from './core-config.middleware';
 
 describe('configMiddleware', () => {
   const configDirPath = join(
@@ -21,7 +21,7 @@ describe('configMiddleware', () => {
   it.each(['ts', 'mjs', 'js'])(
     'should load a valid .%s config',
     async extension => {
-      const config = await configMiddleware({
+      const config = await coreConfigMiddleware({
         config: join(configDirPath, `code-pushup.config.${extension}`),
       });
       expect(config.config).toContain(`code-pushup.config.${extension}`);
@@ -31,7 +31,7 @@ describe('configMiddleware', () => {
 
   it('should throw with invalid config path', async () => {
     await expect(
-      configMiddleware({ config: 'wrong/path/to/config' }),
+      coreConfigMiddleware({ config: 'wrong/path/to/config' }),
     ).rejects.toThrow(/Provided path .* is not valid./);
   });
 });

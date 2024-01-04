@@ -18,9 +18,9 @@ export function yargsGlobalOptionsDefinition(): Record<
       default: false,
     },
     config: {
-      describe: 'Path the the config file, e.g. code-pushup.config.js',
+      describe:
+        'Path the the config file, e.g. code-pushup.config.ts. By default it loads code-pushup.config.(ts|mjs|js).',
       type: 'string',
-      default: 'code-pushup.config.js',
     },
   };
 }

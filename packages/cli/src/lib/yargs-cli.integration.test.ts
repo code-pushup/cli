@@ -16,13 +16,6 @@ describe('yargsCli', () => {
     expect(parsedArgv.progress).toBe(true);
   });
 
-  it('should provide a correct default value for the config', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>([], {
-      options,
-    }).parseAsync();
-    expect(parsedArgv.config).toBe('code-pushup.config.js');
-  });
-
   it('should parse a single boolean negated argument', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(['--no-progress'], {
       options,
@@ -43,7 +36,7 @@ describe('yargsCli', () => {
       ['--persist.format=md', '--persist.format=json'],
       { options },
     ).parseAsync();
-    expect(parsedArgv.persist.format).toEqual(['md', 'json']);
+    expect(parsedArgv?.persist?.format).toEqual(['md', 'json']);
   });
 
   it('should parse global options correctly', async () => {
@@ -81,7 +74,6 @@ describe('yargsCli', () => {
       expect.objectContaining({
         // default values
         progress: true,
-        config: expect.stringContaining('code-pushup.config'),
         // overridden arguments
         verbose: true,
         persist: expect.objectContaining({

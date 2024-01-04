@@ -21,6 +21,10 @@ export {
   PERSIST_FORMAT,
 } from './lib/implementation/constants';
 export {
+  CONFIG_FILE_NAME,
+  SUPPORTED_CONFIG_FILE_FORMATS,
+} from './lib/implementation/configuration';
+export {
   materialIconSchema,
   filePathSchema,
   fileNameSchema,

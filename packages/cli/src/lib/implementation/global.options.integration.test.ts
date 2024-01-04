@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from '../yargs-cli';
-import { yargsGlobalOptionsDefinition } from './global-options';
+import { yargsGlobalOptionsDefinition } from './global.options';
 import { GeneralCliOptions } from './model';
 
 describe('globalOptions', () => {
@@ -15,6 +15,6 @@ describe('globalOptions', () => {
     const config = await cli({});
     expect(config.verbose).toBe(false);
     expect(config.progress).toBe(true);
-    expect(config.config).toBe('code-pushup.config.js');
+    expect(config.config).toBeUndefined();
   });
 });

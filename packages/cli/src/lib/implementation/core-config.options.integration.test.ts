@@ -3,7 +3,7 @@ import { describe, expect } from 'vitest';
 import { CoreConfig } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from '../yargs-cli';
-import { yargsCoreConfigOptionsDefinition } from './core-config-options';
+import { yargsCoreConfigOptionsDefinition } from './core-config.options';
 
 describe('configOptions', () => {
   function argsFromCli(args: Record<string, unknown>): Promise<CoreConfig> {
@@ -22,7 +22,7 @@ describe('configOptions', () => {
     const config = await argsFromCli({ config: 'code-pushup.config.ts' });
     expect(config).toBeDefined();
     // only _ and $0
-    expect(Object.keys(config)).toHaveLength(3);
+    expect(Object.keys(config)).toHaveLength(4);
   });
 
   it.each([
