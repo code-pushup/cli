@@ -41,10 +41,12 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
   const severityCounts = countOccurrences(
     auditIssues.map(({ severity }) => severity),
   );
-  const summaryText = objectToEntries(severityCounts)
+  const severities = objectToEntries(severityCounts);
+  const summaryText = severities
     .sort((a, b) => -compareIssueSeverity(a[0], b[0]))
     .map(([severity, count = 0]) => pluralizeToken(severity, count))
     .join(', ');
+
   return {
     slug,
     score: Number(auditIssues.length === 0),

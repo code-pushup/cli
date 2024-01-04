@@ -38,6 +38,7 @@ export async function executeRunner(argv = process.argv): Promise<void> {
         slug,
         score: 1,
         value: 0,
+        displayValue: 'passed',
         details: { issues: [] },
       },
   );

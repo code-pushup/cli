@@ -1,16 +1,14 @@
 export {
-  CliArgsObject,
   ProcessConfig,
   ProcessError,
   ProcessObserver,
   ProcessResult,
   executeProcess,
-  objectToCliArgs,
 } from './lib/execute-process';
 export {
+  CrawlFileSystemOptions,
   FileResult,
   MultipleFileResults,
-  CrawlFileSystemOptions,
   crawlFileSystem,
   ensureDirectoryExists,
   fileExists,
@@ -52,12 +50,14 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export { ScoredReport, scoreReport } from './lib/scoring';
 export {
+  CliArgsObject,
   countOccurrences,
   distinct,
   factorOf,
+  objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
-} from './lib/transformation';
+} from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { sortReport } from './lib/sort-report';

@@ -1,6 +1,7 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { SCORE_COLOR_RANGE } from './constants';
 import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -100,14 +101,16 @@ function reportToDetailSection(report: ScoredReport): string {
 }
 
 function withColor({ score, text }: { score: number; text?: string }) {
-  let str = text ?? formatReportScore(score);
+  const formattedScore = text ?? formatReportScore(score);
   const style = text ? chalk : chalk.bold;
-  if (score < 0.5) {
-    str = style.red(str);
-  } else if (score < 0.9) {
-    str = style.yellow(str);
-  } else {
-    str = style.green(str);
+
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return style.green(formattedScore);
   }
-  return str;
+
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return style.yellow(formattedScore);
+  }
+
+  return style.red(formattedScore);
 }

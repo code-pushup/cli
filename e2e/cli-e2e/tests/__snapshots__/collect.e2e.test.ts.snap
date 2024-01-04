@@ -199,6 +199,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-cond-assign",
           "score": 1,
           "slug": "no-cond-assign",
@@ -210,6 +211,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-const-assign",
           "score": 1,
           "slug": "no-const-assign",
@@ -221,6 +223,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-debugger",
           "score": 1,
           "slug": "no-debugger",
@@ -232,6 +235,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-invalid-regexp",
           "score": 1,
           "slug": "no-invalid-regexp",
@@ -243,6 +247,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
           "score": 1,
           "slug": "no-undef",
@@ -254,6 +259,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unreachable-loop",
           "score": 1,
           "slug": "no-unreachable-loop",
@@ -265,6 +271,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-negation",
           "score": 1,
           "slug": "no-unsafe-negation",
@@ -276,6 +283,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining",
           "score": 1,
           "slug": "no-unsafe-optional-chaining",
@@ -313,6 +321,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/use-isnan",
           "score": 1,
           "slug": "use-isnan",
@@ -324,6 +333,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
           "score": 1,
           "slug": "valid-typeof",
@@ -361,6 +371,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/camelcase",
           "score": 1,
           "slug": "camelcase",
@@ -372,6 +383,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/curly",
           "score": 1,
           "slug": "curly",
@@ -435,6 +447,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
           "score": 1,
           "slug": "max-lines",
@@ -498,6 +511,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-var",
           "score": 1,
           "slug": "no-var",
@@ -561,6 +575,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/prefer-arrow-callback",
           "score": 1,
           "slug": "prefer-arrow-callback",
@@ -598,6 +613,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/prefer-object-spread",
           "score": 1,
           "slug": "prefer-object-spread",
@@ -609,6 +625,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
           "score": 1,
           "slug": "yoda",
@@ -737,6 +754,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md",
           "score": 1,
           "slug": "react-react-in-jsx-scope",
@@ -748,6 +766,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://reactjs.org/docs/hooks-rules.html",
           "score": 1,
           "slug": "react-hooks-rules-of-hooks",
@@ -798,6 +817,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/display-name.md",
           "score": 1,
           "slug": "react-display-name",
@@ -809,6 +829,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-comment-textnodes.md",
           "score": 1,
           "slug": "react-jsx-no-comment-textnodes",
@@ -820,6 +841,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-duplicate-props.md",
           "score": 1,
           "slug": "react-jsx-no-duplicate-props",
@@ -831,6 +853,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
           "score": 1,
           "slug": "react-jsx-no-target-blank",
@@ -842,6 +865,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-undef.md",
           "score": 1,
           "slug": "react-jsx-no-undef",
@@ -853,6 +877,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-react.md",
           "score": 1,
           "slug": "react-jsx-uses-react",
@@ -864,6 +889,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-vars.md",
           "score": 1,
           "slug": "react-jsx-uses-vars",
@@ -875,6 +901,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-children-prop.md",
           "score": 1,
           "slug": "react-no-children-prop",
@@ -886,6 +913,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-danger-with-children.md",
           "score": 1,
           "slug": "react-no-danger-with-children",
@@ -897,6 +925,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-deprecated.md",
           "score": 1,
           "slug": "react-no-deprecated",
@@ -908,6 +937,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-direct-mutation-state.md",
           "score": 1,
           "slug": "react-no-direct-mutation-state",
@@ -919,6 +949,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-find-dom-node.md",
           "score": 1,
           "slug": "react-no-find-dom-node",
@@ -930,6 +961,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-is-mounted.md",
           "score": 1,
           "slug": "react-no-is-mounted",
@@ -941,6 +973,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-render-return-value.md",
           "score": 1,
           "slug": "react-no-render-return-value",
@@ -952,6 +985,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-string-refs.md",
           "score": 1,
           "slug": "react-no-string-refs",
@@ -963,6 +997,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unescaped-entities.md",
           "score": 1,
           "slug": "react-no-unescaped-entities",
@@ -974,6 +1009,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unknown-property.md",
           "score": 1,
           "slug": "react-no-unknown-property",
@@ -985,6 +1021,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md",
           "score": 1,
           "slug": "react-require-render-return",

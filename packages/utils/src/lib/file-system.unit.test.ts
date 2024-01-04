@@ -96,7 +96,7 @@ describe('logMultipleFileResults', () => {
 });
 
 const getFilepath = (fileName: string) =>
-  join(process.cwd(), 'packages', 'utils', 'test', 'fixtures', fileName);
+  join(process.cwd(), 'packages', 'utils', 'mocks', 'fixtures', fileName);
 
 describe('importEsmModule', () => {
   it('should load file', async () => {

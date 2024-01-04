@@ -9,6 +9,7 @@ import {
   Report,
   reportSchema,
 } from '@code-pushup/models';
+import { SCORE_COLOR_RANGE } from './constants';
 import {
   ensureDirectoryExists,
   readJsonFile,
@@ -62,20 +63,20 @@ export function formatReportScore(score: number): string {
 }
 
 export function getRoundScoreMarker(score: number): string {
-  if (score >= 0.9) {
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
     return '🟢';
   }
-  if (score >= 0.5) {
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
     return '🟡';
   }
   return '🔴';
 }
 
 export function getSquaredScoreMarker(score: number): string {
-  if (score >= 0.9) {
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
     return '🟩';
   }
-  if (score >= 0.5) {
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
     return '🟨';
   }
   return '🟥';
