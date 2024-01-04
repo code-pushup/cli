@@ -18,6 +18,7 @@ import {
   lighthouseReportName,
   pluginSlug,
 } from './constants.generated';
+import {join} from "node:path";
 
 export type LighthouseOptions = {
   url: string;
@@ -97,7 +98,7 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
   const {
     url,
     outputFile = lighthouseReportName,
-    onlyAudits,
+    onlyAudits = [],
     verbose = false,
     headless = false,
   } = options;
@@ -105,7 +106,7 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
     _: ['lighthouse', url],
     verbose,
     output: 'json',
-    'output-path': outputFile,
+    'output-path': join('.code-pushup', outputFile),
   };
 
   if (headless) {
@@ -115,7 +116,7 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
     });
   }
 
-  if (onlyAudits) {
+  if (onlyAudits.length) {
     return objectToCliArgs({
       ...argsObj,
       onlyAudits: toArray(onlyAudits).join(','),
