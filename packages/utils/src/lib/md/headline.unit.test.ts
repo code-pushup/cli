@@ -31,7 +31,7 @@ describe('headline', () => {
     expect(result).toBe('###### Hello World');
   });
 
-  it('should handle empty text', () => {
+  it('should still insert heading for empty string', () => {
     const result = headline('', 3);
     expect(result).toBe('### ');
   });

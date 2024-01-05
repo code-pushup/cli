@@ -26,12 +26,12 @@ describe('style', () => {
     expect(result).toBe('~**_Hello World_**~');
   });
 
-  it('should handle empty styles array', () => {
+  it('should return unchanged text for an empty styles array', () => {
     const result = style('Hello World', []);
     expect(result).toBe('Hello World');
   });
 
-  it('should handle empty text', () => {
+  it('should apply formatting on empty string', () => {
     const result = style('', ['i', 'b']);
     expect(result).toBe('**__**');
   });
