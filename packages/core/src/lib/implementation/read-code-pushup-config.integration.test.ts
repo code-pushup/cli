@@ -36,12 +36,6 @@ describe('readCodePushupConfig', () => {
     );
   });
 
-  it('should throw if the path is empty', async () => {
-    await expect(readCodePushupConfig('')).rejects.toThrow(
-      'The configuration path is empty.',
-    );
-  });
-
   it('should throw if the file does not exist', async () => {
     await expect(
       readCodePushupConfig(join('non-existent', 'config.file.js')),
