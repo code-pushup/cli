@@ -4,7 +4,7 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { executeProcess, objectToCliArgs } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
 import { configFile, extensions } from '../mocks/utils';
 
 describe('print-config', () => {
