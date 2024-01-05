@@ -18,7 +18,6 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
-  toUnixPath,
 } from './lib/file-system';
 export {
   formatBytes,
@@ -58,5 +57,6 @@ export {
   objectToEntries,
   objectToKeys,
   toArray,
+  toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';

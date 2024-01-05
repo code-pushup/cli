@@ -35,34 +35,6 @@ function reportToHeaderSection(report: ScoredReport): string {
   return `${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`;
 }
 
-function reportToOverviewSection({
-  categories,
-  plugins,
-}: ScoredReport): string {
-  let output = addLine(chalk.magentaBright.bold('Categories'));
-  output += addLine();
-
-  const table = new Table({
-    head: reportRawOverviewTableHeaders,
-    colAligns: ['left', 'right', 'right'],
-    style: {
-      head: ['cyan'],
-    },
-  });
-
-  table.push(
-    ...categories.map(({ title, score, refs }) => [
-      title,
-      withColor({ score }),
-      countCategoryAudits(refs, plugins),
-    ]),
-  );
-
-  output += addLine(table.toString());
-
-  return output;
-}
-
 function reportToDetailSection(report: ScoredReport): string {
   const { plugins } = report;
 
@@ -97,6 +69,34 @@ function reportToDetailSection(report: ScoredReport): string {
     output += addLine(ui.toString());
     output += addLine();
   });
+
+  return output;
+}
+
+function reportToOverviewSection({
+  categories,
+  plugins,
+}: ScoredReport): string {
+  let output = addLine(chalk.magentaBright.bold('Categories'));
+  output += addLine();
+
+  const table = new Table({
+    head: reportRawOverviewTableHeaders,
+    colAligns: ['left', 'right', 'right'],
+    style: {
+      head: ['cyan'],
+    },
+  });
+
+  table.push(
+    ...categories.map(({ title, score, refs }) => [
+      title,
+      withColor({ score }),
+      countCategoryAudits(refs, plugins),
+    ]),
+  );
+
+  output += addLine(table.toString());
 
   return output;
 }

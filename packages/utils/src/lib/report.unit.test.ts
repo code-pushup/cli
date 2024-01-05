@@ -1,12 +1,7 @@
 import { vol } from 'memfs';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  CategoryRef,
-  Issue,
-  IssueSeverity,
-  PluginReport,
-} from '@code-pushup/models';
-import { MEMFS_VOLUME, report } from '@code-pushup/models/testing';
+import { describe, expect, it } from 'vitest';
+import { Issue, IssueSeverity, PluginReport } from '@code-pushup/models';
+import { MEMFS_VOLUME, reportMock } from '@code-pushup/models/testing';
 import {
   calcDuration,
   compareIssueSeverity,
@@ -23,53 +18,37 @@ import {
   WeighedAuditReport,
 } from './scoring';
 
-// Mock file system API's
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
-});
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
-const outputDir = MEMFS_VOLUME;
-
-const resetFiles = (files?: Record<string, string>) => {
-  vol.reset();
-  vol.fromJSON(files || {}, outputDir);
-};
-
 describe('calcDuration', () => {
-  it('should calc the duration correctly if start and stop are given', () => {
+  it('should calculate the duration correctly if start and stop are given', () => {
     const start = performance.now();
-    const stop = performance.now() + 100;
+    const stop = start + 100;
     expect(calcDuration(start, stop)).toBe(100);
   });
 
-  it('should calc the duration correctly if only start is given', () => {
+  it('should calculate the duration correctly if only start is given', () => {
     const start = performance.now();
     expect(calcDuration(start)).toBe(0);
   });
 });
 
 describe('countWeightedRefs', () => {
-  it('should calc weighted refs only', () => {
-    const refs: CategoryRef[] = [
-      {
-        slug: 'a1',
-        weight: 0,
-        plugin: 'a',
-        type: 'audit',
-      },
-      {
-        slug: 'a2',
-        weight: 1,
-        plugin: 'a',
-        type: 'audit',
-      },
-    ];
-    expect(countWeightedRefs(refs)).toBe(1);
+  it('should include weighted references only', () => {
+    expect(
+      countWeightedRefs([
+        {
+          slug: 'a1',
+          weight: 0,
+          plugin: 'a',
+          type: 'audit',
+        },
+        {
+          slug: 'a2',
+          weight: 1,
+          plugin: 'a',
+          type: 'audit',
+        },
+      ]),
+    ).toBe(1);
   });
 });
 
@@ -79,59 +58,71 @@ describe('compareIssueSeverity', () => {
       (['error', 'info', 'warning'] satisfies IssueSeverity[]).sort(
         compareIssueSeverity,
       ),
-    ).toEqual(['info', 'warning', 'error'] satisfies IssueSeverity[]);
+    ).toEqual(['info', 'warning', 'error']);
   });
 });
 
 describe('loadReport', () => {
-  afterEach(() => {
-    resetFiles({});
-  });
-
-  it('should load reports form outputDir', async () => {
-    const reportMock = report();
-    resetFiles({
-      [`report.json`]: JSON.stringify(reportMock),
-      [`report.md`]: 'test-42',
-    });
-    const reports = await loadReport({
-      outputDir,
-      filename: 'report',
-      format: 'json',
-    });
-    expect(reports).toEqual(reportMock);
-  });
-
-  it('should load reports by format', async () => {
-    resetFiles({
-      [`report.dummy.md`]: 'test-7',
-      [`report.json`]: '{"test":42}',
-      [`report.md`]: 'test-42',
-    });
-    const reports = await loadReport({
-      outputDir,
-      format: 'md',
-      filename: 'report',
-    });
-    expect(reports).toBe('test-42');
-  });
-
-  it('should throw for invalid json reports', async () => {
-    const reportMock = report();
-    reportMock.plugins = [
+  it('should load a valid JSON report', async () => {
+    vol.fromJSON(
       {
-        ...reportMock.plugins[0],
+        [`report.json`]: JSON.stringify(reportMock()),
+        [`report.md`]: 'test-42',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      loadReport({
+        outputDir: MEMFS_VOLUME,
+        filename: 'report',
+        format: 'json',
+      }),
+    ).resolves.toEqual(reportMock());
+  });
+
+  it('should load a markdown file', async () => {
+    vol.fromJSON(
+      {
+        [`report.dummy.md`]: 'test-7',
+        [`report.json`]: '{"test":42}',
+        [`report.md`]: 'test-42',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      loadReport({
+        outputDir: MEMFS_VOLUME,
+        format: 'md',
+        filename: 'report',
+      }),
+    ).resolves.toBe('test-42');
+  });
+
+  it('should throw for an invalid JSON report', async () => {
+    const invalidReportMock = reportMock();
+    invalidReportMock.plugins = [
+      {
+        ...invalidReportMock.plugins[0],
         slug: '-Invalud_slug',
       } as unknown as PluginReport,
     ];
 
-    resetFiles({
-      [`report.json`]: JSON.stringify(reportMock),
-    });
+    vol.fromJSON(
+      {
+        [`report.json`]: JSON.stringify(invalidReportMock),
+      },
+      MEMFS_VOLUME,
+    );
 
     await expect(
-      loadReport({ outputDir, filename: 'report', format: 'json' }),
-    ).rejects.toThrow('validation');
+      loadReport({
+        outputDir: MEMFS_VOLUME,
+        filename: 'report',
+        format: 'json',
+      }),
+    ).rejects.toThrow('slug has to follow the pattern');
   });
 });
 
