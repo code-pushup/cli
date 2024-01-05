@@ -3,6 +3,6 @@
   "version": "0.6.5",
   "dependencies": {
     "zod": "^3.22.1",
-    "@code-pushup/portal-client": "^0.1.2"
+    "@code-pushup/portal-client": "^0.3.0"
   }
 }
