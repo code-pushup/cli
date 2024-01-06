@@ -1,0 +1,19 @@
+name: PR-issue Synchronization
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  pr-issue-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: code-pushup/pr-issue-sync-action@main
+        name: PR-issue Synchronization
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          project-id: PVT_kwDOCK6Lgc4AYIk0
+          status-field-id: PVTSSF_lADOCK6Lgc4AYIk0zgPbbXc
+          in-review-status-value-id: 2e295971
