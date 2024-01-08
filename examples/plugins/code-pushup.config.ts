@@ -1,12 +1,11 @@
 import {
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from './src';
-import fileSizePlugin, {
-  recommendedRefs as fileSizeRecommendedRefs,
-} from './src/file-size/src/file-size.plugin';
+} from '../../dist/examples/plugins';
 
 /**
  * Run it with:
@@ -17,8 +16,7 @@ import fileSizePlugin, {
  *
  */
 
-// eslint-disable-next-line unicorn/no-unreadable-iife
-const config = (() => ({
+const config = {
   plugins: [
     fileSizePlugin({
       directory: './dist/packages',
@@ -52,6 +50,6 @@ const config = (() => ({
       refs: [packageJsonDocumentationGroupRef],
     },
   ],
-}))();
+};
 
 export default config;
