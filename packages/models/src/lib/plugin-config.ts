@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { pluginAuditsSchema } from './audit';
+import { auditGroupsSchema } from './group';
 import {
   materialIconSchema,
   metaSchema,
@@ -6,12 +8,7 @@ import {
   slugSchema,
 } from './implementation/schemas';
 import { errorItems, hasMissingStrings } from './implementation/utils';
-import { pluginAuditsSchema } from './plugin-config-audits';
-import { auditGroupsSchema } from './plugin-config-groups';
-import {
-  runnerConfigSchema,
-  runnerFunctionSchema,
-} from './plugin-config-runner';
+import { runnerConfigSchema, runnerFunctionSchema } from './runner-config';
 
 export const pluginMetaSchema = packageVersionSchema({
   optional: true,

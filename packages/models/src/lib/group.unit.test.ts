@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { config } from '../../test';
-import { auditGroupSchema } from './plugin-config-groups';
+import { auditGroupSchema } from './group';
 
 describe('auditGroupSchema', () => {
   it('should throw if a group has duplicate audit refs', () => {
