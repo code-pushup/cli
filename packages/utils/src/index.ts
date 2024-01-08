@@ -60,4 +60,5 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { groupByStatus } from './lib/group-by-status';
 export { sortReport } from './lib/sort-report';
