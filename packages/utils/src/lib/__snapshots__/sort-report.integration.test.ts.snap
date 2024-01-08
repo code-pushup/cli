@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`sortReport > should sort the report 1`] = `
+exports[`sortReport > should sort the audits and groups of audits in categories, all audits and nested issues 1`] = `
 {
   "categories": [
     {
@@ -624,6 +624,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
           "plugin": "eslint",
           "score": 1,
@@ -636,6 +637,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-cond-assign",
           "plugin": "eslint",
           "score": 1,
@@ -648,6 +650,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-comment-textnodes.md",
           "plugin": "eslint",
           "score": 1,
@@ -660,6 +663,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-direct-mutation-state.md",
           "plugin": "eslint",
           "score": 1,
@@ -672,6 +676,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-duplicate-props.md",
           "plugin": "eslint",
           "score": 1,
@@ -684,6 +689,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-invalid-regexp",
           "plugin": "eslint",
           "score": 1,
@@ -696,6 +702,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unreachable-loop",
           "plugin": "eslint",
           "score": 1,
@@ -708,6 +715,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/display-name.md",
           "plugin": "eslint",
           "score": 1,
@@ -720,6 +728,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md",
           "plugin": "eslint",
           "score": 1,
@@ -732,6 +741,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-negation",
           "plugin": "eslint",
           "score": 1,
@@ -744,6 +754,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-children-prop.md",
           "plugin": "eslint",
           "score": 1,
@@ -756,6 +767,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-react.md",
           "plugin": "eslint",
           "score": 1,
@@ -768,6 +780,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-const-assign",
           "plugin": "eslint",
           "score": 1,
@@ -780,6 +793,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-debugger",
           "plugin": "eslint",
           "score": 1,
@@ -792,6 +806,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
           "plugin": "eslint",
           "score": 1,
@@ -804,6 +819,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-undef.md",
           "plugin": "eslint",
           "score": 1,
@@ -816,6 +832,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unescaped-entities.md",
           "plugin": "eslint",
           "score": 1,
@@ -828,6 +845,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-deprecated.md",
           "plugin": "eslint",
           "score": 1,
@@ -840,6 +858,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-find-dom-node.md",
           "plugin": "eslint",
           "score": 1,
@@ -852,6 +871,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-is-mounted.md",
           "plugin": "eslint",
           "score": 1,
@@ -864,6 +884,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-render-return-value.md",
           "plugin": "eslint",
           "score": 1,
@@ -876,6 +897,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unknown-property.md",
           "plugin": "eslint",
           "score": 1,
@@ -888,6 +910,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining",
           "plugin": "eslint",
           "score": 1,
@@ -900,6 +923,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/prefer-object-spread",
           "plugin": "eslint",
           "score": 1,
@@ -912,6 +936,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-string-refs.md",
           "plugin": "eslint",
           "score": 1,
@@ -924,6 +949,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-vars.md",
           "plugin": "eslint",
           "score": 1,
@@ -936,6 +962,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-danger-with-children.md",
           "plugin": "eslint",
           "score": 1,
@@ -948,6 +975,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
           "plugin": "eslint",
           "score": 1,
@@ -960,6 +988,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/camelcase",
           "plugin": "eslint",
           "score": 1,
@@ -972,6 +1001,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
           "plugin": "eslint",
           "score": 1,
@@ -984,6 +1014,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/curly",
           "plugin": "eslint",
           "score": 1,
@@ -996,6 +1027,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md",
           "plugin": "eslint",
           "score": 1,
@@ -1008,6 +1040,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://reactjs.org/docs/hooks-rules.html",
           "plugin": "eslint",
           "score": 1,
@@ -1020,6 +1053,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-var",
           "plugin": "eslint",
           "score": 1,
@@ -1032,6 +1066,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/use-isnan",
           "plugin": "eslint",
           "score": 1,
@@ -1044,6 +1079,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
           "plugin": "eslint",
           "score": 1,
@@ -1056,6 +1092,7 @@ exports[`sortReport > should sort the report 1`] = `
           "details": {
             "issues": [],
           },
+          "displayValue": "passed",
           "docsUrl": "https://eslint.org/docs/latest/rules/prefer-arrow-callback",
           "plugin": "eslint",
           "score": 1,

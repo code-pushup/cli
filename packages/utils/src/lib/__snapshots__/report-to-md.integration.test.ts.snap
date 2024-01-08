@@ -33,17 +33,17 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [enforces the Rules of Hooks](#enforces-the-rules-of-hooks-eslint) (_ESLint_) - **passed**
 - 🟥 [Disallow missing props validation in a React component definition](#disallow-missing-props-validation-in-a-react-component-definition-eslint) (_ESLint_) - **6 warnings**
 - 🟥 [Require the use of \`===\` and \`!==\`](#require-the-use-of--and--eslint) (_ESLint_) - **1 warning**
-- 🟩 [Disallow assignment operators in conditional expressions](#disallow-assignment-operators-in-conditional-expressions-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow invalid regular expression strings in \`RegExp\` constructors](#disallow-invalid-regular-expression-strings-in-regexp-constructors-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow loops with a body that allows only one iteration](#disallow-loops-with-a-body-that-allows-only-one-iteration-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow missing React when using JSX](#disallow-missing-react-when-using-jsx-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow negating the left operand of relational operators](#disallow-negating-the-left-operand-of-relational-operators-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow reassigning \`const\` variables](#disallow-reassigning-const-variables-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow the use of \`debugger\`](#disallow-the-use-of-debugger-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments](#disallow-the-use-of-undeclared-variables-unless-mentioned-in--global---comments-eslint) (_ESLint_) - **0**
-- 🟩 [Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed](#disallow-use-of-optional-chaining-in-contexts-where-the-undefined-value-is-not-allowed-eslint) (_ESLint_) - **0**
-- 🟩 [Enforce comparing \`typeof\` expressions against valid strings](#enforce-comparing-typeof-expressions-against-valid-strings-eslint) (_ESLint_) - **0**
-- 🟩 [Require calls to \`isNaN()\` when checking for \`NaN\`](#require-calls-to-isnan-when-checking-for-nan-eslint) (_ESLint_) - **0**
+- 🟩 [Disallow assignment operators in conditional expressions](#disallow-assignment-operators-in-conditional-expressions-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow invalid regular expression strings in \`RegExp\` constructors](#disallow-invalid-regular-expression-strings-in-regexp-constructors-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow loops with a body that allows only one iteration](#disallow-loops-with-a-body-that-allows-only-one-iteration-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow missing React when using JSX](#disallow-missing-react-when-using-jsx-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow negating the left operand of relational operators](#disallow-negating-the-left-operand-of-relational-operators-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow reassigning \`const\` variables](#disallow-reassigning-const-variables-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow the use of \`debugger\`](#disallow-the-use-of-debugger-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments](#disallow-the-use-of-undeclared-variables-unless-mentioned-in--global---comments-eslint) (_ESLint_) - **passed**
+- 🟩 [Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed](#disallow-use-of-optional-chaining-in-contexts-where-the-undefined-value-is-not-allowed-eslint) (_ESLint_) - **passed**
+- 🟩 [Enforce comparing \`typeof\` expressions against valid strings](#enforce-comparing-typeof-expressions-against-valid-strings-eslint) (_ESLint_) - **passed**
+- 🟩 [Require calls to \`isNaN()\` when checking for \`NaN\`](#require-calls-to-isnan-when-checking-for-nan-eslint) (_ESLint_) - **passed**
 
 ### Code style
 
