@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { pluginAuditsSchema } from './audit';
-import { auditGroupsSchema } from './group';
+import { groupsSchema } from './group';
 import {
   materialIconSchema,
   metaSchema,
@@ -32,7 +32,7 @@ export type PluginMeta = z.infer<typeof pluginMetaSchema>;
 export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
-  groups: auditGroupsSchema,
+  groups: groupsSchema,
 });
 type PluginData = z.infer<typeof pluginDataSchema>;
 

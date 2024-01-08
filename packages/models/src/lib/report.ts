@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { auditSchema } from './audit';
 import { auditOutputSchema } from './audit-output';
 import { categoryConfigSchema } from './category-config';
-import { auditGroupSchema } from './group';
+import { groupSchema } from './group';
 import {
   executionMetaSchema,
   packageVersionSchema,
@@ -22,7 +22,7 @@ export const pluginReportSchema = pluginMetaSchema
   .merge(
     z.object({
       audits: z.array(auditReportSchema),
-      groups: z.array(auditGroupSchema).optional(),
+      groups: z.array(groupSchema).optional(),
     }),
   );
 export type PluginReport = z.infer<typeof pluginReportSchema>;

@@ -1,11 +1,11 @@
-import { AuditGroup, CategoryRef } from '@code-pushup/models';
+import { CategoryRef, Group } from '@code-pushup/models';
 import { pluginSlug } from './constants';
 import { dependenciesAuditMeta } from './integration/dependencies.audit';
 import { licenseAuditMeta } from './integration/license.audit';
 import { typeAuditInfoMeta } from './integration/type.audit';
 
 const documentationGroupSlug = 'documentation';
-export const documentationGroup: AuditGroup = {
+export const documentationGroup: Group = {
   slug: documentationGroupSlug,
   title: 'Documentation specific audits',
   description:
@@ -25,7 +25,7 @@ export const documentationGroupRef: CategoryRef = {
 };
 
 const performanceGroupSlug = 'performance';
-export const performanceGroup: AuditGroup = {
+export const performanceGroup: Group = {
   slug: performanceGroupSlug,
   title: 'Performance specific audits',
   description: 'A set of audits focusing on compile and runtime performance',
@@ -44,7 +44,7 @@ export const performanceGroupRef: CategoryRef = {
 };
 
 const versionControlGroupSlug = 'version-control';
-export const versionControlGroup: AuditGroup = {
+export const versionControlGroup: Group = {
   slug: versionControlGroupSlug,
   title: 'Version Control',
   description: 'A set of audits related to version control',
