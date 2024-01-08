@@ -1,20 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { uploadConfig } from '../../test';
-import { uploadConfigSchema } from './upload-config';
+import { UploadConfig, uploadConfigSchema } from './upload-config';
 
 describe('uploadConfigSchema', () => {
-  it('should parse if configuration is valid', () => {
-    const uploadConfigMock = uploadConfig();
-    expect(() => uploadConfigSchema.parse(uploadConfigMock)).not.toThrow();
+  it('should accept a valid upload configuration', () => {
+    expect(() =>
+      uploadConfigSchema.parse({
+        apiKey: 'API-K3Y',
+        organization: 'code-pushup',
+        project: 'cli',
+        server: 'https://cli-server.dev:3800/',
+      } satisfies UploadConfig),
+    ).not.toThrow();
   });
 
-  it('should throw if plugin URL is invalid', () => {
-    const invalidUrl = '-invalid-/url';
-    const uploadConfigMock = uploadConfig();
-    uploadConfigMock.server = invalidUrl;
-
-    expect(() => uploadConfigSchema.parse(uploadConfigMock)).toThrow(
-      `Invalid url`,
-    );
+  it('should throw for an invalid server URL', () => {
+    expect(() =>
+      uploadConfigSchema.parse({
+        apiKey: 'API-K3Y',
+        organization: 'code-pushup',
+        project: 'cli',
+        server: '-invalid-/url',
+      } satisfies UploadConfig),
+    ).toThrow('Invalid url');
   });
 });
