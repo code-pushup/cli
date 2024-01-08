@@ -11,22 +11,22 @@ describe('link', () => {
     expect(result).toBe('[https://example.com](https://example.com)');
   });
 
-  it('should handle empty string as href', () => {
+  it('should return an empty formatted link for empty string', () => {
     const result = link('');
     expect(result).toBe('[]()');
   });
 
-  it('should handle empty string as text', () => {
+  it('should insert link as text for empty string', () => {
     const result = link('https://example.com', '');
     expect(result).toBe('[https://example.com](https://example.com)');
   });
 
-  it('should handle undefined as text', () => {
+  it('should insert link as text for undefined text', () => {
     const result = link('https://example.com', undefined);
     expect(result).toBe('[https://example.com](https://example.com)');
   });
 
-  it('should correctly handle special characters', () => {
+  it('should include special characters', () => {
     const result = link('https://example.com/query?a=b&c=d', 'Query Example');
     expect(result).toBe('[Query Example](https://example.com/query?a=b&c=d)');
   });

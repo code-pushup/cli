@@ -109,3 +109,16 @@ export function objectToCliArgs<
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
 }
+
+export function toUnixPath(
+  path: string,
+  options?: { toRelative?: boolean },
+): string {
+  const unixPath = path.replace(/\\/g, '/');
+
+  if (options?.toRelative) {
+    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+  }
+
+  return unixPath;
+}
