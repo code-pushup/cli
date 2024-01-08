@@ -6,7 +6,6 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-  packageJsonVersionControlGroupRef,
 } from './dist/examples/plugins';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
@@ -45,18 +44,17 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
+
     fileSizePlugin({
-      directory: './dist/packages',
+      directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
-      budget: 42_000,
+      budget: 174_080, // 170 kB
     }),
+
     packageJsonPlugin({
-      directory: './packages',
+      directory: './dist/packages',
       license: 'MIT',
       type: 'module',
-      dependencies: {
-        zod: '^3.22.4',
-      },
     }),
   ],
 
@@ -64,10 +62,7 @@ const config: CoreConfig = {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [
-        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
-        packageJsonVersionControlGroupRef,
-      ],
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
@@ -77,14 +72,13 @@ const config: CoreConfig = {
       ],
     },
     {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [...fileSizeRecommendedRefs, packageJsonPerformanceGroupRef],
-    },
-    {
-      slug: 'documentation',
-      title: 'Documentation',
-      refs: [packageJsonDocumentationGroupRef],
+      slug: 'custom-checks',
+      title: 'Custom checks',
+      refs: [
+        ...fileSizeRecommendedRefs,
+        packageJsonPerformanceGroupRef,
+        packageJsonDocumentationGroupRef,
+      ],
     },
   ],
 };
