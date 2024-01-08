@@ -12,7 +12,7 @@ const typeAuditSlug = 'package-type';
 export const typeAuditInfoMeta = {
   slug: typeAuditSlug,
   title: 'Type',
-  description: 'An audit to check NPM package type`.',
+  description: 'An audit to check NPM package type.',
 };
 
 export function typeAudit(
