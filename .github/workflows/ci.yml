@@ -180,7 +180,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build CLI and ESLint plugin
-        run: npx nx run-many -t build -p cli,plugin-eslint --parallel=2
+        run: npx nx run-many -t build -p cli,plugin-eslint,examples-plugins --parallel=3
       - name: Collect Code PushUp report
         run: npx dist/packages/cli --config code-pushup.config.ts collect
       - name: Upload Code PushUp report to portal
