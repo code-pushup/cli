@@ -55,5 +55,5 @@
       ]
     }
   },
-  "tags": []
+  "tags": ["scope:internal", "type:feature"]
 }
