@@ -1,6 +1,5 @@
 export { config, minimalConfig, minimalReport } from './fixtures/config.mock';
 export { reportMock } from './fixtures/report.mock';
-export * from './memfs';
 
 export { eslintPluginConfig } from './fixtures/eslint-plugin.mock';
 export { lighthousePluginConfig } from './fixtures/lighthouse-plugin.mock';
