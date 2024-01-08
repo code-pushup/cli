@@ -39,7 +39,7 @@ import {
   sortCategoryAudits,
 } from './report';
 import {
-  EnrichedScoredAuditGroupWithAudits,
+  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
@@ -100,7 +100,7 @@ function reportToCategoriesSection(report: ScoredReport): string {
       (
         acc: {
           audits: WeighedAuditReport[];
-          groups: EnrichedScoredAuditGroupWithAudits[];
+          groups: EnrichedScoredGroupWithAudits[];
         },
         ref: CategoryRef,
       ) => ({
@@ -163,7 +163,7 @@ function auditItemToCategorySection(
 }
 
 function groupItemToCategorySection(
-  group: EnrichedScoredAuditGroupWithAudits,
+  group: EnrichedScoredGroupWithAudits,
   plugins: ScoredReport['plugins'],
 ): string {
   const pluginTitle = getPluginNameFromSlug(group.plugin, plugins);

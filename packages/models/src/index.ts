@@ -17,7 +17,7 @@ export {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from './lib/core-config';
-export { AuditGroup, AuditGroupRef, auditGroupSchema } from './lib/group';
+export { Group, GroupRef, groupSchema } from './lib/group';
 export {
   PERSIST_FILENAME,
   PERSIST_FORMAT,

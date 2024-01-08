@@ -11,31 +11,31 @@ import {
   hasDuplicateStrings,
 } from './implementation/utils';
 
-export const auditGroupRefSchema = weightedRefSchema(
-  'Weighted references to audits',
-  "Reference slug to an audit within this plugin (e.g. 'max-lines')",
+export const groupRefSchema = weightedRefSchema(
+  'Weighted reference to a group',
+  "Reference slug to a group within this plugin (e.g. 'max-lines')",
 );
-export type AuditGroupRef = z.infer<typeof auditGroupRefSchema>;
+export type GroupRef = z.infer<typeof groupRefSchema>;
 
-export const auditGroupMetaSchema = metaSchema({
+export const groupMetaSchema = metaSchema({
   titleDescription: 'Descriptive name for the group',
   descriptionDescription: 'Description of the group (markdown)',
   docsUrlDescription: 'Group documentation site',
   description: 'Group metadata',
 });
-export type AuditGroupMeta = z.infer<typeof auditGroupMetaSchema>;
+export type GroupMeta = z.infer<typeof groupMetaSchema>;
 
-export const auditGroupSchema = scorableSchema(
-  'An audit group aggregates a set of audits into a single score which can be referenced from a category. ' +
+export const groupSchema = scorableSchema(
+  'A group aggregates a set of audits into a single score which can be referenced from a category. ' +
     'E.g. the group slug "performance" groups audits and can be referenced in a category',
-  auditGroupRefSchema,
+  groupRefSchema,
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
-).merge(auditGroupMetaSchema);
-export type AuditGroup = z.infer<typeof auditGroupSchema>;
+).merge(groupMetaSchema);
+export type Group = z.infer<typeof groupSchema>;
 
-export const auditGroupsSchema = z
-  .array(auditGroupSchema, {
+export const groupsSchema = z
+  .array(groupSchema, {
     description: 'List of groups',
   })
   .optional()
@@ -49,26 +49,24 @@ export const auditGroupsSchema = z
 // ============
 
 // helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groupAudits: WeightedRef[]) {
-  const duplicateRefs = getDuplicateRefsInGroups(groupAudits);
-  return `In plugin groups the audit refs are not unique: ${errorItems(
+function duplicateRefsInGroupsErrorMsg(groups: WeightedRef[]) {
+  const duplicateRefs = getDuplicateRefsInGroups(groups);
+  return `In plugin groups the following references are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
 
-function getDuplicateRefsInGroups(groupAudits: WeightedRef[]) {
-  return hasDuplicateStrings(
-    groupAudits.map(({ slug: ref }) => ref).filter(exists),
-  );
+function getDuplicateRefsInGroups(groups: WeightedRef[]) {
+  return hasDuplicateStrings(groups.map(({ slug: ref }) => ref).filter(exists));
 }
 
 // helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: AuditGroup[] | undefined) {
+function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
   return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
 }
 
-function getDuplicateSlugsInGroups(groups: AuditGroup[] | undefined) {
+function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
   return Array.isArray(groups)
     ? hasDuplicateStrings(groups.map(({ slug }) => slug))
     : false;
