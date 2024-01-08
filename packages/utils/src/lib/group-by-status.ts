@@ -6,16 +6,14 @@ export function groupByStatus<T>(results: PromiseSettledResult<T>[]): {
     fulfilled: PromiseFulfilledResult<T>[];
     rejected: PromiseRejectedResult[];
   }>(
-    (accumulator, currentValue) => {
-      if (currentValue.status === 'fulfilled' && 'value' in currentValue) {
-        accumulator.fulfilled.push(currentValue);
-      } else if (
-        currentValue.status === 'rejected' &&
-        'reason' in currentValue
-      ) {
-        accumulator.rejected.push(currentValue);
+    (acc, result) => {
+      if (result.status === 'fulfilled') {
+        return { ...acc, fulfilled: [...acc.fulfilled, result] };
       }
-      return accumulator;
+      if (result.status === 'rejected') {
+        return { ...acc, rejected: [...acc.rejected, result] };
+      }
+      return acc;
     },
     { fulfilled: [], rejected: [] },
   );
