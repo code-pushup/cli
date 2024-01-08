@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.8.0](https://github.com/code-pushup/cli/compare/v0.7.0...v0.8.0) (2024-01-08)
+
+### Features
+
+- **core:** add grouping of promise results by status ([5f50e8e](https://github.com/code-pushup/cli/commit/5f50e8ecafa6742c597604bf3ffdcd0361f8c128)), closes [#287](https://github.com/code-pushup/cli/issues/287) [#287](https://github.com/code-pushup/cli/issues/287)
+
 # [0.7.0](https://github.com/code-pushup/cli/compare/v0.6.6...v0.7.0) (2024-01-08)
 
 ### Features
