@@ -14,12 +14,14 @@ import eslintPlugin, {
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
-const envSchema = z.object({
-  CP_SERVER: z.string().url(),
-  CP_API_KEY: z.string().min(1),
-  CP_ORGANIZATION: z.string().min(1),
-  CP_PROJECT: z.string().min(1),
-});
+const envSchema = z
+  .object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().min(1),
+  })
+  .partial();
 const env = await envSchema.parseAsync(process.env);
 
 const config: CoreConfig = {
@@ -29,12 +31,17 @@ const config: CoreConfig = {
     format: ['json', 'md'],
   },
 
-  upload: {
-    server: env.CP_SERVER,
-    apiKey: env.CP_API_KEY,
-    organization: env.CP_ORGANIZATION,
-    project: env.CP_PROJECT,
-  },
+  ...(env.CP_SERVER &&
+    env.CP_API_KEY &&
+    env.CP_ORGANIZATION &&
+    env.CP_PROJECT && {
+      upload: {
+        server: env.CP_SERVER,
+        apiKey: env.CP_API_KEY,
+        organization: env.CP_ORGANIZATION,
+        project: env.CP_PROJECT,
+      },
+    }),
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),

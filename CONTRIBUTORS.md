@@ -36,6 +36,9 @@ npx nx build cli
 
 # lint projects affected by changes (compared to main branch)
 npx nx affected:lint
+
+# run Code PushUp command on this repository
+npx nx run-collect
 ```
 
 ## Git
