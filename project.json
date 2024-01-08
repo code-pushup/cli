@@ -32,7 +32,12 @@
       "command": "npx dist/packages/cli collect --config=code-pushup.config.ts",
       "dependsOn": [
         {
-          "projects": ["cli", "plugin-eslint", "examples-plugins"],
+          "projects": [
+            "cli",
+            "plugin-eslint",
+            "examples-plugins",
+            "react-todos-app"
+          ],
           "target": "build"
         }
       ]
@@ -41,7 +46,12 @@
       "command": "npx dist/packages/cli upload --config=code-pushup.config.ts",
       "dependsOn": [
         {
-          "projects": ["cli", "plugin-eslint", "examples-plugins"],
+          "projects": [
+            "cli",
+            "plugin-eslint",
+            "examples-plugins",
+            "react-todos-app"
+          ],
           "target": "build"
         }
       ]
@@ -50,7 +60,12 @@
       "command": "npx dist/packages/cli autorun --config=code-pushup.config.ts",
       "dependsOn": [
         {
-          "projects": ["cli", "plugin-eslint", "examples-plugins"],
+          "projects": [
+            "cli",
+            "plugin-eslint",
+            "examples-plugins",
+            "react-todos-app"
+          ],
           "target": "build"
         }
       ]
