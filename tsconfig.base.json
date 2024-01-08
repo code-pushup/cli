@@ -25,9 +25,6 @@
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
-      "@code-pushup/lighthouse-plugin/testing": [
-        "packages/plugin-lighthouse/test/index.ts"
-      ],
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/models/testing": ["packages/models/test/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
