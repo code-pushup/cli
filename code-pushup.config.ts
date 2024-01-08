@@ -1,8 +1,5 @@
 import 'dotenv/config';
 import { z } from 'zod';
-import eslintPlugin, {
-  eslintConfigFromNxProjects,
-} from './dist/packages/plugin-eslint';
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -10,7 +7,10 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from './examples/plugins/src';
+} from './dist/examples/plugins';
+import eslintPlugin, {
+  eslintConfigFromNxProjects,
+} from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
