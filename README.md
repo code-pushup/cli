@@ -26,3 +26,5 @@ This monorepo contains code for open-source Code PushUp NPM packages:
 - [🧩 @code-pushup/utils](./packages/utils/) - various **utilities** (useful for custom plugins or other integrations)
 - plugins:
   - [📦 @code-pushup/eslint-plugin](./packages/plugin-eslint/) - static analysis using **ESLint** rules
+
+If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).

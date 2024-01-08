@@ -9,8 +9,8 @@ The plugin crawls the file base depending on your configuration and checks the c
 You can configure the plugin with the following options:
 
 - `directory` - directory to crawl as string
-- `license` - file name pattern as string
-- `type` - size budget as number in bytes
+- `license` - expected value of [`license` property in `package.json`](https://docs.npmjs.com/cli/configuring-npm/package-json#license)
+- `type` - expected value of [`type` property in `package.json`](https://nodejs.org/api/packages.html#type)
 - `dependencies` - package dependencies as object
 - `devDependencies` - package dependencies as object
 - `optionalDependencies` - package dependencies as object
