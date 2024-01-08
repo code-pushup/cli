@@ -87,7 +87,7 @@ function reportToCategoriesSection(report: ScoredReport): string {
       category.score,
     )} Score:  ${style(formatReportScore(category.score))}`;
     const categoryDocs = getDocsAndDescription(category);
-    const categoryItems = category.refs.reduce((acc, ref) => {
+    const categoryMDItems = category.refs.reduce((acc, ref) => {
       if (ref.type === 'group') {
         const group = getGroupWithAudits(ref.slug, ref.plugin, plugins);
         const mdGroupItem = groupItemToCategorySection(group, plugins);
@@ -108,7 +108,7 @@ function reportToCategoriesSection(report: ScoredReport): string {
       categoryDocs +
       categoryScore +
       NEW_LINE +
-      categoryItems
+      categoryMDItems
     );
   }, '');
 

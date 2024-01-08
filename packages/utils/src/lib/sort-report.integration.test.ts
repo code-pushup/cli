@@ -1,4 +1,4 @@
-import { minimalReport, reportMock } from '@code-pushup/models/testing';
+import { reportMock } from '@code-pushup/models/testing';
 import { scoreReport } from './scoring';
 import { sortReport } from './sort-report';
 
