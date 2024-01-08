@@ -147,22 +147,15 @@ export async function executePlugins(
 
   logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
-  const { fulfilled, rejected } = groupByStatus(results) as {
-    fulfilled: PromiseFulfilledResult<PluginReport>[];
-    rejected: PromiseRejectedResult[];
-  };
+  const { fulfilled, rejected } = groupByStatus(results);
   if (rejected.length) {
-    const errorMessages = rejected
-      .map(({ reason }: PromiseRejectedResult) => reason)
-      .join(', ');
+    const errorMessages = rejected.map(({ reason }) => reason).join(', ');
     throw new Error(
       `Plugins failed: ${rejected.length} errors: ${errorMessages}`,
     );
   }
 
-  return fulfilled.map(
-    (result: PromiseFulfilledResult<PluginReport>) => result.value,
-  );
+  return fulfilled.map(result => result.value);
 }
 
 function auditOutputsCorrelateWithPluginOutput(
