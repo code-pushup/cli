@@ -1,13 +1,13 @@
 import { z } from 'zod';
+import { auditSchema } from './audit';
+import { auditOutputSchema } from './audit-output';
 import { categoryConfigSchema } from './category-config';
+import { auditGroupSchema } from './group';
 import {
   executionMetaSchema,
   packageVersionSchema,
 } from './implementation/schemas';
 import { pluginMetaSchema } from './plugin-config';
-import { auditSchema } from './plugin-config-audits';
-import { auditGroupSchema } from './plugin-config-groups';
-import { auditOutputSchema } from './plugin-process-output';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;

@@ -1,11 +1,7 @@
 import { platform } from 'os';
 import { RunnerConfig } from '../../src';
-import {
-  RunnerFunction,
-  runnerConfigSchema,
-  runnerFunctionSchema,
-} from '../../src/lib/plugin-config-runner';
-import { AuditOutput, AuditOutputs } from '../../src/lib/plugin-process-output';
+import { AuditOutput } from '../../src/lib/audit-output';
+import { runnerConfigSchema } from '../../src/lib/runner-config';
 
 /**
  * Use this helper as a general purpose mock with working defaults

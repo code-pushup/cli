@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { auditReport } from '../../test/fixtures/plugin-config.mock';
 import { runnerConfig } from '../../test/fixtures/runner-config.mock';
-import {
-  runnerConfigSchema,
-  runnerFunctionSchema,
-} from './plugin-config-runner';
+import { runnerConfigSchema, runnerFunctionSchema } from './runner-config';
 
 describe('runnerConfig', () => {
   it('should parse if configuration is valid', () => {
