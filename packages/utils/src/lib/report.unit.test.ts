@@ -7,6 +7,7 @@ import {
   compareIssueSeverity,
   compareIssues,
   countWeightedRefs,
+  formatReportScore,
   getPluginNameFromSlug,
   loadReport,
   sortAudits,
@@ -60,6 +61,33 @@ describe('compareIssueSeverity', () => {
       ),
     ).toEqual(['info', 'warning', 'error']);
   });
+});
+
+describe('formatReportScore', () => {
+  it.each([
+    [NaN, 'NaN'],
+    [Infinity, 'Infinity'],
+    [-Infinity, '-Infinity'],
+    [-1, '-100'],
+    [-0.1, '-10'],
+    [0, '0'],
+    [0.0049, '0'],
+    [0.005, '1'],
+    [0.01, '1'],
+    [0.123, '12'],
+    [0.245, '25'],
+    [0.2449, '24'],
+    [0.99, '99'],
+    [0.994, '99'],
+    [0.995, '100'],
+    [1, '100'],
+    [1.1, '110'],
+  ] satisfies readonly [number, string][])(
+    "should format a score of %d as '%s'",
+    (score, expected) => {
+      expect(formatReportScore(score)).toBe(expected);
+    },
+  );
 });
 
 describe('loadReport', () => {
