@@ -5,13 +5,13 @@ import { reportMock } from '@code-pushup/models/testing';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
   calcDuration,
+  compareAudits,
+  compareCategoryAudits,
   compareIssueSeverity,
   compareIssues,
   countWeightedRefs,
   getPluginNameFromSlug,
   loadReport,
-  sortAudits,
-  sortCategoryAudits,
 } from './report';
 import {
   EnrichedAuditReport,
@@ -135,7 +135,7 @@ describe('sortCategoryAudits', () => {
       { weight: 0, score: 0.7 },
       { weight: 10, score: 1 },
     ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
     expect(sortedAudits).toEqual([
       { weight: 10, score: 1 },
       { weight: 5, score: 1 },
@@ -151,7 +151,7 @@ describe('sortCategoryAudits', () => {
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
     ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
       { score: 0.7, value: 1 },
@@ -167,7 +167,7 @@ describe('sortCategoryAudits', () => {
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
     ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(sortCategoryAudits);
+    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },
       { value: 1, title: 'd' },
@@ -185,7 +185,7 @@ describe('sortAudits', () => {
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
     ] as EnrichedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(sortAudits);
+    const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
       { score: 0.7, value: 1 },
@@ -201,7 +201,7 @@ describe('sortAudits', () => {
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
     ] as EnrichedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(sortAudits);
+    const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },
       { value: 1, title: 'd' },

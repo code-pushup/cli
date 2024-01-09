@@ -9,6 +9,7 @@ import {
   reportToMd,
   reportToStdout,
   scoreReport,
+  sortReport,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -29,8 +30,8 @@ export async function persistReport(
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
-  const scoredReport = scoreReport(report);
-  console.info(reportToStdout(scoredReport));
+  const sortedScoredReport = sortReport(scoreReport(report));
+  console.info(reportToStdout(sortedScoredReport));
 
   // collect physical format outputs
   const results: { format: string; content: string }[] = [];
@@ -48,7 +49,7 @@ export async function persistReport(
 
     results.push({
       format: 'md',
-      content: reportToMd(scoredReport, commitData),
+      content: reportToMd(sortedScoredReport, commitData),
     });
   }
 

@@ -10,7 +10,6 @@ import {
   formatReportScore,
   reportHeadlineText,
   reportRawOverviewTableHeaders,
-  sortAudits,
 } from './report';
 import { ScoredReport } from './scoring';
 
@@ -47,7 +46,7 @@ function reportToDetailSection(report: ScoredReport): string {
 
     const ui = cliui({ width: 80 });
 
-    audits.sort(sortAudits).forEach(({ score, title, displayValue, value }) => {
+    audits.forEach(({ score, title, displayValue, value }) => {
       ui.div(
         {
           text: withColor({ score, text: '●' }),
