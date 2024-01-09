@@ -36,6 +36,9 @@ npx nx build cli
 
 # lint projects affected by changes (compared to main branch)
 npx nx affected:lint
+
+# run Code PushUp command on this repository
+npx nx run-collect
 ```
 
 ## Git
@@ -64,6 +67,7 @@ Projects are tagged in two different dimensions - scope and type:
 | `scope:plugin`      | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                                     |
 | `scope:shared`      | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                                     |
 | `scope:tooling`     | supplementary tooling, e.g. code generation                                  | `scope:shared`                                     |
+| `scope:internal`    | internal project, e.g. example plugin                                        | any                                                |
 | `type:app`          | application, e.g. CLI or example web app                                     | `type:feature`, `type:util` or `type:testing-util` |
 | `type:feature`      | library with business logic for a specific feature                           | `type:util` or `type:testing-util`                 |
 | `type:util`         | general purpose utilities and types intended for reuse                       | `type:util` or `type:testing-util`                 |
