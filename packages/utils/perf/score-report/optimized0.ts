@@ -1,12 +1,12 @@
-import { AuditGroupRef, CategoryRef, Report } from '@code-pushup/models';
+import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
 import {
   EnrichedAuditReport,
-  EnrichedScoredAuditGroup,
+  EnrichedScoredGroup,
 } from '../../src/lib/scoring';
 
 function groupRefToScore(audits: EnrichedAuditReport[]) {
-  return (ref: AuditGroupRef) => {
+  return (ref: GroupRef) => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
       throw new Error(
@@ -19,7 +19,7 @@ function groupRefToScore(audits: EnrichedAuditReport[]) {
 
 function categoryRefToScore(
   audits: EnrichedAuditReport[],
-  groups: EnrichedScoredAuditGroup[],
+  groups: EnrichedScoredGroup[],
 ) {
   return (ref: CategoryRef) => {
     let audit;

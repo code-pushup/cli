@@ -1,5 +1,5 @@
 import type { Rule } from 'eslint';
-import type { AuditGroup, AuditGroupRef } from '@code-pushup/models';
+import type { Group, GroupRef } from '@code-pushup/models';
 import { objectToKeys, slugify } from '@code-pushup/utils';
 import { ruleIdToSlug } from './hash';
 import { type RuleData, parseRuleId } from './rules';
@@ -7,7 +7,7 @@ import { type RuleData, parseRuleId } from './rules';
 type RuleType = NonNullable<Rule.RuleMetaData['type']>;
 
 // docs on meta.type: https://eslint.org/docs/latest/extend/custom-rules#rule-structure
-const typeGroups: Record<RuleType, Omit<AuditGroup, 'refs'>> = {
+const typeGroups: Record<RuleType, Omit<Group, 'refs'>> = {
   problem: {
     slug: 'problems',
     title: 'Problems',
@@ -28,7 +28,7 @@ const typeGroups: Record<RuleType, Omit<AuditGroup, 'refs'>> = {
   },
 };
 
-export function groupsFromRuleTypes(rules: RuleData[]): AuditGroup[] {
+export function groupsFromRuleTypes(rules: RuleData[]): Group[] {
   const allTypes = objectToKeys(typeGroups);
 
   const auditSlugsMap = rules.reduce<Partial<Record<RuleType, string[]>>>(
@@ -46,14 +46,13 @@ export function groupsFromRuleTypes(rules: RuleData[]): AuditGroup[] {
     .map(type => ({
       ...typeGroups[type],
       refs:
-        auditSlugsMap[type]?.map(
-          (slug): AuditGroupRef => ({ slug, weight: 1 }),
-        ) ?? [],
+        auditSlugsMap[type]?.map((slug): GroupRef => ({ slug, weight: 1 })) ??
+        [],
     }))
     .filter(group => group.refs.length);
 }
 
-export function groupsFromRuleCategories(rules: RuleData[]): AuditGroup[] {
+export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
   const categoriesMap = rules.reduce<Record<string, Record<string, string[]>>>(
     (acc, { meta: { docs }, ruleId, options }) => {
       // meta.docs.category still used by some popular plugins (e.g. import, react, functional)
@@ -80,7 +79,7 @@ export function groupsFromRuleCategories(rules: RuleData[]): AuditGroup[] {
   return Object.entries(categoriesMap)
     .flatMap(([plugin, categories]) =>
       Object.entries(categories).map(
-        ([category, slugs]): AuditGroup => ({
+        ([category, slugs]): Group => ({
           slug: `${slugify(plugin)}-${slugify(category)}`,
           title: `${category} (${plugin})`,
           refs: slugs.map(slug => ({ slug, weight: 1 })),

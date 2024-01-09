@@ -3,12 +3,9 @@ import { vol } from 'memfs';
 import { join } from 'path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { logPersistedResults, persistReport } from './persist';
 
-// @TODO: should throw PersistDirError
-// @TODO: should throw PersistError
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);

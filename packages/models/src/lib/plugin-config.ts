@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { pluginAuditsSchema } from './audit';
+import { groupsSchema } from './group';
 import {
   materialIconSchema,
   metaSchema,
@@ -6,12 +8,7 @@ import {
   slugSchema,
 } from './implementation/schemas';
 import { errorItems, hasMissingStrings } from './implementation/utils';
-import { pluginAuditsSchema } from './plugin-config-audits';
-import { auditGroupsSchema } from './plugin-config-groups';
-import {
-  runnerConfigSchema,
-  runnerFunctionSchema,
-} from './plugin-config-runner';
+import { runnerConfigSchema, runnerFunctionSchema } from './runner-config';
 
 export const pluginMetaSchema = packageVersionSchema({
   optional: true,
@@ -35,7 +32,7 @@ export type PluginMeta = z.infer<typeof pluginMetaSchema>;
 export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
-  groups: auditGroupsSchema,
+  groups: groupsSchema,
 });
 type PluginData = z.infer<typeof pluginDataSchema>;
 

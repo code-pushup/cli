@@ -1,9 +1,9 @@
 import { vol } from 'memfs';
 import type { SpyInstance } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { findCodePushupEslintrc } from './utils';
 
 describe('find code-pushup.eslintrc.* file', () => {
-  const MEMFS_VOLUME = '/test';
   let cwdSpy: SpyInstance;
 
   beforeAll(() => {

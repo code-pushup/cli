@@ -31,7 +31,7 @@ import {
   reportOverviewTableHeaders,
 } from './report';
 import {
-  EnrichedScoredAuditGroupWithAudits,
+  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
@@ -132,7 +132,7 @@ function auditItemToCategorySection(
 }
 
 function groupItemToCategorySection(
-  group: EnrichedScoredAuditGroupWithAudits,
+  group: EnrichedScoredGroupWithAudits,
   plugins: ScoredReport['plugins'],
 ): string {
   const pluginTitle = getPluginNameFromSlug(group.plugin, plugins);

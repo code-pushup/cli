@@ -7,7 +7,7 @@ import {
   getGroupWithAudits,
 } from './report';
 import {
-  EnrichedScoredAuditGroupWithAudits,
+  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
@@ -19,7 +19,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
       (
         acc: {
           audits: WeighedAuditReport[];
-          groups: EnrichedScoredAuditGroupWithAudits[];
+          groups: EnrichedScoredGroupWithAudits[];
         },
         ref: CategoryRef,
       ) => ({

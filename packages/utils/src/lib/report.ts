@@ -1,9 +1,9 @@
 import { join } from 'path';
 import {
-  AuditGroup,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
+  Group,
   Issue,
   PersistConfig,
   Report,
@@ -17,7 +17,7 @@ import {
 } from './file-system';
 import {
   EnrichedAuditReport,
-  EnrichedScoredAuditGroupWithAudits,
+  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
@@ -110,28 +110,29 @@ export function countCategoryAudits(
   plugins: ScoredReport['plugins'],
 ): number {
   // Create lookup object for groups within each plugin
-  const groupLookup = plugins.reduce<
-    Record<string, Record<string, AuditGroup>>
-  >((lookup, plugin) => {
-    if (!plugin.groups.length) {
-      return lookup;
-    }
+  const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
+    (lookup, plugin) => {
+      if (!plugin.groups.length) {
+        return lookup;
+      }
 
-    return {
-      ...lookup,
-      [plugin.slug]: {
-        ...plugin.groups.reduce<Record<string, AuditGroup>>(
-          (groupLookup, group) => {
-            return {
-              ...groupLookup,
-              [group.slug]: group,
-            };
-          },
-          {},
-        ),
-      },
-    };
-  }, {});
+      return {
+        ...lookup,
+        [plugin.slug]: {
+          ...plugin.groups.reduce<Record<string, Group>>(
+            (groupLookup, group) => {
+              return {
+                ...groupLookup,
+                [group.slug]: group,
+              };
+            },
+            {},
+          ),
+        },
+      };
+    },
+    {},
+  );
 
   // Count audits
   return refs.reduce((acc, ref) => {
@@ -168,7 +169,7 @@ export function getGroupWithAudits(
   refSlug: string,
   refPlugin: string,
   plugins: ScoredReport['plugins'],
-): EnrichedScoredAuditGroupWithAudits {
+): EnrichedScoredGroupWithAudits {
   const plugin = plugins.find(({ slug }) => slug === refPlugin);
   if (!plugin) {
     throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');

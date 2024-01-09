@@ -6,6 +6,7 @@ import type {
 import type { ESLint } from 'eslint';
 import { vol } from 'memfs';
 import type { SpyInstance } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 
@@ -45,8 +46,6 @@ describe('nxProjectsToConfig', () => {
       ]),
     ),
   });
-
-  const MEMFS_VOLUME = '/test';
 
   let cwdSpy: SpyInstance;
 
