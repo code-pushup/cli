@@ -11,8 +11,7 @@ import {
 } from '@code-pushup/models';
 import {
   getProgressBar,
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
+  groupByStatus,
   logMultipleResults,
 } from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
@@ -148,21 +147,15 @@ export async function executePlugins(
 
   logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
-  // TODO: add groupBy method for promiseSettledResult by status, #287
-
-  const failedResults = results.filter(isPromiseRejectedResult);
-  if (failedResults.length) {
-    const errorMessages = failedResults
-      .map(({ reason }: PromiseRejectedResult) => reason)
-      .join(', ');
+  const { fulfilled, rejected } = groupByStatus(results);
+  if (rejected.length) {
+    const errorMessages = rejected.map(({ reason }) => reason).join(', ');
     throw new Error(
-      `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
+      `Plugins failed: ${rejected.length} errors: ${errorMessages}`,
     );
   }
 
-  return results
-    .filter(isPromiseFulfilledResult)
-    .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
+  return fulfilled.map(result => result.value);
 }
 
 function auditOutputsCorrelateWithPluginOutput(

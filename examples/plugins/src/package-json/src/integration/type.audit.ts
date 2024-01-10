@@ -1,5 +1,5 @@
 import { AuditOutput, Issue } from '@code-pushup/models';
-import { findLineNumberInText } from '../../../../../../dist/packages/utils';
+import { findLineNumberInText } from '@code-pushup/utils';
 import { PackageJson, SourceResult, SourceResults } from './types';
 import {
   assertPropertyEmpty,
@@ -12,7 +12,7 @@ const typeAuditSlug = 'package-type';
 export const typeAuditInfoMeta = {
   slug: typeAuditSlug,
   title: 'Type',
-  description: 'An audit to check NPM package type`.',
+  description: 'An audit to check NPM package type.',
 };
 
 export function typeAudit(

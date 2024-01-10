@@ -1,3 +1,10 @@
+export { Audit, auditSchema, pluginAuditsSchema } from './lib/audit';
+export { Issue, IssueSeverity } from './lib/audit-issue';
+export {
+  AuditOutput,
+  AuditOutputs,
+  auditOutputsSchema,
+} from './lib/audit-output';
 export {
   CategoryConfig,
   CategoryRef,
@@ -10,6 +17,12 @@ export {
   refineCoreConfig,
   unrefinedCoreConfigSchema,
 } from './lib/core-config';
+export { Group, GroupRef, groupSchema } from './lib/group';
+export {
+  PERSIST_FILENAME,
+  PERSIST_FORMAT,
+  PERSIST_OUTPUT_DIR,
+} from './lib/implementation/constants';
 export {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
@@ -25,9 +38,9 @@ export {
   SUPPORTED_CONFIG_FILE_FORMATS,
 } from './lib/implementation/configuration';
 export {
-  materialIconSchema,
-  filePathSchema,
   fileNameSchema,
+  filePathSchema,
+  materialIconSchema,
   urlSchema,
 } from './lib/implementation/schemas';
 export {
@@ -38,32 +51,9 @@ export {
 } from './lib/persist-config';
 export {
   PluginConfig,
-  pluginConfigSchema,
   PluginMeta,
+  pluginConfigSchema,
 } from './lib/plugin-config';
-export {
-  Audit,
-  auditSchema,
-  pluginAuditsSchema,
-} from './lib/plugin-config-audits';
-export {
-  AuditGroup,
-  AuditGroupRef,
-  auditGroupSchema,
-} from './lib/plugin-config-groups';
-export {
-  OnProgress,
-  RunnerConfig,
-  RunnerFunction,
-  onProgressSchema,
-  runnerConfigSchema,
-} from './lib/plugin-config-runner';
-export {
-  AuditOutput,
-  AuditOutputs,
-  auditOutputsSchema,
-} from './lib/plugin-process-output';
-export { Issue, IssueSeverity } from './lib/plugin-process-output-audit-issue';
 export {
   AuditReport,
   PluginReport,
@@ -72,4 +62,11 @@ export {
   pluginReportSchema,
   reportSchema,
 } from './lib/report';
+export {
+  OnProgress,
+  RunnerConfig,
+  RunnerFunction,
+  onProgressSchema,
+  runnerConfigSchema,
+} from './lib/runner-config';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';

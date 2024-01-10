@@ -11,17 +11,17 @@ describe('li', () => {
     expect(result).toBe('- [ ] Hello World');
   });
 
-  it('should handle empty text', () => {
+  it('should return an empty list item for empty string', () => {
     const result = li('');
     expect(result).toBe('- ');
   });
 
-  it('should handle empty text with checkbox order', () => {
+  it('should return an empty checkbox item for empty string', () => {
     const result = li('', 'checkbox');
     expect(result).toBe('- [ ] ');
   });
 
-  it('should correctly handle special characters', () => {
+  it('should include special characters', () => {
     const result = li('Hello *World*', 'checkbox');
     expect(result).toBe('- [ ] Hello *World*');
   });

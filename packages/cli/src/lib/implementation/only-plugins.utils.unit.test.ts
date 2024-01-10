@@ -34,8 +34,6 @@ describe('filterPluginsByOnlyPluginsOption', () => {
   });
 });
 
-// without the `no-secrets` rule, this would be flagged as a security issue
-// eslint-disable-next-line no-secrets/no-secrets
 describe('filterCategoryByOnlyPluginsOption', () => {
   it('should return all categories if no onlyPlugins option', () => {
     expect(

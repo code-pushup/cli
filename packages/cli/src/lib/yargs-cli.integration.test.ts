@@ -3,7 +3,9 @@ import { CoreConfig } from '@code-pushup/models';
 import {
   CoreConfigCliOptions,
   GeneralCliOptions,
+  OnlyPluginsOptions,
 } from './implementation/model';
+import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins-options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
@@ -14,6 +16,14 @@ describe('yargsCli', () => {
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(false);
     expect(parsedArgv.progress).toBe(true);
+  });
+
+  it('should parse an empty array as a default onlyPlugins option', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & OnlyPluginsOptions>(
+      [],
+      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv.onlyPlugins).toEqual([]);
   });
 
   it('should parse a single boolean negated argument', async () => {
@@ -57,7 +67,9 @@ describe('yargsCli', () => {
   });
 
   it('should handle global options and middleware argument overrides correctly', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & CoreConfigCliOptions>(
+    const parsedArgv = await yargsCli<
+      GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions
+    >(
       [
         '--verbose',
         '--persist.format=md',
@@ -67,8 +79,10 @@ describe('yargsCli', () => {
         '--upload.project=code-push-down',
         '--upload.server=https://code-pushdown.com/api',
         '--upload.apiKey=some-api-key',
+        '--onlyPlugins=lighthouse',
+        '--onlyPlugins=eslint',
       ],
-      { options },
+      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
     expect(parsedArgv).toEqual(
       expect.objectContaining({
@@ -87,6 +101,7 @@ describe('yargsCli', () => {
           server: 'https://code-pushdown.com/api',
           apiKey: 'some-api-key',
         }),
+        onlyPlugins: ['lighthouse', 'eslint'],
       }),
     );
   });

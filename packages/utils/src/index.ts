@@ -1,16 +1,14 @@
 export {
-  CliArgsObject,
   ProcessConfig,
   ProcessError,
   ProcessObserver,
   ProcessResult,
   executeProcess,
-  objectToCliArgs,
 } from './lib/execute-process';
 export {
+  CrawlFileSystemOptions,
   FileResult,
   MultipleFileResults,
-  CrawlFileSystemOptions,
   crawlFileSystem,
   ensureDirectoryExists,
   fileExists,
@@ -20,7 +18,6 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
-  toUnixPath,
 } from './lib/file-system';
 export {
   formatBytes,
@@ -52,11 +49,15 @@ export { reportToMd } from './lib/report-to-md';
 export { reportToStdout } from './lib/report-to-stdout';
 export { ScoredReport, scoreReport } from './lib/scoring';
 export {
+  CliArgsObject,
   countOccurrences,
   distinct,
   factorOf,
+  objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
-} from './lib/transformation';
+  toUnixPath,
+} from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { groupByStatus } from './lib/group-by-status';

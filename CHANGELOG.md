@@ -2,6 +2,60 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.8.7](https://github.com/code-pushup/cli/compare/v0.8.6...v0.8.7) (2024-01-10)
+
+## [0.8.6](https://github.com/code-pushup/cli/compare/v0.8.5...v0.8.6) (2024-01-10)
+
+## [0.8.5](https://github.com/code-pushup/cli/compare/v0.8.4...v0.8.5) (2024-01-10)
+
+## [0.8.4](https://github.com/code-pushup/cli/compare/v0.8.3...v0.8.4) (2024-01-10)
+
+## [0.8.3](https://github.com/code-pushup/cli/compare/v0.8.2...v0.8.3) (2024-01-10)
+
+## [0.8.2](https://github.com/code-pushup/cli/compare/v0.8.1...v0.8.2) (2024-01-09)
+
+## [0.8.1](https://github.com/code-pushup/cli/compare/v0.8.0...v0.8.1) (2024-01-08)
+
+# [0.8.0](https://github.com/code-pushup/cli/compare/v0.7.0...v0.8.0) (2024-01-08)
+
+### Features
+
+- **core:** add grouping of promise results by status ([5f50e8e](https://github.com/code-pushup/cli/commit/5f50e8ecafa6742c597604bf3ffdcd0361f8c128)), closes [#287](https://github.com/code-pushup/cli/issues/287) [#287](https://github.com/code-pushup/cli/issues/287)
+
+# [0.7.0](https://github.com/code-pushup/cli/compare/v0.6.6...v0.7.0) (2024-01-08)
+
+### Features
+
+- **core:** improve upload error messages, extend icon set ([2251ebd](https://github.com/code-pushup/cli/commit/2251ebd13763facb562a9011cf034ff2e9b7ef37))
+
+## [0.6.6](https://github.com/code-pushup/cli/compare/v0.6.5...v0.6.6) (2024-01-05)
+
+## [0.6.5](https://github.com/code-pushup/cli/compare/v0.6.4...v0.6.5) (2024-01-04)
+
+## [0.6.4](https://github.com/code-pushup/cli/compare/v0.6.3...v0.6.4) (2024-01-04)
+
+## [0.6.3](https://github.com/code-pushup/cli/compare/v0.6.2...v0.6.3) (2024-01-04)
+
+## [0.6.2](https://github.com/code-pushup/cli/compare/v0.6.1...v0.6.2) (2024-01-04)
+
+## [0.6.1](https://github.com/code-pushup/cli/compare/v0.6.0...v0.6.1) (2024-01-03)
+
+### Bug Fixes
+
+- **plugin-eslint:** fix default Nx lint patterns - directory not valid for "files" in eslintrc ([6865800](https://github.com/code-pushup/cli/commit/68658003f295989b0587986e87a0e17711e7430c))
+
+# [0.6.0](https://github.com/code-pushup/cli/compare/v0.5.7...v0.6.0) (2024-01-03)
+
+### Features
+
+- **plugin-eslint:** set "passed" displayValue for ESLint audits ([40f61a4](https://github.com/code-pushup/cli/commit/40f61a44ec5157a9f6e39218838c5c038fcb495a))
+
+## [0.5.7](https://github.com/code-pushup/cli/compare/v0.5.6...v0.5.7) (2024-01-03)
+
+### Bug Fixes
+
+- **plugin-eslint:** set default lint file patterns for Nx projects ([9db19d0](https://github.com/code-pushup/cli/commit/9db19d01c27b2c577268ae4ccac76c64e2341523))
+
 ## [0.5.6](https://github.com/code-pushup/cli/compare/v0.5.5...v0.5.6) (2023-12-29)
 
 ## [0.5.5](https://github.com/code-pushup/cli/compare/v0.5.4...v0.5.5) (2023-12-26)

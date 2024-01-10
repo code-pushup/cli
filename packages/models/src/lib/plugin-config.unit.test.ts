@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { config, pluginConfig } from '../../test';
+import { AuditOutputs } from './audit-output';
 import { pluginConfigSchema } from './plugin-config';
-import { AuditOutputs } from './plugin-process-output';
 
 describe('pluginConfigSchema', () => {
   it('should parse if plugin configuration is valid', () => {

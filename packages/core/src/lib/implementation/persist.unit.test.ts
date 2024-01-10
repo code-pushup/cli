@@ -1,14 +1,11 @@
-import { readFileSync } from 'fs';
 import { vol } from 'memfs';
-import { join } from 'path';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { logPersistedResults, persistReport } from './persist';
 
-// @TODO: should throw PersistDirError
-// @TODO: should throw PersistError
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
@@ -44,7 +41,7 @@ describe('persistReport', () => {
     });
 
     const jsonReport: Report = JSON.parse(
-      readFileSync(join(MEMFS_VOLUME, 'report.json')).toString(),
+      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({
@@ -53,9 +50,9 @@ describe('persistReport', () => {
       }),
     );
 
-    expect(() => readFileSync(join(MEMFS_VOLUME, 'report.md'))).toThrow(
-      'no such file or directory',
-    );
+    await expect(() =>
+      readFile(join(MEMFS_VOLUME, 'report.md')),
+    ).rejects.toThrow('no such file or directory');
   });
 
   it('should create a report in md format', async () => {
@@ -65,12 +62,12 @@ describe('persistReport', () => {
       format: ['md'],
     });
 
-    const mdReport = readFileSync(join(MEMFS_VOLUME, 'report.md')).toString();
+    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
     expect(mdReport).toContain('Code PushUp Report');
 
-    expect(() => readFileSync(join(MEMFS_VOLUME, 'report.json'))).toThrow(
-      'no such file or directory',
-    );
+    await expect(() =>
+      readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+    ).rejects.toThrow('no such file or directory');
   });
 
   it('should create a report in all formats', async () => {
@@ -80,12 +77,12 @@ describe('persistReport', () => {
       filename: 'report',
     });
 
-    const mdReport = readFileSync(join(MEMFS_VOLUME, 'report.md')).toString();
+    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
     expect(mdReport).toContain('Code PushUp Report');
     expect(mdReport).toContain('|🏷 Category|⭐ Score|🛡 Audits|');
 
     const jsonReport: Report = JSON.parse(
-      readFileSync(join(MEMFS_VOLUME, 'report.json')).toString(),
+      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({
@@ -97,8 +94,8 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
-  it('should log report sizes correctly`', async () => {
-    logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10000] }]);
+  it('should log report sizes correctly`', () => {
+    logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
     expect(console.info).toHaveBeenNthCalledWith(
       1,
       'Generated reports successfully: ',
@@ -113,7 +110,7 @@ describe('logPersistedResults', () => {
     );
   });
 
-  it('should log fails correctly`', async () => {
+  it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
 
     expect(console.warn).toHaveBeenNthCalledWith(
@@ -126,9 +123,9 @@ describe('logPersistedResults', () => {
     );
   });
 
-  it('should log report sizes and fails correctly`', async () => {
+  it('should log report sizes and fails correctly`', () => {
     logPersistedResults([
-      { status: 'fulfilled', value: ['out.json', 10000] },
+      { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
 

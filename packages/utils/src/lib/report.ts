@@ -1,14 +1,15 @@
-import { join } from 'path';
+import { join } from 'node:path';
 import {
-  AuditGroup,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
+  Group,
   Issue,
   PersistConfig,
   Report,
   reportSchema,
 } from '@code-pushup/models';
+import { SCORE_COLOR_RANGE } from './constants';
 import {
   ensureDirectoryExists,
   readJsonFile,
@@ -16,7 +17,7 @@ import {
 } from './file-system';
 import {
   EnrichedAuditReport,
-  EnrichedScoredAuditGroupWithAudits,
+  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
 } from './scoring';
@@ -62,20 +63,20 @@ export function formatReportScore(score: number): string {
 }
 
 export function getRoundScoreMarker(score: number): string {
-  if (score >= 0.9) {
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
     return '🟢';
   }
-  if (score >= 0.5) {
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
     return '🟡';
   }
   return '🔴';
 }
 
 export function getSquaredScoreMarker(score: number): string {
-  if (score >= 0.9) {
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
     return '🟩';
   }
-  if (score >= 0.5) {
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
     return '🟨';
   }
   return '🟥';
@@ -109,28 +110,29 @@ export function countCategoryAudits(
   plugins: ScoredReport['plugins'],
 ): number {
   // Create lookup object for groups within each plugin
-  const groupLookup = plugins.reduce<
-    Record<string, Record<string, AuditGroup>>
-  >((lookup, plugin) => {
-    if (!plugin.groups.length) {
-      return lookup;
-    }
+  const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
+    (lookup, plugin) => {
+      if (!plugin.groups.length) {
+        return lookup;
+      }
 
-    return {
-      ...lookup,
-      [plugin.slug]: {
-        ...plugin.groups.reduce<Record<string, AuditGroup>>(
-          (groupLookup, group) => {
-            return {
-              ...groupLookup,
-              [group.slug]: group,
-            };
-          },
-          {},
-        ),
-      },
-    };
-  }, {});
+      return {
+        ...lookup,
+        [plugin.slug]: {
+          ...plugin.groups.reduce<Record<string, Group>>(
+            (groupLookup, group) => {
+              return {
+                ...groupLookup,
+                [group.slug]: group,
+              };
+            },
+            {},
+          ),
+        },
+      };
+    },
+    {},
+  );
 
   // Count audits
   return refs.reduce((acc, ref) => {
@@ -167,7 +169,7 @@ export function getGroupWithAudits(
   refSlug: string,
   refPlugin: string,
   plugins: ScoredReport['plugins'],
-): EnrichedScoredAuditGroupWithAudits {
+): EnrichedScoredGroupWithAudits {
   const plugin = plugins.find(({ slug }) => slug === refPlugin);
   if (!plugin) {
     throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');

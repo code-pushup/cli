@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { issueSchema } from './audit-issue';
 import { positiveIntSchema, slugSchema } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
-import { issueSchema } from './plugin-process-output-audit-issue';
 
 export const auditOutputSchema = z.object(
   {

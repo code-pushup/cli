@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { auditOutputsSchema } from './audit-output';
 import { filePathSchema } from './implementation/schemas';
-import { auditOutputsSchema } from './plugin-process-output';
 
 export const outputTransformSchema = z
   .function()

@@ -27,15 +27,15 @@ describe('getSingletonMultiProgressBars', () => {
 
 const taskAName = 'a';
 const bars = getSingletonProgressBars({ progressWidth: 1 });
-const tasks = bars?.['tasks'];
-const progressBuffer = bars?.['logger'].progressBuffer;
+const tasks = bars['tasks'];
+const progressBuffer = bars['logger'].progressBuffer;
 
 describe('getProgressBar', () => {
-  it('should init task', async () => {
+  it('should init task', () => {
     expect(bars.getIndex(taskAName)).toBeUndefined();
     getProgressBar(taskAName);
     expect(bars.getIndex(taskAName)).toBe(0);
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.idle(' ')}   0% |`,
     );
 
@@ -44,45 +44,45 @@ describe('getProgressBar', () => {
     expect(bars.getIndex(taskAName)).toBeUndefined();
   });
 
-  it('should update task message', async () => {
+  it('should update task message', () => {
     const taskA = getProgressBar(taskAName);
     expect(tasks[taskAName].message).toBe('');
 
     taskA.updateTitle('0');
     expect(tasks[taskAName].message).toBe('0');
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.active(' ')}   0% | 0`,
     );
     taskA.updateTitle('1');
     expect(tasks[taskAName].message).toBe('1');
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.active(' ')}   0% | 1`,
     );
 
     bars.removeTask(taskAName);
   });
 
-  it('should update task progress', async () => {
+  it('should update task progress', () => {
     const taskA = getProgressBar(taskAName);
     taskA.incrementInSteps(2);
     expect(tasks[taskAName].message).toBe('');
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.active('▌')}  50% |`,
     );
     taskA.incrementInSteps(2);
     expect(tasks[taskAName].message).toBe('');
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.active('█')} 100% |`,
     );
     bars.removeTask(taskAName);
   });
 
-  it('should end task when endProgress is called', async () => {
+  it('should end task when endProgress is called', () => {
     const taskA = getProgressBar(taskAName);
     expect(bars.isDone(taskAName)).toBe(false);
     taskA.endProgress();
     expect(bars.isDone(taskAName)).toBe(true);
-    expect(progressBuffer[0].trim()).toBe(
+    expect(progressBuffer[0]!.trim()).toBe(
       `${taskAName}: ${barStyles.done('█')} 100% |`,
     );
   });

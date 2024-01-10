@@ -1,22 +1,22 @@
 import {
-  AuditGroup,
-  AuditGroupRef,
   AuditReport,
   CategoryConfig,
   CategoryRef,
+  Group,
+  GroupRef,
   PluginReport,
   Report,
 } from '@code-pushup/models';
-import { deepClone } from './transformation';
+import { deepClone } from './transform';
 
 export type EnrichedAuditReport = AuditReport & { plugin: string };
 export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
-export type EnrichedScoredAuditGroupWithAudits = EnrichedScoredAuditGroup & {
+export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
   audits: AuditReport[];
 };
 type ScoredCategoryConfig = CategoryConfig & { score: number };
 
-export type EnrichedScoredAuditGroup = AuditGroup & {
+export type EnrichedScoredGroup = Group & {
   plugin: string;
   score: number;
 };
@@ -24,7 +24,7 @@ export type EnrichedScoredAuditGroup = AuditGroup & {
 export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
     audits: EnrichedAuditReport[];
-    groups: EnrichedScoredAuditGroup[];
+    groups: EnrichedScoredGroup[];
   })[];
   categories: ScoredCategoryConfig[];
 };
@@ -70,7 +70,7 @@ export function scoreReport(report: Report): ScoredReport {
       allScoredAuditsAndGroups.set(key, audit);
     });
 
-    function groupScoreFn(ref: AuditGroupRef) {
+    function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
         `${plugin.slug}-${ref.slug}-audit`,
       )?.score;

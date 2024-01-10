@@ -1,10 +1,10 @@
 import { join } from 'path';
-import type { AuditGroup, PluginReport } from '../../src';
+import type { Group, PluginReport } from '../../src';
 import { Audit, PluginConfig } from '../../src';
 import { LIGHTHOUSE_AUDIT_REPORTS_MAP } from './lighthouse-audits.mock';
 import { echoRunnerConfig } from './runner-config.mock';
 
-const PLUGIN_GROUP_PERFORMANCE: AuditGroup = {
+const PLUGIN_GROUP_PERFORMANCE: Group = {
   slug: 'performance',
   title: 'Performance',
   refs: [

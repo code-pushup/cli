@@ -3,44 +3,40 @@ import type { AuditReport } from '../../src';
 export const ESLINT_AUDITS_MAP = {
   'no-cond-assign': {
     slug: 'no-cond-assign',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow assignment operators in conditional expressions',
     description: 'ESLint rule **no-cond-assign**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-cond-assign',
   },
   'no-const-assign': {
     slug: 'no-const-assign',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow reassigning `const` variables',
     description: 'ESLint rule **no-const-assign**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-const-assign',
   },
   'no-debugger': {
     slug: 'no-debugger',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow the use of `debugger`',
     description: 'ESLint rule **no-debugger**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-debugger',
   },
   'no-invalid-regexp': {
     slug: 'no-invalid-regexp',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title:
       'Disallow invalid regular expression strings in `RegExp` constructors',
     description: 'ESLint rule **no-invalid-regexp**.',
@@ -48,11 +44,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'no-undef': {
     slug: 'no-undef',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title:
       'Disallow the use of undeclared variables unless mentioned in `/*global */` comments',
     description: 'ESLint rule **no-undef**.',
@@ -60,33 +55,30 @@ export const ESLINT_AUDITS_MAP = {
   },
   'no-unreachable-loop': {
     slug: 'no-unreachable-loop',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow loops with a body that allows only one iteration',
     description: 'ESLint rule **no-unreachable-loop**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-unreachable-loop',
   },
   'no-unsafe-negation': {
     slug: 'no-unsafe-negation',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow negating the left operand of relational operators',
     description: 'ESLint rule **no-unsafe-negation**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-unsafe-negation',
   },
   'no-unsafe-optional-chaining': {
     slug: 'no-unsafe-optional-chaining',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title:
       'Disallow use of optional chaining in contexts where the `undefined` value is not allowed',
     description: 'ESLint rule **no-unsafe-optional-chaining**.',
@@ -120,22 +112,20 @@ export const ESLINT_AUDITS_MAP = {
   },
   'use-isnan': {
     slug: 'use-isnan',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Require calls to `isNaN()` when checking for `NaN`',
     description: 'ESLint rule **use-isnan**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/use-isnan',
   },
   'valid-typeof': {
     slug: 'valid-typeof',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Enforce comparing `typeof` expressions against valid strings',
     description: 'ESLint rule **valid-typeof**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/valid-typeof',
@@ -169,22 +159,20 @@ export const ESLINT_AUDITS_MAP = {
   },
   camelcase: {
     slug: 'camelcase',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Enforce camelcase naming convention',
     description: 'ESLint rule **camelcase**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/camelcase',
   },
   curly: {
     slug: 'curly',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Enforce consistent brace style for all control statements',
     description: 'ESLint rule **curly**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/curly',
@@ -244,11 +232,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'max-lines': {
     slug: 'max-lines',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Enforce a maximum number of lines per file',
     description: 'ESLint rule **max-lines**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/max-lines',
@@ -311,11 +298,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'no-var': {
     slug: 'no-var',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Require `let` or `const` instead of `var`',
     description: 'ESLint rule **no-var**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/no-var',
@@ -375,11 +361,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'prefer-arrow-callback': {
     slug: 'prefer-arrow-callback',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Require using arrow functions for callbacks',
     description: 'ESLint rule **prefer-arrow-callback**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/prefer-arrow-callback',
@@ -413,11 +398,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'prefer-object-spread': {
     slug: 'prefer-object-spread',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title:
       'Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead',
     description: 'ESLint rule **prefer-object-spread**.',
@@ -425,11 +409,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   yoda: {
     slug: 'yoda',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Require or disallow "Yoda" conditions',
     description: 'ESLint rule **yoda**.',
     docsUrl: 'https://eslint.org/docs/latest/rules/yoda',
@@ -555,11 +538,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-react-in-jsx-scope': {
     slug: 'react-react-in-jsx-scope',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow missing React when using JSX',
     description: 'ESLint rule **react-in-jsx-scope**, from _react_ plugin.',
     docsUrl:
@@ -567,11 +549,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-hooks-rules-of-hooks': {
     slug: 'react-hooks-rules-of-hooks',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'enforces the Rules of Hooks',
     description: 'ESLint rule **rules-of-hooks**, from _react-hooks_ plugin.',
     docsUrl: 'https://reactjs.org/docs/hooks-rules.html',
@@ -620,11 +601,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-display-name': {
     slug: 'react-display-name',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow missing displayName in a React component definition',
     description: 'ESLint rule **display-name**, from _react_ plugin.',
     docsUrl:
@@ -632,11 +612,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-no-comment-textnodes': {
     slug: 'react-jsx-no-comment-textnodes',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow comments from being inserted as text nodes',
     description:
       'ESLint rule **jsx-no-comment-textnodes**, from _react_ plugin.',
@@ -645,11 +624,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-no-duplicate-props': {
     slug: 'react-jsx-no-duplicate-props',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow duplicate properties in JSX',
     description: 'ESLint rule **jsx-no-duplicate-props**, from _react_ plugin.',
     docsUrl:
@@ -657,11 +635,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-no-target-blank': {
     slug: 'react-jsx-no-target-blank',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow `target="_blank"` attribute without `rel="noreferrer"`',
     description: 'ESLint rule **jsx-no-target-blank**, from _react_ plugin.',
     docsUrl:
@@ -669,11 +646,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-no-undef': {
     slug: 'react-jsx-no-undef',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow undeclared variables in JSX',
     description: 'ESLint rule **jsx-no-undef**, from _react_ plugin.',
     docsUrl:
@@ -681,11 +657,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-uses-react': {
     slug: 'react-jsx-uses-react',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow React to be incorrectly marked as unused',
     description: 'ESLint rule **jsx-uses-react**, from _react_ plugin.',
     docsUrl:
@@ -693,11 +668,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-jsx-uses-vars': {
     slug: 'react-jsx-uses-vars',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow variables used in JSX to be incorrectly marked as unused',
     description: 'ESLint rule **jsx-uses-vars**, from _react_ plugin.',
     docsUrl:
@@ -705,11 +679,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-children-prop': {
     slug: 'react-no-children-prop',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow passing of children as props',
     description: 'ESLint rule **no-children-prop**, from _react_ plugin.',
     docsUrl:
@@ -717,11 +690,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-danger-with-children': {
     slug: 'react-no-danger-with-children',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title:
       'Disallow when a DOM element is using both children and dangerouslySetInnerHTML',
     description:
@@ -731,11 +703,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-deprecated': {
     slug: 'react-no-deprecated',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow usage of deprecated methods',
     description: 'ESLint rule **no-deprecated**, from _react_ plugin.',
     docsUrl:
@@ -743,11 +714,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-direct-mutation-state': {
     slug: 'react-no-direct-mutation-state',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow direct mutation of this.state',
     description:
       'ESLint rule **no-direct-mutation-state**, from _react_ plugin.',
@@ -756,11 +726,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-find-dom-node': {
     slug: 'react-no-find-dom-node',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow usage of findDOMNode',
     description: 'ESLint rule **no-find-dom-node**, from _react_ plugin.',
     docsUrl:
@@ -768,11 +737,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-is-mounted': {
     slug: 'react-no-is-mounted',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow usage of isMounted',
     description: 'ESLint rule **no-is-mounted**, from _react_ plugin.',
     docsUrl:
@@ -780,11 +748,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-render-return-value': {
     slug: 'react-no-render-return-value',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow usage of the return value of ReactDOM.render',
     description: 'ESLint rule **no-render-return-value**, from _react_ plugin.',
     docsUrl:
@@ -792,11 +759,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-string-refs': {
     slug: 'react-no-string-refs',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow using string references',
     description: 'ESLint rule **no-string-refs**, from _react_ plugin.',
     docsUrl:
@@ -804,11 +770,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-unescaped-entities': {
     slug: 'react-no-unescaped-entities',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow unescaped HTML entities from appearing in markup',
     description: 'ESLint rule **no-unescaped-entities**, from _react_ plugin.',
     docsUrl:
@@ -816,11 +781,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-no-unknown-property': {
     slug: 'react-no-unknown-property',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Disallow usage of unknown DOM property',
     description: 'ESLint rule **no-unknown-property**, from _react_ plugin.',
     docsUrl:
@@ -828,11 +792,10 @@ export const ESLINT_AUDITS_MAP = {
   },
   'react-require-render-return': {
     slug: 'react-require-render-return',
+    displayValue: 'passed',
     value: 0,
     score: 1,
-    details: {
-      issues: [],
-    },
+    details: { issues: [] },
     title: 'Enforce ES5 or ES6 class for returning value in render function',
     description: 'ESLint rule **require-render-return**, from _react_ plugin.',
     docsUrl:

@@ -1,6 +1,7 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
+import { SCORE_COLOR_RANGE } from './constants';
 import { NEW_LINE } from './md';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -32,34 +33,6 @@ export function reportToStdout(report: ScoredReport): string {
 function reportToHeaderSection(report: ScoredReport): string {
   const { packageName, version } = report;
   return `${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`;
-}
-
-function reportToOverviewSection({
-  categories,
-  plugins,
-}: ScoredReport): string {
-  let output = addLine(chalk.magentaBright.bold('Categories'));
-  output += addLine();
-
-  const table = new Table({
-    head: reportRawOverviewTableHeaders,
-    colAligns: ['left', 'right', 'right'],
-    style: {
-      head: ['cyan'],
-    },
-  });
-
-  table.push(
-    ...categories.map(({ title, score, refs }) => [
-      title,
-      withColor({ score }),
-      countCategoryAudits(refs, plugins),
-    ]),
-  );
-
-  output += addLine(table.toString());
-
-  return output;
 }
 
 function reportToDetailSection(report: ScoredReport): string {
@@ -100,15 +73,45 @@ function reportToDetailSection(report: ScoredReport): string {
   return output;
 }
 
+function reportToOverviewSection({
+  categories,
+  plugins,
+}: ScoredReport): string {
+  let output = addLine(chalk.magentaBright.bold('Categories'));
+  output += addLine();
+
+  const table = new Table({
+    head: reportRawOverviewTableHeaders,
+    colAligns: ['left', 'right', 'right'],
+    style: {
+      head: ['cyan'],
+    },
+  });
+
+  table.push(
+    ...categories.map(({ title, score, refs }) => [
+      title,
+      withColor({ score }),
+      countCategoryAudits(refs, plugins),
+    ]),
+  );
+
+  output += addLine(table.toString());
+
+  return output;
+}
+
 function withColor({ score, text }: { score: number; text?: string }) {
-  let str = text ?? formatReportScore(score);
+  const formattedScore = text ?? formatReportScore(score);
   const style = text ? chalk : chalk.bold;
-  if (score < 0.5) {
-    str = style.red(str);
-  } else if (score < 0.9) {
-    str = style.yellow(str);
-  } else {
-    str = style.green(str);
+
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return style.green(formattedScore);
   }
-  return str;
+
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return style.yellow(formattedScore);
+  }
+
+  return style.red(formattedScore);
 }

@@ -1,10 +1,9 @@
 import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports } from '@code-pushup/core';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
-import { objectToCliArgs } from '@code-pushup/utils';
+import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
@@ -17,36 +16,29 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
-const cli = (options = {}) =>
-  yargsCli(
-    objectToCliArgs({
-      _: 'autorun',
-      verbose: true,
-      config: '/test/code-pushup.config.ts',
-      'persist.outputDir': '/test',
-      ...options,
-    }),
-    {
-      ...DEFAULT_CLI_CONFIGURATION,
-      commands: [yargsAutorunCommandObject()],
-    },
-  );
-
 describe('autorun-command', () => {
-  beforeEach(() => {
+  it('should call collect and upload with correct parameters', async () => {
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
-      '/test',
+      MEMFS_VOLUME,
     );
-  });
 
-  it('should call collect and upload with correct parameters', async () => {
-    await cli({
-      'persist.filename': 'my-report',
-    }).parseAsync();
+    await yargsCli(
+      [
+        'autorun',
+        '--verbose',
+        '--config=/test/code-pushup.config.ts',
+        '--persist.filename=my-report',
+        '--persist.outputDir=/test',
+      ],
+      {
+        ...DEFAULT_CLI_CONFIGURATION,
+        commands: [yargsAutorunCommandObject()],
+      },
+    ).parseAsync();
 
     expect(bundleRequire).toHaveBeenCalledWith({
       format: 'esm',

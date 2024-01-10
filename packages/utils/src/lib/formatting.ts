@@ -5,7 +5,7 @@ export function slugify(text: string): string {
     .trim()
     .toLowerCase()
     .replace(/\s+|\//g, '-')
-    .replace(/[^a-z0-9-]/g, '');
+    .replace(/[^a-z\d-]/g, '');
 }
 
 export function pluralize(text: string): string {

@@ -25,19 +25,19 @@ describe('table function', () => {
     expect(result).toBe(expected);
   });
 
-  it('should handle empty data', () => {
+  it('should throw for empty data', () => {
     const data: (string | number)[][] = [];
     expect(() => tableMd(data)).toThrow("Data can't be empty");
   });
 
-  it('should handle single row data', () => {
+  it('should create a table with a single row', () => {
     const data: (string | number)[][] = [['Header 1', 'Header 2']];
     const result = tableMd(data);
     const expected = `|Header 1|Header 2|`;
     expect(result).toContain(expected);
   });
 
-  it('should handle number values', () => {
+  it('should include number values', () => {
     const data: (string | number)[][] = [
       ['Header 1', 'Header 2'],
       [1, 2],

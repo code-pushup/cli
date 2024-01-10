@@ -1,35 +1,12 @@
-import chalk from 'chalk';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FileResult } from './file-system';
-import { formatBytes } from './formatting';
 import { logMultipleResults, logPromiseResults } from './log-results';
 
-const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
-  const [fileName, size] = result.value;
-  console.info(
-    `- ${chalk.bold(fileName)}` +
-      (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
-  );
-};
-
-const failedCallback = (result: PromiseRejectedResult) => {
-  console.warn(`- ${chalk.bold(result.reason)}`);
-};
-
 describe('logMultipleResults', () => {
-  const succeededCallbackMock = vi.fn().mockImplementation(succeededCallback);
-  const failedCallbackMock = vi.fn().mockImplementation(failedCallback);
+  const succeededCallbackMock = vi.fn();
+  const failedCallbackMock = vi.fn();
 
-  beforeEach(() => {
-    succeededCallbackMock.mockClear();
-    failedCallbackMock.mockClear();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should call logPromiseResults with successfull plugin result', async () => {
+  it('should call logPromiseResults with successfull plugin result', () => {
     logMultipleResults(
       [
         {
@@ -46,7 +23,7 @@ describe('logMultipleResults', () => {
     expect(failedCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPromiseResults with failed plugin result', async () => {
+  it('should call logPromiseResults with failed plugin result', () => {
     logMultipleResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports',
@@ -58,7 +35,7 @@ describe('logMultipleResults', () => {
     expect(succeededCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPromiseResults twice', async () => {
+  it('should call logPromiseResults twice', () => {
     logMultipleResults(
       [
         {
@@ -72,13 +49,13 @@ describe('logMultipleResults', () => {
       failedCallbackMock,
     );
 
-    expect(succeededCallbackMock).toHaveBeenCalled();
-    expect(failedCallbackMock).toHaveBeenCalled();
+    expect(succeededCallbackMock).toHaveBeenCalledOnce();
+    expect(failedCallbackMock).toHaveBeenCalledOnce();
   });
 });
 
 describe('logPromiseResults', () => {
-  it('should log on success', async () => {
+  it('should log on success', () => {
     logPromiseResults(
       [
         {
@@ -86,30 +63,32 @@ describe('logPromiseResults', () => {
           value: ['out.json'],
         } as PromiseFulfilledResult<FileResult>,
       ],
-      'Uploaded reports successfully: ',
-      succeededCallback,
+      'Uploaded reports successfully:',
+      result => {
+        console.info(result.value);
+      },
     );
 
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('Uploaded reports successfully: '),
+    expect(console.info).toHaveBeenNthCalledWith(
+      1,
+      'Uploaded reports successfully:',
     );
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('- [1mout.json[22m'),
-    );
+    expect(console.info).toHaveBeenNthCalledWith(2, ['out.json']);
   });
 
-  it('should log on fail', async () => {
+  it('should log on fail', () => {
     logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
-      'Generated reports failed: ',
-      failedCallback,
+      'Generated reports failed:',
+      result => {
+        console.warn(result.reason);
+      },
     );
 
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Generated reports failed: '),
+    expect(console.warn).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports failed:',
     );
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('- [1mfail[22m'),
-    );
+    expect(console.warn).toHaveBeenNthCalledWith(2, 'fail');
   });
 });
