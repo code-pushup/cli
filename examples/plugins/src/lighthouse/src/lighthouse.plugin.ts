@@ -11,6 +11,7 @@ import {
   MAX_ISSUE_MESSAGE_LENGTH,
   PluginConfig,
   RunnerConfig,
+  PluginReport
 } from '../../../../../packages/models/src';
 import {
   audits,
@@ -53,7 +54,7 @@ export type LighthouseOptions = {
  *
  */
 export function create(options: LighthouseOptions): PluginConfig {
-  const { onlyAudits = [] } = options;
+  const {onlyAudits = []} = options;
   return {
     slug: pluginSlug,
     title: 'Lighthouse',
@@ -68,25 +69,25 @@ export function create(options: LighthouseOptions): PluginConfig {
         refs:
           onlyAudits.length === 0
             ? categoryPerfGroup.refs
-            : categoryPerfGroup.refs.filter(({ slug }) =>
-                onlyAudits.includes(slug),
-              ),
+            : categoryPerfGroup.refs.filter(({slug}) =>
+              onlyAudits.includes(slug),
+            ),
       },
     ],
   };
 }
 
 function runnerConfig(options: LighthouseOptions): RunnerConfig {
-  const { log } = verboseUtils(options.verbose);
-  const { outputFile = lighthouseReportName } = options;
+  const {log} = verboseUtils(options?.verbose);
+  const {outputFile = lighthouseReportName} = options;
   log(
-    `Run npx ${getLighthouseCliArguments({ ...options, outputFile }).join(
+    `Run npx ${getLighthouseCliArguments({...options, outputFile}).join(
       ' ',
     )}`,
   );
   return {
     command: 'npx',
-    args: getLighthouseCliArguments({ ...options, outputFile }),
+    args: getLighthouseCliArguments({...options, outputFile}),
     outputFile,
     outputTransform: (lighthouseOutput: unknown) => {
       return lhrToAuditOutputs(lighthouseOutput as Result);
@@ -160,7 +161,7 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
 function lhrDetailsToIssueDetails(
   details = {} as unknown as Result['audits'][string]['details'],
 ): Issue[] | null {
-  const { type, items } = details as {
+  const {type, items} = details as {
     type: string;
     items: Record<string, string>[];
     /**
@@ -196,12 +197,17 @@ function lhrDetailsToIssueDetails(
   return null;
 }
 
-function codePushupAuditOutputToLhrAudit(
-  issue = {} as unknown as Issue,
-): Result['audits'][string] | null {
-  const {slug} = issue;
+function codePushupAuditReportToLhrAudit(
+  audit = {} as unknown as PluginReport['audits'][number],
+): Result['audits'][string] {
+  const {slug, score, value, displayValue, description = '', docsUrl = '', title} = audit;
   return {
     id: slug,
-
+    numericValue: value,
+    displayValue,
+    score,
+    scoreDisplayMode: "numeric",
+    description: `${description} ${docsUrl}`,
+    title,
   } satisfies Result['audits'][string];
 }

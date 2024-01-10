@@ -1,4 +1,4 @@
-function getLogVerbose(verbose: boolean) {
+function getLogVerbose(verbose = false) {
   return (...args: unknown[]) => {
     if (verbose) {
       console.info(...args);
