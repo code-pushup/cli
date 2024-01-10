@@ -47,6 +47,16 @@ describe('auditOutputSchema', () => {
     ).toThrow('too_small');
   });
 
+  it('should throw for a score outside 0-1 range', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'maximum-layout-shift',
+        score: 9,
+        value: 90,
+      } satisfies AuditOutput),
+    ).toThrow('too_big');
+  });
+
   it('should throw for a missing score', () => {
     expect(() =>
       auditOutputSchema.parse({
