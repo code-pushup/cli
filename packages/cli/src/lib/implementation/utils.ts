@@ -24,20 +24,3 @@ export function coerceArray<T extends string>(param: T | T[] = []): T[] {
     ...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]) || []),
   ];
 }
-
-export async function withAsyncConfig<T>(
-  unconfiguredCli: Argv<T>,
-  optionsName: string,
-  options: Options = {},
-  transform?: (c: string) => Promise<T>,
-) {
-  // create a yargs CLI only configured to parse the config file
-  const args = await unconfiguredCli
-    .options({ [optionsName]: options })
-    .parseAsync();
-  const configJson = transform
-    ? ((await transform(args[optionsName] as string)) as object)
-    : {};
-  // configure cli with config
-  return unconfiguredCli.config(configJson);
-}
