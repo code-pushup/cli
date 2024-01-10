@@ -1,4 +1,3 @@
-import { Argv, Options } from 'yargs';
 import { toArray } from '@code-pushup/utils';
 
 // log error and flush stdout so that Yargs doesn't suppress it
