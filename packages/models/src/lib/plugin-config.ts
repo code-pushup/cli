@@ -57,13 +57,10 @@ function missingRefsFromGroupsErrorMsg(pluginCfg: PluginData) {
 }
 
 function getMissingRefsFromGroups(pluginCfg: PluginData) {
-  if (pluginCfg?.groups?.length && pluginCfg?.audits?.length) {
-    const groups = pluginCfg?.groups || [];
-    const audits = pluginCfg?.audits || [];
-    return hasMissingStrings(
-      groups.flatMap(({ refs: audits }) => audits.map(({ slug: ref }) => ref)),
-      audits.map(({ slug }) => slug),
-    );
-  }
-  return false;
+  return hasMissingStrings(
+    pluginCfg.groups?.flatMap(({ refs: audits }) =>
+      audits.map(({ slug: ref }) => ref),
+    ) ?? [],
+    pluginCfg.audits.map(({ slug }) => slug),
+  );
 }

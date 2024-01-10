@@ -82,6 +82,10 @@ describe('hasMissingStrings', () => {
     expect(hasMissingStrings(['b'], ['a', 'b'])).toBe(false);
   });
 
+  it('should return false for two empty arrays', () => {
+    expect(hasMissingStrings([], [])).toBe(false);
+  });
+
   it('should return a list of strings from source that are missing in target', () => {
     expect(hasMissingStrings(['a', 'b'], ['a', 'c'])).toEqual(['b']);
   });
