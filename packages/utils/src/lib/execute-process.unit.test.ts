@@ -20,10 +20,10 @@ describe('executeProcess', () => {
       args: ['-v'],
       observer: spyObserver,
     });
-    expect(spyObserver?.onStdout).toHaveBeenCalledTimes(1);
-    expect(spyObserver?.onComplete).toHaveBeenCalledTimes(1);
-    expect(spyObserver?.onError).toHaveBeenCalledTimes(0);
-    expect(processResult.stdout).toMatch(/v[0-9]{1,2}(\.[0-9]{1,2}){0,2}/);
+    expect(spyObserver.onStdout).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onComplete).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onError).toHaveBeenCalledTimes(0);
+    expect(processResult.stdout).toMatch(/v\d{1,2}(\.\d{1,2}){0,2}/);
   });
 
   it('should work with npx command `npx --help`', async () => {
@@ -32,9 +32,9 @@ describe('executeProcess', () => {
       args: ['--help'],
       observer: spyObserver,
     });
-    expect(spyObserver?.onStdout).toHaveBeenCalledTimes(1);
-    expect(spyObserver?.onComplete).toHaveBeenCalledTimes(1);
-    expect(spyObserver?.onError).toHaveBeenCalledTimes(0);
+    expect(spyObserver.onStdout).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onComplete).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onError).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('npm exec');
   });
 
@@ -46,9 +46,9 @@ describe('executeProcess', () => {
 
     expect(errorSpy).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toContain('process:complete');
-    expect(spyObserver?.onStdout).toHaveBeenCalledTimes(6); // intro + 4 runs + complete
-    expect(spyObserver?.onError).toHaveBeenCalledTimes(0);
-    expect(spyObserver?.onComplete).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onStdout).toHaveBeenCalledTimes(6); // intro + 4 runs + complete
+    expect(spyObserver.onError).toHaveBeenCalledTimes(0);
+    expect(spyObserver.onComplete).toHaveBeenCalledTimes(1);
   });
 
   it('should work with async script `node custom-script.js` that throws an error', async () => {
@@ -63,8 +63,8 @@ describe('executeProcess', () => {
 
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(processResult).toBeUndefined();
-    expect(spyObserver?.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
-    expect(spyObserver?.onError).toHaveBeenCalledTimes(1);
-    expect(spyObserver?.onComplete).toHaveBeenCalledTimes(0);
+    expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
+    expect(spyObserver.onError).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onComplete).toHaveBeenCalledTimes(0);
   });
 });

@@ -46,7 +46,7 @@ describe('formatBytes', () => {
   });
 
   it('should log file sizes correctly with correct decimal', () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 kB');
+    expect(formatBytes(10_000, 1)).toBe('9.8 kB');
   });
 });
 
