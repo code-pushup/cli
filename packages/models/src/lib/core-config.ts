@@ -6,10 +6,12 @@ import { pluginConfigSchema } from './plugin-config';
 import { uploadConfigSchema } from './upload-config';
 
 export const unrefinedCoreConfigSchema = z.object({
-  plugins: z.array(pluginConfigSchema, {
-    description:
-      'List of plugins to be used (official, community-provided, or custom)',
-  }),
+  plugins: z
+    .array(pluginConfigSchema, {
+      description:
+        'List of plugins to be used (official, community-provided, or custom)',
+    })
+    .nonempty(),
   /** portal configuration for persisting results */
   persist: persistConfigSchema.optional(),
   /** portal configuration for uploading results */
