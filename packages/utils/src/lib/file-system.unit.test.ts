@@ -1,6 +1,6 @@
-import { stat } from 'fs/promises';
 import { vol } from 'memfs';
-import { join } from 'path';
+import { stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import {
@@ -34,7 +34,7 @@ describe('logMultipleFileResults', () => {
     const persistResult = [
       {
         status: 'fulfilled',
-        value: ['out.json', 10000],
+        value: ['out.json', 10_000],
       } as PromiseFulfilledResult<FileResult>,
     ];
     const messagePrefix = 'Generated reports';

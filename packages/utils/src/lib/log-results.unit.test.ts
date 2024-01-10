@@ -6,7 +6,7 @@ describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
   const failedCallbackMock = vi.fn();
 
-  it('should call logPromiseResults with successfull plugin result', async () => {
+  it('should call logPromiseResults with successfull plugin result', () => {
     logMultipleResults(
       [
         {
@@ -23,7 +23,7 @@ describe('logMultipleResults', () => {
     expect(failedCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPromiseResults with failed plugin result', async () => {
+  it('should call logPromiseResults with failed plugin result', () => {
     logMultipleResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports',
@@ -35,7 +35,7 @@ describe('logMultipleResults', () => {
     expect(succeededCallbackMock).not.toHaveBeenCalled();
   });
 
-  it('should call logPromiseResults twice', async () => {
+  it('should call logPromiseResults twice', () => {
     logMultipleResults(
       [
         {
@@ -55,7 +55,7 @@ describe('logMultipleResults', () => {
 });
 
 describe('logPromiseResults', () => {
-  it('should log on success', async () => {
+  it('should log on success', () => {
     logPromiseResults(
       [
         {
@@ -76,7 +76,7 @@ describe('logPromiseResults', () => {
     expect(console.info).toHaveBeenNthCalledWith(2, ['out.json']);
   });
 
-  it('should log on fail', async () => {
+  it('should log on fail', () => {
     logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed:',

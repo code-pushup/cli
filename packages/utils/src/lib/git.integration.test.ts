@@ -8,7 +8,7 @@ describe('getLatestCommit', () => {
   it('should log latest commit', async () => {
     await expect(getLatestCommit()).resolves.toEqual(
       expect.objectContaining({
-        hash: expect.stringMatching(/^[0-9a-f]{40}$/),
+        hash: expect.stringMatching(/^[\da-f]{40}$/),
         message: expect.stringMatching(/.+/),
         author: expect.stringMatching(/.+/),
         date: expect.stringMatching(gitCommitDateRegex),

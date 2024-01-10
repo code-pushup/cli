@@ -173,16 +173,15 @@ describe('executePlugins', () => {
             command: 'node',
             args: ['-v'],
             outputFile: 'output.json',
-            outputTransform: (outputs: unknown): Promise<AuditOutputs> => {
-              return Promise.resolve([
+            outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
+              Promise.resolve([
                 {
                   slug: (outputs as AuditOutputs)[0]!.slug,
                   score: 0.3,
                   value: 16,
                   displayValue: '16.0.0',
                 },
-              ]);
-            },
+              ]),
           },
         },
       ],

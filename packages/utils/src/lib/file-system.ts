@@ -1,7 +1,7 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
-import { mkdir, readFile, readdir, stat } from 'fs/promises';
-import { join } from 'path';
+import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
 
