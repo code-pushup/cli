@@ -25,6 +25,7 @@ export {
 } from './lib/implementation/constants';
 export {
   MAX_DESCRIPTION_LENGTH,
+  MAX_ISSUE_MESSAGE_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
