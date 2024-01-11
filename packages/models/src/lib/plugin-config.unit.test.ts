@@ -70,7 +70,7 @@ describe('pluginConfigSchema', () => {
         ],
       } satisfies PluginConfig),
     ).toThrow(
-      "audit ref's needs to point to a audit in this plugin config: cyct",
+      'group references need to point to an existing audit in this plugin config: cyct',
     );
   });
 
@@ -91,7 +91,7 @@ describe('pluginConfigSchema', () => {
         ],
       } satisfies PluginConfig),
     ).toThrow(
-      "audit ref's needs to point to a audit in this plugin config: cyct",
+      'group references need to point to an existing audit in this plugin config: cyct',
     );
   });
 

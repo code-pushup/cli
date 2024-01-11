@@ -10,9 +10,7 @@ import {
 import { errorItems, hasMissingStrings } from './implementation/utils';
 import { runnerConfigSchema, runnerFunctionSchema } from './runner-config';
 
-export const pluginMetaSchema = packageVersionSchema({
-  optional: true,
-})
+export const pluginMetaSchema = packageVersionSchema()
   .merge(
     metaSchema({
       titleDescription: 'Descriptive name',
@@ -51,7 +49,7 @@ export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 // helper for validator: every listed group ref points to an audit within the plugin
 function missingRefsFromGroupsErrorMsg(pluginCfg: PluginData) {
   const missingRefs = getMissingRefsFromGroups(pluginCfg);
-  return `In the groups, the following audit ref's needs to point to a audit in this plugin config: ${errorItems(
+  return `The following group references need to point to an existing audit in this plugin config: ${errorItems(
     missingRefs,
   )}`;
 }

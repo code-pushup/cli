@@ -104,7 +104,7 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'plugin refs do not exist in the provided plugins: vitest/unit-tests',
+      'category references need to point to an audit or group: vitest/unit-tests',
     );
   });
 
@@ -143,7 +143,7 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'plugin refs do not exist in the provided plugins: eslint#eslint-errors (group)',
+      'category references need to point to an audit or group: eslint#eslint-errors (group)',
     );
   });
 
