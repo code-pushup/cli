@@ -1,4 +1,4 @@
-import type { Report } from '../../../../packages/models/src';
+import type { Report } from '@code-pushup/models';
 
 export const MINIMAL_REPORT_MOCK = {
   packageName: '@code-pushup/core',

@@ -3,8 +3,13 @@ import { scoreReport } from './scoring';
 import { sortReport } from './sort-report';
 
 describe('sortReport', () => {
-  it('should sort the audits and groups of audits in categories, all audits and nested issues', () => {
+  it('should sort the audits and audit groups in categories, plugin audits and audit issues', () => {
     /*
+      Sorting of the report is based on:
+        - for category audits and audit groups: weight, score, value, title
+        - for plugin audits: score, value, title
+        - for audit issues: score, value, title
+
       The sorted report mock has the following data after sorting:
 
       Categories:
