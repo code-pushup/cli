@@ -5,8 +5,37 @@ export const MINIMAL_REPORT_MOCK = {
   version: '0.0.1',
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
-  categories: [],
-  plugins: [],
+  categories: [
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [
+        {
+          plugin: 'eslint',
+          slug: 'no-any',
+          type: 'audit',
+          weight: 1,
+        },
+      ],
+    },
+  ],
+  plugins: [
+    {
+      slug: 'eslint',
+      title: 'ESLint',
+      icon: 'eslint',
+      audits: [
+        {
+          slug: 'no-any',
+          title: 'No any type.',
+          value: 1,
+          score: 0,
+        },
+      ],
+      date: '2023-08-16T09:00:00.000Z',
+      duration: 420,
+    },
+  ],
 } satisfies Report;
 
 export const REPORT_MOCK = {

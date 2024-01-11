@@ -1,7 +1,12 @@
 import { join } from 'node:path';
-import type { Audit, CategoryRef, PluginConfig, PluginReport } from '../../src';
+import type {
+  Audit,
+  CategoryRef,
+  PluginConfig,
+  PluginReport,
+} from '@code-pushup/models';
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
-import { echoRunnerConfig } from './runner-config.mock';
+import { echoRunnerConfigMock } from './runner-config.mock';
 
 const eslintMeta = {
   slug: 'eslint',
@@ -12,7 +17,7 @@ const eslintMeta = {
   version: '0.1.0',
 } satisfies Partial<PluginConfig>;
 
-export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
+export function eslintPluginConfigMock(outputDir = 'tmp'): PluginConfig {
   const audits = Object.values(ESLINT_AUDITS_MAP).map(
     ({ slug, description, title, docsUrl }) =>
       ({
@@ -24,7 +29,7 @@ export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...eslintMeta,
-    runner: echoRunnerConfig(
+    runner: echoRunnerConfigMock(
       Object.values(ESLINT_AUDITS_MAP),
       join(outputDir, 'eslint-out.json'),
     ),
@@ -32,7 +37,7 @@ export function eslintPluginConfig(outputDir = 'tmp'): PluginConfig {
   };
 }
 
-export function eslintPluginReport(): PluginReport {
+export function eslintPluginReportMock(): PluginReport {
   return {
     ...eslintMeta,
     date: '2023-10-18T07:49:45.531Z',
@@ -43,7 +48,10 @@ export function eslintPluginReport(): PluginReport {
 
 type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
 
-export function eslintAuditRef(slug: ESLintAuditSlug, weight = 1): CategoryRef {
+export function eslintAuditRefMock(
+  slug: ESLintAuditSlug,
+  weight = 1,
+): CategoryRef {
   return {
     type: 'audit',
     plugin: 'eslint',

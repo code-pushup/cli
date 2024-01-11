@@ -4,28 +4,31 @@ import {
   PluginReport,
   Report,
   coreConfigSchema,
-} from '../../src';
-import { categoryConfigs } from './categories.mock';
-import { eslintPluginConfig } from './eslint-plugin.mock';
-import { lighthousePluginConfig } from './lighthouse-plugin.mock';
-import { persistConfig } from './persist-config.mock';
-import { auditReport, pluginConfig } from './plugin-config.mock';
+} from '@code-pushup/models';
+import { categoryConfigsMock } from './categories.mock';
+import { eslintPluginConfigMock } from './eslint-plugin.mock';
+import { lighthousePluginConfigMock } from './lighthouse-plugin.mock';
+import { persistConfigMock } from './persist-config.mock';
+import { auditReportMock, pluginConfigMock } from './plugin-config.mock';
 
-export function config(outputDir = 'tmp'): CoreConfig {
+export function configMock(outputDir = 'tmp'): CoreConfig {
   return coreConfigSchema.parse({
-    persist: persistConfig({ outputDir }),
+    persist: persistConfigMock({ outputDir }),
     upload: {
       organization: 'code-pushup',
       project: 'cli',
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
     },
-    categories: categoryConfigs(),
-    plugins: [eslintPluginConfig(outputDir), lighthousePluginConfig(outputDir)],
+    categories: categoryConfigsMock(),
+    plugins: [
+      eslintPluginConfigMock(outputDir),
+      lighthousePluginConfigMock(outputDir),
+    ],
   });
 }
 
-export function minimalConfig(
+export function minimalConfigMock(
   outputDir = 'tmp',
 ): Omit<CoreConfig, 'upload'> & Required<Pick<CoreConfig, 'upload'>> {
   const PLUGIN_1_SLUG = 'plugin-1';
@@ -33,7 +36,7 @@ export function minimalConfig(
   const outputFile = `${PLUGIN_1_SLUG}.${Date.now()}.json`;
 
   const cfg = coreConfigSchema.parse({
-    persist: persistConfig({ outputDir }),
+    persist: persistConfigMock({ outputDir }),
     upload: {
       organization: 'code-pushup',
       project: 'cli',
@@ -55,7 +58,7 @@ export function minimalConfig(
       },
     ],
     plugins: [
-      pluginConfig([auditReport({ slug: AUDIT_1_SLUG })], {
+      pluginConfigMock([auditReportMock({ slug: AUDIT_1_SLUG })], {
         slug: PLUGIN_1_SLUG,
         outputDir,
         outputFile,
@@ -66,11 +69,11 @@ export function minimalConfig(
   return JSON.parse(JSON.stringify(cfg));
 }
 
-export function minimalReport(outputDir = 'tmp'): Report {
+export function minimalReportMock(outputDir = 'tmp'): Report {
   const PLUGIN_1_SLUG = 'plugin-1';
   const AUDIT_1_SLUG = 'audit-1';
 
-  const plg1: PluginConfig = pluginConfig([], {
+  const plg1: PluginConfig = pluginConfigMock([], {
     slug: PLUGIN_1_SLUG,
     outputDir,
   });
@@ -82,7 +85,7 @@ export function minimalReport(outputDir = 'tmp'): Report {
     date: 'dummy-data-string',
     version: '',
     packageName: '',
-    audits: [auditReport({ slug: AUDIT_1_SLUG })],
+    audits: [auditReportMock({ slug: AUDIT_1_SLUG })],
   };
 
   return JSON.parse(

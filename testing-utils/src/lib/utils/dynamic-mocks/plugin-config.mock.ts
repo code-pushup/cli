@@ -3,13 +3,13 @@ import {
   Audit,
   AuditReport,
   PluginConfig,
+  auditReportSchema,
   auditSchema,
   pluginConfigSchema,
-} from '../../src';
-import { auditReportSchema } from '../../src/lib/report';
-import { echoRunnerConfig } from './runner-config.mock';
+} from '@code-pushup/models';
+import { echoRunnerConfigMock } from './runner-config.mock';
 
-export function pluginConfig(
+export function pluginConfigMock(
   auditOutputs: AuditReport[],
   opt?: Partial<PluginConfig> & { outputDir?: string; outputFile?: string },
 ): PluginConfig {
@@ -24,13 +24,13 @@ export function pluginConfig(
     icon: 'nrwl',
     description: 'Plugin description',
     docsUrl: 'https://my-plugin.docs.dev?1',
-    audits: auditOutputs.map(auditOutput => auditConfig(auditOutput)),
-    runner: echoRunnerConfig(auditOutputs, pluginOutputFile),
+    audits: auditOutputs.map(auditOutput => auditConfigMock(auditOutput)),
+    runner: echoRunnerConfigMock(auditOutputs, pluginOutputFile),
     ...(opt || {}),
   });
 }
 
-export function auditConfig(opt?: Partial<Audit>): Audit {
+export function auditConfigMock(opt?: Partial<Audit>): Audit {
   return auditSchema.parse({
     slug: opt?.slug || 'mock-audit-slug',
     title: opt?.title || 'Audit Title',
@@ -39,7 +39,7 @@ export function auditConfig(opt?: Partial<Audit>): Audit {
   }) as Required<Audit>;
 }
 
-export function auditReport(opt?: Partial<AuditReport>): AuditReport {
+export function auditReportMock(opt?: Partial<AuditReport>): AuditReport {
   return auditReportSchema.parse({
     slug: 'mock-audit-slug',
     title: 'Audit Title',

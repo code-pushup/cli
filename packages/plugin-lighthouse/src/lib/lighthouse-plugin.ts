@@ -1,7 +1,7 @@
 import { defaultConfig } from 'lighthouse';
 import { join } from 'path';
 import { PluginConfig } from '@code-pushup/models';
-import { echoRunnerConfig } from '@code-pushup/models/testing';
+import { echoRunnerConfigMock } from '@code-pushup/testing-utils';
 
 type LighthousePluginConfig = {
   config: string;
@@ -23,7 +23,7 @@ export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
         title: 'Largest Contentful Paint',
       },
     ],
-    runner: echoRunnerConfig(
+    runner: echoRunnerConfigMock(
       [
         {
           slug: 'largest-contentful-paint',

@@ -1,4 +1,4 @@
-import { AuditReport } from '../../src';
+import { AuditReport } from '@code-pushup/models';
 
 export const LIGHTHOUSE_AUDIT_REPORTS_MAP: Record<string, AuditReport> = {
   'first-contentful-paint': {

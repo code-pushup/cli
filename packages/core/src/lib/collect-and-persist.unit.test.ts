@@ -3,11 +3,11 @@ import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
-  Report,
 } from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
+  MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
 import {
   CollectAndPersistReportsOptions,
@@ -18,14 +18,7 @@ import { logPersistedResults, persistReport } from './implementation/persist';
 import { normalizePersistConfig } from './normalize';
 
 vi.mock('./implementation/collect', () => ({
-  collect: vi.fn().mockResolvedValue({
-    packageName: 'code-pushup',
-    version: '0.0.1',
-    date: new Date().toISOString(),
-    duration: 0,
-    categories: [],
-    plugins: [],
-  } as Report),
+  collect: vi.fn().mockResolvedValue(MINIMAL_REPORT_MOCK),
 }));
 
 vi.mock('./implementation/persist', () => ({
@@ -66,12 +59,12 @@ describe('collectAndPersistReports', () => {
 
     expect(persistReport).toHaveBeenCalledWith(
       {
-        packageName: 'code-pushup',
+        packageName: '@code-pushup/core',
         version: '0.0.1',
         date: expect.stringMatching(ISO_STRING_REGEXP),
-        duration: 0,
-        categories: [],
-        plugins: [],
+        duration: 666,
+        categories: expect.any(Array),
+        plugins: expect.any(Array),
       },
       normalizePersistConfig(nonVerboseConfig.persist),
     );
@@ -90,14 +83,7 @@ describe('collectAndPersistReports', () => {
     expect(collect).toHaveBeenCalledWith(verboseConfig);
 
     expect(persistReport).toHaveBeenCalledWith(
-      {
-        packageName: 'code-pushup',
-        version: '0.0.1',
-        date: expect.stringMatching(ISO_STRING_REGEXP),
-        duration: 0,
-        categories: [],
-        plugins: [],
-      } as Report,
+      MINIMAL_REPORT_MOCK,
       normalizePersistConfig(verboseConfig.persist),
     );
 

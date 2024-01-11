@@ -4,9 +4,9 @@ import {
   PERSIST_OUTPUT_DIR,
   PersistConfig,
   persistConfigSchema,
-} from '../../src';
+} from '@code-pushup/models';
 
-export function persistConfig(
+export function persistConfigMock(
   opt?: Partial<PersistConfig>,
 ): Required<PersistConfig> {
   return persistConfigSchema.parse({

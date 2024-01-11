@@ -1,4 +1,4 @@
-import type { AuditReport } from '../../src';
+import type { AuditReport } from '@code-pushup/models';
 
 export const ESLINT_AUDITS_MAP = {
   'no-cond-assign': {

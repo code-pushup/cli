@@ -3,7 +3,7 @@ import type {
   PluginConfig,
   RunnerConfig,
   RunnerFunction,
-} from '../../../../../packages/models/src';
+} from '@code-pushup/models';
 
 // Note: In order for the runner to not expect an actual file, set up fs mocks
 // Then add output.json to the in-memory file system and customise content as needed
