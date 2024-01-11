@@ -1,9 +1,9 @@
 import { ESLint } from 'eslint';
-import { mkdir, rm, writeFile } from 'fs/promises';
-import os from 'os';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import type { SpyInstance } from 'vitest';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { SpyInstance, describe, expect, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { readJsonFile } from '@code-pushup/utils';
 import { listAuditsAndGroups } from './meta';

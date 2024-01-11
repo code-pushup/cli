@@ -13,7 +13,7 @@ import {
   formatBytes,
   pluralizeToken,
   toUnixPath,
-} from '../../../../../dist/packages/utils';
+} from '@code-pushup/utils';
 
 export type PluginOptions = {
   directory: string;

@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { Issue, IssueSeverity, PluginReport } from '@code-pushup/models';
+import { Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { reportMock } from '@code-pushup/models/testing';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, REPORT_MOCK } from '@code-pushup/testing-utils';
 import {
   calcDuration,
   compareAudits,
@@ -102,17 +102,12 @@ describe('loadReport', () => {
   });
 
   it('should throw for an invalid JSON report', async () => {
-    const invalidReportMock = reportMock();
-    invalidReportMock.plugins = [
-      {
-        ...invalidReportMock.plugins[0],
-        slug: '-Invalud_slug',
-      } as unknown as PluginReport,
-    ];
-
     vol.fromJSON(
       {
-        [`report.json`]: JSON.stringify(invalidReportMock),
+        [`report.json`]: JSON.stringify({
+          ...REPORT_MOCK,
+          plugins: [{ ...REPORT_MOCK.plugins[0]!, slug: '-Invalid_slug' }],
+        } satisfies Report),
       },
       MEMFS_VOLUME,
     );

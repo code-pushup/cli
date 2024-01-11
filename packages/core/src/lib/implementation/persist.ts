@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync } from 'fs';
-import { stat, writeFile } from 'fs/promises';
-import { join } from 'path';
+import { existsSync, mkdirSync } from 'node:fs';
+import { stat, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { PersistConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
