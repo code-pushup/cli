@@ -26,10 +26,12 @@ export {
   pluralizeToken,
   slugify,
   truncateDescription,
+  truncateIssueMessage,
   truncateText,
   truncateTitle,
 } from './lib/formatting';
 export { getLatestCommit, git } from './lib/git';
+export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
@@ -60,4 +62,3 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
-export { groupByStatus } from './lib/group-by-status';
