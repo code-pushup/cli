@@ -1,13 +1,17 @@
 import { platform } from 'os';
-import { RunnerConfig } from '../../src';
-import { AuditOutput } from '../../src/lib/audit-output';
-import { runnerConfigSchema } from '../../src/lib/runner-config';
+import {
+  AuditOutput,
+  RunnerConfig,
+  runnerConfigSchema,
+} from '@code-pushup/models';
 
 /**
  * Use this helper as a general purpose mock with working defaults
  * @param options
  */
-export function runnerConfig(options?: Partial<RunnerConfig>): RunnerConfig {
+export function runnerConfigMock(
+  options?: Partial<RunnerConfig>,
+): RunnerConfig {
   const outputFile = `out.${Date.now()}.json`;
   return runnerConfigSchema.parse({
     command: 'node',
@@ -23,7 +27,7 @@ export function runnerConfig(options?: Partial<RunnerConfig>): RunnerConfig {
  * @param output
  * @param outputFile
  */
-export function echoRunnerConfig(
+export function echoRunnerConfigMock(
   output: AuditOutput[],
   outputFile: string,
 ): RunnerConfig {

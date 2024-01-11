@@ -1,8 +1,8 @@
 import { join } from 'path';
-import type { Group, PluginReport } from '../../src';
-import { Audit, PluginConfig } from '../../src';
+import type { Group, PluginReport } from '@code-pushup/models';
+import { Audit, PluginConfig } from '@code-pushup/models';
 import { LIGHTHOUSE_AUDIT_REPORTS_MAP } from './lighthouse-audits.mock';
-import { echoRunnerConfig } from './runner-config.mock';
+import { echoRunnerConfigMock } from './runner-config.mock';
 
 const PLUGIN_GROUP_PERFORMANCE: Group = {
   slug: 'performance',
@@ -39,7 +39,7 @@ const lighthousePluginMeta: Omit<PluginConfig, 'audits' | 'runner'> = {
   version: '0.1.0',
 };
 
-export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
+export function lighthousePluginConfigMock(outputDir = 'tmp'): PluginConfig {
   const audits = Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP).map(
     ({ slug, description, title, docsUrl }) =>
       ({
@@ -51,7 +51,7 @@ export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
   );
   return {
     ...lighthousePluginMeta,
-    runner: echoRunnerConfig(
+    runner: echoRunnerConfigMock(
       Object.values(LIGHTHOUSE_AUDIT_REPORTS_MAP),
       join(outputDir, 'lighthouse-out.json'),
     ),
@@ -60,7 +60,7 @@ export function lighthousePluginConfig(outputDir = 'tmp'): PluginConfig {
   };
 }
 
-export function lighthousePluginReport(): PluginReport {
+export function lighthousePluginReportMock(): PluginReport {
   return {
     ...lighthousePluginMeta,
     date: '2023-10-18T07:49:45.899Z',
