@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`sortReport > should sort the audits and groups of audits in categories, all audits and nested issues 1`] = `
+exports[`sortReport > should sort the audits and audit groups in categories, plugin audits and audit issues 1`] = `
 {
   "categories": [
     {
