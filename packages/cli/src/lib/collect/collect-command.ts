@@ -4,7 +4,7 @@ import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { CLI_NAME } from '../cli';
+import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins-options';
 
 export function yargsCollectCommandObject(): CommandModule {

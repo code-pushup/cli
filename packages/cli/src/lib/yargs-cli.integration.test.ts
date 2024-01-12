@@ -53,7 +53,7 @@ describe('yargsCli', () => {
       ['--persist.format=md', '--persist.format=json'],
       { options },
     ).parseAsync();
-    expect(parsedArgv?.persist?.format).toEqual(['md', 'json']);
+    expect(parsedArgv.persist?.format).toEqual(['md', 'json']);
   });
 
   it('should parse global options correctly', async () => {

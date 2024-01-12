@@ -6,7 +6,7 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
-import { CLI_NAME } from '../cli';
+import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins-options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
@@ -34,10 +34,11 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
-      if (!options.upload) {
-        console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
-      } else {
+
+      if (options.upload) {
         await upload(options);
+      } else {
+        console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
       }
     },
   } satisfies CommandModule;
