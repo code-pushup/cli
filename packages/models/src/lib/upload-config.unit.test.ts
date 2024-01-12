@@ -23,4 +23,26 @@ describe('uploadConfigSchema', () => {
       } satisfies UploadConfig),
     ).toThrow('Invalid url');
   });
+
+  it('should throw for a PascalCase organization name', () => {
+    expect(() =>
+      uploadConfigSchema.parse({
+        apiKey: 'API-K3Y',
+        organization: 'CodePushUp',
+        project: 'cli',
+        server: '-invalid-/url',
+      } satisfies UploadConfig),
+    ).toThrow('slug has to follow the pattern');
+  });
+
+  it('should throw for a project with uppercase letters', () => {
+    expect(() =>
+      uploadConfigSchema.parse({
+        apiKey: 'API-K3Y',
+        organization: 'code-pushup',
+        project: 'Code-PushUp-CLI',
+        server: '-invalid-/url',
+      } satisfies UploadConfig),
+    ).toThrow('slug has to follow the pattern');
+  });
 });
