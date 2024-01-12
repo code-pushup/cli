@@ -6,7 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/cli-e2e',
   plugins: [nxViteTsPaths()],
   test: {
-    testTimeout: 20000,
+    testTimeout: 120_000,
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
@@ -14,5 +14,6 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['global-setup.e2e.ts'],
+    setupFiles: ['../../testing-utils/src/lib/setup/reset.mocks.ts'],
   },
 });

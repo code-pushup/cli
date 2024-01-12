@@ -4,6 +4,13 @@
   "sourceRoot": "examples/cli-e2e/src",
   "projectType": "application",
   "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
+      }
+    },
     "e2e": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],

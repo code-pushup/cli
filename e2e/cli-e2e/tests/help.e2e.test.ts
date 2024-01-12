@@ -9,7 +9,19 @@ describe('CLI help', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
     expect(stdout).toMatchSnapshot();
-  }, 120000);
+  });
 
-  // @TODO 'should print help with help command'
+  it('should produce the same output to stdout for both help argument and help command', async () => {
+    const helpArgResult = await executeProcess({
+      command: 'code-pushup',
+      args: ['help'],
+    });
+    const helpCommandResult = await executeProcess({
+      command: 'code-pushup',
+      args: ['--help'],
+    });
+    expect(helpArgResult.code).toBe(0);
+    expect(helpCommandResult.code).toBe(0);
+    expect(helpArgResult.stdout).toBe(helpCommandResult.stdout);
+  });
 });
