@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits';
 import { filePathSchema, positiveIntSchema } from './implementation/schemas';
 
 const sourceFileLocationSchema = z.object(
@@ -25,7 +26,9 @@ export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
 export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
 export const issueSchema = z.object(
   {
-    message: z.string({ description: 'Descriptive error message' }).max(512),
+    message: z
+      .string({ description: 'Descriptive error message' })
+      .max(MAX_ISSUE_MESSAGE_LENGTH),
     severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
   },
