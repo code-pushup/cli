@@ -192,7 +192,7 @@ export function getGroupWithAudits(
     },
     [],
   ) as WeighedAuditReport[];
-  const audits = groupAudits.sort(sortCategoryAudits);
+  const audits = groupAudits.sort(compareCategoryAudits);
 
   return {
     ...groupWithAudits,
@@ -200,7 +200,7 @@ export function getGroupWithAudits(
   };
 }
 
-export function sortCategoryAudits(
+export function compareCategoryAudits(
   a: WeighedAuditReport,
   b: WeighedAuditReport,
 ): number {
@@ -219,7 +219,7 @@ export function sortCategoryAudits(
   return a.title.localeCompare(b.title);
 }
 
-export function sortAudits(
+export function compareAudits(
   a: EnrichedAuditReport,
   b: EnrichedAuditReport,
 ): number {

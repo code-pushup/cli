@@ -1,9 +1,4 @@
-import {
-  AuditReport,
-  CategoryConfig,
-  CategoryRef,
-  Issue,
-} from '@code-pushup/models';
+import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
 import { formatDuration, slugify } from './formatting';
 import { CommitData } from './git';
 import {
@@ -21,7 +16,6 @@ import {
 import {
   FOOTER_PREFIX,
   README_LINK,
-  compareIssues,
   countCategoryAudits,
   detailsTableHeaders,
   formatReportScore,
@@ -35,8 +29,6 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
-  sortAudits,
-  sortCategoryAudits,
 } from './report';
 import {
   EnrichedScoredGroupWithAudits,
@@ -95,38 +87,17 @@ function reportToCategoriesSection(report: ScoredReport): string {
       category.score,
     )} Score:  ${style(formatReportScore(category.score))}`;
     const categoryDocs = getDocsAndDescription(category);
-
-    const auditsAndGroups = category.refs.reduce(
-      (
-        acc: {
-          audits: WeighedAuditReport[];
-          groups: EnrichedScoredGroupWithAudits[];
-        },
-        ref: CategoryRef,
-      ) => ({
-        ...acc,
-        ...(ref.type === 'group'
-          ? {
-              groups: [
-                ...acc.groups,
-                getGroupWithAudits(ref.slug, ref.plugin, plugins),
-              ],
-            }
-          : {
-              audits: [...acc.audits, getAuditByRef(ref, plugins)],
-            }),
-      }),
-      { groups: [], audits: [] },
-    );
-
-    const audits = auditsAndGroups.audits
-      .sort(sortCategoryAudits)
-      .map(audit => auditItemToCategorySection(audit, plugins))
-      .join(NEW_LINE);
-
-    const groups = auditsAndGroups.groups
-      .map(group => groupItemToCategorySection(group, plugins))
-      .join('');
+    const categoryMDItems = category.refs.reduce((acc, ref) => {
+      if (ref.type === 'group') {
+        const group = getGroupWithAudits(ref.slug, ref.plugin, plugins);
+        const mdGroupItem = groupItemToCategorySection(group, plugins);
+        return acc + mdGroupItem + NEW_LINE;
+      } else {
+        const audit = getAuditByRef(ref, plugins);
+        const mdAuditItem = auditItemToCategorySection(audit, plugins);
+        return acc + mdAuditItem + NEW_LINE;
+      }
+    }, '');
 
     return (
       acc +
@@ -137,9 +108,7 @@ function reportToCategoriesSection(report: ScoredReport): string {
       categoryDocs +
       categoryScore +
       NEW_LINE +
-      groups +
-      NEW_LINE +
-      audits
+      categoryMDItems
     );
   }, '');
 
@@ -190,7 +159,7 @@ function groupItemToCategorySection(
 
 function reportToAuditsSection(report: ScoredReport): string {
   const auditsSection = report.plugins.reduce((acc, plugin) => {
-    const auditsData = plugin.audits.sort(sortAudits).reduce((acc, audit) => {
+    const auditsData = plugin.audits.reduce((acc, audit) => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
         audit.plugin,
         report.plugins,
@@ -217,7 +186,7 @@ function reportToAuditsSection(report: ScoredReport): string {
 
       const detailsTableData = [
         detailsTableHeaders,
-        ...audit.details.issues.sort(compareIssues).map((issue: Issue) => {
+        ...audit.details.issues.map((issue: Issue) => {
           const severity = `${getSeverityIcon(issue.severity)} <i>${
             issue.severity
           }</i>`;

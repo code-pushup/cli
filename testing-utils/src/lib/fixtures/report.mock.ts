@@ -1,4 +1,4 @@
-import type { Report } from '../../../../packages/models/src';
+import type { Report } from '@code-pushup/models';
 
 export const MINIMAL_REPORT_MOCK = {
   packageName: '@code-pushup/core',
@@ -21,15 +21,15 @@ export const REPORT_MOCK = {
       refs: [
         {
           type: 'audit',
-          slug: 'cypress-e2e-tests',
-          plugin: 'cypress',
-          weight: 3,
-        },
-        {
-          type: 'audit',
           slug: 'cypress-component-tests',
           plugin: 'cypress',
           weight: 1,
+        },
+        {
+          type: 'audit',
+          slug: 'cypress-e2e-tests',
+          plugin: 'cypress',
+          weight: 3,
         },
       ],
     },
@@ -38,16 +38,16 @@ export const REPORT_MOCK = {
       title: 'Bug prevention',
       refs: [
         {
-          type: 'group',
-          slug: 'typescript-eslint',
-          plugin: 'eslint',
-          weight: 8,
-        },
-        {
           type: 'audit',
           slug: 'eslint-functional',
           plugin: 'eslint',
           weight: 1,
+        },
+        {
+          type: 'group',
+          slug: 'typescript-eslint',
+          plugin: 'eslint',
+          weight: 8,
         },
         {
           type: 'audit',
@@ -73,6 +73,12 @@ export const REPORT_MOCK = {
       icon: 'cypress',
       audits: [
         {
+          slug: 'cypress-component-tests',
+          title: 'Cypress component tests',
+          value: 0,
+          score: 1,
+        },
+        {
           slug: 'cypress-e2e-tests',
           title: 'Cypress e2e tests',
           value: 3,
@@ -93,12 +99,6 @@ export const REPORT_MOCK = {
               },
             ],
           },
-        },
-        {
-          slug: 'cypress-component-tests',
-          title: 'Cypress component tests',
-          value: 0,
-          score: 1,
         },
       ],
     },
@@ -130,25 +130,18 @@ export const REPORT_MOCK = {
       ],
       audits: [
         {
+          slug: 'eslint-cypress',
+          title: 'Cypress rules',
+          value: 0,
+          score: 1,
+        },
+        {
           slug: 'typescript-eslint-typing',
           title: 'Type checking',
           value: 2,
           score: 0,
           details: {
             issues: [
-              {
-                message: 'outputFile does not exist in type Cli',
-                severity: 'error',
-                source: {
-                  file: 'packages/cli/cli.ts',
-                  position: {
-                    startLine: 1,
-                    startColumn: 1,
-                    endLine: 5,
-                    endColumn: 10,
-                  },
-                },
-              },
               {
                 message: 'command might be undefined',
                 severity: 'warning',
@@ -159,6 +152,19 @@ export const REPORT_MOCK = {
                     startColumn: 10,
                     endLine: 5,
                     endColumn: 20,
+                  },
+                },
+              },
+              {
+                message: 'outputFile does not exist in type Cli',
+                severity: 'error',
+                source: {
+                  file: 'packages/cli/cli.ts',
+                  position: {
+                    startLine: 1,
+                    startColumn: 1,
+                    endLine: 5,
+                    endColumn: 10,
                   },
                 },
               },
@@ -200,12 +206,6 @@ export const REPORT_MOCK = {
         {
           slug: 'eslint-jest-consistent-naming',
           title: 'Consistent naming',
-          value: 0,
-          score: 1,
-        },
-        {
-          slug: 'eslint-cypress',
-          title: 'Cypress rules',
           value: 0,
           score: 1,
         },
