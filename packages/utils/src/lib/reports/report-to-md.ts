@@ -1,8 +1,8 @@
 import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
-import { formatDuration, slugify } from './formatting';
-import { CommitData } from './git';
+import { formatDuration, slugify } from '../formatting';
+import { CommitData } from '../git';
+import { NEW_LINE } from './constants';
 import {
-  NEW_LINE,
   details,
   h2,
   h3,
@@ -12,7 +12,12 @@ import {
   style,
   tableHtml,
   tableMd,
-} from './md/';
+} from './md';
+import {
+  EnrichedScoredGroupWithAudits,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
 import {
   FOOTER_PREFIX,
   README_LINK,
@@ -29,12 +34,7 @@ import {
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
-} from './report';
-import {
-  EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+} from './utils';
 
 export function reportToMd(
   report: ScoredReport,

@@ -1,4 +1,4 @@
-import { NEW_LINE } from './constants';
+import { NEW_LINE } from '../constants';
 import { Alignment, tableMd } from './table';
 
 describe('table function', () => {

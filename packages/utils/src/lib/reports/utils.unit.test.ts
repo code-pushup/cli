@@ -7,6 +7,11 @@ import {
   reportMock,
 } from '@code-pushup/testing-utils';
 import {
+  EnrichedAuditReport,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
+import {
   calcDuration,
   compareAudits,
   compareCategoryAudits,
@@ -15,12 +20,7 @@ import {
   countWeightedRefs,
   getPluginNameFromSlug,
   loadReport,
-} from './report';
-import {
-  EnrichedAuditReport,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+} from './utils';
 
 describe('calcDuration', () => {
   it('should calculate the duration correctly if start and stop are given', () => {

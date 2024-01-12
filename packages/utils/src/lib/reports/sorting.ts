@@ -1,16 +1,16 @@
 import { CategoryRef } from '@code-pushup/models';
 import {
+  EnrichedScoredGroupWithAudits,
+  ScoredReport,
+  WeighedAuditReport,
+} from './scoring';
+import {
   compareAudits,
   compareCategoryAudits,
   compareIssues,
   getAuditByRef,
   getGroupWithAudits,
-} from './report';
-import {
-  EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+} from './utils';
 
 export function sortReport(report: ScoredReport): ScoredReport {
   const { categories, plugins } = report;

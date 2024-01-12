@@ -1,4 +1,4 @@
-import { NEW_LINE } from './constants';
+import { NEW_LINE } from '../constants';
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([

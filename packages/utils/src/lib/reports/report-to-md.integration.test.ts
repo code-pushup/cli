@@ -2,7 +2,7 @@ import { describe } from 'vitest';
 import { reportMock } from '@code-pushup/testing-utils';
 import { reportToMd } from './report-to-md';
 import { scoreReport } from './scoring';
-import { sortReport } from './sort-report';
+import { sortReport } from './sorting';
 
 describe('report-to-md', () => {
   beforeEach(() => {
