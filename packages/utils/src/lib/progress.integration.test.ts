@@ -28,7 +28,7 @@ describe('getSingletonMultiProgressBars', () => {
 const taskAName = 'a';
 const bars = getSingletonProgressBars({ progressWidth: 1 });
 const tasks = bars['tasks'];
-const progressBuffer = bars['logger'].progressBuffer;
+const progressBuffer: string[] = bars['logger'].progressBuffer;
 
 describe('getProgressBar', () => {
   it('should init task', () => {
