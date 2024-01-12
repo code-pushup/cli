@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { UploadOptions, upload } from '@code-pushup/core';
-import { CLI_NAME } from '../cli';
+import { CLI_NAME } from '../constants';
 
 export function yargsUploadCommandObject() {
   const command = 'upload';

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -31,10 +32,9 @@ export function yargsCli<T = unknown>(
   },
 ): Argv<T> {
   const { usageMessage, scriptName, noExitProcess } = cfg;
-  let { commands, options, middlewares } = cfg;
-  commands = Array.isArray(commands) ? commands : [];
-  middlewares = Array.isArray(middlewares) ? middlewares : [];
-  options = options || {};
+  const commands = cfg.commands ?? [];
+  const middlewares = cfg.middlewares ?? [];
+  const options = cfg.options ?? {};
   const cli = yargs(argv);
 
   // setup yargs
@@ -46,12 +46,9 @@ export function yargsCli<T = unknown>(
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
     .array('persist.format')
-    .coerce('config', (config: string | string[]) => {
-      if (Array.isArray(config)) {
-        return config[config.length - 1];
-      }
-      return config;
-    })
+    .coerce('config', (config: string | string[]) =>
+      Array.isArray(config) ? config.at(-1) : config,
+    )
     .options(options);
 
   // usage message
@@ -76,9 +73,7 @@ export function yargsCli<T = unknown>(
   commands.forEach(commandObj => {
     cli.command({
       ...commandObj,
-      ...(commandObj.handler && {
-        handler: logErrorBeforeThrow(commandObj.handler),
-      }),
+      handler: logErrorBeforeThrow(commandObj.handler),
       ...(typeof commandObj.builder === 'function' && {
         builder: logErrorBeforeThrow(commandObj.builder),
       }),

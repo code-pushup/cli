@@ -39,16 +39,16 @@ export async function configMiddleware<
       // so we have to manually implement the order
       persist: {
         outputDir:
-          cliOptions?.persist?.outputDir ||
-          importedRc?.persist?.outputDir ||
+          cliOptions.persist?.outputDir ||
+          importedRc.persist?.outputDir ||
           PERSIST_OUTPUT_DIR,
         filename:
-          cliOptions?.persist?.filename ||
-          importedRc?.persist?.filename ||
+          cliOptions.persist?.filename ||
+          importedRc.persist?.filename ||
           PERSIST_FILENAME,
         format: coerceArray<Format>(
-          cliOptions?.persist?.format ||
-            importedRc?.persist?.format ||
+          cliOptions.persist?.format ??
+            importedRc.persist?.format ??
             PERSIST_FORMAT,
         ),
       },
