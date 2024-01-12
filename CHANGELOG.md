@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.8.11](https://github.com/code-pushup/cli/compare/v0.8.10...v0.8.11) (2024-01-12)
+
+### Bug Fixes
+
+- **models:** fix use case for a group reference but empty audits, clean up tests ([d311b95](https://github.com/code-pushup/cli/commit/d311b956cf6d6c9532de30bfd4080bfeb37ab1c3))
+
 ## [0.8.10](https://github.com/code-pushup/cli/compare/v0.8.9...v0.8.10) (2024-01-12)
 
 ## [0.8.9](https://github.com/code-pushup/cli/compare/v0.8.8...v0.8.9) (2024-01-11)
