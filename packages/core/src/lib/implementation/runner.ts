@@ -27,14 +27,12 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  let audits = await readJsonFile<AuditOutputs>(
+  const outputs = await readJsonFile<AuditOutputs>(
     join(process.cwd(), outputFile),
   );
 
   // transform unknownAuditOutputs to auditOutputs
-  if (outputTransform) {
-    audits = await outputTransform(audits);
-  }
+  const audits = outputTransform ? await outputTransform(outputs) : outputs;
 
   // create runner result
   return {
