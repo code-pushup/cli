@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/models",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "dependencies": {
     "zod": "^3.22.1",
     "@code-pushup/portal-client": "^0.3.0"
