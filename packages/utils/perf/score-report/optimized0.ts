@@ -3,7 +3,7 @@ import { ScoredReport } from '../../src';
 import {
   EnrichedAuditReport,
   EnrichedScoredGroup,
-} from '../../src/lib/scoring';
+} from '../../src/lib/reports/scoring';
 
 function groupRefToScore(audits: EnrichedAuditReport[]) {
   return (ref: GroupRef) => {

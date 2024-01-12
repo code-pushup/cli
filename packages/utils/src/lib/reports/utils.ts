@@ -9,12 +9,12 @@ import {
   Report,
   reportSchema,
 } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
 import {
   ensureDirectoryExists,
   readJsonFile,
   readTextFile,
-} from './file-system';
+} from '../file-system';
+import { SCORE_COLOR_RANGE } from './constants';
 import {
   EnrichedAuditReport,
   EnrichedScoredGroupWithAudits,

@@ -1,8 +1,8 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { SCORE_COLOR_RANGE } from './constants';
-import { NEW_LINE } from './md';
+import { NEW_LINE, SCORE_COLOR_RANGE } from './constants';
+import { ScoredReport } from './scoring';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -10,8 +10,7 @@ import {
   formatReportScore,
   reportHeadlineText,
   reportRawOverviewTableHeaders,
-} from './report';
-import { ScoredReport } from './scoring';
+} from './utils';
 
 function addLine(line = ''): string {
   return line + NEW_LINE;

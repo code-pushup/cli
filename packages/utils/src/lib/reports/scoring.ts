@@ -7,7 +7,7 @@ import {
   PluginReport,
   Report,
 } from '@code-pushup/models';
-import { deepClone } from './transform';
+import { deepClone } from '../transform';
 
 export type EnrichedAuditReport = AuditReport & { plugin: string };
 export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
