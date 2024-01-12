@@ -33,6 +33,7 @@
                 "onlyDependOnLibsWithTags": [
                   "type:app",
                   "type:feature",
+                  "type:util",
                   "type:testing-util"
                 ]
               },

@@ -1,11 +1,10 @@
+import { join } from 'node:path';
 import { expect } from 'vitest';
-import {
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
-} from '@code-pushup/models';
 import { executeProcess } from '@code-pushup/utils';
-import { configFile, extensions } from '../mocks/utils';
+
+const extensions = ['js', 'mjs', 'ts'] as const;
+export const configFilePath = (ext: (typeof extensions)[number]) =>
+  join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
 
 describe('print-config', () => {
   it.each(extensions)(
@@ -17,7 +16,10 @@ describe('print-config', () => {
           'print-config',
           '--verbose',
           '--no-progress',
-          `--config=${configFile(ext)}`,
+          `--config=${configFilePath(ext)}`,
+          '--persist.outputDir=output-dir',
+          '--persist.format=md',
+          `--persist.filename=${ext}-report`,
         ],
       });
 
@@ -28,9 +30,9 @@ describe('print-config', () => {
           config: expect.stringContaining(`code-pushup.config.${ext}`),
           // filled by command options
           persist: {
-            outputDir: PERSIST_OUTPUT_DIR,
-            filename: PERSIST_FILENAME,
-            format: PERSIST_FORMAT,
+            outputDir: 'output-dir',
+            filename: `${ext}-report`,
+            format: ['md'],
           },
           upload: {
             organization: 'code-pushup',
@@ -38,42 +40,16 @@ describe('print-config', () => {
             apiKey: 'e2e-api-key',
             server: 'https://e2e.com/api',
           },
-          plugins: expect.arrayContaining([
+          plugins: [
             expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
-            expect.objectContaining({
-              slug: 'lighthouse',
-              title: 'ChromeDevTools Lighthouse',
-            }),
-          ]),
-          // @TODO add test data to config file
-          categories: expect.any(Array),
+          ],
+          categories: [
+            expect.objectContaining({ slug: 'bug-prevention' }),
+            expect.objectContaining({ slug: 'code-style' }),
+          ],
           onlyPlugins: [],
         }),
       );
     },
-    120000,
   );
-
-  it('should load .ts config file and overload it with arguments', async () => {
-    const { code, stderr, stdout } = await executeProcess({
-      command: 'code-pushup',
-      args: [
-        'print-config',
-        '--verbose',
-        '--no-progress',
-        `--config=${configFile('ts')}`,
-        '--persist.outputDir=my-dir',
-        '--persist.format=md',
-        '--persist.filename=my-report',
-      ],
-    });
-
-    expect(JSON.parse(stdout)?.persist).toEqual(
-      expect.objectContaining({
-        outputDir: 'my-dir',
-        format: ['md'],
-        filename: 'my-report',
-      }),
-    );
-  }, 120000);
 });

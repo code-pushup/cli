@@ -1,4 +1,5 @@
 export * from './lib/constants';
+export * from './lib/setup/test-folder.setup';
 export * from './lib/utils/execute-process-helper.mock';
 
 // static mocks
