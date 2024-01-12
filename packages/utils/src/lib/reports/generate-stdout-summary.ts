@@ -16,7 +16,7 @@ function addLine(line = ''): string {
   return line + NEW_LINE;
 }
 
-export function reportToStdout(report: ScoredReport): string {
+export function generateStdoutSummary(report: ScoredReport): string {
   let output = '';
 
   output += addLine(reportToHeaderSection(report));

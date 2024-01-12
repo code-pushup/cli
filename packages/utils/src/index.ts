@@ -38,8 +38,8 @@ export {
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
 export { ProgressBar, getProgressBar } from './lib/progress';
-export { reportToMd } from './lib/reports/report-to-md';
-export { reportToStdout } from './lib/reports/report-to-stdout';
+export { generateMdReport } from './lib/reports/generate-md-report';
+export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
 export { ScoredReport, scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
 export {

@@ -1,6 +1,6 @@
 import { describe } from 'vitest';
 import { reportMock } from '@code-pushup/testing-utils';
-import { reportToMd } from './report-to-md';
+import { generateMdReport } from './generate-md-report';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
@@ -22,7 +22,10 @@ describe('report-to-md', () => {
       author: 'BioPhoton',
       date: 'Sat Sep 10 12:00:00 2021 +0200',
     };
-    const mdReport = reportToMd(sortReport(scoreReport(reportMock())), commit);
+    const mdReport = generateMdReport(
+      sortReport(scoreReport(reportMock())),
+      commit,
+    );
     expect(mdReport).toContain(
       `${commit.message} (${commit.hash.slice(0, 7)})`,
     );
