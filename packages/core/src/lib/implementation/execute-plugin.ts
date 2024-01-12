@@ -117,39 +117,40 @@ export async function executePlugins(
   plugins: PluginConfig[],
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
-  const { progress = false } = options || {};
+  const { progress = false } = options ?? {};
 
-  const progressName = 'Run Plugins';
-  const progressBar = progress ? getProgressBar(progressName) : null;
+  const progressBar = progress ? getProgressBar('Run plugins') : null;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
-    const outputs = await acc;
-
-    progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
+    progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
 
     try {
       const pluginReport = await executePlugin(pluginCfg);
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat(Promise.resolve(pluginReport));
-    } catch (e: unknown) {
+      return [...(await acc), Promise.resolve(pluginReport)];
+    } catch (error) {
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat(
-        Promise.reject(e instanceof Error ? e.message : String(e)),
-      );
+      return [
+        ...(await acc),
+        Promise.reject(error instanceof Error ? error.message : String(error)),
+      ];
     }
   }, Promise.resolve([] as Promise<PluginReport>[]));
 
   progressBar?.endProgress('Done running plugins');
 
-  const errorsCallback = ({ reason }: PromiseRejectedResult) =>
+  const errorsCallback = ({ reason }: PromiseRejectedResult) => {
     console.error(reason);
+  };
   const results = await Promise.allSettled(pluginsResult);
 
   logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
   const { fulfilled, rejected } = groupByStatus(results);
-  if (rejected.length) {
-    const errorMessages = rejected.map(({ reason }) => reason).join(', ');
+  if (rejected.length > 0) {
+    const errorMessages = rejected
+      .map(({ reason }) => String(reason))
+      .join(', ');
     throw new Error(
       `Plugins failed: ${rejected.length} errors: ${errorMessages}`,
     );

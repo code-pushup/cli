@@ -24,6 +24,15 @@ export async function fileExists(path: string): Promise<boolean> {
   }
 }
 
+export async function directoryExists(path: string): Promise<boolean> {
+  try {
+    const stats = await stat(path);
+    return stats.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 export async function ensureDirectoryExists(baseDir: string) {
   try {
     await mkdir(baseDir, { recursive: true });

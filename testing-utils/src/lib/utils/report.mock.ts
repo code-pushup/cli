@@ -1,6 +1,6 @@
 import type { Report } from '@code-pushup/models';
 
-export const MINIMAL_REPORT_MOCK = {
+export const MINIMAL_REPORT_MOCK: Report = {
   packageName: '@code-pushup/core',
   version: '0.0.1',
   date: '2023-08-16T09:00:00.000Z',
@@ -36,9 +36,9 @@ export const MINIMAL_REPORT_MOCK = {
       duration: 420,
     },
   ],
-} satisfies Report;
+};
 
-export const REPORT_MOCK = {
+export const REPORT_MOCK: Report = {
   packageName: '@code-pushup/core',
   version: '1.0.0',
   date: '2023-08-16T09:00:00.000Z',
@@ -241,4 +241,4 @@ export const REPORT_MOCK = {
       ],
     },
   ],
-} satisfies Report;
+};
