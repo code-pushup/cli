@@ -21,7 +21,7 @@ export const pluginMetaSchema = packageVersionSchema()
   )
   .merge(
     z.object({
-      slug: slugSchema('References plugin. ID (unique within core config)'),
+      slug: slugSchema('Unique plugin slug within core config'),
       icon: materialIconSchema,
     }),
   );

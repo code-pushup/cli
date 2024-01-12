@@ -63,7 +63,9 @@ function getDuplicateRefsInGroups(groups: WeightedRef[]) {
 // helper for validator: group refs are unique
 function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
   const duplicateRefs = getDuplicateSlugsInGroups(groups);
-  return `In groups the slugs are not unique: ${errorItems(duplicateRefs)}`;
+  return `In groups the following slugs are not unique: ${errorItems(
+    duplicateRefs,
+  )}`;
 }
 
 function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
