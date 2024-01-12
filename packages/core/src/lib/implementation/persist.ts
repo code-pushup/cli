@@ -4,10 +4,10 @@ import { join } from 'node:path';
 import { PersistConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
+  generateMdReport,
+  generateStdoutSummary,
   getLatestCommit,
   logMultipleFileResults,
-  reportToMd,
-  reportToStdout,
   scoreReport,
   sortReport,
 } from '@code-pushup/utils';
@@ -31,7 +31,7 @@ export async function persistReport(
   const { outputDir, filename, format } = options;
 
   const sortedScoredReport = sortReport(scoreReport(report));
-  console.info(reportToStdout(sortedScoredReport));
+  console.info(generateStdoutSummary(sortedScoredReport));
 
   // collect physical format outputs
   const results: { format: string; content: string }[] = [];
@@ -49,7 +49,7 @@ export async function persistReport(
 
     results.push({
       format: 'md',
-      content: reportToMd(sortedScoredReport, commitData),
+      content: generateMdReport(sortedScoredReport, commitData),
     });
   }
 

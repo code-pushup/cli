@@ -36,7 +36,7 @@ import {
   reportOverviewTableHeaders,
 } from './utils';
 
-export function reportToMd(
+export function generateMdReport(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
