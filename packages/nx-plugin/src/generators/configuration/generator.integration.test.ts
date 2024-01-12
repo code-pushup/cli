@@ -4,7 +4,7 @@ import {
   readProjectConfiguration,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'path';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { addToProjectGenerator } from './generator';
 

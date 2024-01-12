@@ -11,7 +11,7 @@ describe('logMultipleResults', () => {
       [
         {
           status: 'fulfilled',
-          value: ['out.json', 10000],
+          value: ['out.json', 10_000],
         } as PromiseFulfilledResult<FileResult>,
       ],
       'Generated reports',
@@ -40,7 +40,7 @@ describe('logMultipleResults', () => {
       [
         {
           status: 'fulfilled',
-          value: ['out.json', 10000],
+          value: ['out.json', 10_000],
         } as PromiseFulfilledResult<FileResult>,
         { status: 'rejected', reason: 'fail' } as PromiseRejectedResult,
       ],
