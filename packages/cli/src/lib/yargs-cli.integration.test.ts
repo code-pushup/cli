@@ -56,6 +56,15 @@ describe('yargsCli', () => {
     expect(parsedArgv.persist?.format).toEqual(['md', 'json']);
   });
 
+  it('should throw for an invalid persist format', () => {
+    expect(() =>
+      yargsCli<CoreConfig>(['--persist.format=md', '--persist.format=stdout'], {
+        options,
+        noExitProcess: true,
+      }).parse(),
+    ).toThrow('Invalid persist.format option');
+  });
+
   it('should parse global options correctly', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(
       ['--verbose', '--no-progress'],
