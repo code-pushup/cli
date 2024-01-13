@@ -65,12 +65,7 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'code-pushup',
-      args: [
-        'collect',
-        '--verbose',
-        '--persist.format=stdout',
-        '--no-progress',
-      ],
+      args: ['collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 

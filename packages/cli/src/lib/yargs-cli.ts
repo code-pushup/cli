@@ -7,6 +7,7 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
+import { PersistConfig, formatSchema } from '@code-pushup/models';
 import { logErrorBeforeThrow } from './implementation/utils';
 
 /**
@@ -42,10 +43,13 @@ export function yargsCli<T = unknown>(
     .help()
     .version(false)
     .alias('h', 'help')
+    .check(args => {
+      const persist = args['persist'] as PersistConfig | undefined;
+      return persist == null || validatePersistFormat(persist);
+    })
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
-    .array('persist.format')
     .coerce('config', (config: string | string[]) =>
       Array.isArray(config) ? config.at(-1) : config,
     )
@@ -89,4 +93,19 @@ export function yargsCli<T = unknown>(
 
   // return CLI object
   return cli as unknown as Argv<T>;
+}
+
+function validatePersistFormat(persist: PersistConfig) {
+  try {
+    if (persist?.format != null) {
+      persist.format.forEach(format => formatSchema.parse(format));
+    }
+    return true;
+  } catch {
+    throw new Error(
+      `Invalid persist.format option. Valid options are: ${Object.values(
+        formatSchema.Values,
+      ).join(', ')}`,
+    );
+  }
 }
