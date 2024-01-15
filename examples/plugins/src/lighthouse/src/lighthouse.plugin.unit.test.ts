@@ -32,10 +32,12 @@ describe('lighthouse-runnerConfig', () => {
 
   it('should run only audits included in given onlyAudits', () => {
     expect(
-      runnerConfig({
-        ...baseOptions,
-        onlyAudits: [lcpAuditOutputBase.slug],
-      }),
+      runnerConfig(
+        expect.objectContaining({
+          ...baseOptions,
+          onlyAudits: [lcpAuditOutputBase.slug],
+        }),
+      ),
     ).toEqual(
       expect.objectContaining({
         args: [`--onlyAudits="${lcpAuditOutputBase.slug}"`],
