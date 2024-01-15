@@ -4,6 +4,8 @@
 
 ---
 
+<img alt="Code PushUp plugin for lighthouse reports" src="./docs/images/lighthouse-plugin-cover.png" height="655">
+
 The plugin analyses a given URL and creates a lighthouse audits.
 
 You can configure the plugin with the following options:
