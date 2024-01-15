@@ -1,15 +1,15 @@
 import { describe, expect } from 'vitest';
 import { CoreConfig } from '@code-pushup/models';
 import {
-  filterCategoryByOnlyPluginsOption,
-  filterPluginsByOnlyPluginsOption,
+  filterCategoryByPluginSlug,
+  filterPluginsBySlug,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
 
-describe('filterPluginsByOnlyPluginsOption', () => {
+describe('filterCategoryByPluginSlug', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {
     expect(
-      filterPluginsByOnlyPluginsOption(
+      filterPluginsBySlug(
         [
           { slug: 'plugin1' },
           { slug: 'plugin2' },
@@ -22,7 +22,7 @@ describe('filterPluginsByOnlyPluginsOption', () => {
 
   it('should return only plugins with matching slugs', () => {
     expect(
-      filterPluginsByOnlyPluginsOption(
+      filterPluginsBySlug(
         [
           { slug: 'plugin1' },
           { slug: 'plugin2' },
@@ -37,7 +37,7 @@ describe('filterPluginsByOnlyPluginsOption', () => {
 describe('filterCategoryByOnlyPluginsOption', () => {
   it('should return all categories if no onlyPlugins option', () => {
     expect(
-      filterCategoryByOnlyPluginsOption(
+      filterCategoryByPluginSlug(
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
@@ -52,7 +52,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
 
   it('should return categories containing only defined plugins', () => {
     expect(
-      filterCategoryByOnlyPluginsOption(
+      filterCategoryByPluginSlug(
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
@@ -63,7 +63,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
   });
 
   it('should print ignored category and its first violating plugin', () => {
-    filterCategoryByOnlyPluginsOption(
+    filterCategoryByPluginSlug(
       [
         {
           title: 'category1',
