@@ -2,6 +2,28 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.8.14](https://github.com/code-pushup/cli/compare/v0.8.13...v0.8.14) (2024-01-12)
+
+## [0.8.13](https://github.com/code-pushup/cli/compare/v0.8.12...v0.8.13) (2024-01-12)
+
+## [0.8.12](https://github.com/code-pushup/cli/compare/v0.8.11...v0.8.12) (2024-01-12)
+
+## [0.8.11](https://github.com/code-pushup/cli/compare/v0.8.10...v0.8.11) (2024-01-12)
+
+### Bug Fixes
+
+- **models:** fix use case for a group reference but empty audits, clean up tests ([d311b95](https://github.com/code-pushup/cli/commit/d311b956cf6d6c9532de30bfd4080bfeb37ab1c3))
+
+## [0.8.10](https://github.com/code-pushup/cli/compare/v0.8.9...v0.8.10) (2024-01-12)
+
+## [0.8.9](https://github.com/code-pushup/cli/compare/v0.8.8...v0.8.9) (2024-01-11)
+
+## [0.8.8](https://github.com/code-pushup/cli/compare/v0.8.7...v0.8.8) (2024-01-11)
+
+### Bug Fixes
+
+- **plugin-eslint:** truncate long issue messages ([c39d0cc](https://github.com/code-pushup/cli/commit/c39d0ccefbbc9f44a7ecb4d90346bca5b1553766))
+
 ## [0.8.7](https://github.com/code-pushup/cli/compare/v0.8.6...v0.8.7) (2024-01-10)
 
 ## [0.8.6](https://github.com/code-pushup/cli/compare/v0.8.5...v0.8.6) (2024-01-10)

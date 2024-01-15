@@ -19,12 +19,8 @@ export {
 } from './lib/core-config';
 export { Group, GroupRef, groupSchema } from './lib/group';
 export {
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
-} from './lib/implementation/constants';
-export {
   MAX_DESCRIPTION_LENGTH,
+  MAX_ISSUE_MESSAGE_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';

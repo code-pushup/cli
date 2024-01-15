@@ -5,7 +5,7 @@ import {
   GeneralCliOptions,
   OnlyPluginsOptions,
 } from './implementation/model';
-import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins-options';
+import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
@@ -46,7 +46,7 @@ describe('yargsCli', () => {
       ['--persist.format=md', '--persist.format=json'],
       { options },
     ).parseAsync();
-    expect(parsedArgv?.persist?.format).toEqual(['md', 'json']);
+    expect(parsedArgv.persist?.format).toEqual(['md', 'json']);
   });
 
   it('should parse global options correctly', async () => {

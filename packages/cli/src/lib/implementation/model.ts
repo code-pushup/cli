@@ -3,6 +3,7 @@ import { Format } from '@code-pushup/models';
 
 export type GeneralCliOptions = { config: string } & GlobalOptions;
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export type PersistConfigCliOptions = {
   'persist.outputDir': string;
   'persist.filename': string;
@@ -15,6 +16,7 @@ export type UploadConfigCliOptions = {
   'upload.apiKey': string;
   'upload.server': string;
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export type CoreConfigCliOptions = PersistConfigCliOptions &
   UploadConfigCliOptions;

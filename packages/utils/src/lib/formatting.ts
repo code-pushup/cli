@@ -1,4 +1,8 @@
-import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from '@code-pushup/models';
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_ISSUE_MESSAGE_LENGTH,
+  MAX_TITLE_LENGTH,
+} from '@code-pushup/models';
 
 export function slugify(text: string): string {
   return text
@@ -57,4 +61,8 @@ export function truncateTitle(text: string): string {
 
 export function truncateDescription(text: string): string {
   return truncateText(text, MAX_DESCRIPTION_LENGTH);
+}
+
+export function truncateIssueMessage(text: string): string {
+  return truncateText(text, MAX_ISSUE_MESSAGE_LENGTH);
 }

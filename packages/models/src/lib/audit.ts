@@ -33,7 +33,7 @@ export const pluginAuditsSchema = z
 // helper for validator: audit slugs are unique
 function duplicateSlugsInAuditsErrorMsg(audits: Audit[]) {
   const duplicateRefs = getDuplicateSlugsInAudits(audits);
-  return `In plugin audits the slugs are not unique: ${errorItems(
+  return `In plugin audits the following slugs are not unique: ${errorItems(
     duplicateRefs,
   )}`;
 }
