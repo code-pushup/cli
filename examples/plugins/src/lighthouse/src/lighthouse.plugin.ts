@@ -97,12 +97,12 @@ export function create(options: PluginOptions): PluginConfig {
 export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
   const { log } = verboseUtils(options.verbose);
   const outputPath = options.outputPath ?? LIGHTHOUSE_OUTPUT_FILE_DEFAULT;
-  const cliOptions = { ...options, outputPath };
-  log(`Run npx ${getLighthouseCliArguments(cliOptions).join(' ')}`);
+  const args = getLighthouseCliArguments({ ...options, outputPath });
+  log(`Run npx ${args.join(' ')}`);
 
   return {
     command: 'npx',
-    args: getLighthouseCliArguments(cliOptions),
+    args,
     outputFile: outputPath,
     outputTransform: (lighthouseOutput: unknown) =>
       lhrToAuditOutputs(lighthouseOutput as Result),
@@ -117,7 +117,8 @@ function getLighthouseCliArguments(options: LighthouseCliOptions): string[] {
     verbose = false,
     headless = false,
   } = options;
-  const argsObj: Record<string, unknown> = {
+  // eslint-disable-next-line functional/no-let
+  let argsObj: Record<string, unknown> = {
     _: ['lighthouse', url],
     verbose,
     output: 'json',
@@ -125,17 +126,17 @@ function getLighthouseCliArguments(options: LighthouseCliOptions): string[] {
   };
 
   if (headless) {
-    return objectToCliArgs({
+    argsObj = {
       ...argsObj,
       ['chrome-flags']: `--headless=${headless}`,
-    });
+    };
   }
 
   if (onlyAudits.length > 0) {
-    return objectToCliArgs({
+    argsObj = {
       ...argsObj,
-      onlyAudits: toArray(onlyAudits).join(','),
-    });
+      onlyAudits: toArray(onlyAudits),
+    };
   }
 
   return objectToCliArgs(argsObj);
