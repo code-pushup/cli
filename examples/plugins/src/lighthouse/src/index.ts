@@ -3,4 +3,4 @@ export {
   recommendedRefs,
   categoryPerfGroup,
 } from './constants.generated';
-export { create, LighthouseOptions } from './lighthouse.plugin';
+export { create, LighthouseCliOptions } from './lighthouse.plugin';

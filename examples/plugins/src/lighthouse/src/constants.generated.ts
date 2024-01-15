@@ -1,4 +1,4 @@
-import { CategoryRef, Audit } from '@code-pushup/models';
+import { Audit, CategoryRef } from '@code-pushup/models';
 
 export const lighthouseReportName = 'lighthouse-report.json';
 export const pluginSlug = 'lighthouse';
@@ -13,15 +13,15 @@ export const recommendedRefs: CategoryRef[] = [
 
 export const audits: Audit[] = [
   {
-    slug: "resource-summary",
-    title: "Resources Summary",
-    description: "Aggregates all network requests and groups them by type",
+    slug: 'resource-summary',
+    title: 'Resources Summary',
+    description: 'Aggregates all network requests and groups them by type',
   },
   {
-    slug: "third-party-cookies",
-    title: "Avoids third-party cookies",
-    description: "Support for third-party cookies will be removed in a future version of Chrome. [Learn more about phasing out third-party cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).",
-
+    slug: 'third-party-cookies',
+    title: 'Avoids third-party cookies',
+    description:
+      'Support for third-party cookies will be removed in a future version of Chrome. [Learn more about phasing out third-party cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).',
   },
   {
     slug: 'is-on-https',

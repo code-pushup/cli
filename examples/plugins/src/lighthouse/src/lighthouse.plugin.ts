@@ -1,24 +1,30 @@
 import Result from 'lighthouse/types/lhr/lhr';
+import { join } from 'node:path';
 import {
-  objectToCliArgs,
-  toArray,
-  verboseUtils,
-} from '@code-pushup/utils';
-import { AuditOutput, AuditOutputs, Issue, MAX_ISSUE_MESSAGE_LENGTH, PluginConfig, RunnerConfig } from '@code-pushup/models';
+  AuditOutput,
+  AuditOutputs,
+  Issue,
+  MAX_ISSUE_MESSAGE_LENGTH,
+  PluginConfig,
+  RunnerConfig,
+} from '@code-pushup/models';
+import { objectToCliArgs, toArray, verboseUtils } from '@code-pushup/utils';
 import {
   audits,
   categoryPerfGroup,
   lighthouseReportName,
   pluginSlug,
 } from './constants.generated';
-import {join} from "node:path";
 
-export type LighthouseOptions = {
+export type PluginOptions = {
   url: string;
   onlyAudits?: string | string[];
   verbose?: boolean;
   headless?: boolean | 'new';
-  outputFile?: string;
+};
+
+export type LighthouseCliOptions = PluginOptions & {
+  outputFile: string;
 };
 
 /**
@@ -45,8 +51,8 @@ export type LighthouseOptions = {
  * }
  *
  */
-export function create(options: LighthouseOptions): PluginConfig {
-  const {onlyAudits = []} = options;
+export function create(options: PluginOptions): PluginConfig {
+  const { onlyAudits = [] } = options;
   return {
     slug: pluginSlug,
     title: 'Lighthouse',
@@ -61,31 +67,32 @@ export function create(options: LighthouseOptions): PluginConfig {
         refs:
           onlyAudits.length === 0
             ? categoryPerfGroup.refs
-            : categoryPerfGroup.refs.filter(({slug}) =>
-              onlyAudits.includes(slug),
-            ),
+            : categoryPerfGroup.refs.filter(({ slug }) =>
+                onlyAudits.includes(slug),
+              ),
       },
     ],
   };
 }
 
-function runnerConfig(options: LighthouseOptions): RunnerConfig {
-  const {log} = verboseUtils(options.verbose);
-  const {outputFile = lighthouseReportName} = options;
+export function runnerConfig(options: PluginOptions): RunnerConfig {
+  const { log } = verboseUtils(options.verbose);
+  const outputFile = lighthouseReportName;
   log(
-    `Run npx ${getLighthouseCliArguments({...options, outputFile}).join(
+    `Run npx ${getLighthouseCliArguments({ ...options, outputFile }).join(
       ' ',
     )}`,
   );
   return {
     command: 'npx',
-    args: getLighthouseCliArguments({...options, outputFile}),
+    args: getLighthouseCliArguments({ ...options, outputFile }),
     outputFile,
-    outputTransform: (lighthouseOutput: unknown) => lhrToAuditOutputs(lighthouseOutput as Result),
+    outputTransform: (lighthouseOutput: unknown) =>
+      lhrToAuditOutputs(lighthouseOutput as Result),
   } satisfies RunnerConfig;
 }
 
-function getLighthouseCliArguments(options: LighthouseOptions): string[] {
+function getLighthouseCliArguments(options: LighthouseCliOptions): string[] {
   const {
     url,
     outputFile = lighthouseReportName,
@@ -120,12 +127,12 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
   return Object.values(lhr.audits).map(
     ({
-       id: slug,
-       score,
-       numericValue: value = 0, // not every audit has a numericValue
-       displayValue,
-       details,
-     }) => {
+      id: slug,
+      score,
+      numericValue: value = 0, // not every audit has a numericValue
+      displayValue,
+      details,
+    }) => {
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 0, // score can be null
@@ -151,7 +158,7 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
 function lhrDetailsToIssueDetails(
   details = {} as unknown as Result['audits'][string]['details'],
 ): Issue[] | null {
-  const {type, items} = details as {
+  const { type, items } = details as {
     type: string;
     items: Record<string, string>[];
     /**
@@ -177,9 +184,6 @@ function lhrDetailsToIssueDetails(
           .join(',')
           .slice(0, MAX_ISSUE_MESSAGE_LENGTH),
         severity: 'info',
-        source: {
-          file: 'file-name',
-        },
       },
     ];
   }
