@@ -7,8 +7,7 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
-import { PersistConfig, formatSchema } from '@code-pushup/models';
-import { MAX_SCREEN_WIDTH } from '@code-pushup/models';
+import { PersistConfig, formatSchema , MAX_SCREEN_WIDTH } from '@code-pushup/models';
 import { logErrorBeforeThrow } from './implementation/global.utils';
 
 /**
