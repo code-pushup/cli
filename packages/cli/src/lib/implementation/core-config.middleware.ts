@@ -9,14 +9,9 @@ import {
 import { GeneralCliOptions } from './global.model';
 import { coerceArray } from './global.utils';
 import { OnlyPluginsOptions } from './only-plugins.model';
-import {
-  filterCategoryByOnlyPluginsOption,
-  filterPluginsByOnlyPluginsOption,
-  validateOnlyPluginsOption,
-} from './only-plugins.utils';
 
 export async function coreConfigMiddleware<
-  T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
+  T extends Partial<GeneralCliOptions & CoreConfig>,
 >(processArgs: T) {
   const args = processArgs;
   const { config, ...cliOptions } = args as GeneralCliOptions &
@@ -24,42 +19,32 @@ export async function coreConfigMiddleware<
     OnlyPluginsOptions;
   const importedRc = await readCodePushupConfig(config);
 
-  validateOnlyPluginsOption(importedRc.plugins, cliOptions);
-
-  const parsedProcessArgs: CoreConfig & GeneralCliOptions & OnlyPluginsOptions =
-    {
-      config,
-      progress: cliOptions.progress,
-      verbose: cliOptions.verbose,
-      upload: {
-        ...importedRc.upload,
-        ...cliOptions.upload,
-      },
-      // we can't use a async rc file as yargs does not support it. see: https://github.com/yargs/yargs/issues/2234
-      // therefore this can't live in option defaults as the order would be `config`->`provided options`->default
-      // so we have to manually implement the order
-      persist: {
-        outputDir:
-          cliOptions.persist?.outputDir ||
-          importedRc.persist?.outputDir ||
-          PERSIST_OUTPUT_DIR,
-        filename:
-          cliOptions.persist?.filename ||
-          importedRc.persist?.filename ||
-          PERSIST_FILENAME,
-        format: coerceArray<Format>(
-          cliOptions.persist?.format ??
-            importedRc.persist?.format ??
-            PERSIST_FORMAT,
-        ),
-      },
-      plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
-      categories: filterCategoryByOnlyPluginsOption(
-        importedRc.categories,
-        cliOptions,
+  const parsedProcessArgs: CoreConfig & GeneralCliOptions = {
+    config,
+    ...cliOptions,
+    upload: {
+      ...importedRc.upload,
+      ...cliOptions.upload,
+    },
+    // we can't use a async rc file as yargs does not support it. see: https://github.com/yargs/yargs/issues/2234
+    // therefore this can't live in option defaults as the order would be `config`->`provided options`->default
+    // so we have to manually implement the order
+    persist: {
+      outputDir:
+        cliOptions.persist?.outputDir ||
+        importedRc.persist?.outputDir ||
+        PERSIST_OUTPUT_DIR,
+      filename:
+        cliOptions.persist?.filename ||
+        importedRc.persist?.filename ||
+        PERSIST_FILENAME,
+      format: coerceArray<Format>(
+        cliOptions.persist?.format ??
+          importedRc.persist?.format ??
+          PERSIST_FORMAT,
       ),
-      onlyPlugins: cliOptions.onlyPlugins,
-    };
+    },
+  };
 
   return parsedProcessArgs;
 }
