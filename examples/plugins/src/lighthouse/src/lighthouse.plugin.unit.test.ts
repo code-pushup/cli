@@ -6,6 +6,7 @@ import { LighthouseCliOptions, runnerConfig } from './lighthouse.plugin';
 describe('lighthouse-runnerConfig', () => {
   const baseOptions: LighthouseCliOptions = {
     url: LIGHTHOUSE_URL,
+    headless: true
   };
   const lcpAuditOutputBase = {
     displayValue: expect.stringContaining('sec'),

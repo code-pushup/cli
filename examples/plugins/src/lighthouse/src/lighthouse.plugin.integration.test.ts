@@ -16,7 +16,7 @@ import { PluginOptions, create } from './lighthouse.plugin';
 describe('lighthouse-create-export', () => {
   const baseOptions: PluginOptions = {
     url: LIGHTHOUSE_URL,
-    headless: 'new',
+    headless: true,
   };
 
   beforeEach(() => {
