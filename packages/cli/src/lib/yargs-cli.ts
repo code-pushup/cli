@@ -8,7 +8,7 @@ import yargs, {
   ParserConfigurationOptions,
 } from 'yargs';
 import { PersistConfig, formatSchema } from '@code-pushup/models';
-import { logErrorBeforeThrow } from './implementation/utils';
+import { logErrorBeforeThrow } from './implementation/global.utils';
 
 /**
  * returns configurable yargs CLI for code-pushup

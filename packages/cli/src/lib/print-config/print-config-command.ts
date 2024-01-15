@@ -1,6 +1,6 @@
 import { CommandModule } from 'yargs';
-import { filterKebabCaseKeys } from '../implementation/filter-kebab-case-keys';
-import { onlyPluginsOption } from '../implementation/only-plugins-options';
+import { filterKebabCaseKeys } from '../implementation/global.utils';
+import { onlyPluginsOption } from '../implementation/only-plugins.options';
 
 export function yargsConfigCommandObject() {
   const command = 'print-config';

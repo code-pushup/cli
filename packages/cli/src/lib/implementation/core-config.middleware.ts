@@ -6,15 +6,16 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { GeneralCliOptions, OnlyPluginsOptions } from './model';
+import { GeneralCliOptions } from './global.model';
+import { coerceArray } from './global.utils';
+import { OnlyPluginsOptions } from './only-plugins.model';
 import {
   filterCategoryByOnlyPluginsOption,
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
-} from './only-plugins-utils';
-import { coerceArray } from './utils';
+} from './only-plugins.utils';
 
-export async function configMiddleware<
+export async function coreConfigMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
 >(processArgs: T) {
   const args = processArgs;
