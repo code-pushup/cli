@@ -1,20 +1,20 @@
 import 'dotenv/config';
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthousePlugin,
+  lighthouseRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-  lighthousePlugin,
-  lighthouseRecommendedRefs,
-  LIGHTHOUSE_OUTPUT_FILE_DEFAULT
 } from './dist/examples/plugins';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
-import {join} from "node:path";
 
 // load upload configuration from environment
 const envSchema = z
@@ -83,9 +83,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [
-        ...lighthouseRecommendedRefs,
-      ],
+      refs: [...lighthouseRecommendedRefs],
     },
     {
       slug: 'custom-checks',
