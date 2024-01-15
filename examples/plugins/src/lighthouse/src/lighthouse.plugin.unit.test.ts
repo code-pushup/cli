@@ -16,18 +16,28 @@ describe('lighthouse-runnerConfig', () => {
   };
 
   it('should execute if url is given', () => {
-    expect(runnerConfig(baseOptions)).toEqual({
-      args: [
-        'lighthouse',
-        LIGHTHOUSE_URL,
-        '--no-verbose',
-        '--output="json"',
-        `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
-      ],
-      command: 'npx',
-      outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-      outputTransform: expect.any(Function),
-    });
+    expect(runnerConfig(baseOptions)).toEqual(
+      expect.objectContaining({
+        args: ['lighthouse', LIGHTHOUSE_URL],
+        command: 'npx',
+        outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+        outputTransform: expect.any(Function),
+      }),
+    );
+  });
+
+  it('should execute if with output options', () => {
+    expect(runnerConfig(baseOptions)).toEqual(
+      expect.objectContaining({
+        args: [
+          '--output="json"',
+          `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
+        ],
+        command: 'npx',
+        outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+        outputTransform: expect.any(Function),
+      }),
+    );
   });
 
   it('should run only audits included in given onlyAudits', () => {
