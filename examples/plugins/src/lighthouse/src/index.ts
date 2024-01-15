@@ -1,5 +1,6 @@
 export {
   pluginSlug,
+  audits,
   recommendedRefs,
   categoryPerfGroup,
 } from './constants.generated';

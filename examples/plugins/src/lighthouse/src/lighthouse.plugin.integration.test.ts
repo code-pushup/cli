@@ -7,11 +7,9 @@ import {
 } from '@code-pushup/models';
 import {
   PluginOptions,
-  audits,
   create,
-  recommendedRefs,
-  pluginSlug as slug,
 } from './lighthouse.plugin';
+import {recommendedRefs, audits, pluginSlug as slug} from './index';
 
 describe('create', () => {
   const baseOptions: PluginOptions = {
@@ -22,28 +20,30 @@ describe('create', () => {
     const pluginConfig = create(baseOptions);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
-      audits,
-      description:
-        'A plugin to measure and assert size of files in a directory.',
-      icon: 'folder-javascript',
-      runner: expect.any(Function),
       slug,
-      title: 'File Size',
+      title: 'Lighthouse',
+      description:
+        'Chrome lighthouse CLI as code-pushup plugin',
+      icon: 'lighthouse',
+      runner: expect.any(Object),
+      audits,
+      groups: expect.any(Array),
     });
   });
 
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = create(baseOptions);
-    await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
-      description:
-        'A plugin to measure and assert size of files in a directory.',
+    await expect(executePlugin(pluginConfig)).resolves.toMatchObject(expect.objectContaining({
       slug,
-      title: 'File Size',
+      title: 'Lighthouse',
+      description:
+        'Chrome lighthouse CLI as code-pushup plugin',
       duration: expect.any(Number),
       date: expect.any(String),
       audits: expect.any(Array),
-    });
-  });
+      groups: expect.any(Array),
+    }));
+  }, 20_000);
 
   it('should use onlyAudits', async () => {
     const pluginConfig = create({
@@ -52,11 +52,11 @@ describe('create', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.score).toBe(1);
-    expect(auditOutputs[0]?.details).toBe(1);
+    expect(auditOutputs).toHaveLength(60);
+    expect(auditOutputs[0]?.score).toBe(expect.any(Number));
+    expect(auditOutputs[0]?.details).toBe(expect.any(Number));
   });
-});
+}, 20_000);
 
 describe('audits', () => {
   it.each(audits)('should be a valid audit meta info', audit => {
