@@ -1,7 +1,4 @@
-import { GlobalOptions } from '@code-pushup/core';
 import { Format } from '@code-pushup/models';
-
-export type GeneralCliOptions = { config: string } & GlobalOptions;
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type PersistConfigCliOptions = {
@@ -20,7 +17,3 @@ export type UploadConfigCliOptions = {
 
 export type CoreConfigCliOptions = PersistConfigCliOptions &
   UploadConfigCliOptions;
-
-export type OnlyPluginsOptions = {
-  onlyPlugins: string[];
-};

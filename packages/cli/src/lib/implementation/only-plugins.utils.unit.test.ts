@@ -4,7 +4,7 @@ import {
   filterCategoryByOnlyPluginsOption,
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
-} from './only-plugins-utils';
+} from './only-plugins.utils';
 
 describe('filterPluginsByOnlyPluginsOption', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {

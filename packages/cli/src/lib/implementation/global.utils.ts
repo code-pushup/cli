@@ -1,5 +1,25 @@
 import { toArray } from '@code-pushup/utils';
 
+export function filterKebabCaseKeys<T extends Record<string, unknown>>(
+  obj: T,
+): T {
+  return Object.entries(obj)
+    .filter(([key]) => !key.includes('-'))
+    .reduce(
+      (acc, [key, value]) =>
+        typeof value === 'string' ||
+        (typeof value === 'object' && Array.isArray(obj[key]))
+          ? { ...acc, [key]: value }
+          : typeof value === 'object' && !Array.isArray(value) && value != null
+          ? {
+              ...acc,
+              [key]: filterKebabCaseKeys(value as Record<string, unknown>),
+            }
+          : { ...acc, [key]: value },
+      {},
+    ) as T;
+}
+
 // log error and flush stdout so that Yargs doesn't suppress it
 // related issue: https://github.com/yargs/yargs/issues/2118
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
