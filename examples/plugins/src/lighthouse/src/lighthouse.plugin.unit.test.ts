@@ -37,14 +37,7 @@ describe('lighthouse-runnerConfig', () => {
       }),
     ).toEqual(
       expect.objectContaining({
-        args: [
-          'lighthouse',
-          LIGHTHOUSE_URL,
-          '--no-verbose',
-          '--output="json"',
-          `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
-          `--onlyAudits="${lcpAuditOutputBase.slug}"`,
-        ],
+        args: [`--onlyAudits="${lcpAuditOutputBase.slug}"`],
         command: 'npx',
         outputFile: 'lighthouse-report.json',
         outputTransform: expect.any(Function),
