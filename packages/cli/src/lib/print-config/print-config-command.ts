@@ -1,5 +1,5 @@
 import { CommandModule } from 'yargs';
-import { filterKebabCaseKeys } from '../implementation/filter-kebab-case-keys';
+import { filterKebabCaseKeys } from '../implementation/global.utils';
 import { onlyPluginsOption } from '../implementation/only-plugins.options';
 
 export function yargsConfigCommandObject() {

@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { CoreConfig } from '@code-pushup/models';
-import {
-  CoreConfigCliOptions,
-  GeneralCliOptions,
-  OnlyPluginsOptions,
-} from './implementation/model';
+import { CoreConfigCliOptions } from './implementation/core-config.model';
+import { GeneralCliOptions } from './implementation/global.model';
+import { OnlyPluginsOptions } from './implementation/only-plugins.model';
 import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';

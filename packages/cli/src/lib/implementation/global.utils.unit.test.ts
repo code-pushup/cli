@@ -1,5 +1,5 @@
 import { expect } from 'vitest';
-import { filterKebabCaseKeys } from './filter-kebab-case-keys';
+import { filterKebabCaseKeys } from './global.utils';
 
 describe('filterKebabCaseKeys', () => {
   it('should filter root level kebab-case keys', () => {

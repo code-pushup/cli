@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { coreConfigMiddleware } from './core-config.middleware';
 
-describe('configMiddleware', () => {
+describe('coreConfigMiddleware', () => {
   const configDirPath = join(
     fileURLToPath(dirname(import.meta.url)),
     '..',

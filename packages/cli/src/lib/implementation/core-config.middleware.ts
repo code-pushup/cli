@@ -23,8 +23,8 @@ export async function coreConfigMiddleware<
         ...cliOptions.upload,
       },
       persist: {
-        ...importedRc?.persist,
-        ...cliOptions?.persist,
+        ...importedRc.persist,
+        ...cliOptions.persist,
       },
     };
 

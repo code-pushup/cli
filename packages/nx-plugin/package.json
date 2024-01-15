@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/nx-plugin",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "dependencies": {
     "@nx/devkit": "^17.1.3",
     "tslib": "2.6.2"
