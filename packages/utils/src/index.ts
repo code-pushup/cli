@@ -10,6 +10,7 @@ export {
   FileResult,
   MultipleFileResults,
   crawlFileSystem,
+  directoryExists,
   ensureDirectoryExists,
   fileExists,
   findLineNumberInText,

@@ -3,37 +3,6 @@
   // temporarily disable failing rules so `nx lint` passes
   // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:21 GMT+0100 (Central European Standard Time)
   "rules": {
-    "max-lines-per-function": "off", // 1 warning
-    "prefer-template": "off", // 3 warnings
-    "@typescript-eslint/no-confusing-void-expression": "off", // 2 warnings
-    "@typescript-eslint/no-floating-promises": "off", // 5 errors
-    "@typescript-eslint/no-shadow": "off", // 2 warnings
-    "@typescript-eslint/no-unnecessary-condition": "off", // 4 warnings
-    "@typescript-eslint/no-unsafe-return": "off", // 1 error
-    "@typescript-eslint/prefer-nullish-coalescing": "off", // 2 warnings
-    "functional/immutable-data": "off", // 1 error, 2 warnings
-    "functional/no-let": "off", // 2 warnings
-    "n/no-sync": "off", // 6 warnings
-    "unicorn/catch-error-name": "off", // 3 warnings
-    "unicorn/explicit-length-check": "off", // 2 warnings
-    "unicorn/import-style": "off", // 6 warnings
-    "unicorn/prefer-spread": "off", // 2 warnings
-    "unicorn/prefer-ternary": "off" // 1 warning
-  },
-  "overrides": [
-    {
-      "files": [
-        "*.spec.ts",
-        "*.test.ts",
-        "**/test/**/*",
-        "**/mock/**/*",
-        "**/mocks/**/*",
-        "*.cy.ts",
-        "*.stories.ts"
-      ],
-      "rules": {
-        "@typescript-eslint/naming-convention": "off" // 4 warnings
-      }
-    }
-  ]
+    "@typescript-eslint/no-unnecessary-condition": "off" // 1 warning
+  }
 }

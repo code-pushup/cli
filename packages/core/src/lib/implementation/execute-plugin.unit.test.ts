@@ -119,7 +119,7 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      'Plugins failed: 1 errors: Audit metadata not found for slug node-version',
+      /Plugins failed: 1 errors:.*Audit metadata not found for slug node-version/,
     );
   });
 
