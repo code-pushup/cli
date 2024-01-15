@@ -3,15 +3,24 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "examples/plugins/src",
   "projectType": "library",
-  "implicitDependencies": ["cli"],
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/examples/plugins",
+        "main": "examples/plugins/src/index.ts",
+        "tsConfig": "examples/plugins/tsconfig.lib.json",
+        "assets": ["examples/plugins/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["examples/plugins/**/*.ts"]
-      },
-      "dependsOn": ["^build"]
+      }
     },
     "unit-test": {
       "executor": "@nx/vite:test",
@@ -19,8 +28,7 @@
       "options": {
         "config": "examples/plugins/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
-      },
-      "dependsOn": ["^build"]
+      }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
@@ -28,25 +36,32 @@
       "options": {
         "config": "examples/plugins/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
-      },
-      "dependsOn": ["^build"]
+      }
     },
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "build",
+        "^build",
+        { "projects": ["cli"], "target": "build" }
+      ]
     },
     "run-print-config": {
       "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": ["^build"]
-    },
-    "run-print-config": {
-      "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "build",
+        "^build",
+        { "projects": ["cli"], "target": "build" }
+      ]
     },
     "run-help": {
       "command": "npx dist/packages/cli help --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "build",
+        "^build",
+        { "projects": ["cli"], "target": "build" }
+      ]
     }
   },
-  "tags": []
+  "tags": ["scope:internal", "type:feature"]
 }

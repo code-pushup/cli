@@ -1,5 +1,5 @@
-import { spawn } from 'child_process';
-import { calcDuration } from './report';
+import { spawn } from 'node:child_process';
+import { calcDuration } from './reports/utils';
 
 /**
  * Represents the process result.

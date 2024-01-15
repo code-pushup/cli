@@ -11,8 +11,7 @@ import {
 } from '@code-pushup/models';
 import {
   getProgressBar,
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
+  groupByStatus,
   logMultipleResults,
 } from '@code-pushup/utils';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
@@ -118,51 +117,46 @@ export async function executePlugins(
   plugins: PluginConfig[],
   options?: { progress: boolean },
 ): Promise<PluginReport[]> {
-  const { progress = false } = options || {};
+  const { progress = false } = options ?? {};
 
-  const progressName = 'Run Plugins';
-  const progressBar = progress ? getProgressBar(progressName) : null;
+  const progressBar = progress ? getProgressBar('Run plugins') : null;
 
   const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
-    const outputs = await acc;
-
-    progressBar?.updateTitle(`Executing  ${chalk.bold(pluginCfg.title)}`);
+    progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
 
     try {
       const pluginReport = await executePlugin(pluginCfg);
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat(Promise.resolve(pluginReport));
-    } catch (e: unknown) {
+      return [...(await acc), Promise.resolve(pluginReport)];
+    } catch (error) {
       progressBar?.incrementInSteps(plugins.length);
-      return outputs.concat(
-        Promise.reject(e instanceof Error ? e.message : String(e)),
-      );
+      return [
+        ...(await acc),
+        Promise.reject(error instanceof Error ? error.message : String(error)),
+      ];
     }
   }, Promise.resolve([] as Promise<PluginReport>[]));
 
   progressBar?.endProgress('Done running plugins');
 
-  const errorsCallback = ({ reason }: PromiseRejectedResult) =>
+  const errorsCallback = ({ reason }: PromiseRejectedResult) => {
     console.error(reason);
+  };
   const results = await Promise.allSettled(pluginsResult);
 
   logMultipleResults(results, 'Plugins', undefined, errorsCallback);
 
-  // TODO: add groupBy method for promiseSettledResult by status, #287
-
-  const failedResults = results.filter(isPromiseRejectedResult);
-  if (failedResults.length) {
-    const errorMessages = failedResults
-      .map(({ reason }: PromiseRejectedResult) => reason)
+  const { fulfilled, rejected } = groupByStatus(results);
+  if (rejected.length > 0) {
+    const errorMessages = rejected
+      .map(({ reason }) => String(reason))
       .join(', ');
     throw new Error(
-      `Plugins failed: ${failedResults.length} errors: ${errorMessages}`,
+      `Plugins failed: ${rejected.length} errors: ${errorMessages}`,
     );
   }
 
-  return results
-    .filter(isPromiseFulfilledResult)
-    .map((result: PromiseFulfilledResult<PluginReport>) => result.value);
+  return fulfilled.map(result => result.value);
 }
 
 function auditOutputsCorrelateWithPluginOutput(

@@ -179,12 +179,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Build CLI and ESLint plugin
-        run: npx nx run-many -t build -p cli,plugin-eslint --parallel=2
       - name: Collect Code PushUp report
-        run: npx dist/packages/cli --config code-pushup.config.ts collect
+        run: npx nx run-collect
       - name: Upload Code PushUp report to portal
-        run: npx dist/packages/cli --config code-pushup.config.ts upload
+        run: npx nx run-upload
       - name: Save report files as workflow artifact
         uses: actions/upload-artifact@v3
         with:

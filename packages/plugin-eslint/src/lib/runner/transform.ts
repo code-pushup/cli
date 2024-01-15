@@ -6,6 +6,7 @@ import {
   countOccurrences,
   objectToEntries,
   pluralizeToken,
+  truncateIssueMessage,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
@@ -60,7 +61,7 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
 
 function convertIssue(issue: LintIssue): Issue {
   return {
-    message: issue.message,
+    message: truncateIssueMessage(issue.message),
     severity: convertSeverity(issue.severity),
     source: {
       file: issue.relativeFilePath,

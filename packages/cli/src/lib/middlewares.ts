@@ -1,6 +1,6 @@
 import { MiddlewareFunction } from 'yargs';
-import { configMiddleware } from './implementation/config-middleware';
+import { coreConfigMiddleware } from './implementation/core-config.middleware';
 
 export const middlewares = [
-  { middlewareFunction: configMiddleware as unknown as MiddlewareFunction },
+  { middlewareFunction: coreConfigMiddleware as unknown as MiddlewareFunction },
 ];

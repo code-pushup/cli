@@ -35,7 +35,7 @@ describe('pluralize', () => {
 describe('formatBytes', () => {
   it.each([
     [0, '0 B'],
-    [1_000, '1000 B'],
+    [1000, '1000 B'],
     [10_000, '9.77 kB'],
     [10_000_000, '9.54 MB'],
     [10_000_000_000, '9.31 GB'],
@@ -46,7 +46,7 @@ describe('formatBytes', () => {
   });
 
   it('should log file sizes correctly with correct decimal', () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 kB');
+    expect(formatBytes(10_000, 1)).toBe('9.8 kB');
   });
 });
 

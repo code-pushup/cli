@@ -1,0 +1,124 @@
+import { describe, expect, it } from 'vitest';
+import {
+  AuditOutput,
+  AuditOutputs,
+  auditOutputSchema,
+  auditOutputsSchema,
+} from './audit-output';
+
+describe('auditOutputSchema', () => {
+  it('should accept a valid audit output without details', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'cypress-e2e-test-results',
+        score: 0.8,
+        value: 80,
+        displayValue: '80 %',
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
+  it('should accept a valid audit output with details', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'speed-index',
+        score: 0.3,
+        value: 4500,
+        displayValue: '4.5 s',
+        details: {
+          issues: [
+            {
+              message: 'The progress chart was blocked for 4 seconds.',
+              severity: 'info',
+            },
+          ],
+        },
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
+  it('should throw for a negative value', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'speed-index',
+        score: 1,
+        value: -100,
+      } satisfies AuditOutput),
+    ).toThrow('too_small');
+  });
+
+  it('should throw for a score outside 0-1 range', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'maximum-layout-shift',
+        score: 9,
+        value: 90,
+      } satisfies AuditOutput),
+    ).toThrow('too_big');
+  });
+
+  it('should throw for a missing score', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'total-blocking-time',
+        value: 2500,
+      }),
+    ).toThrow('invalid_type');
+  });
+
+  it('should throw for an invalid slug', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'Lighthouse',
+        value: 2500,
+      }),
+    ).toThrow('slug has to follow the pattern');
+  });
+});
+
+describe('auditOutputsSchema', () => {
+  it('should accept a valid audit output array', () => {
+    expect(() =>
+      auditOutputsSchema.parse([
+        {
+          slug: 'total-blocking-time',
+          value: 2500,
+          score: 0.8,
+        },
+        {
+          slug: 'speed-index',
+          score: 1,
+          value: 250,
+        },
+      ] satisfies AuditOutputs),
+    ).not.toThrow();
+  });
+
+  it('should accept an empty output array', () => {
+    expect(() =>
+      auditOutputsSchema.parse([] satisfies AuditOutputs),
+    ).not.toThrow();
+  });
+
+  it('should throw for duplicate outputs', () => {
+    expect(() =>
+      auditOutputsSchema.parse([
+        {
+          slug: 'total-blocking-time',
+          value: 2500,
+          score: 0.8,
+        },
+        {
+          slug: 'speed-index',
+          score: 1,
+          value: 250,
+        },
+        {
+          slug: 'total-blocking-time',
+          value: 4300,
+          score: 0.75,
+        },
+      ] satisfies AuditOutputs),
+    ).toThrow('slugs are not unique: total-blocking-time');
+  });
+});

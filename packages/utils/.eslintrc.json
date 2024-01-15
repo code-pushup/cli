@@ -14,32 +14,29 @@
     "@typescript-eslint/naming-convention": "off", // 8 warnings
     "@typescript-eslint/no-floating-promises": "off", // 2 errors
     "@typescript-eslint/no-shadow": "off", // 8 warnings
-    "@typescript-eslint/no-unnecessary-condition": "off", // 25 warnings
+    "@typescript-eslint/no-unnecessary-condition": "off", // 18 warnings
     "@typescript-eslint/no-unnecessary-type-assertion": "off", // 1 error
     "@typescript-eslint/no-unsafe-argument": "off", // 1 error
     "@typescript-eslint/no-unsafe-assignment": "off", // 15 errors
-    "@typescript-eslint/no-unsafe-call": "off", // 8 errors
+    "@typescript-eslint/no-unsafe-call": "off", // 2 errors
     "@typescript-eslint/no-unsafe-member-access": "off", // 12 errors
     "@typescript-eslint/no-unsafe-return": "off", // 13 errors
     "@typescript-eslint/prefer-nullish-coalescing": "off", // 11 warnings
-    "@typescript-eslint/require-await": "off", // 23 warnings
     "@typescript-eslint/restrict-plus-operands": "off", // 1 error
     "@typescript-eslint/restrict-template-expressions": "off", // 2 errors
-    "functional/immutable-data": "off", // 22 errors, 4 warnings
+    "functional/immutable-data": "off", // 25 errors
     "functional/no-let": "off", // 12 warnings
     "import/no-cycle": "off", // 2 errors
     "import/no-named-as-default": "off", // 2 warnings
     "import/no-useless-path-segments": "off", // 1 warning
     "sonarjs/cognitive-complexity": "off", // 1 error
     "sonarjs/no-duplicate-string": "off", // 1 warning
-    "unicorn/better-regex": "off", // 2 warnings
     "unicorn/consistent-destructuring": "off", // 31 warnings
     "unicorn/explicit-length-check": "off", // 2 warnings
     "unicorn/import-style": "off", // 3 warnings
     "unicorn/no-negated-condition": "off", // 1 warning
     "unicorn/no-new-array": "off", // 6 warnings
     "unicorn/numeric-separators-style": "off", // 12 warnings
-    "unicorn/prefer-node-protocol": "off", // 7 warnings
     "unicorn/prefer-number-properties": "off", // 4 warnings
     "unicorn/prefer-spread": "off", // 7 warnings
     "unicorn/prefer-ternary": "off" // 1 warning

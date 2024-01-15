@@ -7,7 +7,7 @@ import {
   crawlFileSystem,
   readJsonFile,
   readTextFile,
-} from '../../../../../dist/packages/utils';
+} from '@code-pushup/utils';
 import { pluginSlug } from './constants';
 import {
   RequiredDependencies,

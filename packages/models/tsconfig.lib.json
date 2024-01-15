@@ -11,6 +11,6 @@
     "vite.config.integration.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
-    "test/**/*.ts"
+    "mocks/**/*.ts"
   ]
 }

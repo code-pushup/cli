@@ -36,7 +36,7 @@ describe('executeRunnerConfig', () => {
     const runnerResult = await executeRunnerConfig(MINIMAL_RUNNER_CONFIG_MOCK);
 
     // data sanity
-    expect(runnerResult.audits[0]?.slug).toBe('node-version');
+    expect((runnerResult.audits as AuditOutputs)[0]?.slug).toBe('node-version');
     expect(runnerResult.date).toMatch(ISO_STRING_REGEXP);
     expect(runnerResult.duration).toBeGreaterThanOrEqual(0);
 
@@ -49,20 +49,20 @@ describe('executeRunnerConfig', () => {
       command: 'node',
       args: ['-v'],
       outputFile: 'output.json',
-      outputTransform: (outputs: unknown): Promise<AuditOutputs> => {
-        return Promise.resolve([
+      outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
+        Promise.resolve([
           {
             slug: (outputs as AuditOutputs)[0]!.slug,
             score: 0.3,
             value: 16,
             displayValue: '16.0.0',
           },
-        ]);
-      },
+        ]),
     });
+    const auditOutputs = runnerResult.audits as AuditOutputs;
 
-    expect(runnerResult.audits[0]?.slug).toBe('node-version');
-    expect(runnerResult.audits[0]?.displayValue).toBe('16.0.0');
+    expect(auditOutputs[0]?.slug).toBe('node-version');
+    expect(auditOutputs[0]?.displayValue).toBe('16.0.0');
   });
 
   it('should throw if outputTransform throws', async () => {
@@ -71,11 +71,8 @@ describe('executeRunnerConfig', () => {
         command: 'node',
         args: ['-v'],
         outputFile: 'output.json',
-        outputTransform: () => {
-          return Promise.reject(
-            new Error('Error: outputTransform has failed.'),
-          );
-        },
+        outputTransform: () =>
+          Promise.reject(new Error('Error: outputTransform has failed.')),
       }),
     ).rejects.toThrow('Error: outputTransform has failed.');
   });
@@ -86,9 +83,10 @@ describe('executeRunnerFunction', () => {
     const runnerResult: RunnerResult = await executeRunnerFunction(
       MINIMAL_RUNNER_FUNCTION_MOCK,
     );
+    const auditOutputs = runnerResult.audits as AuditOutputs;
 
-    expect(runnerResult.audits[0]?.slug).toBe('node-version');
-    expect(runnerResult.audits[0]?.details?.issues).toEqual([
+    expect(auditOutputs[0]?.slug).toBe('node-version');
+    expect(auditOutputs[0]?.details?.issues).toEqual([
       expect.objectContaining({
         message: 'The required Node version to run Code PushUp CLI is 18.',
       }),
