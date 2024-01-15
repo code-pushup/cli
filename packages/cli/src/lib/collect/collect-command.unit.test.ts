@@ -92,16 +92,6 @@ describe('collect-command', () => {
       ],
       {
         ...DEFAULT_CLI_CONFIGURATION,
-        middlewares: [
-          {
-            middlewareFunction: coreConfigMiddleware,
-            applyBeforeValidation: true,
-          },
-          {
-            middlewareFunction: onlyPluginsMiddleware,
-            applyBeforeValidation: false,
-          },
-        ],
         commands: [yargsCollectCommandObject()],
       },
     ).parseAsync();
