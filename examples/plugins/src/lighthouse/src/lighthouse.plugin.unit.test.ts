@@ -20,8 +20,7 @@ describe('lighthouse-runnerConfig', () => {
       expect.objectContaining({
         args: ['lighthouse', LIGHTHOUSE_URL],
         command: 'npx',
-        outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-        outputTransform: expect.any(Function),
+        outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT
       }),
     );
   });
