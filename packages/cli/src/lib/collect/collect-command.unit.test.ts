@@ -4,8 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectAndPersistReports } from '@code-pushup/core';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { coreConfigMiddleware } from '../implementation/core-config.middleware';
-import { onlyPluginsMiddleware } from '../implementation/only-plugins.middleware';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
 
