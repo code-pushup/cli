@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { ZodObject, ZodOptional, ZodString, z } from 'zod';
 import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import {
   MAX_DESCRIPTION_LENGTH,
@@ -134,22 +134,24 @@ export function positiveIntSchema(description: string) {
   return z.number({ description }).int().nonnegative();
 }
 
-export function packageVersionSchema(options?: {
+export function packageVersionSchema<TRequired extends boolean>(options?: {
   versionDescription?: string;
-  optional?: boolean;
+  required?: TRequired;
 }) {
-  let { versionDescription, optional } = options || {};
-  versionDescription = versionDescription || 'NPM version of the package';
-  optional = !!optional;
+  const { versionDescription = 'NPM version of the package', required } =
+    options ?? {};
   const packageSchema = z.string({ description: 'NPM package name' });
   const versionSchema = z.string({ description: versionDescription });
   return z.object(
     {
-      packageName: optional ? packageSchema.optional() : packageSchema,
-      version: optional ? versionSchema.optional() : versionSchema,
+      packageName: required ? packageSchema : packageSchema.optional(),
+      version: required ? versionSchema : versionSchema.optional(),
     },
     { description: 'NPM package name and version of a published package' },
-  );
+  ) as ZodObject<{
+    packageName: TRequired extends true ? ZodString : ZodOptional<ZodString>;
+    version: TRequired extends true ? ZodString : ZodOptional<ZodString>;
+  }>;
 }
 
 /**

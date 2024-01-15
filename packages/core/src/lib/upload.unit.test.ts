@@ -1,9 +1,9 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import { MEMFS_VOLUME } from '@code-pushup/models/testing';
 import {
   ISO_STRING_REGEXP,
+  MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
 import { upload } from './upload';

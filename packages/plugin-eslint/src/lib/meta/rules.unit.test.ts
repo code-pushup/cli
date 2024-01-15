@@ -1,6 +1,6 @@
 import { ESLint } from 'eslint';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { SpyInstance } from 'vitest';
 import { RuleData, listRules, parseRuleId } from './rules';
 

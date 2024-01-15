@@ -1,12 +1,11 @@
 import {
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from './src';
-import fileSizePlugin, {
-  recommendedRefs as fileSizeRecommendedRefs,
-} from './src/file-size/src/file-size.plugin';
+} from '../../dist/examples/plugins';
 import {
   create as lighthousePlugin, //  recommendedRefs as lighthouseRecommendedRefs,
 } from './src/lighthouse/src/lighthouse.plugin';
@@ -20,8 +19,7 @@ import {
  *
  */
 
-// eslint-disable-next-line unicorn/no-unreadable-iife
-const config = (() => ({
+const config = {
   plugins: [
     fileSizePlugin({
       directory: './dist/packages',
@@ -67,6 +65,6 @@ const config = (() => ({
       refs: [packageJsonDocumentationGroupRef],
     },
   ],
-}))();
+};
 
 export default config;

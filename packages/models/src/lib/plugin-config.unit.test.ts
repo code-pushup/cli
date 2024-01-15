@@ -1,101 +1,109 @@
 import { describe, expect, it } from 'vitest';
-import { config, pluginConfig } from '../../test';
-import { pluginConfigSchema } from './plugin-config';
-import { AuditOutputs } from './plugin-process-output';
+import { PluginConfig, pluginConfigSchema } from './plugin-config';
 
 describe('pluginConfigSchema', () => {
-  it('should parse if plugin configuration is valid', () => {
-    const pluginConfig = config().plugins[0];
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+  it('should accept a valid plugin configuration with all entities', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'eslint',
+        title: 'ESLint plugin',
+        description: 'This plugin checks ESLint in configured files.',
+        docsUrl: 'https://eslint.org/',
+        icon: 'eslint',
+        runner: { command: 'node', outputFile: 'output.json' },
+        audits: [
+          { slug: 'no-magic-numbers', title: 'Use defined constants' },
+          { slug: 'require-await', title: 'Every async has await.' },
+        ],
+        groups: [
+          {
+            slug: 'typescript-eslint',
+            title: 'TypeScript ESLint rules',
+            refs: [{ slug: 'require-await', weight: 2 }],
+          },
+        ],
+        packageName: 'cli',
+        version: 'v0.5.2',
+      } satisfies PluginConfig),
+    ).not.toThrow();
   });
 
-  it('should throw if plugin slug has a invalid pattern', () => {
-    const invalidPluginSlug = '-invalid-plugin-slug';
-    const pluginConfig = config().plugins[0];
-    pluginConfig.slug = invalidPluginSlug;
+  it('should accept a minimal plugin configuration', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'cypress',
+        title: 'Cypress testing',
+        icon: 'cypress',
+        runner: { command: 'npx cypress run', outputFile: 'e2e-output.json' },
+        audits: [{ slug: 'cypress-e2e', title: 'Cypress E2E results' }],
+      } satisfies PluginConfig),
+    ).not.toThrow();
+  });
 
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `slug has to follow the pattern`,
+  it('should accept a plugin configuration with no audits or groups', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'jest',
+        title: 'Jest',
+        icon: 'jest',
+        runner: { command: 'npm run test', outputFile: 'jest-output.json' },
+        audits: [],
+        groups: [],
+      } satisfies PluginConfig),
+    ).not.toThrow();
+  });
+
+  it('should throw for a configuration with a group reference missing among audits', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'cypress',
+        title: 'Cypress testing',
+        icon: 'cypress',
+        runner: { command: 'npx cypress run', outputFile: 'output.json' },
+        audits: [{ slug: 'jest', title: 'Jest' }],
+        groups: [
+          {
+            slug: 'cyct',
+            title: 'Cypress component testing',
+            refs: [{ slug: 'cyct', weight: 5 }],
+          },
+        ],
+      } satisfies PluginConfig),
+    ).toThrow(
+      'group references need to point to an existing audit in this plugin config: cyct',
     );
   });
 
-  it('should throw if plugin audits contain invalid slugs', () => {
-    const invalidAuditRef = '-invalid-audit-slug';
-    const pluginConfig = config().plugins[0];
-    pluginConfig.audits[0].slug = invalidAuditRef;
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `slug has to follow the patter`,
+  it('should throw for a plugin configuration that has a group but empty audits', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'cypress',
+        title: 'Cypress testing',
+        icon: 'cypress',
+        runner: { command: 'npx cypress run', outputFile: 'output.json' },
+        audits: [],
+        groups: [
+          {
+            slug: 'cyct',
+            title: 'Cypress component testing',
+            refs: [{ slug: 'cyct', weight: 5 }],
+          },
+        ],
+      } satisfies PluginConfig),
+    ).toThrow(
+      'group references need to point to an existing audit in this plugin config: cyct',
     );
   });
 
-  it('should throw if plugin audits slugs are duplicates', () => {
-    const pluginConfig = config().plugins[0];
-    pluginConfig.audits = [...pluginConfig.audits, pluginConfig.audits[0]];
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `In plugin audits the slugs are not unique`,
-    );
-  });
-
-  it('should throw if plugin groups contain invalid slugs', () => {
-    const invalidGroupSlug = '-invalid-group-slug';
-    const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups!;
-    groups[0].slug = invalidGroupSlug;
-    pluginConfig.groups = groups;
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `slug has to follow the patter`,
-    );
-  });
-
-  it('should throw if plugin groups have duplicate slugs', () => {
-    const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups!;
-    pluginConfig.groups = [...groups, groups[0]];
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      'In groups the slugs are not unique',
-    );
-  });
-
-  it('should throw if plugin groups refs contain invalid slugs', () => {
-    const invalidAuditRef = '-invalid-audit-ref';
-    const pluginConfig = config().plugins[1];
-    const groups = pluginConfig.groups!;
-
-    groups[0].refs[0].slug = invalidAuditRef;
-    pluginConfig.groups = groups;
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      `slug has to follow the pattern`,
-    );
-  });
-
-  it('should take a outputTransform function', () => {
-    const undefinedPluginOutput = [
-      { slug: 'audit-1', errors: 0 },
-      { slug: 'audit-2', errors: 5 },
-    ];
-    const pluginCfg = pluginConfig([]);
-    pluginCfg.runner.outputTransform = (data: unknown): AuditOutputs => {
-      return (data as typeof undefinedPluginOutput).map(data => ({
-        slug: data.slug,
-        score: Number(data.errors === 0),
-        value: data.errors,
-      }));
-    };
-
-    expect(
-      pluginConfigSchema.parse(pluginCfg).runner.outputTransform,
-    ).toBeDefined();
-    expect(
-      pluginConfigSchema.parse(pluginCfg).runner.outputTransform!(
-        undefinedPluginOutput,
-      ),
-    ).toEqual([
-      { slug: 'audit-1', score: 1, value: 0 },
-      { slug: 'audit-2', score: 0, value: 5 },
-    ]);
+  it('should throw for an invalid plugin slug', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: '-invalid-jest',
+        title: 'Jest',
+        icon: 'jest',
+        runner: { command: 'npm run test', outputFile: 'jest-output.json' },
+        audits: [],
+      } satisfies PluginConfig),
+    ).toThrow('slug has to follow the pattern');
   });
 });

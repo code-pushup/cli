@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import chalk from 'chalk';
 import yargs, {
   Argv,
@@ -6,7 +7,8 @@ import yargs, {
   Options,
   ParserConfigurationOptions,
 } from 'yargs';
-import { logErrorBeforeThrow } from './implementation/utils';
+import { PersistConfig, formatSchema } from '@code-pushup/models';
+import { logErrorBeforeThrow } from './implementation/global.utils';
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -31,10 +33,9 @@ export function yargsCli<T = unknown>(
   },
 ): Argv<T> {
   const { usageMessage, scriptName, noExitProcess } = cfg;
-  let { commands, options, middlewares } = cfg;
-  commands = Array.isArray(commands) ? commands : [];
-  middlewares = Array.isArray(middlewares) ? middlewares : [];
-  options = options || {};
+  const commands = cfg.commands ?? [];
+  const middlewares = cfg.middlewares ?? [];
+  const options = cfg.options ?? {};
   const cli = yargs(argv);
 
   // setup yargs
@@ -42,16 +43,16 @@ export function yargsCli<T = unknown>(
     .help()
     .version(false)
     .alias('h', 'help')
+    .check(args => {
+      const persist = args['persist'] as PersistConfig | undefined;
+      return persist == null || validatePersistFormat(persist);
+    })
     .parserConfiguration({
       'strip-dashed': true,
     } satisfies Partial<ParserConfigurationOptions>)
-    .array('persist.format')
-    .coerce('config', (config: string | string[]) => {
-      if (Array.isArray(config)) {
-        return config[config.length - 1];
-      }
-      return config;
-    })
+    .coerce('config', (config: string | string[]) =>
+      Array.isArray(config) ? config.at(-1) : config,
+    )
     .options(options);
 
   // usage message
@@ -76,9 +77,7 @@ export function yargsCli<T = unknown>(
   commands.forEach(commandObj => {
     cli.command({
       ...commandObj,
-      ...(commandObj.handler && {
-        handler: logErrorBeforeThrow(commandObj.handler),
-      }),
+      handler: logErrorBeforeThrow(commandObj.handler),
       ...(typeof commandObj.builder === 'function' && {
         builder: logErrorBeforeThrow(commandObj.builder),
       }),
@@ -94,4 +93,19 @@ export function yargsCli<T = unknown>(
 
   // return CLI object
   return cli as unknown as Argv<T>;
+}
+
+function validatePersistFormat(persist: PersistConfig) {
+  try {
+    if (persist?.format != null) {
+      persist.format.forEach(format => formatSchema.parse(format));
+    }
+    return true;
+  } catch {
+    throw new Error(
+      `Invalid persist.format option. Valid options are: ${Object.values(
+        formatSchema.Values,
+      ).join(', ')}`,
+    );
+  }
 }

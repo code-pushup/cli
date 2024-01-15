@@ -3,16 +3,8 @@ import {
   objectToCliArgs,
   toArray,
   verboseUtils,
-} from '../../../../../dist/packages/utils';
-import {
-  AuditOutput,
-  AuditOutputs,
-  Issue,
-  MAX_ISSUE_MESSAGE_LENGTH,
-  PluginConfig,
-  RunnerConfig,
-  PluginReport
-} from '../../../../../packages/models/src';
+} from '@code-pushup/utils';
+import { AuditOutput, AuditOutputs, Issue, MAX_ISSUE_MESSAGE_LENGTH, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import {
   audits,
   categoryPerfGroup,
@@ -78,7 +70,7 @@ export function create(options: LighthouseOptions): PluginConfig {
 }
 
 function runnerConfig(options: LighthouseOptions): RunnerConfig {
-  const {log} = verboseUtils(options?.verbose);
+  const {log} = verboseUtils(options.verbose);
   const {outputFile = lighthouseReportName} = options;
   log(
     `Run npx ${getLighthouseCliArguments({...options, outputFile}).join(
@@ -89,9 +81,7 @@ function runnerConfig(options: LighthouseOptions): RunnerConfig {
     command: 'npx',
     args: getLighthouseCliArguments({...options, outputFile}),
     outputFile,
-    outputTransform: (lighthouseOutput: unknown) => {
-      return lhrToAuditOutputs(lighthouseOutput as Result);
-    },
+    outputTransform: (lighthouseOutput: unknown) => lhrToAuditOutputs(lighthouseOutput as Result),
   } satisfies RunnerConfig;
 }
 
@@ -117,7 +107,7 @@ function getLighthouseCliArguments(options: LighthouseOptions): string[] {
     });
   }
 
-  if (onlyAudits.length) {
+  if (onlyAudits.length > 0) {
     return objectToCliArgs({
       ...argsObj,
       onlyAudits: toArray(onlyAudits).join(','),
@@ -195,19 +185,4 @@ function lhrDetailsToIssueDetails(
   }
 
   return null;
-}
-
-function codePushupAuditReportToLhrAudit(
-  audit = {} as unknown as PluginReport['audits'][number],
-): Result['audits'][string] {
-  const {slug, score, value, displayValue, description = '', docsUrl = '', title} = audit;
-  return {
-    id: slug,
-    numericValue: value,
-    displayValue,
-    score,
-    scoreDisplayMode: "numeric",
-    description: `${description} ${docsUrl}`,
-    title,
-  } satisfies Result['audits'][string];
 }

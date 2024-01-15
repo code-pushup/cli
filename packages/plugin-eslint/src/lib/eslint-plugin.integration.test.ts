@@ -1,6 +1,6 @@
-import os from 'os';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import os from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { SpyInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';

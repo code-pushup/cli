@@ -53,8 +53,8 @@ describe('create', () => {
     expect(pluginConfig).toEqual({
       audits,
       description:
-        'A plugin to measure and assert filesize of files in a directory.',
-      icon: 'javascript',
+        'A plugin to measure and assert size of files in a directory.',
+      icon: 'folder-javascript',
       runner: expect.any(Function),
       slug,
       title: 'File Size',
@@ -65,7 +65,7 @@ describe('create', () => {
     const pluginConfig = create(baseOptions);
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
       description:
-        'A plugin to measure and assert filesize of files in a directory.',
+        'A plugin to measure and assert size of files in a directory.',
       slug,
       title: 'File Size',
       duration: expect.any(Number),

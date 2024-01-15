@@ -1,12 +1,10 @@
 {
   "extends": ["../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": ["!**/*", "code-pushup.config.ts"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@nx/enforce-module-boundaries": ["off"]
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],
@@ -16,11 +14,12 @@
       "rules": {}
     },
     {
-      "files": ["*.test.ts", "*.test.tsx"],
+      "files": ["*.test.ts", "*.test.tsx", "*.generated.ts", "*.generated.tsx"],
       "parserOptions": {
         "project": ["examples/plugins/tsconfig.*?.json"]
       },
       "rules": {
+        "no-magic-numbers": "off",
         "max-lines": "off"
       }
     },
