@@ -13,7 +13,7 @@ export function filterPluginsByOnlyPluginsOption(
 
 // skip the whole category if it has at least one skipped plugin ref
 // see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
-export function filterCategoryByOnlyPluginsOption(
+export function filterCategoryByPlugins(
   categories: CoreConfig['categories'],
   {
     onlyPlugins,

@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { CoreConfig } from '@code-pushup/models';
 import {
-  filterCategoryByOnlyPluginsOption,
+  filterCategoryByPlugins,
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
@@ -34,10 +34,10 @@ describe('filterPluginsByOnlyPluginsOption', () => {
   });
 });
 
-describe('filterCategoryByOnlyPluginsOption', () => {
+describe('filterCategoryByPlugins', () => {
   it('should return all categories if no onlyPlugins option', () => {
     expect(
-      filterCategoryByOnlyPluginsOption(
+      filterCategoryByPlugins(
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
@@ -52,7 +52,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
 
   it('should return categories containing only defined plugins', () => {
     expect(
-      filterCategoryByOnlyPluginsOption(
+      filterCategoryByPlugins(
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
@@ -63,7 +63,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
   });
 
   it('should print ignored category and its first violating plugin', () => {
-    filterCategoryByOnlyPluginsOption(
+    filterCategoryByPlugins(
       [
         {
           title: 'category1',

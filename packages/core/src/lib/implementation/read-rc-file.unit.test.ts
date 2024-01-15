@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'path';
+import { join } from 'node:path';
 import { describe, expect } from 'vitest';
 import { CONFIG_FILE_NAME } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';

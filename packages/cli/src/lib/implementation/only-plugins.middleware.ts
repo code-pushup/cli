@@ -1,12 +1,12 @@
 import { CoreConfig } from '@code-pushup/models';
 import { GeneralCliOptions, OnlyPluginsOptions } from './model';
 import {
-  filterCategoryByOnlyPluginsOption,
+  filterCategoryByPlugins,
   filterPluginsByOnlyPluginsOption,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
 
-export async function onlyPluginsMiddleware<
+export function onlyPluginsMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
 >(processArgs: T) {
   const args = processArgs;
@@ -20,10 +20,7 @@ export async function onlyPluginsMiddleware<
     {
       ...cliOptions,
       plugins: filterPluginsByOnlyPluginsOption(cliOptions.plugins, cliOptions),
-      categories: filterCategoryByOnlyPluginsOption(
-        cliOptions.categories,
-        cliOptions,
-      ),
+      categories: filterCategoryByPlugins(cliOptions.categories, cliOptions),
     };
 
   return parsedProcessArgs;

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { categoryConfig } from '../../test/fixtures/categories.mock';
 import {
   CategoryConfig,
   CategoryRef,

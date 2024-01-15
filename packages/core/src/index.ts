@@ -1,3 +1,4 @@
+export { readCodePushupConfig } from './lib/implementation/read-code-pushup-config';
 export {
   persistReport,
   PersistError,
