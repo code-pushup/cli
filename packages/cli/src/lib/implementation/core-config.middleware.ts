@@ -1,6 +1,7 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import { CoreConfig } from '@code-pushup/models';
-import { GeneralCliOptions, OnlyPluginsOptions } from './model';
+import { GeneralCliOptions } from './global.model';
+import { OnlyPluginsOptions } from './only-plugins.model';
 
 export async function coreConfigMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
