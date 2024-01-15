@@ -57,10 +57,8 @@ export type LighthouseCliOptions = Omit<
  *
  */
 export function create(options: PluginOptions): PluginConfig {
-  const {
-    onlyAudits: onlyAuditsOption = [],
-    headless: headlessOption = false,
-  } = options;
+  const { onlyAudits: onlyAuditsOption = [], headless: headlessOption = true } =
+    options;
   const onlyAudits = toArray(onlyAuditsOption);
   const headless = headlessOption ? ('new' as const) : false;
 
