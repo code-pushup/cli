@@ -1,5 +1,5 @@
 import { Options } from 'yargs';
-import { coerceArray } from './utils';
+import { coerceArray } from './global.utils';
 
 export const onlyPluginsOption: Options = {
   describe: 'List of plugins to run. If not set all plugins are run.',
