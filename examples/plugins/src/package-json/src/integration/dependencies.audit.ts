@@ -1,8 +1,5 @@
 import { Audit, AuditOutput, Issue } from '@code-pushup/models';
-import {
-  factorOf,
-  findLineNumberInText,
-} from '../../../../../../dist/packages/utils';
+import { factorOf, findLineNumberInText } from '@code-pushup/utils';
 import {
   DependencyMap,
   DependencyType,

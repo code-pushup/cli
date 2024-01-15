@@ -1,7 +1,42 @@
 {
   "name": "@code-pushup/cli-source",
-  "version": "0.5.0",
+  "version": "0.8.15",
   "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-pushup/cli.git"
+  },
+  "contributors": [
+    {
+      "name": "Igor Katsuba",
+      "email": "igor@katsuba.dev",
+      "url": "https://katsuba.dev"
+    },
+    {
+      "name": "Kateřina Pilátová",
+      "email": "katerina.pilatova@flowup.cz",
+      "url": "https://github.com/Tlacenka"
+    },
+    {
+      "name": "Matěj Chalk",
+      "email": "matej.chalk@flowup.cz",
+      "url": "https://github.com/matejchalk"
+    },
+    {
+      "name": "Michael Hladky",
+      "email": "michael.hladky@push-based.io",
+      "url": "https://push-based.io"
+    },
+    {
+      "name": "Michael Seredenko",
+      "email": "misha.seredenko@push-based.io",
+      "url": "https://github.com/MishaSeredenkoPushBased"
+    }
+  ],
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz"
@@ -11,7 +46,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.1.2",
+    "@code-pushup/portal-client": "^0.3.0",
     "@isaacs/cliui": "^8.0.2",
     "@swc/helpers": "0.5.3",
     "bundle-require": "^4.0.1",
@@ -23,7 +58,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@code-pushup/eslint-config": "^0.1.2",
+    "@code-pushup/eslint-config": "^0.2.1",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^18.4.3",
@@ -65,7 +100,6 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-n": "^16.3.1",
-    "eslint-plugin-no-secrets": "^0.8.9",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",

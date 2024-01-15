@@ -1,9 +1,9 @@
 import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports } from '@code-pushup/core';
-import { MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
@@ -17,17 +17,15 @@ vi.mock('@code-pushup/core', async () => {
 });
 
 describe('autorun-command', () => {
-  beforeEach(() => {
+  it('should call collect and upload with correct parameters', async () => {
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
         'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
-      '/test',
+      MEMFS_VOLUME,
     );
-  });
 
-  it('should call collect and upload with correct parameters', async () => {
     await yargsCli(
       [
         'autorun',

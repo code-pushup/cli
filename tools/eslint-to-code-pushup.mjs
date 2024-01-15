@@ -32,7 +32,7 @@ for (let i = 0; i < projects.length; i++) {
   const options = project.targets.lint.options;
 
   const eslintrc = options.eslintConfig ?? `${project.root}/.eslintrc.json`;
-  const patterns = options.lintFilePatterns;
+  const patterns = options.lintFilePatterns ?? project.root;
 
   console.info(
     `Processing Nx ${project.projectType ?? 'project'} "${project.name}" (${

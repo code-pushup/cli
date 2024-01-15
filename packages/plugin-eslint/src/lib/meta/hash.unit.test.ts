@@ -56,6 +56,6 @@ describe('jsonHash', () => {
   ])('should produce short hexadecimal hash for rule options: %j', options => {
     const hash = jsonHash(options);
     expect(hash).toHaveLength(16);
-    expect(hash).toMatch(/^[0-9a-f]+$/);
+    expect(hash).toMatch(/^[\da-f]+$/);
   });
 });

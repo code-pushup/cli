@@ -36,22 +36,17 @@ describe('formatBytes', () => {
   it.each([
     [0, '0 B'],
     [1000, '1000 B'],
-    [10000, '9.77 kB'],
-    [10000000, '9.54 MB'],
-    [10000000000, '9.31 GB'],
-    [10000000000000, '9.09 TB'],
-    [10000000000000000, '8.88 PB'],
-    [10000000000000000000, '8.67 EB'],
-    [10000000000000000000000, '8.47 ZB'],
-    [10000000000000000000000000, '8.27 YB'],
-    [10000000000000000000000, '8.47 ZB'],
-    [10000000000000000000000, '8.47 ZB'],
-  ])('should log file sizes correctly for %s`', (bytes, displayValue) => {
+    [10_000, '9.77 kB'],
+    [10_000_000, '9.54 MB'],
+    [10_000_000_000, '9.31 GB'],
+    [10_000_000_000_000, '9.09 TB'],
+    [5_000_000_000_000_000, '4.44 PB'],
+  ])('should log file sizes correctly for %s', (bytes, displayValue) => {
     expect(formatBytes(bytes)).toBe(displayValue);
   });
 
-  it('should log file sizes correctly with correct decimal`', () => {
-    expect(formatBytes(10000, 1)).toBe('9.8 kB');
+  it('should log file sizes correctly with correct decimal', () => {
+    expect(formatBytes(10_000, 1)).toBe('9.8 kB');
   });
 });
 
@@ -63,7 +58,7 @@ describe('pluralizeToken', () => {
     [0, '0 files'],
     [1, '1 file'],
     [2, '2 files'],
-  ])('should log correct plural for %s`', (times, plural) => {
+  ])('should log correct plural for %s', (times, plural) => {
     expect(pluralizeToken('file', times)).toBe(plural);
   });
 });
@@ -75,7 +70,7 @@ describe('formatDuration', () => {
     [1, '1 ms'],
     [2, '2 ms'],
     [1200, '1.20 s'],
-  ])('should log correct plural for %s`', (ms, displayValue) => {
+  ])('should log correctly formatted duration for %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
   });
 });

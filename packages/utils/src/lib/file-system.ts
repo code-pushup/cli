@@ -1,7 +1,7 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
-import { mkdir, readFile, readdir, stat } from 'fs/promises';
-import { join } from 'path';
+import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
 
@@ -24,17 +24,13 @@ export async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-export function toUnixPath(
-  path: string,
-  options?: { toRelative?: boolean },
-): string {
-  const unixPath = path.replace(/\\/g, '/');
-
-  if (options?.toRelative) {
-    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+export async function directoryExists(path: string): Promise<boolean> {
+  try {
+    const stats = await stat(path);
+    return stats.isDirectory();
+  } catch {
+    return false;
   }
-
-  return unixPath;
 }
 
 export async function ensureDirectoryExists(baseDir: string) {
@@ -77,25 +73,21 @@ export function logMultipleFileResults(
 
 export class NoExportError extends Error {
   constructor(filepath: string) {
-    super(`No export found in ${filepath}`);
+    super(`No default export found in ${filepath}`);
   }
 }
 
-export async function importEsmModule<T = unknown>(
-  options: Options,
-  parse?: (d: unknown) => T,
-) {
-  parse = parse || (v => v as T);
-  options = {
+export async function importEsmModule(options: Options): Promise<unknown> {
+  const { mod } = await bundleRequire({
     format: 'esm',
     ...options,
-  };
+  });
 
-  const { mod } = await bundleRequire(options);
-  if (mod.default === undefined) {
+  if (!('default' in mod)) {
     throw new NoExportError(options.filepath);
   }
-  return parse(mod.default);
+
+  return mod.default;
 }
 
 export function pluginWorkDir(slug: string): string {

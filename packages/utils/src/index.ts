@@ -1,17 +1,16 @@
 export {
-  CliArgsObject,
   ProcessConfig,
   ProcessError,
   ProcessObserver,
   ProcessResult,
   executeProcess,
-  objectToCliArgs,
 } from './lib/execute-process';
 export {
+  CrawlFileSystemOptions,
   FileResult,
   MultipleFileResults,
-  CrawlFileSystemOptions,
   crawlFileSystem,
+  directoryExists,
   ensureDirectoryExists,
   fileExists,
   findLineNumberInText,
@@ -20,7 +19,6 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
-  toUnixPath,
 } from './lib/file-system';
 export {
   formatBytes,
@@ -29,6 +27,7 @@ export {
   pluralizeToken,
   slugify,
   truncateDescription,
+  truncateIssueMessage,
   truncateText,
   truncateTitle,
 } from './lib/formatting';
@@ -40,13 +39,17 @@ export {
   guardAgainstDirtyRepo,
   GitTag,
 } from './lib/git';
+export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { NEW_LINE } from './lib/md';
 export { ProgressBar, getProgressBar } from './lib/progress';
+export { generateMdReport } from './lib/reports/generate-md-report';
+export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
+export { ScoredReport, scoreReport } from './lib/reports/scoring';
+export { sortReport } from './lib/reports/sorting';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -55,16 +58,16 @@ export {
   calcDuration,
   compareIssueSeverity,
   loadReport,
-} from './lib/report';
-export { reportToMd } from './lib/report-to-md';
-export { reportToStdout } from './lib/report-to-stdout';
-export { ScoredReport, scoreReport } from './lib/scoring';
+} from './lib/reports/utils';
 export {
+  CliArgsObject,
   countOccurrences,
   distinct,
   factorOf,
+  objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
-} from './lib/transformation';
+  toUnixPath,
+} from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';

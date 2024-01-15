@@ -13,7 +13,7 @@ import {
   formatBytes,
   pluralizeToken,
   toUnixPath,
-} from '../../../../../dist/packages/utils';
+} from '@code-pushup/utils';
 
 export type PluginOptions = {
   directory: string;
@@ -31,7 +31,7 @@ export const auditsMap = {
     slug: fileSizeAuditSlug,
     title: 'File Size Audit - Unmodified',
     description:
-      'An audit to check JavaScript file size in a directory. The files are not modified and takes as they are.',
+      'An audit to check JavaScript file size in a directory. The files are not modified and taken as they are.',
   },
 };
 export const audits = Object.values(auditsMap);
@@ -80,9 +80,8 @@ export function create(options: PluginOptions): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'File Size',
-    icon: 'javascript',
-    description:
-      'A plugin to measure and assert filesize of files in a directory.',
+    icon: 'folder-javascript',
+    description: 'A plugin to measure and assert size of files in a directory.',
     runner: () => runnerFunction(options),
     audits,
   };
@@ -137,7 +136,7 @@ export function fileSizeIssues(options: {
     directory,
     pattern,
     fileTransform: async (file: string) => {
-      // get file size of file
+      // get size of file
       // const filePath = join(directory, file);
       const stats = await stat(file);
 

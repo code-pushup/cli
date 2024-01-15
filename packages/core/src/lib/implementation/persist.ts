@@ -1,14 +1,15 @@
-import { existsSync, mkdirSync } from 'fs';
-import { stat, writeFile } from 'fs/promises';
-import { join } from 'path';
-import { CoreConfig, Report } from '@code-pushup/models';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { PersistConfig, Report } from '@code-pushup/models';
 import {
   MultipleFileResults,
+  directoryExists,
+  generateMdReport,
+  generateStdoutSummary,
   getLatestCommit,
   logMultipleFileResults,
-  reportToMd,
-//  reportToStdout,
   scoreReport,
+  sortReport,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -25,59 +26,69 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
-  config: CoreConfig,
+  options: Required<PersistConfig>,
 ): Promise<MultipleFileResults> {
-  const { persist } = config;
-  const outputDir = persist.outputDir;
-  const filename = persist.filename;
-  const format = persist.format ?? [];
+  const { outputDir, filename, format } = options;
 
-  let scoredReport = scoreReport(report);
-  //console.info(reportToStdout(scoredReport));
+  const sortedScoredReport = sortReport(scoreReport(report));
+  console.info(generateStdoutSummary(sortedScoredReport));
 
   // collect physical format outputs
-  const results: { format: string; content: string }[] = [
-    // JSON is always persisted
-    { format: 'json', content: JSON.stringify(report, null, 2) },
-  ];
+  const results = await Promise.all(
+    format.map(async reportType => {
+      switch (reportType) {
+        case 'json':
+          return {
+            format: 'json',
+            content: JSON.stringify(report, null, 2),
+          };
+        case 'md':
+          const commitData = await getLatestCommit();
+          validateCommitData(commitData);
+          return {
+            format: 'md',
+            content: generateMdReport(sortedScoredReport, commitData),
+          };
+      }
+    }),
+  );
 
-  if (format.includes('md')) {
-    scoredReport = scoredReport || scoreReport(report);
-    const commitData = await getLatestCommit();
-    if (!commitData) {
-      console.warn('no commit data available');
-    }
-    results.push({
-      format: 'md',
-      content: reportToMd(scoredReport, commitData),
-    });
-  }
-
-  if (!existsSync(outputDir)) {
+  if (!(await directoryExists(outputDir))) {
     try {
-      mkdirSync(outputDir, { recursive: true });
-    } catch (e) {
-      console.warn(e);
+      await mkdir(outputDir, { recursive: true });
+    } catch (error) {
+      console.warn(error);
       throw new PersistDirError(outputDir);
     }
   }
 
   // write relevant format outputs to file system
   return Promise.allSettled(
-    results.map(({ format, content }) => {
-      const reportPath = join(outputDir, `${filename}.${format}`);
+    results.map(result =>
+      persistResult(
+        join(outputDir, `${filename}.${result.format}`),
+        result.content,
+      ),
+    ),
+  );
+}
 
-      return (
-        writeFile(reportPath, content)
-          // return reportPath instead of void
-          .then(() => stat(reportPath))
-          .then(stats => [reportPath, stats.size] as const)
-          .catch(e => {
-            console.warn(e);
-            throw new PersistError(reportPath);
-          })
-      );
-    }),
+function validateCommitData(commitData?: unknown) {
+  if (!commitData) {
+    console.warn('no commit data available');
+  }
+}
+
+async function persistResult(reportPath: string, content: string) {
+  return (
+    writeFile(reportPath, content)
+      // return reportPath instead of void
+      .then(() => stat(reportPath))
+      .then(stats => [reportPath, stats.size] as const)
+      .catch(error => {
+        console.warn(error);
+        throw new PersistError(reportPath);
+      })
   );
 }
 

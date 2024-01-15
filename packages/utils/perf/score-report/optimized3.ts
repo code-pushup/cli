@@ -1,4 +1,4 @@
-import { AuditGroupRef, CategoryRef, Report } from '@code-pushup/models';
+import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
 
 export function calculateScore<T extends { weight: number }>(
@@ -47,7 +47,7 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
       allScoredAuditsAndGroups.set(key, audit);
     });
 
-    function groupScoreFn(ref: AuditGroupRef) {
+    function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
         `${plugin.slug}-${ref.slug}-audit`,
       )?.score;

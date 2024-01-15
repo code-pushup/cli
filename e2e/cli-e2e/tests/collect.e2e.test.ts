@@ -65,12 +65,7 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'code-pushup',
-      args: [
-        'collect',
-        '--verbose',
-        '--persist.format=stdout',
-        '--no-progress',
-      ],
+      args: ['collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -78,8 +73,7 @@ describe('CLI collect', () => {
     expect(stderr).toBe('');
 
     expect(stdout).toContain('Code PushUp Report');
-    expect(stdout).toContain('Generated reports');
-    expect(stdout).toContain('report.json');
+    expect(stdout).not.toContain('Generated reports');
     expect(stdout).toContain(exampleCategoryTitle);
     expect(stdout).toContain(exampleAuditTitle);
   }, 120000);

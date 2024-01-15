@@ -6,6 +6,7 @@ import {
   countOccurrences,
   objectToEntries,
   pluralizeToken,
+  truncateIssueMessage,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
@@ -41,10 +42,12 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
   const severityCounts = countOccurrences(
     auditIssues.map(({ severity }) => severity),
   );
-  const summaryText = objectToEntries(severityCounts)
+  const severities = objectToEntries(severityCounts);
+  const summaryText = severities
     .sort((a, b) => -compareIssueSeverity(a[0], b[0]))
     .map(([severity, count = 0]) => pluralizeToken(severity, count))
     .join(', ');
+
   return {
     slug,
     score: Number(auditIssues.length === 0),
@@ -58,7 +61,7 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
 
 function convertIssue(issue: LintIssue): Issue {
   return {
-    message: issue.message,
+    message: truncateIssueMessage(issue.message),
     severity: convertSeverity(issue.severity),
     source: {
       file: issue.relativeFilePath,

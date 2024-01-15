@@ -34,8 +34,6 @@ describe('filterPluginsByOnlyPluginsOption', () => {
   });
 });
 
-// without the `no-secrets` rule, this would be flagged as a security issue
-// eslint-disable-next-line no-secrets/no-secrets
 describe('filterCategoryByOnlyPluginsOption', () => {
   it('should return all categories if no onlyPlugins option', () => {
     expect(
@@ -75,6 +73,7 @@ describe('filterCategoryByOnlyPluginsOption', () => {
       ] as CoreConfig['categories'],
       {
         onlyPlugins: ['plugin1', 'plugin3'],
+        verbose: true,
       },
     );
     expect(console.info).toHaveBeenCalledWith(
@@ -92,6 +91,7 @@ describe('validateOnlyPluginsOption', () => {
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
       {
         onlyPlugins: ['plugin1', 'plugin3', 'plugin4'],
+        verbose: true,
       },
     );
     expect(console.warn).toHaveBeenCalledWith(
@@ -106,6 +106,7 @@ describe('validateOnlyPluginsOption', () => {
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
       {
         onlyPlugins: ['plugin1'],
+        verbose: true,
       },
     );
     expect(console.warn).not.toHaveBeenCalled();

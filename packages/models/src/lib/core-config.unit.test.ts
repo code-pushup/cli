@@ -1,55 +1,158 @@
 import { describe, expect, it } from 'vitest';
-import { config } from '../../test';
-import { coreConfigSchema } from './core-config';
+import { CoreConfig, coreConfigSchema } from './core-config';
 
-/*
- - plugin slug: es-lint
- - audit slug: no-any
- - group slug: basics
-   - audit: no-any
- - category: best-practices
-
- - from category to audit: es-lint#no-any
- - from category to group: es-lint#group:basics
-  */
-describe('CoreConfig', () => {
-  it('should parse if configuration is valid', () => {
-    const coreConfig = config();
-    expect(() => coreConfigSchema.parse(coreConfig)).not.toThrow();
+describe('coreConfigSchema', () => {
+  it('should accept a valid core configuration with all entities', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        categories: [
+          {
+            slug: 'test-results',
+            title: 'Test results',
+            refs: [
+              {
+                plugin: 'jest',
+                slug: 'unit-tests',
+                type: 'group',
+                weight: 1,
+              },
+            ],
+          },
+        ],
+        plugins: [
+          {
+            slug: 'jest',
+            title: 'Jest',
+            icon: 'jest',
+            runner: { command: 'npm run test', outputFile: 'jest-output.json' },
+            audits: [{ slug: 'jest-unit-tests', title: 'Jest unit tests.' }],
+            groups: [
+              {
+                slug: 'unit-tests',
+                title: 'Unit tests',
+                refs: [{ slug: 'jest-unit-tests', weight: 2 }],
+              },
+            ],
+          },
+        ],
+        persist: { format: ['md'] },
+        upload: {
+          apiKey: 'AP7-K3Y',
+          organization: 'code-pushup',
+          project: 'cli',
+          server: 'https://api.code-pushup.org',
+        },
+      } satisfies CoreConfig),
+    ).not.toThrow();
   });
 
-  it('should throw if the category slugs are not unique', () => {
-    const coreConfig = config();
-    const duplicatedSlug = coreConfig.categories[0].slug;
-    coreConfig.categories = [
-      ...coreConfig.categories,
-      coreConfig.categories[0],
-    ];
-    expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
-      `In the categories, the following slugs are duplicated: ${duplicatedSlug}`,
+  it('should accept a minimal core configuration', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug prevention',
+            refs: [
+              {
+                plugin: 'eslint',
+                slug: 'no-magic-numbers',
+                type: 'audit',
+                weight: 1,
+              },
+            ],
+          },
+        ],
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'ESLint',
+            icon: 'eslint',
+            runner: { command: 'npm run lint', outputFile: 'output.json' },
+            audits: [{ slug: 'no-magic-numbers', title: 'No magic numbers.' }],
+          },
+        ],
+      } satisfies CoreConfig),
+    ).not.toThrow();
+  });
+
+  it('should throw for a category reference not found in audits', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug prevention',
+            refs: [
+              {
+                plugin: 'vitest',
+                slug: 'unit-tests',
+                type: 'audit',
+                weight: 1,
+              },
+            ],
+          },
+        ],
+        plugins: [
+          {
+            slug: 'jest',
+            title: 'Jest',
+            icon: 'jest',
+            runner: { command: 'npm run test', outputFile: 'output.json' },
+            audits: [{ slug: 'unit-tests', title: 'Jest unit tests.' }],
+          },
+        ],
+      } satisfies CoreConfig),
+    ).toThrow(
+      'category references need to point to an audit or group: vitest/unit-tests',
     );
   });
 
-  it('should throw if ref in a category does not exist in audits', () => {
-    const coreConfig = config();
-    const ref = coreConfig.categories[1].refs[0];
-    const pluginSlug = ref.plugin;
-
-    const missingAuditSlug = 'missing-audit-ref';
-    ref.slug = missingAuditSlug;
-    expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
-      `In the categories, the following plugin refs do not exist in the provided plugins: ${pluginSlug}/${missingAuditSlug}`,
+  it('should throw for a category reference not found in groups', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug prevention',
+            refs: [
+              {
+                plugin: 'eslint',
+                slug: 'eslint-errors',
+                type: 'group',
+                weight: 1,
+              },
+            ],
+          },
+        ],
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'ESLint',
+            icon: 'eslint',
+            runner: { command: 'npm run lint', outputFile: 'output.json' },
+            audits: [{ slug: 'eslint-errors', title: 'ESLint errors.' }],
+            groups: [
+              {
+                slug: 'eslint-suggestions',
+                title: 'ESLint suggestions',
+                refs: [{ slug: 'eslint-errors', weight: 1 }],
+              },
+            ],
+          },
+        ],
+      } satisfies CoreConfig),
+    ).toThrow(
+      'category references need to point to an audit or group: eslint#eslint-errors (group)',
     );
   });
 
-  it('should throw if ref in a category does not exist in groups', () => {
-    const coreConfig = config();
-    const categoryConfig = coreConfig.categories[0];
-    const ref = { ...categoryConfig.refs[0], slug: 'missing-slug' };
-    coreConfig.categories[1].refs.push(ref);
-
-    expect(() => coreConfigSchema.parse(coreConfig)).toThrow(
-      `In the categories, the following plugin refs do not exist in the provided plugins: lighthouse#missing-slug (group)`,
-    );
+  it('should throw for an empty core configuration', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        categories: [],
+        plugins: [],
+      }),
+    ).toThrow('too_small');
   });
 });

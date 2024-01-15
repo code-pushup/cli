@@ -1,4 +1,4 @@
-import type { AuditGroup } from '@code-pushup/models';
+import type { Group } from '@code-pushup/models';
 import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
 import type { RuleData } from './rules';
 
@@ -121,7 +121,7 @@ const eslintRules: RuleData[] = [
 
 describe('groupsFromRuleTypes', () => {
   it("should create groups based on rules' meta.type", () => {
-    expect(groupsFromRuleTypes(eslintRules)).toEqual<AuditGroup[]>([
+    expect(groupsFromRuleTypes(eslintRules)).toEqual<Group[]>([
       {
         slug: 'problems',
         title: 'Problems',
@@ -148,7 +148,7 @@ describe('groupsFromRuleTypes', () => {
 
 describe('groupsFromRuleCategories', () => {
   it("should create groups based on rules' meta.docs.category", () => {
-    expect(groupsFromRuleCategories(eslintRules)).toEqual<AuditGroup[]>([
+    expect(groupsFromRuleCategories(eslintRules)).toEqual<Group[]>([
       {
         slug: 'react-best-practices',
         title: 'Best Practices (react)',

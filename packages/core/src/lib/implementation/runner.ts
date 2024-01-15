@@ -1,16 +1,11 @@
-import { join } from 'path';
-import {
-  AuditOutputs,
-  OnProgress,
-  RunnerConfig,
-  RunnerFunction,
-} from '@code-pushup/models';
+import { join } from 'node:path';
+import { OnProgress, RunnerConfig, RunnerFunction } from '@code-pushup/models';
 import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
   duration: number;
-  audits: AuditOutputs;
+  audits: unknown;
 };
 
 export async function executeRunnerConfig(
@@ -27,14 +22,10 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  let audits = await readJsonFile<AuditOutputs>(
-    join(process.cwd(), outputFile),
-  );
+  const outputs = await readJsonFile(join(process.cwd(), outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
-  if (outputTransform) {
-    audits = await outputTransform(audits);
-  }
+  const audits = outputTransform ? await outputTransform(outputs) : outputs;
 
   // create runner result
   return {

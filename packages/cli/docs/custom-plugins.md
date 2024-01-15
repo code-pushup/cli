@@ -501,21 +501,21 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 
 ### Audit groups
 
-As an optional property a plugin can maintain `groups` as an array of [`AuditGroup`s](@TODO).
+As an optional property a plugin can maintain `groups` as an array of [`Group`s](@TODO).
 While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting plugins within a plugin.
 For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
 
 An audit group maintains:
 
-- metadata about the group [AuditGroupMeta](@TODO)
-- a list of referenced audits under `refs` as [AuditGroupRef](@TODO) array
+- metadata about the group [GroupMeta](@TODO)
+- a list of referenced audits under `refs` as [GroupRef](@TODO) array
 
 The minimum information of an audit group looks like this:
 
 ```typescript
-import { AuditGroup } from '@code-pushup/models';
+import { Group } from '@code-pushup/models';
 
-const myAuditGroup: AuditGroup = {
+const myGroup: Group = {
   slug: 'performance',
   refs: [
     {

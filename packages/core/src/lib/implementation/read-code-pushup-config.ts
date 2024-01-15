@@ -7,19 +7,12 @@ export class ConfigPathError extends Error {
   }
 }
 
-export async function readCodePushupConfig(filepath: string) {
-  if (!filepath.length) {
-    throw new Error('The configuration path is empty.');
-  }
-
+export async function readCodePushupConfig(
+  filepath: string,
+): Promise<CoreConfig> {
   if (!(await fileExists(filepath))) {
     throw new ConfigPathError(filepath);
   }
 
-  return importEsmModule<CoreConfig>(
-    {
-      filepath,
-    },
-    coreConfigSchema.parse,
-  );
+  return coreConfigSchema.parse(await importEsmModule({ filepath }));
 }

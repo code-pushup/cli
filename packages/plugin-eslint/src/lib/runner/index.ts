@@ -1,6 +1,6 @@
-import { mkdir, writeFile } from 'fs/promises';
-import { platform } from 'os';
-import { dirname, join } from 'path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { platform } from 'node:os';
+import { dirname, join } from 'node:path';
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
 import { pluginWorkDir, readJsonFile, toArray } from '@code-pushup/utils';
 import { lint } from './lint';
@@ -38,6 +38,7 @@ export async function executeRunner(argv = process.argv): Promise<void> {
         slug,
         score: 1,
         value: 0,
+        displayValue: 'passed',
         details: { issues: [] },
       },
   );

@@ -1,13 +1,12 @@
 import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 import {
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from './src';
-import fileSizePlugin, {
-  recommendedRefs as fileSizeRecommendedRefs,
-} from './src/file-size/src/file-size.plugin';
+} from '../../dist/examples/plugins';
 
 /**
  * Run it with:
@@ -63,6 +62,6 @@ const config = (() => ({
       refs: [...fileSizeRecommendedRefs],
     },
   ],
-}))();
+};
 
 export default config;

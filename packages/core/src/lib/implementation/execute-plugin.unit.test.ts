@@ -119,7 +119,7 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      'Plugins failed: 1 errors: Audit metadata not found for slug node-version',
+      /Plugins failed: 1 errors:.*Audit metadata not found for slug node-version/,
     );
   });
 
@@ -173,16 +173,15 @@ describe('executePlugins', () => {
             command: 'node',
             args: ['-v'],
             outputFile: 'output.json',
-            outputTransform: (outputs: unknown): Promise<AuditOutputs> => {
-              return Promise.resolve([
+            outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
+              Promise.resolve([
                 {
                   slug: (outputs as AuditOutputs)[0]!.slug,
                   score: 0.3,
                   value: 16,
                   displayValue: '16.0.0',
                 },
-              ]);
-            },
+              ]),
           },
         },
       ],

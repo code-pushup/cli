@@ -1,10 +1,6 @@
 import chalk from 'chalk';
 import { CommandModule } from 'yargs';
-import {
-  HistoryOptions,
-  UploadOptions,
-  history,
-} from '@code-pushup/core';
+import { HistoryOptions, UploadOptions, history } from '@code-pushup/core';
 import {
   getCurrentBranchOrTag,
   git,

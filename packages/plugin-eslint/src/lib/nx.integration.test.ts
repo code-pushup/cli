@@ -1,6 +1,6 @@
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot } from 'nx/src/utils/workspace-root';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 import type { SpyInstance } from 'vitest';
 import { ESLintPluginConfig } from './config';
 import { eslintConfigFromNxProject, eslintConfigFromNxProjects } from './nx';
