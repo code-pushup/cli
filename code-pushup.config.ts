@@ -6,11 +6,15 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
+  lighthousePlugin,
+  lighthouseRecommendedRefs,
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT
 } from './dist/examples/plugins';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
+import {join} from "node:path";
 
 // load upload configuration from environment
 const envSchema = z
@@ -56,6 +60,11 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
+
+    lighthousePlugin({
+      url: 'https://quality-metrics-staging.web.app/login',
+      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+    }),
   ],
 
   categories: [
@@ -69,6 +78,13 @@ const config: CoreConfig = {
       title: 'Code style',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [
+        ...lighthouseRecommendedRefs,
       ],
     },
     {
