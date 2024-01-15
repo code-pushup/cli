@@ -8,7 +8,7 @@ import {
   CoreConfigCliOptions,
   PersistConfigCliOptions,
   UploadConfigCliOptions,
-} from './model';
+} from './core-config.model';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
   keyof CoreConfigCliOptions,

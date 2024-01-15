@@ -1,11 +1,7 @@
 import { readCodePushupConfig } from '@code-pushup/core';
 import { CoreConfig } from '@code-pushup/models';
 import { GeneralCliOptions, OnlyPluginsOptions } from './model';
-import {
-  filterCategoryByPlugins,
-  filterPluginsByOnlyPluginsOption,
-  validateOnlyPluginsOption,
-} from './only-plugins.utils';
+import { validateOnlyPluginsOption } from './only-plugins.utils';
 
 export async function configMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
@@ -21,8 +17,7 @@ export async function configMiddleware<
   const parsedProcessArgs: CoreConfig & GeneralCliOptions & OnlyPluginsOptions =
     {
       config,
-      progress: cliOptions.progress,
-      verbose: cliOptions.verbose,
+      ...cliOptions,
       upload: {
         ...importedRc.upload,
         ...cliOptions.upload,
@@ -31,9 +26,6 @@ export async function configMiddleware<
         ...importedRc.persist,
         ...cliOptions.persist,
       },
-      plugins: filterPluginsByOnlyPluginsOption(importedRc.plugins, cliOptions),
-      categories: filterCategoryByPlugins(importedRc.categories, cliOptions),
-      onlyPlugins: cliOptions.onlyPlugins,
     };
 
   return parsedProcessArgs;

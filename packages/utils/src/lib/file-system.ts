@@ -79,7 +79,6 @@ export class NoExportError extends Error {
 
 export async function importEsmModule<T = unknown>(
   options: Options,
-  parseFn?: (mod: unknown) => T,
 ): Promise<T> {
   const { mod } = await bundleRequire({
     format: 'esm',
@@ -90,7 +89,7 @@ export async function importEsmModule<T = unknown>(
     throw new NoExportError(options.filepath);
   }
 
-  return parseFn ? parseFn(mod.default) : mod.default;
+  return mod.default;
 }
 
 export function pluginWorkDir(slug: string): string {
