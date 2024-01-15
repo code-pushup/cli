@@ -1,5 +1,6 @@
 import { CoreConfig } from '@code-pushup/models';
-import { GeneralCliOptions, OnlyPluginsOptions } from './model';
+import { GeneralCliOptions } from './global.model';
+import { OnlyPluginsOptions } from './only-plugins.model';
 import {
   filterCategoryByPlugins,
   filterPluginsByOnlyPluginsOption,
