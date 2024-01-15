@@ -13,7 +13,18 @@ describe('runnerConfig', () => {
   };
 
   it('should execute if url is given', () => {
-    expect(runnerConfig(baseOptions)).toEqual([lcpAuditOutputBase]);
+    expect(runnerConfig(baseOptions)).toEqual({
+      args: [
+        "lighthouse",
+          "https://example.com",
+          "--no-verbose",
+          "--output=\"json\"",
+          "--output-path=\".code-pushup/lighthouse-report.json\"",
+        ],
+      command: "npx",
+      outputFile: "lighthouse-report.json",
+      outputTransform: expect.any(Function),
+    });
   });
 
   it('should run only audits included in given onlyAudits', () => {
@@ -22,11 +33,20 @@ describe('runnerConfig', () => {
         ...baseOptions,
         onlyAudits: [lcpAuditOutputBase.slug],
       }),
-    ).toEqual([
+    ).toEqual(
       expect.objectContaining({
-        slug: lcpAuditOutputBase.slug,
-        value: 0,
+        args: [
+          "lighthouse",
+          "https://example.com",
+          "--no-verbose",
+          "--output=\"json\"",
+          "--output-path=\".code-pushup/lighthouse-report.json\"",
+          `--onlyAudits="${lcpAuditOutputBase.slug}"`
+        ],
+        command: "npx",
+        outputFile: "lighthouse-report.json",
+        outputTransform: expect.any(Function),
       }),
-    ]);
+    );
   });
 });

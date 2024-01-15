@@ -110,7 +110,7 @@
     "inquirer": "^8.2.6",
     "jsdom": "~22.1.0",
     "jsonc": "^2.0.0",
-    "lighthouse": "^11.4.0",
+    "lighthouse": "^11.0.0",
     "memfs": "^4.5.0",
     "moment": "^2.29.4",
     "ngx-deploy-npm": "^7.1.0",
