@@ -9,9 +9,10 @@ The plugin analyses a given URL and creates a lighthouse audits.
 You can configure the plugin with the following options:
 
 - `url` - target to crawl
-- `onlyAudits` - list of audits to run;
-- `verbose` - boolean;
-- `headless` - boolean;
+- `outputPath` - path to lighthouse report in json format _(optional)_
+- `onlyAudits` - list of audits to run _(optional)_
+- `verbose` - additional information _(optional)_
+- `headless` - run headless _(optional)_
 
 ## Getting started
 
@@ -24,7 +25,8 @@ You can configure the plugin with the following options:
    Pass in the path on the directory to crawl (relative to `process.cwd()`), as well as patterns and a budget.
 
    ```js
-   import fileSizePlugin from './lighthouse.plugin';
+   import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './lighthouse-plugin.constants';
+   import lighthousePlugin from './lighthouse.plugin';
 
    export default {
      // ...
@@ -32,6 +34,7 @@ You can configure the plugin with the following options:
        // ...
        lighthousePlugin({
          url: 'https://example.com',
+         outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
        }),
      ],
    };

@@ -1,5 +1,4 @@
 import Result from 'lighthouse/types/lhr/lhr';
-import { join } from 'node:path';
 import {
   AuditOutput,
   AuditOutputs,
@@ -9,6 +8,7 @@ import {
   RunnerConfig,
 } from '@code-pushup/models';
 import { objectToCliArgs, toArray, verboseUtils } from '@code-pushup/utils';
+import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
 import {
   audits,
   categoryPerfGroup,
@@ -18,13 +18,18 @@ import {
 
 export type PluginOptions = {
   url: string;
+  outputPath?: string;
   onlyAudits?: string | string[];
   verbose?: boolean;
-  headless?: boolean | 'new';
+  headless?: boolean;
 };
 
-export type LighthouseCliOptions = PluginOptions & {
-  outputFile: string;
+export type LighthouseCliOptions = Omit<
+  PluginOptions,
+  'headless' | 'onlyAudits'
+> & {
+  headless?: boolean | 'new';
+  onlyAudits?: string[];
 };
 
 /**
@@ -52,41 +57,53 @@ export type LighthouseCliOptions = PluginOptions & {
  *
  */
 export function create(options: PluginOptions): PluginConfig {
-  const { onlyAudits = [] } = options;
+  const {
+    onlyAudits: onlyAuditsOption = [],
+    headless: headlessOption = false,
+  } = options;
+  const onlyAudits = toArray(onlyAuditsOption);
+  const headless = headlessOption ? ('new' as const) : false;
+
+  // @TODO don't fail collect if the result does not contain all listed audits => debug DX for plugin authors
+  const groupsRefs =
+    onlyAudits.length === 0
+      ? categoryPerfGroup.refs
+      : categoryPerfGroup.refs.filter(({ slug }) => onlyAudits.includes(slug));
+
+  if (groupsRefs.length === 0) {
+    throw new Error(`audits ${onlyAudits.join(', ')} unknown`);
+  }
+
   return {
     slug: pluginSlug,
     title: 'Lighthouse',
     icon: 'lighthouse',
     description: 'Chrome lighthouse CLI as code-pushup plugin',
-    runner: runnerConfig(options),
+    runner: runnerConfig({
+      ...options,
+      onlyAudits,
+      headless,
+    }),
     audits,
     groups: [
       {
         ...categoryPerfGroup,
-        // @TODO don't fail collect if the result does not contain all listed audits
-        refs:
-          onlyAudits.length === 0
-            ? categoryPerfGroup.refs
-            : categoryPerfGroup.refs.filter(({ slug }) =>
-                onlyAudits.includes(slug),
-              ),
+        refs: groupsRefs,
       },
     ],
   };
 }
 
-export function runnerConfig(options: PluginOptions): RunnerConfig {
+export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
   const { log } = verboseUtils(options.verbose);
-  const outputFile = lighthouseReportName;
-  log(
-    `Run npx ${getLighthouseCliArguments({ ...options, outputFile }).join(
-      ' ',
-    )}`,
-  );
+  const outputPath = options.outputPath ?? LIGHTHOUSE_OUTPUT_FILE_DEFAULT;
+  const cliOptions = { ...options, outputPath };
+  log(`Run npx ${getLighthouseCliArguments(cliOptions).join(' ')}`);
+
   return {
     command: 'npx',
-    args: getLighthouseCliArguments({ ...options, outputFile }),
-    outputFile,
+    args: getLighthouseCliArguments(cliOptions),
+    outputFile: outputPath,
     outputTransform: (lighthouseOutput: unknown) =>
       lhrToAuditOutputs(lighthouseOutput as Result),
   } satisfies RunnerConfig;
@@ -95,7 +112,7 @@ export function runnerConfig(options: PluginOptions): RunnerConfig {
 function getLighthouseCliArguments(options: LighthouseCliOptions): string[] {
   const {
     url,
-    outputFile = lighthouseReportName,
+    outputPath = lighthouseReportName,
     onlyAudits = [],
     verbose = false,
     headless = false,
@@ -104,7 +121,7 @@ function getLighthouseCliArguments(options: LighthouseCliOptions): string[] {
     _: ['lighthouse', url],
     verbose,
     output: 'json',
-    'output-path': join('.code-pushup', outputFile),
+    'output-path': outputPath,
   };
 
   if (headless) {

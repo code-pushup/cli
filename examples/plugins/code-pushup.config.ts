@@ -1,14 +1,15 @@
+import { join } from 'node:path';
 import {
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthousePlugin,
+  lighthouseRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from '../../dist/examples/plugins';
-import {
-  create as lighthousePlugin, //  recommendedRefs as lighthouseRecommendedRefs,
-} from './src/lighthouse/src/lighthouse.plugin';
 
 /**
  * Run it with:
@@ -36,7 +37,9 @@ const config = {
       },
     }),
     lighthousePlugin({
-      url: 'https://example.com',
+      url: 'https://quality-metrics-staging.web.app/login',
+      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      onlyAudits: ['metrics'],
     }),
   ],
   categories: [
@@ -46,12 +49,7 @@ const config = {
       refs: [
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
-        {
-          plugin: 'lighthouse',
-          slug: 'largest-contentful-paint',
-          type: 'audit',
-          weight: 1,
-        },
+        ...lighthouseRecommendedRefs,
       ],
     },
     {

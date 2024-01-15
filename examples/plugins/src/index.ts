@@ -11,3 +11,8 @@ export {
   performanceGroupRef as packageJsonPerformanceGroupRef,
 } from './package-json/src/scoring';
 export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
+export {
+  create as lighthousePlugin,
+  recommendedRefs as lighthouseRecommendedRefs,
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+} from './lighthouse/src/index';

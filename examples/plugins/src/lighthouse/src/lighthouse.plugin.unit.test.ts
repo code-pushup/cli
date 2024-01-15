@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { PluginOptions, runnerConfig } from './lighthouse.plugin';
+import { LIGHTHOUSE_URL } from '../mock/constants';
+import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
+import { LighthouseCliOptions, runnerConfig } from './lighthouse.plugin';
 
-describe('runnerConfig', () => {
-  const baseOptions: PluginOptions = {
-    url: 'https://example.com',
+describe('lighthouse-runnerConfig', () => {
+  const baseOptions: LighthouseCliOptions = {
+    url: LIGHTHOUSE_URL,
   };
   const lcpAuditOutputBase = {
     displayValue: expect.stringContaining('sec'),
@@ -15,14 +17,14 @@ describe('runnerConfig', () => {
   it('should execute if url is given', () => {
     expect(runnerConfig(baseOptions)).toEqual({
       args: [
-        "lighthouse",
-          "https://example.com",
-          "--no-verbose",
-          "--output=\"json\"",
-          "--output-path=\".code-pushup/lighthouse-report.json\"",
-        ],
-      command: "npx",
-      outputFile: "lighthouse-report.json",
+        'lighthouse',
+        LIGHTHOUSE_URL,
+        '--no-verbose',
+        '--output="json"',
+        `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
+      ],
+      command: 'npx',
+      outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
       outputTransform: expect.any(Function),
     });
   });
@@ -36,15 +38,15 @@ describe('runnerConfig', () => {
     ).toEqual(
       expect.objectContaining({
         args: [
-          "lighthouse",
-          "https://example.com",
-          "--no-verbose",
-          "--output=\"json\"",
-          "--output-path=\".code-pushup/lighthouse-report.json\"",
-          `--onlyAudits="${lcpAuditOutputBase.slug}"`
+          'lighthouse',
+          LIGHTHOUSE_URL,
+          '--no-verbose',
+          '--output="json"',
+          `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
+          `--onlyAudits="${lcpAuditOutputBase.slug}"`,
         ],
-        command: "npx",
-        outputFile: "lighthouse-report.json",
+        command: 'npx',
+        outputFile: 'lighthouse-report.json',
         outputTransform: expect.any(Function),
       }),
     );
