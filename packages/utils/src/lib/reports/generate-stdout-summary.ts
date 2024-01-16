@@ -79,9 +79,9 @@ function reportToOverviewSection({
   output += addLine();
 
   const table = new Table({
-    colWidths: [null, 8, 8],
+    colWidths: [51, 8, 8],
     head: reportRawOverviewTableHeaders,
-    colAligns: ['left', 'right', 'right'],
+    colAligns: ['left', 'right', 'left'],
     style: {
       head: ['cyan'],
     },

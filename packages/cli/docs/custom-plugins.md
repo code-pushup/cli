@@ -1,14 +1,14 @@
 # Integrating a custom plugin in the CLI
 
-One of the main features of Code PushUp is the ability to write custom plugins and track your own metrics.
-It enables you to implement nearly any kind of metric you want to track progress with minimum effort.
+One of the main features of Code PushUp is the ability to track your own metrics by writing custom plugins.
+It enables you to implement any kind of metric you want to track progress with minimum effort.
 In this section we will go through the steps needed to create a custom plugin and integrate it in your project.
 
 ## Set up the core config
 
-To start crafting custom plugins you need a minimum `code-pushup.config.(ts|js|mjs)` file maintaining a `plugins` property.
-All plugins are registered in a core configuration object and can take potential options to configure its behaviour.
-The following example shows where to register the plugin:
+All plugins are registered in a core configuration, also allowing for further configuration of the plugins behavior.
+Creating custom plugins requires you to create a `code-pushup.config.(ts|js|mjs)` file, that exposes a `plugins` property.
+See the following example:
 
 ```typescript
 // code-pushup.config.ts
@@ -35,7 +35,7 @@ The plugin configuration contains:
 - a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](@TODO - link models).
 - optional [`groups`](#audit-groups) to pre score audits
 
-A minimal custom plugin containing the required fields looks like the following:
+See the following example that shows a minimal implementation of a custom plugin containing all required fields:
 
 **template for a custom plugin**
 
@@ -145,11 +145,10 @@ const pluginOutput: AuditOutputs = [myAuditOutput];
 
 ## Plugin runner
 
-The core of a plugin is defined under the `runner` property.
-The `runner` property is the entry point of your plugin and is called by the CLI. It should return the audit results
-as [`AuditOutputs`](@TODO - link models).
+The `runner` property defines the core of a plugin.
+It also serves as the entry point of your plugin and is executed by the CLI. It should return the audit results as [`AuditOutputs`](@TODO - link models).
 
-A plugins runner logic can get implemented in 2 ways:
+A runner can be implemented in two ways:
 
 - as a [`RunnerFunction`](#runnerfunction)
 - as a [`RunnerConfig`](#runnerconfig)
