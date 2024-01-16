@@ -41,7 +41,7 @@ describe('lighthouse-create-export', () => {
     });
   });
 
-  it('should use parse options to lighthouse options', async () => {
+  it('should use parse options to lighthouse options', () => {
     const pluginConfig = create({
       ...baseOptions,
       headless: true,
