@@ -84,9 +84,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "value": 3,
         },
         {
-          "details": {
-            "issues": [],
-          },
           "plugin": "cypress",
           "score": 1,
           "slug": "cypress-component-tests",
@@ -174,9 +171,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "value": 1,
         },
         {
-          "details": {
-            "issues": [],
-          },
           "plugin": "eslint",
           "score": 1,
           "slug": "eslint-jest-consistent-naming",
@@ -184,9 +178,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "value": 0,
         },
         {
-          "details": {
-            "issues": [],
-          },
           "plugin": "eslint",
           "score": 1,
           "slug": "eslint-cypress",
@@ -194,9 +185,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "value": 0,
         },
         {
-          "details": {
-            "issues": [],
-          },
           "plugin": "eslint",
           "score": 1,
           "slug": "typescript-eslint-enums",
