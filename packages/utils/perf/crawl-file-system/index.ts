@@ -43,7 +43,7 @@ const listeners = {
           2,
         )} sec`,
       );
-      console.info('Fastest is ' + suite.filter('fastest').map('name'));
+      console.info(`Fastest is ${suite.filter('fastest').map('name')}`);
     }
   },
 };

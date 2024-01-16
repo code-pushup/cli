@@ -21,10 +21,16 @@ export function tableMd(
   if (data.length === 0) {
     throw new Error("Data can't be empty");
   }
-  align = align || data[0]?.map(() => 'c');
-  const _data = data.map(arr => '|' + arr.join('|') + '|');
-  const secondRow = '|' + align?.map(s => alignString.get(s)).join('|') + '|';
-  return _data.shift() + NEW_LINE + secondRow + NEW_LINE + _data.join(NEW_LINE);
+  align ??= data[0]?.map(() => 'c');
+  const tableContent = data.map(arr => `|${arr.join('|')}|`);
+  const secondRow = `|${align?.map(s => alignString.get(s)).join('|')}|`;
+  return (
+    tableContent.shift() +
+    NEW_LINE +
+    secondRow +
+    NEW_LINE +
+    tableContent.join(NEW_LINE)
+  );
 }
 
 export function tableHtml(data: (string | number)[][]): string {
@@ -32,11 +38,13 @@ export function tableHtml(data: (string | number)[][]): string {
     throw new Error("Data can't be empty");
   }
 
-  const _data = data.map((arr, index) => {
+  const tableContent = data.map((arr, index) => {
     if (index === 0) {
-      return '<tr>' + arr.map(s => `<th>${s}</th>`).join('') + '</tr>';
+      const headerRow = arr.map(s => `<th>${s}</th>`).join('');
+      return `<tr>${headerRow}</tr>`;
     }
-    return '<tr>' + arr.map(s => `<td>${s}</td>`).join('') + '</tr>';
+    const row = arr.map(s => `<td>${s}</td>`).join('');
+    return `<tr>${row}</tr>`;
   });
-  return '<table>' + _data.join('') + '</table>';
+  return `<table>${tableContent.join('')}</table>`;
 }
