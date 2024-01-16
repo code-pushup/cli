@@ -6,7 +6,7 @@ import {
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
 
-describe('filterCategoryByPluginSlug', () => {
+describe('filterPluginsBySlug', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {
     expect(
       filterPluginsBySlug(
@@ -34,7 +34,7 @@ describe('filterCategoryByPluginSlug', () => {
   });
 });
 
-describe('filterCategoryByOnlyPluginsOption', () => {
+describe('filterCategoryByPluginSlug', () => {
   it('should return all categories if no onlyPlugins option', () => {
     expect(
       filterCategoryByPluginSlug(
