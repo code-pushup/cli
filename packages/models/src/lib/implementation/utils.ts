@@ -8,7 +8,7 @@ import type { PluginReport } from '../report';
  * - category (e.g. 'performance')
  * Also validates ``and ` `
  */
-export const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const slugRegex = /^[a-z\d]+(?:-[a-z\d]+)*$/;
 
 /**
  * Regular expression to validate a filename.
@@ -21,14 +21,12 @@ export const filenameRegex = /^(?!.*[ \\/:*?"<>|]).+$/;
  * @param strings
  */
 export function hasDuplicateStrings(strings: string[]): string[] | false {
-  const uniqueStrings = Array.from(new Set(strings));
-  const duplicatedStrings = strings.filter(
-    (
-      i => v =>
-        uniqueStrings[i] !== v || !++i
-    )(0),
+  const sortedStrings = [...strings].sort();
+  const duplStrings = sortedStrings.filter(
+    (item, index) => index !== 0 && item === sortedStrings[index - 1],
   );
-  return duplicatedStrings.length === 0 ? false : duplicatedStrings;
+
+  return duplStrings.length === 0 ? false : [...new Set(duplStrings)];
 }
 
 /**
@@ -50,10 +48,9 @@ export function hasMissingStrings(
  */
 export function errorItems(
   items: string[] | false,
-  transform: (items: string[]) => string = items => items.join(', '),
+  transform: (itemArr: string[]) => string = itemArr => itemArr.join(', '),
 ): string {
-  const paredItems = items ? items : [];
-  return transform(paredItems);
+  return transform(items || []);
 }
 
 export function exists<T>(value: T): value is NonNullable<T> {
@@ -70,46 +67,39 @@ export function getMissingRefsForCategories(
   categories: CategoryConfig[],
   plugins: PluginConfig[] | PluginReport[],
 ) {
-  const missingRefs: string[] = [];
   const auditRefsFromCategory = categories.flatMap(({ refs }) =>
     refs
       .filter(({ type }) => type === 'audit')
       .map(({ plugin, slug }) => `${plugin}/${slug}`),
   );
-  const auditRefsFromPlugins = plugins.flatMap(
-    ({ audits, slug: pluginSlug }) => {
-      return audits.map(({ slug }) => `${pluginSlug}/${slug}`);
-    },
+  const auditRefsFromPlugins = plugins.flatMap(({ audits, slug: pluginSlug }) =>
+    audits.map(({ slug }) => `${pluginSlug}/${slug}`),
   );
   const missingAuditRefs = hasMissingStrings(
     auditRefsFromCategory,
     auditRefsFromPlugins,
   );
 
-  if (Array.isArray(missingAuditRefs) && missingAuditRefs.length > 0) {
-    missingRefs.push(...missingAuditRefs);
-  }
   const groupRefsFromCategory = categories.flatMap(({ refs }) =>
     refs
       .filter(({ type }) => type === 'group')
       .map(({ plugin, slug }) => `${plugin}#${slug} (group)`),
   );
-  const groupRefsFromPlugins = plugins.flatMap(
-    ({ groups, slug: pluginSlug }) => {
-      return Array.isArray(groups)
-        ? groups.map(({ slug }) => `${pluginSlug}#${slug} (group)`)
-        : [];
-    },
+  const groupRefsFromPlugins = plugins.flatMap(({ groups, slug: pluginSlug }) =>
+    Array.isArray(groups)
+      ? groups.map(({ slug }) => `${pluginSlug}#${slug} (group)`)
+      : [],
   );
   const missingGroupRefs = hasMissingStrings(
     groupRefsFromCategory,
     groupRefsFromPlugins,
   );
-  if (Array.isArray(missingGroupRefs) && missingGroupRefs.length > 0) {
-    missingRefs.push(...missingGroupRefs);
-  }
 
-  return missingRefs.length ? missingRefs : false;
+  const missingRefs = [missingAuditRefs, missingGroupRefs]
+    .filter((refs): refs is string[] => Array.isArray(refs) && refs.length > 0)
+    .flat();
+
+  return missingRefs.length > 0 ? missingRefs : false;
 }
 export function missingRefsForCategoriesErrorMsg(
   categories: CategoryConfig[],
