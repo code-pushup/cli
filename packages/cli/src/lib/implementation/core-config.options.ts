@@ -1,10 +1,5 @@
 import { Options } from 'yargs';
 import {
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
-} from '@code-pushup/models';
-import {
   CoreConfigCliOptions,
   PersistConfigCliOptions,
   UploadConfigCliOptions,
@@ -31,17 +26,14 @@ export function yargsPersistConfigOptionsDefinition(): Record<
     'persist.outputDir': {
       describe: 'Directory for the produced reports',
       type: 'string',
-      default: PERSIST_OUTPUT_DIR,
     },
     'persist.filename': {
       describe: 'Filename for the produced reports.',
       type: 'string',
-      default: PERSIST_FILENAME,
     },
     'persist.format': {
       describe: 'Format of the report output. e.g. `md`, `json`',
       type: 'array',
-      default: PERSIST_FORMAT,
     },
   };
 }
