@@ -2,6 +2,7 @@ import { CategoryRef } from '@code-pushup/models';
 import { pluginSlug } from './constants.generated';
 
 export const LIGHTHOUSE_OUTPUT_FILE_DEFAULT = 'lighthouse-report.json';
+export const LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG = 'performance-core';
 
 export const corePerfGroupRefs: CategoryRef[] = [
   /**
@@ -14,14 +15,14 @@ export const corePerfGroupRefs: CategoryRef[] = [
    */
   {
     type: 'group',
-    slug: 'performance-core',
+    slug: LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG,
     plugin: pluginSlug,
     weight: 1,
   },
 ];
 
 export const categoryCorePerfGroup = {
-  slug: 'performance-core',
+  slug: LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG,
   title: 'performance-core',
   refs: [
     // web vitals
@@ -31,14 +32,17 @@ export const categoryCorePerfGroup = {
     },
     {
       slug: 'largest-contentful-paint',
+      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {
       slug: 'total-blocking-time',
+      // eslint-disable-next-line no-magic-numbers
       weight: 30,
     },
     {
       slug: 'cumulative-layout-shift',
+      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {

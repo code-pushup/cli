@@ -8,7 +8,10 @@ import {
   RunnerConfig,
 } from '@code-pushup/models';
 import { objectToCliArgs, toArray, verboseUtils } from '@code-pushup/utils';
-import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
+import {
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  categoryCorePerfGroup,
+} from './constants';
 import {
   audits,
   categoryPerfGroup,
@@ -84,6 +87,7 @@ export function create(options: PluginOptions): PluginConfig {
     }),
     audits,
     groups: [
+      categoryCorePerfGroup,
       {
         ...categoryPerfGroup,
         refs: groupsRefs,
