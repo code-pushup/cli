@@ -29,7 +29,8 @@ export async function coreConfigMiddleware<
       ...cliUpload,
     },
     persist: {
-      outputDir: cliPersist?.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
+      outputDir:
+        cliPersist?.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
       format: cliPersist?.format ?? rcPersist?.format ?? PERSIST_FORMAT,
       filename: cliPersist?.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
     },
