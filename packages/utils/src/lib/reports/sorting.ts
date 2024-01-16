@@ -56,13 +56,17 @@ export function sortReport(report: ScoredReport): ScoredReport {
 
   const sortedPlugins = plugins.map(plugin => ({
     ...plugin,
-    audits: plugin.audits.sort(compareAudits).map(audit => ({
-      ...audit,
-      details: {
-        ...audit.details,
-        issues: [...(audit?.details?.issues ?? [])].sort(compareIssues),
-      },
-    })),
+    audits: [...plugin.audits].sort(compareAudits).map(audit =>
+      audit.details?.issues
+        ? {
+            ...audit,
+            details: {
+              ...audit.details,
+              issues: [...audit.details.issues].sort(compareIssues),
+            },
+          }
+        : audit,
+    ),
   }));
 
   return {
