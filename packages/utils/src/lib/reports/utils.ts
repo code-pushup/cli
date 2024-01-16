@@ -95,7 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  stop = stop !== undefined ? stop : performance.now();
+  stop ??= performance.now();
   return Math.floor(stop - start);
 }
 
@@ -112,23 +112,15 @@ export function countCategoryAudits(
   // Create lookup object for groups within each plugin
   const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
     (lookup, plugin) => {
-      if (!plugin.groups.length) {
+      if (plugin.groups.length === 0) {
         return lookup;
       }
 
       return {
         ...lookup,
-        [plugin.slug]: {
-          ...plugin.groups.reduce<Record<string, Group>>(
-            (groupLookup, group) => {
-              return {
-                ...groupLookup,
-                [group.slug]: group,
-              };
-            },
-            {},
-          ),
-        },
+        [plugin.slug]: Object.fromEntries(
+          plugin.groups.map(group => [group.slug, group]),
+        ),
       };
     },
     {},
@@ -138,7 +130,7 @@ export function countCategoryAudits(
   return refs.reduce((acc, ref) => {
     if (ref.type === 'group') {
       const groupRefs = groupLookup[ref.plugin]?.[ref.slug]?.refs;
-      return acc + (groupRefs?.length || 0);
+      return acc + (groupRefs?.length ?? 0);
     }
     return acc + 1;
   }, 0);
@@ -296,7 +288,7 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   if (a.source?.file !== b.source?.file) {
-    return a.source?.file.localeCompare(b.source?.file || '') || 0;
+    return a.source?.file.localeCompare(b.source?.file || '') ?? 0;
   }
 
   if (!a.source?.position && b.source?.position) {
@@ -309,8 +301,8 @@ export function compareIssues(a: Issue, b: Issue): number {
 
   if (a.source?.position?.startLine !== b.source?.position?.startLine) {
     return (
-      (a.source?.position?.startLine || 0) -
-      (b.source?.position?.startLine || 0)
+      (a.source?.position?.startLine ?? 0) -
+      (b.source?.position?.startLine ?? 0)
     );
   }
 

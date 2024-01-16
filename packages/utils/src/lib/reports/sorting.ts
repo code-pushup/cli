@@ -41,7 +41,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
       ...groups,
       ...audits.sort(compareCategoryAudits),
     ];
-    const sortedRefs = category.refs.slice().sort((a, b) => {
+    const sortedRefs = [...category.refs].sort((a, b) => {
       const aIndex = sortedAuditsAndGroups.findIndex(
         ref => ref.slug === a.slug,
       );
@@ -60,7 +60,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
       ...audit,
       details: {
         ...audit.details,
-        issues: audit?.details?.issues.slice().sort(compareIssues) || [],
+        issues: [...(audit?.details?.issues ?? [])].sort(compareIssues),
       },
     })),
   }));

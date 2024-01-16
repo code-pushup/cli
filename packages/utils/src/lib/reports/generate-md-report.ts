@@ -40,24 +40,30 @@ export function generateMdReport(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
-  // header section
-  let md = reportToHeaderSection() + NEW_LINE;
-
-  // overview section
-  md += reportToOverviewSection(report) + NEW_LINE + NEW_LINE;
-
-  // categories section
-  md += reportToCategoriesSection(report) + NEW_LINE + NEW_LINE;
-
-  // audits section
-  md += reportToAuditsSection(report) + NEW_LINE + NEW_LINE;
-
-  // about section
-  md += reportToAboutSection(report, commitData) + NEW_LINE + NEW_LINE;
-
-  // footer section
-  md += `${FOOTER_PREFIX} ${link(README_LINK, 'Code PushUp')}`;
-  return md;
+  return (
+    // header section
+    // eslint-disable-next-line prefer-template
+    reportToHeaderSection() +
+    NEW_LINE +
+    // overview section
+    reportToOverviewSection(report) +
+    NEW_LINE +
+    NEW_LINE +
+    // categories section
+    reportToCategoriesSection(report) +
+    NEW_LINE +
+    NEW_LINE +
+    // audits section
+    reportToAuditsSection(report) +
+    NEW_LINE +
+    NEW_LINE +
+    // about section
+    reportToAboutSection(report, commitData) +
+    NEW_LINE +
+    NEW_LINE +
+    // footer section
+    `${FOOTER_PREFIX} ${link(README_LINK, 'Code PushUp')}`
+  );
 }
 
 function reportToHeaderSection(): string {
@@ -65,13 +71,13 @@ function reportToHeaderSection(): string {
 }
 
 function reportToOverviewSection(report: ScoredReport): string {
-  const { categories } = report;
+  const { categories, plugins } = report;
   const tableContent: string[][] = [
     reportOverviewTableHeaders,
     ...categories.map(({ title, refs, score }) => [
       link(`#${slugify(title)}`, title),
       `${getRoundScoreMarker(score)} ${style(formatReportScore(score))}`,
-      countCategoryAudits(refs, report.plugins).toString(),
+      countCategoryAudits(refs, plugins).toString(),
     ]),
   ];
 
@@ -255,6 +261,7 @@ function reportToAboutSection(
   ];
 
   return (
+    // eslint-disable-next-line prefer-template
     h2('About') +
     NEW_LINE +
     NEW_LINE +
