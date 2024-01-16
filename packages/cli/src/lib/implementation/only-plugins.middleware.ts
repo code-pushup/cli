@@ -2,8 +2,8 @@ import { CoreConfig } from '@code-pushup/models';
 import { GeneralCliOptions } from './global.model';
 import { OnlyPluginsOptions } from './only-plugins.model';
 import {
-  filterCategoryByPlugins,
-  filterPluginsByOnlyPluginsOption,
+  filterCategoryByPluginSlug,
+  filterPluginsBySlug,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
 
@@ -20,8 +20,8 @@ export function onlyPluginsMiddleware<
   const parsedProcessArgs: CoreConfig & GeneralCliOptions & OnlyPluginsOptions =
     {
       ...cliOptions,
-      plugins: filterPluginsByOnlyPluginsOption(cliOptions.plugins, cliOptions),
-      categories: filterCategoryByPlugins(cliOptions.categories, cliOptions),
+      plugins: filterPluginsBySlug(cliOptions.plugins, cliOptions),
+      categories: filterCategoryByPluginSlug(cliOptions.categories, cliOptions),
     };
 
   return parsedProcessArgs;

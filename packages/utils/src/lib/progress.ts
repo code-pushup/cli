@@ -22,6 +22,7 @@ export type ProgressBar = {
   endProgress: (message?: string) => void;
 };
 
+// eslint-disable-next-line functional/no-let
 let mpb: MultiProgressBars;
 
 export function getSingletonProgressBars(

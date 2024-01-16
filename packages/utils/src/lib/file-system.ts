@@ -54,10 +54,8 @@ export function logMultipleFileResults(
 ): void {
   const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
-    console.info(
-      `- ${chalk.bold(fileName)}` +
-        (size ? ` (${chalk.gray(formatBytes(size))})` : ''),
-    );
+    const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
+    console.info(`- ${chalk.bold(fileName)}${formattedSize}`);
   };
   const failedCallback = (result: PromiseRejectedResult) => {
     console.warn(`- ${chalk.bold(result.reason)}`);

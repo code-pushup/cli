@@ -14,7 +14,7 @@ export function slugify(text: string): string {
 
 export function pluralize(text: string): string {
   if (text.endsWith('y')) {
-    return text.slice(0, -1) + 'ies';
+    return `${text.slice(0, -1)}ies`;
   }
   if (text.endsWith('s')) {
     return `${text}es`;
@@ -25,7 +25,9 @@ export function pluralize(text: string): string {
 export function formatBytes(bytes: number, decimals = 2) {
   bytes = Math.max(bytes, 0);
   // early exit
-  if (!bytes) return '0 B';
+  if (!bytes) {
+    return '0 B';
+  }
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
@@ -33,7 +35,9 @@ export function formatBytes(bytes: number, decimals = 2) {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${
+    sizes[i]
+  }`;
 }
 
 export function pluralizeToken(token: string, times: number = 0): string {
