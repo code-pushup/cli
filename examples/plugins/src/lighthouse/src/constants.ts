@@ -49,9 +49,5 @@ export const categoryCorePerfGroup = {
       slug: 'speed-index',
       weight: 10,
     },
-    {
-      slug: 'resource-summary',
-      weight: 0,
-    },
   ],
 };
