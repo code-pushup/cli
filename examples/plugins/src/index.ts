@@ -15,4 +15,5 @@ export {
   create as lighthousePlugin,
   recommendedRefs as lighthouseRecommendedRefs,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  corePerfGroupRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';

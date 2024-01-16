@@ -5,8 +5,8 @@ import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthouseCorePerfGroupRefs,
   lighthousePlugin,
-  lighthouseRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
@@ -83,7 +83,7 @@ const config: CoreConfig = {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [...lighthouseRecommendedRefs],
+      refs: [...lighthouseCorePerfGroupRefs],
     },
     {
       slug: 'custom-checks',
