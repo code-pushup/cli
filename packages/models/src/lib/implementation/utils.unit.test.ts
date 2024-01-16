@@ -68,6 +68,10 @@ describe('hasDuplicateStrings', () => {
     expect(hasDuplicateStrings(['a', 'b', 'a', 'c'])).toEqual(['a']);
   });
 
+  it('should return a duplicate only once', () => {
+    expect(hasDuplicateStrings(['a', 'b', 'a', 'a'])).toEqual(['a']);
+  });
+
   it('should return false for a list with 1 item', () => {
     expect(hasDuplicateStrings(['a'])).toBe(false);
   });

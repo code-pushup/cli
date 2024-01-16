@@ -90,7 +90,7 @@ export function metaSchema(options?: {
     titleDescription,
     docsUrlDescription,
     description,
-  } = options || {};
+  } = options ?? {};
   return z.object(
     {
       title: titleSchema(titleDescription),
