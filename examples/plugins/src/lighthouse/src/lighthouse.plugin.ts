@@ -28,7 +28,7 @@ export type LighthouseCliOptions = Omit<
   PluginOptions,
   'headless' | 'onlyAudits'
 > & {
-  headless?: boolean | 'new';
+  headless?: false | 'new';
   onlyAudits?: string[];
 };
 

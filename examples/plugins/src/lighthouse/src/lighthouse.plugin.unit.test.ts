@@ -52,4 +52,17 @@ describe('lighthouse-runnerConfig', () => {
       }),
     );
   });
+
+  it('should run headless "new" if set to true', () => {
+    expect(
+      runnerConfig({
+        ...baseOptions,
+        headless: 'new',
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        args: expect.arrayContaining([`--chrome-flags="--headless=new"`]),
+      }),
+    );
+  });
 });
