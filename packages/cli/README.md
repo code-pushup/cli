@@ -139,7 +139,7 @@ jobs:
 We provide comprehensive documentation on [how to create a custom plugin](./docs/custom-plugins.md).
 
 The repository also maintains a set of plugin examples showcasing different scenarios.  
-Each example is fully tested to give demonstrate best practices for plugin testing.
+Each example is fully tested to demonstrate best practices for plugin testing as well.
 
 **Example for custom plugins:**
 
@@ -170,7 +170,7 @@ Each example is fully tested to give demonstrate best practices for plugin testi
 | **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
 
 > [!NOTE]  
-> All common options, expect `--onlyPlugins`, can be specified in the configuration file as well.
+> All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
 > CLI arguments take precedence over configuration file options.
 
 > [!NOTE]
@@ -184,7 +184,7 @@ Usage:
 `code-pushup collect [options]`
 
 Description:
-The command initializes the necessary plugins, runs them, and then collects the results. After collecting the results, it generates a comprehensive report.
+The command initializes and executes the necessary plugins and collects the results. Based on the results it generates a comprehensive report.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
@@ -204,7 +204,7 @@ Usage:
 `code-pushup autorun [options]`
 
 Description:
-Run plugins, collect results and upload report to the Code PushUp portal.
+Run plugins, collect results and upload the report to the Code PushUp portal.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 

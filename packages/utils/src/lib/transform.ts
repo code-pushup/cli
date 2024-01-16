@@ -20,7 +20,7 @@ export function countOccurrences<T extends PropertyKey>(
 }
 
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
-  return Array.from(new Set(array));
+  return [...new Set(array)];
 }
 
 export function deepClone<T>(obj: T): T {
@@ -52,7 +52,8 @@ export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
 type ArgumentValue = number | string | boolean | string[];
 export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
   T extends never
-    ? Record<string, ArgumentValue | undefined> | { _: string }
+    ? // eslint-disable-next-line @typescript-eslint/naming-convention
+      Record<string, ArgumentValue | undefined> | { _: string }
     : T;
 
 /**
@@ -65,6 +66,7 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
@@ -75,11 +77,7 @@ export function objectToCliArgs<
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      if (Array.isArray(value)) {
-        return value;
-      } else {
-        return [value + ''];
-      }
+      return Array.isArray(value) ? value : [`${value}`];
     }
     const prefix = key.length === 1 ? '-' : '--';
     // "-*" arguments (shorthands)
@@ -117,7 +115,7 @@ export function toUnixPath(
   const unixPath = path.replace(/\\/g, '/');
 
   if (options?.toRelative) {
-    return unixPath.replace(process.cwd().replace(/\\/g, '/') + '/', '');
+    return unixPath.replace(`${process.cwd().replace(/\\/g, '/')}/`, '');
   }
 
   return unixPath;

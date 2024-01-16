@@ -1,7 +1,7 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { NEW_LINE, SCORE_COLOR_RANGE } from './constants';
+import { NEW_LINE, SCORE_COLOR_RANGE, TERMINAL_WIDTH } from './constants';
 import { ScoredReport } from './scoring';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -17,15 +17,13 @@ function addLine(line = ''): string {
 }
 
 export function generateStdoutSummary(report: ScoredReport): string {
-  let output = '';
-
-  output += addLine(reportToHeaderSection(report));
-  output += addLine();
-  output += addLine(reportToDetailSection(report));
-  output += addLine(reportToOverviewSection(report));
-  output += addLine(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
-
-  return output;
+  return (
+    addLine(reportToHeaderSection(report)) +
+    addLine() +
+    addLine(reportToDetailSection(report)) +
+    addLine(reportToOverviewSection(report)) +
+    addLine(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`)
+  );
 }
 
 function reportToHeaderSection(report: ScoredReport): string {
@@ -36,14 +34,9 @@ function reportToHeaderSection(report: ScoredReport): string {
 function reportToDetailSection(report: ScoredReport): string {
   const { plugins } = report;
 
-  let output = '';
-
-  plugins.forEach(({ title, audits }) => {
-    output += addLine();
-    output += addLine(chalk.magentaBright.bold(`${title} audits`));
-    output += addLine();
-
-    const ui = cliui({ width: 80 });
+  return plugins.reduce((acc, plugin) => {
+    const { title, audits } = plugin;
+    const ui = cliui({ width: TERMINAL_WIDTH });
 
     audits.forEach(({ score, title, displayValue, value }) => {
       ui.div(
@@ -54,6 +47,7 @@ function reportToDetailSection(report: ScoredReport): string {
         },
         {
           text: title,
+          // eslint-disable-next-line no-magic-numbers
           padding: [0, 3, 0, 0],
         },
         {
@@ -63,21 +57,21 @@ function reportToDetailSection(report: ScoredReport): string {
         },
       );
     });
-
-    output += addLine(ui.toString());
-    output += addLine();
-  });
-
-  return output;
+    return (
+      acc +
+      addLine() +
+      addLine(chalk.magentaBright.bold(`${title} audits`)) +
+      addLine() +
+      addLine(ui.toString()) +
+      addLine()
+    );
+  }, '');
 }
 
 function reportToOverviewSection({
   categories,
   plugins,
 }: ScoredReport): string {
-  let output = addLine(chalk.magentaBright.bold('Categories'));
-  output += addLine();
-
   const table = new Table({
     head: reportRawOverviewTableHeaders,
     colAligns: ['left', 'right', 'right'],
@@ -94,9 +88,11 @@ function reportToOverviewSection({
     ]),
   );
 
-  output += addLine(table.toString());
-
-  return output;
+  return (
+    addLine(chalk.magentaBright.bold('Categories')) +
+    addLine() +
+    addLine(table.toString())
+  );
 }
 
 function withColor({ score, text }: { score: number; text?: string }) {
