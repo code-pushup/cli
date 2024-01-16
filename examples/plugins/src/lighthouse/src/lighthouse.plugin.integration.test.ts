@@ -9,7 +9,7 @@ import {
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { LIGHTHOUSE_URL } from '../mock/constants';
 import { lhr } from '../mock/fixtures/lhr';
-import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
+import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
 import { audits, recommendedRefs, pluginSlug as slug } from './index';
 import { PluginOptions, create } from './lighthouse.plugin';
 
@@ -41,6 +41,20 @@ describe('lighthouse-create-export', () => {
     });
   });
 
+  it('should use parse options to lighthouse options', async () => {
+    const pluginConfig = create({
+      ...baseOptions,
+      headless: true,
+    });
+    expect(pluginConfig).toEqual(
+      expect.objectContaining({
+        runner: expect.objectContaining({
+          args: expect.arrayContaining(['--chrome-flags="--headless=new"']),
+        }),
+      }),
+    );
+  });
+
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = create(baseOptions);
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
@@ -54,7 +68,7 @@ describe('lighthouse-create-export', () => {
         groups: expect.any(Array),
       }),
     );
-  }, 20_000);
+  });
 
   it('should use onlyAudits', async () => {
     const pluginConfig = create({
@@ -65,7 +79,7 @@ describe('lighthouse-create-export', () => {
 
     expect(auditOutputs).toHaveLength(1);
   });
-}, 20_000);
+}, 30_000);
 
 describe('lighthouse-audits-export', () => {
   it.each(audits)('should be a valid audit meta info', audit => {
@@ -75,6 +89,15 @@ describe('lighthouse-audits-export', () => {
 
 describe('lighthouse-recommendedRefs-export', () => {
   it.each(recommendedRefs)(
+    'should be a valid category reference',
+    categoryRef => {
+      expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
+    },
+  );
+});
+
+describe('lighthouse-corePerfGroupRefs-export', () => {
+  it.each(corePerfGroupRefs)(
     'should be a valid category reference',
     categoryRef => {
       expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
