@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/eslint-plugin",
-  "version": "0.8.19",
+  "version": "0.8.20",
   "dependencies": {
     "@code-pushup/utils": "*",
     "@code-pushup/models": "*",
