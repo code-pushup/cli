@@ -1,15 +1,8 @@
 {
   "extends": ["./code-pushup.eslintrc.json"],
   // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:36 GMT+0100 (Central European Standard Time)
+  // number of errors/warnings per rule recorded at Wed Jan 17 2024 15:00:00 GMT+0100 (Central European Standard Time)
   "rules": {
-    "@typescript-eslint/no-unnecessary-condition": "off", // 18 warnings
-    "@typescript-eslint/no-unsafe-argument": "off", // 1 error
-    "@typescript-eslint/no-unsafe-assignment": "off", // 15 errors
-    "@typescript-eslint/no-unsafe-call": "off", // 2 errors
-    "@typescript-eslint/no-unsafe-member-access": "off", // 12 errors
-    "@typescript-eslint/no-unsafe-return": "off", // 13 errors
-    "@typescript-eslint/restrict-plus-operands": "off", // 1 error
-    "@typescript-eslint/restrict-template-expressions": "off" // 2 errors
+    "@typescript-eslint/no-unnecessary-condition": "off" // 5 warnings
   }
 }

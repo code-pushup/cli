@@ -63,9 +63,11 @@ export function objectToCliArgs<
     return [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return Array.isArray(value) ? value : [`${value}`];
     }
     const prefix = key.length === 1 ? '-' : '--';

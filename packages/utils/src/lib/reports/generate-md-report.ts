@@ -129,7 +129,7 @@ function auditItemToCategorySection(
   const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
     `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
-    audit?.title,
+    audit.title,
   );
   return li(
     `${getSquaredScoreMarker(
@@ -150,7 +150,7 @@ function groupItemToCategorySection(
   const groupAudits = group.audits.reduce((acc, audit) => {
     const auditTitle = link(
       `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
-      audit?.title,
+      audit.title,
     );
     return `${acc}  ${li(
       `${getSquaredScoreMarker(audit.score)} ${auditTitle} - ${getAuditResult(
@@ -193,7 +193,7 @@ function reportToDetailsSection(audit: EnrichedAuditReport) {
     true,
   )} (score: ${formatReportScore(audit.score)})`;
 
-  if (!audit.details?.issues?.length) {
+  if (!audit.details?.issues.length) {
     return detailsTitle;
   }
 
@@ -209,7 +209,7 @@ function reportToDetailsSection(audit: EnrichedAuditReport) {
         return [severity, message, '', ''];
       }
       // TODO: implement file links, ticket #149
-      const file = `<code>${issue.source?.file}</code>`;
+      const file = `<code>${issue.source.file}</code>`;
       if (!issue.source.position) {
         return [severity, message, file, ''];
       }

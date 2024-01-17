@@ -146,12 +146,12 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     let stderr = '';
 
     process.stdout.on('data', data => {
-      stdout += data.toString();
-      onStdout?.(data);
+      stdout += String(data);
+      onStdout?.(String(data));
     });
 
     process.stderr.on('data', data => {
-      stderr += data.toString();
+      stderr += String(data);
     });
 
     process.on('error', err => {
