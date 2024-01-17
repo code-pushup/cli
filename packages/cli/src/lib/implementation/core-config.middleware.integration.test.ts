@@ -6,12 +6,20 @@ import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
+  PersistConfig,
 } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
+import { CoreConfigNames } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
-import { ConfigCliOptions } from './core-config.model';
+import {
+  ConfigCliOptions,
+  CoreConfigCliOptions,
+  PersistConfigCliOptions,
+  UploadConfigCliOptions,
+} from './core-config.model';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
+import { GeneralCliOptions } from './global.model';
 
 describe('coreConfigMiddleware', () => {
   const configDirPath = join(
@@ -47,7 +55,7 @@ describe('coreConfigMiddleware', () => {
 });
 
 const cliWithConfigOptionsAndMiddleware = (
-  cliObj: CoreConfig & ConfigCliOptions,
+  cliObj: Partial<CoreConfigCliOptions>,
 ) =>
   yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
     options: {
@@ -57,7 +65,7 @@ const cliWithConfigOptionsAndMiddleware = (
   });
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
-  const configPath = (kind: 'minimal' | 'persist' | 'upload' = 'minimal') =>
+  const configPath = (kind: CoreConfigNames = 'minimal') =>
     join(
       fileURLToPath(dirname(import.meta.url)),
       '..',
@@ -66,9 +74,24 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
       'mocks',
       `code-pushup.${kind}.config.ts`,
     );
-
+  const cliPersistOptions: PersistConfigCliOptions = {
+    'persist.outputDir': 'tmp-cli',
+    'persist.format': 'md',
+    'persist.filename': 'cli-report',
+  };
+  const cliResultPersistOptions: PersistConfig = {
+    outputDir: 'tmp-cli',
+    format: ['md'],
+    filename: 'cli-report',
+  };
+  const rcResultPersistOptions: PersistConfig = {
+    outputDir: 'rc-tmp',
+    format: ['json', 'md'],
+    filename: 'rc-report',
+  };
   it.each([
     [
+      'defaults',
       'minimal' as const,
       {},
       {
@@ -78,19 +101,33 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
       },
     ],
     [
+      'cli args',
+      'minimal' as const,
+      cliPersistOptions,
+      cliResultPersistOptions,
+    ],
+    ['rc', 'persist' as const, {}, rcResultPersistOptions],
+    [
+      'rc + cli args',
       'persist' as const,
+      cliPersistOptions,
+      cliResultPersistOptions,
+    ],
+    [
+      'partial rc + partial cli args',
+      'persist-only-filename' as const,
+      { 'persist.outputDir': cliPersistOptions['persist.outputDir'] },
       {
-        'persist.outputDir': 'tmp',
-        'persist.format': 'md',
-        'persist.filename': 'report-name',
+        outputDir: cliResultPersistOptions.outputDir,
+        format: PERSIST_FORMAT,
+        filename: rcResultPersistOptions.filename,
       },
-      { outputDir: 'tmp', format: ['md'], filename: 'report-name' },
     ],
   ])(
-    'should handle persist arguments for %s correctly',
-    async (configKind, cliObj, persistResult) => {
+    'should handle persist arguments for "%s" correctly',
+    async (id, configKind, cliObj, persistResult) => {
       const argv = await cliWithConfigOptionsAndMiddleware({
-        ...(cliObj as CoreConfig),
+        ...(cliObj as CoreConfigCliOptions),
         config: configPath(configKind),
       }).parseAsync();
 

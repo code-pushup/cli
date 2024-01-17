@@ -14,15 +14,16 @@ describe('cliWithGlobalOptions', () => {
     });
 
   it.each([
-    ['minimal' as const, {}, { verbose: false, progress: true }],
+    ['defaults', 'minimal' as const, {}, { verbose: false, progress: true }],
     [
-      'persist' as const,
+      'cli args',
+      'minimal' as const,
       { verbose: true, progress: false },
       { verbose: true, progress: false },
     ],
   ])(
     'should handle general arguments for %s correctly',
-    async (configKind, cliObj, generalResult) => {
+    async (testId, configKind, cliObj, generalResult) => {
       const argv = await cliWithGlobalOptions(
         cliObj as GeneralCliOptions,
       ).parseAsync();

@@ -1,11 +1,6 @@
 import {CoreConfig} from '@code-pushup/models';
 
 export default {
-  persist: {
-    outputDir: 'rc-tmp',
-    format: ['json', 'md'],
-    filename: 'rc-report'
-  },
   categories: [
     {
       slug: 'category-1',

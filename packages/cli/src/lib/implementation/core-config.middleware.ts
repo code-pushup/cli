@@ -15,15 +15,19 @@ export async function coreConfigMiddleware<
     config,
     persist: cliPersist,
     upload: cliUpload,
-    ...cliOptions
+    ...remainingCliOptions
   } = args as GeneralCliOptions & Required<CoreConfig>;
   const rcOptions = await readCodePushupConfig(config);
-  const { persist: rcPersist, upload: rcUpload } = rcOptions;
+  const {
+    persist: rcPersist,
+    upload: rcUpload,
+    ...remainingRcConfig
+  } = rcOptions;
 
   const parsedProcessArgs: CoreConfig & GeneralCliOptions = {
     config,
-    ...rcOptions,
-    ...cliOptions,
+    ...remainingRcConfig,
+    ...remainingCliOptions,
     upload: {
       ...rcUpload,
       ...cliUpload,
