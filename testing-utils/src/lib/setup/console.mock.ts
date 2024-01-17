@@ -7,15 +7,15 @@ let consoleErrorSpy: SpyInstance | undefined;
 beforeEach(() => {
   // In multi-progress-bars, console methods are overriden
   if (console.info != null) {
-    consoleInfoSpy = vi.spyOn(console, 'info');
+    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
   }
 
   if (console.warn != null) {
-    consoleWarnSpy = vi.spyOn(console, 'warn');
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
   }
 
   if (console.error != null) {
-    consoleErrorSpy = vi.spyOn(console, 'error');
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   }
 });
 
