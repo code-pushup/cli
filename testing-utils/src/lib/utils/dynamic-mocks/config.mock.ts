@@ -36,7 +36,6 @@ export function minimalConfigMock(
   const outputFile = `${PLUGIN_1_SLUG}.${Date.now()}.json`;
 
   const cfg = coreConfigSchema.parse({
-    persist: persistConfigMock({ outputDir }),
     upload: {
       organization: 'code-pushup',
       project: 'cli',

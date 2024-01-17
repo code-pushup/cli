@@ -1,4 +1,9 @@
 import { expect } from 'vitest';
+import { CoreConfig } from '@code-pushup/models';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { yargsCli } from '../yargs-cli';
+import { GeneralCliOptions } from './global.model';
+import { yargsGlobalOptionsDefinition } from './global.options';
 import { filterKebabCaseKeys } from './global.utils';
 
 describe('filterKebabCaseKeys', () => {
@@ -37,4 +42,32 @@ describe('filterKebabCaseKeys', () => {
       camelCase: ['kebab-case', { 'kebab-case': 'value' }],
     });
   });
+});
+
+describe('cliWithGlobalOptionsAndMiddleware', () => {
+  const cliWithGlobalOptionsAndMiddleware = (cliObj: GeneralCliOptions) =>
+    yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
+      options: {
+        ...yargsGlobalOptionsDefinition(),
+      },
+    });
+
+  it.each([
+    [
+      'minimal' as const,
+      {},
+      { verbose: false, progress: true },
+      'persist' as const,
+      { verbose: true, progress: false },
+      { verbose: true, progress: false },
+    ],
+  ])(
+    'should handle general arguments for %s correctly',
+    async (configKind, cliObj, generalResult) => {
+      const argv = await cliWithGlobalOptionsAndMiddleware(
+        cliObj as GeneralCliOptions,
+      ).parseAsync();
+      expect(argv.persist).toEqual(expect.objectContaining(generalResult));
+    },
+  );
 });
