@@ -3,7 +3,7 @@ import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
-  const exampleAuditTitle = 'Require `const` declarations for variables';
+  const exampleAuditTitle = 'PushUp';
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const omitVariableData = ({
