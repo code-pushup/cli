@@ -17,6 +17,7 @@ import {
   PersistConfigCliOptions,
 } from './core-config.model';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
+import { GeneralCliOptions } from './global.model';
 
 const configDirPath = join(
   fileURLToPath(dirname(import.meta.url)),
@@ -52,7 +53,7 @@ describe('coreConfigMiddleware', () => {
 });
 
 const cliWithConfigOptionsAndMiddleware = (
-  cliObj: Partial<CoreConfigCliOptions>,
+  cliObj: Partial<GeneralCliOptions>,
 ) =>
   yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
     options: {
@@ -82,10 +83,12 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
     filename: 'rc-report',
   };
 
-  it.each([
+  it.each<
+    [string, CoreConfigNames, Partial<CoreConfigCliOptions>, PersistConfig]
+  >([
     [
       'defaults',
-      'minimal' as const,
+      'minimal',
       {},
       {
         outputDir: PERSIST_OUTPUT_DIR,
@@ -93,22 +96,12 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
         filename: PERSIST_FILENAME,
       },
     ],
-    [
-      'cli args',
-      'minimal' as const,
-      cliPersistOptions,
-      cliResultPersistOptions,
-    ],
-    ['rc', 'persist' as const, {}, rcResultPersistOptions],
-    [
-      'rc + cli args',
-      'persist' as const,
-      cliPersistOptions,
-      cliResultPersistOptions,
-    ],
+    ['cli args', 'minimal', cliPersistOptions, cliResultPersistOptions],
+    ['rc', 'persist', {}, rcResultPersistOptions],
+    ['rc + cli args', 'persist', cliPersistOptions, cliResultPersistOptions],
     [
       'partial rc + partial cli args',
-      'persist-only-filename' as const,
+      'persist-only-filename',
       { 'persist.outputDir': cliPersistOptions['persist.outputDir'] },
       {
         outputDir: cliResultPersistOptions.outputDir,
@@ -118,13 +111,13 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
     ],
   ])(
     'should handle persist arguments for "%s" correctly',
-    async (id, configKind, cliObj, persistResult) => {
+    async (_, configKind, cliObj, expectedObject) => {
       const argv = await cliWithConfigOptionsAndMiddleware({
-        ...(cliObj as CoreConfigCliOptions),
+        ...cliObj,
         config: configPath(configKind),
       }).parseAsync();
 
-      expect(argv?.persist).toEqual(expect.objectContaining(persistResult));
+      expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
     },
   );
 });
