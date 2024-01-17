@@ -1,3 +1,4 @@
+/* eslint-disable functional/immutable-data */
 import {
   NxJsonConfiguration,
   Tree,
