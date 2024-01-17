@@ -56,8 +56,12 @@ export function calculateScore<T extends { weight: number }>(
   return numerator / denominator;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
-  const allScoredAuditsAndGroups = new Map();
+  const allScoredAuditsAndGroups = new Map<
+    string,
+    EnrichedAuditReport | EnrichedScoredGroup
+  >();
 
   const scoredPlugins = report.plugins.map(plugin => {
     const { slug, audits, groups } = plugin;
@@ -109,7 +113,6 @@ export function scoreReport(report: Report): ScoredReport {
     ...category,
     score: calculateScore(category.refs, catScoreFn),
   }));
-
   return {
     ...deepClone(report),
     plugins: scoredPlugins,

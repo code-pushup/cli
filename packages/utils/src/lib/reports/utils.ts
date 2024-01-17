@@ -143,11 +143,11 @@ export function getAuditByRef(
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
-  const audit = auditPlugin?.audits.find(
+  const audit = auditPlugin.audits.find(
     ({ slug: auditSlug }) => auditSlug === slug,
   );
   if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin?.slug);
+    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
   }
   return {
     ...audit,
@@ -165,10 +165,10 @@ export function getGroupWithAudits(
   if (!plugin) {
     throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
   }
-  const groupWithAudits = plugin?.groups?.find(({ slug }) => slug === refSlug);
+  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === refSlug);
 
   if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
+    throwIsNotPresentError(`Group ${refSlug}`, plugin.slug);
   }
   const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
     (acc: WeighedAuditReport[], ref) => {
@@ -176,11 +176,7 @@ export function getGroupWithAudits(
         { ...ref, plugin: refPlugin, type: 'audit' },
         plugins,
       );
-
-      if (audit) {
-        return [...acc, audit];
-      }
-      return [...acc];
+      return [...acc, audit];
     },
     [],
   );
@@ -251,11 +247,11 @@ export async function loadReport<T extends Format>(
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return reportSchema.parse(content) as any;
+    return reportSchema.parse(content) as LoadedReportFormat<T>;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return readTextFile(filePath) as any;
+
+  const text = await readTextFile(filePath);
+  return text as LoadedReportFormat<T>;
 }
 
 export function throwIsNotPresentError(
