@@ -8,7 +8,7 @@ import {
   PERSIST_OUTPUT_DIR,
   PersistConfig,
 } from '@code-pushup/models';
-import { CoreConfigNames } from '@code-pushup/testing-utils';
+import { CoreConfigName } from '@code-pushup/testing-utils';
 import { objectToCliArgs } from '@code-pushup/utils';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
@@ -63,7 +63,7 @@ const cliWithConfigOptionsAndMiddleware = (
   });
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
-  const configPath = (kind?: CoreConfigNames) => {
+  const configPath = (kind?: CoreConfigName) => {
     const templateKind = kind ? `${kind}.` : '';
     return join(configDirPath, `code-pushup.${templateKind}config.ts`);
   };
@@ -84,7 +84,7 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
   };
 
   it.each<
-    [string, CoreConfigNames, Partial<CoreConfigCliOptions>, PersistConfig]
+    [string, CoreConfigName, Partial<CoreConfigCliOptions>, PersistConfig]
   >([
     [
       'defaults',
