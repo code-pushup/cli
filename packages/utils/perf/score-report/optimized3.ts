@@ -38,31 +38,31 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
   const allScoredAuditsAndGroups = new Map();
 
   scoredReport.plugins?.forEach(plugin => {
-    const { audits } = plugin;
+    const { audits, slug } = plugin;
     const groups = plugin.groups || [];
 
     audits.forEach(audit => {
-      const key = `${plugin.slug}-${audit.slug}-audit`;
-      audit.plugin = plugin.slug;
+      const key = `${slug}-${audit.slug}-audit`;
+      audit.plugin = slug;
       allScoredAuditsAndGroups.set(key, audit);
     });
 
     function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
-        `${plugin.slug}-${ref.slug}-audit`,
+        `${slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
         throw new Error(
-          `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
+          `Group has invalid ref - audit with slug ${slug}-${ref.slug}-audit not found`,
         );
       }
       return score;
     }
 
     groups.forEach(group => {
-      const key = `${plugin.slug}-${group.slug}-group`;
+      const key = `${slug}-${group.slug}-group`;
       group.score = calculateScore(group.refs, groupScoreFn);
-      group.plugin = plugin.slug;
+      group.plugin = slug;
       allScoredAuditsAndGroups.set(key, group);
     });
     plugin.groups = groups;
@@ -86,7 +86,7 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
     scoredCategoriesMap.set(category.slug, category);
   }
 
-  scoredReport.categories = Array.from(scoredCategoriesMap.values());
+  scoredReport.categories = [...scoredCategoriesMap.values()];
 
   return scoredReport;
 }

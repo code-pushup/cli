@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/cli-source",
-  "version": "0.8.20",
+  "version": "0.8.22",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli#readme",
   "bugs": {
@@ -58,7 +58,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@code-pushup/cli": "^1.0.0",
     "@code-pushup/eslint-config": "^0.2.1",
+    "@code-pushup/eslint-plugin": "^1.0.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^18.4.3",
