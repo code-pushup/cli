@@ -15,17 +15,16 @@ describe('cliWithGlobalOptions', () => {
       },
     });
 
-  it.each<[string, CoreConfigName, Partial<GeneralCliOptions>, GlobalOptions]>([
-    ['defaults', 'minimal' as const, {}, { verbose: false, progress: true }],
+  it.each<[string, Partial<GeneralCliOptions>, GlobalOptions]>([
+    ['defaults', {}, { verbose: false, progress: true }],
     [
       'cli args',
-      'minimal' as const,
       { verbose: true, progress: false },
       { verbose: true, progress: false },
     ],
   ])(
     'should handle general arguments for %s correctly',
-    async (_, configKind, cliObj, expectedObject) => {
+    async (_, cliObj, expectedObject) => {
       const argv = await cliWithGlobalOptions(cliObj).parseAsync();
       expect(argv).toEqual(expect.objectContaining(expectedObject));
     },
