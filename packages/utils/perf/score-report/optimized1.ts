@@ -13,6 +13,7 @@ export function calculateScore<T extends { weight: number }>(
   return numerator / denominator;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function scoreReportOptimized1(report: Report): ScoredReport {
   const allScoredAuditsAndGroupsMap = new Map();
 

@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+
+/* eslint-disable functional/immutable-data */
 import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
 
@@ -23,6 +26,7 @@ export function deepClone<T>(obj: T): T {
     return obj;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
   // eslint-disable-next-line functional/no-loop-statements
   for (const key in obj) {

@@ -95,8 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  stop ??= performance.now();
-  return Math.floor(stop - start);
+  return Math.floor((stop ?? performance.now()) - start);
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
@@ -140,7 +139,7 @@ export function getAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
 ): WeighedAuditReport {
-  const auditPlugin = plugins.find(({ slug }) => slug === plugin);
+  const auditPlugin = plugins.find(p => p.slug === plugin);
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
@@ -174,17 +173,18 @@ export function getGroupWithAudits(
   const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
     (acc: WeighedAuditReport[], ref) => {
       const audit = getAuditByRef(
-        { ...ref, plugin: refPlugin } as CategoryRef,
+        { ...ref, plugin: refPlugin, type: 'audit' },
         plugins,
       );
+
       if (audit) {
         return [...acc, audit];
       }
       return [...acc];
     },
     [],
-  ) as WeighedAuditReport[];
-  const audits = groupAudits.sort(compareCategoryAudits);
+  );
+  const audits = [...groupAudits].sort(compareCategoryAudits);
 
   return {
     ...groupWithAudits,

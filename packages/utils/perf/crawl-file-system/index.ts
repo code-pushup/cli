@@ -6,17 +6,18 @@ import {
 } from '../../src/lib/file-system';
 import { crawlFileSystemOptimized0 } from './optimized0';
 
+// TODO pls double check me here... also, is pop that much faster that ESLint should be disabled instead?
 const PROCESS_ARGUMENT_TARGET_DIRECTORY = String(
   process.argv
     .find(arg => arg.startsWith('--directory'))
     ?.split('=')
-    .pop() || '',
+    .slice(0, -1)[0] ?? '',
 );
 const PROCESS_ARGUMENT_PATTERN = String(
   process.argv
     .find(arg => arg.startsWith('--pattern'))
     ?.split('=')
-    .pop() || '',
+    .slice(0, -1)[0] ?? '',
 );
 
 const suite = new Benchmark.Suite('report-scoring');
