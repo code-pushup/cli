@@ -1,3 +1,3 @@
-export interface AddToProjectGeneratorSchema {
+export type AddToProjectGeneratorSchema = {
   project: string;
-}
+};
