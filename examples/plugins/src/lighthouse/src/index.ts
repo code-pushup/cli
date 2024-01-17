@@ -1,8 +1,7 @@
+export { create } from './lighthouse.plugin';
 export {
-  pluginSlug,
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  corePerfGroupRefs,
+  PLUGIN_SLUG,
   audits,
-  recommendedRefs,
-  categoryPerfGroup,
-} from './constants.generated';
-export { create, LighthouseCliOptions } from './lighthouse.plugin';
-export { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
+} from './constants';

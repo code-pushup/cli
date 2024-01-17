@@ -13,7 +13,6 @@ export {
 export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
 export {
   create as lighthousePlugin,
-  recommendedRefs as lighthouseRecommendedRefs,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   corePerfGroupRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';

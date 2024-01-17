@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { LIGHTHOUSE_URL } from '../mock/constants';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
-import { LighthouseCliOptions, runnerConfig } from './lighthouse.plugin';
+import { runnerConfig } from './lighthouse.plugin';
+import type { LighthouseCliOptions } from './types';
 
 describe('lighthouse-runnerConfig', () => {
   const baseOptions: LighthouseCliOptions = {

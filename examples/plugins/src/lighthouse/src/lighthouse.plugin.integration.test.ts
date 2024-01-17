@@ -10,8 +10,9 @@ import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { LIGHTHOUSE_URL } from '../mock/constants';
 import { lhr } from '../mock/fixtures/lhr';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
-import { audits, recommendedRefs, pluginSlug as slug } from './index';
-import { PluginOptions, create } from './lighthouse.plugin';
+import { audits, PLUGIN_SLUG as slug } from './index';
+import { create } from './lighthouse.plugin';
+import type { PluginOptions } from './types';
 
 describe('lighthouse-create-export', () => {
   const baseOptions: PluginOptions = {
@@ -85,15 +86,6 @@ describe('lighthouse-audits-export', () => {
   it.each(audits)('should be a valid audit meta info', audit => {
     expect(() => auditSchema.parse(audit)).not.toThrow();
   });
-});
-
-describe('lighthouse-recommendedRefs-export', () => {
-  it.each(recommendedRefs)(
-    'should be a valid category reference',
-    categoryRef => {
-      expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
-    },
-  );
 });
 
 describe('lighthouse-corePerfGroupRefs-export', () => {

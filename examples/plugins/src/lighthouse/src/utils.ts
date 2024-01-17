@@ -1,0 +1,123 @@
+import Result from 'lighthouse/types/lhr/lhr';
+import { Issue, MAX_ISSUE_MESSAGE_LENGTH } from '@code-pushup/models';
+import { objectToCliArgs, toArray } from '@code-pushup/utils';
+import { LIGHTHOUSE_REPORT_NAME } from './constants';
+import type { LighthouseCliOptions } from './types';
+
+export class AuditsNotImplementedError extends Error {
+  constructor(list: WithSlug[], auditSlugs: string[]) {
+    super(
+      `audits: "${auditSlugs
+        .filter(slug => !list.some(a => a.slug === slug))
+        .join(', ')}" not implemented`,
+    );
+  }
+}
+
+export function filterRefsBySlug<T extends { refs: WithSlug[] }>(
+  group: T,
+  auditSlugs: string[],
+): T {
+  if (auditSlugs.length === 0) {
+    return group;
+  }
+  const groupsRefs =
+    auditSlugs.length === 0 ? group.refs : filterBySlug(group.refs, auditSlugs);
+
+  return {
+    ...group,
+    refs: groupsRefs,
+  };
+}
+export type WithSlug = { slug: string };
+
+export function filterBySlug<T extends WithSlug>(
+  list: T[],
+  auditSlugs: string[],
+): T[] {
+  if (auditSlugs.length === 0) {
+    return list;
+  }
+  if (auditSlugs.filter(slug => !list.some(wS => wS.slug === slug)).length) {
+    throw new AuditsNotImplementedError(list, auditSlugs);
+  }
+  const filteredList = list.filter(({ slug }) => auditSlugs.includes(slug));
+
+  return filteredList;
+}
+
+export function getLighthouseCliArguments(
+  options: LighthouseCliOptions,
+): string[] {
+  const {
+    url,
+    outputPath = LIGHTHOUSE_REPORT_NAME,
+    onlyAudits = [],
+    verbose = false,
+    headless = false,
+    userDataDir,
+  } = options;
+  // eslint-disable-next-line functional/no-let
+  let argsObj: Record<string, unknown> = {
+    _: ['lighthouse', url],
+    verbose,
+    output: 'json',
+    'output-path': outputPath,
+    userDataDir,
+  };
+
+  if (headless) {
+    argsObj = {
+      ...argsObj,
+      ['chrome-flags']: `--headless=${headless}`,
+    };
+  }
+
+  if (onlyAudits.length > 0) {
+    argsObj = {
+      ...argsObj,
+      onlyAudits: toArray(onlyAudits),
+    };
+  }
+
+  return objectToCliArgs(argsObj);
+}
+
+export function lhrDetailsToIssueDetails(
+  details = {} as unknown as Result['audits'][string]['details'],
+): Issue[] | null {
+  const { type, items } = details as {
+    type: string;
+    items: Record<string, string>[];
+    /**
+     * @TODO implement cases
+     * - undefined,
+     * - 'table',
+     * - 'filmstrip',
+     * - 'screenshot',
+     * - 'debugdata',
+     * - 'opportunity',
+     * - 'criticalrequestchain',
+     * - 'list',
+     * - 'treemap-data'
+     */
+  };
+  if (type === 'table') {
+    return [
+      {
+        message: items
+          .map((item: Record<string, string>) =>
+            Object.entries(item).map(([key, value]) => `${key}-${value}`),
+          )
+          .join(',')
+          .slice(0, MAX_ISSUE_MESSAGE_LENGTH),
+        severity: 'info',
+        source: {
+          file: 'required-in-portal-api',
+        },
+      },
+    ];
+  }
+
+  return null;
+}

@@ -3,8 +3,8 @@ import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthouseCorePerfGroupRefs,
   lighthousePlugin,
-  lighthouseRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
@@ -39,6 +39,8 @@ const config = {
     lighthousePlugin({
       url: 'https://quality-metrics-staging.web.app/login',
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      headless: false,
+      verbose: true,
     }),
   ],
   categories: [
@@ -48,7 +50,7 @@ const config = {
       refs: [
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
-        ...lighthouseRecommendedRefs,
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
     {

@@ -145,6 +145,7 @@ Each example is fully tested to give demonstrate best practices for plugin testi
 
 - 📏 [File Size](../../examples/plugins/src/file-size)
 - 📦 [Package Json](../../examples/plugins/src/package-json)
+- 🔥 [LightHouse](../../examples/plugins/src/lighthouse)
 
 ## CLI commands and options
 
