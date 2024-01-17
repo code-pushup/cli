@@ -15,7 +15,7 @@ export async function listRules(
   const configs = await toArray(patterns).reduce(
     async (acc, pattern) => [
       ...(await acc),
-      await eslint.calculateConfigForFile(pattern),
+      (await eslint.calculateConfigForFile(pattern)) as Linter.Config,
     ],
     Promise.resolve<Linter.Config[]>([]),
   );
@@ -24,6 +24,7 @@ export async function listRules(
     configs.flatMap(config => Object.keys(config.rules ?? {})),
   );
   const rulesMeta = eslint.getRulesMetaForResults([
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     {
       messages: rulesIds.map(ruleId => ({ ruleId })),
       suppressedMessages: [] as Linter.SuppressedLintMessage[],
@@ -58,7 +59,7 @@ export async function listRules(
       {},
     );
 
-  return Object.values(rulesMap).flatMap(Object.values);
+  return Object.values(rulesMap).flatMap<RuleData>(Object.values);
 }
 
 function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {

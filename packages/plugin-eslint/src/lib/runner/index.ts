@@ -20,7 +20,7 @@ export async function executeRunner(argv = process.argv): Promise<void> {
   if (!eslintrc) {
     throw new Error('Invalid runner args - missing eslintrc argument');
   }
-  if (!patterns.length) {
+  if (patterns.length === 0) {
     throw new Error('Invalid runner args - missing patterns argument');
   }
 
