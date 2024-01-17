@@ -1,8 +1,8 @@
-import {CoreConfig} from '@code-pushup/models';
+import { CoreConfig } from '@code-pushup/models';
 
 export default {
   persist: {
-    filename: 'rc-report'
+    filename: 'rc-report',
   },
   categories: [
     {
@@ -27,13 +27,13 @@ export default {
         {
           slug: 'audit-1',
           title: 'Audit Title',
-        }
+        },
       ],
       runner: {
         command: 'node',
         args: [],
-        outputFile: 'plugin-slug-report.json'
-      }
-    }
+        outputFile: 'plugin-slug-report.json',
+      },
+    },
   ],
 } satisfies CoreConfig;

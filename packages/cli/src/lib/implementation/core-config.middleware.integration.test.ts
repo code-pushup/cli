@@ -8,34 +8,31 @@ import {
   PERSIST_OUTPUT_DIR,
   PersistConfig,
 } from '@code-pushup/models';
+import { CoreConfigNames } from '@code-pushup/testing-utils';
 import { objectToCliArgs } from '@code-pushup/utils';
-import { CoreConfigNames } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
 import {
-  ConfigCliOptions,
   CoreConfigCliOptions,
   PersistConfigCliOptions,
-  UploadConfigCliOptions,
 } from './core-config.model';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
-import { GeneralCliOptions } from './global.model';
+
+const configDirPath = join(
+  fileURLToPath(dirname(import.meta.url)),
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  'testing-utils',
+  'src',
+  'lib',
+  'fixtures',
+  'configs',
+);
 
 describe('coreConfigMiddleware', () => {
-  const configDirPath = join(
-    fileURLToPath(dirname(import.meta.url)),
-    '..',
-    '..',
-    '..',
-    '..',
-    '..',
-    'testing-utils',
-    'src',
-    'lib',
-    'fixtures',
-    'configs',
-  );
-
   it.each(['ts', 'mjs', 'js'])(
     'should load a valid .%s config',
     async extension => {
@@ -65,15 +62,8 @@ const cliWithConfigOptionsAndMiddleware = (
   });
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
-  const configPath = (kind: CoreConfigNames = 'minimal') =>
-    join(
-      fileURLToPath(dirname(import.meta.url)),
-      '..',
-      '..',
-      '..',
-      'mocks',
-      `code-pushup.${kind}.config.ts`,
-    );
+  const configPath = (kind?: CoreConfigNames) =>
+    join(configDirPath, `code-pushup.${kind ? `${kind}.` : ''}config.ts`);
   const cliPersistOptions: PersistConfigCliOptions = {
     'persist.outputDir': 'tmp-cli',
     'persist.format': 'md',
@@ -89,6 +79,7 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
     format: ['json', 'md'],
     filename: 'rc-report',
   };
+
   it.each([
     [
       'defaults',
