@@ -52,17 +52,16 @@ describe('coreConfigMiddleware', () => {
   });
 });
 
-const cliWithConfigOptionsAndMiddleware = (
-  cliObj: Partial<GeneralCliOptions>,
-) =>
-  yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
-    options: {
-      ...yargsCoreConfigOptionsDefinition(),
-    },
-    middlewares: [{ middlewareFunction: coreConfigMiddleware }],
-  });
-
 describe('cliWithConfigOptionsAndMiddleware', () => {
+  const cliWithConfigOptionsAndMiddleware = (
+    cliObj: Partial<GeneralCliOptions>,
+  ) =>
+    yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
+      options: {
+        ...yargsCoreConfigOptionsDefinition(),
+      },
+      middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+    });
   const configPath = (kind?: CoreConfigName) => {
     const templateKind = kind ? `${kind}.` : '';
     return join(configDirPath, `code-pushup.${templateKind}config.ts`);
@@ -110,7 +109,7 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
       },
     ],
   ])(
-    'should handle persist arguments for "%s" correctly',
+    'options and middleware should handle persist arguments for case "%s" correctly',
     async (_, configKind, cliObj, expectedObject) => {
       const argv = await cliWithConfigOptionsAndMiddleware({
         ...cliObj,
