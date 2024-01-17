@@ -62,17 +62,19 @@ const cliWithConfigOptionsAndMiddleware = (
   });
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
-  const configPath = (kind?: CoreConfigNames) =>
-    join(configDirPath, `code-pushup.${kind ? `${kind}.` : ''}config.ts`);
+  const configPath = (kind?: CoreConfigNames) => {
+    const templateKind = kind ? `${kind}.` : '';
+    return join(configDirPath, `code-pushup.${templateKind}config.ts`);
+  };
   const cliPersistOptions: PersistConfigCliOptions = {
     'persist.outputDir': 'tmp-cli',
     'persist.format': 'md',
     'persist.filename': 'cli-report',
   };
   const cliResultPersistOptions: PersistConfig = {
-    outputDir: 'tmp-cli',
-    format: ['md'],
-    filename: 'cli-report',
+    outputDir: cliPersistOptions['persist.outputDir'],
+    format: [cliPersistOptions['persist.format']],
+    filename: cliPersistOptions['persist.filename'],
   };
   const rcResultPersistOptions: PersistConfig = {
     outputDir: 'rc-tmp',
