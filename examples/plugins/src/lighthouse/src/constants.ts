@@ -20,12 +20,6 @@ export const audits: Audit[] = [
       'Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)',
   },
   {
-    slug: 'first-meaningful-paint',
-    title: 'First Meaningful Paint',
-    description:
-      'First Meaningful Paint measures when the primary content of a page is visible. [Learn more about the First Meaningful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-meaningful-paint/).',
-  },
-  {
     slug: 'speed-index',
     title: 'Speed Index',
     description:
