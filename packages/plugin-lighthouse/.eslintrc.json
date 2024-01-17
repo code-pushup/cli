@@ -1,25 +1,18 @@
 {
-  "extends": ["./code-pushup.eslintrc.json"],
-  // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:31 GMT+0100 (Central European Standard Time)
-  "rules": {
-    "@typescript-eslint/no-unused-expressions": "off", // 1 warning
-    "unicorn/import-style": "off", // 1 warning
-    "unicorn/prefer-node-protocol": "off" // 1 warning
-  },
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": [
-        "*.spec.ts",
-        "*.test.ts",
-        "**/test/**/*",
-        "**/mock/**/*",
-        "**/mocks/**/*",
-        "*.cy.ts",
-        "*.stories.ts"
-      ],
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["packages/plugin-lighthouse/tsconfig.*?.json"]
+      }
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
       "rules": {
-        "unicorn/no-empty-file": "off" // 1 warning
+        "@nx/dependency-checks": ["error"]
       }
     }
   ]
