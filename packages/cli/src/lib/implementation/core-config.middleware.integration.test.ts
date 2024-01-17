@@ -17,7 +17,6 @@ import {
   PersistConfigCliOptions,
 } from './core-config.model';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
-import { GeneralCliOptions } from './global.model';
 
 const configDirPath = join(
   fileURLToPath(dirname(import.meta.url)),
@@ -54,7 +53,7 @@ describe('coreConfigMiddleware', () => {
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
   const cliWithConfigOptionsAndMiddleware = (
-    cliObj: Partial<GeneralCliOptions>,
+    cliObj: Partial<CoreConfigCliOptions>,
   ) =>
     yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
       options: {
@@ -82,41 +81,49 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
     filename: 'rc-report',
   };
 
-  it.each<
-    [string, CoreConfigName, Partial<CoreConfigCliOptions>, PersistConfig]
-  >([
-    [
-      'defaults',
-      'minimal',
-      {},
-      {
-        outputDir: PERSIST_OUTPUT_DIR,
-        format: PERSIST_FORMAT,
-        filename: PERSIST_FILENAME,
-      },
-    ],
-    ['cli args', 'minimal', cliPersistOptions, cliResultPersistOptions],
-    ['rc', 'persist', {}, rcResultPersistOptions],
-    ['rc + cli args', 'persist', cliPersistOptions, cliResultPersistOptions],
-    [
-      'partial rc + partial cli args',
-      'persist-only-filename',
-      { 'persist.outputDir': cliPersistOptions['persist.outputDir'] },
-      {
-        outputDir: cliResultPersistOptions.outputDir,
-        format: PERSIST_FORMAT,
-        filename: rcResultPersistOptions.filename,
-      },
-    ],
-  ])(
-    'options and middleware should handle persist arguments for case "%s" correctly',
-    async (_, configKind, cliObj, expectedObject) => {
-      const argv = await cliWithConfigOptionsAndMiddleware({
-        ...cliObj,
-        config: configPath(configKind),
-      }).parseAsync();
+  it('should take default values for persist when no argument is given in rc or over the cli', async () => {
+    const expectedObject = {
+      outputDir: PERSIST_OUTPUT_DIR,
+      format: PERSIST_FORMAT,
+      filename: PERSIST_FILENAME,
+    };
+    const argv = await cliWithConfigOptionsAndMiddleware({
+      config: configPath('minimal'),
+    }).parseAsync();
 
-      expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
-    },
-  );
+    expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
+  });
+
+  it('should take values for persist when provided over the cli', async () => {
+    const expectedObject = cliResultPersistOptions;
+    const argv = await cliWithConfigOptionsAndMiddleware({
+      ...cliPersistOptions,
+      config: configPath('minimal'),
+    }).parseAsync();
+
+    expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
+  });
+
+  it('should take values for persist when provided over the rc', async () => {
+    const expectedObject = rcResultPersistOptions;
+    const argv = await cliWithConfigOptionsAndMiddleware({
+      config: configPath('persist'),
+    }).parseAsync();
+
+    expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
+  });
+
+  it('should take values for persist when provided over both, the rc config and the cli', async () => {
+    const expectedObject = {
+      outputDir: cliResultPersistOptions.outputDir,
+      format: PERSIST_FORMAT,
+      filename: rcResultPersistOptions.filename,
+    };
+    const argv = await cliWithConfigOptionsAndMiddleware({
+      ['persist.outputDir']: cliPersistOptions['persist.outputDir'],
+      config: configPath('persist-only-filename'),
+    }).parseAsync();
+
+    expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
+  });
 });
