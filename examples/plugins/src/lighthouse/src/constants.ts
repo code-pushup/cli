@@ -55,7 +55,6 @@ export const corePerfGroupRefs: CategoryRef[] = [
     weight: 1,
   },
 ];
-
 export const categoryCorePerfGroup: Group = {
   slug: LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG,
   title: 'performance-core',

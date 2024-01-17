@@ -38,12 +38,13 @@ export function filterBySlug<T extends WithSlug>(
   if (auditSlugs.length === 0) {
     return list;
   }
-  if (auditSlugs.filter(slug => !list.some(wS => wS.slug === slug)).length) {
+  if (
+    auditSlugs.filter(slug => list.some(wS => wS.slug === slug)).length === 0
+  ) {
     throw new AuditsNotImplementedError(list, auditSlugs);
   }
-  const filteredList = list.filter(({ slug }) => auditSlugs.includes(slug));
 
-  return filteredList;
+  return list.filter(({ slug }) => auditSlugs.includes(slug));
 }
 
 export function getLighthouseCliArguments(
