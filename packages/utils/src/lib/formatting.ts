@@ -23,9 +23,10 @@ export function pluralize(text: string): string {
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
-  bytes = Math.max(bytes, 0);
+  const positiveBytes = Math.max(bytes, 0);
+
   // early exit
-  if (!bytes) {
+  if (positiveBytes === 0) {
     return '0 B';
   }
 
@@ -33,9 +34,9 @@ export function formatBytes(bytes: number, decimals = 2) {
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.floor(Math.log(positiveBytes) / Math.log(k));
 
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${
+  return `${Number.parseFloat((positiveBytes / Math.pow(k, i)).toFixed(dm))} ${
     sizes[i]
   }`;
 }

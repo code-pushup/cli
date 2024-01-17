@@ -16,21 +16,21 @@ const PROCESS_ARGUMENT_NUM_AUDITS_P1 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits1'))
     ?.split('=')
-    .pop() || '0',
+    .slice(0, -1)[0] ?? '0',
   10,
 );
 const PROCESS_ARGUMENT_NUM_AUDITS_P2 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits2'))
     ?.split('=')
-    .pop() || '0',
+    .slice(0, -1)[0] ?? '0',
   10,
 );
 const PROCESS_ARGUMENT_NUM_GROUPS_P2 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numGroupRefs2'))
     ?.split('=')
-    .pop() || '0',
+    .slice(0, -1)[0] ?? '0',
   10,
 );
 
@@ -125,6 +125,7 @@ function scoreMinimalReportOptimized3() {
 
 // ==============================================================
 
+// eslint-disable-next-line max-lines-per-function
 function minimalReport(opt?: MinimalReportOptions): Report {
   const numAuditsP1 = opt?.numAuditsP1 ?? NUM_AUDITS_P1;
   const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;

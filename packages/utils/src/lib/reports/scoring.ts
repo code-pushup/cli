@@ -57,17 +57,15 @@ export function calculateScore<T extends { weight: number }>(
 }
 
 export function scoreReport(report: Report): ScoredReport {
-  const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map();
 
-  scoredReport.plugins?.forEach(plugin => {
-    const { slug, audits } = plugin;
-    const groups = plugin.groups || [];
+  const scoredPlugins = report.plugins.map(plugin => {
+    const { slug, audits, groups } = plugin;
 
-    audits.forEach(audit => {
-      const key = `${slug}-${audit.slug}-audit`;
-      audit.plugin = slug;
-      allScoredAuditsAndGroups.set(key, audit);
+    const updatedAudits = audits.map(audit => ({ ...audit, plugin: slug }));
+
+    updatedAudits.forEach(audit => {
+      allScoredAuditsAndGroups.set(`${slug}-${audit.slug}-audit`, audit);
     });
 
     function groupScoreFn(ref: GroupRef) {
@@ -82,13 +80,18 @@ export function scoreReport(report: Report): ScoredReport {
       return score;
     }
 
-    groups.forEach(group => {
-      const key = `${slug}-${group.slug}-group`;
-      group.score = calculateScore(group.refs, groupScoreFn);
-      group.plugin = slug;
-      allScoredAuditsAndGroups.set(key, group);
+    const scoredGroups =
+      groups?.map(group => ({
+        ...group,
+        score: calculateScore(group.refs, groupScoreFn),
+        plugin: slug,
+      })) ?? [];
+
+    scoredGroups.forEach(group => {
+      allScoredAuditsAndGroups.set(`${slug}-${group.slug}-group`, group);
     });
-    plugin.groups = groups;
+
+    return { ...plugin, audits: updatedAudits, groups: scoredGroups };
   });
 
   function catScoreFn(ref: CategoryRef) {
@@ -102,14 +105,14 @@ export function scoreReport(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategoriesMap = new Map();
-  // eslint-disable-next-line functional/no-loop-statements
-  for (const category of scoredReport.categories) {
-    category.score = calculateScore(category.refs, catScoreFn);
-    scoredCategoriesMap.set(category.slug, category);
-  }
+  const scoredCategories = report.categories.map(category => ({
+    ...category,
+    score: calculateScore(category.refs, catScoreFn),
+  }));
 
-  scoredReport.categories = [...scoredCategoriesMap.values()];
-
-  return scoredReport;
+  return {
+    ...deepClone(report),
+    plugins: scoredPlugins,
+    categories: scoredCategories,
+  };
 }
