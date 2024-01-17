@@ -38,9 +38,7 @@ export function filterBySlug<T extends WithSlug>(
   if (auditSlugs.length === 0) {
     return list;
   }
-  if (
-    auditSlugs.filter(slug => list.some(wS => wS.slug === slug)).length === 0
-  ) {
+  if (auditSlugs.some(slug => !list.some(wS => wS.slug === slug))) {
     throw new AuditsNotImplementedError(list, auditSlugs);
   }
 
