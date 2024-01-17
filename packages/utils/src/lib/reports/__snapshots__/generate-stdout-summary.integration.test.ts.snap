@@ -6,91 +6,119 @@ exports[`report-to-stdout > should contain all sections when using the fixture r
 
 ESLint audits
 
-● Disallow missing props validation in a React component       6 warnings
-  definition
-● Disallow variable declarations from shadowing variables      3 warnings
-  declared in the outer scope
-● Require or disallow method and property shorthand syntax     3 warnings
-  for object literals
-● verifies the list of dependencies for Hooks like useEffect   2 warnings
-  and similar
-● Disallow missing \`key\` props in iterators/collection         1 warning
+● Disallow missing props validation in   6 warnings
+  a React component definition
+● Disallow variable declarations from    3 warnings
+  shadowing variables declared in the
+  outer scope
+● Require or disallow method and         3 warnings
+  property shorthand syntax for object
   literals
-● Disallow unused variables                                    1 warning
-● Enforce a maximum number of lines of code in a function      1 warning
-● Require \`const\` declarations for variables that are never    1 warning
-  reassigned after declared
-● Require braces around arrow function bodies                  1 warning
-● Require the use of \`===\` and \`!==\`                           1 warning
-● Disallow \`target=\\"_blank\\"\` attribute without                 passed
-  \`rel=\\"noreferrer\\"\`
-● Disallow assignment operators in conditional expressions     passed
-● Disallow comments from being inserted as text nodes          passed
-● Disallow direct mutation of this.state                       passed
-● Disallow duplicate properties in JSX                         passed
-● Disallow invalid regular expression strings in \`RegExp\`      passed
-  constructors
-● Disallow loops with a body that allows only one iteration    passed
-● Disallow missing displayName in a React component            passed
-  definition
-● Disallow missing React when using JSX                        passed
-● Disallow negating the left operand of relational operators   passed
-● Disallow passing of children as props                        passed
-● Disallow React to be incorrectly marked as unused            passed
-● Disallow reassigning \`const\` variables                       passed
-● Disallow the use of \`debugger\`                               passed
-● Disallow the use of undeclared variables unless mentioned    passed
-  in \`/*global */\` comments
-● Disallow undeclared variables in JSX                         passed
-● Disallow unescaped HTML entities from appearing in markup    passed
-● Disallow usage of deprecated methods                         passed
-● Disallow usage of findDOMNode                                passed
-● Disallow usage of isMounted                                  passed
-● Disallow usage of the return value of ReactDOM.render        passed
-● Disallow usage of unknown DOM property                       passed
-● Disallow use of optional chaining in contexts where the      passed
-  \`undefined\` value is not allowed
-● Disallow using Object.assign with an object literal as the   passed
-  first argument and prefer the use of object spread instead
-● Disallow using string references                             passed
-● Disallow variables used in JSX to be incorrectly marked as   passed
-  unused
-● Disallow when a DOM element is using both children and       passed
+● verifies the list of dependencies      2 warnings
+  for Hooks like useEffect and similar
+● Disallow missing \`key\` props in        1 warning
+  iterators/collection literals
+● Disallow unused variables              1 warning
+● Enforce a maximum number of lines of   1 warning
+  code in a function
+● Require \`const\` declarations for       1 warning
+  variables that are never reassigned
+  after declared
+● Require braces around arrow function   1 warning
+  bodies
+● Require the use of \`===\` and \`!==\`     1 warning
+● Disallow \`target=\\"_blank\\"\` attribute   passed
+  without \`rel=\\"noreferrer\\"\`
+● Disallow assignment operators in       passed
+  conditional expressions
+● Disallow comments from being           passed
+  inserted as text nodes
+● Disallow direct mutation of            passed
+  this.state
+● Disallow duplicate properties in JSX   passed
+● Disallow invalid regular expression    passed
+  strings in \`RegExp\` constructors
+● Disallow loops with a body that        passed
+  allows only one iteration
+● Disallow missing displayName in a      passed
+  React component definition
+● Disallow missing React when using      passed
+  JSX
+● Disallow negating the left operand     passed
+  of relational operators
+● Disallow passing of children as        passed
+  props
+● Disallow React to be incorrectly       passed
+  marked as unused
+● Disallow reassigning \`const\`           passed
+  variables
+● Disallow the use of \`debugger\`         passed
+● Disallow the use of undeclared         passed
+  variables unless mentioned in
+  \`/*global */\` comments
+● Disallow undeclared variables in JSX   passed
+● Disallow unescaped HTML entities       passed
+  from appearing in markup
+● Disallow usage of deprecated methods   passed
+● Disallow usage of findDOMNode          passed
+● Disallow usage of isMounted            passed
+● Disallow usage of the return value     passed
+  of ReactDOM.render
+● Disallow usage of unknown DOM          passed
+  property
+● Disallow use of optional chaining in   passed
+  contexts where the \`undefined\` value
+  is not allowed
+● Disallow using Object.assign with an   passed
+  object literal as the first argument
+  and prefer the use of object spread
+  instead
+● Disallow using string references       passed
+● Disallow variables used in JSX to be   passed
+  incorrectly marked as unused
+● Disallow when a DOM element is using   passed
+  both children and
   dangerouslySetInnerHTML
-● Enforce a maximum number of lines per file                   passed
-● Enforce camelcase naming convention                          passed
-● Enforce comparing \`typeof\` expressions against valid         passed
-  strings
-● Enforce consistent brace style for all control statements    passed
-● Enforce ES5 or ES6 class for returning value in render       passed
-  function
-● enforces the Rules of Hooks                                  passed
-● Require \`let\` or \`const\` instead of \`var\`                    passed
-● Require calls to \`isNaN()\` when checking for \`NaN\`           passed
-● Require or disallow \\"Yoda\\" conditions                        passed
-● Require using arrow functions for callbacks                  passed
+● Enforce a maximum number of lines      passed
+  per file
+● Enforce camelcase naming convention    passed
+● Enforce comparing \`typeof\`             passed
+  expressions against valid strings
+● Enforce consistent brace style for     passed
+  all control statements
+● Enforce ES5 or ES6 class for           passed
+  returning value in render function
+● enforces the Rules of Hooks            passed
+● Require \`let\` or \`const\` instead of    passed
+  \`var\`
+● Require calls to \`isNaN()\` when        passed
+  checking for \`NaN\`
+● Require or disallow \\"Yoda\\"             passed
+  conditions
+● Require using arrow functions for      passed
+  callbacks
 
 
 Lighthouse audits
 
-● First Contentful Paint                                       1.2 s
-● Largest Contentful Paint                                     1.5 s
-● Speed Index                                                  1.2 s
-● Cumulative Layout Shift                                      0
-● Total Blocking Time                                          0 ms
+● First Contentful Paint                 1.2 s
+● Largest Contentful Paint               1.5 s
+● Speed Index                            1.2 s
+● Cumulative Layout Shift                0
+● Total Blocking Time                    0 ms
 
 
 Categories
 
-┌───────────────────────────────────────────────────┬────────┬────────┐
-│ Category                                          │  Score │ Audits │
-├───────────────────────────────────────────────────┼────────┼────────┤
-│ Performance                                       │     92 │ 6      │
-├───────────────────────────────────────────────────┼────────┼────────┤
-│ Bug prevention                                    │     68 │ 16     │
-├───────────────────────────────────────────────────┼────────┼────────┤
-│ Code style                                        │     54 │ 13     │
-└───────────────────────────────────────────────────┴────────┴────────┘
+┌──────────────────────────────────────┬───────┬────────┐
+│ Category                             │ Score │ Audits │
+├──────────────────────────────────────┼───────┼────────┤
+│ Performance                          │    92 │ 6      │
+├──────────────────────────────────────┼───────┼────────┤
+│ Bug prevention                       │    68 │ 16     │
+├──────────────────────────────────────┼───────┼────────┤
+│ Code style                           │    54 │ 13     │
+└──────────────────────────────────────┴───────┴────────┘
 
 Made with ❤ by code-pushup.dev
 "

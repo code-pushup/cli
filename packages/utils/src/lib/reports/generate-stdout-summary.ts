@@ -73,7 +73,7 @@ function reportToOverviewSection({
 }: ScoredReport): string {
   const table = new Table({
     /* eslint-disable no-magic-numbers */
-    colWidths: [51, 8, 8],
+    colWidths: [38, 7, 8],
     /* eslint-enable no-magic-numbers */
     head: reportRawOverviewTableHeaders,
     colAligns: ['left', 'right', 'left'],
