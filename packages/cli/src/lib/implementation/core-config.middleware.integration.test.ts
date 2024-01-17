@@ -13,16 +13,6 @@ import { coreConfigMiddleware } from './core-config.middleware';
 import { ConfigCliOptions } from './core-config.model';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
 
-const cliWithConfigOptionsAndMiddleware = (
-  cliObj: CoreConfig & ConfigCliOptions,
-) =>
-  yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
-    options: {
-      ...yargsCoreConfigOptionsDefinition(),
-    },
-    middlewares: [{ middlewareFunction: coreConfigMiddleware }],
-  });
-
 describe('coreConfigMiddleware', () => {
   const configDirPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -55,6 +45,16 @@ describe('coreConfigMiddleware', () => {
     ).rejects.toThrow(/Provided path .* is not valid./);
   });
 });
+
+const cliWithConfigOptionsAndMiddleware = (
+  cliObj: CoreConfig & ConfigCliOptions,
+) =>
+  yargsCli<CoreConfig>(objectToCliArgs(cliObj), {
+    options: {
+      ...yargsCoreConfigOptionsDefinition(),
+    },
+    middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+  });
 
 describe('cliWithConfigOptionsAndMiddleware', () => {
   const configPath = (kind: 'minimal' | 'persist' | 'upload' = 'minimal') =>
