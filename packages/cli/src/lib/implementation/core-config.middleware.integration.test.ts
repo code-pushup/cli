@@ -113,7 +113,17 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
     expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
   });
 
-  it('should take values for persist when provided over both, the rc config and the cli', async () => {
+  it('should take the CLI values as precedence if both, the rc config and the CLI arguments are given for persist', async () => {
+    const expectedObject = rcResultPersistOptions;
+    const argv = await cliWithConfigOptionsAndMiddleware({
+      ...cliPersistOptions,
+      config: configPath('persist'),
+    }).parseAsync();
+
+    expect(argv?.persist).toEqual(expect.objectContaining(expectedObject));
+  });
+
+  it('should take values for persist when provided over both, the rc config, the cli and the defaults', async () => {
     const expectedObject = {
       outputDir: cliResultPersistOptions.outputDir,
       format: PERSIST_FORMAT,
