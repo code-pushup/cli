@@ -114,7 +114,7 @@ describe('cliWithConfigOptionsAndMiddleware', () => {
   });
 
   it('should take the CLI values as precedence if both, the rc config and the CLI arguments are given for persist', async () => {
-    const expectedObject = rcResultPersistOptions;
+    const expectedObject = cliResultPersistOptions;
     const argv = await cliWithConfigOptionsAndMiddleware({
       ...cliPersistOptions,
       config: configPath('persist'),
