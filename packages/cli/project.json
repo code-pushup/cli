@@ -63,7 +63,11 @@
       },
       "dependsOn": ["build"]
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/cli"
+      }
+    }
   },
   "tags": ["scope:core", "type:app"]
 }
