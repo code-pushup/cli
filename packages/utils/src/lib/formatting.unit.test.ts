@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
+  formatDate,
   formatDuration,
   pluralize,
   pluralizeToken,
@@ -72,6 +73,19 @@ describe('formatDuration', () => {
     [1200, '1.20 s'],
   ])('should log correctly formatted duration for %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
+  });
+});
+
+describe('formatDate', () => {
+  it('should produce human-readable date and time in English', () => {
+    expect(formatDate(new Date('2024-01-23T09:50:09.606Z'))).toBe(
+      'Jan 23, 2024, 9:50 AM',
+    );
+  });
+
+  // see https://github.com/nodejs/node/issues/45171
+  it('should not include narrow non-breaking space', () => {
+    expect(formatDate(new Date())).not.toMatch(' ');
   });
 });
 
