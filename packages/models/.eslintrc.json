@@ -1,22 +1,19 @@
 {
-  "extends": ["./code-pushup.eslintrc.json"],
-  // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:24 GMT+0100 (Central European Standard Time)
-  "rules": {
-    "arrow-body-style": "off", // 3 warnings
-    "no-magic-numbers": "off", // 4 warnings
-    "no-param-reassign": "off", // 1 error
-    "@typescript-eslint/no-shadow": "off", // 10 warnings
-    "@typescript-eslint/no-unnecessary-condition": "off", // 7 warnings
-    "@typescript-eslint/no-unsafe-argument": "off", // 2 errors
-    "@typescript-eslint/no-unsafe-call": "off", // 1 error
-    "@typescript-eslint/prefer-nullish-coalescing": "off", // 2 warnings
-    "functional/immutable-data": "off", // 2 errors, 22 warnings
-    "functional/no-let": "off", // 1 warning
-    "unicorn/better-regex": "off", // 1 warning
-    "unicorn/explicit-length-check": "off", // 1 warning
-    "unicorn/numeric-separators-style": "off", // 1 warning
-    "unicorn/prefer-logical-operator-over-ternary": "off", // 1 warning
-    "unicorn/prefer-spread": "off" // 1 warning
-  }
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["packages/models/tsconfig.*?.json"]
+      }
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": ["error"]
+      }
+    }
+  ]
 }

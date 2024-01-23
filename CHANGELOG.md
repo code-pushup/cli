@@ -2,6 +2,22 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.8.25](https://github.com/code-pushup/cli/compare/v0.8.24...v0.8.25) (2024-01-19)
+
+## [0.8.24](https://github.com/code-pushup/cli/compare/v0.8.23...v0.8.24) (2024-01-19)
+
+## [0.8.23](https://github.com/code-pushup/cli/compare/v0.8.22...v0.8.23) (2024-01-18)
+
+## [0.8.22](https://github.com/code-pushup/cli/compare/v0.8.21...v0.8.22) (2024-01-16)
+
+## [0.8.21](https://github.com/code-pushup/cli/compare/v0.8.20...v0.8.21) (2024-01-16)
+
+## [0.8.20](https://github.com/code-pushup/cli/compare/v0.8.19...v0.8.20) (2024-01-16)
+
+## [0.8.19](https://github.com/code-pushup/cli/compare/v0.8.18...v0.8.19) (2024-01-16)
+
+## [0.8.18](https://github.com/code-pushup/cli/compare/v0.8.17...v0.8.18) (2024-01-15)
+
 ## [0.8.17](https://github.com/code-pushup/cli/compare/v0.8.16...v0.8.17) (2024-01-15)
 
 ## [0.8.16](https://github.com/code-pushup/cli/compare/v0.8.15...v0.8.16) (2024-01-15)

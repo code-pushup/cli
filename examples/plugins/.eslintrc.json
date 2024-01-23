@@ -3,18 +3,13 @@
   "ignorePatterns": ["!**/*", "code-pushup.config.ts"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
-    },
-    {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
         "project": ["examples/plugins/tsconfig.*?.json"]
-      },
-      "rules": {}
+      }
     },
     {
-      "files": ["*.test.ts", "*.test.tsx", "*.generated.ts", "*.generated.tsx"],
+      "files": ["*.test.ts"],
       "parserOptions": {
         "project": ["examples/plugins/tsconfig.*?.json"]
       },
@@ -22,10 +17,6 @@
         "no-magic-numbers": "off",
         "max-lines": "off"
       }
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
     },
     {
       "files": ["*.json"],

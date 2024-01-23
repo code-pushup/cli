@@ -95,8 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  stop = stop !== undefined ? stop : performance.now();
-  return Math.floor(stop - start);
+  return Math.floor((stop ?? performance.now()) - start);
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
@@ -112,23 +111,15 @@ export function countCategoryAudits(
   // Create lookup object for groups within each plugin
   const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
     (lookup, plugin) => {
-      if (!plugin.groups.length) {
+      if (plugin.groups.length === 0) {
         return lookup;
       }
 
       return {
         ...lookup,
-        [plugin.slug]: {
-          ...plugin.groups.reduce<Record<string, Group>>(
-            (groupLookup, group) => {
-              return {
-                ...groupLookup,
-                [group.slug]: group,
-              };
-            },
-            {},
-          ),
-        },
+        [plugin.slug]: Object.fromEntries(
+          plugin.groups.map(group => [group.slug, group]),
+        ),
       };
     },
     {},
@@ -138,7 +129,7 @@ export function countCategoryAudits(
   return refs.reduce((acc, ref) => {
     if (ref.type === 'group') {
       const groupRefs = groupLookup[ref.plugin]?.[ref.slug]?.refs;
-      return acc + (groupRefs?.length || 0);
+      return acc + (groupRefs?.length ?? 0);
     }
     return acc + 1;
   }, 0);
@@ -148,15 +139,15 @@ export function getAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
 ): WeighedAuditReport {
-  const auditPlugin = plugins.find(({ slug }) => slug === plugin);
+  const auditPlugin = plugins.find(p => p.slug === plugin);
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
-  const audit = auditPlugin?.audits.find(
+  const audit = auditPlugin.audits.find(
     ({ slug: auditSlug }) => auditSlug === slug,
   );
   if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin?.slug);
+    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
   }
   return {
     ...audit,
@@ -174,25 +165,22 @@ export function getGroupWithAudits(
   if (!plugin) {
     throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
   }
-  const groupWithAudits = plugin?.groups?.find(({ slug }) => slug === refSlug);
+  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === refSlug);
 
   if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
+    throwIsNotPresentError(`Group ${refSlug}`, plugin.slug);
   }
   const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
     (acc: WeighedAuditReport[], ref) => {
       const audit = getAuditByRef(
-        { ...ref, plugin: refPlugin } as CategoryRef,
+        { ...ref, plugin: refPlugin, type: 'audit' },
         plugins,
       );
-      if (audit) {
-        return [...acc, audit];
-      }
-      return [...acc];
+      return [...acc, audit];
     },
     [],
-  ) as WeighedAuditReport[];
-  const audits = groupAudits.sort(compareCategoryAudits);
+  );
+  const audits = [...groupAudits].sort(compareCategoryAudits);
 
   return {
     ...groupWithAudits,
@@ -259,11 +247,11 @@ export async function loadReport<T extends Format>(
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return reportSchema.parse(content) as any;
+    return reportSchema.parse(content) as LoadedReportFormat<T>;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return readTextFile(filePath) as any;
+
+  const text = await readTextFile(filePath);
+  return text as LoadedReportFormat<T>;
 }
 
 export function throwIsNotPresentError(
@@ -296,7 +284,7 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   if (a.source?.file !== b.source?.file) {
-    return a.source?.file.localeCompare(b.source?.file || '') || 0;
+    return a.source?.file.localeCompare(b.source?.file || '') ?? 0;
   }
 
   if (!a.source?.position && b.source?.position) {
@@ -309,8 +297,8 @@ export function compareIssues(a: Issue, b: Issue): number {
 
   if (a.source?.position?.startLine !== b.source?.position?.startLine) {
     return (
-      (a.source?.position?.startLine || 0) -
-      (b.source?.position?.startLine || 0)
+      (a.source?.position?.startLine ?? 0) -
+      (b.source?.position?.startLine ?? 0)
     );
   }
 

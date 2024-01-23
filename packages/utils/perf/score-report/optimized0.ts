@@ -22,12 +22,9 @@ function categoryRefToScore(
   groups: EnrichedScoredGroup[],
 ) {
   return (ref: CategoryRef) => {
-    let audit;
-    let group;
-
     switch (ref.type) {
       case 'audit':
-        audit = audits.find(
+        const audit = audits.find(
           a => a.slug === ref.slug && a.plugin === ref.plugin,
         );
         if (!audit) {
@@ -38,7 +35,7 @@ function categoryRefToScore(
         return audit.score;
 
       case 'group':
-        group = groups.find(
+        const group = groups.find(
           g => g.slug === ref.slug && g.plugin === ref.plugin,
         );
         if (!group) {
@@ -47,8 +44,6 @@ function categoryRefToScore(
           );
         }
         return group.score;
-      default:
-        throw new Error(`Type ${ref.type} is unknown`);
     }
   };
 }
@@ -67,17 +62,17 @@ export function calculateScore<T extends { weight: number }>(
 
 export function scoreReportOptimized0(report: Report): ScoredReport {
   const scoredPlugins = report.plugins.map(plugin => {
-    const { groups, audits } = plugin;
+    const { groups, audits, slug } = plugin;
     const preparedAudits = audits.map(audit => ({
       ...audit,
-      plugin: plugin.slug,
+      plugin: slug,
     }));
     const preparedGroups =
       groups?.map(group => ({
         ...group,
         score: calculateScore(group.refs, groupRefToScore(preparedAudits)),
-        plugin: plugin.slug,
-      })) || [];
+        plugin: slug,
+      })) ?? [];
 
     return {
       ...plugin,

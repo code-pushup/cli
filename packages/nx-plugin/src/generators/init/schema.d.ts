@@ -1,3 +1,3 @@
-export interface InitGeneratorSchema {
+export type InitGeneratorSchema = {
   skipPackageJson: boolean;
-}
+};
