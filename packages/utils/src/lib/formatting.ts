@@ -56,8 +56,13 @@ export function formatDate(date: Date): string {
   const locale = 'en-US'; // fixed locale to ensure consistency
   return date
     .toLocaleString(locale, {
-      dateStyle: 'medium',
-      timeStyle: 'short',
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
     })
     .replace(/\u202F/g, ' '); // see https://github.com/nodejs/node/issues/45171
 }

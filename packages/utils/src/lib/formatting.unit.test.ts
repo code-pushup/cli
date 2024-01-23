@@ -79,7 +79,7 @@ describe('formatDuration', () => {
 describe('formatDate', () => {
   it('should produce human-readable date and time in English', () => {
     expect(formatDate(new Date('2024-01-23T09:50:09.606Z'))).toBe(
-      'Jan 23, 2024, 9:50 AM',
+      'Tue, Jan 23, 2024, 9:50 AM UTC',
     );
   });
 
