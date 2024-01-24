@@ -6,18 +6,16 @@ import {
 } from '../../src/lib/file-system';
 import { crawlFileSystemOptimized0 } from './optimized0';
 
-const PROCESS_ARGUMENT_TARGET_DIRECTORY = String(
+const PROCESS_ARGUMENT_TARGET_DIRECTORY =
   process.argv
     .find(arg => arg.startsWith('--directory'))
     ?.split('=')
-    .pop() || '',
-);
-const PROCESS_ARGUMENT_PATTERN = String(
+    .at(-1) ?? '';
+const PROCESS_ARGUMENT_PATTERN =
   process.argv
     .find(arg => arg.startsWith('--pattern'))
     ?.split('=')
-    .pop() || '',
-);
+    .at(-1) ?? '';
 
 const suite = new Benchmark.Suite('report-scoring');
 
@@ -43,7 +41,7 @@ const listeners = {
           2,
         )} sec`,
       );
-      console.info(`Fastest is ${suite.filter('fastest').map('name')}`);
+      console.info(`Fastest is ${String(suite.filter('fastest').map('name'))}`);
     }
   },
 };

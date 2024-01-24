@@ -1,17 +1,19 @@
 {
-  "extends": ["./code-pushup.eslintrc.json"],
-  // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:28 GMT+0100 (Central European Standard Time)
-  "rules": {
-    "no-duplicate-imports": "off", // 1 warning
-    "@typescript-eslint/consistent-type-assertions": "off", // 1 error
-    "@typescript-eslint/no-unnecessary-condition": "off", // 1 warning
-    "@typescript-eslint/no-unsafe-assignment": "off", // 1 error
-    "@typescript-eslint/no-unsafe-return": "off", // 2 errors
-    "functional/immutable-data": "off", // 2 errors
-    "sonarjs/no-nested-template-literals": "off", // 1 error
-    "unicorn/explicit-length-check": "off", // 1 warning
-    "unicorn/import-style": "off", // 5 warnings
-    "unicorn/prefer-top-level-await": "off" // 1 warning
-  }
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["packages/plugin-eslint/tsconfig.*?.json"]
+      }
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": ["error"]
+      }
+    }
+  ]
 }

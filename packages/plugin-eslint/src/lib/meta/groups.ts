@@ -76,15 +76,15 @@ export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
     {},
   );
 
-  return Object.entries(categoriesMap)
-    .flatMap(([plugin, categories]) =>
-      Object.entries(categories).map(
-        ([category, slugs]): Group => ({
-          slug: `${slugify(plugin)}-${slugify(category)}`,
-          title: `${category} (${plugin})`,
-          refs: slugs.map(slug => ({ slug, weight: 1 })),
-        }),
-      ),
-    )
-    .sort((a, b) => a.slug.localeCompare(b.slug));
+  const groups = Object.entries(categoriesMap).flatMap(([plugin, categories]) =>
+    Object.entries(categories).map(
+      ([category, slugs]): Group => ({
+        slug: `${slugify(plugin)}-${slugify(category)}`,
+        title: `${category} (${plugin})`,
+        refs: slugs.map(slug => ({ slug, weight: 1 })),
+      }),
+    ),
+  );
+
+  return [...groups].sort((a, b) => a.slug.localeCompare(b.slug));
 }

@@ -9,7 +9,7 @@ export function findAllDependencies(
 
   // eslint-disable-next-line functional/no-loop-statements
   while (queue.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, functional/immutable-data
     const source = queue.shift()!;
     const dependencies = projectGraph.dependencies[source];
 
@@ -18,6 +18,7 @@ export function findAllDependencies(
       // skip duplicates (cycle in graph)
       if (!results.has(target) && target !== entry) {
         results.add(target);
+        // eslint-disable-next-line functional/immutable-data
         queue.push(target);
       }
     }

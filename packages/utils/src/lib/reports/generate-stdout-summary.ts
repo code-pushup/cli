@@ -1,6 +1,6 @@
 import cliui from '@isaacs/cliui';
 import chalk from 'chalk';
-import Table from 'cli-table3';
+import CliTable3 from 'cli-table3';
 import { NEW_LINE, SCORE_COLOR_RANGE, TERMINAL_WIDTH } from './constants';
 import { ScoredReport } from './scoring';
 import {
@@ -38,20 +38,20 @@ function reportToDetailSection(report: ScoredReport): string {
     const { title, audits } = plugin;
     const ui = cliui({ width: TERMINAL_WIDTH });
 
-    audits.forEach(({ score, title, displayValue, value }) => {
+    audits.forEach(audit => {
       ui.div(
         {
-          text: withColor({ score, text: '●' }),
+          text: withColor({ score: audit.score, text: '●' }),
           width: 2,
           padding: [0, 1, 0, 0],
         },
         {
-          text: title,
+          text: audit.title,
           // eslint-disable-next-line no-magic-numbers
           padding: [0, 3, 0, 0],
         },
         {
-          text: chalk.cyanBright(displayValue || `${value}`),
+          text: chalk.cyanBright(audit.displayValue || `${audit.value}`),
           width: 10,
           padding: [0, 0, 0, 0],
         },
@@ -72,7 +72,7 @@ function reportToOverviewSection({
   categories,
   plugins,
 }: ScoredReport): string {
-  const table = new Table({
+  const table = new CliTable3({
     head: reportRawOverviewTableHeaders,
     colAligns: ['left', 'right', 'right'],
     style: {

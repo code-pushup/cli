@@ -14,6 +14,7 @@ import {
   tableMd,
 } from './md';
 import {
+  EnrichedAuditReport,
   EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
@@ -93,15 +94,15 @@ function reportToCategoriesSection(report: ScoredReport): string {
       category.score,
     )} Score:  ${style(formatReportScore(category.score))}`;
     const categoryDocs = getDocsAndDescription(category);
-    const categoryMDItems = category.refs.reduce((acc, ref) => {
+    const categoryMDItems = category.refs.reduce((refAcc, ref) => {
       if (ref.type === 'group') {
         const group = getGroupWithAudits(ref.slug, ref.plugin, plugins);
         const mdGroupItem = groupItemToCategorySection(group, plugins);
-        return acc + mdGroupItem + NEW_LINE;
+        return refAcc + mdGroupItem + NEW_LINE;
       } else {
         const audit = getAuditByRef(ref, plugins);
         const mdAuditItem = auditItemToCategorySection(audit, plugins);
-        return acc + mdAuditItem + NEW_LINE;
+        return refAcc + mdAuditItem + NEW_LINE;
       }
     }, '');
 
@@ -128,7 +129,7 @@ function auditItemToCategorySection(
   const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
     `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
-    audit?.title,
+    audit.title,
   );
   return li(
     `${getSquaredScoreMarker(
@@ -149,84 +150,79 @@ function groupItemToCategorySection(
   const groupAudits = group.audits.reduce((acc, audit) => {
     const auditTitle = link(
       `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
-      audit?.title,
+      audit.title,
     );
-    acc += `  ${li(
+    return `${acc}  ${li(
       `${getSquaredScoreMarker(audit.score)} ${auditTitle} - ${getAuditResult(
         audit,
       )}`,
-    )}`;
-    acc += NEW_LINE;
-    return acc;
+    )}${NEW_LINE}`;
   }, '');
 
   return groupTitle + NEW_LINE + groupAudits;
 }
 
 function reportToAuditsSection(report: ScoredReport): string {
-  const auditsSection = report.plugins.reduce((acc, plugin) => {
-    const auditsData = plugin.audits.reduce((acc, audit) => {
+  const auditsSection = report.plugins.reduce((pluginAcc, plugin) => {
+    const auditsData = plugin.audits.reduce((auditAcc, audit) => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
         audit.plugin,
         report.plugins,
       )})`;
-      const detailsTitle = `${getSquaredScoreMarker(
-        audit.score,
-      )} ${getAuditResult(audit, true)} (score: ${formatReportScore(
-        audit.score,
-      )})`;
-      const docsItem = getDocsAndDescription(audit);
 
-      acc += h3(auditTitle);
-
-      acc += NEW_LINE;
-      acc += NEW_LINE;
-
-      if (!audit.details?.issues?.length) {
-        acc += detailsTitle;
-        acc += NEW_LINE;
-        acc += NEW_LINE;
-        acc += docsItem;
-        return acc;
-      }
-
-      const detailsTableData = [
-        detailsTableHeaders,
-        ...audit.details.issues.map((issue: Issue) => {
-          const severity = `${getSeverityIcon(issue.severity)} <i>${
-            issue.severity
-          }</i>`;
-          const message = issue.message;
-
-          if (!issue.source) {
-            return [severity, message, '', ''];
-          }
-          // TODO: implement file links, ticket #149
-          const file = `<code>${issue.source?.file}</code>`;
-          if (!issue.source.position) {
-            return [severity, message, file, ''];
-          }
-          const { startLine, endLine } = issue.source.position;
-          const line = `${startLine || ''}${
-            endLine && startLine !== endLine ? `-${endLine}` : ''
-          }`;
-
-          return [severity, message, file, line];
-        }),
-      ];
-      const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
-
-      acc += details(detailsTitle, detailsTable);
-      acc += NEW_LINE;
-      acc += NEW_LINE;
-      acc += docsItem;
-
-      return acc;
+      return (
+        auditAcc +
+        h3(auditTitle) +
+        NEW_LINE +
+        NEW_LINE +
+        reportToDetailsSection(audit) +
+        NEW_LINE +
+        NEW_LINE +
+        getDocsAndDescription(audit)
+      );
     }, '');
-    return acc + auditsData;
+    return pluginAcc + auditsData;
   }, '');
 
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsSection;
+}
+
+function reportToDetailsSection(audit: EnrichedAuditReport) {
+  const detailsTitle = `${getSquaredScoreMarker(audit.score)} ${getAuditResult(
+    audit,
+    true,
+  )} (score: ${formatReportScore(audit.score)})`;
+
+  if (!audit.details?.issues.length) {
+    return detailsTitle;
+  }
+
+  const detailsTableData = [
+    detailsTableHeaders,
+    ...audit.details.issues.map((issue: Issue) => {
+      const severity = `${getSeverityIcon(issue.severity)} <i>${
+        issue.severity
+      }</i>`;
+      const message = issue.message;
+
+      if (!issue.source) {
+        return [severity, message, '', ''];
+      }
+      // TODO: implement file links, ticket #149
+      const file = `<code>${issue.source.file}</code>`;
+      if (!issue.source.position) {
+        return [severity, message, file, ''];
+      }
+      const { startLine, endLine } = issue.source.position;
+      const line = `${startLine || ''}${
+        endLine && startLine !== endLine ? `-${endLine}` : ''
+      }`;
+
+      return [severity, message, file, line];
+    }),
+  ];
+  const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
+  return details(detailsTitle, detailsTable);
 }
 
 function reportToAboutSection(
@@ -252,11 +248,11 @@ function reportToAboutSection(
 
   const pluginMetaTable = [
     pluginMetaTableHeaders,
-    ...plugins.map(({ title, version, duration, audits }) => [
-      title,
-      audits.length.toString(),
-      style(version || '', ['c']),
-      formatDuration(duration),
+    ...plugins.map(plugin => [
+      plugin.title,
+      plugin.audits.length.toString(),
+      style(plugin.version || '', ['c']),
+      formatDuration(plugin.duration),
     ]),
   ];
 
