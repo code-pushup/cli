@@ -52,6 +52,21 @@ export function formatDuration(duration: number): string {
   return `${(duration / 1000).toFixed(2)} s`;
 }
 
+export function formatDate(date: Date): string {
+  const locale = 'en-US'; // fixed locale to ensure consistency across local defaults execution
+  return date
+    .toLocaleString(locale, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    })
+    .replace(/\u202F/g, ' '); // see https://github.com/nodejs/node/issues/45171
+}
+
 export function truncateText(text: string, maxChars: number): string {
   if (text.length <= maxChars) {
     return text;

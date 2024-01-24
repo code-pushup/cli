@@ -1,5 +1,5 @@
 import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
-import { formatDuration, slugify } from '../formatting';
+import { formatDate, formatDuration, slugify } from '../formatting';
 import { CommitData } from '../git';
 import { NEW_LINE } from './constants';
 import {
@@ -229,7 +229,8 @@ function reportToAboutSection(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
-  const date = new Date().toString();
+  const date = formatDate(new Date());
+
   const { duration, version, plugins, categories } = report;
   const commitInfo = commitData
     ? `${commitData.message} (${commitData.hash.slice(0, 7)})`
