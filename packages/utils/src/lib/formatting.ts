@@ -53,7 +53,7 @@ export function formatDuration(duration: number): string {
 }
 
 export function formatDate(date: Date): string {
-  const locale = 'en-US'; // fixed locale to ensure consistency
+  const locale = 'en-US'; // fixed locale to ensure consistency across local defaults execution
   return date
     .toLocaleString(locale, {
       weekday: 'short',
