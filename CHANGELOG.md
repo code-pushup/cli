@@ -2,6 +2,16 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.10.0](https://github.com/code-pushup/cli/compare/v0.9.0...v0.10.0) (2024-01-24)
+
+### Bug Fixes
+
+- **utils:** set fixed locale for date in report.md ([aa4694b](https://github.com/code-pushup/cli/commit/aa4694b33da34f3a6c4aff8ff92b1c4f8717c520))
+
+### Features
+
+- **utils:** include timezone in report.md ([27d267a](https://github.com/code-pushup/cli/commit/27d267ab481f90187b0717ca72053689aab3b4f3))
+
 # [0.9.0](https://github.com/code-pushup/cli/compare/v0.8.25...v0.9.0) (2024-01-24)
 
 ### Features
