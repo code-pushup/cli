@@ -1,6 +1,7 @@
 {
   "name": "@code-pushup/eslint-plugin",
-  "version": "0.8.22",
+  "version": "0.10.1",
+  "license": "MIT",
   "dependencies": {
     "@code-pushup/utils": "*",
     "@code-pushup/models": "*",

@@ -2,6 +2,31 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.10.1](https://github.com/code-pushup/cli/compare/v0.10.0...v0.10.1) (2024-01-24)
+
+# [0.10.0](https://github.com/code-pushup/cli/compare/v0.9.0...v0.10.0) (2024-01-24)
+
+### Bug Fixes
+
+- **utils:** set fixed locale for date in report.md ([aa4694b](https://github.com/code-pushup/cli/commit/aa4694b33da34f3a6c4aff8ff92b1c4f8717c520))
+
+### Features
+
+- **utils:** include timezone in report.md ([27d267a](https://github.com/code-pushup/cli/commit/27d267ab481f90187b0717ca72053689aab3b4f3))
+
+# [0.9.0](https://github.com/code-pushup/cli/compare/v0.8.25...v0.9.0) (2024-01-24)
+
+### Features
+
+- **core:** add optional upload.timeout to config ([fdc3f58](https://github.com/code-pushup/cli/commit/fdc3f58cb0617d5240dcb7a80ec9f640d0b5df7c))
+- **core:** update portal-client to version with request timeouts ([173bd2f](https://github.com/code-pushup/cli/commit/173bd2f9a1e5b66f52d98c9fa36a2db4cf1403d1))
+
+## [0.8.25](https://github.com/code-pushup/cli/compare/v0.8.24...v0.8.25) (2024-01-19)
+
+## [0.8.24](https://github.com/code-pushup/cli/compare/v0.8.23...v0.8.24) (2024-01-19)
+
+## [0.8.23](https://github.com/code-pushup/cli/compare/v0.8.22...v0.8.23) (2024-01-18)
+
 ## [0.8.22](https://github.com/code-pushup/cli/compare/v0.8.21...v0.8.22) (2024-01-16)
 
 ## [0.8.21](https://github.com/code-pushup/cli/compare/v0.8.20...v0.8.21) (2024-01-16)

@@ -23,9 +23,10 @@ export function pluralize(text: string): string {
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
-  bytes = Math.max(bytes, 0);
+  const positiveBytes = Math.max(bytes, 0);
+
   // early exit
-  if (!bytes) {
+  if (positiveBytes === 0) {
     return '0 B';
   }
 
@@ -33,9 +34,9 @@ export function formatBytes(bytes: number, decimals = 2) {
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.floor(Math.log(positiveBytes) / Math.log(k));
 
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${
+  return `${Number.parseFloat((positiveBytes / Math.pow(k, i)).toFixed(dm))} ${
     sizes[i]
   }`;
 }
@@ -49,6 +50,21 @@ export function formatDuration(duration: number): string {
     return `${duration} ms`;
   }
   return `${(duration / 1000).toFixed(2)} s`;
+}
+
+export function formatDate(date: Date): string {
+  const locale = 'en-US'; // fixed locale to ensure consistency across local defaults execution
+  return date
+    .toLocaleString(locale, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    })
+    .replace(/\u202F/g, ' '); // see https://github.com/nodejs/node/issues/45171
 }
 
 export function truncateText(text: string, maxChars: number): string {

@@ -1,5 +1,12 @@
+/* eslint-disable no-param-reassign, functional/immutable-data */
+// Note: The mutability issues are resolved in production code
 import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
+import {
+  EnrichedAuditReport,
+  EnrichedScoredGroup,
+  ScoredCategoryConfig,
+} from '../../src/lib/reports/scoring';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
@@ -23,6 +30,7 @@ export function deepClone<T>(obj: T): T {
     return obj;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
   // eslint-disable-next-line functional/no-loop-statements
   for (const key in obj) {
@@ -33,9 +41,13 @@ export function deepClone<T>(obj: T): T {
   return cloned;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
-  const allScoredAuditsAndGroups = new Map();
+  const allScoredAuditsAndGroups = new Map<
+    string,
+    EnrichedAuditReport | EnrichedScoredGroup
+  >();
 
   scoredReport.plugins?.forEach(plugin => {
     const { audits, slug } = plugin;
@@ -79,7 +91,7 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategoriesMap = new Map();
+  const scoredCategoriesMap = new Map<string, ScoredCategoryConfig>();
   // eslint-disable-next-line functional/no-loop-statements
   for (const category of scoredReport.categories) {
     category.score = calculateScore(category.refs, catScoreFn);

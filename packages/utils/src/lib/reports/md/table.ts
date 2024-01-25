@@ -21,15 +21,17 @@ export function tableMd(
   if (data.length === 0) {
     throw new Error("Data can't be empty");
   }
-  align ??= data[0]?.map(() => 'c');
+  const alignmentSetting = align ?? data[0]?.map(() => 'c');
   const tableContent = data.map(arr => `|${arr.join('|')}|`);
-  const secondRow = `|${align?.map(s => alignString.get(s)).join('|')}|`;
+  const alignmentRow = `|${alignmentSetting
+    ?.map(s => alignString.get(s))
+    .join('|')}|`;
   return (
-    tableContent.shift() +
+    tableContent[0] +
     NEW_LINE +
-    secondRow +
+    alignmentRow +
     NEW_LINE +
-    tableContent.join(NEW_LINE)
+    tableContent.slice(1).join(NEW_LINE)
   );
 }
 

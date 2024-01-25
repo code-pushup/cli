@@ -3,21 +3,21 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { coreConfigMiddleware } from './core-config.middleware';
 
-describe('coreConfigMiddleware', () => {
-  const configDirPath = join(
-    fileURLToPath(dirname(import.meta.url)),
-    '..',
-    '..',
-    '..',
-    '..',
-    '..',
-    'testing-utils',
-    'src',
-    'lib',
-    'fixtures',
-    'configs',
-  );
+const configDirPath = join(
+  fileURLToPath(dirname(import.meta.url)),
+  '..',
+  '..',
+  '..',
+  '..',
+  '..',
+  'testing-utils',
+  'src',
+  'lib',
+  'fixtures',
+  'configs',
+);
 
+describe('coreConfigMiddleware', () => {
   it.each(['ts', 'mjs', 'js'])(
     'should load a valid .%s config',
     async extension => {

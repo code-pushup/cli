@@ -19,6 +19,7 @@ describe('Nx helpers', () => {
     );
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(workspaceDir);
 
+    // eslint-disable-next-line functional/immutable-data
     process.env['NX_DAEMON'] = 'false';
 
     setWorkspaceRoot(workspaceDir);

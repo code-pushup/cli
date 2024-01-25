@@ -15,5 +15,8 @@ export type UploadConfigCliOptions = {
   'upload.server': string;
 };
 
-export type CoreConfigCliOptions = PersistConfigCliOptions &
+export type ConfigCliOptions = { config: string };
+
+export type CoreConfigCliOptions = ConfigCliOptions &
+  PersistConfigCliOptions &
   UploadConfigCliOptions;
