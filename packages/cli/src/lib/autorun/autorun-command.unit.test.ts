@@ -1,18 +1,23 @@
-import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import { collectAndPersistReports } from '@code-pushup/core';
+import {
+  collectAndPersistReports,
+  readCodePushupConfig,
+} from '@code-pushup/core';
 import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
 
 vi.mock('@code-pushup/core', async () => {
-  const core = await vi.importActual('@code-pushup/core');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
+    await vi.importActual('@code-pushup/testing-utils');
+  const core: object = await vi.importActual('@code-pushup/core');
   return {
-    ...(core as object),
+    ...core,
     collectAndPersistReports: vi.fn().mockResolvedValue({}),
+    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
@@ -21,7 +26,6 @@ describe('autorun-command', () => {
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
       MEMFS_VOLUME,
     );
@@ -40,10 +44,9 @@ describe('autorun-command', () => {
       },
     ).parseAsync();
 
-    expect(bundleRequire).toHaveBeenCalledWith({
-      format: 'esm',
-      filepath: '/test/code-pushup.config.ts',
-    });
+    expect(readCodePushupConfig).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -56,6 +59,7 @@ describe('autorun-command', () => {
       }),
     );
 
+    // values come from CORE_CONFIG_MOCK returned by readCodePushupConfig mock
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

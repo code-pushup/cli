@@ -1,30 +1,24 @@
-import { bundleRequire } from 'bundle-require';
-import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { collectAndPersistReports } from '@code-pushup/core';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  collectAndPersistReports,
+  readCodePushupConfig,
+} from '@code-pushup/core';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
 
 vi.mock('@code-pushup/core', async () => {
-  const core = await vi.importActual('@code-pushup/core');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
+    await vi.importActual('@code-pushup/testing-utils');
+  const core: object = await vi.importActual('@code-pushup/core');
   return {
-    ...(core as object),
+    ...core,
     collectAndPersistReports: vi.fn().mockResolvedValue({}),
+    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
 describe('collect-command', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
   it('should call collect with default parameters', async () => {
     // It's hard to test the defaults for `config` so we skipped it as there are other integration tests already
     await yargsCli(['collect', '--config=/test/code-pushup.config.ts'], {
@@ -32,10 +26,9 @@ describe('collect-command', () => {
       commands: [yargsCollectCommandObject()],
     }).parseAsync();
 
-    expect(bundleRequire).toHaveBeenCalledWith({
-      format: 'esm',
-      filepath: '/test/code-pushup.config.ts',
-    });
+    expect(readCodePushupConfig).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -64,10 +57,9 @@ describe('collect-command', () => {
       },
     ).parseAsync();
 
-    expect(bundleRequire).toHaveBeenCalledWith({
-      format: 'esm',
-      filepath: '/test/code-pushup.config.ts',
-    });
+    expect(readCodePushupConfig).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -94,10 +86,9 @@ describe('collect-command', () => {
       },
     ).parseAsync();
 
-    expect(bundleRequire).toHaveBeenCalledWith({
-      format: 'esm',
-      filepath: '/test/code-pushup.config.ts',
-    });
+    expect(readCodePushupConfig).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
