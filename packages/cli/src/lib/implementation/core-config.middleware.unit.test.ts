@@ -5,9 +5,7 @@ import { CORE_CONFIG_MOCK } from '@code-pushup/testing-utils';
 import { coreConfigMiddleware } from './core-config.middleware';
 
 vi.mock('@code-pushup/core', async () => {
-  const core: typeof import('@code-pushup/core') = await vi.importActual(
-    '@code-pushup/core',
-  );
+  const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,
     readRcByPath: vi.fn().mockImplementation((filepath: string): CoreConfig => {
