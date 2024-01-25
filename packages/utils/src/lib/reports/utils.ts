@@ -95,8 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  stop ??= performance.now();
-  return Math.floor(stop - start);
+  return Math.floor((stop ?? performance.now()) - start);
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
@@ -140,15 +139,15 @@ export function getAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
 ): WeighedAuditReport {
-  const auditPlugin = plugins.find(({ slug }) => slug === plugin);
+  const auditPlugin = plugins.find(p => p.slug === plugin);
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
-  const audit = auditPlugin?.audits.find(
+  const audit = auditPlugin.audits.find(
     ({ slug: auditSlug }) => auditSlug === slug,
   );
   if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin?.slug);
+    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
   }
   return {
     ...audit,
@@ -166,25 +165,22 @@ export function getGroupWithAudits(
   if (!plugin) {
     throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
   }
-  const groupWithAudits = plugin?.groups?.find(({ slug }) => slug === refSlug);
+  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === refSlug);
 
   if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin?.slug);
+    throwIsNotPresentError(`Group ${refSlug}`, plugin.slug);
   }
   const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
     (acc: WeighedAuditReport[], ref) => {
       const audit = getAuditByRef(
-        { ...ref, plugin: refPlugin } as CategoryRef,
+        { ...ref, plugin: refPlugin, type: 'audit' },
         plugins,
       );
-      if (audit) {
-        return [...acc, audit];
-      }
-      return [...acc];
+      return [...acc, audit];
     },
     [],
-  ) as WeighedAuditReport[];
-  const audits = groupAudits.sort(compareCategoryAudits);
+  );
+  const audits = [...groupAudits].sort(compareCategoryAudits);
 
   return {
     ...groupWithAudits,
@@ -251,11 +247,11 @@ export async function loadReport<T extends Format>(
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return reportSchema.parse(content) as any;
+    return reportSchema.parse(content) as LoadedReportFormat<T>;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return readTextFile(filePath) as any;
+
+  const text = await readTextFile(filePath);
+  return text as LoadedReportFormat<T>;
 }
 
 export function throwIsNotPresentError(
