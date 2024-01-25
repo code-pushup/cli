@@ -1,23 +1,19 @@
-import { vol } from 'memfs';
-import { beforeEach, describe, expect } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { describe, expect } from 'vitest';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
 
+vi.mock('@code-pushup/core', async () => {
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
+    await vi.importActual('@code-pushup/testing-utils');
+  const core: object = await vi.importActual('@code-pushup/core');
+  return {
+    ...core,
+    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+  };
+});
+
 describe('print-config-command', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      // the real value comes from vitest mocks configured in vitest.config.ts
-
-      {
-        // only needs to exist for stat inside readCodePushupConfig
-        'code-pushup.config.ts': '',
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
   it('should filter out meta arguments and kebab duplicates', async () => {
     await yargsCli(
       [
