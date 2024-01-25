@@ -21,15 +21,15 @@ vi.mock('@code-pushup/core', async () => {
         },
       };
     }),
-    autoloadRc: vi.fn().mockImplementation((): CoreConfig => {
-      return {
+    autoloadRc: vi.fn().mockImplementation(
+      (): CoreConfig => ({
         ...CORE_CONFIG_MOCK,
         upload: {
           ...CORE_CONFIG_MOCK.upload,
           project: `cli-autoload`,
         },
-      };
-    }),
+      }),
+    ),
   };
 });
 
