@@ -8,7 +8,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+      () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
     ),
   };
 });

@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
-import { describe, expect } from 'vitest';
-import { vi } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import {
   PortalUploadArgs,
   ReportFragment,
@@ -20,7 +19,7 @@ vi.mock('@code-pushup/portal-client', async () => {
   return {
     ...module,
     uploadToPortal: vi.fn(
-      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+      () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
     ),
   };
 });
