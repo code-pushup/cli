@@ -1,18 +1,15 @@
 import { Options } from 'yargs';
 import {
-  CoreConfigCliOptions,
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './core-config.model';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
-  keyof CoreConfigCliOptions,
+  keyof (PersistConfigCliOptions & UploadConfigCliOptions),
   Options
 > {
   return {
-    // persist
     ...yargsPersistConfigOptionsDefinition(),
-    // upload
     ...yargsUploadConfigOptionsDefinition(),
   };
 }
@@ -22,7 +19,6 @@ export function yargsPersistConfigOptionsDefinition(): Record<
   Options
 > {
   return {
-    // persist
     'persist.outputDir': {
       describe: 'Directory for the produced reports',
       type: 'string',
@@ -43,7 +39,6 @@ export function yargsUploadConfigOptionsDefinition(): Record<
   Options
 > {
   return {
-    // upload
     'upload.organization': {
       describe: 'Organization slug from portal',
       type: 'string',
