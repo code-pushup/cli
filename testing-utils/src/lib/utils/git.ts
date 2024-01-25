@@ -1,19 +1,9 @@
-import { executeProcess, objectToCliArgs } from '@code-pushup/utils';
+import {spawn} from 'node:child_process';
 
-export async function makeStatusDirty(): Promise<void> {
-  await executeProcess({
-    command: 'echo',
-    args: objectToCliArgs({
-      _: ['Some changes', '>>', 'some-file.txt'],
-    }),
-  });
+export function makeStatusDirty() {
+   spawn('echo', ['Some changes', '>>', 'some-file.txt'], { shell: true });
 }
 
-export async function makeStatusClean(): Promise<void> {
-  await executeProcess({
-    command: 'git',
-    args: objectToCliArgs({
-      _: ['clean -fd'],
-    }),
-  });
+export function makeStatusClean() {
+  spawn('git', ['clean -fd'], { shell: true });
 }

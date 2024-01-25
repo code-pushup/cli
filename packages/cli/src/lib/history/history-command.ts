@@ -6,7 +6,7 @@ import {
   git,
   guardAgainstDirtyRepo,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../cli';
+import {CLI_NAME} from "../constants";
 
 export type HistoryCommandOptions = {
   targetBranch: string;
@@ -61,6 +61,7 @@ export function yargsHistoryCommandObject() {
         git.raw(['restore', '.']);
       }
 
+      // git requires a clean history to check out a branch
       await guardAgainstDirtyRepo();
       await git.checkout(targetBranch);
 

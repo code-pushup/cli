@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@code-pushup/portal-client": "^0.3.0",
+    "@inquirer/prompts": "^3.3.0",
     "@isaacs/cliui": "^8.0.2",
     "@swc/helpers": "0.5.3",
     "bundle-require": "^4.0.1",
