@@ -22,7 +22,7 @@ export async function readRcByPath(filepath: string): Promise<CoreConfig> {
     throw new ConfigPathError(filepath);
   }
 
-  const cfg = await importEsmModule<CoreConfig>({ filepath });
+  const cfg = await importEsmModule({ filepath });
 
   return coreConfigSchema.parse(cfg);
 }
