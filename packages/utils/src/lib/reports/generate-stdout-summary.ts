@@ -74,7 +74,7 @@ function reportToOverviewSection({
 }: ScoredReport): string {
   const table = new CliTable3({
     // eslint-disable-next-line no-magic-numbers
-    colWidths: [38, 7, 8],
+    colWidths: [67, 7, 8],
     head: reportRawOverviewTableHeaders,
     colAligns: ['left', 'right', 'left'],
     style: {
