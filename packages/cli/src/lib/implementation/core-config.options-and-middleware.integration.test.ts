@@ -1,85 +1,52 @@
-import { vol } from 'memfs';
-import {
-  SpyInstance,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  vi,
-} from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import {
   CoreConfig,
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { CORE_CONFIG_MOCK, MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { CORE_CONFIG_MOCK } from '@code-pushup/testing-utils';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
 
-vi.mock('bundle-require', () => ({
-  bundleRequire: vi.fn().mockImplementation(args => {
-    const filepath = args.filepath as string;
+vi.mock('@code-pushup/core', async () => {
+  const core = await vi.importActual('@code-pushup/core');
+  return {
+    ...(core as object),
+    readCodePushupConfig: vi
+      .fn()
+      .mockImplementation((filepath: string): CoreConfig => {
+        const allPersistOptions = {
+          ...CORE_CONFIG_MOCK,
+          persist: {
+            filename: 'rc-filename',
+            format: ['json', 'md'],
+            outputDir: 'rc-outputDir',
+          },
+        };
 
-    const allPersistOptions = {
-      ...CORE_CONFIG_MOCK,
-      persist: {
-        filename: 'rc-filename',
-        format: ['json', 'md'],
-        outputDir: 'rc-outputDir',
-      },
-    };
+        const persistOnlyFilename = {
+          ...CORE_CONFIG_MOCK,
+          persist: {
+            filename: 'rc-filename',
+          },
+        };
 
-    const persistOnlyFilename = {
-      ...CORE_CONFIG_MOCK,
-      persist: {
-        filename: 'rc-filename',
-      },
-    };
+        const noPersistFilename = CORE_CONFIG_MOCK;
 
-    return {
-      mod: {
-        default: filepath.includes('all-persist-options')
+        return filepath.includes('all-persist-options')
           ? allPersistOptions
+          : filepath.includes('no-persist')
+          ? noPersistFilename
           : filepath.includes('persist-only-filename')
           ? persistOnlyFilename
-          : CORE_CONFIG_MOCK,
-      },
-    };
-  }),
-}));
-
-vi.mock('fs', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs;
+          : CORE_CONFIG_MOCK;
+      }),
+  };
 });
-vi.mock('fs/promises', async () => {
-  const memfs: typeof import('memfs') = await vi.importActual('memfs');
-  return memfs.fs.promises;
-});
-
-let cwdSpy: SpyInstance;
 
 describe('parsing values from CLI and middleware', () => {
-  beforeEach(() => {
-    cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);
-
-    // value set in bundle-require mock above
-    vol.fromJSON(
-      {
-        'no-persist.config.ts': '',
-        'all-persist-options.config.ts': '',
-        'persist-only-filename.config.ts': '',
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
-  afterEach(() => {
-    cwdSpy.mockRestore();
-  });
-
   it('should take default values for persist when no argument is given in rc or over the cli', async () => {
     const { persist } = await yargsCli<CoreConfig>(
       ['--config=./no-persist.config.ts'],
