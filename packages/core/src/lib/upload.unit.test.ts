@@ -1,12 +1,29 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import { vi } from 'vitest';
+import {
+  PortalUploadArgs,
+  ReportFragment,
+  uploadToPortal,
+} from '@code-pushup/portal-client';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
 import { upload } from './upload';
+
+vi.mock('@code-pushup/portal-client', async () => {
+  const module: typeof import('@code-pushup/portal-client') =
+    await vi.importActual('@code-pushup/portal-client');
+
+  return {
+    ...module,
+    uploadToPortal: vi.fn(
+      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+    ),
+  };
+});
 
 describe('upload', () => {
   it('upload should be called with correct data', async () => {
