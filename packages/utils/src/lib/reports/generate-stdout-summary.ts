@@ -52,6 +52,7 @@ function reportToDetailSection(report: ScoredReport): string {
         },
         {
           text: chalk.cyanBright(audit.displayValue || `${audit.value}`),
+          width: 10,
           padding: [0, 0, 0, 0],
         },
       );
