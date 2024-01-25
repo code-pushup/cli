@@ -9,6 +9,7 @@ describe('readRcByPath', () => {
   it('should load a valid configuration file', async () => {
     vol.fromJSON(
       {
+        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.ts`]: '',
       },
       MEMFS_VOLUME,
@@ -47,6 +48,7 @@ describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
       {
+        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.js`]: '',
         [`${CONFIG_FILE_NAME}.mjs`]: '',
         [`${CONFIG_FILE_NAME}.ts`]: '',
@@ -62,6 +64,7 @@ describe('autoloadRc', () => {
   it('should prioritise .mjs configuration file over .js', async () => {
     vol.fromJSON(
       {
+        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.js`]: '',
         [`${CONFIG_FILE_NAME}.mjs`]: '',
       },
