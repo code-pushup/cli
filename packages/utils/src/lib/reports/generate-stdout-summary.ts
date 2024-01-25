@@ -76,7 +76,7 @@ function reportToOverviewSection({
     // eslint-disable-next-line no-magic-numbers
     colWidths: [67, 7, 8],
     head: reportRawOverviewTableHeaders,
-    colAligns: ['left', 'right', 'left'],
+    colAligns: ['left', 'right', 'right'],
     style: {
       head: ['cyan'],
     },
