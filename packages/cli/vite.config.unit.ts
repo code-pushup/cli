@@ -16,7 +16,6 @@ export default defineConfig({
     setupFiles: [
       '../../testing-utils/src/lib/setup/fs.mock.ts',
       '../../testing-utils/src/lib/setup/console.mock.ts',
-      '../../testing-utils/src/lib/setup/portal-client.mock.ts',
       '../../testing-utils/src/lib/setup/reset.mocks.ts',
     ],
   },

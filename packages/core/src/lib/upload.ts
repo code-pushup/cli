@@ -1,4 +1,4 @@
-import { uploadToPortal } from '@code-pushup/portal-client';
+import { ReportFragment, uploadToPortal } from '@code-pushup/portal-client';
 import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { jsonReportToGql } from './implementation/json-to-gql';

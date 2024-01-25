@@ -1,6 +1,10 @@
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import {
+  PortalUploadArgs,
+  ReportFragment,
+  uploadToPortal,
+} from '@code-pushup/portal-client';
 import {
   collectAndPersistReports,
   readCodePushupConfig,
@@ -9,6 +13,18 @@ import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
+
+vi.mock('@code-pushup/portal-client', async () => {
+  const module: typeof import('@code-pushup/portal-client') =
+    await vi.importActual('@code-pushup/portal-client');
+
+  return {
+    ...module,
+    uploadToPortal: vi.fn(
+      async () => ({ packageName: '@code-pushup/cli' } as ReportFragment),
+    ),
+  };
+});
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
