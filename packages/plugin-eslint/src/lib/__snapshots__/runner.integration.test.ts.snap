@@ -78,7 +78,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "'loading' is assigned a value but never used.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/App.jsx",
@@ -119,7 +119,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoFilter.jsx",
@@ -160,7 +160,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Expected '===' and instead saw '=='.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -183,7 +183,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Arrow function has too many lines (71). Maximum allowed is 50.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -215,7 +215,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -228,7 +228,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -241,7 +241,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'data' is already declared in the upper scope on line 5 column 10.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -273,7 +273,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Expected property shorthand.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -286,7 +286,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "Expected property shorthand.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -299,7 +299,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "Expected property shorthand.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -331,7 +331,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "'root' is never reassigned. Use 'const' instead.",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/index.jsx",
@@ -372,7 +372,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Missing \\"key\\" prop for element in iterator",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoList.jsx",
@@ -395,7 +395,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "'onCreate' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/CreateTodo.jsx",
@@ -408,7 +408,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'setQuery' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoFilter.jsx",
@@ -421,7 +421,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'setHideComplete' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoFilter.jsx",
@@ -434,7 +434,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'todos' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoList.jsx",
@@ -447,7 +447,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'todos.map' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoList.jsx",
@@ -460,7 +460,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "'onEdit' is missing in props validation",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/components/TodoList.jsx",
@@ -501,7 +501,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
@@ -514,7 +514,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           },
         },
         {
-          "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
+          "message": "...",
           "severity": "warning",
           "source": {
             "file": "src/hooks/useTodos.js",
