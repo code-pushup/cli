@@ -1,9 +1,35 @@
-import { vol } from 'memfs';
-import { join } from 'node:path';
-import { describe, expect } from 'vitest';
-import { CONFIG_FILE_NAME } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
-import { autoloadRc, readRcByPath } from './read-rc-file';
+import {vol} from 'memfs';
+import {join} from 'node:path';
+import {describe, expect, vi} from 'vitest';
+import {CONFIG_FILE_NAME, CoreConfig} from '@code-pushup/models';
+import {MEMFS_VOLUME} from '@code-pushup/testing-utils';
+import {autoloadRc, readRcByPath} from './read-rc-file';
+
+// Mock bundleRequire inside importEsmModule used for fetching config
+vi.mock('bundle-require', async () => {
+  const {CORE_CONFIG_MOCK}: { CORE_CONFIG_MOCK: CoreConfig } =
+    await vi.importActual('@code-pushup/testing-utils');
+
+  return {
+    bundleRequire: vi
+      .fn()
+      .mockImplementation((filepath: string) => {
+        const project = filepath.split('.').pop() || 'no-extension-found';
+        return {
+          mod: {
+            default: {
+              ...CORE_CONFIG_MOCK,
+              upload: {
+                ...CORE_CONFIG_MOCK.upload,
+                project
+              }
+            }
+          }
+        }
+      }),
+  };
+});
+
 
 describe('readRcByPath', () => {
   it('should load a valid configuration file', async () => {
@@ -19,7 +45,7 @@ describe('readRcByPath', () => {
     ).resolves.toEqual(
       expect.objectContaining({
         upload: expect.objectContaining({
-          organization: 'code-pushup',
+          project: 'ts',
         }),
         categories: expect.any(Array),
         plugins: expect.arrayContaining([
@@ -57,7 +83,7 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: expect.any(Object) }),
+      expect.objectContaining({upload: expect.any(Object)}),
     );
   });
 
@@ -72,7 +98,7 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: expect.any(Object) }),
+      expect.objectContaining({upload: expect.any(Object)}),
     );
   });
 
@@ -86,7 +112,7 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: expect.any(Object) }),
+      expect.objectContaining({upload: expect.any(Object)}),
     );
   });
 
