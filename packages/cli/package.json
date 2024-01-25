@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/cli",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "license": "MIT",
   "bin": {
     "code-pushup": "index.js"
