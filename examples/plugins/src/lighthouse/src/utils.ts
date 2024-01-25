@@ -91,7 +91,6 @@ export function lhrDetailsToIssueDetails(
     /**
      * @TODO implement cases
      * - undefined,
-     * - 'table',
      * - 'filmstrip',
      * - 'screenshot',
      * - 'debugdata',

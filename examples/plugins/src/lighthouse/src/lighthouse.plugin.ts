@@ -5,14 +5,14 @@ import {
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
-import { toArray, verboseUtils } from '@code-pushup/utils';
+import {toArray, verboseUtils} from '@code-pushup/utils';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   PLUGIN_SLUG,
   audits,
   categoryCorePerfGroup,
 } from './constants';
-import { LighthouseCliOptions, PluginOptions } from './types';
+import {LighthouseCliOptions, PluginOptions} from './types';
 import {
   filterBySlug,
   filterRefsBySlug,
@@ -48,7 +48,7 @@ export function create(options: PluginOptions): PluginConfig {
   const {
     // @NOTICE
     // Not all audits are implemented, so we always rely on the `onlyAudits` argument
-    onlyAudits: onlyAuditsOption = audits.map(({ slug }) => slug),
+    onlyAudits: onlyAuditsOption = audits.map(({slug}) => slug),
     headless: headlessOption = true,
     userDataDir,
   } = options;
@@ -75,7 +75,7 @@ export function create(options: PluginOptions): PluginConfig {
 }
 
 export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
-  const { log } = verboseUtils(options.verbose);
+  const {log} = verboseUtils(options.verbose);
   const outputPath = options.outputPath ?? LIGHTHOUSE_OUTPUT_FILE_DEFAULT;
   const args = getLighthouseCliArguments({
     ...options,
@@ -97,12 +97,12 @@ export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
   return Object.values(lhr.audits).map(
     ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      displayValue,
-      details,
-    }) => {
+       id: slug,
+       score,
+       numericValue: value = 0, // not every audit has a numericValue
+       displayValue,
+       details,
+     }) => {
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 0, // score can be null

@@ -1,4 +1,4 @@
-import { Audit, CategoryRef, Group } from '@code-pushup/models';
+import {Audit, CategoryRef, Group} from '@code-pushup/models';
 
 export const LIGHTHOUSE_OUTPUT_FILE_DEFAULT = 'lighthouse-report.json';
 export const LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG = 'performance-core';
@@ -37,6 +37,16 @@ export const audits: Audit[] = [
     description:
       'Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more about the Cumulative Layout Shift metric](https://web.dev/articles/cls).',
   },
+  {
+    slug: "server-response-time",
+    title: "Initial server response time was short",
+    description: "Keep the server response time for the main document short because all other requests depend on it. [Learn more about the Time to First Byte metric](https://developer.chrome.com/docs/lighthouse/performance/time-to-first-byte/).",
+  },
+  {
+    slug: "interactive",
+    title: "Time to Interactive",
+    description: "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).",
+  }
 ];
 
 export const corePerfGroupRefs: CategoryRef[] = [
@@ -83,5 +93,51 @@ export const categoryCorePerfGroup: Group = {
       slug: 'speed-index',
       weight: 10,
     },
+    // others
+    {
+      slug: "server-response-time",
+      weight: 0,
+    },
+    {
+      slug: "interactive",
+      weight: 0,
+    },
+    {
+      slug: "user-timings",
+      weight: 0,
+    }
+],
+};
+
+
+export const categoryCorePerfGroup2: Group = {
+  slug: LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG+2,
+  title: 'performance-core-2',
+  refs: [
+    // web vitals
+    {
+      slug: 'first-contentful-paint',
+      weight: 10,
+    },
+    {
+      slug: 'largest-contentful-paint',
+      // eslint-disable-next-line no-magic-numbers
+      weight: 25,
+    },
+    {
+      slug: 'total-blocking-time',
+      // eslint-disable-next-line no-magic-numbers
+      weight: 30,
+    },
+    {
+      slug: 'cumulative-layout-shift',
+      // eslint-disable-next-line no-magic-numbers
+      weight: 25,
+    },
+    {
+      slug: 'speed-index',
+      weight: 10,
+    },
   ],
 };
+
