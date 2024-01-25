@@ -36,10 +36,10 @@ vi.mock('@code-pushup/core', async () => {
       return filepath.includes('all-persist-options')
         ? allPersistOptions
         : filepath.includes('no-persist')
-        ? noPersistFilename
-        : filepath.includes('persist-only-filename')
-        ? persistOnlyFilename
-        : CORE_CONFIG_MOCK;
+          ? noPersistFilename
+          : filepath.includes('persist-only-filename')
+            ? persistOnlyFilename
+            : CORE_CONFIG_MOCK;
     }),
   };
 });
