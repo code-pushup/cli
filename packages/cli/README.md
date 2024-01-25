@@ -150,23 +150,23 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
 | **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
-| **`--config`**   | `string`  | `code-pushup.config.ts` | Path to the config file, e.g. code-pushup.config.(ts\mjs\js)           |
+| **`--config`**   | `string`  | `code-pushup.config.ts` | Path to the config file, e.g. code-pushup.config.(ts\|mjs\|js)         |
 
 > [!NOTE]  
 > By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided with `--config`.
 
 ### Common Command Options
 
-| Option                      | Type              | Default        | Description                                                                 |
-| --------------------------- | ----------------- | -------------- | --------------------------------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`          | `.code-pushup` | Directory for the produced reports.                                         |
-| **`--persist.filename`**    | `string`          | `report`       | Filename for the produced reports without extension.                        |
-| **`--persist.format`**      | `('json','md')[]` | `json`         | Format(s) of the report file.                                               |
-| **`--upload.organization`** | `string`          | n/a            | Organization slug from portal.                                              |
-| **`--upload.project`**      | `string`          | n/a            | Project slug from portal.                                                   |
-| **`--upload.server`**       | `string`          | n/a            | URL to your portal server.                                                  |
-| **`--upload.apiKey`**       | `string`          | n/a            | API key for the portal server.                                              |
-| **`--onlyPlugins`**         | `string[]`        | `[]`           | Only run the specified plugins. Applicable to all commands except `upload`. |
+| Option                      | Type                 | Default  | Description                                                                 |
+| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
+| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
+| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
+| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
+| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
+| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
 
 > [!NOTE]  
 > All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
