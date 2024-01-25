@@ -75,7 +75,7 @@ export class NoExportError extends Error {
   }
 }
 
-export async function importEsmModule<T = unknown>(
+export async function importEsmModule<T = object>(
   options: Options,
 ): Promise<T> {
   const { mod } = await bundleRequire<object>({
@@ -86,7 +86,7 @@ export async function importEsmModule<T = unknown>(
   if (!('default' in mod)) {
     throw new NoExportError(options.filepath);
   }
-  return mod.default;
+  return mod.default as T;
 }
 
 export function pluginWorkDir(slug: string): string {

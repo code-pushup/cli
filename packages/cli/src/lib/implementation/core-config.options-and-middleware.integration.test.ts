@@ -14,35 +14,33 @@ vi.mock('@code-pushup/core', async () => {
   const core = await vi.importActual('@code-pushup/core');
   return {
     ...(core as object),
-    readCodePushupConfig: vi
-      .fn()
-      .mockImplementation((filepath: string): CoreConfig => {
-        const allPersistOptions = {
-          ...CORE_CONFIG_MOCK,
-          persist: {
-            filename: 'rc-filename',
-            format: ['json', 'md'],
-            outputDir: 'rc-outputDir',
-          },
-        };
+    readRcByPath: vi.fn().mockImplementation((filepath: string): CoreConfig => {
+      const allPersistOptions = {
+        ...CORE_CONFIG_MOCK,
+        persist: {
+          filename: 'rc-filename',
+          format: ['json', 'md'],
+          outputDir: 'rc-outputDir',
+        },
+      };
 
-        const persistOnlyFilename = {
-          ...CORE_CONFIG_MOCK,
-          persist: {
-            filename: 'rc-filename',
-          },
-        };
+      const persistOnlyFilename = {
+        ...CORE_CONFIG_MOCK,
+        persist: {
+          filename: 'rc-filename',
+        },
+      };
 
-        const noPersistFilename = CORE_CONFIG_MOCK;
+      const noPersistFilename = CORE_CONFIG_MOCK;
 
-        return filepath.includes('all-persist-options')
-          ? allPersistOptions
-          : filepath.includes('no-persist')
-          ? noPersistFilename
-          : filepath.includes('persist-only-filename')
-          ? persistOnlyFilename
-          : CORE_CONFIG_MOCK;
-      }),
+      return filepath.includes('all-persist-options')
+        ? allPersistOptions
+        : filepath.includes('no-persist')
+        ? noPersistFilename
+        : filepath.includes('persist-only-filename')
+        ? persistOnlyFilename
+        : CORE_CONFIG_MOCK;
+    }),
   };
 });
 
