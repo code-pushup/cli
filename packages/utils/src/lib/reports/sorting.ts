@@ -1,5 +1,7 @@
-import { CategoryRef } from '@code-pushup/models';
+import { CategoryRef, PluginReport } from '@code-pushup/models';
 import {
+  EnrichedAuditReport,
+  EnrichedScoredGroup,
   EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
@@ -39,7 +41,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
     );
     const sortedAuditsAndGroups = [
       ...groups,
-      ...audits.sort(compareCategoryAudits),
+      ...[...audits].sort(compareCategoryAudits),
     ];
     const sortedRefs = [...category.refs].sort((a, b) => {
       const aIndex = sortedAuditsAndGroups.findIndex(
@@ -54,7 +56,20 @@ export function sortReport(report: ScoredReport): ScoredReport {
     return { ...category, refs: sortedRefs };
   });
 
-  const sortedPlugins = plugins.map(plugin => ({
+  return {
+    ...report,
+    categories: sortedCategories,
+    plugins: sortPlugins(plugins),
+  };
+}
+
+function sortPlugins(
+  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
+    audits: EnrichedAuditReport[];
+    groups: EnrichedScoredGroup[];
+  })[],
+) {
+  return plugins.map(plugin => ({
     ...plugin,
     audits: [...plugin.audits].sort(compareAudits).map(audit =>
       audit.details?.issues
@@ -68,10 +83,4 @@ export function sortReport(report: ScoredReport): ScoredReport {
         : audit,
     ),
   }));
-
-  return {
-    ...report,
-    categories: sortedCategories,
-    plugins: sortedPlugins,
-  };
 }

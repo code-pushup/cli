@@ -12,7 +12,7 @@ export async function readTextFile(path: string): Promise<string> {
 
 export async function readJsonFile<T = unknown>(path: string): Promise<T> {
   const text = await readTextFile(path);
-  return JSON.parse(text);
+  return JSON.parse(text) as T;
 }
 
 export async function fileExists(path: string): Promise<boolean> {
@@ -76,7 +76,7 @@ export class NoExportError extends Error {
 }
 
 export async function importEsmModule(options: Options): Promise<unknown> {
-  const { mod } = await bundleRequire({
+  const { mod } = await bundleRequire<object>({
     format: 'esm',
     ...options,
   });
@@ -84,7 +84,6 @@ export async function importEsmModule(options: Options): Promise<unknown> {
   if (!('default' in mod)) {
     throw new NoExportError(options.filepath);
   }
-
   return mod.default;
 }
 

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
+// Note: The plugins of the ScoredReport are not structured correctly, hence the ESLint disables.
 import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
+import { ScoredCategoryConfig } from '../../src/lib/reports/scoring';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
@@ -13,6 +16,7 @@ export function calculateScore<T extends { weight: number }>(
   return numerator / denominator;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function scoreReportOptimized2(report: Report): ScoredReport {
   const allScoredAuditsAndGroupsMap = new Map();
 
@@ -64,7 +68,7 @@ export function scoreReportOptimized2(report: Report): ScoredReport {
       });
       return categoryMap;
     },
-    new Map(),
+    new Map<string, ScoredCategoryConfig>(),
   );
 
   return {

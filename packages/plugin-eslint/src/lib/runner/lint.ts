@@ -21,9 +21,9 @@ export async function lint({
   const ruleOptionsPerFile = await results.reduce(
     async (acc, { filePath, relativeFilePath, messages }) => {
       const filesMap = await acc;
-      const config: Linter.Config = await eslint.calculateConfigForFile(
+      const config = (await eslint.calculateConfigForFile(
         filePath,
-      );
+      )) as Linter.Config;
       const ruleIds = distinct(
         messages
           .map(({ ruleId }) => ruleId)

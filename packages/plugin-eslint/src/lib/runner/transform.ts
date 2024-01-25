@@ -1,6 +1,5 @@
 import type { Linter } from 'eslint';
-import type { AuditOutput, Issue } from '@code-pushup/models';
-import { IssueSeverity } from '@code-pushup/models';
+import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
 import {
   compareIssueSeverity,
   countOccurrences,
@@ -43,7 +42,7 @@ function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
     auditIssues.map(({ severity }) => severity),
   );
   const severities = objectToEntries(severityCounts);
-  const summaryText = severities
+  const summaryText = [...severities]
     .sort((a, b) => -compareIssueSeverity(a[0], b[0]))
     .map(([severity, count = 0]) => pluralizeToken(severity, count))
     .join(', ');

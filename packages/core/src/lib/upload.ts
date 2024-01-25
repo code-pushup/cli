@@ -5,7 +5,7 @@ import { jsonReportToGql } from './implementation/json-to-gql';
 import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
-export type UploadOptions = { upload: Required<UploadConfig> } & {
+export type UploadOptions = { upload: UploadConfig } & {
   persist: Required<PersistConfig>;
 } & GlobalOptions;
 
@@ -21,7 +21,7 @@ export async function upload(
   if (!options.upload) {
     throw new Error('upload config must be set');
   }
-  const { apiKey, server, organization, project } = options.upload;
+  const { apiKey, server, organization, project, timeout } = options.upload;
   const report: Report = await loadReport({
     ...persist,
     format: 'json',
@@ -38,5 +38,5 @@ export async function upload(
     ...jsonReportToGql(report),
   };
 
-  return uploadFn({ apiKey, server, data });
+  return uploadFn({ apiKey, server, data, timeout });
 }

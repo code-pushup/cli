@@ -44,8 +44,6 @@ function categoryRefToScore(
           );
         }
         return group.score;
-      default:
-        throw new Error(`Type ${ref.type} is unknown`);
     }
   };
 }

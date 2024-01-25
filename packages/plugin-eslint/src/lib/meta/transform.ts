@@ -7,9 +7,10 @@ export function ruleToAudit({ ruleId, meta, options }: RuleData): Audit {
   const name = ruleId.split('/').at(-1) ?? ruleId;
   const plugin =
     name === ruleId ? null : ruleId.slice(0, ruleId.lastIndexOf('/'));
+  const pluginContext = plugin ? `, from _${plugin}_ plugin` : '';
 
   const lines: string[] = [
-    `ESLint rule **${name}**${plugin ? `, from _${plugin}_ plugin` : ''}.`,
+    `ESLint rule **${name}**${pluginContext}.`,
     ...(options?.length ? ['Custom options:'] : []),
     ...(options?.map(option =>
       ['```json', JSON.stringify(option, null, 2), '```'].join('\n'),

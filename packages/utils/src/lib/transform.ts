@@ -24,18 +24,7 @@ export function distinct<T extends string | number | boolean>(array: T[]): T[] {
 }
 
 export function deepClone<T>(obj: T): T {
-  if (obj == null || typeof obj !== 'object') {
-    return obj;
-  }
-
-  const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
-  // eslint-disable-next-line functional/no-loop-statements
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key as keyof T] = deepClone(obj[key]);
-    }
-  }
-  return cloned;
+  return obj == null || typeof obj !== 'object' ? obj : structuredClone(obj);
 }
 
 export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
@@ -74,9 +63,11 @@ export function objectToCliArgs<
     return [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return Array.isArray(value) ? value : [`${value}`];
     }
     const prefix = key.length === 1 ? '-' : '--';
