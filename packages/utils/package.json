@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/utils",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "dependencies": {
     "@code-pushup/models": "*",
     "bundle-require": "^4.0.1",
