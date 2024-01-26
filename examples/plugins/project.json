@@ -70,14 +70,6 @@
         { "projects": ["cli"], "target": "build" }
       ]
     },
-    "run-history": {
-      "command": "npx dist/packages/cli history --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": [
-        "build",
-        "^build",
-        { "projects": ["cli"], "target": "build" }
-      ]
-    },
     "run-help": {
       "command": "npx dist/packages/cli help",
       "dependsOn": [
