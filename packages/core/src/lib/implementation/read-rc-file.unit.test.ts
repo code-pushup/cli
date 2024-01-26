@@ -7,18 +7,18 @@ import { autoloadRc, readRcByPath } from './read-rc-file';
 
 // Mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: { CORE_CONFIG_MOCK: CoreConfig } =
+  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/testing-utils');
 
   return {
     bundleRequire: vi.fn().mockImplementation((filepath: string) => {
-      const project = filepath.split('.').pop() || 'no-extension-found';
+      const project = filepath.split('.').slice(-1) || 'no-extension-found';
       return {
         mod: {
           default: {
             ...CORE_CONFIG_MOCK,
             upload: {
-              ...CORE_CONFIG_MOCK.upload,
+              ...CORE_CONFIG_MOCK?.upload,
               project,
             },
           },
