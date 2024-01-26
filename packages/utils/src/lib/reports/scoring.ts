@@ -29,33 +29,6 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   categories: ScoredCategoryConfig[];
 };
 
-export function calculateScore<T extends { weight: number }>(
-  refs: T[],
-  scoreFn: (ref: T) => number,
-): number {
-  const { numerator, denominator } = refs.reduce(
-    (acc, ref) => {
-      const score = scoreFn(ref);
-      return {
-        numerator: acc.numerator + score * ref.weight,
-        denominator: acc.denominator + ref.weight,
-      };
-    },
-    { numerator: 0, denominator: 0 },
-  );
-  // No division by 0, otherwise we produce NaN
-  // This can be caused by:
-  // - empty category refs
-  // - categories with refs only containing weight of `0`
-  // both should get caught when validating the model
-  if (!numerator && !denominator) {
-    throw new Error(
-      '0 division for score. This can be caused by refs only weighted with 0 or empty refs',
-    );
-  }
-  return numerator / denominator;
-}
-
 // eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
   const allScoredAuditsAndGroups = new Map<
@@ -118,4 +91,48 @@ export function scoreReport(report: Report): ScoredReport {
     plugins: scoredPlugins,
     categories: scoredCategories,
   };
+}
+
+export function calculateScore<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): number {
+  const validatedRefs = parseScoringParameters(refs, scoreFn);
+  const { numerator, denominator } = validatedRefs.reduce(
+    (acc, ref) => ({
+      numerator: acc.numerator + ref.score * ref.weight,
+      denominator: acc.denominator + ref.weight,
+    }),
+    { numerator: 0, denominator: 0 },
+  );
+
+  return numerator / denominator;
+}
+
+function parseScoringParameters<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): { weight: number; score: number }[] {
+  if (refs.length === 0) {
+    throw new Error('Reference array cannot be empty.');
+  }
+
+  if (refs.some(ref => ref.weight < 0)) {
+    throw new Error('Weight cannot be negative.');
+  }
+
+  if (refs.every(ref => ref.weight === 0)) {
+    throw new Error('All references cannot have zero weight.');
+  }
+
+  const scoredRefs = refs.map(ref => ({
+    weight: ref.weight,
+    score: scoreFn(ref),
+  }));
+
+  if (scoredRefs.some(ref => ref.score < 0 || ref.score > 1)) {
+    throw new Error('All scores must be in range 0-1.');
+  }
+
+  return scoredRefs;
 }
