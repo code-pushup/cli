@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { CommandModule } from 'yargs';
-import { HistoryOptions, UploadOptions, history } from '@code-pushup/core';
+import {CommandModule, Options} from 'yargs';
+import {HistoryOptions, UploadOptions, history, HistoryOnlyOptions} from '@code-pushup/core';
 import {
   getCurrentBranchOrTag,
   git,
@@ -9,10 +9,8 @@ import {
 import {CLI_NAME} from "../constants";
 
 export type HistoryCommandOptions = {
-  targetBranch: string;
   gitRestore: string;
-  numSteps: number;
-};
+} & HistoryOnlyOptions;
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -35,14 +33,19 @@ export function yargsHistoryCommandObject() {
         type: 'number',
         default: 1,
       },
-    },
+      uploadReports: {
+        describe: 'Upload created reports',
+        type: 'boolean',
+        default: true,
+      },
+    } satisfies Record<keyof HistoryCommandOptions, unknown>,
     handler: async args => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}`));
       // await guardAgainstDirtyRepo();
-      const { targetBranch, gitRestore, numSteps, ...config } =
+      const {targetBranch, gitRestore, numSteps, ...config} =
         args as unknown as HistoryCommandOptions;
 
       const options = args as unknown as UploadOptions;
@@ -68,7 +71,7 @@ export function yargsHistoryCommandObject() {
       const log = await git.log();
 
       const commitsToAudit = log.all
-        .map(({ hash }) => hash)
+        .map(({hash}) => hash)
         // crawl from oldest to newest
         .reverse();
       // eslint-disable-next-line no-console

@@ -3,10 +3,14 @@ import {CoreConfig} from '@code-pushup/models';
 import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
 import {collectAndPersistReports, CollectAndPersistReportsOptions} from './collect-and-persist';
 import {GlobalOptions} from './types';
-import { upload as uploadCommandLogic } from './upload';
-import {UploadOptions} from './upload';
+import { upload as uploadCommandLogic, UploadOptions } from './upload';
 
-export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
+export type HistoryOnlyOptions = {
+  targetBranch: string;
+  numSteps: number;
+  uploadReports: boolean;
+};
+export type HistoryOptions = Required<CoreConfig> & GlobalOptions & HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -38,10 +42,12 @@ export async function history(
     } satisfies CollectAndPersistReportsOptions;
     await collectAndPersistReports(currentConfig);
 
-    const { upload } = currentConfig as unknown as UploadOptions;
-    if (upload) {
+    const { uploadReports, progress } = currentConfig as unknown as HistoryOptions;
+    if (uploadReports) {
       progressBar?.updateTitle(`Upload ${commit}`);
-      console.log(`Upload ${commit}`); // @TODO log verbose
+      if(progress === false) {
+        console.log(`Upload ${commit}`); // @TODO log verbose
+      }
       await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
