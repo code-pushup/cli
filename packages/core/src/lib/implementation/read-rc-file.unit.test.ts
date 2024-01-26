@@ -12,14 +12,14 @@ vi.mock('bundle-require', async () => {
 
   return {
     bundleRequire: vi.fn().mockImplementation((filepath: string) => {
-      const project = filepath.split('.').slice(-1) || 'no-extension-found';
+      const extension = filepath.split('.').slice(-1) || 'no-extension-found';
       return {
         mod: {
           default: {
             ...CORE_CONFIG_MOCK,
             upload: {
               ...CORE_CONFIG_MOCK?.upload,
-              project,
+              project: extension,
             },
           },
         },
@@ -32,7 +32,7 @@ describe('readRcByPath', () => {
   it('should load a valid configuration file', async () => {
     vol.fromJSON(
       {
-        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
+        // this is just here to satisfy the file system check. the file is served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.ts`]: '',
       },
       MEMFS_VOLUME,
