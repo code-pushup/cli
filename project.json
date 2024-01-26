@@ -69,6 +69,20 @@
           "target": "build"
         }
       ]
+    },
+    "run-history": {
+      "command": "npx dist/packages/cli history",
+      "dependsOn": [
+        {
+          "projects": [
+            "cli",
+            "plugin-eslint",
+            "examples-plugins",
+            "react-todos-app"
+          ],
+          "target": "build"
+        }
+      ]
     }
   }
 }
