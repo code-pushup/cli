@@ -17,6 +17,25 @@ describe('history-command', () => {
     );
   });
 
+  it('should have correct default arguments if no cli options are provided', async () => {
+    const verboseConfig: HistoryOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      verbose: true,
+      progress: false,
+    };
+    await yargsCli(
+      objectToCliArgs({
+        ...verboseConfig,
+        _: 'history',
+        targetBranch: 'main',
+        numSteps: 1,
+        uploadReports: true,
+        gitRestore: undefined,
+      }),
+      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
+    ).parseAsync();
+  });
+
   it('should throw for invalid targetBranch', async () => {
     const verboseConfig: HistoryOptions = {
       ...MINIMAL_CONFIG_MOCK,

@@ -13,7 +13,7 @@ export async function multiselect<T>(options: {
   choices: T[];
 }): Promise<T[]> {
   const { message = 'Choices:', choices } = options;
-  const answer = await select<T[]>({
+  return await select<T[]>({
     message,
     choices: choices.map(
       value =>
@@ -22,5 +22,4 @@ export async function multiselect<T>(options: {
         } satisfies Choice<T>),
     ) as unknown as readonly Separator[],
   });
-  return answer;
 }

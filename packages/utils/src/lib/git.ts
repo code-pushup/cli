@@ -7,7 +7,7 @@ export type CommitData = {
   date: string;
 };
 
-export interface GitTag {
+export type GitTag = {
   name: string;
   semver: string;
   date: string;
@@ -25,7 +25,7 @@ export async function getLatestCommit() {
 }
 
 export async function branchHasChanges(): Promise<boolean> {
-  return await git.status(['-s']).then(r => Boolean(r.files.length));
+  return await git.status(['-s']).then(r => r.files.length > 0);
 }
 
 export async function guardAgainstDirtyRepo(): Promise<void> {

@@ -26,12 +26,12 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
-  options: Required<PersistConfig>,
+  options: Required<PersistConfig>
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
   const sortedScoredReport = sortReport(scoreReport(report));
-  console.log(generateStdoutSummary(sortedScoredReport));
+  console.warn(generateStdoutSummary(sortedScoredReport));
 
   // collect physical format outputs
   const results = await Promise.all(

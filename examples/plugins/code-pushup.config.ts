@@ -1,4 +1,3 @@
-import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -7,6 +6,7 @@ import {
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from '../../dist/examples/plugins';
+import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 
 /**
  * Run it with:

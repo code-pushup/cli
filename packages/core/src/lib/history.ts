@@ -1,16 +1,21 @@
-import {join} from 'node:path';
-import {CoreConfig} from '@code-pushup/models';
-import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
-import {collectAndPersistReports, CollectAndPersistReportsOptions} from './collect-and-persist';
-import {GlobalOptions} from './types';
-import { upload as uploadCommandLogic, UploadOptions } from './upload';
+import { join } from 'node:path';
+import { CoreConfig } from '@code-pushup/models';
+import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
+import {
+  CollectAndPersistReportsOptions,
+  collectAndPersistReports,
+} from './collect-and-persist';
+import { GlobalOptions } from './types';
+import { UploadOptions, upload as uploadCommandLogic } from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch: string;
   numSteps: number;
   uploadReports: boolean;
 };
-export type HistoryOptions = Required<CoreConfig> & GlobalOptions & HistoryOnlyOptions;
+export type HistoryOptions = Required<CoreConfig> &
+  GlobalOptions &
+  HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -20,7 +25,7 @@ export async function history(
   const progressBar = config?.progress ? getProgressBar('history') : null;
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+     
     const start: number = getStartDuration();
     const result: Record<string, unknown> = {
       commit,
@@ -42,10 +47,11 @@ export async function history(
     } satisfies CollectAndPersistReportsOptions;
     await collectAndPersistReports(currentConfig);
 
-    const { uploadReports, progress } = currentConfig as unknown as HistoryOptions;
+    const { uploadReports, progress } =
+      currentConfig as unknown as HistoryOptions;
     if (uploadReports) {
       progressBar?.updateTitle(`Upload ${commit}`);
-      if(progress === false) {
+      if (!progress) {
         console.log(`Upload ${commit}`); // @TODO log verbose
       }
       await uploadCommandLogic(currentConfig as unknown as UploadOptions);
