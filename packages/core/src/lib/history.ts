@@ -41,6 +41,7 @@ export async function history(
     const { upload } = currentConfig as unknown as UploadOptions;
     if (upload) {
       progressBar?.updateTitle(`Upload ${commit}`);
+      console.log(`Upload ${commit}`); // @TODO log verbose
       await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
