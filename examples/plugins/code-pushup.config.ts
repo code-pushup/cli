@@ -19,7 +19,7 @@ import {
 
 const outputDir = '.code-pushup';
 // eslint-disable-next-line unicorn/no-unreadable-iife
-const config = (() => ({
+const config = {
   persist: {
     outputDir,
   },
