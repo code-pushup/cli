@@ -1,4 +1,4 @@
-import { readCodePushupConfig } from '@code-pushup/core';
+import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   CoreConfig,
   PERSIST_FILENAME,
@@ -17,12 +17,13 @@ export async function coreConfigMiddleware<
     upload: cliUpload,
     ...remainingCliOptions
   } = args as GeneralCliOptions & Required<CoreConfig>;
-  const rcOptions = await readCodePushupConfig(config);
+  // if config path is given use it otherwise auto-load
+  const importedRc = config ? await readRcByPath(config) : await autoloadRc();
   const {
     persist: rcPersist,
     upload: rcUpload,
     ...remainingRcConfig
-  } = rcOptions;
+  } = importedRc;
 
   const parsedProcessArgs: CoreConfig & GeneralCliOptions = {
     config,

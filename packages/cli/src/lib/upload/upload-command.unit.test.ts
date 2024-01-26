@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import { readCodePushupConfig } from '@code-pushup/core';
+import { readRcByPath } from '@code-pushup/core';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
@@ -17,7 +17,7 @@ vi.mock('@code-pushup/core', async () => {
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,
-    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+    readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
@@ -46,11 +46,9 @@ describe('upload-command-object', () => {
       },
     ).parseAsync();
 
-    expect(readCodePushupConfig).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-    );
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
-    // values come from CORE_CONFIG_MOCK returned by readCodePushupConfig mock
+    // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
