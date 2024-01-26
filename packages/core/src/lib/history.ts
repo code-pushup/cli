@@ -45,7 +45,7 @@ export async function history(
       // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
     } else {
-      console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
+      console.log('Upload skipped because configuration is not set.'); // @TODO log verbose
     }
 
     // eslint-disable-next-line functional/immutable-data
