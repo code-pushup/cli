@@ -38,7 +38,7 @@ export function yargsHistoryCommandObject() {
         type: 'boolean',
         default: true,
       },
-    } satisfies Record<keyof HistoryCommandOptions, unknown>,
+    } satisfies Record<keyof HistoryCommandOptions, Options>,
     handler: async args => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
