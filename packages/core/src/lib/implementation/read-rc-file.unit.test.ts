@@ -21,6 +21,7 @@ vi.mock('bundle-require', async () => {
               ...CORE_CONFIG_MOCK,
               upload: {
                 ...CORE_CONFIG_MOCK?.upload,
+                // this value is mocked from the above mock setup. It is always the extension of the loaded file
                 project: extension,
               },
             },
