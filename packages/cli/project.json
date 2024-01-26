@@ -50,7 +50,7 @@
       "dependsOn": ["build"]
     },
     "run-collect": {
-      "command": "npx ../../dist/packages/cli collect --persist.format=stdout --persist.format=md",
+      "command": "npx ../../dist/packages/cli collect --persist.format=json --persist.format=md",
       "options": {
         "cwd": "examples/react-todos-app"
       },
@@ -63,7 +63,11 @@
       },
       "dependsOn": ["build"]
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/cli"
+      }
+    }
   },
   "tags": ["scope:core", "type:app"]
 }

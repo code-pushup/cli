@@ -69,6 +69,14 @@
         "^build",
         { "projects": ["cli"], "target": "build" }
       ]
+    },
+    "run-help": {
+      "command": "npx dist/packages/cli help",
+      "dependsOn": [
+        "build",
+        "^build",
+        { "projects": ["cli"], "target": "build" }
+      ]
     }
   },
   "tags": ["scope:internal", "type:feature"]

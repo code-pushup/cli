@@ -1,44 +1,8 @@
 {
   "extends": ["./code-pushup.eslintrc.json"],
   // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Tue Nov 28 2023 15:38:36 GMT+0100 (Central European Standard Time)
+  // number of errors/warnings per rule recorded at Wed Jan 17 2024 15:00:00 GMT+0100 (Central European Standard Time)
   "rules": {
-    "arrow-body-style": "off", // 1 warning
-    "curly": "off", // 1 warning
-    "max-lines-per-function": "off", // 6 warnings
-    "no-magic-numbers": "off", // 21 warnings
-    "no-param-reassign": "off", // 25 errors
-    "prefer-template": "off", // 12 warnings
-    "@typescript-eslint/consistent-type-assertions": "off", // 3 errors
-    "@typescript-eslint/consistent-type-definitions": "off", // 1 warning
-    "@typescript-eslint/naming-convention": "off", // 8 warnings
-    "@typescript-eslint/no-floating-promises": "off", // 2 errors
-    "@typescript-eslint/no-shadow": "off", // 8 warnings
-    "@typescript-eslint/no-unnecessary-condition": "off", // 18 warnings
-    "@typescript-eslint/no-unnecessary-type-assertion": "off", // 1 error
-    "@typescript-eslint/no-unsafe-argument": "off", // 1 error
-    "@typescript-eslint/no-unsafe-assignment": "off", // 15 errors
-    "@typescript-eslint/no-unsafe-call": "off", // 2 errors
-    "@typescript-eslint/no-unsafe-member-access": "off", // 12 errors
-    "@typescript-eslint/no-unsafe-return": "off", // 13 errors
-    "@typescript-eslint/prefer-nullish-coalescing": "off", // 11 warnings
-    "@typescript-eslint/restrict-plus-operands": "off", // 1 error
-    "@typescript-eslint/restrict-template-expressions": "off", // 2 errors
-    "functional/immutable-data": "off", // 25 errors
-    "functional/no-let": "off", // 12 warnings
-    "import/no-cycle": "off", // 2 errors
-    "import/no-named-as-default": "off", // 2 warnings
-    "import/no-useless-path-segments": "off", // 1 warning
-    "sonarjs/cognitive-complexity": "off", // 1 error
-    "sonarjs/no-duplicate-string": "off", // 1 warning
-    "unicorn/consistent-destructuring": "off", // 31 warnings
-    "unicorn/explicit-length-check": "off", // 2 warnings
-    "unicorn/import-style": "off", // 3 warnings
-    "unicorn/no-negated-condition": "off", // 1 warning
-    "unicorn/no-new-array": "off", // 6 warnings
-    "unicorn/numeric-separators-style": "off", // 12 warnings
-    "unicorn/prefer-number-properties": "off", // 4 warnings
-    "unicorn/prefer-spread": "off", // 7 warnings
-    "unicorn/prefer-ternary": "off" // 1 warning
+    "@typescript-eslint/no-unnecessary-condition": "off" // 5 warnings
   }
 }

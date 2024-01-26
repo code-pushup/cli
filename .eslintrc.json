@@ -33,6 +33,7 @@
                 "onlyDependOnLibsWithTags": [
                   "type:app",
                   "type:feature",
+                  "type:util",
                   "type:testing-util"
                 ]
               },
@@ -96,6 +97,13 @@
       "files": "*.json",
       "parser": "jsonc-eslint-parser",
       "rules": {}
+    },
+    {
+      "files": ["perf/**/*.ts"],
+      "rules": {
+        "no-magic-numbers": "off",
+        "sonarjs/no-duplicate-string": "off"
+      }
     }
   ]
 }

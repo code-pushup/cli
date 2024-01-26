@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
+import { TERMINAL_WIDTH } from './reports/constants';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
@@ -22,6 +23,7 @@ export type ProgressBar = {
   endProgress: (message?: string) => void;
 };
 
+// eslint-disable-next-line functional/no-let
 let mpb: MultiProgressBars;
 
 export function getSingletonProgressBars(
@@ -29,6 +31,7 @@ export function getSingletonProgressBars(
 ): MultiProgressBars {
   if (!mpb) {
     mpb = new MultiProgressBars({
+      progressWidth: TERMINAL_WIDTH,
       initMessage: '',
       border: true,
       ...options,

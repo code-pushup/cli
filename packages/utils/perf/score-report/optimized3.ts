@@ -1,5 +1,12 @@
+/* eslint-disable no-param-reassign, functional/immutable-data */
+// Note: The mutability issues are resolved in production code
 import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
+import {
+  EnrichedAuditReport,
+  EnrichedScoredGroup,
+  ScoredCategoryConfig,
+} from '../../src/lib/reports/scoring';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
@@ -23,6 +30,7 @@ export function deepClone<T>(obj: T): T {
     return obj;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const cloned: T = Array.isArray(obj) ? ([] as T) : ({} as T);
   // eslint-disable-next-line functional/no-loop-statements
   for (const key in obj) {
@@ -33,36 +41,40 @@ export function deepClone<T>(obj: T): T {
   return cloned;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
-  const allScoredAuditsAndGroups = new Map();
+  const allScoredAuditsAndGroups = new Map<
+    string,
+    EnrichedAuditReport | EnrichedScoredGroup
+  >();
 
   scoredReport.plugins?.forEach(plugin => {
-    const { audits } = plugin;
+    const { audits, slug } = plugin;
     const groups = plugin.groups || [];
 
     audits.forEach(audit => {
-      const key = `${plugin.slug}-${audit.slug}-audit`;
-      audit.plugin = plugin.slug;
+      const key = `${slug}-${audit.slug}-audit`;
+      audit.plugin = slug;
       allScoredAuditsAndGroups.set(key, audit);
     });
 
     function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
-        `${plugin.slug}-${ref.slug}-audit`,
+        `${slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
         throw new Error(
-          `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
+          `Group has invalid ref - audit with slug ${slug}-${ref.slug}-audit not found`,
         );
       }
       return score;
     }
 
     groups.forEach(group => {
-      const key = `${plugin.slug}-${group.slug}-group`;
+      const key = `${slug}-${group.slug}-group`;
       group.score = calculateScore(group.refs, groupScoreFn);
-      group.plugin = plugin.slug;
+      group.plugin = slug;
       allScoredAuditsAndGroups.set(key, group);
     });
     plugin.groups = groups;
@@ -79,14 +91,14 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategoriesMap = new Map();
+  const scoredCategoriesMap = new Map<string, ScoredCategoryConfig>();
   // eslint-disable-next-line functional/no-loop-statements
   for (const category of scoredReport.categories) {
     category.score = calculateScore(category.refs, catScoreFn);
     scoredCategoriesMap.set(category.slug, category);
   }
 
-  scoredReport.categories = Array.from(scoredCategoriesMap.values());
+  scoredReport.categories = [...scoredCategoriesMap.values()];
 
   return scoredReport;
 }

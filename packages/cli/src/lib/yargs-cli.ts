@@ -8,7 +8,8 @@ import yargs, {
   ParserConfigurationOptions,
 } from 'yargs';
 import { PersistConfig, formatSchema } from '@code-pushup/models';
-import { logErrorBeforeThrow } from './implementation/utils';
+import { TERMINAL_WIDTH } from '@code-pushup/utils';
+import { logErrorBeforeThrow } from './implementation/global.utils';
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -53,7 +54,9 @@ export function yargsCli<T = unknown>(
     .coerce('config', (config: string | string[]) =>
       Array.isArray(config) ? config.at(-1) : config,
     )
-    .options(options);
+    .options(options)
+    // take full width of the terminal `cli.terminalWidth()`
+    .wrap(TERMINAL_WIDTH);
 
   // usage message
   if (usageMessage) {

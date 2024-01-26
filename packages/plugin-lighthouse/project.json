@@ -41,7 +41,11 @@
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/plugin-lighthouse"
+      }
+    }
   },
   "tags": ["scope:plugin", "type:feature"]
 }

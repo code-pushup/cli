@@ -6,31 +6,31 @@ import { scoreReportOptimized1 } from './optimized1';
 import { scoreReportOptimized2 } from './optimized2';
 import { scoreReportOptimized3 } from './optimized3';
 
-interface MinimalReportOptions {
+type MinimalReportOptions = {
   numAuditsP1?: number;
   numAuditsP2?: number;
   numGroupRefs2?: number;
-}
+};
 
-const PROCESS_ARGUMENT_NUM_AUDITS_P1 = parseInt(
+const PROCESS_ARGUMENT_NUM_AUDITS_P1 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits1'))
     ?.split('=')
-    .pop() || '0',
+    .at(-1) ?? '0',
   10,
 );
-const PROCESS_ARGUMENT_NUM_AUDITS_P2 = parseInt(
+const PROCESS_ARGUMENT_NUM_AUDITS_P2 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numAudits2'))
     ?.split('=')
-    .pop() || '0',
+    .at(-1) ?? '0',
   10,
 );
-const PROCESS_ARGUMENT_NUM_GROUPS_P2 = parseInt(
+const PROCESS_ARGUMENT_NUM_GROUPS_P2 = Number.parseInt(
   process.argv
     .find(arg => arg.startsWith('--numGroupRefs2'))
     ?.split('=')
-    .pop() || '0',
+    .at(-1) ?? '0',
   10,
 );
 
@@ -58,7 +58,7 @@ const listeners = {
   complete: () => {
     if (typeof suite.filter === 'function') {
       console.info(' ');
-      console.info('Fastest is ' + suite.filter('fastest').map('name'));
+      console.info(`Fastest is ${String(suite.filter('fastest').map('name'))}`);
     }
   },
 };
@@ -67,10 +67,10 @@ const listeners = {
 
 // Add tests
 suite.add('scoreReport', scoreReport);
-suite.add('scoreReportOptimized0', _scoreReportOptimized0);
-suite.add('scoreReportOptimized1', _scoreReportOptimized1);
-suite.add('scoreReportOptimized2', _scoreReportOptimized2);
-suite.add('scoreReportOptimized3', _scoreReportOptimized3);
+suite.add('scoreReportOptimized0', scoreMinimalReportOptimized0);
+suite.add('scoreReportOptimized1', scoreMinimalReportOptimized1);
+suite.add('scoreReportOptimized2', scoreMinimalReportOptimized2);
+suite.add('scoreReportOptimized3', scoreMinimalReportOptimized3);
 
 // ==================
 
@@ -107,28 +107,29 @@ suite.run({
 
 // ==============================================================
 
-function _scoreReportOptimized0() {
+function scoreMinimalReportOptimized0() {
   scoreReportOptimized0(minimalReport());
 }
 
-function _scoreReportOptimized1() {
+function scoreMinimalReportOptimized1() {
   scoreReportOptimized1(minimalReport());
 }
 
-function _scoreReportOptimized2() {
+function scoreMinimalReportOptimized2() {
   scoreReportOptimized2(minimalReport());
 }
 
-function _scoreReportOptimized3() {
+function scoreMinimalReportOptimized3() {
   scoreReportOptimized3(minimalReport());
 }
 
 // ==============================================================
 
+// eslint-disable-next-line max-lines-per-function
 function minimalReport(opt?: MinimalReportOptions): Report {
-  const numAuditsP1 = opt?.numAuditsP1 || NUM_AUDITS_P1;
-  const numAuditsP2 = opt?.numAuditsP2 || NUM_AUDITS_P2;
-  const numGroupRefs2 = opt?.numGroupRefs2 || NUM_GROUPS_P2;
+  const numAuditsP1 = opt?.numAuditsP1 ?? NUM_AUDITS_P1;
+  const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;
+  const numGroupRefs2 = opt?.numGroupRefs2 ?? NUM_GROUPS_P2;
 
   return {
     date: '2022-01-01',
@@ -137,7 +138,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
       {
         slug: 'c1_',
         title: 'Category 1',
-        refs: new Array(numAuditsP1).map((_, idx) => ({
+        refs: Array.from({ length: numAuditsP1 }).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P1,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
@@ -148,7 +149,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
       {
         slug: 'c2_',
         title: 'Category 2',
-        refs: new Array(numAuditsP2).map((_, idx) => ({
+        refs: Array.from({ length: numAuditsP2 }).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P2,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
@@ -164,7 +165,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         slug: SLUG_PLUGIN_P1,
         title: 'Plugin 1',
         icon: 'slug',
-        audits: new Array(numAuditsP1).fill(null).map((_, idx) => ({
+        audits: Array.from({ length: numAuditsP1 }).map((_, idx) => ({
           value: 0,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
           title: 'Default Title',
@@ -178,7 +179,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         slug: SLUG_PLUGIN_P2,
         title: 'Plugin 2',
         icon: 'slug',
-        audits: new Array(numAuditsP2).map((_, idx) => ({
+        audits: Array.from({ length: numAuditsP2 }).map((_, idx) => ({
           value: 0,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
           title: 'Default Title',
@@ -188,7 +189,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
           {
             title: 'Group 1',
             slug: GROUP_P2_PREFIX + 1,
-            refs: new Array(numGroupRefs2).map((_, idx) => ({
+            refs: Array.from({ length: numGroupRefs2 }).map((_, idx) => ({
               slug: `${AUDIT_P2_PREFIX}${idx}`,
               weight: 1,
             })),

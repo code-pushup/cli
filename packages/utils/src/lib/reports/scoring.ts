@@ -29,66 +29,46 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   categories: ScoredCategoryConfig[];
 };
 
-export function calculateScore<T extends { weight: number }>(
-  refs: T[],
-  scoreFn: (ref: T) => number,
-): number {
-  const { numerator, denominator } = refs.reduce(
-    (acc, ref) => {
-      const score = scoreFn(ref);
-      return {
-        numerator: acc.numerator + score * ref.weight,
-        denominator: acc.denominator + ref.weight,
-      };
-    },
-    { numerator: 0, denominator: 0 },
-  );
-  // No division by 0, otherwise we produce NaN
-  // This can be caused by:
-  // - empty category refs
-  // - categories with refs only containing weight of `0`
-  // both should get caught when validating the model
-  if (!numerator && !denominator) {
-    throw new Error(
-      '0 division for score. This can be caused by refs only weighted with 0 or empty refs',
-    );
-  }
-  return numerator / denominator;
-}
-
+// eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
-  const scoredReport = deepClone(report) as ScoredReport;
-  const allScoredAuditsAndGroups = new Map();
+  const allScoredAuditsAndGroups = new Map<
+    string,
+    EnrichedAuditReport | EnrichedScoredGroup
+  >();
 
-  scoredReport.plugins?.forEach(plugin => {
-    const { audits } = plugin;
-    const groups = plugin.groups || [];
+  const scoredPlugins = report.plugins.map(plugin => {
+    const { slug, audits, groups } = plugin;
 
-    audits.forEach(audit => {
-      const key = `${plugin.slug}-${audit.slug}-audit`;
-      audit.plugin = plugin.slug;
-      allScoredAuditsAndGroups.set(key, audit);
+    const updatedAudits = audits.map(audit => ({ ...audit, plugin: slug }));
+
+    updatedAudits.forEach(audit => {
+      allScoredAuditsAndGroups.set(`${slug}-${audit.slug}-audit`, audit);
     });
 
     function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
-        `${plugin.slug}-${ref.slug}-audit`,
+        `${slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
         throw new Error(
-          `Group has invalid ref - audit with slug ${plugin.slug}-${ref.slug}-audit not found`,
+          `Group has invalid ref - audit with slug ${slug}-${ref.slug}-audit not found`,
         );
       }
       return score;
     }
 
-    groups.forEach(group => {
-      const key = `${plugin.slug}-${group.slug}-group`;
-      group.score = calculateScore(group.refs, groupScoreFn);
-      group.plugin = plugin.slug;
-      allScoredAuditsAndGroups.set(key, group);
+    const scoredGroups =
+      groups?.map(group => ({
+        ...group,
+        score: calculateScore(group.refs, groupScoreFn),
+        plugin: slug,
+      })) ?? [];
+
+    scoredGroups.forEach(group => {
+      allScoredAuditsAndGroups.set(`${slug}-${group.slug}-group`, group);
     });
-    plugin.groups = groups;
+
+    return { ...plugin, audits: updatedAudits, groups: scoredGroups };
   });
 
   function catScoreFn(ref: CategoryRef) {
@@ -102,14 +82,57 @@ export function scoreReport(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategoriesMap = new Map();
-  // eslint-disable-next-line functional/no-loop-statements
-  for (const category of scoredReport.categories) {
-    category.score = calculateScore(category.refs, catScoreFn);
-    scoredCategoriesMap.set(category.slug, category);
+  const scoredCategories = report.categories.map(category => ({
+    ...category,
+    score: calculateScore(category.refs, catScoreFn),
+  }));
+  return {
+    ...deepClone(report),
+    plugins: scoredPlugins,
+    categories: scoredCategories,
+  };
+}
+
+export function calculateScore<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): number {
+  const validatedRefs = parseScoringParameters(refs, scoreFn);
+  const { numerator, denominator } = validatedRefs.reduce(
+    (acc, ref) => ({
+      numerator: acc.numerator + ref.score * ref.weight,
+      denominator: acc.denominator + ref.weight,
+    }),
+    { numerator: 0, denominator: 0 },
+  );
+
+  return numerator / denominator;
+}
+
+function parseScoringParameters<T extends { weight: number }>(
+  refs: T[],
+  scoreFn: (ref: T) => number,
+): { weight: number; score: number }[] {
+  if (refs.length === 0) {
+    throw new Error('Reference array cannot be empty.');
   }
 
-  scoredReport.categories = Array.from(scoredCategoriesMap.values());
+  if (refs.some(ref => ref.weight < 0)) {
+    throw new Error('Weight cannot be negative.');
+  }
 
-  return scoredReport;
+  if (refs.every(ref => ref.weight === 0)) {
+    throw new Error('All references cannot have zero weight.');
+  }
+
+  const scoredRefs = refs.map(ref => ({
+    weight: ref.weight,
+    score: scoreFn(ref),
+  }));
+
+  if (scoredRefs.some(ref => ref.score < 0 || ref.score > 1)) {
+    throw new Error('All scores must be in range 0-1.');
+  }
+
+  return scoredRefs;
 }

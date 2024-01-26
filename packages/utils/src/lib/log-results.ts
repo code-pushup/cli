@@ -30,7 +30,7 @@ export function logMultipleResults<T>(
 export function logPromiseResults<
   T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
 >(results: T[], logMessage: string, callback: (result: T) => void): void {
-  if (results.length) {
+  if (results.length > 0) {
     if (results[0]?.status === 'fulfilled') {
       console.info(logMessage);
     } else {

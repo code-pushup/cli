@@ -59,6 +59,7 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
+export { TERMINAL_WIDTH } from './lib/reports/constants';
 export {
   CliArgsObject,
   countOccurrences,

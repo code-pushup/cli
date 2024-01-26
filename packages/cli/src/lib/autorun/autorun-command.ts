@@ -7,7 +7,7 @@ import {
   upload,
 } from '@code-pushup/core';
 import { CLI_NAME } from '../constants';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins-options';
+import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 

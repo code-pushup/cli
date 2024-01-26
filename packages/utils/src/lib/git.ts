@@ -1,4 +1,4 @@
-import simpleGit from 'simple-git';
+import { simpleGit } from 'simple-git';
 
 export type CommitData = {
   hash: string;
@@ -21,7 +21,7 @@ export async function getLatestCommit() {
     maxCount: 1,
     format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
   });
-  return log?.latest;
+  return log.latest;
 }
 
 export async function branchHasChanges(): Promise<boolean> {

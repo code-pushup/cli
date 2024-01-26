@@ -67,7 +67,11 @@
         "reportsDirectory": "../../coverage/packages/models/integration-tests"
       }
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/nx-plugin"
+      }
+    }
   },
   "tags": ["scope:tooling", "type:feature"]
 }
