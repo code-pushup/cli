@@ -10,21 +10,23 @@ vi.mock('bundle-require', async () => {
     await vi.importActual('@code-pushup/testing-utils');
 
   return {
-    bundleRequire: vi.fn().mockImplementation((options: {filepath: string}) => {
-      console.log('FILEPATH:: ', options);
-      const extension = options.filepath?.split('.').at(-1) || 'no-extension-found';
-      return {
-        mod: {
-          default: {
-            ...CORE_CONFIG_MOCK,
-            upload: {
-              ...CORE_CONFIG_MOCK?.upload,
-              project: extension,
+    bundleRequire: vi
+      .fn()
+      .mockImplementation((options: { filepath: string }) => {
+        const extension =
+          options.filepath?.split('.').at(-1) || 'no-extension-found';
+        return {
+          mod: {
+            default: {
+              ...CORE_CONFIG_MOCK,
+              upload: {
+                ...CORE_CONFIG_MOCK?.upload,
+                project: extension,
+              },
             },
           },
-        },
-      };
-    }),
+        };
+      }),
   };
 });
 
@@ -41,7 +43,11 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: expect.any(Object) }),
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: 'ts',
+        }),
+      }),
     );
   });
 
@@ -56,7 +62,11 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: expect.any(Object) }),
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: 'mjs',
+        }),
+      }),
     );
   });
 
@@ -70,7 +80,11 @@ describe('autoloadRc', () => {
     );
 
     await expect(autoloadRc()).resolves.toEqual(
-      expect.objectContaining({ upload: 'u' }),
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: 'js',
+        }),
+      }),
     );
   });
 
