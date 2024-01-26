@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.10.5](https://github.com/code-pushup/cli/compare/v0.10.4...v0.10.5) (2024-01-26)
+
+### Bug Fixes
+
+- **cli:** set terminal output to full width ([#362](https://github.com/code-pushup/cli/issues/362)) ([d6270a5](https://github.com/code-pushup/cli/commit/d6270a5cc7766e9c3d4090ad5935e65c9d36c427))
+
 ## [0.10.4](https://github.com/code-pushup/cli/compare/v0.10.3...v0.10.4) (2024-01-25)
 
 ## [0.10.3](https://github.com/code-pushup/cli/compare/v0.10.2...v0.10.3) (2024-01-25)
