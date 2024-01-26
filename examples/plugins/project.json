@@ -55,7 +55,7 @@
       ]
     },
     "run-history": {
-      "command": "npx dist/packages/cli history --config=examples/plugins/code-pushup.config.ts --verbose --no-progress",
+      "command": "npx dist/packages/cli history --config=examples/plugins/code-pushup.config.ts",
       "dependsOn": [
         "build",
         "^build",
