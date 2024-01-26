@@ -31,7 +31,7 @@ export async function persistReport(
   const { outputDir, filename, format } = options;
 
   const sortedScoredReport = sortReport(scoreReport(report));
-  console.info(generateStdoutSummary(sortedScoredReport));
+  console.log(generateStdoutSummary(sortedScoredReport));
 
   // collect physical format outputs
   const results = await Promise.all(

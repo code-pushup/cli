@@ -40,7 +40,7 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
       // eslint-disable-next-line no-console
-      console.log(chalk.gray(`Run ${command}...`));
+      console.log(chalk.gray(`Run ${command} ${JSON.stringify(args)}`));
       // await guardAgainstDirtyRepo();
       const { targetBranch, gitRestore, numSteps, ...config } =
         args as unknown as HistoryCommandOptions;
