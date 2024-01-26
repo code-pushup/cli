@@ -21,7 +21,31 @@ describe('readRcByPath', () => {
   it('should load the configuration', async () => {
     await expect(
       readRcByPath(join(configDirPath, 'code-pushup.config.js')),
-    ).resolves.not.toThrow();
+    ).resolves.toEqual(
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: 'cli-js',
+        }),
+        categories: expect.any(Array),
+        plugins: expect.arrayContaining([
+          expect.objectContaining({
+            slug: 'node',
+          }),
+        ]),
+      }),
+    );
+  });
+
+  it('should throw if the path is empty', async () => {
+    await expect(readRcByPath('')).rejects.toThrow(
+      'The path to the configuration file is empty.',
+    );
+  });
+
+  it('should throw if the file does not exist', async () => {
+    await expect(
+      readRcByPath(join('non-existent', 'config.file.js')),
+    ).rejects.toThrow(/Provided path .* is not valid./);
   });
 
   it('should throw if the configuration is empty', async () => {
