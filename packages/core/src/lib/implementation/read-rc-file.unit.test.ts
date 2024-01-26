@@ -4,29 +4,6 @@ import { CONFIG_FILE_NAME, CoreConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { autoloadRc } from './read-rc-file';
 
-// Mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/testing-utils');
-
-  return {
-    bundleRequire: vi.fn().mockImplementation((filepath: string) => {
-      const extension = filepath?.split('.').slice(-1) || 'no-extension-found';
-      return {
-        mod: {
-          default: {
-            ...CORE_CONFIG_MOCK,
-            upload: {
-              ...CORE_CONFIG_MOCK?.upload,
-              project: extension,
-            },
-          },
-        },
-      };
-    }),
-  };
-});
-
 describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
