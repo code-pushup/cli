@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.11.0](https://github.com/code-pushup/cli/compare/v0.10.7...v0.11.0) (2024-01-26)
+
+### Features
+
+- **cli:** add autoloading of the config file ([#361](https://github.com/code-pushup/cli/issues/361)) ([aef86c9](https://github.com/code-pushup/cli/commit/aef86c9d472e7dc77e6e85dcf7fa11319b5ad662))
+
 ## [0.10.7](https://github.com/code-pushup/cli/compare/v0.10.6...v0.10.7) (2024-01-26)
 
 ## [0.10.6](https://github.com/code-pushup/cli/compare/v0.10.5...v0.10.6) (2024-01-26)
