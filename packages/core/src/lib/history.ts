@@ -3,6 +3,7 @@ import {CoreConfig} from '@code-pushup/models';
 import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
 import {collectAndPersistReports, CollectAndPersistReportsOptions} from './collect-and-persist';
 import {GlobalOptions} from './types';
+import { upload as uploadCommandLogic } from './upload';
 import {UploadOptions} from './upload';
 
 export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
@@ -40,7 +41,7 @@ export async function history(
     const { upload } = currentConfig as unknown as UploadOptions;
     if (upload) {
       progressBar?.updateTitle(`Upload ${commit}`);
-     // await uploadCommandLogic(currentConfig as unknown as UploadOptions);
+      await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
     } else {
