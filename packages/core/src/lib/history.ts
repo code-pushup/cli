@@ -1,10 +1,9 @@
-import { join } from 'node:path';
-import { CoreConfig } from '@code-pushup/models';
-import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
-import { collectAndPersistReports } from './collect-and-persist';
-import { GlobalOptions } from './types';
-import { upload as uploadCommandLogic } from './upload';
-import { UploadOptions } from './upload';
+import {join} from 'node:path';
+import {CoreConfig} from '@code-pushup/models';
+import {getProgressBar, getStartDuration, git} from '@code-pushup/utils';
+import {collectAndPersistReports, CollectAndPersistReportsOptions} from './collect-and-persist';
+import {GlobalOptions} from './types';
+import {UploadOptions} from './upload';
 
 export type HistoryOptions = Required<CoreConfig> & GlobalOptions;
 
@@ -32,21 +31,23 @@ export async function history(
       ...config,
       persist: {
         ...config.persist,
-        format: [],
+        format: ['json'],
         filename: `${commit}-report`,
       },
-    };
+    } satisfies CollectAndPersistReportsOptions;
     await collectAndPersistReports(currentConfig);
 
     const { upload } = currentConfig as unknown as UploadOptions;
-    if (!upload) {
-      console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
-    } else {
+    if (upload) {
       progressBar?.updateTitle(`Upload ${commit}`);
      // await uploadCommandLogic(currentConfig as unknown as UploadOptions);
+      // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
+    } else {
+      console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     }
-    /**/
+
+    // eslint-disable-next-line functional/immutable-data
     reports.push({
       [join(currentConfig.persist.filename)]: result,
     });
