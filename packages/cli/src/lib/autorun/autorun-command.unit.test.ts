@@ -1,10 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
-import {
-  collectAndPersistReports,
-  readCodePushupConfig,
-} from '@code-pushup/core';
+import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
 import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -17,7 +14,7 @@ vi.mock('@code-pushup/core', async () => {
   return {
     ...core,
     collectAndPersistReports: vi.fn().mockResolvedValue({}),
-    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+    readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
@@ -44,9 +41,7 @@ describe('autorun-command', () => {
       },
     ).parseAsync();
 
-    expect(readCodePushupConfig).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-    );
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -59,7 +54,7 @@ describe('autorun-command', () => {
       }),
     );
 
-    // values come from CORE_CONFIG_MOCK returned by readCodePushupConfig mock
+    // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
