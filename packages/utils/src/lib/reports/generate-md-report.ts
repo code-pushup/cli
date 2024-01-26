@@ -41,25 +41,29 @@ export function generateMdReport(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
+  const { categories = [] } = report;
+  const reportWithCategories = { ...report, categories };
+  const printCategories = categories.length > 0 ? true : false;
+
   return (
     // header section
     // eslint-disable-next-line prefer-template
     reportToHeaderSection() +
     NEW_LINE +
-    // overview section
-    reportToOverviewSection(report) +
-    NEW_LINE +
-    NEW_LINE +
+    // categories overview section
+    (printCategories
+      ? reportToOverviewSection(reportWithCategories) + NEW_LINE + NEW_LINE
+      : '') +
     // categories section
-    reportToCategoriesSection(report) +
-    NEW_LINE +
-    NEW_LINE +
+    (printCategories
+      ? reportToCategoriesSection(reportWithCategories) + NEW_LINE + NEW_LINE
+      : '') +
     // audits section
-    reportToAuditsSection(report) +
+    reportToAuditsSection(reportWithCategories) +
     NEW_LINE +
     NEW_LINE +
     // about section
-    reportToAboutSection(report, commitData) +
+    reportToAboutSection(reportWithCategories, commitData) +
     NEW_LINE +
     NEW_LINE +
     // footer section

@@ -64,8 +64,8 @@ export function exists<T>(value: T): value is NonNullable<T> {
  * @returns Array of missing references.
  */
 export function getMissingRefsForCategories(
-  categories: CategoryConfig[],
   plugins: PluginConfig[] | PluginReport[],
+  categories: CategoryConfig[] = [],
 ) {
   const auditRefsFromCategory = categories.flatMap(({ refs }) =>
     refs
@@ -102,10 +102,10 @@ export function getMissingRefsForCategories(
   return missingRefs.length > 0 ? missingRefs : false;
 }
 export function missingRefsForCategoriesErrorMsg(
-  categories: CategoryConfig[],
   plugins: PluginConfig[] | PluginReport[],
+  categories: CategoryConfig[] = [],
 ) {
-  const missingRefs = getMissingRefsForCategories(categories, plugins);
+  const missingRefs = getMissingRefsForCategories(plugins, categories);
   return `The following category references need to point to an audit or group: ${errorItems(
     missingRefs,
   )}`;

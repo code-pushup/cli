@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { CoreConfig } from '@code-pushup/models';
+import { CategoryConfig, CoreConfig } from '@code-pushup/models';
 
 export function filterPluginsBySlug(
   plugins: CoreConfig['plugins'],
@@ -14,12 +14,16 @@ export function filterPluginsBySlug(
 // skip the whole category if it has at least one skipped plugin ref
 // see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
 export function filterCategoryByPluginSlug(
-  categories: CoreConfig['categories'],
+  categories: Array<CategoryConfig>,
   {
     onlyPlugins,
     verbose = false,
   }: { onlyPlugins?: string[]; verbose?: boolean },
 ): CoreConfig['categories'] {
+  // early exit for empty categories
+  if (!categories?.length) {
+    return categories;
+  }
   if (!onlyPlugins?.length) {
     return categories;
   }

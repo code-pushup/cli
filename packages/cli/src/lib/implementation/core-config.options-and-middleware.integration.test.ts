@@ -34,11 +34,17 @@ vi.mock('@code-pushup/core', async () => {
         };
 
         const noPersistFilename = CORE_CONFIG_MOCK;
+        const noCategoryFilename = {
+          plugins: CORE_CONFIG_MOCK.plugins,
+          upload: CORE_CONFIG_MOCK.upload,
+        };
 
         return filepath.includes('all-persist-options')
           ? allPersistOptions
           : filepath.includes('no-persist')
           ? noPersistFilename
+          : filepath.includes('no-category')
+          ? noCategoryFilename
           : filepath.includes('persist-only-filename')
           ? persistOnlyFilename
           : CORE_CONFIG_MOCK;
@@ -138,5 +144,17 @@ describe('parsing values from CLI and middleware', () => {
       format: PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
     });
+  });
+
+  it('should fill categories if not given in config file', async () => {
+    const { categories } = await yargsCli<CoreConfig>(
+      ['--config=./no-category.config.ts'],
+      {
+        options: { ...yargsCoreConfigOptionsDefinition() },
+        middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+      },
+    ).parseAsync();
+
+    expect(categories).toEqual([]);
   });
 });

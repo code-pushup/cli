@@ -40,14 +40,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
    ```js
    export default {
-     persist: {
-       outputDir: '.code-pushup',
-       format: ['json', 'md'],
-     },
      plugins: [
-       // ...
-     ],
-     categories: [
        // ...
      ],
    };
@@ -71,11 +64,14 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-4. Define your custom categories.
+4. Optionally define your custom categories.
 
    ```js
    export default {
      // ...
+     plugins: [
+       // ...
+     ],
      categories: [
        {
          slug: 'performance',

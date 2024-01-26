@@ -2,6 +2,22 @@ import { describe, expect, it } from 'vitest';
 import { CoreConfig, coreConfigSchema } from './core-config';
 
 describe('coreConfigSchema', () => {
+  it('should accept a minimal core configuration', () => {
+    expect(() =>
+      coreConfigSchema.parse({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'ESLint',
+            icon: 'eslint',
+            runner: { command: 'npm run lint', outputFile: 'output.json' },
+            audits: [{ slug: 'no-magic-numbers', title: 'No magic numbers.' }],
+          },
+        ],
+      } satisfies CoreConfig),
+    ).not.toThrow();
+  });
+
   it('should accept a valid core configuration with all entities', () => {
     expect(() =>
       coreConfigSchema.parse({
@@ -42,36 +58,6 @@ describe('coreConfigSchema', () => {
           project: 'cli',
           server: 'https://api.code-pushup.org',
         },
-      } satisfies CoreConfig),
-    ).not.toThrow();
-  });
-
-  it('should accept a minimal core configuration', () => {
-    expect(() =>
-      coreConfigSchema.parse({
-        categories: [
-          {
-            slug: 'bug-prevention',
-            title: 'Bug prevention',
-            refs: [
-              {
-                plugin: 'eslint',
-                slug: 'no-magic-numbers',
-                type: 'audit',
-                weight: 1,
-              },
-            ],
-          },
-        ],
-        plugins: [
-          {
-            slug: 'eslint',
-            title: 'ESLint',
-            icon: 'eslint',
-            runner: { command: 'npm run lint', outputFile: 'output.json' },
-            audits: [{ slug: 'no-magic-numbers', title: 'No magic numbers.' }],
-          },
-        ],
       } satisfies CoreConfig),
     ).not.toThrow();
   });

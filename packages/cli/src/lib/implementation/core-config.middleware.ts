@@ -21,6 +21,7 @@ export async function coreConfigMiddleware<
   const {
     persist: rcPersist,
     upload: rcUpload,
+    categories: rcCategories = [],
     ...remainingRcConfig
   } = rcOptions;
 
@@ -38,6 +39,7 @@ export async function coreConfigMiddleware<
       format: cliPersist?.format ?? rcPersist?.format ?? PERSIST_FORMAT,
       filename: cliPersist?.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
     },
+    categories: rcCategories,
   };
 
   return parsedProcessArgs;
