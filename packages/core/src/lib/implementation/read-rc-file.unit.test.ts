@@ -11,7 +11,7 @@ vi.mock('bundle-require', async () => {
 
   return {
     bundleRequire: vi.fn().mockImplementation((filepath: string) => {
-      const extension = filepath.split('.').slice(-1) || 'no-extension-found';
+      const extension = filepath?.split('.').slice(-1) || 'no-extension-found';
       return {
         mod: {
           default: {
