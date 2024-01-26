@@ -58,7 +58,7 @@ const config = {
     },
     {
       slug: 'new-category',
-      title: 'Performance',
+      title: 'New Category',
       refs: [...fileSizeRecommendedRefs],
     },
   ],
