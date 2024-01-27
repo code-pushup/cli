@@ -1,5 +1,5 @@
 import { expect } from 'vitest';
-import {branchHasChanges, getLatestCommit, guardAgainstDirtyRepo} from './git';
+import {branchHasChanges, getCurrentBranchOrTag, getLatestCommit, guardAgainstDirtyRepo} from './git';
 import {makeStatusClean, makeStatusDirty} from "@code-pushup/testing-utils";
 
 const gitCommitDateRegex =
@@ -19,12 +19,12 @@ describe('getLatestCommit', () => {
 });
 
 describe('branchHasChanges', () => {
-  it('should log changes if some are given', async () => {
+  it('should return true if some changes are given', async () => {
     await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toEqual(true);
     await makeStatusClean();
   });
-  it('should log no changes if non are given', async () => {
+  it('should return false if no changes are given', async () => {
     await expect(branchHasChanges()).resolves.toEqual(false);
   });
 });
@@ -37,5 +37,14 @@ describe('guardAgainstDirtyRepo', () => {
   });
   it('should not throw if history is clean', async () => {
     await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
+  });
+});
+
+describe('getCurrentBranchOrTag', () => {
+  it('should return if history is dirty', async () => {
+    await expect(getCurrentBranchOrTag()).rejects.toThrow('Repository should be clean before we you can proceed');
+  });
+  it('should not throw if history is clean', async () => {
+    await expect(getCurrentBranchOrTag()).resolves.toEqual(void 0);
   });
 });
