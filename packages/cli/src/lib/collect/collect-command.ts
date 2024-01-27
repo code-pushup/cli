@@ -18,6 +18,12 @@ export function yargsCollectCommandObject(): CommandModule {
       console.info(chalk.bold(CLI_NAME));
       console.info(chalk.gray(`Run ${command}...`));
       await collectAndPersistReports(options);
+      if (options.categories.length === 0) {
+        console.info(
+          chalk.gray(`💡Configure categories to see the scores in an overview table.
+        See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md`),
+        );
+      }
     },
   } satisfies CommandModule;
 }
