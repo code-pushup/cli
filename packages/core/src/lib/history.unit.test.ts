@@ -1,12 +1,12 @@
-import { describe } from 'vitest';
-import { Report } from '@code-pushup/models';
+import {describe, expect} from 'vitest';
+import {Report} from '@code-pushup/models';
 import {
   MINIMAL_CONFIG_MOCK,
   makeStatusClean,
   makeStatusDirty,
 } from '@code-pushup/testing-utils';
-import { guardAgainstDirtyRepo } from '@code-pushup/utils';
-import { HistoryOptions, history } from './history';
+import {guardAgainstDirtyRepo} from '@code-pushup/utils';
+import {HistoryOptions, history} from './history';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue({
@@ -32,13 +32,13 @@ describe('history', () => {
       progress: false,
       targetBranch: 'main',
     };
-    await history(nonVerboseConfig);
+    await expect( history(nonVerboseConfig, [])).resolves.toBeDefined();
   });
 });
 
 describe('guardAgainstDirtyRepo', () => {
   it('should pass for clean repo', async () => {
-    await guardAgainstDirtyRepo();
+    await expect(guardAgainstDirtyRepo()).resolves.toBeDefined();
   });
 
   it('should throw for dirty repo', async () => {

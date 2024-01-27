@@ -81,6 +81,7 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
+  shell?: boolean;
   observer?: ProcessObserver;
 };
 

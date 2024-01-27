@@ -25,7 +25,7 @@ export async function history(
   const progressBar = config?.progress ? getProgressBar('history') : null;
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-     
+
     const start: number = getStartDuration();
     const result: Record<string, unknown> = {
       commit,
@@ -52,13 +52,13 @@ export async function history(
     if (uploadReports) {
       progressBar?.updateTitle(`Upload ${commit}`);
       if (!progress) {
-        console.log(`Upload ${commit}`); // @TODO log verbose
+        console.warn(`Upload ${commit}`); // @TODO log verbose
       }
       await uploadCommandLogic(currentConfig as unknown as UploadOptions);
       // eslint-disable-next-line functional/immutable-data
       result['uploadDate'] = new Date().toISOString();
     } else {
-      console.log('Upload skipped because configuration is not set.'); // @TODO log verbose
+      console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
     }
 
     // eslint-disable-next-line functional/immutable-data

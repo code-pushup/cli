@@ -43,12 +43,12 @@ describe('history-command', () => {
       progress: false,
       targetBranch: 'test',
     };
-    await yargsCli(
+    await expect(yargsCli(
       objectToCliArgs({
         ...verboseConfig,
         _: 'history',
       }),
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
-    ).parseAsync();
+    ).parseAsync()).rejects.toThrow('PPP');
   });
 });

@@ -1,9 +1,11 @@
-import { spawn } from 'node:child_process';
+import {executeProcess} from "@code-pushup/utils";
 
-export function makeStatusDirty() {
-  spawn('echo', ['Some changes', '>>', 'some-file.txt'], { shell: true });
+export async function makeStatusDirty(): Promise<void> {
+  await executeProcess({command:'echo', args: ['Some changes', '>>', 'some-file.txt'], shell: true });
+  return void 0;
 }
 
-export function makeStatusClean() {
-  spawn('git', ['clean -fd'], { shell: true });
+export async function makeStatusClean(): Promise<void> {
+  await executeProcess({command:'git', args: ['clean -fd'], shell: true });
+  return void 0;
 }

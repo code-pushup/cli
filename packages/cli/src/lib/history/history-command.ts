@@ -1,17 +1,8 @@
 import chalk from 'chalk';
-import { CommandModule, Options } from 'yargs';
-import {
-  HistoryOnlyOptions,
-  HistoryOptions,
-  UploadOptions,
-  history,
-} from '@code-pushup/core';
-import {
-  getCurrentBranchOrTag,
-  git,
-  guardAgainstDirtyRepo,
-} from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import {CommandModule, Options} from 'yargs';
+import {history, HistoryOnlyOptions, HistoryOptions, UploadOptions,} from '@code-pushup/core';
+import {getCurrentBranchOrTag, git, guardAgainstDirtyRepo,} from '@code-pushup/utils';
+import {CLI_NAME} from '../constants';
 
 export type HistoryCommandOptions = {
   gitRestore: string;
@@ -81,7 +72,7 @@ export function yargsHistoryCommandObject() {
         .reverse();
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
-       
+
 
       const reports: unknown[] = await history(
         config as unknown as HistoryOptions,
