@@ -20,6 +20,7 @@ export const pluginAuditsSchema = z
   .array(auditSchema, {
     description: 'List of audits maintained in a plugin',
   })
+  .min(1)
   // audit slugs are unique
   .refine(
     auditMetadata => !getDuplicateSlugsInAudits(auditMetadata),
