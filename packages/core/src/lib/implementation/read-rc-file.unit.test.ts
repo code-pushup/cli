@@ -4,7 +4,7 @@ import { CONFIG_FILE_NAME, CoreConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
 import { autoloadRc } from './read-rc-file';
 
-// Mock bundleRequire inside importEsmModule used for fetching config
+// mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/testing-utils');
@@ -21,8 +21,7 @@ vi.mock('bundle-require', async () => {
               ...CORE_CONFIG_MOCK,
               upload: {
                 ...CORE_CONFIG_MOCK?.upload,
-                // this value is mocked from the above mock setup. It is always the extension of the loaded file
-                project: extension,
+                project: extension, // returns loaded file extension to check format precedence
               },
             },
           },
@@ -31,11 +30,11 @@ vi.mock('bundle-require', async () => {
   };
 });
 
+// Note: memfs files are only listed to satisfy a system check, value is used from bundle-require mock
 describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
       {
-        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.js`]: '',
         [`${CONFIG_FILE_NAME}.mjs`]: '',
         [`${CONFIG_FILE_NAME}.ts`]: '',
@@ -45,9 +44,7 @@ describe('autoloadRc', () => {
 
     await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({
-        upload: expect.objectContaining({
-          project: 'ts',
-        }),
+        upload: expect.objectContaining({ project: 'ts' }),
       }),
     );
   });
@@ -55,7 +52,6 @@ describe('autoloadRc', () => {
   it('should prioritise .mjs configuration file over .js', async () => {
     vol.fromJSON(
       {
-        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
         [`${CONFIG_FILE_NAME}.js`]: '',
         [`${CONFIG_FILE_NAME}.mjs`]: '',
       },
@@ -64,27 +60,17 @@ describe('autoloadRc', () => {
 
     await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({
-        upload: expect.objectContaining({
-          project: 'mjs',
-        }),
+        upload: expect.objectContaining({ project: 'mjs' }),
       }),
     );
   });
 
   it('should load a .js configuration file if no other valid extension exists', async () => {
-    vol.fromJSON(
-      {
-        // this is just here to satisfy the file system check. the file ise served over a mock in bundleRequire
-        [`${CONFIG_FILE_NAME}.js`]: '',
-      },
-      MEMFS_VOLUME,
-    );
+    vol.fromJSON({ [`${CONFIG_FILE_NAME}.js`]: '' }, MEMFS_VOLUME);
 
     await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({
-        upload: expect.objectContaining({
-          project: 'js',
-        }),
+        upload: expect.objectContaining({ project: 'js' }),
       }),
     );
   });
