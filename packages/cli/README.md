@@ -23,6 +23,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 ## Getting started
 
 1. Install as a dev dependency with your package manager:
+   <details>
+   <summary>Install options for <code>npm</code>, <code>yarn</code>,<code>pnpm</code> etc</summary>
 
    ```sh
    npm install --save-dev @code-pushup/cli
@@ -35,6 +37,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    ```sh
    pnpm add --save-dev @code-pushup/cli
    ```
+
+   </details>
 
 2. Create a `code-pushup.config.js` configuration file (`.ts` or `.mjs` extensions are also supported).
 
@@ -67,7 +71,13 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-4. Define your custom categories.
+4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
+
+5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+
+### Setup categories
+
+1. Define your custom categories.
 
    ```js
    export default {
@@ -91,9 +101,9 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-5. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
+2. Run the CLI with `npx code-pushup`.
 
-6. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+3. View report file(s) including category section in output directory.
 
 ## Portal integration
 
