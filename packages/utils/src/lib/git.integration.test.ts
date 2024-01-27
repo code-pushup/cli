@@ -1,5 +1,5 @@
 import { expect } from 'vitest';
-import {branchHasChanges, getLatestCommit} from './git';
+import {branchHasChanges, getLatestCommit, guardAgainstDirtyRepo} from './git';
 import {makeStatusClean, makeStatusDirty} from "@code-pushup/testing-utils";
 
 const gitCommitDateRegex =
@@ -25,6 +25,17 @@ describe('branchHasChanges', () => {
   it('should log no changes if non are given', async () => {
     await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toEqual(true);
+    await makeStatusClean();
+  });
+});
+
+describe('guardAgainstDirtyRepo', () => {
+  it('should throw if history is dirty', async () => {
+    await expect(guardAgainstDirtyRepo()).rejects.toThrow('Repository should be clean before we you can proceed');
+  });
+  it('should not throw if history is clean', async () => {
+    await makeStatusDirty();
+    await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
     await makeStatusClean();
   });
 });
