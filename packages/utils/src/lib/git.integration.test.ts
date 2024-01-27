@@ -20,12 +20,12 @@ describe('getLatestCommit', () => {
 
 describe('branchHasChanges', () => {
   it('should log changes if some are given', async () => {
+    await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toEqual(false);
+    await makeStatusClean();
   });
   it('should log no changes if non are given', async () => {
-    await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toEqual(true);
-    await makeStatusClean();
   });
 });
 
