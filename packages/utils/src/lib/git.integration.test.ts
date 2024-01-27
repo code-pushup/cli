@@ -24,7 +24,7 @@ describe('branchHasChanges', () => {
   });
   it('should log no changes if non are given', async () => {
     await makeStatusDirty();
-    await expect(branchHasChanges()).resolves.toEqual(false);
+    await expect(branchHasChanges()).resolves.toEqual(true);
     await makeStatusClean();
   });
 });
