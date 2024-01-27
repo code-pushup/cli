@@ -6,7 +6,7 @@ import { yargsUploadCommandObject } from './upload/upload-command';
 
 export const commands: CommandModule[] = [
   {
-    ...yargsAutorunCommandObject(),
+    ...yargsCollectCommandObject(),
     command: '*',
   },
   yargsAutorunCommandObject(),
