@@ -29,6 +29,9 @@
         ]
       }
     },
+    "types-generation": {
+      "command": "npx tsx --tsconfig=./tools/tsconfig.tools.json tools/scripts/generate-types"
+    },
     "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
