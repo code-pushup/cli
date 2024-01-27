@@ -1,4 +1,11 @@
-import { fileSizePlugin, packageJsonPlugin } from '../../dist/examples/plugins';
+import {
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
+  packageJsonDocumentationGroupRef,
+  packageJsonPerformanceGroupRef,
+  packageJsonPlugin,
+  packageJsonVersionControlGroupRef,
+} from '../../dist/examples/plugins';
 
 /**
  * Run it with:
@@ -25,6 +32,23 @@ const config = {
         zod: '^3.22.4',
       },
     }),
+  ],
+  categories: [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [...fileSizeRecommendedRefs, packageJsonPerformanceGroupRef],
+    },
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [packageJsonVersionControlGroupRef],
+    },
+    {
+      slug: 'documentation',
+      title: 'Documentation',
+      refs: [packageJsonDocumentationGroupRef],
+    },
   ],
 };
 
