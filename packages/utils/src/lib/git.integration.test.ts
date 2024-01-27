@@ -31,11 +31,11 @@ describe('branchHasChanges', () => {
 
 describe('guardAgainstDirtyRepo', () => {
   it('should throw if history is dirty', async () => {
+    await makeStatusDirty();
     await expect(guardAgainstDirtyRepo()).rejects.toThrow('Repository should be clean before we you can proceed');
+    await makeStatusClean();
   });
   it('should not throw if history is clean', async () => {
-    await makeStatusDirty();
     await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
-    await makeStatusClean();
   });
 });
