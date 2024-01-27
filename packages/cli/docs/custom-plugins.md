@@ -30,7 +30,7 @@ Every plugin is defined in [`PluginConfig`](@TODO - link models) object.
 
 The plugin configuration contains:
 
-- metadata about the plugin [`PluginMeta`](@TODO - link models)
+- metadata about the plugin [`PluginMeta`](../../../packages/models/src/types.ts#L56)
 - metadata about the available [audit](#audits) [`Audit`](@TODO - link models)
 - a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](@TODO - link models).
 - optional [`groups`](#audit-groups) to pre score audits
