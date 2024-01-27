@@ -81,6 +81,7 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
+  shell?: boolean;
   observer?: ProcessObserver;
 };
 
@@ -132,14 +133,14 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args } = cfg;
+  const { observer, cwd, command, args, shell = true } = cfg;
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(command, args, { cwd, shell: true });
+    const process = spawn(command, args, { cwd, shell });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
