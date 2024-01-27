@@ -26,7 +26,7 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
-  options: Required<PersistConfig>
+  options: Required<PersistConfig>,
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
