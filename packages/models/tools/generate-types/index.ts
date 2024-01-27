@@ -1,27 +1,28 @@
-import {writeFile} from "node:fs/promises";
-import {generateTypesString} from "./utils";
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import {
-  auditSchema, pluginAuditsSchema,
   auditOutputsSchema,
+  auditReportSchema,
+  auditSchema,
   categoryConfigSchema,
   categoryRefSchema,
   coreConfigSchema,
-  unrefinedCoreConfigSchema,
   fileNameSchema,
   filePathSchema,
-  materialIconSchema,
-  urlSchema,
   formatSchema,
+  materialIconSchema,
+  onProgressSchema,
   persistConfigSchema,
+  pluginAuditsSchema,
   pluginConfigSchema,
-  auditReportSchema,
   pluginReportSchema,
   reportSchema,
-  onProgressSchema,
   runnerConfigSchema,
-  uploadConfigSchema
-} from "../../src";
-import {join} from "node:path";
+  unrefinedCoreConfigSchema,
+  uploadConfigSchema,
+  urlSchema,
+} from '../../src';
+import { generateTypesString } from './utils';
 
 const nodeString = generateTypesString({
   fileNameSchema: fileNameSchema('File Name'),
@@ -43,9 +44,9 @@ const nodeString = generateTypesString({
   reportSchema,
   onProgressSchema,
   runnerConfigSchema,
-  uploadConfigSchema
+  uploadConfigSchema,
 });
 // eslint disable-next-line
 const dest: string = join(process.cwd(), '..', 'src', 'types.generated.ts');
 // eslint disable-next-line
-void writeFile(dest, nodeString, {encoding: 'utf8'});
+void writeFile(dest, nodeString, { encoding: 'utf8' });
