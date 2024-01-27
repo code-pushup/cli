@@ -9,13 +9,11 @@ import { GlobalOptions } from './types';
 import { UploadOptions, upload as uploadCommandLogic } from './upload';
 
 export type HistoryOnlyOptions = {
-  targetBranch: string;
-  numSteps: number;
-  uploadReports: boolean;
+  targetBranch?: string;
+  numSteps?: number;
+  uploadReports?: boolean;
 };
-export type HistoryOptions = Required<CoreConfig> &
-  GlobalOptions &
-  HistoryOnlyOptions;
+export type HistoryOptions = CoreConfig & GlobalOptions & HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -25,7 +23,6 @@ export async function history(
   const progressBar = config?.progress ? getProgressBar('history') : null;
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-
     const start: number = getStartDuration();
     const result: Record<string, unknown> = {
       commit,

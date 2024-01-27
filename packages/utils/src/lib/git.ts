@@ -11,7 +11,7 @@ export type GitTag = {
   name: string;
   semver: string;
   date: string;
-}
+};
 
 export const git = simpleGit();
 

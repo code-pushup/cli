@@ -1,12 +1,14 @@
 import chalk from 'chalk';
-import {CommandModule, Options} from 'yargs';
-import {history, HistoryOnlyOptions, HistoryOptions, UploadOptions,} from '@code-pushup/core';
-import {getCurrentBranchOrTag, git, guardAgainstDirtyRepo,} from '@code-pushup/utils';
-import {CLI_NAME} from '../constants';
-
-export type HistoryCommandOptions = {
-  gitRestore: string;
-} & HistoryOnlyOptions;
+import { CommandModule, Options } from 'yargs';
+import { HistoryOptions, UploadOptions, history } from '@code-pushup/core';
+import {
+  getCurrentBranchOrTag,
+  git,
+  guardAgainstDirtyRepo,
+} from '@code-pushup/utils';
+import { CLI_NAME } from '../constants';
+import { HistoryCliOptions } from './history.model';
+import { yargsHistoryOptionsDefinition } from './history.options';
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -14,27 +16,8 @@ export function yargsHistoryCommandObject() {
     command,
     describe: 'Create history of commits',
     builder: {
-      targetBranch: {
-        describe: 'Branch to crawl history of',
-        type: 'string',
-        default: 'main',
-      },
-      gitRestore: {
-        describe: 'Folder to restore using "git restore [folder]"',
-        type: 'string',
-        // default: '.', // @TODO remove after debugging
-      },
-      numSteps: {
-        describe: 'Number of steps in history',
-        type: 'number',
-        default: 1,
-      },
-      uploadReports: {
-        describe: 'Upload created reports',
-        type: 'boolean',
-        default: true,
-      },
-    } satisfies Record<keyof HistoryCommandOptions, Options>,
+      ...yargsHistoryOptionsDefinition(),
+    } satisfies Record<keyof HistoryCliOptions, Options>,
     handler: async args => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
@@ -42,7 +25,7 @@ export function yargsHistoryCommandObject() {
       console.log(chalk.gray(`Run ${command}`));
       // await guardAgainstDirtyRepo();
       const { targetBranch, gitRestore, numSteps, ...config } =
-        args as unknown as HistoryCommandOptions;
+        args as unknown as HistoryCliOptions;
 
       const options = args as unknown as UploadOptions;
       if (!options.upload) {
@@ -57,7 +40,7 @@ export function yargsHistoryCommandObject() {
       console.log('Target Branch:', targetBranch);
 
       if (gitRestore) {
-        git.raw(['restore', '.']);
+        await git.raw(['restore', '.']);
       }
 
       // git requires a clean history to check out a branch
@@ -72,7 +55,6 @@ export function yargsHistoryCommandObject() {
         .reverse();
       // eslint-disable-next-line no-console
       console.log('All Log:', commitsToAudit.length);
-
 
       const reports: unknown[] = await history(
         config as unknown as HistoryOptions,

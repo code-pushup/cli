@@ -23,17 +23,22 @@ describe('history-command', () => {
       verbose: true,
       progress: false,
     };
-    await yargsCli(
-      objectToCliArgs({
-        ...verboseConfig,
-        _: 'history',
-        targetBranch: 'main',
-        numSteps: 1,
-        uploadReports: true,
-        gitRestore: undefined,
-      }),
-      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
-    ).parseAsync();
+    await expect(
+      yargsCli(
+        objectToCliArgs({
+          ...verboseConfig,
+          _: 'history',
+          targetBranch: 'main',
+          numSteps: 1,
+          uploadReports: true,
+          gitRestore: undefined,
+        }),
+        {
+          ...DEFAULT_CLI_CONFIGURATION,
+          commands: [yargsConfigCommandObject()],
+        },
+      ).parseAsync(),
+    ).resolves.toEqual({});
   });
 
   it('should throw for invalid targetBranch', async () => {
@@ -43,12 +48,17 @@ describe('history-command', () => {
       progress: false,
       targetBranch: 'test',
     };
-    await expect(yargsCli(
-      objectToCliArgs({
-        ...verboseConfig,
-        _: 'history',
-      }),
-      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
-    ).parseAsync()).rejects.toThrow('PPP');
+    await expect(
+      yargsCli(
+        objectToCliArgs({
+          ...verboseConfig,
+          _: 'history',
+        }),
+        {
+          ...DEFAULT_CLI_CONFIGURATION,
+          commands: [yargsConfigCommandObject()],
+        },
+      ).parseAsync(),
+    ).rejects.toThrow('PPP');
   });
 });
