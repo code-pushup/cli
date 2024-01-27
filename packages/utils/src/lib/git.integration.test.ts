@@ -41,10 +41,7 @@ describe('guardAgainstDirtyRepo', () => {
 });
 
 describe('getCurrentBranchOrTag', () => {
-  it('should return if history is dirty', async () => {
-    await expect(getCurrentBranchOrTag()).rejects.toThrow('Repository should be clean before we you can proceed');
-  });
-  it('should not throw if history is clean', async () => {
-    await expect(getCurrentBranchOrTag()).resolves.toEqual(void 0);
+  it('should log current branch', async () => {
+    await expect(getCurrentBranchOrTag()).resolves.toEqual(expect.any(String));
   });
 });
