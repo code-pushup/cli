@@ -46,7 +46,11 @@
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/plugin-eslint"
+      }
+    }
   },
   "tags": ["scope:plugin", "type:feature"]
 }

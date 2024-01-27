@@ -1,21 +1,22 @@
 export {
-  persistReport,
-  PersistError,
-  PersistDirError,
-} from './lib/implementation/persist';
+  CollectAndPersistReportsOptions,
+  collectAndPersistReports,
+} from './lib/collect-and-persist';
+export { CollectOptions, collect } from './lib/implementation/collect';
 export {
+  PluginOutputMissingAuditError,
   executePlugin,
   executePlugins,
-  PluginOutputMissingAuditError,
 } from './lib/implementation/execute-plugin';
-export { collect, CollectOptions } from './lib/implementation/collect';
-export { upload, UploadOptions } from './lib/upload';
-export { GlobalOptions } from './lib/types';
 export {
-  collectAndPersistReports,
-  CollectAndPersistReportsOptions,
-} from './lib/collect-and-persist';
+  PersistDirError,
+  PersistError,
+  persistReport,
+} from './lib/implementation/persist';
 export {
-  readCodePushupConfig,
   ConfigPathError,
-} from './lib/implementation/read-code-pushup-config';
+  autoloadRc,
+  readRcByPath,
+} from './lib/implementation/read-rc-file';
+export { GlobalOptions } from './lib/types';
+export { UploadOptions, upload } from './lib/upload';

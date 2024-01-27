@@ -45,7 +45,11 @@
         "reportsDirectory": "../../coverage/models/integration-tests"
       }
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/models"
+      }
+    }
   },
   "tags": ["scope:shared", "type:util"]
 }

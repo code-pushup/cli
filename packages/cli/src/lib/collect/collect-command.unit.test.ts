@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  collectAndPersistReports,
-  readCodePushupConfig,
-} from '@code-pushup/core';
+import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
@@ -14,7 +11,7 @@ vi.mock('@code-pushup/core', async () => {
   return {
     ...core,
     collectAndPersistReports: vi.fn().mockResolvedValue({}),
-    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+    readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
@@ -26,9 +23,7 @@ describe('collect-command', () => {
       commands: [yargsCollectCommandObject()],
     }).parseAsync();
 
-    expect(readCodePushupConfig).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-    );
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -57,9 +52,7 @@ describe('collect-command', () => {
       },
     ).parseAsync();
 
-    expect(readCodePushupConfig).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-    );
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -86,9 +79,7 @@ describe('collect-command', () => {
       },
     ).parseAsync();
 
-    expect(readCodePushupConfig).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-    );
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({

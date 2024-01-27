@@ -2,6 +2,24 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.11.1](https://github.com/code-pushup/cli/compare/v0.11.0...v0.11.1) (2024-01-27)
+
+# [0.11.0](https://github.com/code-pushup/cli/compare/v0.10.7...v0.11.0) (2024-01-26)
+
+### Features
+
+- **cli:** add autoloading of the config file ([#361](https://github.com/code-pushup/cli/issues/361)) ([aef86c9](https://github.com/code-pushup/cli/commit/aef86c9d472e7dc77e6e85dcf7fa11319b5ad662))
+
+## [0.10.7](https://github.com/code-pushup/cli/compare/v0.10.6...v0.10.7) (2024-01-26)
+
+## [0.10.6](https://github.com/code-pushup/cli/compare/v0.10.5...v0.10.6) (2024-01-26)
+
+## [0.10.5](https://github.com/code-pushup/cli/compare/v0.10.4...v0.10.5) (2024-01-26)
+
+### Bug Fixes
+
+- **cli:** set terminal output to full width ([#362](https://github.com/code-pushup/cli/issues/362)) ([d6270a5](https://github.com/code-pushup/cli/commit/d6270a5cc7766e9c3d4090ad5935e65c9d36c427))
+
 ## [0.10.4](https://github.com/code-pushup/cli/compare/v0.10.3...v0.10.4) (2024-01-25)
 
 ## [0.10.3](https://github.com/code-pushup/cli/compare/v0.10.2...v0.10.3) (2024-01-25)

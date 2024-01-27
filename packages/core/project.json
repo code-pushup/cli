@@ -45,7 +45,11 @@
         "reportsDirectory": "../../coverage/core/integration-tests"
       }
     },
-    "deploy": {}
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/core"
+      }
+    }
   },
   "tags": ["scope:core", "type:feature"]
 }

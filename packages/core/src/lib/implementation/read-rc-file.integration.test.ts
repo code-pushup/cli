@@ -1,9 +1,9 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { readCodePushupConfig } from './read-code-pushup-config';
+import { readRcByPath } from './read-rc-file';
 
-describe('readCodePushupConfig', () => {
+describe('readRcByPath', () => {
   const configDirPath = join(
     fileURLToPath(dirname(import.meta.url)),
     '..',
@@ -18,13 +18,13 @@ describe('readCodePushupConfig', () => {
     'configs',
   );
 
-  it('should load a valid configuration file', async () => {
+  it('should load the configuration', async () => {
     await expect(
-      readCodePushupConfig(join(configDirPath, 'code-pushup.config.ts')),
+      readRcByPath(join(configDirPath, 'code-pushup.config.js')),
     ).resolves.toEqual(
       expect.objectContaining({
         upload: expect.objectContaining({
-          organization: 'code-pushup',
+          project: 'cli-js',
         }),
         categories: expect.any(Array),
         plugins: expect.arrayContaining([
@@ -36,23 +36,27 @@ describe('readCodePushupConfig', () => {
     );
   });
 
+  it('should throw if the path is empty', async () => {
+    await expect(readRcByPath('')).rejects.toThrow(
+      'The path to the configuration file is empty.',
+    );
+  });
+
   it('should throw if the file does not exist', async () => {
     await expect(
-      readCodePushupConfig(join('non-existent', 'config.file.js')),
+      readRcByPath(join('non-existent', 'config.file.js')),
     ).rejects.toThrow(/Provided path .* is not valid./);
   });
 
   it('should throw if the configuration is empty', async () => {
     await expect(
-      readCodePushupConfig(join(configDirPath, 'code-pushup.empty.config.js')),
+      readRcByPath(join(configDirPath, 'code-pushup.empty.config.js')),
     ).rejects.toThrow(`"code": "invalid_type",`);
   });
 
   it('should throw if the configuration is invalid', async () => {
     await expect(
-      readCodePushupConfig(
-        join(configDirPath, 'code-pushup.invalid.config.ts'),
-      ),
+      readRcByPath(join(configDirPath, 'code-pushup.invalid.config.ts')),
     ).rejects.toThrow(/refs are duplicates/);
   });
 });

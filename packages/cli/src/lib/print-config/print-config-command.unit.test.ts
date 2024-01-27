@@ -9,7 +9,7 @@ vi.mock('@code-pushup/core', async () => {
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,
-    readCodePushupConfig: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+    readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
 });
 
