@@ -50,6 +50,10 @@ describe('pluginAuditsSchema', () => {
     ).not.toThrow();
   });
 
+  it('should throw for an empty array', () => {
+    expect(() => pluginAuditsSchema.parse([])).toThrow('too_small');
+  });
+
   it('should throw for duplicate audits', () => {
     expect(() =>
       pluginAuditsSchema.parse([
