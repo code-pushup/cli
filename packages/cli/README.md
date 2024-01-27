@@ -172,7 +172,7 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 > All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
 > CLI arguments take precedence over configuration file options.
 
-> [!NOTE]
+> [!NOTE]  
 > The `--upload.*` group of options is applicable to all commands except `collect`.
 
 ### Commands
