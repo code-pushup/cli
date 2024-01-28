@@ -27,7 +27,7 @@ vi.mock('./upload', () => ({
 
 describe('history', () => {
 
-  beforeEach(() => {
+  beforeEach(async () => {
     await makeStatusClean();
   })
 
