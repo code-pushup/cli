@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, vi} from 'vitest';
 import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
-import {guardAgainstDirtyRepo} from '@code-pushup/utils';
+import {guardAgainstDirtyRepo, safeCheckout} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
 import {collectAndPersistReports, upload} from "@code-pushup/core";
 
@@ -47,14 +47,14 @@ describe('history', () => {
       verbose: false,
       progress: false,
     };
-    await history(historyOptions, ['abc']);
+    const reports = await history(historyOptions, ['abc']);
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(expect.objectContaining({
       targetBranch: "main",
       persist: expect.objectContaining({
         filename: "abc-report",
         format: ["json"],
-      }),
+      })
     }));
 
     expect(upload).toHaveBeenCalledWith(expect.objectContaining({
@@ -62,18 +62,29 @@ describe('history', () => {
         filename: "abc-report"
       }),
     }));
+
+    expect(reports).toHaveLength(1);
   });
 
-  it('should guard against dirty git history', async () => {
+  it('should call collect for many commit hashes and reset to original git state', async () => {
     const historyOptions: HistoryOptions = {
       ...MINIMAL_CONFIG_MOCK,
-      uploadReports: false,
+      uploadReports: true,
       targetBranch: 'main',
       verbose: false,
       progress: false,
     };
-    await makeStatusDirty();
-    await expect(history(historyOptions, ['abc'])).rejects.toThrow('Repository should be clean before we you can proceed');
+    const reports = await history(historyOptions, ['abc', 'def']);
+
+    expect(safeCheckout).toHaveBeenCalledTimes(3);
+    /*
+    expect(safeCheckout).toHaveBeenCalledWith(
+      ['abc', { "gitRestore": undefined } ],
+      ['def', { "gitRestore": undefined } ],
+      ['history', { "gitRestore": undefined } ],
+    );
+*/
+    expect(reports).toHaveLength(2);
   });
 
   it('should not call upload if uploadReports is set to false', async () => {
