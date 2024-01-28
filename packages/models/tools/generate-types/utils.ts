@@ -13,11 +13,23 @@ export function generateTypesString(
         return `export ${printNode(typeAlias)}`;
       })
       // @TODO add line break
-      .join('')
+      .join('\n')
   );
 }
 
 export function schemaNameToTypeName(schemaName: string): string {
   const name = schemaName.replace(/Schema/, '');
   return name[0].toUpperCase() + name.slice(1);
+}
+
+export function generateMdFile(typesString: string): string {
+  return;
+  `# Code PushUp config file reference
+
+  The \`code-pushup.config.(ts|mjs|js)\` file should conform to the following type definition:
+
+  \`\`\`ts
+${typesString}
+  \`\`\`
+  `;
 }

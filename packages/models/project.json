@@ -30,7 +30,10 @@
       }
     },
     "types-generation": {
-      "command": "npx tsx --tsconfig=./tools/tsconfig.tools.json tools/scripts/generate-types"
+      "command": "npx tsx --tsconfig=../tsconfig.tools.json generate-types",
+      "options": {
+        "cwd": "./packages/models/tools"
+      }
     },
     "unit-test": {
       "executor": "@nx/vite:test",

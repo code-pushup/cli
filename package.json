@@ -123,7 +123,8 @@
     "typescript": "5.2.2",
     "verdaccio": "^5.0.4",
     "vite": "~4.3.9",
-    "vitest": "~0.32.0"
+    "vitest": "~0.32.0",
+    "zod-to-ts": "^1.2.0"
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.19.4",
