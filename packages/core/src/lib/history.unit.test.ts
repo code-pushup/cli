@@ -1,19 +1,15 @@
 import {beforeEach, describe, expect, vi} from 'vitest';
-import {makeStatusClean, makeStatusDirty, MEMFS_VOLUME, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
+import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
 import {guardAgainstDirtyRepo} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
 import {collectAndPersistReports, upload} from "@code-pushup/core";
-import {vol} from "memfs";
 
 
 vi.mock('@code-pushup/utils', async () => {
   const utils: object = await vi.importActual('@code-pushup/utils');
   return {
     ...utils,
-    git: {
-      ...utils.git,
-      checkout: vi.fn().mockResolvedValue(void 0)
-    },
+    safeCheckout: vi.fn().mockResolvedValue(void 0)
   };
 });
 
