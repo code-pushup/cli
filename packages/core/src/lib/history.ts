@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { CoreConfig } from '@code-pushup/models';
-import {getCurrentBranchOrTag, getProgressBar, getStartDuration, git} from '@code-pushup/utils';
+import {getCurrentBranchOrTag, getProgressBar, getStartDuration, git, safeCheckout} from '@code-pushup/utils';
 import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
@@ -9,9 +9,8 @@ import { GlobalOptions } from './types';
 import { UploadOptions, upload as uploadCommandLogic } from './upload';
 
 export type HistoryOnlyOptions = {
-  targetBranch?: string;
-  numSteps?: number;
   uploadReports?: boolean;
+  gitRestore?: string;
 };
 export type HistoryOptions = CoreConfig & GlobalOptions & HistoryOnlyOptions;
 
@@ -24,7 +23,6 @@ export async function history(
 
   const initialBranch: string = await getCurrentBranchOrTag();
 
-
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
     const start: number = getStartDuration();
@@ -34,7 +32,7 @@ export async function history(
     };
     progressBar?.incrementInSteps(commits.length);
 
-    await git.checkout(commit);
+    await safeCheckout(commit, {gitRestore: config.gitRestore});
 
     progressBar?.updateTitle(`Collect ${commit}`);
 

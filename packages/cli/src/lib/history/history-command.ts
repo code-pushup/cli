@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import {CommandModule, Options} from 'yargs';
 import {history} from '@code-pushup/core';
 import {CoreConfig} from '@code-pushup/models';
-import {git, guardAgainstDirtyRepo,} from '@code-pushup/utils';
+import {getCurrentBranchOrTag, git, safeCheckout,} from '@code-pushup/utils';
 import {CLI_NAME} from '../constants';
 import {HistoryCliOptions} from './history.model';
 import {yargsHistoryOptionsDefinition} from './history.options';
@@ -22,21 +22,14 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}`));
 
-      const { targetBranch, gitRestore, numSteps, ...config } =
+      const {targetBranch = await getCurrentBranchOrTag(), gitRestore, numSteps = 1, ...config} =
         args as unknown as HistoryCliOptions & CoreConfig & GeneralCliOptions;
 
-
-      // git requires a clean history to check out a branch
-      if (gitRestore) {
-        await git.raw(['restore', '.']);
-      }
-      await guardAgainstDirtyRepo();
-
       // determine history to walk
-      await git.checkout(targetBranch);
+      await safeCheckout(targetBranch, {gitRestore});
       const log = await git.log();
       const commitsToAudit = log.all
-        .map(({ hash }) => hash)
+        .map(({hash}) => hash)
         // crawl from oldest to newest
         .reverse()
         // adjust length
@@ -44,7 +37,10 @@ export function yargsHistoryCommandObject() {
 
       // run history logic
       const reports: unknown[] = await history(
-        config,
+        {
+          ...config,
+          gitRestore
+        },
         commitsToAudit,
       );
       // eslint-disable-next-line no-console
