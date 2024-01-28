@@ -1,38 +1,100 @@
-import { describe, expect } from 'vitest';
-import { Report } from '@code-pushup/models';
-import {
-  MINIMAL_CONFIG_MOCK,
-  makeStatusClean,
-  makeStatusDirty,
-} from '@code-pushup/testing-utils';
-import { guardAgainstDirtyRepo } from '@code-pushup/utils';
-import { HistoryOptions, history } from './history';
+import {describe, expect, vi} from 'vitest';
+import {makeStatusClean, makeStatusDirty, MEMFS_VOLUME, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
+import {guardAgainstDirtyRepo} from '@code-pushup/utils';
+import {history, HistoryOptions} from './history';
+import {collectAndPersistReports, upload} from "@code-pushup/core";
+import {vol} from "memfs";
 
-vi.mock('./implementation/collect', () => ({
-  collect: vi.fn().mockResolvedValue({
-    packageName: 'code-pushup',
-    version: '0.0.1',
-    date: new Date().toISOString(),
-    duration: 0,
-    categories: [],
-    plugins: [],
-  } as Report),
+
+vi.mock('@code-pushup/utils', async () => {
+  const utils: object = await vi.importActual('@code-pushup/utils');
+  return {
+    ...utils,
+    git: {
+      ...utils.git,
+      checkout: vi.fn().mockResolvedValue(void 0)
+    },
+  };
+});
+
+vi.mock('./collect-and-persist', () => ({
+  collectAndPersistReports: vi.fn(),
 }));
 
-vi.mock('./implementation/persist', () => ({
-  persistReport: vi.fn(),
-  logPersistedResults: vi.fn(),
+vi.mock('./upload', () => ({
+  upload: vi.fn(),
 }));
 
 describe('history', () => {
-  it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
-    const nonVerboseConfig: HistoryOptions = {
+
+  it('should return an array of reports including reports for each commit given', async () => {
+    const historyOptions: HistoryOptions = {
       ...MINIMAL_CONFIG_MOCK,
+      targetBranch: 'main',
       verbose: false,
       progress: false,
-      targetBranch: 'main',
     };
-    await expect(history(nonVerboseConfig, [])).resolves.toBeDefined();
+    const reports = await history(historyOptions, ['a', 'b']);
+
+    expect(reports).toHaveLength(2);
+  });
+
+  it('should call collect with persist options updated by commit hash', async () => {
+    const historyOptions: HistoryOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      uploadReports: true,
+      targetBranch: 'main',
+      verbose: false,
+      progress: false,
+    };
+    await history(historyOptions, ['abc']);
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(expect.objectContaining({
+      targetBranch: "main",
+      persist: expect.objectContaining({
+        filename: "abc-report",
+        format: ["json"],
+      }),
+    }));
+
+    expect(upload).toHaveBeenCalledWith(expect.objectContaining({
+      persist: expect.objectContaining({
+        filename: "abc-report"
+      }),
+    }));
+  });
+
+  it('should guard against dirty git history', async () => {
+    const historyOptions: HistoryOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      uploadReports: false,
+      targetBranch: 'main',
+      verbose: false,
+      progress: false,
+    };
+    await makeStatusDirty();
+    await expect(history(historyOptions, ['abc'])).rejects.toThrow('saf');
+  });
+
+  it('should not call upload if uploadReports is set to false', async () => {
+    const historyOptions: HistoryOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      uploadReports: false,
+      targetBranch: 'main',
+      verbose: false,
+      progress: false,
+    };
+    await history(historyOptions, ['abc']);
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(expect.objectContaining({
+      targetBranch: "main",
+      persist: expect.objectContaining({
+        filename: "abc-report",
+        format: ["json"],
+      }),
+    }));
+
+    expect(upload).not.toHaveBeenCalled();
   });
 });
 

@@ -1,14 +1,12 @@
 import chalk from 'chalk';
-import { CommandModule, Options } from 'yargs';
-import { HistoryOptions, UploadOptions, history } from '@code-pushup/core';
-import {
-  getCurrentBranchOrTag,
-  git,
-  guardAgainstDirtyRepo,
-} from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
-import { HistoryCliOptions } from './history.model';
-import { yargsHistoryOptionsDefinition } from './history.options';
+import {CommandModule, Options} from 'yargs';
+import {history} from '@code-pushup/core';
+import {CoreConfig} from '@code-pushup/models';
+import {git, guardAgainstDirtyRepo,} from '@code-pushup/utils';
+import {CLI_NAME} from '../constants';
+import {HistoryCliOptions} from './history.model';
+import {yargsHistoryOptionsDefinition} from './history.options';
+import {GeneralCliOptions} from "../implementation/global.model";
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -18,55 +16,40 @@ export function yargsHistoryCommandObject() {
     builder: {
       ...yargsHistoryOptionsDefinition(),
     } satisfies Record<keyof HistoryCliOptions, Options>,
-    handler: async args => {
+    handler: async (args) => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}`));
-      // await guardAgainstDirtyRepo();
+
       const { targetBranch, gitRestore, numSteps, ...config } =
-        args as unknown as HistoryCliOptions;
+        args as unknown as HistoryCliOptions & CoreConfig & GeneralCliOptions;
 
-      const options = args as unknown as UploadOptions;
-      if (!options.upload) {
-        throw new Error('Upload configuration not set');
-      }
 
-      // load upload configuration from environment
-      const initialBranch: string = await getCurrentBranchOrTag();
-      // eslint-disable-next-line no-console
-      console.log('Initial Branch:', initialBranch);
-      // eslint-disable-next-line no-console
-      console.log('Target Branch:', targetBranch);
-
+      // git requires a clean history to check out a branch
       if (gitRestore) {
         await git.raw(['restore', '.']);
       }
-
-      // git requires a clean history to check out a branch
       await guardAgainstDirtyRepo();
+
+      // determine history to walk
       await git.checkout(targetBranch);
-
       const log = await git.log();
-
       const commitsToAudit = log.all
         .map(({ hash }) => hash)
         // crawl from oldest to newest
-        .reverse();
-      // eslint-disable-next-line no-console
-      console.log('All Log:', commitsToAudit.length);
+        .reverse()
+        // adjust length
+        .slice(-numSteps);
 
+      // run history logic
       const reports: unknown[] = await history(
-        config as unknown as HistoryOptions,
-        commitsToAudit.slice(-numSteps),
+        config,
+        commitsToAudit,
       );
       // eslint-disable-next-line no-console
       console.log('Reports:', reports.length);
-      // await writeFile('history.json', JSON.stringify(reports, null, 2));
-      /* */
-      await git.checkout(initialBranch);
-      // eslint-disable-next-line no-console
-      console.log('Current Branch:', initialBranch);
+
     },
   } satisfies CommandModule;
 }

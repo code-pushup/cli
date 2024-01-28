@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { CoreConfig } from '@code-pushup/models';
-import { getProgressBar, getStartDuration, git } from '@code-pushup/utils';
+import {getCurrentBranchOrTag, getProgressBar, getStartDuration, git} from '@code-pushup/utils';
 import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
@@ -21,6 +21,10 @@ export async function history(
 ): Promise<Record<string, unknown>[]> {
   const reports: Record<string, unknown>[] = [];
   const progressBar = config?.progress ? getProgressBar('history') : null;
+
+  const initialBranch: string = await getCurrentBranchOrTag();
+
+
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
     const start: number = getStartDuration();
@@ -63,6 +67,10 @@ export async function history(
       [join(currentConfig.persist.filename)]: result,
     });
   }
+
+  await git.checkout(initialBranch);
+  // eslint-disable-next-line no-console
+  console.log('Current Branch:', initialBranch);
 
   return reports;
 }

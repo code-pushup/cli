@@ -45,3 +45,14 @@ export async function getCurrentBranchOrTag(): Promise<string> {
     (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
   );
 }
+
+export async function safeCheckout(branchOrHash: string, options: {
+  gitRestore: false | string
+}): Promise<void> {
+  // git requires a clean history to check out a branch
+  if (options.gitRestore) {
+    await git.raw(['restore', '.']);
+  }
+  await guardAgainstDirtyRepo();
+  await git.checkout(branchOrHash);
+}
