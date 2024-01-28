@@ -1,4 +1,4 @@
-import {describe, expect, vi} from 'vitest';
+import {beforeEach, describe, expect, vi} from 'vitest';
 import {makeStatusClean, makeStatusDirty, MEMFS_VOLUME, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
 import {guardAgainstDirtyRepo} from '@code-pushup/utils';
 import {history, HistoryOptions} from './history';
@@ -26,6 +26,10 @@ vi.mock('./upload', () => ({
 }));
 
 describe('history', () => {
+
+  beforeEach(() => {
+    await makeStatusClean();
+  })
 
   it('should return an array of reports including reports for each commit given', async () => {
     const historyOptions: HistoryOptions = {
@@ -73,7 +77,7 @@ describe('history', () => {
       progress: false,
     };
     await makeStatusDirty();
-    await expect(history(historyOptions, ['abc'])).rejects.toThrow('saf');
+    await expect(history(historyOptions, ['abc'])).rejects.toThrow('Repository should be clean before we you can proceed');
   });
 
   it('should not call upload if uploadReports is set to false', async () => {

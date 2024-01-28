@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { CoreConfig } from '@code-pushup/models';
-import {getCurrentBranchOrTag, getProgressBar, getStartDuration, git, safeCheckout} from '@code-pushup/utils';
+import {getCurrentBranchOrTag, getProgressBar, getStartDuration, safeCheckout} from '@code-pushup/utils';
 import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
@@ -33,7 +33,6 @@ export async function history(
     progressBar?.incrementInSteps(commits.length);
 
     await safeCheckout(commit, {gitRestore: config.gitRestore});
-
     progressBar?.updateTitle(`Collect ${commit}`);
 
     const currentConfig = {
@@ -66,7 +65,7 @@ export async function history(
     });
   }
 
-  await git.checkout(initialBranch);
+  await safeCheckout(initialBranch, {gitRestore: config.gitRestore});
   // eslint-disable-next-line no-console
   console.log('Current Branch:', initialBranch);
 
