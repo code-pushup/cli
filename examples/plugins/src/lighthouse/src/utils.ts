@@ -56,6 +56,7 @@ export function getLighthouseCliArguments(
     headless = false,
     userDataDir,
   } = options;
+
   // eslint-disable-next-line functional/no-let
   let argsObj: Record<string, unknown> = {
     _: ['lighthouse', url],
@@ -65,17 +66,26 @@ export function getLighthouseCliArguments(
     userDataDir,
   };
 
-  if (headless) {
-    argsObj = {
-      ...argsObj,
-      ['chrome-flags']: `--headless=${headless}`,
-    };
-  }
-
   if (onlyAudits.length > 0) {
     argsObj = {
       ...argsObj,
       onlyAudits: toArray(onlyAudits),
+    };
+  }
+
+  // handle chrome flags
+  // eslint-disable-next-line functional/no-let
+  let chromeFlags: Array<string> = [];
+  if (headless) {
+    chromeFlags = [...chromeFlags, `--headless=${headless}`];
+  }
+  if (userDataDir) {
+    chromeFlags = [...chromeFlags, `--user-data-dir=${userDataDir}`];
+  }
+  if (chromeFlags.length > 0) {
+    argsObj = {
+      ...argsObj,
+      chromeFlags: chromeFlags.join(' '),
     };
   }
 
