@@ -24,7 +24,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 1. Install as a dev dependency with your package manager:
    <details>
-   <summary>Install options for <code>npm</code>, <code>yarn</code>,<code>pnpm</code> etc</summary>
+   <summary>Installation command for <code>npm</code>, <code>yarn</code> and <code>pnpm</code></summary>
 
    ```sh
    npm install --save-dev @code-pushup/cli
