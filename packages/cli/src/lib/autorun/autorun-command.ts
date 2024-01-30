@@ -38,7 +38,16 @@ export function yargsAutorunCommandObject() {
       if (options.upload) {
         await upload(options);
       } else {
-        console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
+        console.warn('Upload skipped because configuration is not set.');
+        console.info(
+          [
+            '💡 Integrate the portal:',
+            '- npx code-pushup upload - Run upload to upload the created report to the server',
+            '  https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
+            '- Portal Integration - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
+            '- Upload Command - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
+          ].join('\n'),
+        );
       }
     },
   } satisfies CommandModule;

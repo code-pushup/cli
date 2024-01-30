@@ -5,6 +5,10 @@ import { yargsConfigCommandObject } from './print-config/print-config-command';
 import { yargsUploadCommandObject } from './upload/upload-command';
 
 export const commands: CommandModule[] = [
+  {
+    ...yargsAutorunCommandObject(),
+    command: '*',
+  },
   yargsAutorunCommandObject(),
   yargsCollectCommandObject(),
   yargsUploadCommandObject(),

@@ -4,6 +4,8 @@ exports[`CLI help > should print help with argument ---help 1`] = `
 "[1mCode PushUp CLI[22m
 
 Commands:
+  code-pushup               Shortcut for running collect followed by upload
+                                                                       [default]
   code-pushup autorun       Shortcut for running collect followed by upload
   code-pushup collect       Run Plugins and collect results
   code-pushup upload        Upload report results to the portal
@@ -25,6 +27,8 @@ Options:
       --upload.project       Project slug from portal                   [string]
       --upload.server        URL to your portal server                  [string]
       --upload.apiKey        API key for the portal server              [string]
+      --onlyPlugins          List of plugins to run. If not set all plugins are
+                             run.                          [array] [default: []]
   -h, --help                 Show help                                 [boolean]
 "
 `;
