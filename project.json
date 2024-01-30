@@ -29,7 +29,7 @@
       }
     },
     "run-collect": {
-      "command": "npx dist/packages/cli collect --config=code-pushup.config.ts",
+      "command": "npx dist/packages/cli collect",
       "dependsOn": [
         {
           "projects": [
@@ -43,7 +43,7 @@
       ]
     },
     "run-upload": {
-      "command": "npx dist/packages/cli upload --config=code-pushup.config.ts",
+      "command": "npx dist/packages/cli upload",
       "dependsOn": [
         {
           "projects": [
@@ -57,7 +57,7 @@
       ]
     },
     "run-autorun": {
-      "command": "npx dist/packages/cli autorun --config=code-pushup.config.ts",
+      "command": "npx dist/packages/cli autorun",
       "dependsOn": [
         {
           "projects": [
