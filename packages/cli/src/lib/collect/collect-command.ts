@@ -23,13 +23,13 @@ export function yargsCollectCommandObject(): CommandModule {
         object | undefined
       >;
       if (Object.keys(upload).length === 0) {
-        console.info(`
-        💡 Visualize your reports:
-        - npx code-pushup upload - Run upload to upload the created report to the server
-          https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command
-        - npx code-pushup autorun - Run collect & upload
-          https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command
-        `);
+        console.info([
+          '💡 Visualize your reports:',
+          '- npx code-pushup upload - Run upload to upload the created report to the server',
+          '  https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
+          '- npx code-pushup autorun - Run collect & upload',
+          '  https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command',
+        ].join('\n'));
       }
     },
   } satisfies CommandModule;
