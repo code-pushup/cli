@@ -75,8 +75,6 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
 
-<img src="./docs/images/cli-run-stdout-example.png" width="400" alt="example of code-pushup terminal output">
-
 ### Setup categories
 
 1. Define your custom categories.
