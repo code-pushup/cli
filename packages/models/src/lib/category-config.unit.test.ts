@@ -211,10 +211,8 @@ describe('categoriesSchema', () => {
     ).not.toThrow();
   });
 
-  it('should throw for an empty category array', () => {
-    expect(() => categoriesSchema.parse([] satisfies CategoryConfig[])).toThrow(
-      'too_small',
-    );
+  it('should accept an empty category array', () => {
+    expect(() => categoriesSchema.parse([])).not.toThrow();
   });
 
   it('should throw for category duplicates', () => {

@@ -41,9 +41,7 @@ export function generateMdReport(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
-  const { categories = [] } = report;
-  const reportWithCategories = { ...report, categories };
-  const printCategories = categories.length > 0 ? true : false;
+  const printCategories = report.categories.length > 0;
 
   return (
     // header section
@@ -52,18 +50,18 @@ export function generateMdReport(
     NEW_LINE +
     // categories overview section
     (printCategories
-      ? reportToOverviewSection(reportWithCategories) + NEW_LINE + NEW_LINE
+      ? reportToOverviewSection(report) + NEW_LINE + NEW_LINE
       : '') +
     // categories section
     (printCategories
-      ? reportToCategoriesSection(reportWithCategories) + NEW_LINE + NEW_LINE
+      ? reportToCategoriesSection(report) + NEW_LINE + NEW_LINE
       : '') +
     // audits section
-    reportToAuditsSection(reportWithCategories) +
+    reportToAuditsSection(report) +
     NEW_LINE +
     NEW_LINE +
     // about section
-    reportToAboutSection(reportWithCategories, commitData) +
+    reportToAboutSection(report, commitData) +
     NEW_LINE +
     NEW_LINE +
     // footer section

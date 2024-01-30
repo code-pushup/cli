@@ -3,7 +3,7 @@ import { categoryConfigsMock } from './categories.mock';
 import { eslintPluginReportMock } from './eslint-plugin.mock';
 import { lighthousePluginReportMock } from './lighthouse-plugin.mock';
 
-export function reportWithCategoriesMock(): Report {
+export function reportMock(): Report {
   return reportSchema.parse({
     packageName: '@code-pushup/core',
     version: '0.0.1',

@@ -35,6 +35,14 @@ export function yargsAutorunCommandObject() {
 
       await collectAndPersistReports(optionsWithFormat);
 
+      if (options.categories.length === 0) {
+        console.info(
+          chalk.gray(
+            '💡 Configure categories to see the scores in an overview table. See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
+          ),
+        );
+      }
+
       if (options.upload) {
         await upload(options);
       } else {

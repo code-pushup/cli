@@ -4,7 +4,7 @@ import { Issue, IssueSeverity, Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   REPORT_MOCK,
-  reportWithCategoriesMock,
+  reportMock,
 } from '@code-pushup/testing-utils';
 import {
   EnrichedAuditReport,
@@ -91,7 +91,7 @@ describe('loadReport', () => {
   it('should load a valid JSON report', async () => {
     vol.fromJSON(
       {
-        [`report.json`]: JSON.stringify(reportWithCategoriesMock()),
+        [`report.json`]: JSON.stringify(reportMock()),
         [`report.md`]: 'test-42',
       },
       MEMFS_VOLUME,
@@ -103,7 +103,7 @@ describe('loadReport', () => {
         filename: 'report',
         format: 'json',
       }),
-    ).resolves.toEqual(reportWithCategoriesMock());
+    ).resolves.toEqual(reportMock());
   });
 
   it('should load a markdown file', async () => {

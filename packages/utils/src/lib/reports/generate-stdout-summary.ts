@@ -17,8 +17,7 @@ function addLine(line = ''): string {
 }
 
 export function generateStdoutSummary(report: ScoredReport): string {
-  const { categories = [] } = report;
-  const printCategories = categories.length > 0 ? true : false;
+  const printCategories = report.categories.length > 0;
   return (
     addLine(reportToHeaderSection(report)) +
     addLine() +

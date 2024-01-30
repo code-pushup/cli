@@ -64,19 +64,17 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-4. Optionally define your custom categories.
+4. Optionally define your custom categories. This section provides an overview of thematically related audits and groups.
 
    ```js
    export default {
      // ...
-     plugins: [
-       // ...
-     ],
      categories: [
        {
          slug: 'performance',
          title: 'Performance',
          refs: [
+           // reference to an existing audit or group from plugins
            {
              type: 'audit',
              plugin: 'eslint',

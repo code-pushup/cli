@@ -14,14 +14,13 @@ export function filterPluginsBySlug(
 // skip the whole category if it has at least one skipped plugin ref
 // see https://github.com/code-pushup/cli/pull/246#discussion_r1392274281
 export function filterCategoryByPluginSlug(
-  categories: Array<CategoryConfig>,
+  categories: CategoryConfig[],
   {
     onlyPlugins,
     verbose = false,
   }: { onlyPlugins?: string[]; verbose?: boolean },
-): CoreConfig['categories'] {
-  // early exit for empty categories
-  if (!categories?.length) {
+): CategoryConfig[] {
+  if (categories.length === 0) {
     return categories;
   }
   if (!onlyPlugins?.length) {
