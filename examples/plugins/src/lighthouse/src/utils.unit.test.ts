@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { LIGHTHOUSE_URL } from '../mock/constants';
+import { create } from './lighthouse.plugin';
 import {
   AuditsNotImplementedError,
   WithSlug,
   filterBySlug,
   filterRefsBySlug,
+  getLighthouseCliArguments,
 } from './utils';
 
 describe('filterBySlug', () => {
@@ -65,4 +68,55 @@ describe('filterRefsBySlug', () => {
       );
     },
   );
+});
+
+describe('getLighthouseCliArguments', () => {
+  it('should parse valid options', () => {
+    expect(() =>
+      getLighthouseCliArguments({
+        url: 'https://code-pushup-portal.com',
+      }),
+    ).toEqual([]);
+  });
+
+  it('should parse options for headless by default to new', () => {
+    const pluginConfig = getLighthouseCliArguments({
+      url: LIGHTHOUSE_URL,
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for headless to new if true is given', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+      headless: true,
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for headless to new if false is given', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+      headless: false,
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.not.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for userDataDir correctly', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+      userDataDir: 'test',
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining([
+        '--chromeFlags="--headless=new --user-data-dir=test"',
+      ]),
+    );
+  });
 });

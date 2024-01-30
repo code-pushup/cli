@@ -44,13 +44,12 @@ import {
  * }
  *
  */
-export function create(options: PluginOptions): PluginConfig {
+export function create(options: PluginOptions) {
   const {
     // @NOTICE
     // Not all audits are implemented, so we always rely on the `onlyAudits` argument
     onlyAudits: onlyAuditsOption = audits.map(({ slug }) => slug),
     headless: headlessOption = true,
-    userDataDir,
   } = options;
   const onlyAudits = toArray(onlyAuditsOption);
   const headless = headlessOption ? ('new' as const) : false;
@@ -67,27 +66,31 @@ export function create(options: PluginOptions): PluginConfig {
       // Examples have a reduced scope, so we only execute the performance category here
       onlyCategories: ['performance'],
       headless,
-      userDataDir,
     }),
     audits: filterBySlug(audits, onlyAudits),
     groups: [filterRefsBySlug(categoryCorePerfGroup, onlyAudits)],
-  };
+  } satisfies PluginConfig;
 }
 
 export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
-  const { log } = verboseUtils(options.verbose);
-  const outputPath = options.outputPath ?? LIGHTHOUSE_OUTPUT_FILE_DEFAULT;
-  const args = getLighthouseCliArguments({
-    ...options,
+  const {
+    outputPath = LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+    userDataDir,
+    ...remnainingOptions
+  } = options;
+
+  // eslint-disable-next-line functional/no-let
+  let lhCliOpts: LighthouseCliOptions = {
+    ...remnainingOptions,
     outputPath,
-    userDataDir: options.userDataDir ?? process.cwd(),
-  });
-
-  log(`Run npx ${args.join(' ')}`);
-
+  };
+  if (userDataDir !== undefined) {
+    lhCliOpts = { ...lhCliOpts, userDataDir };
+  }
+  // throw new Error(JSON.stringify(lhCliOpts));
   return {
     command: 'npx',
-    args,
+    args: getLighthouseCliArguments(lhCliOpts),
     outputFile: outputPath,
     outputTransform: (lighthouseOutput: unknown) =>
       lhrToAuditOutputs(lighthouseOutput as Result),

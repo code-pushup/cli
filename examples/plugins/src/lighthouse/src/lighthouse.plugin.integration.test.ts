@@ -12,13 +12,8 @@ import { lhr } from '../mock/fixtures/lhr';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
 import { audits, PLUGIN_SLUG as slug } from './index';
 import { create } from './lighthouse.plugin';
-import type { PluginOptions } from './types';
 
 describe('lighthouse-create-export', () => {
-  const baseOptions: PluginOptions = {
-    url: LIGHTHOUSE_URL,
-  };
-
   beforeEach(() => {
     vol.fromJSON(
       {
@@ -28,8 +23,8 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should return valid PluginConfig', () => {
-    const pluginConfig = create(baseOptions);
+  it('should return valid PluginConfig if create is called', () => {
+    const pluginConfig = create({ url: LIGHTHOUSE_URL });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
       slug,
@@ -42,22 +37,70 @@ describe('lighthouse-create-export', () => {
     });
   });
 
-  it('should use parse options to lighthouse options', () => {
+  it('should parse options for defaults correctly', () => {
     const pluginConfig = create({
-      ...baseOptions,
+      url: 'https://code-pushup.com',
+    });
+    expect(pluginConfig.runner.args).toEqual([
+      'lighthouse',
+      'https://code-pushup.com',
+      '--no-verbose',
+      '--output="json"',
+      '--output-path="lighthouse-report.json"',
+      '--onlyAudits="first-contentful-paint"',
+      '--onlyAudits="largest-contentful-paint"',
+      '--onlyAudits="speed-index"',
+      '--onlyAudits="total-blocking-time"',
+      '--onlyAudits="cumulative-layout-shift"',
+      '--onlyAudits="server-response-time"',
+      '--onlyAudits="interactive"',
+      '--chromeFlags="--headless=new"',
+    ]);
+  });
+
+  it('should parse options for headless by default to new', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for headless to new if true is given', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
       headless: true,
     });
-    expect(pluginConfig).toEqual(
-      expect.objectContaining({
-        runner: expect.objectContaining({
-          args: expect.arrayContaining(['--chrome-flags="--headless=new"']),
-        }),
-      }),
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for headless to new if false is given', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+      headless: false,
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.not.arrayContaining(['--chromeFlags="--headless=new"']),
+    );
+  });
+
+  it('should parse options for userDataDir correctly', () => {
+    const pluginConfig = create({
+      url: LIGHTHOUSE_URL,
+      userDataDir: 'test',
+    });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining([
+        '--chromeFlags="--headless=new --user-data-dir=test"',
+      ]),
     );
   });
 
   it('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = create(baseOptions);
+    const pluginConfig = create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
       expect.objectContaining({
         slug,
@@ -73,9 +116,12 @@ describe('lighthouse-create-export', () => {
 
   it('should use onlyAudits', async () => {
     const pluginConfig = create({
-      ...baseOptions,
+      url: LIGHTHOUSE_URL,
       onlyAudits: 'largest-contentful-paint',
     });
+    expect(pluginConfig.runner.args).toEqual(
+      expect.arrayContaining(['--onlyAudits="largest-contentful-paint"']),
+    );
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
     expect(auditOutputs).toHaveLength(1);

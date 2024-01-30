@@ -63,7 +63,6 @@ export function getLighthouseCliArguments(
     verbose,
     output: 'json',
     'output-path': outputPath,
-    userDataDir,
   };
 
   if (onlyAudits.length > 0) {
