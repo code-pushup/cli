@@ -3,7 +3,11 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
-import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import {
+  MEMFS_VOLUME,
+  MINIMAL_REPORT_MOCK,
+  REPORT_MOCK,
+} from '@code-pushup/testing-utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
@@ -70,8 +74,8 @@ describe('persistReport', () => {
     ).rejects.toThrow('no such file or directory');
   });
 
-  it('should create a report in all formats', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
+  it('should create a report with categories section in all formats', async () => {
+    await persistReport(REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       format: ['md', 'json'],
       filename: 'report',

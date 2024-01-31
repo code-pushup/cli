@@ -53,19 +53,5 @@ export const MINIMAL_CONFIG_MOCK: CoreConfig = {
     apiKey: 'dummy-api-key',
     server: 'https://example.com/api',
   },
-  categories: [
-    {
-      slug: 'info',
-      title: 'Information',
-      refs: [
-        {
-          type: 'audit',
-          plugin: 'node',
-          slug: 'node-version',
-          weight: 1,
-        },
-      ],
-    },
-  ],
   plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
 };

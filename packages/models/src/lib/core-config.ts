@@ -19,7 +19,7 @@ export const unrefinedCoreConfigSchema = z.object({
   persist: persistConfigSchema.optional(),
   /** portal configuration for uploading results */
   upload: uploadConfigSchema.optional(),
-  categories: categoriesSchema,
+  categories: categoriesSchema.optional(),
 });
 
 export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
@@ -33,10 +33,10 @@ export function refineCoreConfig(schema: typeof unrefinedCoreConfigSchema) {
   // categories point to existing audit or group refs
   return schema.refine(
     coreCfg =>
-      !getMissingRefsForCategories(coreCfg.categories, coreCfg.plugins),
+      !getMissingRefsForCategories(coreCfg.categories ?? [], coreCfg.plugins),
     coreCfg => ({
       message: missingRefsForCategoriesErrorMsg(
-        coreCfg.categories,
+        coreCfg.categories ?? [],
         coreCfg.plugins,
       ),
     }),

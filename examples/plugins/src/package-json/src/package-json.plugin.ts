@@ -60,7 +60,7 @@ export type PluginOptions = {
  * }
  *
  * // terminal
- * npx code-pushup --config code-pushup.config.ts
+ * npx code-pushup
  */
 export function create(options: PluginOptions): PluginConfig {
   return {

@@ -2,6 +2,22 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.12.2](https://github.com/code-pushup/cli/compare/v0.12.1...v0.12.2) (2024-01-31)
+
+## [0.12.1](https://github.com/code-pushup/cli/compare/v0.12.0...v0.12.1) (2024-01-31)
+
+# [0.12.0](https://github.com/code-pushup/cli/compare/v0.11.2...v0.12.0) (2024-01-30)
+
+### Features
+
+- **cli:** add hints to commands ([#443](https://github.com/code-pushup/cli/issues/443)) ([854cf4b](https://github.com/code-pushup/cli/commit/854cf4b1f947b5574a4493b6c5f5e2f2a81b2ad8))
+
+## [0.11.2](https://github.com/code-pushup/cli/compare/v0.11.1...v0.11.2) (2024-01-29)
+
+### Bug Fixes
+
+- **core:** update portal-client, fixed missing graphql dependency ([c16c0c8](https://github.com/code-pushup/cli/commit/c16c0c8154097d33ce18259ff17b93f039fb1481))
+
 ## [0.11.1](https://github.com/code-pushup/cli/compare/v0.11.0...v0.11.1) (2024-01-27)
 
 # [0.11.0](https://github.com/code-pushup/cli/compare/v0.10.7...v0.11.0) (2024-01-26)

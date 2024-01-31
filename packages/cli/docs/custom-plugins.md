@@ -97,18 +97,12 @@ Code PushUp Report - @code-pushup/core@x.y.z
 My plugin audits
 ● My audit                                                            0
 
-Categories
-┌──────────┬───────┬────────┐
-│ Category │ Score │ Audits │
-└──────────┴───────┴────────┘
-
 Made with ❤ by code-pushup.dev
 ```
 
 </details>
 
-The categories are empty for now. But under the audit listing you can see your plugin title `My plugin`, its listed
-audit `My audit` and the resulting value `0`.
+Under the audit listing you can see your plugin title `My plugin`, its listed audit `My audit` and the resulting value `0`.
 
 ## Plugin output
 
@@ -251,11 +245,6 @@ Code PushUp Report - @code-pushup/core@x.y.z
 File size plugin audits
 ● File size audit                                                            2 files
 
-Categories
-┌──────────┬───────┬────────┐
-│ Category │ Score │ Audits │
-└──────────┴───────┴────────┘
-
 Made with ❤ by code-pushup.dev
 ```
 
@@ -387,11 +376,6 @@ Code PushUp Report - @code-pushup/core@x.y.z
 Chrome Lighthosue audits
 ● Largest Contentful Paint                                                0
 
-Categories
-┌──────────┬───────┬────────┐
-│ Category │ Score │ Audits │
-└──────────┴───────┴────────┘
-
 Made with ❤ by code-pushup.dev
 ```
 
@@ -498,37 +482,6 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 }
 ```
 
-### Audit groups
-
-As an optional property a plugin can maintain `groups` as an array of [`Group`s](../../packages/models/src/types.generated.ts).
-While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting plugins within a plugin.
-For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
-
-An audit group maintains:
-
-- metadata about the group [GroupMeta](../../packages/models/src/types.generated.ts)
-- a list of referenced audits under `refs` as [GroupRef](../../packages/models/src/types.generated.ts) array
-
-The minimum information of an audit group looks like this:
-
-```typescript
-import { Group } from '@code-pushup/models';
-
-const myGroup: Group = {
-  slug: 'performance',
-  refs: [
-    {
-      slug: 'file-size-audit',
-      weight: 1,
-    },
-  ],
-  // optional details
-};
-```
-
-The weight property of a reference is used to calculate a score for all audits listed under refs.  
-A weight of 0 can be used for informative audits and a value from 1 upward to give a weight in the score compared to other audits.
-
 ### Audit details
 
 To have better attribution in your audits you can use the `details` section in `AuditOutputs`.
@@ -630,11 +583,42 @@ The `report.md` file should contain a similar content like the following:
 
 </details>
 
-## Plugins and categories
+## Groups
+
+As an optional property a plugin can maintain `groups` as an array of [`Group`s](@TODO).
+While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting audits within a plugin.
+For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
+
+An audit group maintains:
+
+- metadata about the group [GroupMeta](@TODO)
+- a list of referenced audits under `refs` as [GroupRef](@TODO) array
+
+The minimum information of an audit group looks like this:
+
+```typescript
+import { Group } from '@code-pushup/models';
+
+const myGroup: Group = {
+  slug: 'performance',
+  refs: [
+    {
+      slug: 'file-size-audit',
+      weight: 1,
+    },
+  ],
+  // optional details
+};
+```
+
+The weight property of a reference is used to calculate a score for all audits listed under refs.  
+A weight of 0 can be used for informative audits and a value from 1 upward to give a weight in the score compared to other audits.
+
+## Categories
 
 In this chapter we will see how plugin results contribute to the category scoring.
 
-**basic categories setup**
+**basic category setup**
 In this example we create a Performance category which contains one audit and one group.
 
 Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
