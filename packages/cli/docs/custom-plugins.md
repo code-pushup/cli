@@ -26,13 +26,13 @@ export default {
 
 ## Plugin Structure
 
-Every plugin is defined in [`PluginConfig`](@TODO - link models) object.
+Every plugin is defined in [`PluginConfig`](../../packages/models/src/types.generated.ts) object.
 
 The plugin configuration contains:
 
 - metadata about the plugin [`PluginMeta`](../../../packages/models/src/types.ts#L56)
-- metadata about the available [audit](#audits) [`Audit`](@TODO - link models)
-- a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](@TODO - link models).
+- metadata about the available [audit](#audits) [`Audit`](../../packages/models/src/types.generated.ts)
+- a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](../../packages/models/src/types.generated.ts).
 - optional [`groups`](#audit-groups) to pre score audits
 
 See the following example that shows a minimal implementation of a custom plugin containing all required fields:
@@ -127,7 +127,7 @@ const myAuditOutput: AuditOutput = {
 };
 ```
 
-- An audit output always includes the metadata of the audit. [`Audit`](@TODO - link models)
+- An audit output always includes the metadata of the audit. [`Audit`](../../packages/models/src/types.generated.ts)
 
 - `score` and `value` are important to calculate a score from a given metric and display it.
   Here you can read more about [audits and scoring](#audit-score).
@@ -146,7 +146,7 @@ const pluginOutput: AuditOutputs = [myAuditOutput];
 ## Plugin runner
 
 The `runner` property defines the core of a plugin.
-It also serves as the entry point of your plugin and is executed by the CLI. It should return the audit results as [`AuditOutputs`](@TODO - link models).
+It also serves as the entry point of your plugin and is executed by the CLI. It should return the audit results as [`AuditOutputs`](../../packages/models/src/types.generated.ts).
 
 A runner can be implemented in two ways:
 
@@ -500,14 +500,14 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 
 ### Audit groups
 
-As an optional property a plugin can maintain `groups` as an array of [`Group`s](@TODO).
+As an optional property a plugin can maintain `groups` as an array of [`Group`s](../../packages/models/src/types.generated.ts).
 While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting plugins within a plugin.
 For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
 
 An audit group maintains:
 
-- metadata about the group [GroupMeta](@TODO)
-- a list of referenced audits under `refs` as [GroupRef](@TODO) array
+- metadata about the group [GroupMeta](../../packages/models/src/types.generated.ts)
+- a list of referenced audits under `refs` as [GroupRef](../../packages/models/src/types.generated.ts) array
 
 The minimum information of an audit group looks like this:
 
