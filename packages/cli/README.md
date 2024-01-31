@@ -47,9 +47,6 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
      plugins: [
        // ...
      ],
-     categories: [
-       // ...
-     ],
    };
    ```
 
@@ -87,6 +84,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
          slug: 'performance',
          title: 'Performance',
          refs: [
+           // reference to an existing audit or group from plugins
            {
              type: 'audit',
              plugin: 'eslint',

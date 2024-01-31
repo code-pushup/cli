@@ -41,19 +41,21 @@ export function generateMdReport(
   report: ScoredReport,
   commitData: CommitData | null,
 ): string {
+  const printCategories = report.categories.length > 0;
+
   return (
     // header section
     // eslint-disable-next-line prefer-template
     reportToHeaderSection() +
     NEW_LINE +
-    // overview section
-    reportToOverviewSection(report) +
-    NEW_LINE +
-    NEW_LINE +
+    // categories overview section
+    (printCategories
+      ? reportToOverviewSection(report) + NEW_LINE + NEW_LINE
+      : '') +
     // categories section
-    reportToCategoriesSection(report) +
-    NEW_LINE +
-    NEW_LINE +
+    (printCategories
+      ? reportToCategoriesSection(report) + NEW_LINE + NEW_LINE
+      : '') +
     // audits section
     reportToAuditsSection(report) +
     NEW_LINE +

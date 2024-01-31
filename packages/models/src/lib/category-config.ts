@@ -68,8 +68,6 @@ export const categoriesSchema = z
   .array(categoryConfigSchema, {
     description: 'Categorization of individual audits',
   })
-  .min(1)
-  // categories slugs are unique
   .refine(
     categoryCfg => !getDuplicateSlugCategories(categoryCfg),
     categoryCfg => ({

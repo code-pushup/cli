@@ -5,9 +5,8 @@ import { logPersistedResults, persistReport } from './implementation/persist';
 import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
-export type CollectAndPersistReportsOptions = Pick<
-  CoreConfig,
-  'persist' | 'plugins' | 'categories'
+export type CollectAndPersistReportsOptions = Required<
+  Pick<CoreConfig, 'persist' | 'plugins' | 'categories'>
 > &
   GlobalOptions;
 
