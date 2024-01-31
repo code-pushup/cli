@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/nx-plugin",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "license": "MIT",
   "dependencies": {
     "@nx/devkit": "^17.1.3",
