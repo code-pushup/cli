@@ -75,7 +75,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
 
-### Setup categories
+### Set up categories (optional)
 
 1. Define your custom categories.
 
