@@ -5,20 +5,7 @@ export const MINIMAL_REPORT_MOCK: Report = {
   version: '0.0.1',
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
-  categories: [
-    {
-      slug: 'bug-prevention',
-      title: 'Bug prevention',
-      refs: [
-        {
-          plugin: 'eslint',
-          slug: 'no-any',
-          type: 'audit',
-          weight: 1,
-        },
-      ],
-    },
-  ],
+  categories: [],
   plugins: [
     {
       slug: 'eslint',
