@@ -40,10 +40,6 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
    ```js
    export default {
-     persist: {
-       outputDir: '.code-pushup',
-       format: ['json', 'md'],
-     },
      plugins: [
        // ...
      ],
@@ -155,7 +151,10 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | ---------------- | --------- | ----------------------- | ---------------------------------------------------------------------- |
 | **`--progress`** | `boolean` | `true`                  | Show progress bar in stdout.                                           |
 | **`--verbose`**  | `boolean` | `false`                 | When true creates more verbose output. This is helpful when debugging. |
-| **`--config`**   | `string`  | `code-pushup.config.js` | Path to the config file, e.g. code-pushup.config.js                    |
+| **`--config`**   | `string`  | `code-pushup.config.ts` | Path to the config file, e.g. code-pushup.config.(ts\|mjs\|js)         |
+
+> [!NOTE]  
+> By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided with `--config`.
 
 ### Common Command Options
 

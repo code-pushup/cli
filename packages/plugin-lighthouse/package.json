@@ -1,6 +1,7 @@
 {
   "name": "@code-pushup/lighthouse-plugin",
-  "version": "0.8.25",
+  "version": "0.12.1",
+  "license": "MIT",
   "dependencies": {
     "@code-pushup/models": "*",
     "lighthouse": "^11.0.0"

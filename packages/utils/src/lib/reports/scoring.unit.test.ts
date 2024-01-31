@@ -56,7 +56,16 @@ describe('calculateScore', () => {
   it('should throw for an empty reference array', () => {
     expect(() =>
       calculateScore<{ weight: number }>([], ref => ref.weight),
-    ).toThrow('0 division for score');
+    ).toThrow('Reference array cannot be empty.');
+  });
+
+  it('should throw negative weight', () => {
+    expect(() =>
+      calculateScore(
+        [{ slug: 'first-contentful-paint', weight: -1, score: 0.5 }],
+        ref => ref.score,
+      ),
+    ).toThrow('Weight cannot be negative.');
   });
 
   it('should throw for a reference array full of zero weights', () => {
@@ -66,9 +75,27 @@ describe('calculateScore', () => {
           { slug: 'first-contentful-paint', weight: 0, score: 0 },
           { slug: 'cumulative-layout-shift', weight: 0, score: 1 },
         ],
-        ref => ref.weight,
+        ref => ref.score,
       ),
-    ).toThrow('0 division for score');
+    ).toThrow('All references cannot have zero weight.');
+  });
+
+  it('should throw for a negative score', () => {
+    expect(() =>
+      calculateScore(
+        [{ slug: 'first-contentful-paint', weight: 1, score: -0.8 }],
+        ref => ref.score,
+      ),
+    ).toThrow('All scores must be in range 0-1.');
+  });
+
+  it('should throw for score above 1', () => {
+    expect(() =>
+      calculateScore(
+        [{ slug: 'first-contentful-paint', weight: 1, score: 2 }],
+        ref => ref.score,
+      ),
+    ).toThrow('All scores must be in range 0-1.');
   });
 });
 

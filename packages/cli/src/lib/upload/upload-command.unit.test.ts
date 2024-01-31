@@ -1,23 +1,33 @@
-import { bundleRequire } from 'bundle-require';
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import { readRcByPath } from '@code-pushup/core';
 import {
   ISO_STRING_REGEXP,
+  MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/testing-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
 
+vi.mock('@code-pushup/core', async () => {
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
+    await vi.importActual('@code-pushup/testing-utils');
+  const core: object = await vi.importActual('@code-pushup/core');
+  return {
+    ...core,
+    readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
+  };
+});
+
 describe('upload-command-object', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
         'my-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
       },
-      '/test',
+      MEMFS_VOLUME,
     );
   });
 
@@ -36,11 +46,9 @@ describe('upload-command-object', () => {
       },
     ).parseAsync();
 
-    expect(bundleRequire).toHaveBeenCalledWith({
-      format: 'esm',
-      filepath: '/test/code-pushup.config.ts',
-    });
+    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
 
+    // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

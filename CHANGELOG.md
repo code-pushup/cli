@@ -2,6 +2,63 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.12.1](https://github.com/code-pushup/cli/compare/v0.12.0...v0.12.1) (2024-01-31)
+
+# [0.12.0](https://github.com/code-pushup/cli/compare/v0.11.2...v0.12.0) (2024-01-30)
+
+### Features
+
+- **cli:** add hints to commands ([#443](https://github.com/code-pushup/cli/issues/443)) ([854cf4b](https://github.com/code-pushup/cli/commit/854cf4b1f947b5574a4493b6c5f5e2f2a81b2ad8))
+
+## [0.11.2](https://github.com/code-pushup/cli/compare/v0.11.1...v0.11.2) (2024-01-29)
+
+### Bug Fixes
+
+- **core:** update portal-client, fixed missing graphql dependency ([c16c0c8](https://github.com/code-pushup/cli/commit/c16c0c8154097d33ce18259ff17b93f039fb1481))
+
+## [0.11.1](https://github.com/code-pushup/cli/compare/v0.11.0...v0.11.1) (2024-01-27)
+
+# [0.11.0](https://github.com/code-pushup/cli/compare/v0.10.7...v0.11.0) (2024-01-26)
+
+### Features
+
+- **cli:** add autoloading of the config file ([#361](https://github.com/code-pushup/cli/issues/361)) ([aef86c9](https://github.com/code-pushup/cli/commit/aef86c9d472e7dc77e6e85dcf7fa11319b5ad662))
+
+## [0.10.7](https://github.com/code-pushup/cli/compare/v0.10.6...v0.10.7) (2024-01-26)
+
+## [0.10.6](https://github.com/code-pushup/cli/compare/v0.10.5...v0.10.6) (2024-01-26)
+
+## [0.10.5](https://github.com/code-pushup/cli/compare/v0.10.4...v0.10.5) (2024-01-26)
+
+### Bug Fixes
+
+- **cli:** set terminal output to full width ([#362](https://github.com/code-pushup/cli/issues/362)) ([d6270a5](https://github.com/code-pushup/cli/commit/d6270a5cc7766e9c3d4090ad5935e65c9d36c427))
+
+## [0.10.4](https://github.com/code-pushup/cli/compare/v0.10.3...v0.10.4) (2024-01-25)
+
+## [0.10.3](https://github.com/code-pushup/cli/compare/v0.10.2...v0.10.3) (2024-01-25)
+
+## [0.10.2](https://github.com/code-pushup/cli/compare/v0.10.1...v0.10.2) (2024-01-25)
+
+## [0.10.1](https://github.com/code-pushup/cli/compare/v0.10.0...v0.10.1) (2024-01-24)
+
+# [0.10.0](https://github.com/code-pushup/cli/compare/v0.9.0...v0.10.0) (2024-01-24)
+
+### Bug Fixes
+
+- **utils:** set fixed locale for date in report.md ([aa4694b](https://github.com/code-pushup/cli/commit/aa4694b33da34f3a6c4aff8ff92b1c4f8717c520))
+
+### Features
+
+- **utils:** include timezone in report.md ([27d267a](https://github.com/code-pushup/cli/commit/27d267ab481f90187b0717ca72053689aab3b4f3))
+
+# [0.9.0](https://github.com/code-pushup/cli/compare/v0.8.25...v0.9.0) (2024-01-24)
+
+### Features
+
+- **core:** add optional upload.timeout to config ([fdc3f58](https://github.com/code-pushup/cli/commit/fdc3f58cb0617d5240dcb7a80ec9f640d0b5df7c))
+- **core:** update portal-client to version with request timeouts ([173bd2f](https://github.com/code-pushup/cli/commit/173bd2f9a1e5b66f52d98c9fa36a2db4cf1403d1))
+
 ## [0.8.25](https://github.com/code-pushup/cli/compare/v0.8.24...v0.8.25) (2024-01-19)
 
 ## [0.8.24](https://github.com/code-pushup/cli/compare/v0.8.23...v0.8.24) (2024-01-19)

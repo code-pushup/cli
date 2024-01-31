@@ -16,13 +16,6 @@ describe('yargsCli', () => {
     expect(parsedArgv.progress).toBe(true);
   });
 
-  it('should provide a correct default value for the config', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>([], {
-      options,
-    }).parseAsync();
-    expect(parsedArgv.config).toBe('code-pushup.config.js');
-  });
-
   it('should parse an empty array as a default onlyPlugins option', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions & OnlyPluginsOptions>(
       [],
@@ -102,7 +95,6 @@ describe('yargsCli', () => {
       expect.objectContaining({
         // default values
         progress: true,
-        config: expect.stringContaining('code-pushup.config'),
         // overridden arguments
         verbose: true,
         persist: expect.objectContaining({

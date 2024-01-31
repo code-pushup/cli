@@ -19,16 +19,20 @@ export {
 } from './lib/core-config';
 export { Group, GroupRef, groupSchema } from './lib/group';
 export {
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
-} from './lib/implementation/constants';
-export {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
   MAX_ISSUE_MESSAGE_LENGTH,
 } from './lib/implementation/limits';
+export {
+  PERSIST_FILENAME,
+  PERSIST_OUTPUT_DIR,
+  PERSIST_FORMAT,
+} from './lib/implementation/constants';
+export {
+  CONFIG_FILE_NAME,
+  SUPPORTED_CONFIG_FILE_FORMATS,
+} from './lib/implementation/configuration';
 export {
   fileNameSchema,
   filePathSchema,

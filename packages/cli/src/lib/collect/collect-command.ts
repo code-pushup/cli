@@ -18,6 +18,21 @@ export function yargsCollectCommandObject(): CommandModule {
       console.info(chalk.bold(CLI_NAME));
       console.info(chalk.gray(`Run ${command}...`));
       await collectAndPersistReports(options);
+      const { upload = {} } = args as unknown as Record<
+        'upload',
+        object | undefined
+      >;
+      if (Object.keys(upload).length === 0) {
+        console.info(
+          [
+            '💡 Visualize your reports:',
+            '- npx code-pushup upload - Run upload to upload the created report to the server',
+            '  https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
+            '- npx code-pushup autorun - Run collect & upload',
+            '  https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command',
+          ].join('\n'),
+        );
+      }
     },
   } satisfies CommandModule;
 }

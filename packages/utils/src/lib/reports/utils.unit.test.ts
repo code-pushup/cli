@@ -18,6 +18,7 @@ import {
   compareIssueSeverity,
   compareIssues,
   countWeightedRefs,
+  formatReportScore,
   getPluginNameFromSlug,
   loadReport,
 } from './utils';
@@ -65,6 +66,25 @@ describe('compareIssueSeverity', () => {
       'error',
     ]);
   });
+});
+
+describe('formatReportScore', () => {
+  it.each([
+    [0, '0'],
+    [0.0049, '0'],
+    [0.005, '1'],
+    [0.01, '1'],
+    [0.123, '12'],
+    [0.99, '99'],
+    [0.994, '99'],
+    [0.995, '100'],
+    [1, '100'],
+  ] satisfies readonly [number, string][])(
+    "should format a score of %d as '%s'",
+    (score, expected) => {
+      expect(formatReportScore(score)).toBe(expected);
+    },
+  );
 });
 
 describe('loadReport', () => {
