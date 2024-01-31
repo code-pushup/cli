@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import { Audit, CategoryRef, Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_OUTPUT_FILE_DEFAULT = 'lighthouse-report.json';
@@ -83,17 +84,14 @@ export const categoryCorePerfGroup: Group = {
     },
     {
       slug: lcpSlug,
-      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {
       slug: tbtSlug,
-      // eslint-disable-next-line no-magic-numbers
       weight: 30,
     },
     {
       slug: clsSlug,
-      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {
@@ -127,17 +125,14 @@ export const categoryCorePerfGroup2: Group = {
     },
     {
       slug: 'largest-contentful-paint',
-      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {
       slug: 'total-blocking-time',
-      // eslint-disable-next-line no-magic-numbers
       weight: 30,
     },
     {
       slug: 'cumulative-layout-shift',
-      // eslint-disable-next-line no-magic-numbers
       weight: 25,
     },
     {

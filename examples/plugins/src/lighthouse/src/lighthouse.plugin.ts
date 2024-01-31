@@ -5,7 +5,7 @@ import {
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
-import { toArray, verboseUtils } from '@code-pushup/utils';
+import { toArray } from '@code-pushup/utils';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   PLUGIN_SLUG,

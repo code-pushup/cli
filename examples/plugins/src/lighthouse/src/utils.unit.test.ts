@@ -72,13 +72,11 @@ describe('filterRefsBySlug', () => {
 
 describe('getLighthouseCliArguments', () => {
   it('should parse valid options', () => {
-    expect(() =>
+    expect(
       getLighthouseCliArguments({
         url: 'https://code-pushup-portal.com',
       }),
-    ).toEqual(
-      expect.arrayContaining(['--url=https://code-pushup-portal.com']),
-    );
+    ).toEqual(expect.arrayContaining(['https://code-pushup-portal.com']));
   });
 
   it('should parse options for headless to new if true is given', () => {

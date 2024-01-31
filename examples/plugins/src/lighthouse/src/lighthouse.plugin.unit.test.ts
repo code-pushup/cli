@@ -3,7 +3,6 @@ import { LIGHTHOUSE_URL } from '../mock/constants';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
 import { runnerConfig } from './lighthouse.plugin';
 import type { LighthouseCliOptions } from './types';
-import {getLighthouseCliArguments} from "./utils";
 
 describe('lighthouse-runnerConfig', () => {
   const baseOptions: LighthouseCliOptions = {
@@ -55,13 +54,12 @@ describe('lighthouse-runnerConfig', () => {
     );
   });
 
-
-  it('should parse options for headless by default to new', () => {
+  it('should parse options for headless by default to false', () => {
     const args = runnerConfig({
       url: LIGHTHOUSE_URL,
     });
     expect(args).toEqual(
-      expect.arrayContaining(['--chrome-flags="--headless=new"']),
+      expect.not.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 

@@ -54,16 +54,16 @@ describe('lighthouse-create-export', () => {
       '--onlyAudits="cumulative-layout-shift"',
       '--onlyAudits="server-response-time"',
       '--onlyAudits="interactive"',
-      '--chromeFlags="--headless=new"',
+      '--chrome-flags="--headless=new"',
     ]);
   });
 
-  it('should parse options for headless by default to new', () => {
+  it('should parse options for headless by default to "new"', () => {
     const pluginConfig = create({
       url: LIGHTHOUSE_URL,
     });
     expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+      expect.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
@@ -73,7 +73,7 @@ describe('lighthouse-create-export', () => {
       headless: true,
     });
     expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+      expect.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
@@ -83,7 +83,7 @@ describe('lighthouse-create-export', () => {
       headless: false,
     });
     expect(pluginConfig.runner.args).toEqual(
-      expect.not.arrayContaining(['--chromeFlags="--headless=new"']),
+      expect.not.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
@@ -94,7 +94,7 @@ describe('lighthouse-create-export', () => {
     });
     expect(pluginConfig.runner.args).toEqual(
       expect.arrayContaining([
-        '--chromeFlags="--headless=new --user-data-dir=test"',
+        '--chrome-flags="--headless=new --user-data-dir=test"',
       ]),
     );
   });
