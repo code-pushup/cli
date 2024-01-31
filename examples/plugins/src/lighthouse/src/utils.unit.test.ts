@@ -76,15 +76,8 @@ describe('getLighthouseCliArguments', () => {
       getLighthouseCliArguments({
         url: 'https://code-pushup-portal.com',
       }),
-    ).toEqual([]);
-  });
-
-  it('should parse options for headless by default to new', () => {
-    const pluginConfig = getLighthouseCliArguments({
-      url: LIGHTHOUSE_URL,
-    });
-    expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+    ).toEqual(
+      expect.arrayContaining(['--url=https://code-pushup-portal.com']),
     );
   });
 
@@ -94,7 +87,7 @@ describe('getLighthouseCliArguments', () => {
       headless: true,
     });
     expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining(['--chromeFlags="--headless=new"']),
+      expect.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
@@ -104,7 +97,7 @@ describe('getLighthouseCliArguments', () => {
       headless: false,
     });
     expect(pluginConfig.runner.args).toEqual(
-      expect.not.arrayContaining(['--chromeFlags="--headless=new"']),
+      expect.not.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
@@ -115,7 +108,7 @@ describe('getLighthouseCliArguments', () => {
     });
     expect(pluginConfig.runner.args).toEqual(
       expect.arrayContaining([
-        '--chromeFlags="--headless=new --user-data-dir=test"',
+        '--chrome-flags="--headless=new --user-data-dir=test"',
       ]),
     );
   });

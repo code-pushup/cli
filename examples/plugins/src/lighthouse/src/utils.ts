@@ -84,7 +84,7 @@ export function getLighthouseCliArguments(
   if (chromeFlags.length > 0) {
     argsObj = {
       ...argsObj,
-      chromeFlags: chromeFlags.join(' '),
+      ['chrome-flags']: chromeFlags.join(' '),
     };
   }
 
