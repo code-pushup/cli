@@ -49,20 +49,6 @@ describe('coreConfigSchema', () => {
   it('should accept a minimal core configuration', () => {
     expect(() =>
       coreConfigSchema.parse({
-        categories: [
-          {
-            slug: 'bug-prevention',
-            title: 'Bug prevention',
-            refs: [
-              {
-                plugin: 'eslint',
-                slug: 'no-magic-numbers',
-                type: 'audit',
-                weight: 1,
-              },
-            ],
-          },
-        ],
         plugins: [
           {
             slug: 'eslint',
@@ -74,6 +60,10 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).not.toThrow();
+  });
+
+  it('should throw for an empty configuration with no plugins', () => {
+    expect(() => coreConfigSchema.parse({ plugins: [] })).toThrow('too_small');
   });
 
   it('should throw for a category reference not found in audits', () => {
@@ -145,14 +135,5 @@ describe('coreConfigSchema', () => {
     ).toThrow(
       'category references need to point to an audit or group: eslint#eslint-errors (group)',
     );
-  });
-
-  it('should throw for an empty core configuration', () => {
-    expect(() =>
-      coreConfigSchema.parse({
-        categories: [],
-        plugins: [],
-      }),
-    ).toThrow('too_small');
   });
 });
