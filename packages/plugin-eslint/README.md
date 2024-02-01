@@ -1,4 +1,4 @@
-# @code-pushup/eslint-plugin
+# @code-pushup/eslint-plugin [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fplugin-eslint.svg)](https://www.npmjs.com/package/%40code-pushup%2Fplugin-eslint)
 
 🕵️ **Code PushUp plugin for detecting problems in source code using ESLint.** 📋
 
