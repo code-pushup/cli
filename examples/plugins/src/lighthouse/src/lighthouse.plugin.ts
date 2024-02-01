@@ -1,5 +1,4 @@
 import Result from 'lighthouse/types/lhr/lhr';
-import { mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import {
   AuditOutput,
@@ -7,11 +6,7 @@ import {
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
-import {
-  directoryExists,
-  ensureDirectoryExists,
-  toArray,
-} from '@code-pushup/utils';
+import { ensureDirectoryExists, toArray } from '@code-pushup/utils';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   PLUGIN_SLUG,
@@ -56,13 +51,14 @@ export async function create(options: PluginOptions) {
     // Not all audits are implemented, so we always rely on the `onlyAudits` argument
     onlyAudits: onlyAuditsOption = audits.map(({ slug }) => slug),
     headless: headlessOption = true,
+    outputPath,
   } = options;
   const onlyAudits = toArray(onlyAuditsOption);
   const headless = headlessOption ? ('new' as const) : false;
 
   // ensure output dir
-  if (options.outputPath !== undefined) {
-    await ensureDirectoryExists(dirname(options.outputPath));
+  if (outputPath !== undefined) {
+    await ensureDirectoryExists(dirname(outputPath));
   }
 
   return {
