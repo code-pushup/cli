@@ -32,15 +32,10 @@ export function generateMdFile(typesString: string): string {
 }
 
 export async function safeWriteFile(path: string, content: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const dir = dirname(path) as string;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   const stats = await stat(dir);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
   if (!stats.isDirectory()) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await mkdir(dir);
   }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await writeFile(path, content, { encoding: 'utf8' });
 }

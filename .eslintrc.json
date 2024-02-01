@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*", "**/tools/**", "*.generated.ts"],
+  "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
   "overrides": [
     {
