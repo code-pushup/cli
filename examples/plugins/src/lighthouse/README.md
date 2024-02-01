@@ -66,4 +66,4 @@ You can configure the plugin with the following options:
 
 ## Audits
 
-Detailed information about the audits can be found in the docs of [lighthouse](@TODO).
+Detailed information about the audits can be found in the docs of [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/).
