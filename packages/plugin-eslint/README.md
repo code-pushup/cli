@@ -81,7 +81,11 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      };
      ```
 
-5. (Optional) Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+### Optionally set up categories
+
+1. Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    Assign weights based on what influence each ESLint rule should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
    Note that categories can combine multiple plugins.
@@ -174,4 +178,8 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    };
    ```
 
-6. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+2. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+## Nx Monorepo Setup
+
+Find all details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).
