@@ -1,4 +1,4 @@
-# @code-pushup/cli
+# @code-pushup/cli [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 
 🔎🔬 **Quality metrics for your software project.** 📉🔍
 

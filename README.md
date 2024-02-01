@@ -1,5 +1,6 @@
 # Code PushUp CLI
 
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)

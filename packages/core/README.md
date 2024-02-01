@@ -1,4 +1,4 @@
-# @code-pushup/core
+# @code-pushup/core [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcore.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcore)
 
 🔎🔬 **Quality metrics for your software project.** 📉🔍
 
