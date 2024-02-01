@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function */
 import { LCOVRecord } from 'parse-lcov';
 import { AuditOutput, Issue } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
 import { CoverageType } from '../../config';
 import { LCOVStat } from './types';
-import { calculateCoverage } from './utils';
+import { calculateCoverage, mergeConsecutiveNumbers } from './utils';
 
 export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {
   return {
@@ -28,54 +29,39 @@ export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {
   };
 }
 
-// TODO split merging logic to a separate function
 export function lcovReportToLineStat(record: LCOVRecord): LCOVStat {
+  const missingCoverage = record.lines.hit < record.lines.found;
+  const lines = missingCoverage
+    ? record.lines.details
+        .filter(detail => !detail.hit)
+        .map(detail => detail.line)
+    : [];
+
+  const linePositions = mergeConsecutiveNumbers(lines);
+
   return {
     totalFound: record.lines.found,
     totalHit: record.lines.hit,
-    issues:
-      record.lines.hit < record.lines.found
-        ? record.lines.details
-            .filter(detail => !detail.hit)
-            .reduce<Issue[]>((acc, detail): Issue[] => {
-              const unixFilePath = toUnixPath(record.file);
-              const sameFile = acc.at(-1)?.source?.file === unixFilePath;
-              const prevPosition = acc.at(-1)?.source?.position;
+    issues: missingCoverage
+      ? linePositions.map(linePosition => {
+          const lineReference =
+            linePosition.end == null
+              ? `Line ${linePosition.start} is`
+              : `Lines ${linePosition.start}-${linePosition.end} are`;
 
-              if (
-                acc.length > 0 &&
-                sameFile &&
-                (prevPosition?.startLine === detail.line - 1 ||
-                  prevPosition?.endLine === detail.line - 1)
-              ) {
-                return [
-                  ...acc.slice(0, -1),
-                  {
-                    message: `Lines ${prevPosition.startLine}-${detail.line} are not covered in any test case.`,
-                    severity: 'warning',
-                    source: {
-                      file: unixFilePath,
-                      position: {
-                        startLine: prevPosition.startLine,
-                        endLine: detail.line,
-                      },
-                    },
-                  },
-                ];
-              }
-              return [
-                ...acc,
-                {
-                  message: `Line ${detail.line} is not covered in any test case.`,
-                  severity: 'warning',
-                  source: {
-                    file: toUnixPath(record.file),
-                    position: { startLine: detail.line },
-                  },
-                },
-              ];
-            }, [])
-        : [],
+          return {
+            message: `${lineReference} not covered in any test case.`,
+            severity: 'warning',
+            source: {
+              file: toUnixPath(record.file),
+              position: {
+                startLine: linePosition.start,
+                endLine: linePosition.end,
+              },
+            },
+          } satisfies Issue;
+        })
+      : [],
   };
 }
 

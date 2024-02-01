@@ -1,3 +1,5 @@
+import { NumberRange } from './types';
+
 /**
  * This function calculates coverage as ratio of tested entities vs total
  * @param hit how many entities were executed in at least one test
@@ -6,4 +8,17 @@
  */
 export function calculateCoverage(hit: number, found: number): number {
   return found > 0 ? hit / found : 0;
+}
+
+export function mergeConsecutiveNumbers(numberArr: number[]): NumberRange[] {
+  return [...numberArr].sort().reduce<NumberRange[]>((acc, currValue) => {
+    const prevValue = acc.at(-1);
+    if (
+      prevValue != null &&
+      (prevValue.start === currValue - 1 || prevValue.end === currValue - 1)
+    ) {
+      return [...acc.slice(0, -1), { start: prevValue.start, end: currValue }];
+    }
+    return [...acc, { start: currValue }];
+  }, []);
 }
