@@ -2,15 +2,15 @@ import { objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 import { LighthousePluginOptions } from './lighthouse-plugin';
 
+export type ChromeFlage = { headless?: false | 'new'; userDataDir?: string };
 export type LighthouseCliOptions = Omit<
   LighthousePluginOptions,
   'headless' | 'onlyAudits'
 > & {
-  headless?: false | 'new';
-  userDataDir?: string;
   onlyAudits?: string[];
   onlyCategories?: string[];
-};
+} & ChromeFlage;
+
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
 ): string[] {

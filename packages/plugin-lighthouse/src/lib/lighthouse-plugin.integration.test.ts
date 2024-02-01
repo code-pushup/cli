@@ -3,15 +3,18 @@ import {
   auditSchema,
   categoryConfigSchema,
   groupSchema,
+  pluginConfigSchema,
 } from '@code-pushup/models';
 import { audits, categories, groups } from './constants.generated';
 import { lighthousePlugin } from './lighthouse-plugin';
 
 describe('lighthousePlugin', () => {
-  it('should initialize Lighthouse plugin', () => {
-    expect(lighthousePlugin({ url: 'https://localhost:8080' }).slug).toBe(
-      'lighthouse',
-    );
+  it('should create valid plugin config', () => {
+    expect(() =>
+      pluginConfigSchema.parse(
+        lighthousePlugin({ url: 'https://code-pushup-portal.com' }),
+      ),
+    ).not.toThrow();
   });
 });
 
