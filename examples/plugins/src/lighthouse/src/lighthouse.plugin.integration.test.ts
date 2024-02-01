@@ -23,8 +23,8 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should return valid PluginConfig if create is called', () => {
-    const pluginConfig = create({ url: LIGHTHOUSE_URL });
+  it('should return valid PluginConfig if create is called', async () => {
+    const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
       slug,
@@ -37,8 +37,8 @@ describe('lighthouse-create-export', () => {
     });
   });
 
-  it('should parse options for defaults correctly', () => {
-    const pluginConfig = create({
+  it('should parse options for defaults correctly', async () => {
+    const pluginConfig = await create({
       url: 'https://code-pushup.com',
     });
     expect(pluginConfig.runner.args).toEqual([
@@ -58,8 +58,8 @@ describe('lighthouse-create-export', () => {
     ]);
   });
 
-  it('should parse options for headless by default to "new"', () => {
-    const pluginConfig = create({
+  it('should parse options for headless by default to "new"', async () => {
+    const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -67,8 +67,8 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if true is given', () => {
-    const pluginConfig = create({
+  it('should parse options for headless to new if true is given', async () => {
+    const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: true,
     });
@@ -77,8 +77,8 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if false is given', () => {
-    const pluginConfig = create({
+  it('should parse options for headless to new if false is given', async () => {
+    const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: false,
     });
@@ -87,8 +87,8 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for userDataDir correctly', () => {
-    const pluginConfig = create({
+  it('should parse options for userDataDir correctly', async () => {
+    const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       userDataDir: 'test',
     });
@@ -100,7 +100,7 @@ describe('lighthouse-create-export', () => {
   });
 
   it('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = create({ url: LIGHTHOUSE_URL });
+    const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
       expect.objectContaining({
         slug,
@@ -115,7 +115,7 @@ describe('lighthouse-create-export', () => {
   });
 
   it('should use onlyAudits', async () => {
-    const pluginConfig = create({
+    const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       onlyAudits: 'largest-contentful-paint',
     });
