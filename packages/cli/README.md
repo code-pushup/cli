@@ -43,11 +43,15 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 2. Create a `code-pushup.config.ts` configuration file (`.js` or `.mjs` extensions are also supported).
 
    ```ts
-   export default {
+   import type { CoreConfig } from '@code-pushup/models';
+
+   const config: CoreConfig = {
      plugins: [
        // ...
      ],
    };
+
+   export default config;
    ```
 
 3. Add plugins as per your project needs (e.g. [@code-pushup/eslint-plugin](../plugin-eslint/README.md)).
@@ -58,14 +62,17 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
    ```ts
    import eslintPlugin from '@code-pushup/eslint-plugin';
+   import type { CoreConfig } from '@code-pushup/models';
 
-   export default {
+   const config: CoreConfig = {
      // ...
      plugins: [
        // ...
        await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
      ],
    };
+
+   export default config;
    ```
 
 4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
@@ -77,7 +84,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 1. Define your custom categories.
 
    ```ts
-   export default {
+   const config: CoreConfig = {
      // ...
      categories: [
        {
@@ -108,7 +115,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 If you have access to the Code PushUp portal, provide credentials in order to upload reports.
 
 ```ts
-export default {
+const config: CoreConfig = {
   // ...
   upload: {
     server: 'https://ip-or-domain/path/to/portal/api/graphql',
