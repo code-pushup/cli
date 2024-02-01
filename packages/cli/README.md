@@ -23,6 +23,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 ## Getting started
 
 1. Install as a dev dependency with your package manager:
+   <details>
+   <summary>Installation command for <code>npm</code>, <code>yarn</code> and <code>pnpm</code></summary>
 
    ```sh
    npm install --save-dev @code-pushup/cli
@@ -35,6 +37,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    ```sh
    pnpm add --save-dev @code-pushup/cli
    ```
+
+   </details>
 
 2. Create a `code-pushup.config.js` configuration file (`.ts` or `.mjs` extensions are also supported).
 
@@ -64,7 +68,13 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-4. Optionally define your custom categories. This section provides an overview of thematically related audits and groups.
+4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
+
+5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+
+### Set up categories (optional)
+
+1. Define your custom categories.
 
    ```js
    export default {
@@ -89,9 +99,9 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    };
    ```
 
-5. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
+2. Run the CLI with `npx code-pushup`.
 
-6. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+3. View report file(s) including category section in output directory.
 
 ## Portal integration
 
@@ -170,12 +180,14 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 > All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
 > CLI arguments take precedence over configuration file options.
 
-> [!NOTE]
+> [!NOTE]  
 > The `--upload.*` group of options is applicable to all commands except `collect`.
 
 ### Commands
 
 #### `collect` command
+
+<img src="./docs/images/cli-run-stdout-example.png" width="400" alt="example of code-pushup terminal output">
 
 Usage:
 `code-pushup collect [options]`
