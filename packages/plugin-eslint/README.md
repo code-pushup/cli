@@ -179,3 +179,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    ```
 
 2. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+## Nx Monorepo Setup
+
+Find all details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).
