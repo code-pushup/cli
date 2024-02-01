@@ -62,7 +62,7 @@ const config: CoreConfig = {
     }),
 
     lighthousePlugin({
-      url: 'https://quality-metrics-staging.web.app/login',
+      url: 'https://staging.code-pushup.dev/login',
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
     }),
