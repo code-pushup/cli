@@ -1,6 +1,6 @@
 # lighthouse-plugin
 
-🕵️ **Code PushUp plugin for lighthouse reports** 🔥
+🕵️ **Code PushUp plugin for Lighthouse reports** 🔥
 
 ---
 
