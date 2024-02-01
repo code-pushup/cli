@@ -8,3 +8,5 @@ export type LCOVStat = {
 };
 
 export type LCOVStats = Partial<Record<CoverageType, LCOVStat>>;
+
+export type NumberRange = { start: number; end?: number };

@@ -90,7 +90,6 @@ describe('lcovReportToFunctionStat', () => {
   });
 });
 
-// TODO test line range
 describe('lcovReportToLineStat', () => {
   it('should transform a fully covered line report to LCOV stat', () => {
     expect(
