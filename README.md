@@ -1,5 +1,6 @@
 # Code PushUp CLI
 
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
@@ -20,11 +21,11 @@
 
 This monorepo contains code for open-source Code PushUp NPM packages:
 
-- [🧩 @code-pushup/cli](./packages/cli#readme) - **CLI** for **collecting** audit results and **uploading** report to portal - [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
-- [🧩 @code-pushup/core](./packages/core#readme) - implementation of **core business logic** (useful for custom integrations) - [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcore.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcore)
-- [🧩 @code-pushup/models](./packages/models#readme) - **schemas and types** for data models (useful for custom plugins or other integrations) - [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fmodels.svg)](https://www.npmjs.com/package/%40code-pushup%2Fmodels)
-- [🧩 @code-pushup/utils](./packages/utils#readme) - various **utilities** (useful for custom plugins or other integrations) - [![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/%40code-pushup%2Futils)
+- [🧩 @code-pushup/cli](./packages/cli#readme) - **CLI** for **collecting** audit results and **uploading** report to portal
+- [🧩 @code-pushup/core](./packages/core#readme) - implementation of **core business logic** (useful for custom integrations)
+- [🧩 @code-pushup/models](./packages/models#readme) - **schemas and types** for data models (useful for custom plugins or other integrations)
+- [🧩 @code-pushup/utils](./packages/utils#readme) - various **utilities** (useful for custom plugins or other integrations)
 - plugins:
-  - [📦 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules - [![npm](https://img.shields.io/npm/v/%40code-pushup%2Feslint-plugin.svg)](https://www.npmjs.com/package/%40code-pushup%2Feslint-plugin)
+  - [📦 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
 
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
