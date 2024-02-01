@@ -6,20 +6,22 @@ This plugin allows you to measure and track code coverage on your project.
 
 Measured coverage types are mapped to Code PushUp audits in the following way
 
-- both the score and value is in range 0-1 and represents the code coverage for all passed results (_covered / total_)
+- The value is in range 0-100 and represents the code coverage for all passed results (_covered / total_)
+- the score is value converted to 0-1 range
 - missing coverage is mapped to issues in the audit details (uncalled functions, uncovered branches or lines)
 
 ## Getting started
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Prepare either existing code coverage result files or a command for a coverage tool of your choice that will generate the results, such as [Istanbul](https://github.com/istanbuljs).
+2. Prepare either existing code coverage result files or a command for a coverage tool of your choice that will generate the results. Set lcov as the reporter to the configuration (example for Jest [here](https://jestjs.io/docs/configuration#coveragereporters-arraystring--string-options)).
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
    Pass coverage types you wish to track (line, branch or function), paths to the code coverage results in LCOV format and optionally define your code coverage tool to be run first.
 
-   Please note that when you define the tool command, you still need to define the paths to the coverage results.
+   > [!IMPORTANT]
+   > Please note that when you define the tool command, you still need to define the paths to the coverage results.
 
    The configuration will look similarly to the following:
 
@@ -34,8 +36,8 @@ Measured coverage types are mapped to Code PushUp audits in the following way
          coverageType: ['branch', 'function', 'line'],
          reports: ['coverage/cli/lcov.info'],
          coverageToolCommand: {
-           command: 'npx nx run-many',
-           args: ['-t', 'test', '--coverage'],
+           command: 'npx',
+           args: ['jest', '--coverage', '--coverageReporters=lcov'],
          },
        }),
      ],
@@ -44,9 +46,8 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 4. (Optional) Reference audits which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
-   Assign weights based on what influence each coverage type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
-
-   Note that categories can combine multiple plugins.
+   > [!TIP]
+   > Assign weights based on what influence each coverage type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
    ```js
    export default {
@@ -88,7 +89,10 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 Code coverage is a metric that indicates what percentage of source code is executed by unit tests. It can give insights into test effectiveness and uncover parts of source code that would otherwise go untested.
 
-However, please note that code coverage is not the same as test coverage. Test coverage measures the amount of acceptance criteria covered by tests and is hard to formally verify. This means that code coverage cannot guarantee that the designed software caters to the business requirements.
+> [!IMPORTANT]
+> Please note that code coverage is not the same as test coverage. Test coverage measures the amount of acceptance criteria covered by tests and is hard to formally verify. This means that code coverage cannot guarantee that the designed software caters to the business requirements.
+
+If you want to know more code coverage and how each type of coverage is measured, go to [Software Testing Help](https://www.softwaretestinghelp.com/code-coverage-tutorial/).
 
 ### LCOV format
 
@@ -110,14 +114,17 @@ It recognises the following entities:
 
 [Here](https://github.com/linux-test-project/lcov/issues/113#issuecomment-762335134) is the source of the information above.
 
+> [!NOTE]
+> Branch name is usually a number indexed from 0, indicating either truthy/falsy condition or loop conditions.
+
 ## Plugin architecture
 
 ### Plugin configuration specification
 
 The plugin accepts the following parameters:
 
-- `coverageType`: An array of types of coverage that you wish to track. Supported values: function, branch, line.
-- `reports`: Array of paths to files with code coverage results. Supported formats: LCOV.
+- `coverageType`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`.
+- `reports`: Array of paths to files with code coverage results. LCOV format is supported for now.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 
@@ -134,14 +141,14 @@ For instance, the following can be an audit output for line coverage.
   "slug": "line-coverage",
   "displayValue": "95 %",
   "score": 0.95,
-  "value": 0.95,
+  "value": 95,
   "details": {
     "issues": [
       {
         "message": "Lines 7-9 are not covered in any test case.",
         "severity": "warning",
         "source": {
-          "file": "src/lib/utils.ts",
+          "file": "packages/cli/src/lib/utils.ts",
           "position": {
             "startLine": 7,
             "endLine": 9
