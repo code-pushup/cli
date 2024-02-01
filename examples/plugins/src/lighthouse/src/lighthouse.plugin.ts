@@ -1,11 +1,17 @@
 import Result from 'lighthouse/types/lhr/lhr';
+import { mkdir } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import {
   AuditOutput,
   AuditOutputs,
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
-import { toArray } from '@code-pushup/utils';
+import {
+  directoryExists,
+  ensureDirectoryExists,
+  toArray,
+} from '@code-pushup/utils';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   PLUGIN_SLUG,
@@ -44,7 +50,7 @@ import {
  * }
  *
  */
-export function create(options: PluginOptions) {
+export async function create(options: PluginOptions) {
   const {
     // @NOTICE
     // Not all audits are implemented, so we always rely on the `onlyAudits` argument
@@ -53,6 +59,11 @@ export function create(options: PluginOptions) {
   } = options;
   const onlyAudits = toArray(onlyAuditsOption);
   const headless = headlessOption ? ('new' as const) : false;
+
+  // ensure output dir
+  if (options.outputPath !== undefined) {
+    await ensureDirectoryExists(dirname(options.outputPath));
+  }
 
   return {
     slug: PLUGIN_SLUG,
@@ -87,7 +98,7 @@ export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
   if (userDataDir !== undefined) {
     lhCliOpts = { ...lhCliOpts, userDataDir };
   }
-  // throw new Error(JSON.stringify(lhCliOpts));
+
   return {
     command: 'npx',
     args: getLighthouseCliArguments(lhCliOpts),

@@ -61,7 +61,7 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    lighthousePlugin({
+    await lighthousePlugin({
       url: 'https://staging.code-pushup.dev/login',
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
@@ -82,17 +82,13 @@ const config: CoreConfig = {
       ],
     },
     {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [...lighthouseCorePerfGroupRefs],
-    },
-    {
       slug: 'custom-checks',
       title: 'Custom checks',
       refs: [
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],
