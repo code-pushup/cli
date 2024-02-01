@@ -6,17 +6,14 @@ import { createTypeAlias, printNode, zodToTs } from 'zod-to-ts';
 export function generateTypesString(
   schemas: Record<string, ZodTypeAny>,
 ): string {
-  return (
-    Object.entries(schemas)
-      .map(([identifier, schema]) => {
-        const typeName = schemaNameToTypeName(identifier);
-        const { node } = zodToTs(schema, typeName);
-        const typeAlias = createTypeAlias(node, typeName);
-        return `export ${printNode(typeAlias)}`;
-      })
-      // @TODO add line break
-      .join('\n')
-  );
+  return Object.entries(schemas)
+    .map(([identifier, schema]) => {
+      const typeName = schemaNameToTypeName(identifier);
+      const { node } = zodToTs(schema, typeName);
+      const typeAlias = createTypeAlias(node, typeName);
+      return `export ${printNode(typeAlias)}`;
+    })
+    .join('\n');
 }
 
 export function schemaNameToTypeName(schemaName: string): string {
@@ -35,10 +32,15 @@ export function generateMdFile(typesString: string): string {
 }
 
 export async function safeWriteFile(path: string, content: string) {
-  const dir = dirname(path);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const dir = dirname(path) as string;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   const stats = await stat(dir);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
   if (!stats.isDirectory()) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await mkdir(dir);
   }
-  void writeFile(path, content, { encoding: 'utf8' });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await writeFile(path, content, { encoding: 'utf8' });
 }
