@@ -51,7 +51,7 @@ export function scoreReport(report: Report): ScoredReport {
       )?.score;
       if (score == null) {
         throw new Error(
-          `Group has invalid ref - audit with slug ${ref.slug} from plugin ${plugin.slug} not found`,
+          `Group has invalid ref - audit with slug ${ref.slug} from plugin ${slug} not found`,
         );
       }
       return score;
