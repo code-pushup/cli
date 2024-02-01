@@ -7,6 +7,7 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
+import coveragePlugin from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
@@ -44,7 +45,17 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-
+    coveragePlugin({
+      coverageType: ['branch', 'function', 'line'],
+      reports: [
+        'coverage/cli/unit-tests/lcov.info',
+        'coverage/core/unit-tests/lcov.info',
+        'coverage/models/unit-tests/lcov.info',
+        'coverage/utils/unit-tests/lcov.info',
+        'coverage/plugin-eslint/unit-tests/lcov.info',
+        'coverage/plugin-coverage/unit-tests/lcov.info',
+      ],
+    }),
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -69,6 +80,30 @@ const config: CoreConfig = {
       title: 'Code style',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+    {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'function-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'branch-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'line-coverage',
+          weight: 1,
+        },
       ],
     },
     {
