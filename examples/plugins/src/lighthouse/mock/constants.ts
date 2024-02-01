@@ -1,1 +1,1 @@
-export const LIGHTHOUSE_URL = 'https://quality-metrics-staging.web.app/login';
+export const LIGHTHOUSE_URL = 'https://staging.code-pushup.dev/login';
