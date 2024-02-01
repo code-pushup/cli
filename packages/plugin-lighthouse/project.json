@@ -5,7 +5,6 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "dependsOn": ["generate-constants"],
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
