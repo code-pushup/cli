@@ -29,7 +29,7 @@
         ]
       }
     },
-    "types-generation": {
+    "generate-types": {
       "command": "npx tsx --tsconfig=../tsconfig.tools.json generate-types",
       "options": {
         "cwd": "./packages/models/tools"
