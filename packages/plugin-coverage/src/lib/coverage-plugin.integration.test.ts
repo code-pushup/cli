@@ -4,11 +4,18 @@ import { CoveragePluginConfig } from './config';
 import { coveragePlugin } from './coverage-plugin';
 
 describe('coveragePluginConfigSchema', () => {
+  const LCOV_PATH = join(
+    'packages',
+    'plugin-coverage',
+    'mocks',
+    'single-record-lcov.info',
+  );
+
   it('should initialise a Code coverage plugin', () => {
     expect(
       coveragePlugin({
         coverageType: ['function'],
-        reports: [join('packages', 'plugin-coverage', 'mocks', 'lcov.info')],
+        reports: [{ resultsPath: LCOV_PATH }],
       }),
     ).toStrictEqual(
       expect.objectContaining({
@@ -23,7 +30,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(
       coveragePlugin({
         coverageType: ['function', 'branch'],
-        reports: [join('packages', 'plugin-coverage', 'mocks', 'lcov.info')],
+        reports: [{ resultsPath: LCOV_PATH }],
       }),
     ).toStrictEqual(
       expect.objectContaining({
@@ -43,7 +50,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(
       coveragePlugin({
         coverageType: ['line'],
-        reports: [join('packages', 'plugin-coverage', 'mocks', 'lcov.info')],
+        reports: [{ resultsPath: LCOV_PATH }],
         coverageToolCommand: {
           command: 'npm run-many',
           args: ['-t', 'test', '--coverage'],
@@ -66,7 +73,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(
       coveragePlugin({
         coverageType: ['line'],
-        reports: [join('packages', 'plugin-coverage', 'mocks', 'lcov.info')],
+        reports: [{ resultsPath: LCOV_PATH }],
       } satisfies CoveragePluginConfig),
     ).toStrictEqual(
       expect.objectContaining({

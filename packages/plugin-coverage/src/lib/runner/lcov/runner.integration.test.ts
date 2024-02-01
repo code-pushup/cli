@@ -11,7 +11,17 @@ describe('lcovResultsToAuditOutputs', () => {
      * Lines: 10 found, 7 covered (70% coverage) - merged into one issue with line range
      */
     const results = await lcovResultsToAuditOutputs(
-      [join('packages', 'plugin-coverage', 'mocks', 'single-record-lcov.info')],
+      [
+        {
+          resultsPath: join(
+            'packages',
+            'plugin-coverage',
+            'mocks',
+            'single-record-lcov.info',
+          ),
+          pathToProject: join('packages', 'cli'),
+        },
+      ],
       ['branch', 'function', 'line'],
     );
     expect(results).toMatchSnapshot();

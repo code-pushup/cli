@@ -40,7 +40,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Branch 1 is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/partly-covered/utils.ts",
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
                   "position": {
                     "startLine": 6,
                   },
@@ -50,7 +50,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Branch 1 is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/partly-covered/utils.ts",
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
                   "position": {
                     "startLine": 10,
                   },
@@ -60,7 +60,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Branch 0 is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/not-covered/sorting.ts",
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
                   "position": {
                     "startLine": 7,
                   },
@@ -70,7 +70,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Branch 1 is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/not-covered/sorting.ts",
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
                   "position": {
                     "startLine": 7,
                   },
@@ -92,7 +92,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Function formatReportScore is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/partly-covered/utils.ts",
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
                   "position": {
                     "startLine": 2,
                   },
@@ -102,7 +102,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Function sortReport is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "src/lib/not-covered/sorting.ts",
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
                   "position": {
                     "startLine": 1,
                   },
@@ -124,7 +124,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Lines 7-9 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/lib/partly-covered/utils.ts",
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
                   "position": {
                     "endLine": 9,
                     "startLine": 7,
@@ -135,7 +135,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Lines 1-5 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/lib/not-covered/sorting.ts",
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
                   "position": {
                     "endLine": 5,
                     "startLine": 1,

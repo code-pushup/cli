@@ -9,7 +9,7 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
           "message": "Branch 0 is not taken in any test case.",
           "severity": "error",
           "source": {
-            "file": "src/lib/utils.ts",
+            "file": "packages/cli/src/lib/utils.ts",
             "position": {
               "startLine": 6,
             },
@@ -19,7 +19,7 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
           "message": "Branch 0 is not taken in any test case.",
           "severity": "error",
           "source": {
-            "file": "src/lib/utils.ts",
+            "file": "packages/cli/src/lib/utils.ts",
             "position": {
               "startLine": 10,
             },
@@ -46,7 +46,7 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
           "message": "Lines 7-9 are not covered in any test case.",
           "severity": "warning",
           "source": {
-            "file": "src/lib/utils.ts",
+            "file": "packages/cli/src/lib/utils.ts",
             "position": {
               "endLine": 9,
               "startLine": 7,

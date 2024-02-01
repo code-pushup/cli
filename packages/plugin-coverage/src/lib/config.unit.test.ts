@@ -6,7 +6,12 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageType: ['branch', 'function'],
-        reports: ['coverage/cli/lcov.info'],
+        reports: [
+          {
+            resultsPath: 'coverage/cli/lcov.info',
+            pathToProject: 'packages/cli',
+          },
+        ],
         coverageToolCommand: {
           command: 'npx nx run-many',
           args: ['-t', 'test', '--coverage'],
@@ -20,7 +25,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageType: ['line'],
-        reports: ['coverage/cli/lcov.info'],
+        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
       } satisfies CoveragePluginConfig),
     ).not.toThrow();
   });
@@ -29,7 +34,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageType: [],
-        reports: ['coverage/cli/lcov.info'],
+        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
       } satisfies CoveragePluginConfig),
     ).toThrow('too_small');
   });
@@ -47,8 +52,8 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageType: ['line'],
-        reports: ['coverage/cli/coverage-final.json'],
-      }),
+        reports: [{ resultsPath: 'coverage/cli/coverage-final.json' }],
+      } satisfies CoveragePluginConfig),
     ).toThrow(/Invalid input: must include.+lcov/);
   });
 
@@ -68,7 +73,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageType: ['line'],
-        reports: ['coverage/cli/lcov.info'],
+        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
         perfectScoreThreshold: 110,
       } satisfies CoveragePluginConfig),
     ).toThrow('too_big');
