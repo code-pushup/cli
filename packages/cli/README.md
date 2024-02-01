@@ -40,9 +40,9 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
    </details>
 
-2. Create a `code-pushup.config.js` configuration file (`.ts` or `.mjs` extensions are also supported).
+2. Create a `code-pushup.config.ts` configuration file (`.js` or `.mjs` extensions are also supported).
 
-   ```js
+   ```ts
    export default {
      plugins: [
        // ...
@@ -56,7 +56,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    npm install --save-dev @code-pushup/eslint-plugin
    ```
 
-   ```js
+   ```ts
    import eslintPlugin from '@code-pushup/eslint-plugin';
 
    export default {
@@ -76,7 +76,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 1. Define your custom categories.
 
-   ```js
+   ```ts
    export default {
      // ...
      categories: [
@@ -107,7 +107,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 If you have access to the Code PushUp portal, provide credentials in order to upload reports.
 
-```js
+```ts
 export default {
   // ...
   upload: {
