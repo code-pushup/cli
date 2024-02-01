@@ -5,6 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "dependsOn": ["generate-constants"],
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -39,6 +40,15 @@
       "options": {
         "config": "packages/plugin-lighthouse/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
+      }
+    },
+    "generate-constants": {
+      "outputs": [
+        "{projectRoot}/packages/plugin-lighthouse/src/lib/constants.generated.ts"
+      ],
+      "command": "npx tsx --tsconfig=../tsconfig.tools.json generate-constants",
+      "options": {
+        "cwd": "./packages/plugin-lighthouse/tools"
       }
     },
     "deploy": {

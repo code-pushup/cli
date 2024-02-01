@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
+  "ignorePatterns": ["**/*", "**/tools/**", "*.generated.ts"],
   "plugins": ["@nx"],
   "overrides": [
     {
@@ -99,8 +99,9 @@
       "rules": {}
     },
     {
-      "files": ["perf/**/*.ts"],
+      "files": ["perf/**/*.ts", "*.generated.ts"],
       "rules": {
+        "max-lines": "off",
         "no-magic-numbers": "off",
         "sonarjs/no-duplicate-string": "off"
       }
