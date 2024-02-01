@@ -17,11 +17,12 @@ function addLine(line = ''): string {
 }
 
 export function generateStdoutSummary(report: ScoredReport): string {
+  const printCategories = report.categories.length > 0;
   return (
     addLine(reportToHeaderSection(report)) +
     addLine() +
     addLine(reportToDetailSection(report)) +
-    addLine(reportToOverviewSection(report)) +
+    (printCategories ? addLine(reportToOverviewSection(report)) : '') +
     addLine(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`)
   );
 }

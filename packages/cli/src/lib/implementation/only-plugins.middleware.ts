@@ -17,12 +17,13 @@ export function onlyPluginsMiddleware<
 
   validateOnlyPluginsOption(cliOptions.plugins, cliOptions);
 
-  const parsedProcessArgs: CoreConfig & GeneralCliOptions & OnlyPluginsOptions =
-    {
-      ...cliOptions,
-      plugins: filterPluginsBySlug(cliOptions.plugins, cliOptions),
-      categories: filterCategoryByPluginSlug(cliOptions.categories, cliOptions),
-    };
+  const parsedProcessArgs: Required<CoreConfig> &
+    GeneralCliOptions &
+    OnlyPluginsOptions = {
+    ...cliOptions,
+    plugins: filterPluginsBySlug(cliOptions.plugins, cliOptions),
+    categories: filterCategoryByPluginSlug(cliOptions.categories, cliOptions),
+  };
 
   return parsedProcessArgs;
 }

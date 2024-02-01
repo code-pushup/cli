@@ -23,22 +23,23 @@ vi.mock('@code-pushup/core', async () => {
           outputDir: 'rc-outputDir',
         },
       };
-
       const persistOnlyFilename = {
         ...CORE_CONFIG_MOCK,
         persist: {
           filename: 'rc-filename',
         },
       };
-
-      const noPersistFilename = CORE_CONFIG_MOCK;
+      const noPersist = CORE_CONFIG_MOCK;
+      const noCategory = { plugins: CORE_CONFIG_MOCK.plugins };
 
       return filepath.includes('all-persist-options')
         ? allPersistOptions
-        : filepath.includes('no-persist')
-        ? noPersistFilename
         : filepath.includes('persist-only-filename')
         ? persistOnlyFilename
+        : filepath.includes('no-persist')
+        ? noPersist
+        : filepath.includes('no-category')
+        ? noCategory
         : CORE_CONFIG_MOCK;
     }),
   };
@@ -136,5 +137,17 @@ describe('parsing values from CLI and middleware', () => {
       format: PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
     });
+  });
+
+  it('should set empty array for categories if not given in config file', async () => {
+    const { categories } = await yargsCli<CoreConfig>(
+      ['--config=./no-category.config.ts'],
+      {
+        options: { ...yargsCoreConfigOptionsDefinition() },
+        middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+      },
+    ).parseAsync();
+
+    expect(categories).toEqual([]);
   });
 });

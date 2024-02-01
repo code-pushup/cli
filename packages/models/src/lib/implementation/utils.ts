@@ -67,6 +67,10 @@ export function getMissingRefsForCategories(
   categories: CategoryConfig[],
   plugins: PluginConfig[] | PluginReport[],
 ) {
+  if (categories.length === 0) {
+    return false;
+  }
+
   const auditRefsFromCategory = categories.flatMap(({ refs }) =>
     refs
       .filter(({ type }) => type === 'audit')
@@ -101,6 +105,7 @@ export function getMissingRefsForCategories(
 
   return missingRefs.length > 0 ? missingRefs : false;
 }
+
 export function missingRefsForCategoriesErrorMsg(
   categories: CategoryConfig[],
   plugins: PluginConfig[] | PluginReport[],

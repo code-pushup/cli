@@ -54,4 +54,11 @@ describe('sortReport', () => {
     const sortedReport = sortReport(scoreReport(REPORT_MOCK));
     expect(sortedReport).toMatchSnapshot();
   });
+
+  it('should sort a report with no categories', () => {
+    const sortedReport = sortReport(
+      scoreReport({ ...REPORT_MOCK, categories: [] }),
+    );
+    expect(sortedReport).toEqual(expect.objectContaining({ categories: [] }));
+  });
 });

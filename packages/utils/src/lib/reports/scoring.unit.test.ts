@@ -129,4 +129,10 @@ describe('scoreReport', () => {
       }),
     );
   });
+
+  it('should accept a report with empty categories', () => {
+    expect(scoreReport({ ...REPORT_MOCK, categories: [] })).toEqual(
+      expect.objectContaining({ categories: [] }),
+    );
+  });
 });

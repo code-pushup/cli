@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { CoreConfig } from '@code-pushup/models';
+import { CategoryConfig, CoreConfig } from '@code-pushup/models';
 import {
   filterCategoryByPluginSlug,
   filterPluginsBySlug,
@@ -41,7 +41,7 @@ describe('filterCategoryByPluginSlug', () => {
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
-        ] as CoreConfig['categories'],
+        ] as CategoryConfig[],
         {},
       ),
     ).toEqual([
@@ -56,7 +56,7 @@ describe('filterCategoryByPluginSlug', () => {
         [
           { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
           { refs: [{ slug: 'plugin3' }] },
-        ] as CoreConfig['categories'],
+        ] as CategoryConfig[],
         { onlyPlugins: ['plugin1', 'plugin3'] },
       ),
     ).toEqual([{ refs: [{ slug: 'plugin3' }] }]);
@@ -70,7 +70,7 @@ describe('filterCategoryByPluginSlug', () => {
           refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }, { slug: 'plugin4' }],
         },
         { title: 'category2', refs: [{ slug: 'plugin3' }] },
-      ] as CoreConfig['categories'],
+      ] as CategoryConfig[],
       {
         onlyPlugins: ['plugin1', 'plugin3'],
         verbose: true,

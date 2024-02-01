@@ -9,8 +9,20 @@ describe('report-to-stdout', () => {
     const logOutput = generateStdoutSummary(
       sortReport(scoreReport(reportMock())),
     );
-    // logOutput.replace(/\u001B\[\d+m/g, '') removes all color codes from the output
-    // for snapshot readability
+
+    expect(logOutput).toContain('Categories');
+    // removes all color codes from the output for snapshot readability
+    // eslint-disable-next-line no-control-regex
+    expect(logOutput.replace(/\u001B\[\d+m/g, '')).toMatchSnapshot();
+  });
+
+  it('should not contain category section when categories are empty', () => {
+    const logOutput = generateStdoutSummary(
+      sortReport(scoreReport({ ...reportMock(), categories: [] })),
+    );
+
+    expect(logOutput).not.toContain('Categories');
+    // removes all color codes from the output for snapshot readability
     // eslint-disable-next-line no-control-regex
     expect(logOutput.replace(/\u001B\[\d+m/g, '')).toMatchSnapshot();
   });
