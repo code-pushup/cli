@@ -5,6 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "dependsOn": ["types-generation"],
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -30,6 +31,7 @@
       }
     },
     "generate-types": {
+      "outputs": ["{projectRoot}/packages/models/docs/core-config-types.md"],
       "command": "npx tsx --tsconfig=../tsconfig.tools.json generate-types",
       "options": {
         "cwd": "./packages/models/tools"

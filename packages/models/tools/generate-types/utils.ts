@@ -1,3 +1,5 @@
+import { mkdir, stat, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import { ZodTypeAny } from 'zod';
 import { createTypeAlias, printNode, zodToTs } from 'zod-to-ts';
 
@@ -23,13 +25,20 @@ export function schemaNameToTypeName(schemaName: string): string {
 }
 
 export function generateMdFile(typesString: string): string {
-  return;
-  `# Code PushUp config file reference
+  return [
+    '# Code PushUp config file reference',
+    'The `code-pushup.config.(ts|mjs|js)` file should conform to the following type definition:',
+    '```ts',
+    typesString,
+    '```',
+  ].join('\n');
+}
 
-  The \`code-pushup.config.(ts|mjs|js)\` file should conform to the following type definition:
-
-  \`\`\`ts
-${typesString}
-  \`\`\`
-  `;
+export async function safeWriteFile(path: string, content: string) {
+  const dir = dirname(path);
+  const stats = await stat(dir);
+  if (!stats.isDirectory()) {
+    await mkdir(dir);
+  }
+  void writeFile(path, content, { encoding: 'utf8' });
 }
