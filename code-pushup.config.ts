@@ -48,12 +48,30 @@ const config: CoreConfig = {
     coveragePlugin({
       coverageType: ['branch', 'function', 'line'],
       reports: [
-        'coverage/cli/unit-tests/lcov.info',
-        'coverage/core/unit-tests/lcov.info',
-        'coverage/models/unit-tests/lcov.info',
-        'coverage/utils/unit-tests/lcov.info',
-        'coverage/plugin-eslint/unit-tests/lcov.info',
-        'coverage/plugin-coverage/unit-tests/lcov.info',
+        {
+          resultsPath: 'coverage/cli/unit-tests/lcov.info',
+          pathToProject: 'packages/cli',
+        },
+        {
+          resultsPath: 'coverage/core/unit-tests/lcov.info',
+          pathToProject: 'packages/core',
+        },
+        {
+          resultsPath: 'coverage/models/unit-tests/lcov.info',
+          pathToProject: 'packages/models',
+        },
+        {
+          resultsPath: 'coverage/utils/unit-tests/lcov.info',
+          pathToProject: 'packages/utils',
+        },
+        {
+          resultsPath: 'coverage/plugin-eslint/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-eslint',
+        },
+        {
+          resultsPath: 'coverage/plugin-coverage/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-coverage',
+        },
       ],
     }),
     fileSizePlugin({

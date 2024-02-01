@@ -1,6 +1,6 @@
 # @code-pushup/coverage-plugin
 
-**Code PushUp plugin for tracking code coverage.**
+🧪 **Code PushUp plugin for tracking code coverage.** ☂️
 
 This plugin allows you to measure and track code coverage on your project.
 
@@ -20,8 +20,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
    Pass coverage types you wish to track (line, branch or function), paths to the code coverage results in LCOV format and optionally define your code coverage tool to be run first.
 
-   > [!IMPORTANT]
-   > Please note that when you define the tool command, you still need to define the paths to the coverage results.
+   📌 Please note that when you define the tool command, you still need to define the paths to all relevant coverage results.
 
    The configuration will look similarly to the following:
 
@@ -34,7 +33,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
        // ...
        await coveragePlugin({
          coverageType: ['branch', 'function', 'line'],
-         reports: ['coverage/cli/lcov.info'],
+         reports: [{ resultsPath: 'coverage/cli/lcov.info', pathToProject: 'packages/cli' }],
          coverageToolCommand: {
            command: 'npx',
            args: ['jest', '--coverage', '--coverageReporters=lcov'],
@@ -46,8 +45,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 4. (Optional) Reference audits which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
-   > [!TIP]
-   > Assign weights based on what influence each coverage type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
+   💡 Assign weights based on what influence each coverage type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
    ```js
    export default {
@@ -124,7 +122,7 @@ It recognises the following entities:
 The plugin accepts the following parameters:
 
 - `coverageType`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`.
-- `reports`: Array of paths to files with code coverage results. LCOV format is supported for now.
+- `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 

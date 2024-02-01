@@ -38,7 +38,12 @@ export default {
   plugins: [
     coveragePlugin({
       coverageType: ['branch', 'function', 'line'],
-      reports: [join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info')],
+      reports: [
+        {
+          resultsPath: join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info'),
+          pathToProject: join('packages', 'cli'),
+        },
+      ],
     }),
   ],
 } satisfies CoreConfig;
