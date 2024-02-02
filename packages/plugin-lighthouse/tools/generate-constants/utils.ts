@@ -84,9 +84,9 @@ export async function getExampleReport(options?: {
   await executeProcess({
     command: 'npx',
     args: getLighthouseCliArguments({
-      url: 'chrome://settings',
+      url: ['chrome://settings'],
       outputPath,
-      headless: 'new',
+      chromeFlags: { headless: 'new' },
     }),
   });
 

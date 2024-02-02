@@ -1,15 +1,13 @@
-import { objectToCliArgs, toArray } from '@code-pushup/utils';
+import type { CliFlags } from 'lighthouse';
+import { objectToCliArgs } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
-import { LighthousePluginOptions } from './lighthouse-plugin';
 
-export type ChromeFlage = { headless?: false | 'new'; userDataDir?: string };
-export type LighthouseCliOptions = Omit<
-  LighthousePluginOptions,
-  'headless' | 'onlyAudits'
-> & {
-  onlyAudits?: string[];
-  onlyCategories?: string[];
-} & ChromeFlage;
+type RefinedLighthouseOption = {
+  url: CliFlags['_'];
+  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
+};
+export type LighthouseCliOptions = RefinedLighthouseOption &
+  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
@@ -18,39 +16,33 @@ export function getLighthouseCliArguments(
     url,
     outputPath = LIGHTHOUSE_REPORT_NAME,
     onlyAudits = [],
+    output = 'json',
     verbose = false,
-    headless = false,
-    userDataDir,
+    chromeFlags = {},
   } = options;
 
   // eslint-disable-next-line functional/no-let
   let argsObj: Record<string, unknown> = {
-    _: ['lighthouse', url],
+    _: ['lighthouse', url.join(',')],
     verbose,
-    output: 'json',
+    output,
     'output-path': outputPath,
   };
 
-  if (onlyAudits.length > 0) {
+  if (onlyAudits != null && onlyAudits.length > 0) {
     argsObj = {
       ...argsObj,
-      onlyAudits: toArray(onlyAudits),
+      onlyAudits,
     };
   }
 
   // handle chrome flags
-  // eslint-disable-next-line functional/no-let
-  let chromeFlags: Array<string> = [];
-  if (headless) {
-    chromeFlags = [...chromeFlags, `--headless=${headless}`];
-  }
-  if (userDataDir) {
-    chromeFlags = [...chromeFlags, `--user-data-dir=${userDataDir}`];
-  }
-  if (chromeFlags.length > 0) {
+  if (Object.keys(chromeFlags).length > 0) {
     argsObj = {
       ...argsObj,
-      ['chrome-flags']: chromeFlags.join(' '),
+      chromeFlags: Object.entries(chromeFlags)
+        .map(([key, value]) => `--${key}=${value}`)
+        .join(' '),
     };
   }
 
