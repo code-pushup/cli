@@ -49,6 +49,7 @@
       "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
       "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/tools/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s"
     ],
     "sharedGlobals": []
