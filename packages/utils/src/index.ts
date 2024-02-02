@@ -55,6 +55,7 @@ export {
 } from './lib/reports/utils';
 export {
   CliArgsObject,
+  capitalize,
   countOccurrences,
   distinct,
   factorOf,
@@ -62,6 +63,8 @@ export {
   objectToEntries,
   objectToKeys,
   toArray,
+  toNumberPrecision,
+  toOrdinal,
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';

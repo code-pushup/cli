@@ -115,3 +115,38 @@ export function toUnixPath(
 
   return unixPath;
 }
+
+export function capitalize<T extends string>(text: T): Capitalize<T> {
+  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
+    1,
+  )}` as Capitalize<T>;
+}
+
+export function toNumberPrecision(
+  value: number,
+  decimalPlaces: number,
+): number {
+  return Number(
+    `${Math.round(
+      Number.parseFloat(`${value}e${decimalPlaces}`),
+    )}e-${decimalPlaces}`,
+  );
+}
+
+/* eslint-disable no-magic-numbers */
+export function toOrdinal(value: number): string {
+  if (value % 10 === 1 && value % 100 !== 11) {
+    return `${value}st`;
+  }
+
+  if (value % 10 === 2 && value % 100 !== 12) {
+    return `${value}nd`;
+  }
+
+  if (value % 10 === 3 && value % 100 !== 13) {
+    return `${value}rd`;
+  }
+
+  return `${value}th`;
+}
+/* eslint-enable no-magic-numbers */
