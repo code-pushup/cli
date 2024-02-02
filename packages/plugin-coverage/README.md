@@ -18,7 +18,8 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass coverage types you wish to track (line, branch or function), paths to the code coverage results in LCOV format and optionally define your code coverage tool to be run first.
+   Pass paths to the code coverage results in LCOV format and optionally define your code coverage tool to be run first.
+   All coverage types are measured by default. If you wish to focus on a subset of offered types of coverage, define them in `coverageTypes`.
 
    📌 Please note that when you define the tool command, you still need to define the paths to all relevant coverage results.
 
@@ -32,7 +33,6 @@ Measured coverage types are mapped to Code PushUp audits in the following way
      plugins: [
        // ...
        await coveragePlugin({
-         coverageType: ['branch', 'function', 'line'],
          reports: [{ resultsPath: 'coverage/cli/lcov.info', pathToProject: 'packages/cli' }],
          coverageToolCommand: {
            command: 'npx',
@@ -121,7 +121,7 @@ It recognises the following entities:
 
 The plugin accepts the following parameters:
 
-- `coverageType`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`.
+- `coverageTypes`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`. Defaults to all available types.
 - `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.

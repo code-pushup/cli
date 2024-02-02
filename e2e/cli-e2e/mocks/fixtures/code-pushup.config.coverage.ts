@@ -37,7 +37,7 @@ export default {
   ],
   plugins: [
     coveragePlugin({
-      coverageType: ['branch', 'function', 'line'],
+      coverageTypes: ['branch', 'function', 'line'],
       reports: [
         {
           resultsPath: join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info'),

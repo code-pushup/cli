@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CoveragePluginConfig } from './config';
 import { coveragePlugin } from './coverage-plugin';
 
-describe('coveragePluginConfigSchema', () => {
+describe('coveragePlugin', () => {
   const LCOV_PATH = join(
     'packages',
     'plugin-coverage',
@@ -14,7 +14,7 @@ describe('coveragePluginConfigSchema', () => {
   it('should initialise a Code coverage plugin', () => {
     expect(
       coveragePlugin({
-        coverageType: ['function'],
+        coverageTypes: ['function'],
         reports: [{ resultsPath: LCOV_PATH }],
       }),
     ).toStrictEqual(
@@ -29,7 +29,7 @@ describe('coveragePluginConfigSchema', () => {
   it('should generate audits from coverage types', () => {
     expect(
       coveragePlugin({
-        coverageType: ['function', 'branch'],
+        coverageTypes: ['function', 'branch'],
         reports: [{ resultsPath: LCOV_PATH }],
       }),
     ).toStrictEqual(
@@ -37,8 +37,8 @@ describe('coveragePluginConfigSchema', () => {
         audits: [
           {
             slug: 'function-coverage',
-            title: 'function coverage',
-            description: 'function coverage percentage on the project',
+            title: 'Function coverage',
+            description: expect.stringContaining('Function coverage'),
           },
           expect.objectContaining({ slug: 'branch-coverage' }),
         ],
@@ -49,7 +49,7 @@ describe('coveragePluginConfigSchema', () => {
   it('should assign RunnerConfig when a command is passed', () => {
     expect(
       coveragePlugin({
-        coverageType: ['line'],
+        coverageTypes: ['line'],
         reports: [{ resultsPath: LCOV_PATH }],
         coverageToolCommand: {
           command: 'npm run-many',
@@ -72,7 +72,7 @@ describe('coveragePluginConfigSchema', () => {
   it('should assign a RunnerFunction when only reports are passed', () => {
     expect(
       coveragePlugin({
-        coverageType: ['line'],
+        coverageTypes: ['line'],
         reports: [{ resultsPath: LCOV_PATH }],
       } satisfies CoveragePluginConfig),
     ).toStrictEqual(

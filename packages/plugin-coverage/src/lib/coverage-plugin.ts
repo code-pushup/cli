@@ -5,7 +5,7 @@ import type {
   RunnerConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { pluginWorkDir } from '@code-pushup/utils';
+import { capitalize, pluginWorkDir } from '@code-pushup/utils';
 import { name, version } from '../../package.json';
 import { CoveragePluginConfig, coveragePluginConfigSchema } from './config';
 import { lcovResultsToAuditOutputs } from './runner/lcov/runner';
@@ -27,55 +27,54 @@ export const RUNNER_OUTPUT_PATH = join(
  *   plugins: [
  *     // ... other plugins ...
  *     await coveragePlugin({
- *       coverageType: ['function', 'line'],
- *       reports: ['coverage/cli/lcov.info']
+ *       reports: [{ resultsPath: 'coverage/cli/lcov.info', pathToProject: 'packages/cli' }]
  *     })
  *   ]
  * }
  *
- * @returns Plugin configuration as a promise.
+ * @returns Plugin configuration.
  */
 export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
-  const { reports, perfectScoreThreshold, coverageType, coverageToolCommand } =
+  const { reports, perfectScoreThreshold, coverageTypes, coverageToolCommand } =
     coveragePluginConfigSchema.parse(config);
 
-  const audits = coverageType.map(
-    type =>
-      ({
-        slug: `${type}-coverage`,
-        title: `${type} coverage`,
-        description: `${type} coverage percentage on the project`,
-      } satisfies Audit),
+  const audits = coverageTypes.map(
+    (type): Audit => ({
+      slug: `${type}-coverage`,
+      title: `${capitalize(type)} coverage`,
+      description: `${capitalize(type)} coverage percentage on the project.`,
+    }),
   );
 
   const getAuditOutputs = async () =>
     perfectScoreThreshold
       ? applyMaxScoreAboveThreshold(
-          await lcovResultsToAuditOutputs(reports, coverageType),
+          await lcovResultsToAuditOutputs(reports, coverageTypes),
           perfectScoreThreshold,
         )
-      : await lcovResultsToAuditOutputs(reports, coverageType);
+      : await lcovResultsToAuditOutputs(reports, coverageTypes);
 
   // if coverage results are provided, only convert them to AuditOutputs
   // if not, run coverage command and then run result conversion
   const runner: RunnerConfig | RunnerFunction =
     coverageToolCommand == null
       ? getAuditOutputs
-      : ({
+      : {
           command: coverageToolCommand.command,
           args: coverageToolCommand.args,
           outputFile: RUNNER_OUTPUT_PATH,
           outputTransform: getAuditOutputs,
-        } satisfies RunnerConfig);
+        };
+
   return {
     slug: 'coverage',
     title: 'Code coverage',
     icon: 'folder-coverage-open',
-    description: 'Official Code PushUp code coverage plugin',
-    docsUrl: 'https://www.softwaretestinghelp.com/code-coverage-tutorial/',
+    description: 'Official Code PushUp code coverage plugin.',
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
     packageName: name,
     version,
     audits,
     runner,
-  } satisfies PluginConfig;
+  };
 }

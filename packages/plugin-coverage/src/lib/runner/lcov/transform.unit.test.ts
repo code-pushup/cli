@@ -236,7 +236,7 @@ describe('lcovReportToBranchStat', () => {
       expect.objectContaining({
         issues: [
           {
-            message: 'Branch 0 is not taken in any test case.',
+            message: '1st branch is not taken in any test case.',
             severity: 'error',
             source: { file: 'cli.ts', position: { startLine: 12 } },
           } satisfies Issue,
@@ -253,8 +253,8 @@ describe('lcovReportToBranchStat', () => {
           hit: 1,
           found: 2,
           details: [
-            { line: 15, taken: 0, branch: 0, block: 1 },
-            { line: 20, taken: 3, branch: 1, block: 0 },
+            { line: 15, taken: 3, branch: 0, block: 1 },
+            { line: 20, taken: 0, branch: 1, block: 0 },
           ],
         },
       }),
@@ -262,9 +262,9 @@ describe('lcovReportToBranchStat', () => {
       expect.objectContaining({
         issues: [
           {
-            message: 'Branch 0 is not taken in any test case.',
+            message: '2nd branch is not taken in any test case.',
             severity: 'error',
-            source: { file: 'cli.ts', position: { startLine: 15 } },
+            source: { file: 'cli.ts', position: { startLine: 20 } },
           } satisfies Issue,
         ],
       }),
@@ -295,9 +295,9 @@ describe('lcovCoverageToAudit', () => {
       ),
     ).toEqual({
       slug: 'function-coverage',
-      score: 0,
-      value: 0,
-      displayValue: '0 %',
+      score: 1,
+      value: 100,
+      displayValue: '100 %',
     } satisfies AuditOutput);
   });
 
