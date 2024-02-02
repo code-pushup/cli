@@ -20,7 +20,7 @@ describe('lighthousePlugin', () => {
 
 describe('generated-constants', () => {
   it.each(AUDITS.map(a => [a.slug, a]))(
-    'should parsed audit "%s" correctly',
+    'should parse audit "%s" correctly',
     (_, audit) => {
       expect(() => auditSchema.parse(audit)).not.toThrow();
       expect(audit.description).toEqual(expect.any(String));
@@ -28,7 +28,7 @@ describe('generated-constants', () => {
   );
 
   it.each(GROUPS.map(a => [a.slug, a]))(
-    'should parsed group "%s" correctly',
+    'should parse group "%s" correctly',
     (_, group) => {
       expect(() => groupSchema.parse(group)).not.toThrow();
     },
