@@ -20,7 +20,7 @@ You can configure the plugin with the following options:
 
 1. If you haven't already, install [@code-pushup/cli](../../../../packages/cli/README.md) and create a configuration file.
 
-2. Copy the [plugin source](../lighthouse) as is into your project
+2. Copy the [plugin source](./src/) as is into your project
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
