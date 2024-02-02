@@ -56,7 +56,7 @@ import { join } from 'node:path';
        {
          slug: 'performance',
          title: 'Performance',
-         refs: [...lighthouseRecommendedRefs],
+         refs: lighthouseRecommendedRefs,
        },
      ],
    };
