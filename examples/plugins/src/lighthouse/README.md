@@ -29,7 +29,7 @@ You can configure the plugin with the following options:
    ```js
    import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './lighthouse-plugin.constants';
    import lighthousePlugin from './lighthouse.plugin';
-
+import { join } from 'node:path';
    export default {
      // ...
      plugins: [
