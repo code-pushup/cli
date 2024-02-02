@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import { AuditOutputs } from '@code-pushup/models';
-import { exists, readTextFile } from '@code-pushup/utils';
+import { exists, readTextFile, toUnixNewlines } from '@code-pushup/utils';
 import { CoverageReport, CoverageType } from '../../config';
 import { parseLcov } from './parse-lcov';
 import {
@@ -26,7 +26,7 @@ export async function lcovResultsToAuditOutputs(
   const parsedReports = await Promise.all(
     reports.map(async report => {
       const reportContent = await readTextFile(report.resultsPath);
-      const parsedRecords = parseLcov(reportContent);
+      const parsedRecords = parseLcov(toUnixNewlines(reportContent));
       return parsedRecords.map<LCOVRecord>(record => ({
         ...record,
         file:
@@ -36,7 +36,6 @@ export async function lcovResultsToAuditOutputs(
       }));
     }),
   );
-
   if (parsedReports.length !== reports.length) {
     throw new Error('Some provided LCOV reports were not valid.');
   }

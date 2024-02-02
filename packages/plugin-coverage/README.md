@@ -33,7 +33,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
      plugins: [
        // ...
        await coveragePlugin({
-         reports: [{ resultsPath: 'coverage/cli/lcov.info', pathToProject: 'packages/cli' }],
+         reports: [{ resultsPath: 'coverage/lcov.info' }],
          coverageToolCommand: {
            command: 'npx',
            args: ['jest', '--coverage', '--coverageReporters=lcov'],

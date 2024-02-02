@@ -1,3 +1,5 @@
+import { platform } from 'node:os';
+
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
@@ -114,6 +116,10 @@ export function toUnixPath(
   }
 
   return unixPath;
+}
+
+export function toUnixNewlines(text: string): string {
+  return platform() === 'win32' ? text.replace(/\r\n/g, '\n') : text;
 }
 
 export function capitalize<T extends string>(text: T): Capitalize<T> {

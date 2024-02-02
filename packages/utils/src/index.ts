@@ -65,6 +65,7 @@ export {
   toArray,
   toNumberPrecision,
   toOrdinal,
+  toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
