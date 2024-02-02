@@ -1,3 +1,4 @@
+export { exists } from '@code-pushup/models';
 export {
   ProcessConfig,
   ProcessError,
@@ -56,7 +57,6 @@ export {
   CliArgsObject,
   countOccurrences,
   distinct,
-  exists,
   factorOf,
   objectToCliArgs,
   objectToEntries,

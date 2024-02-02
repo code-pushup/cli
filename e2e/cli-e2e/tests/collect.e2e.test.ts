@@ -1,4 +1,5 @@
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/testing-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
@@ -52,8 +53,8 @@ describe('CLI collect', () => {
      */
 
     const configPath = join(
-      'e2e',
-      'cli-e2e',
+      fileURLToPath(dirname(import.meta.url)),
+      '..',
       'mocks',
       'fixtures',
       'code-pushup.config.coverage.ts',
