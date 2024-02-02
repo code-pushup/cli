@@ -1,7 +1,5 @@
-import type { Config, IcuMessage } from 'lighthouse';
-import { defaultConfig } from 'lighthouse';
+import { type Config, type IcuMessage, defaultConfig } from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
-import { importEsmModule } from '@code-pushup/utils';
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
