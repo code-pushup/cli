@@ -99,9 +99,8 @@
       "rules": {}
     },
     {
-      "files": ["perf/**/*.ts", "*.generated.ts"],
+      "files": ["perf/**/*.ts"],
       "rules": {
-        "max-lines": "off",
         "no-magic-numbers": "off",
         "sonarjs/no-duplicate-string": "off"
       }
