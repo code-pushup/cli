@@ -7,7 +7,7 @@ import { NumberRange } from './types';
  * @returns coverage between 0 and 1
  */
 export function calculateCoverage(hit: number, found: number): number {
-  return found > 0 ? hit / found : 0;
+  return found > 0 ? hit / found : 1;
 }
 
 export function mergeConsecutiveNumbers(numberArr: number[]): NumberRange[] {

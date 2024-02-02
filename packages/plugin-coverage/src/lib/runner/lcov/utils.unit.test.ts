@@ -10,8 +10,8 @@ describe('calculateCoverage', () => {
     expect(calculateCoverage(0, 25)).toBe(0);
   });
 
-  it('should calculate zero coverage when no entity was covered or found', () => {
-    expect(calculateCoverage(0, 0)).toBe(0);
+  it('should assign full coverage when no entity was found', () => {
+    expect(calculateCoverage(0, 0)).toBe(1);
   });
 });
 
