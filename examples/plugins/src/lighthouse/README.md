@@ -62,7 +62,7 @@ import { join } from 'node:path';
    };
    ```
 
-5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../../../../packages/cli/README.m)).
 
 ## Audits
 
