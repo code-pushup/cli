@@ -1,14 +1,12 @@
 import { join } from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import { AuditOutputs } from '@code-pushup/models';
-import { readTextFile, toUnixPath } from '@code-pushup/utils';
-//TODO fix, why doesnt it know the exists import??
-import { exists } from '../../../../../models/src/lib/implementation/utils';
+import { exists, readTextFile } from '@code-pushup/utils';
 import { CoverageReport, CoverageType } from '../../config';
 import { parseLcov } from './parse-lcov';
 import {
   lcovCoverageToAuditOutput,
-  reportToStatFunctionMapper as recordToStatFunctionMapper,
+  recordToStatFunctionMapper,
 } from './transform';
 import { LCOVStat, LCOVStats } from './types';
 
@@ -26,20 +24,19 @@ export async function lcovResultsToAuditOutputs(
   coverageTypes: CoverageType[],
 ): Promise<AuditOutputs> {
   const parsedReports = await Promise.all(
-    reports.map(report =>
-      readTextFile(toUnixPath(report.resultsPath))
-        .then(reportContent => parseLcov(reportContent))
-        .then(records =>
-          records.map<LCOVRecord>(record => ({
-            ...record,
-            file:
-              report.pathToProject == null
-                ? record.file
-                : join(report.pathToProject, record.file),
-          })),
-        ),
-    ),
+    reports.map(async report => {
+      const reportContent = await readTextFile(report.resultsPath);
+      const parsedRecords = parseLcov(reportContent);
+      return parsedRecords.map<LCOVRecord>(record => ({
+        ...record,
+        file:
+          report.pathToProject == null
+            ? record.file
+            : join(report.pathToProject, record.file),
+      }));
+    }),
   );
+
   if (parsedReports.length !== reports.length) {
     throw new Error('Some provided LCOV reports were not valid.');
   }

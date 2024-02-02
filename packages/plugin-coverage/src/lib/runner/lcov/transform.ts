@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { LCOVRecord } from 'parse-lcov';
 import { AuditOutput, Issue } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
@@ -88,7 +87,7 @@ export function lcovReportToBranchStat(record: LCOVRecord): LCOVStat {
   };
 }
 
-export const reportToStatFunctionMapper = {
+export const recordToStatFunctionMapper = {
   branch: lcovReportToBranchStat,
   line: lcovReportToLineStat,
   function: lcovReportToFunctionStat,

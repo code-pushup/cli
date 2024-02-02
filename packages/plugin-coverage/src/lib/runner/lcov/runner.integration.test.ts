@@ -1,4 +1,5 @@
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
 import { lcovResultsToAuditOutputs } from './runner';
 
@@ -14,8 +15,11 @@ describe('lcovResultsToAuditOutputs', () => {
       [
         {
           resultsPath: join(
-            'packages',
-            'plugin-coverage',
+            fileURLToPath(dirname(import.meta.url)),
+            '..',
+            '..',
+            '..',
+            '..',
             'mocks',
             'single-record-lcov.info',
           ),
