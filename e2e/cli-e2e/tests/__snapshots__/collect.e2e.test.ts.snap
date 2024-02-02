@@ -33,11 +33,11 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
     {
       "audits": [
         {
-          "description": "branch coverage percentage on the project",
+          "description": "Branch coverage percentage on the project.",
           "details": {
             "issues": [
               {
-                "message": "Branch 1 is not taken in any test case.",
+                "message": "2nd branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
                   "file": "packages/cli/src/lib/partly-covered/utils.ts",
@@ -47,7 +47,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 },
               },
               {
-                "message": "Branch 1 is not taken in any test case.",
+                "message": "2nd branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
                   "file": "packages/cli/src/lib/partly-covered/utils.ts",
@@ -57,7 +57,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 },
               },
               {
-                "message": "Branch 0 is not taken in any test case.",
+                "message": "1st branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
                   "file": "packages/cli/src/lib/not-covered/sorting.ts",
@@ -67,7 +67,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 },
               },
               {
-                "message": "Branch 1 is not taken in any test case.",
+                "message": "2nd branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
                   "file": "packages/cli/src/lib/not-covered/sorting.ts",
@@ -79,13 +79,13 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
             ],
           },
           "displayValue": "76 %",
-          "score": 0.76,
+          "score": 0.7647,
           "slug": "branch-coverage",
-          "title": "branch coverage",
+          "title": "Branch coverage",
           "value": 76,
         },
         {
-          "description": "function coverage percentage on the project",
+          "description": "Function coverage percentage on the project.",
           "details": {
             "issues": [
               {
@@ -113,11 +113,11 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "displayValue": "60 %",
           "score": 0.6,
           "slug": "function-coverage",
-          "title": "function coverage",
+          "title": "Function coverage",
           "value": 60,
         },
         {
-          "description": "line coverage percentage on the project",
+          "description": "Line coverage percentage on the project.",
           "details": {
             "issues": [
               {
@@ -147,12 +147,12 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "displayValue": "68 %",
           "score": 0.68,
           "slug": "line-coverage",
-          "title": "line coverage",
+          "title": "Line coverage",
           "value": 68,
         },
       ],
-      "description": "Official Code PushUp code coverage plugin",
-      "docsUrl": "https://www.softwaretestinghelp.com/code-coverage-tutorial/",
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
       "icon": "folder-coverage-open",
       "packageName": "@code-pushup/coverage-plugin",
       "slug": "coverage",

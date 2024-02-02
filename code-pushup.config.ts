@@ -46,7 +46,6 @@ const config: CoreConfig = {
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
     coveragePlugin({
-      coverageType: ['branch', 'function', 'line'],
       reports: [
         {
           resultsPath: 'coverage/cli/unit-tests/lcov.info',

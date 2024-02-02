@@ -27,7 +27,12 @@ export const coveragePluginConfigSchema = z.object({
         .optional(),
     })
     .optional(),
-  coverageType: z.array(coverageTypeSchema).min(1),
+  coverageTypes: z
+    .array(coverageTypeSchema, {
+      description: 'Coverage types measured. Defaults to all available types.',
+    })
+    .min(1)
+    .default(['function', 'branch', 'line']),
   reports: z
     .array(coverageReportSchema, {
       description:
@@ -35,10 +40,12 @@ export const coveragePluginConfigSchema = z.object({
     })
     .min(1),
   perfectScoreThreshold: z
-    .number({ description: 'Score will be 100 for this coverage and above.' })
-    .min(1)
-    .max(100)
+    .number({
+      description:
+        'Score will be 1 (perfect) for this coverage and above. Score range is 0 - 1.',
+    })
+    .gt(0)
+    .max(1)
     .optional(),
 });
-
-export type CoveragePluginConfig = z.infer<typeof coveragePluginConfigSchema>;
+export type CoveragePluginConfig = z.input<typeof coveragePluginConfigSchema>;
