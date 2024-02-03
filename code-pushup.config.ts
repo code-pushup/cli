@@ -58,6 +58,29 @@ const config: CoreConfig = {
     }),
   ],
 
+  categories: [
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+    },
+    {
+      slug: 'code-style',
+      title: 'Code style',
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+    {
+      slug: 'custom-checks',
+      title: 'Custom checks',
+      refs: [
+        ...fileSizeRecommendedRefs,
+        packageJsonPerformanceGroupRef,
+        packageJsonDocumentationGroupRef,
+      ],
+    },
+  ],
 };
 
 export default config;
