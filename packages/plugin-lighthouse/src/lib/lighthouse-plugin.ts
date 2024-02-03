@@ -13,9 +13,6 @@ export type LighthousePluginOptions = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function lighthousePlugin(_: LighthousePluginOptions) {
-  // This line is here to have import and engines errors still present
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  defaultConfig;
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: 'Lighthouse',
