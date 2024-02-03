@@ -18,7 +18,7 @@ export function lighthousePlugin(_: LighthousePluginOptions) {
   defaultConfig;
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
-    title: 'ChromeDevTools Lighthouse',
+    title: 'Lighthouse',
     icon: 'lighthouse',
     audits: AUDITS,
     groups: GROUPS,
