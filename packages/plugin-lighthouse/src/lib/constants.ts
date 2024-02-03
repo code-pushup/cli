@@ -43,12 +43,20 @@ function getMetaString(value: string | IcuMessage): string {
 async function loadLighthouseAudit(
   value: Config.AuditJson,
 ): Promise<typeof LHAudit> {
+  // the passed value directly includes the implementation as JS object
+  //   shape: { implementation: typeof LHAudit; options?: {}; }
   if (typeof value === 'object' && 'implementation' in value) {
     return value.implementation;
   }
+  // the passed value is a `LH.Audit` class instance
+  //   shape: LHAudit
   if (typeof value === 'function') {
     return value;
   }
+  // the passed value is the path directly
+  //   shape: string
+  // otherwise it is a JS object maintaining a `path` property
+  //   shape: { path: string, options?: {}; }
   const path = typeof value === 'string' ? value : value.path;
   const module = (await import(`lighthouse/core/audits/${path}.js`)) as {
     default: typeof LHAudit;
