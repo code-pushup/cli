@@ -1,36 +1,57 @@
-import { type Config, type IcuMessage, defaultConfig } from 'lighthouse';
+import {
+  type Config,
+  type IcuMessage,
+  Audit as LHAudit,
+  defaultConfig,
+} from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
 
-type Meta = { title: IcuMessage; description: IcuMessage };
 const { audits, categories } = defaultConfig;
-export const GROUPS: Group[] = Object.entries(
-  categories as Record<string, Config.CategoryJson>,
-).map(([id, category]) => {
-  const meta = category as Meta & {
-    auditRefs: Config.AuditRefJson[];
-  };
-  return {
+
+export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
+  ([id, category]) => ({
     slug: id,
-    title: meta.title.formattedDefault,
-    refs: meta.auditRefs.map(ref => ({ slug: ref.id, weight: ref.weight })),
-  };
-});
+    title: getMetaString(category.title),
+    ...(category.description && {
+      description: getMetaString(category.description),
+    }),
+    refs: category.auditRefs.map(ref => ({ slug: ref.id, weight: ref.weight })),
+  }),
+);
 
 export const AUDITS: Audit[] = await Promise.all(
-  (audits as string[]).map(async path => {
-    const { default: audit } = (await import(
-      `lighthouse/core/audits/${path}.js`
-    )) as { default: unknown };
-    const { meta } = audit as { meta: Meta & { id: string } };
+  (audits ?? []).map(async value => {
+    const audit = await loadLighthouseAudit(value);
     return {
-      slug: meta.id,
-      title: meta.title.formattedDefault || (meta.title as unknown as string),
-      description:
-        meta.description.formattedDefault ||
-        (meta.description as unknown as string),
+      slug: audit.meta.id,
+      title: getMetaString(audit.meta.title),
+      description: getMetaString(audit.meta.description),
     };
   }),
 );
+
+function getMetaString(value: string | IcuMessage): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  return value.formattedDefault;
+}
+
+async function loadLighthouseAudit(
+  value: Config.AuditJson,
+): Promise<typeof LHAudit> {
+  if (typeof value === 'object' && 'implementation' in value) {
+    return value.implementation;
+  }
+  if (typeof value === 'function') {
+    return value;
+  }
+  const path = typeof value === 'string' ? value : value.path;
+  const module = (await import(`lighthouse/core/audits/${path}.js`)) as {
+    default: typeof LHAudit;
+  };
+  return module.default;
+}
