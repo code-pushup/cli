@@ -46,7 +46,7 @@ export function yargsAutorunCommandObject() {
         renderConfigureCategoriesHint(ui);
       }
 
-      if (false) {
+      if (options.upload) {
         await upload(options);
       } else {
         logger.warning('Upload skipped because configuration is not set.');
