@@ -25,7 +25,7 @@ export function yargsAutorunCommandObject() {
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const ui = cliui();
       const logger = ui.logger;
-      logger.info(chalk.bold(CLI_NAME));
+      logger.log(chalk.bold(CLI_NAME));
       logger.info(chalk.gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
 

@@ -20,7 +20,7 @@ export function yargsCollectCommandObject(): CommandModule {
       const options = args as unknown as CollectAndPersistReportsOptions;
       const ui = cliui();
       const logger = ui.logger;
-      logger.info(chalk.bold(CLI_NAME));
+      logger.log(chalk.bold(CLI_NAME));
       logger.info(chalk.gray(`Run ${command}...`));
       await collectAndPersistReports(options);
 
