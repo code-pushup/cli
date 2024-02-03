@@ -43,7 +43,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     },
     "run-print-config": {
@@ -51,7 +54,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     },
     "run-help": {
@@ -59,7 +65,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     }
   },
