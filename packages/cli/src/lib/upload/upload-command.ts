@@ -1,7 +1,9 @@
+import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { UploadOptions, upload } from '@code-pushup/core';
 import { CLI_NAME } from '../constants';
+import { renderIntegratePortalHint } from '../implementation/logging';
 
 export function yargsUploadCommandObject() {
   const command = 'upload';
@@ -9,20 +11,14 @@ export function yargsUploadCommandObject() {
     command,
     describe: 'Upload report results to the portal',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      console.info(chalk.bold(CLI_NAME));
-      console.info(chalk.gray(`Run ${command}...`));
+      const ui = cliui();
+      const logger = ui.logger;
+      logger.info(chalk.bold(CLI_NAME));
+      logger.info(chalk.gray(`Run ${command}...`));
 
       const options = args as unknown as UploadOptions;
       if (!options.upload) {
-        console.info(
-          [
-            '💡 Integrate the portal:',
-            '- npx code-pushup upload - Run upload to upload the created report to the server',
-            '  https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
-            '- Portal Integration - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-            '- Upload Command - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-          ].join('\n'),
-        );
+        renderIntegratePortalHint(ui);
         throw new Error('Upload configuration not set');
       }
       await upload(options);

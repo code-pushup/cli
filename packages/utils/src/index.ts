@@ -64,3 +64,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { link } from './lib/logging';
