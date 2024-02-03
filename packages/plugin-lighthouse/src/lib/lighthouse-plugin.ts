@@ -12,7 +12,7 @@ export type LighthousePluginOptions = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function lighthousePlugin(_: LighthousePluginOptions) {
+export function lighthousePlugin(_: LighthousePluginOptions): PluginConfig {
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: 'Lighthouse',
