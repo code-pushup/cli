@@ -3,5 +3,6 @@ export {
   performanceGroupRef,
   documentationGroupRef,
   versionControlGroupRef,
+  recommendedRefs,
 } from './scoring';
 export { create, PluginOptions } from './package-json.plugin';
