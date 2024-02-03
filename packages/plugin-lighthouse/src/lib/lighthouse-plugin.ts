@@ -1,5 +1,4 @@
-import { defaultConfig } from 'lighthouse';
-import { AuditOutputs } from '@code-pushup/models';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 
 export type LighthousePluginOptions = {
