@@ -36,8 +36,8 @@ export type PluginOptions = {
  * // code-pushup.config.ts
  * import {
  *   create as packageJsonPlugin,
- *   recommendedRef as packageJsonRecommendedRefs
- * } from 'file-size.plugin.ts';
+ *   recommendedRefs as packageJsonRecommendedRefs
+ * } from 'package-json.plugin.ts';
  * export default {
  *   persist: {
  *     outputDir: '.code-pushup',
