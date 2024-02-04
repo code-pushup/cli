@@ -1,38 +1,28 @@
-import { defaultConfig } from 'lighthouse';
-import { join } from 'node:path';
-import { PluginConfig } from '@code-pushup/models';
-import { echoRunnerConfigMock } from '@code-pushup/testing-utils';
+import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 
-type LighthousePluginConfig = {
-  config: string;
+export type LighthousePluginOptions = {
+  url: string;
+  outputPath?: string;
+  onlyAudits?: string | string[];
+  verbose?: boolean;
+  headless?: boolean;
+  userDataDir?: string;
 };
 
-const outputDir = 'tmp';
-const outputFile = join(outputDir, `out.${Date.now()}.json`);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function lighthousePlugin(_: LighthousePluginConfig): PluginConfig {
-  // This line is here to have import and engines errors still present
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  defaultConfig;
+export function lighthousePlugin(_: LighthousePluginOptions): PluginConfig {
   return {
-    slug: 'lighthouse',
-    title: 'ChromeDevTools Lighthouse',
+    slug: LIGHTHOUSE_PLUGIN_SLUG,
+    title: 'Lighthouse',
     icon: 'lighthouse',
-    audits: [
-      {
-        slug: 'largest-contentful-paint',
-        title: 'Largest Contentful Paint',
-      },
-    ],
-    runner: echoRunnerConfigMock(
-      [
-        {
-          slug: 'largest-contentful-paint',
-          value: 0,
-          score: 0,
-        },
-      ],
-      outputFile,
-    ),
+    audits: AUDITS,
+    groups: GROUPS,
+    runner: (): AuditOutputs =>
+      AUDITS.map(audit => ({
+        ...audit,
+        score: 0,
+        value: 0,
+      })),
   };
 }
