@@ -1,15 +1,18 @@
-import {beforeEach, describe, expect, vi} from 'vitest';
-import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
-import {guardAgainstDirtyRepo, safeCheckout} from '@code-pushup/utils';
-import {history, HistoryOptions} from './history';
-import {collectAndPersistReports, upload} from "@code-pushup/core";
-
+import { beforeEach, describe, expect, vi } from 'vitest';
+import { collectAndPersistReports, upload } from '@code-pushup/core';
+import {
+  MINIMAL_CONFIG_MOCK,
+  makeStatusClean,
+  makeStatusDirty,
+} from '@code-pushup/testing-utils';
+import { guardAgainstDirtyRepo, safeCheckout } from '@code-pushup/utils';
+import { HistoryOptions, history } from './history';
 
 vi.mock('@code-pushup/utils', async () => {
   const utils: object = await vi.importActual('@code-pushup/utils');
   return {
     ...utils,
-    safeCheckout: vi.fn().mockResolvedValue(void 0)
+    safeCheckout: vi.fn().mockResolvedValue(void 0),
   };
 });
 
@@ -22,10 +25,9 @@ vi.mock('./upload', () => ({
 }));
 
 describe('history', () => {
-
   beforeEach(async () => {
     await makeStatusClean();
-  })
+  });
 
   it('should return an array of reports including reports for each commit given', async () => {
     const historyOptions: HistoryOptions = {
@@ -49,19 +51,23 @@ describe('history', () => {
     };
     const reports = await history(historyOptions, ['abc']);
 
-    expect(collectAndPersistReports).toHaveBeenCalledWith(expect.objectContaining({
-      targetBranch: "main",
-      persist: expect.objectContaining({
-        filename: "abc-report",
-        format: ["json"],
-      })
-    }));
-
-    expect(upload).toHaveBeenCalledWith(expect.objectContaining({
-      persist: expect.objectContaining({
-        filename: "abc-report"
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetBranch: 'main',
+        persist: expect.objectContaining({
+          filename: 'abc-report',
+          format: ['json'],
+        }),
       }),
-    }));
+    );
+
+    expect(upload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        persist: expect.objectContaining({
+          filename: 'abc-report',
+        }),
+      }),
+    );
 
     expect(reports).toHaveLength(1);
   });
@@ -97,13 +103,15 @@ describe('history', () => {
     };
     await history(historyOptions, ['abc']);
 
-    expect(collectAndPersistReports).toHaveBeenCalledWith(expect.objectContaining({
-      targetBranch: "main",
-      persist: expect.objectContaining({
-        filename: "abc-report",
-        format: ["json"],
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetBranch: 'main',
+        persist: expect.objectContaining({
+          filename: 'abc-report',
+          format: ['json'],
+        }),
       }),
-    }));
+    );
 
     expect(upload).not.toHaveBeenCalled();
   });

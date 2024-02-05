@@ -78,6 +78,7 @@
           "projects": [
             "cli",
             "plugin-eslint",
+            "plugin-coverage",
             "examples-plugins",
             "react-todos-app"
           ],

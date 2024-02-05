@@ -1,14 +1,17 @@
-import {beforeEach, describe, expect, vi} from 'vitest';
-import {makeStatusClean, makeStatusDirty, MINIMAL_CONFIG_MOCK,} from '@code-pushup/testing-utils';
-import {guardAgainstDirtyRepo} from '@code-pushup/utils';
-import {history, HistoryOptions} from './history';
-import {collectAndPersistReports, upload} from "@code-pushup/core";
+import { beforeEach, describe, expect, vi } from 'vitest';
+import { collectAndPersistReports, upload } from '@code-pushup/core';
+import {
+  MINIMAL_CONFIG_MOCK,
+  makeStatusClean,
+  makeStatusDirty,
+} from '@code-pushup/testing-utils';
+import { guardAgainstDirtyRepo } from '@code-pushup/utils';
+import { HistoryOptions, history } from './history';
 
 describe('history', () => {
-
   beforeEach(async () => {
     await makeStatusClean();
-  })
+  });
 
   it('should return an array of reports including reports for each commit given', async () => {
     const historyOptions: HistoryOptions = {
@@ -31,7 +34,8 @@ describe('history', () => {
       progress: false,
     };
     await makeStatusDirty();
-    await expect(history(historyOptions, ['abc'])).rejects.toThrow('Repository should be clean before we you can proceed');
+    await expect(history(historyOptions, ['abc'])).rejects.toThrow(
+      'Repository should be clean before we you can proceed',
+    );
   });
-
 });

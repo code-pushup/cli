@@ -1,10 +1,10 @@
-import {vol} from 'memfs';
-import {beforeEach, describe, vi} from "vitest";
-import {makeStatusClean, makeStatusDirty} from '@code-pushup/testing-utils';
-import {objectToCliArgs} from '@code-pushup/utils';
-import {DEFAULT_CLI_CONFIGURATION} from '../../../mocks/constants';
-import {yargsCli} from '../yargs-cli';
-import {yargsHistoryCommandObject} from "./history-command";
+import { vol } from 'memfs';
+import { beforeEach, describe, vi } from 'vitest';
+import { makeStatusClean, makeStatusDirty } from '@code-pushup/testing-utils';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
+import { yargsCli } from '../yargs-cli';
+import { yargsHistoryCommandObject } from './history-command';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
@@ -87,5 +87,4 @@ describe('history-command', () => {
       ).parseAsync(),
     ).rejects.toThrow('target branch invalid');
   });
-
 });

@@ -1,6 +1,11 @@
 import { join } from 'node:path';
 import { CoreConfig } from '@code-pushup/models';
-import {getCurrentBranchOrTag, getProgressBar, getStartDuration, safeCheckout} from '@code-pushup/utils';
+import {
+  getCurrentBranchOrTag,
+  getProgressBar,
+  getStartDuration,
+  safeCheckout,
+} from '@code-pushup/utils';
 import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
@@ -12,7 +17,9 @@ export type HistoryOnlyOptions = {
   uploadReports?: boolean;
   gitRestore?: string;
 };
-export type HistoryOptions = CoreConfig & GlobalOptions & HistoryOnlyOptions;
+export type HistoryOptions = Required<CoreConfig> &
+  GlobalOptions &
+  HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -32,7 +39,7 @@ export async function history(
     };
     progressBar?.incrementInSteps(commits.length);
 
-    await safeCheckout(commit, {gitRestore: config.gitRestore});
+    await safeCheckout(commit, { gitRestore: config.gitRestore });
     progressBar?.updateTitle(`Collect ${commit}`);
 
     const currentConfig = {
@@ -65,7 +72,7 @@ export async function history(
     });
   }
 
-  await safeCheckout(initialBranch, {gitRestore: config.gitRestore});
+  await safeCheckout(initialBranch, { gitRestore: config.gitRestore });
   // eslint-disable-next-line no-console
   console.log('Current Branch:', initialBranch);
 
