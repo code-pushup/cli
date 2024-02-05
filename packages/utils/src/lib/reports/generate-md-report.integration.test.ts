@@ -4,7 +4,7 @@ import { generateMdReport } from './generate-md-report';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
-describe('report-to-md', () => {
+describe('generateMdReport', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2021-09-15'));
