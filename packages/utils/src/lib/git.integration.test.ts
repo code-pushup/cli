@@ -1,4 +1,4 @@
-import {beforeAll, beforeEach, expect} from 'vitest';
+import {afterEach, beforeAll, beforeEach, expect} from 'vitest';
 import { makeStatusClean, makeStatusDirty } from '@code-pushup/testing-utils';
 import {
   branchHasChanges,
@@ -61,7 +61,7 @@ describe('safeCheckout', () => {
     initialBranch = await getCurrentBranchOrTag();
   });
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await git.checkout(initialBranch);
     await makeStatusClean();
   });
