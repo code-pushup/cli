@@ -126,7 +126,7 @@ describe('lighthouse-create-export-execution', () => {
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
     expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs?.[0]?.slug).toBe('largest-contentful-paint');
+    expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
   });
 }, 30_000);
 
