@@ -50,10 +50,10 @@ export async function safeCheckout(
   branchOrHash: string,
   options: {
     gitRestore?: string;
-  },
+  } = {},
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options.gitRestore) {
+  if (options?.gitRestore !== undefined) {
     await git.raw(['restore', options.gitRestore]);
   }
   await guardAgainstDirtyRepo();
