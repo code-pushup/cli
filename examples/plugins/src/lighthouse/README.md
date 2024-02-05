@@ -4,7 +4,7 @@
 
 ---
 
-> [ NOTE ]
+> [!NOTE]
 > The real implementation of lighthouse lives [here](../../../../packages/plugin-lighthouse)
 
 <img alt="Code PushUp plugin for lighthouse reports" src="./docs/images/lighthouse-plugin-cover.png" height="655">
