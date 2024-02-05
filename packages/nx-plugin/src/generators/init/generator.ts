@@ -45,12 +45,12 @@ function moveToDevDependencies(tree: Tree) {
       const newPackageJson: Record<string, Record<string, string>> = {
         dependencies: {},
         devDependencies: {},
-        ...packageJson
+        ...packageJson,
       };
 
       if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
         const { [nxPluginPackageName]: version, ...dependencies } =
-          newPackageJson.dependencies as { [nxPluginPackageName]: string} ;
+          newPackageJson.dependencies as { [nxPluginPackageName]: string };
         return {
           ...newPackageJson,
           dependencies,
