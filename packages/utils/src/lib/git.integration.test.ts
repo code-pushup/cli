@@ -5,6 +5,7 @@ import {
   getCurrentBranchOrTag,
   getLatestCommit,
   guardAgainstDirtyRepo,
+  safeCheckout,
 } from './git';
 
 const gitCommitDateRegex =
@@ -50,5 +51,11 @@ describe('guardAgainstDirtyRepo', () => {
 describe('getCurrentBranchOrTag', () => {
   it('should log current branch', async () => {
     await expect(getCurrentBranchOrTag()).resolves.toEqual(expect.any(String));
+  });
+});
+describe('safeCheckout', () => {
+  it('should checkout target branch in clean state', async () => {
+    await expect(safeCheckout('main')).resolves.toBe(void 0);
+    expect(getCurrentBranchOrTag()).toBe('main');
   });
 });
