@@ -22,11 +22,11 @@ import { InitGeneratorSchema } from './schema';
 const nxPluginPackageName = '@code-pushup/nx-plugin';
 
 function checkDependenciesInstalled(host: Tree) {
-  const packageJson = readJson(host, 'package.json');
+  const packageJson = readJson<PackageJson>(host, 'package.json');
   const devDependencies: Record<string, string> = {};
   const dependencies = {};
-  packageJson.dependencies = packageJson.dependencies || {};
-  packageJson.devDependencies = packageJson.devDependencies || {};
+  packageJson.dependencies = packageJson.dependencies ?? {};
+  packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
   devDependencies[nxPluginPackageName] = cpuNxPluginVersion;
