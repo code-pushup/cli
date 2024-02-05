@@ -60,4 +60,21 @@ describe('safeCheckout', () => {
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
     await safeCheckout(initialBranch);
   });
+  it('should throw if history is dirty', async () => {
+    await makeStatusDirty();
+    await expect(safeCheckout('main')).rejects.toThrow(
+      'Repository should be clean before we you can proceed',
+    );
+    await makeStatusClean();
+  });
+
+  it('should use gitRestore option', async () => {
+    const initialBranch = await getCurrentBranchOrTag();
+    await makeStatusDirty();
+    await expect(safeCheckout('main', {gitRestore: '.'})).rejects.toThrow(
+      'Repository should be clean before we you can proceed',
+    );
+    await expect(getCurrentBranchOrTag()).resolves.toBe('main');
+    await safeCheckout(initialBranch);
+  });
 });
