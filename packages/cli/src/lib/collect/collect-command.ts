@@ -1,4 +1,3 @@
-import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
@@ -7,7 +6,11 @@ import {
 } from '@code-pushup/core';
 import { link } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import { renderConfigureCategoriesHint } from '../implementation/logging';
+import {
+  logger,
+  renderConfigureCategoriesHint,
+  ui,
+} from '../implementation/logging';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 export function yargsCollectCommandObject(): CommandModule {
@@ -18,14 +21,12 @@ export function yargsCollectCommandObject(): CommandModule {
     builder: yargsOnlyPluginsOptionsDefinition(),
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
-      const ui = cliui();
-      const logger = ui.logger;
-      logger.log(chalk.bold(CLI_NAME));
-      logger.info(chalk.gray(`Run ${command}...`));
+      logger().log(chalk.bold(CLI_NAME));
+      logger().info(chalk.gray(`Run ${command}...`));
       await collectAndPersistReports(options);
 
       if (options.categories.length === 0) {
-        renderConfigureCategoriesHint(ui);
+        renderConfigureCategoriesHint();
       }
 
       const { upload = {} } = args as unknown as Record<
@@ -33,14 +34,15 @@ export function yargsCollectCommandObject(): CommandModule {
         object | undefined
       >;
       if (Object.keys(upload).length === 0) {
-        renderUploadAutorunHint(ui);
+        renderUploadAutorunHint();
       }
     },
   } satisfies CommandModule;
 }
 
-export function renderUploadAutorunHint(ui: ReturnType<typeof cliui>): void {
-  ui.sticker()
+export function renderUploadAutorunHint(): void {
+  ui()
+    .sticker()
     .add(chalk.bold(chalk.gray('💡 Visualize your reports')))
     .add('')
     .add(

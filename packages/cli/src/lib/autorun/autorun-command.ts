@@ -1,4 +1,3 @@
-import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@code-pushup/core';
 import { CLI_NAME } from '../constants';
 import {
+  logger,
   renderConfigureCategoriesHint,
   renderIntegratePortalHint,
 } from '../implementation/logging';
@@ -23,10 +23,8 @@ export function yargsAutorunCommandObject() {
     describe: 'Shortcut for running collect followed by upload',
     builder: yargsOnlyPluginsOptionsDefinition(),
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      const ui = cliui();
-      const logger = ui.logger;
-      logger.log(chalk.bold(CLI_NAME));
-      logger.info(chalk.gray(`Run ${command}...`));
+      logger().log(chalk.bold(CLI_NAME));
+      logger().info(chalk.gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
 
       // we need to ensure `json` is part of the formats as we want to upload
@@ -43,14 +41,14 @@ export function yargsAutorunCommandObject() {
       await collectAndPersistReports(optionsWithFormat);
 
       if (options.categories.length === 0) {
-        renderConfigureCategoriesHint(ui);
+        renderConfigureCategoriesHint();
       }
 
       if (options.upload) {
         await upload(options);
       } else {
-        logger.warning('Upload skipped because configuration is not set.');
-        renderIntegratePortalHint(ui);
+        logger().warning('Upload skipped because configuration is not set.');
+        renderIntegratePortalHint();
       }
     },
   } satisfies CommandModule;
