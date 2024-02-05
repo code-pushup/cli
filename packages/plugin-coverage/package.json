@@ -1,0 +1,10 @@
+{
+  "name": "@code-pushup/coverage-plugin",
+  "version": "0.13.2",
+  "dependencies": {
+    "@code-pushup/models": "*",
+    "@code-pushup/utils": "*",
+    "parse-lcov": "^1.0.4",
+    "zod": "^3.22.4"
+  }
+}

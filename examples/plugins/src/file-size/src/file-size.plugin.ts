@@ -52,7 +52,7 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
  * // code-pushup.config.ts
  * import {
  *   create as fileSizePlugin,
- *   recommendedRef as fileSizeRecommendedRefs
+ *   recommendedRefs as fileSizeRecommendedRefs
  * } from 'file-size.plugin.ts';
  * export default {
  *   persist: {

@@ -1,4 +1,4 @@
-# @code-pushup/utils
+# @code-pushup/utils [![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/%40code-pushup%2Futils)
 
 Low-level **utilities** (helper functions, etc.) used by [Code PushUp CLI](../cli/README.md).
 

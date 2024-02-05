@@ -2,6 +2,37 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.13.2](https://github.com/code-pushup/cli/compare/v0.13.1...v0.13.2) (2024-02-05)
+
+## [0.13.1](https://github.com/code-pushup/cli/compare/v0.13.0...v0.13.1) (2024-02-05)
+
+# [0.13.0](https://github.com/code-pushup/cli/compare/v0.12.10...v0.13.0) (2024-02-05)
+
+### Bug Fixes
+
+- **plugin-coverage:** calculate coverage for no found entities as full coverage ([349c772](https://github.com/code-pushup/cli/commit/349c7724060231863236e16f7a69a54bbdcaf95e))
+- **plugin-coverage:** convert new lines on Windows for parse-lcov, update docs ([3195da2](https://github.com/code-pushup/cli/commit/3195da2c92c10148cd2d43b1a6fc6eef62d52348))
+
+### Features
+
+- **plugin-coverage:** implement lcov parsing ([800e2d0](https://github.com/code-pushup/cli/commit/800e2d07542ab6398386ee278193c1ee49560b29))
+- **plugin-coverage:** implement plugin configuration ([513c518](https://github.com/code-pushup/cli/commit/513c51809e412d14d48a859e75ee5cdc855dff3d))
+- **plugin-coverage:** set up plugin-coverage package ([8b18a0f](https://github.com/code-pushup/cli/commit/8b18a0ff05982f350240d33114f3738bac2be4ed))
+
+## [0.12.10](https://github.com/code-pushup/cli/compare/v0.12.9...v0.12.10) (2024-02-03)
+
+## [0.12.9](https://github.com/code-pushup/cli/compare/v0.12.8...v0.12.9) (2024-02-03)
+
+## [0.12.8](https://github.com/code-pushup/cli/compare/v0.12.7...v0.12.8) (2024-02-02)
+
+## [0.12.7](https://github.com/code-pushup/cli/compare/v0.12.6...v0.12.7) (2024-02-01)
+
+## [0.12.6](https://github.com/code-pushup/cli/compare/v0.12.5...v0.12.6) (2024-02-01)
+
+## [0.12.5](https://github.com/code-pushup/cli/compare/v0.12.4...v0.12.5) (2024-02-01)
+
+## [0.12.4](https://github.com/code-pushup/cli/compare/v0.12.3...v0.12.4) (2024-02-01)
+
 ## [0.12.3](https://github.com/code-pushup/cli/compare/v0.12.2...v0.12.3) (2024-02-01)
 
 ## [0.12.2](https://github.com/code-pushup/cli/compare/v0.12.1...v0.12.2) (2024-01-31)

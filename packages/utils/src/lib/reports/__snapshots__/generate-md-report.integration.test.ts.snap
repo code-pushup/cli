@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`report-to-md > should contain all sections when using the fixture report 1`] = `
+exports[`generateMdReport > should contain all sections when using the fixture report 1`] = `
 "# Code PushUp Report
 
 |🏷 Category|⭐ Score|🛡 Audits|
@@ -437,7 +437,7 @@ The following plugins were run:
 Made with ❤ by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme)"
 `;
 
-exports[`report-to-md > should not contain category sections when categories are empty 1`] = `
+exports[`generateMdReport > should not contain category sections when categories are empty 1`] = `
 "# Code PushUp Report
 
 ## 🛡️ Audits
