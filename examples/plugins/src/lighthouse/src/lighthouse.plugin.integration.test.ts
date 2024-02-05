@@ -13,16 +13,7 @@ import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
 import { audits, PLUGIN_SLUG as slug } from './index';
 import { create } from './lighthouse.plugin';
 
-describe('lighthouse-create-export', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
+describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -98,7 +89,17 @@ describe('lighthouse-create-export', () => {
       ]),
     );
   });
+});
 
+describe('lighthouse-create-export-execution', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
+      },
+      MEMFS_VOLUME,
+    );
+  });
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
@@ -125,6 +126,7 @@ describe('lighthouse-create-export', () => {
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
     expect(auditOutputs).toHaveLength(1);
+    expect(auditOutputs?.[0]?.slug).toBe('largest-contentful-paint');
   });
 }, 30_000);
 
