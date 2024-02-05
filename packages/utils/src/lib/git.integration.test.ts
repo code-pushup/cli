@@ -1,9 +1,9 @@
-import { expect } from 'vitest';
+import {beforeAll, expect} from 'vitest';
 import { makeStatusClean, makeStatusDirty } from '@code-pushup/testing-utils';
 import {
   branchHasChanges,
   getCurrentBranchOrTag,
-  getLatestCommit,
+  getLatestCommit, git,
   guardAgainstDirtyRepo,
   safeCheckout,
 } from './git';
@@ -55,7 +55,16 @@ describe('getCurrentBranchOrTag', () => {
 });
 
 describe('safeCheckout', () => {
-  const initialBranch = await getCurrentBranchOrTag();
+  let initialBranch: string = '';
+
+  beforeAll(async () => {
+    initialBranch = await getCurrentBranchOrTag();
+  });
+
+  beforeAll(async () => {
+    await git.checkout(initialBranch);
+  });
+
   it('should checkout target branch in clean state', async () => {
     await expect(safeCheckout('main')).resolves.toBe(void 0);
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
