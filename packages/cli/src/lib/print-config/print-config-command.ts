@@ -1,6 +1,6 @@
 import { CommandModule } from 'yargs';
 import { filterKebabCaseKeys } from '../implementation/global.utils';
-import { logger } from '../implementation/logging';
+import { ui } from '../implementation/logging';
 import { onlyPluginsOption } from '../implementation/only-plugins.options';
 
 export function yargsConfigCommandObject() {
@@ -17,7 +17,7 @@ export function yargsConfigCommandObject() {
       // it is important to filter out kebab case keys
       // because yargs duplicates options in camel case and kebab case
       const cleanArgs = filterKebabCaseKeys(args);
-      logger().log(JSON.stringify(cleanArgs, null, 2));
+      ui().logger.log(JSON.stringify(cleanArgs, null, 2));
     },
   } satisfies CommandModule;
 }

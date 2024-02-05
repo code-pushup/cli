@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect } from 'vitest';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { logger, ui } from '../implementation/logging';
+import { ui } from '../implementation/logging';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
 
@@ -17,7 +17,7 @@ vi.mock('@code-pushup/core', async () => {
 describe('print-config-command', () => {
   beforeAll(() => {
     // initialize it inn raw mode
-    ui({ mode: 'raw' });
+    ui().switchMode('raw');
   });
 
   it('should filter out meta arguments and kebab duplicates', async () => {
@@ -31,7 +31,7 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    const log = logger().getLogs();
+    const log = ui().logger.getLogs();
     expect(log).toEqual(
       expect.arrayContaining([
         {

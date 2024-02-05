@@ -11,7 +11,6 @@
     "yargs": "^17.7.2",
     "chalk": "^5.3.0",
     "@code-pushup/utils": "*",
-    "@poppinss/cliui": "^6.3.0",
-    "vitest": "~0.32.0"
+    "@poppinss/cliui": "^6.3.0"
   }
 }
