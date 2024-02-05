@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { verboseUtils } from './verbose-utils';
 
 describe('verbose-utils', () => {
-  it('exec should off by default', () => {
+  it('exec should be off by default', () => {
     const spy = vi.fn();
     verboseUtils().exec(spy);
     expect(spy).not.toHaveBeenCalled();
