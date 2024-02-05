@@ -22,6 +22,7 @@ describe('coveragePlugin', () => {
         slug: 'coverage',
         title: 'Code coverage',
         audits: expect.any(Array),
+        groups: expect.any(Array),
       }),
     );
   });
@@ -41,6 +42,31 @@ describe('coveragePlugin', () => {
             description: expect.stringContaining('Function coverage'),
           },
           expect.objectContaining({ slug: 'branch-coverage' }),
+        ],
+      }),
+    );
+  });
+
+  it('should provide a group from defined coverage types', () => {
+    expect(
+      coveragePlugin({
+        coverageTypes: ['branch', 'line'],
+        reports: [{ resultsPath: LCOV_PATH }],
+      }),
+    ).toStrictEqual(
+      expect.objectContaining({
+        audits: [
+          expect.objectContaining({ slug: 'branch-coverage' }),
+          expect.objectContaining({ slug: 'line-coverage' }),
+        ],
+        groups: [
+          expect.objectContaining({
+            slug: 'coverage',
+            refs: [
+              expect.objectContaining({ slug: 'branch-coverage' }),
+              expect.objectContaining({ slug: 'line-coverage' }),
+            ],
+          }),
         ],
       }),
     );

@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import type {
   Audit,
+  Group,
   PluginConfig,
   RunnerConfig,
   RunnerFunction,
@@ -46,6 +47,13 @@ export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
     }),
   );
 
+  const group: Group = {
+    slug: 'coverage',
+    title: 'Code coverage metrics',
+    description: 'Group containing all defined coverage types as audits.',
+    refs: audits.map(audit => ({ ...audit, weight: 1 })),
+  };
+
   const getAuditOutputs = async () =>
     perfectScoreThreshold
       ? applyMaxScoreAboveThreshold(
@@ -75,6 +83,7 @@ export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
     packageName: name,
     version,
     audits,
+    groups: [group],
     runner,
   };
 }
