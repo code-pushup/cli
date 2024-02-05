@@ -33,7 +33,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
     {
       "audits": [
         {
-          "description": "Branch coverage percentage on the project.",
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
           "details": {
             "issues": [
               {
@@ -85,7 +85,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "value": 76,
         },
         {
-          "description": "Function coverage percentage on the project.",
+          "description": "Measures how many functions were called in at least one test.",
           "details": {
             "issues": [
               {
@@ -117,7 +117,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "value": 60,
         },
         {
-          "description": "Line coverage percentage on the project.",
+          "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
               {

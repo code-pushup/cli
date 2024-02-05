@@ -10,7 +10,7 @@ import { capitalize, pluginWorkDir } from '@code-pushup/utils';
 import { name, version } from '../../package.json';
 import { CoveragePluginConfig, coveragePluginConfigSchema } from './config';
 import { lcovResultsToAuditOutputs } from './runner/lcov/runner';
-import { applyMaxScoreAboveThreshold } from './utils';
+import { applyMaxScoreAboveThreshold, coverageDescription } from './utils';
 
 export const RUNNER_OUTPUT_PATH = join(
   pluginWorkDir('coverage'),
@@ -43,7 +43,7 @@ export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
     (type): Audit => ({
       slug: `${type}-coverage`,
       title: `${capitalize(type)} coverage`,
-      description: `${capitalize(type)} coverage percentage on the project.`,
+      description: coverageDescription[type],
     }),
   );
 
