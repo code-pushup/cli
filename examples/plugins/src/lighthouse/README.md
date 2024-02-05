@@ -46,7 +46,7 @@ You can configure the plugin with the following options:
    };
    ```
 
-4. (Optional) Setup categories (use `npx code-pushup print-config` to list audits and groups).
+4. (Optional) Set up categories (use `npx code-pushup print-config` to list audits and groups).
 
    ```js
    import fileSizePlugin, { recommendedRefs as lighthouseRecommendedRefs } from './lighthouse.plugin';
