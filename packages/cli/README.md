@@ -78,7 +78,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
 
 5. View report file(s) in output directory (specified by `persist.outputDir` configuration).  
-   This folder should be ignored. 
+   This folder should be ignored.
 
 ### Set up categories (optional)
 
