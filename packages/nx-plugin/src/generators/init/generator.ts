@@ -10,7 +10,6 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
-import { PackageJson } from 'type-fest';
 import {
   cpuCliVersion,
   cpuModelVersion,
@@ -20,9 +19,9 @@ import {
 import { InitGeneratorSchema } from './schema';
 
 const nxPluginPackageName = '@code-pushup/nx-plugin';
-
+type PkgJson = Record<string, Record<string, string>>;
 function checkDependenciesInstalled(host: Tree) {
-  const packageJson = readJson<PackageJson>(host, 'package.json');
+  const packageJson = readJson<PkgJson>(host, 'package.json');
   const devDependencies: Record<string, string> = {};
   const dependencies = {};
   packageJson.dependencies = packageJson.dependencies ?? {};
@@ -38,31 +37,27 @@ function checkDependenciesInstalled(host: Tree) {
 }
 
 function moveToDevDependencies(tree: Tree) {
-  updateJson(
-    tree,
-    'package.json',
-    (packageJson: Record<string, Record<string, string>>) => {
-      const newPackageJson: Record<string, Record<string, string>> = {
-        dependencies: {},
-        devDependencies: {},
-        ...packageJson,
-      };
+  updateJson(tree, 'package.json', (packageJson: PkgJson) => {
+    const newPackageJson: PkgJson = {
+      dependencies: {},
+      devDependencies: {},
+      ...packageJson,
+    };
 
-      if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
-        const { [nxPluginPackageName]: version, ...dependencies } =
-          newPackageJson.dependencies as { [nxPluginPackageName]: string };
-        return {
-          ...newPackageJson,
-          dependencies,
-          devDependencies: {
-            ...newPackageJson.devDependencies,
-            [nxPluginPackageName as string]: version,
-          },
-        };
-      }
-      return newPackageJson;
-    },
-  );
+    if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
+      const { [nxPluginPackageName]: version, ...dependencies } =
+        newPackageJson.dependencies as { [nxPluginPackageName]: string };
+      return {
+        ...newPackageJson,
+        dependencies,
+        devDependencies: {
+          ...newPackageJson.devDependencies,
+          [nxPluginPackageName as string]: version,
+        },
+      };
+    }
+    return newPackageJson;
+  });
 }
 
 function updateNxJsonConfig(tree: Tree) {
