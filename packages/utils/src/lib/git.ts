@@ -17,3 +17,40 @@ export async function getLatestCommit() {
   });
   return log.latest;
 }
+
+export async function branchHasChanges(): Promise<boolean> {
+  return await git.status(['-s']).then(r => r.files.length > 0);
+}
+
+export async function guardAgainstDirtyRepo(): Promise<void> {
+  const isDirty = await branchHasChanges();
+  if (isDirty) {
+    throw new Error(`
+        Repository should be clean before we you can proceed.
+        Commit your local changes or stash them.
+      `);
+  }
+}
+
+export async function getCurrentBranchOrTag(): Promise<string> {
+  return (
+    (await git.branch().then(r => r.current)) ||
+    // @TODO replace with simple git
+    (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
+  );
+}
+
+export async function safeCheckout(
+  branchOrHash: string,
+  options: {
+    gitRestore?: string;
+  } = {},
+): Promise<void> {
+  // git requires a clean history to check out a branch
+  if (options?.gitRestore !== undefined) {
+    await git.clean(['f']);
+    console.info(`branch restored with:  ${options.gitRestore}`);
+  }
+  await guardAgainstDirtyRepo();
+  await git.checkout(branchOrHash);
+}
