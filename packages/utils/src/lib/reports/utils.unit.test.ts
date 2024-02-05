@@ -21,6 +21,8 @@ import {
   formatReportScore,
   getPluginNameFromSlug,
   loadReport,
+  portalCommitDashboardLink,
+  portalCommitLink,
 } from './utils';
 
 describe('calcDuration', () => {
@@ -298,5 +300,52 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
     ]);
+  });
+});
+
+describe('portalCommitLink', () => {
+  it('should return link to portal if upload config is given', () => {
+    expect(
+      portalCommitLink(
+        {
+          server: 'https://code-pushup.com/graphql',
+          organization: 'code-pushup',
+          project: 'cli',
+        },
+        '123',
+      ),
+    ).toBe('https://code-pushup.com/portal/code-pushup/cli/commit/123');
+  });
+  it('should take baseUrl if given', () => {
+    expect(
+      portalCommitLink(
+        {
+          baseUrl: 'https://code-pushup.com/from-base-url',
+          server: 'https://code-pushup.com/graphql',
+          organization: 'code-pushup',
+          project: 'cli',
+        },
+        '123',
+      ),
+    ).toBe(
+      'https://code-pushup.com/from-base-url/portal/code-pushup/cli/commit/123',
+    );
+  });
+});
+
+describe('portalCommitDashboardLink', () => {
+  it('should return link to portal dashboard if upload config is given', () => {
+    expect(
+      portalCommitDashboardLink(
+        {
+          server: 'https://code-pushup.com/graphql',
+          organization: 'code-pushup',
+          project: 'cli',
+        },
+        '123',
+      ),
+    ).toBe(
+      'https://code-pushup.com/portal/code-pushup/cli/commit/123/dashboard',
+    );
   });
 });

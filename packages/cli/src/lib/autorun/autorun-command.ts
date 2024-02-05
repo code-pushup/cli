@@ -6,11 +6,14 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
+import { getLatestCommit } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
+  collectSuccessfulLog,
   renderConfigureCategoriesHint,
   renderIntegratePortalHint,
   ui,
+  uploadSuccessfulLog,
 } from '../implementation/logging';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
@@ -39,6 +42,7 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
+      collectSuccessfulLog();
 
       if (options.categories.length === 0) {
         renderConfigureCategoriesHint();
@@ -46,6 +50,11 @@ export function yargsAutorunCommandObject() {
 
       if (options.upload) {
         await upload(options);
+        const commitData = await getLatestCommit();
+        if (!commitData) {
+          throw new Error('no commit data available');
+        }
+        uploadSuccessfulLog(options.upload, commitData.hash);
       } else {
         ui().logger.warning('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();

@@ -1,6 +1,7 @@
 import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
-import { link } from '@code-pushup/utils';
+import { UploadConfig } from '@code-pushup/models';
+import { link, portalCommitDashboardLink } from '@code-pushup/utils';
 
 export type CliUi = ReturnType<typeof cliui>;
 
@@ -21,6 +22,16 @@ export function renderConfigureCategoriesHint(): void {
       )}`,
     ),
   );
+}
+export function uploadSuccessfulLog(
+  options: UploadConfig,
+  commit: string,
+): void {
+  ui().logger.success('Upload successful!');
+  ui().logger.success(link(portalCommitDashboardLink(options, commit)));
+}
+export function collectSuccessfulLog(): void {
+  ui().logger.success('Collecting report successful!');
 }
 
 export function renderIntegratePortalHint(): void {

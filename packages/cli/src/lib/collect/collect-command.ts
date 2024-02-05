@@ -6,7 +6,11 @@ import {
 } from '@code-pushup/core';
 import { link } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import { renderConfigureCategoriesHint, ui } from '../implementation/logging';
+import {
+  collectSuccessfulLog,
+  renderConfigureCategoriesHint,
+  ui,
+} from '../implementation/logging';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 export function yargsCollectCommandObject(): CommandModule {
@@ -19,7 +23,9 @@ export function yargsCollectCommandObject(): CommandModule {
       const options = args as unknown as CollectAndPersistReportsOptions;
       ui().logger.log(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}...`));
+
       await collectAndPersistReports(options);
+      collectSuccessfulLog();
 
       if (options.categories.length === 0) {
         renderConfigureCategoriesHint();

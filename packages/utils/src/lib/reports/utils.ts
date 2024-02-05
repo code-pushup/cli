@@ -7,6 +7,7 @@ import {
   Issue,
   PersistConfig,
   Report,
+  UploadConfig,
   reportSchema,
 } from '@code-pushup/models';
 import {
@@ -303,4 +304,31 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   return 0;
+}
+
+export function portalCommitLink(
+  config: Pick<UploadConfig, 'project' | 'organization' | 'server'> & {
+    baseUrl?: string;
+  },
+  commit: string,
+): string {
+  // https://quality-metrics-staging.web.app////commit/2d9905b813824d5f7d56f4ec0143d0d9c15f6f1c
+  const { organization, project, server } = config;
+  // https://portal-api-r6nh2xm7mq-ez.a.run.app/graphql
+  const urlObj = new URL(config.baseUrl || server);
+  if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+    throw new Error(
+      `Protocol ${urlObj.protocol} not supported. Supported protocols are http and https.`,
+    );
+  }
+  // Extract the base URL
+  const baseUrl = config.baseUrl || `${urlObj.protocol}//${urlObj.hostname}`;
+  return `${baseUrl}/portal/${organization}/${project}/commit/${commit}`;
+}
+
+export function portalCommitDashboardLink(
+  config: Pick<UploadConfig, 'project' | 'organization' | 'server'>,
+  commit: string,
+): string {
+  return `${portalCommitLink(config, commit)}/dashboard`;
 }
