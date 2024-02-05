@@ -90,6 +90,8 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
           npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin
+      - name: Collect unit test coverage (temporary due to coverage plugin)
+        run: npx nx run-many -t unit-test --coverage
       - name: Collect and upload Code PushUp report
         run: npx nx run-autorun
         env:
