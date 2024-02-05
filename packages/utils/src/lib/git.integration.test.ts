@@ -75,6 +75,6 @@ describe('safeCheckout', () => {
       'Repository should be clean before we you can proceed',
     );
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
-    await safeCheckout(initialBranch);
+   
   });
 });
