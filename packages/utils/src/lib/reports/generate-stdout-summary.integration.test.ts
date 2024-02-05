@@ -4,7 +4,7 @@ import { generateStdoutSummary } from './generate-stdout-summary';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
-describe('report-to-stdout', () => {
+describe('generateStdoutSummary', () => {
   it('should contain all sections when using the fixture report', () => {
     const logOutput = generateStdoutSummary(
       sortReport(scoreReport(reportMock())),

@@ -54,7 +54,7 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
    export default config;
    ```
 
-3. Add plugins as per your project needs (e.g. [@code-pushup/eslint-plugin](../plugin-eslint/README.md)).
+3. Add plugins as per your project needs (e.g. [@code-pushup/eslint-plugin](../plugin-eslint/README.md) or [@code-pushup/coverage-plugin](../plugin-coverage/README.md)).
 
    ```sh
    npm install --save-dev @code-pushup/eslint-plugin
@@ -156,6 +156,7 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 - 📏 [File Size](../../examples/plugins/src/file-size)
 - 📦 [Package Json](../../examples/plugins/src/package-json)
+- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse)
 
 ## CLI commands and options
 

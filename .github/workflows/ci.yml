@@ -179,6 +179,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Collect unit test coverage (temporary due to coverage plugin)
+        run: npx nx run-many -t unit-test --coverage
       - name: Collect Code PushUp report
         run: npx nx run-collect
       - name: Upload Code PushUp report to portal

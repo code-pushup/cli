@@ -4,6 +4,7 @@
 🧩 nx-plugin: packages/nx-plugin/**
 🧩 eslint-plugin: packages/plugin-eslint/**
 🧩 lighthouse-plugin: packages/plugin-lighthouse/**
+🧩 coverage-plugin: packages/plugin-coverage/**
 🧩 utils: packages/utils/**
 
 🔬 testing:

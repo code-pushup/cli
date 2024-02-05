@@ -25,6 +25,7 @@
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
+      "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
       "@code-pushup/testing-utils": ["testing-utils/src/index.ts"],
