@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.14.0](https://github.com/code-pushup/cli/compare/v0.13.2...v0.14.0) (2024-02-05)
+
+### Features
+
+- **examples-plugins:** add lighthouse to examples ([#417](https://github.com/code-pushup/cli/issues/417)) ([8fcc465](https://github.com/code-pushup/cli/commit/8fcc46551314358486969a2687373d6735274341))
+
 ## [0.13.2](https://github.com/code-pushup/cli/compare/v0.13.1...v0.13.2) (2024-02-05)
 
 ## [0.13.1](https://github.com/code-pushup/cli/compare/v0.13.0...v0.13.1) (2024-02-05)
