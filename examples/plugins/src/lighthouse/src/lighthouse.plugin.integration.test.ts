@@ -37,7 +37,7 @@ describe('lighthouse-create-export', () => {
     });
   });
 
-  it('should parse options for defaults correctly', async () => {
+  it('should parse options for defaults correctly in runner args', async () => {
     const pluginConfig = await create({
       url: 'https://code-pushup.com',
     });
@@ -58,7 +58,7 @@ describe('lighthouse-create-export', () => {
     ]);
   });
 
-  it('should parse options for headless by default to "new"', async () => {
+  it('should parse options for headless by default to "new" in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
     });
@@ -67,7 +67,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if true is given', async () => {
+  it('should parse options for headless to new if true is given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: true,
@@ -77,7 +77,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if false is given', async () => {
+  it('should parse options for headless to new if false is given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: false,
@@ -87,7 +87,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for userDataDir correctly', async () => {
+  it('should override userDataDir option when given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       userDataDir: 'test',
