@@ -38,32 +38,27 @@ function checkDependenciesInstalled(host: Tree) {
 }
 
 function moveToDevDependencies(tree: Tree) {
-  type PackageJsonWithDeps = Required<
-    Pick<PackageJson, 'dependencies' | 'devDependencies'>
-  > &
-    Omit<PackageJson, 'dependencies' | 'devDependencies'>;
   updateJson(
     tree,
     'package.json',
-    (packageJson: PackageJson): PackageJsonWithDeps => {
-      const newPackageJson: PackageJsonWithDeps = {
+    (packageJson: Record<string, Record<string, string>>) => {
+      const newPackageJson: Record<string, Record<string, string>> = {
         dependencies: {},
         devDependencies: {},
-        ...packageJson,
-      } satisfies PackageJsonWithDeps;
+        ...packageJson
+      };
 
-      if (newPackageJson.dependencies[nxPluginPackageName] !== undefined) {
+      if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
         const { [nxPluginPackageName]: version, ...dependencies } =
-          newPackageJson.dependencies;
-        const pkgJson: PackageJsonWithDeps = {
+          newPackageJson.dependencies as { [nxPluginPackageName]: string} ;
+        return {
           ...newPackageJson,
           dependencies,
           devDependencies: {
             ...newPackageJson.devDependencies,
-            [nxPluginPackageName]: version,
+            [nxPluginPackageName as string]: version,
           },
-        } satisfies PackageJsonWithDeps;
-        return pkgJson;
+        };
       }
       return newPackageJson;
     },
