@@ -55,7 +55,9 @@ describe('getCurrentBranchOrTag', () => {
 });
 describe('safeCheckout', () => {
   it('should checkout target branch in clean state', async () => {
+    const initialBranch = await getCurrentBranchOrTag();
     await expect(safeCheckout('main')).resolves.toBe(void 0);
-    expect(getCurrentBranchOrTag()).toBe('main');
+    await expect(getCurrentBranchOrTag()).resolves.toBe('main');
+    await safeCheckout(initialBranch);
   });
 });
