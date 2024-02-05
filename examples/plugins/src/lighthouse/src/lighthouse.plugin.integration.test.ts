@@ -131,15 +131,18 @@ describe('lighthouse-create-export-execution', () => {
 }, 30_000);
 
 describe('lighthouse-audits-export', () => {
-  it.each(audits)('should be a valid audit meta info', audit => {
-    expect(() => auditSchema.parse(audit)).not.toThrow();
-  });
+  it.each(audits.map(a => [a.slug, a]))(
+    'should have a valid audit meta info for %s',
+    (_, audit) => {
+      expect(() => auditSchema.parse(audit)).not.toThrow();
+    },
+  );
 });
 
 describe('lighthouse-corePerfGroupRefs-export', () => {
-  it.each(corePerfGroupRefs)(
-    'should be a valid category reference',
-    categoryRef => {
+  it.each(corePerfGroupRefs.map(g => [g.slug, g]))(
+    'should be a valid category reference for %s',
+    (_, categoryRef) => {
       expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
     },
   );
