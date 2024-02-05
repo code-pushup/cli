@@ -43,7 +43,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
    };
    ```
 
-4. (Optional) Reference audits which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+4. (Optional) Reference individual audits or the provided plugin group which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    💡 Assign weights based on what influence each coverage type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
@@ -56,21 +56,9 @@ Measured coverage types are mapped to Code PushUp audits in the following way
          title: 'Code coverage',
          refs: [
            {
-             type: 'audit',
+             type: 'group',
              plugin: 'coverage',
-             slug: 'function-coverage',
-             weight: 2,
-           },
-           {
-             type: 'audit',
-             plugin: 'coverage',
-             slug: 'branch-coverage',
-             weight: 1,
-           },
-           {
-             type: 'audit',
-             plugin: 'coverage',
-             slug: 'line-coverage',
+             slug: 'coverage',
              weight: 1,
            },
            // ...
@@ -125,6 +113,58 @@ The plugin accepts the following parameters:
 - `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
+
+### Audits and group
+
+This plugin provides a group for convenient declaration in your config. When defined this way, all measured coverage type audits have the same weight.
+
+```ts
+     // ...
+     categories: [
+       {
+         slug: 'code-coverage',
+         title: 'Code coverage',
+         refs: [
+           {
+             type: 'group',
+             plugin: 'coverage',
+             slug: 'coverage',
+             weight: 1,
+           },
+           // ...
+         ],
+       },
+       // ...
+     ],
+```
+
+Each coverage type still has its own audit. So when you want to include a subset of coverage types or assign different weights to them, you can do so in the following way:
+
+```ts
+     // ...
+     categories: [
+       {
+         slug: 'code-coverage',
+         title: 'Code coverage',
+         refs: [
+           {
+             type: 'audit',
+             plugin: 'coverage',
+             slug: 'function-coverage',
+             weight: 2,
+           },
+           {
+             type: 'audit',
+             plugin: 'coverage',
+             slug: 'branch-coverage',
+             weight: 1,
+           },
+           // ...
+         ],
+       },
+       // ...
+     ],
+```
 
 ### Audit output
 

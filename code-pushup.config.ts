@@ -114,21 +114,9 @@ const config: CoreConfig = {
       title: 'Code coverage',
       refs: [
         {
-          type: 'audit',
+          type: 'group',
           plugin: 'coverage',
-          slug: 'function-coverage',
-          weight: 1,
-        },
-        {
-          type: 'audit',
-          plugin: 'coverage',
-          slug: 'branch-coverage',
-          weight: 1,
-        },
-        {
-          type: 'audit',
-          plugin: 'coverage',
-          slug: 'line-coverage',
+          slug: 'coverage',
           weight: 1,
         },
       ],

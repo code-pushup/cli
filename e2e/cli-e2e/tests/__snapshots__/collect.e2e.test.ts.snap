@@ -153,6 +153,27 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
       ],
       "description": "Official Code PushUp code coverage plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "branch-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "function-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
       "icon": "folder-coverage-open",
       "packageName": "@code-pushup/coverage-plugin",
       "slug": "coverage",
