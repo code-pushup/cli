@@ -75,6 +75,12 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 Code coverage is a metric that indicates what percentage of source code is executed by unit tests. It can give insights into test effectiveness and uncover parts of source code that would otherwise go untested.
 
+- Statement coverage: Measures how many statements are executed in at least one test.
+- Line coverage: Measures how many lines are executed in at least one test. Unlike statement coverage, any partially executed line counts towards line coverage.
+- Condition coverage: Measures all condition values (`true`/`false`) evaluated for a conditional statement in at least one test.
+- Branch coverage: Measures how many branches are executed as a result of conditional statements (`if`/`else` and other) in at least one test. In case of short-circuit logic, only executed paths are counted in. Unlike condition coverage, it does not ensure all combinations of condition values are tested.
+- Function coverage: Measures how many functions are called in at least one test. Argument values, usage of optional arguments or default values is irrelevant for this metric.
+
 > [!IMPORTANT]
 > Please note that code coverage is not the same as test coverage. Test coverage measures the amount of acceptance criteria covered by tests and is hard to formally verify. This means that code coverage cannot guarantee that the designed software caters to the business requirements.
 
