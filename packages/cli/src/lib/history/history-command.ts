@@ -22,13 +22,16 @@ export function yargsHistoryCommandObject() {
       // eslint-disable-next-line no-console
       console.log(chalk.gray(`Run ${command}`));
 
+
       const {
         targetBranch = await getCurrentBranchOrTag(),
         gitRestore,
         numSteps = 1,
         ...config
       } = args as unknown as HistoryCliOptions & HistoryOptions;
-
+      console.log(JSON.stringify({ targetBranch,
+        gitRestore,
+        numSteps}));
       // determine history to walk
       await safeCheckout(targetBranch, { gitRestore });
       const log = await git.log();
