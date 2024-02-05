@@ -1,8 +1,12 @@
 import 'dotenv/config';
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthouseCorePerfGroupRefs,
+  lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
@@ -84,6 +88,12 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
+
+    await lighthousePlugin({
+      url: 'https://staging.code-pushup.dev/login',
+      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      headless: true,
+    }),
   ],
 
   categories: [
@@ -130,6 +140,7 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],
