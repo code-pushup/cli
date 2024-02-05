@@ -82,7 +82,7 @@ describe('safeCheckout', () => {
   it('should use gitRestore option', async () => {
     await makeStatusDirty();
     await expect(
-      safeCheckout('main', { gitRestore: '.' }),
+      safeCheckout('main', { clean: true }),
     ).resolves.toBeUndefined();
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
   });
