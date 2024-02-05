@@ -10,6 +10,7 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
+import { PackageJson } from 'type-fest';
 import {
   cpuCliVersion,
   cpuModelVersion,
@@ -17,6 +18,8 @@ import {
   cpuUtilsVersion,
 } from '../../utils/versions';
 import { InitGeneratorSchema } from './schema';
+
+const nxPluginPackageName = '@code-pushup/nx-plugin';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson(host, 'package.json');
@@ -26,7 +29,7 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies || {};
 
   // base deps
-  devDependencies['@code-pushup/nx-plugin'] = cpuNxPluginVersion;
+  devDependencies[nxPluginPackageName] = cpuNxPluginVersion;
   devDependencies['@code-pushup/models'] = cpuModelVersion;
   devDependencies['@code-pushup/utils'] = cpuUtilsVersion;
   devDependencies['@code-pushup/cli'] = cpuCliVersion;
@@ -35,18 +38,36 @@ function checkDependenciesInstalled(host: Tree) {
 }
 
 function moveToDevDependencies(tree: Tree) {
-  updateJson(tree, 'package.json', packageJson => {
-    packageJson.dependencies = packageJson.dependencies || {};
-    packageJson.devDependencies = packageJson.devDependencies || {};
+  type PackageJsonWithDeps = Required<
+    Pick<PackageJson, 'dependencies' | 'devDependencies'>
+  > &
+    Omit<PackageJson, 'dependencies' | 'devDependencies'>;
+  updateJson(
+    tree,
+    'package.json',
+    (packageJson: PackageJson): PackageJsonWithDeps => {
+      const newPackageJson: PackageJsonWithDeps = {
+        dependencies: {},
+        devDependencies: {},
+        ...packageJson,
+      } satisfies PackageJsonWithDeps;
 
-    if (packageJson.dependencies['@code-pushup/nx-plugin']) {
-      packageJson.devDependencies['@code-pushup/nx-plugin'] =
-        packageJson.dependencies['@code-pushup/nx-plugin'];
-      delete packageJson.dependencies['@code-pushup/nx-plugin'];
-    }
-
-    return packageJson;
-  });
+      if (newPackageJson.dependencies[nxPluginPackageName] !== undefined) {
+        const { [nxPluginPackageName]: version, ...dependencies } =
+          newPackageJson.dependencies;
+        const pkgJson: PackageJsonWithDeps = {
+          ...newPackageJson,
+          dependencies,
+          devDependencies: {
+            ...newPackageJson.devDependencies,
+            [nxPluginPackageName]: version,
+          },
+        } satisfies PackageJsonWithDeps;
+        return pkgJson;
+      }
+      return newPackageJson;
+    },
+  );
 }
 
 function updateNxJsonConfig(tree: Tree) {
@@ -63,7 +84,7 @@ function updateNxJsonConfig(tree: Tree) {
   updateNxJson(tree, nxJson);
 }
 
-export async function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
+export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
   if (!schema.skipPackageJson) {
     moveToDevDependencies(tree);
   }
