@@ -23,7 +23,7 @@ describe('verbose-utils', () => {
     expect(console.info).not.toHaveBeenCalled();
   });
 
-  it('log  should off by default', () => {
+  it('logs should be off by default', () => {
     verboseUtils(false).log('42');
     expect(console.info).not.toHaveBeenCalled();
   });
