@@ -1,4 +1,4 @@
-function getLogVerbose(verbose: boolean) {
+function getLogVerbose(verbose = false) {
   return (...args: unknown[]) => {
     if (verbose) {
       console.info(...args);
@@ -6,7 +6,7 @@ function getLogVerbose(verbose: boolean) {
   };
 }
 
-function getExecVerbose(verbose: boolean) {
+function getExecVerbose(verbose = false) {
   return (fn: () => unknown) => {
     if (verbose) {
       fn();
@@ -14,7 +14,7 @@ function getExecVerbose(verbose: boolean) {
   };
 }
 
-export const verboseUtils = (verbose: boolean) => ({
+export const verboseUtils = (verbose = false) => ({
   log: getLogVerbose(verbose),
   exec: getExecVerbose(verbose),
 });

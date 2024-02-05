@@ -14,6 +14,7 @@
         "project": ["examples/plugins/tsconfig.*?.json"]
       },
       "rules": {
+        "no-magic-numbers": "off",
         "max-lines": "off"
       }
     },

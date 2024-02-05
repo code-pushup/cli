@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  capitalize,
   countOccurrences,
   deepClone,
   distinct,
@@ -8,6 +9,8 @@ import {
   objectToEntries,
   objectToKeys,
   toArray,
+  toNumberPrecision,
+  toOrdinal,
   toUnixPath,
 } from './transform';
 
@@ -185,5 +188,51 @@ describe('toUnixPath', () => {
         toRelative: true,
       }),
     ).toBe('windows/path/config.ts');
+  });
+});
+
+describe('capitalize', () => {
+  it('should transform the first string letter to upper case', () => {
+    expect(capitalize('code PushUp')).toBe('Code PushUp');
+  });
+
+  it('should leave the first string letter in upper case', () => {
+    expect(capitalize('Code PushUp')).toBe('Code PushUp');
+  });
+
+  it('should accept empty string', () => {
+    expect(capitalize('')).toBe('');
+  });
+});
+
+describe('toNumberPrecision', () => {
+  it.each([
+    [12.1, 0, 12],
+    [12.3, 1, 12.3],
+    [12.35, 1, 12.4],
+    [0.001, 2, 0],
+  ])(
+    'should round %d to %d decimal places as %d',
+    (value, decimalPlaces, roundedValue) => {
+      expect(toNumberPrecision(value, decimalPlaces)).toBe(roundedValue);
+    },
+  );
+});
+
+describe('toOrdinal', () => {
+  it.each([
+    [1, '1st'],
+    [2, '2nd'],
+    [3, '3rd'],
+    [5, '5th'],
+    [10, '10th'],
+    [11, '11th'],
+    [12, '12th'],
+    [13, '13th'],
+    [171, '171st'],
+    [172, '172nd'],
+    [173, '173rd'],
+  ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
+    expect(toOrdinal(value)).toBe(ordinalValue);
   });
 });

@@ -43,7 +43,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     },
     "run-upload": {
@@ -67,7 +70,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     },
     "run-help": {
@@ -75,7 +81,10 @@
       "dependsOn": [
         "build",
         "^build",
-        { "projects": ["cli"], "target": "build" }
+        {
+          "projects": ["cli"],
+          "target": "build"
+        }
       ]
     }
   },

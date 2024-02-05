@@ -1,12 +1,17 @@
 import 'dotenv/config';
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  lighthouseCorePerfGroupRefs,
+  lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
+import coveragePlugin from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
@@ -44,7 +49,34 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-
+    coveragePlugin({
+      reports: [
+        {
+          resultsPath: 'coverage/cli/unit-tests/lcov.info',
+          pathToProject: 'packages/cli',
+        },
+        {
+          resultsPath: 'coverage/core/unit-tests/lcov.info',
+          pathToProject: 'packages/core',
+        },
+        {
+          resultsPath: 'coverage/models/unit-tests/lcov.info',
+          pathToProject: 'packages/models',
+        },
+        {
+          resultsPath: 'coverage/utils/unit-tests/lcov.info',
+          pathToProject: 'packages/utils',
+        },
+        {
+          resultsPath: 'coverage/plugin-eslint/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-eslint',
+        },
+        {
+          resultsPath: 'coverage/plugin-coverage/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-coverage',
+        },
+      ],
+    }),
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -55,6 +87,12 @@ const config: CoreConfig = {
       directory: './dist/packages',
       license: 'MIT',
       type: 'module',
+    }),
+
+    await lighthousePlugin({
+      url: 'https://staging.code-pushup.dev/login',
+      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      headless: true,
     }),
   ],
 
@@ -72,12 +110,37 @@ const config: CoreConfig = {
       ],
     },
     {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'function-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'branch-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'line-coverage',
+          weight: 1,
+        },
+      ],
+    },
+    {
       slug: 'custom-checks',
       title: 'Custom checks',
       refs: [
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],

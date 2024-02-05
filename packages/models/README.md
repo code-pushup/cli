@@ -1,4 +1,4 @@
-# @code-pushup/models
+# @code-pushup/models [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fmodels.svg)](https://www.npmjs.com/package/%40code-pushup%2Fmodels)
 
 **Model definitions and validators** for the [Code PushUp CLI](../cli/README.md).
 

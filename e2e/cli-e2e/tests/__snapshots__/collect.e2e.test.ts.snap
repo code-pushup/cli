@@ -1,5 +1,167 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`CLI collect > should run Code coverage plugin and create report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "function-coverage",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "coverage",
+          "slug": "branch-coverage",
+          "type": "audit",
+          "weight": 1,
+        },
+        {
+          "plugin": "coverage",
+          "slug": "line-coverage",
+          "type": "audit",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Branch coverage percentage on the project.",
+          "details": {
+            "issues": [
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 6,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 10,
+                  },
+                },
+              },
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "76 %",
+          "score": 0.7647,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 76,
+        },
+        {
+          "description": "Function coverage percentage on the project.",
+          "details": {
+            "issues": [
+              {
+                "message": "Function formatReportScore is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Function sortReport is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "60 %",
+          "score": 0.6,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 60,
+        },
+        {
+          "description": "Line coverage percentage on the project.",
+          "details": {
+            "issues": [
+              {
+                "message": "Lines 7-9 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "endLine": 9,
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "Lines 1-5 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "endLine": 5,
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "68 %",
+          "score": 0.68,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 68,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
 exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
 {
   "categories": [

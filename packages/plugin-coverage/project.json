@@ -1,0 +1,55 @@
+{
+  "name": "plugin-coverage",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-coverage/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-coverage",
+        "main": "packages/plugin-coverage/src/index.ts",
+        "tsConfig": "packages/plugin-coverage/tsconfig.lib.json",
+        "assets": ["packages/plugin-coverage/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-coverage/**/*.ts",
+          "packages/plugin-coverage/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/plugin-coverage"],
+      "options": {
+        "config": "packages/plugin-coverage/vite.config.unit.ts",
+        "reportsDirectory": "../../coverage/plugin-coverage/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/packages/plugin-coverage"],
+      "options": {
+        "config": "packages/plugin-coverage/vite.config.integration.ts",
+        "reportsDirectory": "../../coverage/plugin-coverage/integration-tests"
+      }
+    },
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/plugin-coverage"
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs plugin-coverage {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["scope:plugin", "type:feature"]
+}

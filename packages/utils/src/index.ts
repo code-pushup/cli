@@ -1,3 +1,4 @@
+export { exists } from '@code-pushup/models';
 export {
   ProcessConfig,
   ProcessError,
@@ -38,7 +39,7 @@ export {
   branchHasChanges,
   guardAgainstDirtyRepo,
   GitTag,
-  safeCheckout
+  safeCheckout,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -47,6 +48,7 @@ export {
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
 export { ProgressBar, getProgressBar } from './lib/progress';
+export { TERMINAL_WIDTH } from './lib/reports/constants';
 export { generateMdReport } from './lib/reports/generate-md-report';
 export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
 export { ScoredReport, scoreReport } from './lib/reports/scoring';
@@ -60,9 +62,9 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
-export { TERMINAL_WIDTH } from './lib/reports/constants';
 export {
   CliArgsObject,
+  capitalize,
   countOccurrences,
   distinct,
   factorOf,
@@ -70,6 +72,9 @@ export {
   objectToEntries,
   objectToKeys,
   toArray,
+  toNumberPrecision,
+  toOrdinal,
+  toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
