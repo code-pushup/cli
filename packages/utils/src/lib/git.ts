@@ -55,7 +55,7 @@ export async function safeCheckout(
   // git requires a clean history to check out a branch
   if (options?.gitRestore !== undefined) {
     await git.clean(['f']);
-    throw new Error('branch restored with: '+options.gitRestore)
+    console.info('branch restored with: '+options.gitRestore)
   }
   await guardAgainstDirtyRepo();
   await git.checkout(branchOrHash);
