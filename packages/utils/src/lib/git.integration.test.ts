@@ -63,19 +63,18 @@ describe('safeCheckout', () => {
 
   beforeEach(async () => {
     await git.checkout(initialBranch);
+    await makeStatusClean();
   });
 
   it('should checkout target branch in clean state', async () => {
     await expect(safeCheckout('main')).resolves.toBe(void 0);
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
-    await safeCheckout(initialBranch);
   });
   it('should throw if history is dirty', async () => {
     await makeStatusDirty();
     await expect(safeCheckout('main')).rejects.toThrow(
       'Repository should be clean before we you can proceed',
     );
-    await makeStatusClean();
   });
 
   it('should use gitRestore option', async () => {
