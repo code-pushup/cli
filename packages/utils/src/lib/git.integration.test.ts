@@ -53,9 +53,10 @@ describe('getCurrentBranchOrTag', () => {
     await expect(getCurrentBranchOrTag()).resolves.toEqual(expect.any(String));
   });
 });
+
 describe('safeCheckout', () => {
+  const initialBranch = await getCurrentBranchOrTag();
   it('should checkout target branch in clean state', async () => {
-    const initialBranch = await getCurrentBranchOrTag();
     await expect(safeCheckout('main')).resolves.toBe(void 0);
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
     await safeCheckout(initialBranch);
@@ -69,7 +70,6 @@ describe('safeCheckout', () => {
   });
 
   it('should use gitRestore option', async () => {
-    const initialBranch = await getCurrentBranchOrTag();
     await makeStatusDirty();
     await expect(safeCheckout('main', {gitRestore: '.'})).rejects.toThrow(
       'Repository should be clean before we you can proceed',
