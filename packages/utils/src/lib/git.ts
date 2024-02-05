@@ -43,13 +43,13 @@ export async function getCurrentBranchOrTag(): Promise<string> {
 export async function safeCheckout(
   branchOrHash: string,
   options: {
-    gitRestore?: string;
+    clean?: boolean;
   } = {},
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options?.gitRestore !== undefined) {
+  if (options?.clean) {
     await git.clean(['f']);
-    console.info(`branch restored with:  ${options.gitRestore}`);
+    console.info(`branch cleaned`);
   }
   await guardAgainstDirtyRepo();
   await git.checkout(branchOrHash);
