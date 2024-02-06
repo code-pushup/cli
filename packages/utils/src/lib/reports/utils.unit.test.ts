@@ -335,7 +335,7 @@ describe('portalCommitLink', () => {
 });
 
 describe('portalCommitDashboardLink', () => {
-  it('should return link to portal dashboard if upload config is given', () => {
+  it('should return link to portal dashboard', () => {
     expect(
       portalCommitDashboardLink(
         {
