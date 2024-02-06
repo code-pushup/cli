@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { LIGHTHOUSE_URL } from '../mock/constants';
-import { create } from './lighthouse.plugin';
 import { getLighthouseCliArguments } from './utils';
 
 describe('getLighthouseCliArguments', () => {

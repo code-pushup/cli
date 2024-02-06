@@ -1,6 +1,5 @@
 import { expect } from 'vitest';
 import {
-  Group,
   auditSchema,
   groupSchema,
   pluginConfigSchema,
@@ -26,11 +25,10 @@ describe('lighthousePlugin-config-object', () => {
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
-    expect(pluginConfig.audits).toEqual([
+    expect(pluginConfig.audits[0]).toEqual(
         expect.objectContaining({
           slug: 'first-contentful-paint',
-        }
-      ]),
+        }),
     );
   });
 
@@ -59,9 +57,9 @@ describe('lighthousePlugin-config-object', () => {
 describe('constants', () => {
   it.each(AUDITS.map(a => [a.slug, a]))(
     'should parse audit "%s" correctly',
-    (_, audit) => {
+    (slug, audit) => {
       expect(() => auditSchema.parse(audit)).not.toThrow();
-      expect(audit.description).toEqual(expect.any(String));
+      expect(audit.description).toEqual(slug);
     },
   );
 
