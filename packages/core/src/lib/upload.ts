@@ -12,15 +12,13 @@ export type UploadOptions = { upload: UploadConfig } & {
 /**
  * Uploads collected audits to the portal
  * @param options
+ * @param uploadFn
  */
 export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
   const persist = normalizePersistConfig(options.persist);
-  if (!options.upload) {
-    throw new Error('upload config must be set');
-  }
   const { apiKey, server, organization, project, timeout } = options.upload;
   const report: Report = await loadReport({
     ...persist,
