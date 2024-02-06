@@ -13,6 +13,9 @@ const gitCommitDateRegex =
   /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} \d{4} [+|-]\d{4}$/;
 
 describe('getLatestCommit', () => {
+  afterEach(async () => {
+    await makeStatusClean();
+  });
   it('should log latest commit', async () => {
     await expect(getLatestCommit()).resolves.toEqual(
       expect.objectContaining({
@@ -29,7 +32,6 @@ describe('branchHasChanges', () => {
   it('should return true if some changes are given', async () => {
     await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toBe(true);
-    await makeStatusClean();
   });
   it('should return false if no changes are given', async () => {
     await expect(branchHasChanges()).resolves.toBe(false);
@@ -42,7 +44,6 @@ describe('guardAgainstDirtyRepo', () => {
     await expect(guardAgainstDirtyRepo()).rejects.toThrow(
       'Repository should be clean before we you can proceed',
     );
-    await makeStatusClean();
   });
   it('should not throw if history is clean', async () => {
     await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
