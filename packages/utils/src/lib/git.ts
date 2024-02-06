@@ -17,3 +17,18 @@ export async function getLatestCommit() {
   });
   return log.latest;
 }
+
+export function validateCommitData(
+  commitData?: unknown,
+  options: { throwError?: boolean } = {},
+): void {
+  const { throwError = false } = options;
+  if (!commitData) {
+    const msg = 'no commit data available';
+    if (throwError) {
+      throw new Error(msg);
+    } else {
+      console.warn(msg);
+    }
+  }
+}

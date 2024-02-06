@@ -316,7 +316,7 @@ describe('portalCommitLink', () => {
       ),
     ).toBe('https://code-pushup.com/portal/code-pushup/cli/commit/123');
   });
-  
+
   it('should take baseUrl if given', () => {
     expect(
       portalCommitLink(
