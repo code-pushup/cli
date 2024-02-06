@@ -6,7 +6,12 @@ import {
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
-import { ensureDirectoryExists, toArray } from '@code-pushup/utils';
+import {
+  ensureDirectoryExists,
+  filterByAuditSlug,
+  filterBySlug,
+  toArray,
+} from '@code-pushup/utils';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   PLUGIN_SLUG,
@@ -14,12 +19,7 @@ import {
   categoryCorePerfGroup,
 } from './constants';
 import { LighthouseCliOptions, PluginOptions } from './types';
-import {
-  filterBySlug,
-  filterRefsBySlug,
-  getLighthouseCliArguments,
-  lhrDetailsToIssueDetails,
-} from './utils';
+import { getLighthouseCliArguments, lhrDetailsToIssueDetails } from './utils';
 
 /**
  * @example
@@ -75,7 +75,7 @@ export async function create(options: PluginOptions) {
       headless,
     }),
     audits: filterBySlug(audits, onlyAudits),
-    groups: [filterRefsBySlug(categoryCorePerfGroup, onlyAudits)],
+    groups: filterByAuditSlug([categoryCorePerfGroup], onlyAudits),
   } satisfies PluginConfig;
 }
 
