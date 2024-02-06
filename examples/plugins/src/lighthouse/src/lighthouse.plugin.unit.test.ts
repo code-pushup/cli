@@ -25,7 +25,7 @@ describe('lighthouse-runnerConfig', () => {
     );
   });
 
-  it('should execute if with output options', () => {
+  it('should execute with output "json" and output-path "lighthouse-report.json" by default', () => {
     expect(runnerConfig(baseOptions)).toEqual(
       expect.objectContaining({
         args: expect.arrayContaining([

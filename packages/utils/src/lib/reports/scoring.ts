@@ -29,6 +29,14 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   categories: ScoredCategoryConfig[];
 };
 
+export class GroupRefInvalidError extends Error {
+  constructor(auditSlug: string, pluginSlug: string) {
+    super(
+      `Group has invalid ref - audit with slug ${auditSlug} from plugin ${pluginSlug} not found`,
+    );
+  }
+}
+
 // eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
   const allScoredAuditsAndGroups = new Map<
@@ -50,9 +58,7 @@ export function scoreReport(report: Report): ScoredReport {
         `${slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
-        throw new Error(
-          `Group has invalid ref - audit with slug ${ref.slug} from plugin ${slug} not found`,
-        );
+        throw new GroupRefInvalidError(ref.slug, slug);
       }
       return score;
     }
