@@ -5,7 +5,7 @@ import {
   getCurrentBranchOrTag,
   getLatestCommit,
   git,
-  guardAgainstDirtyRepo,
+  guardAgainstLocalChanges,
   safeCheckout,
 } from './git';
 
@@ -33,22 +33,22 @@ describe('branchHasChanges', () => {
     await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toBe(true);
   });
-  
+
   it('should return false if no changes are given', async () => {
     await expect(branchHasChanges()).resolves.toBe(false);
   });
 });
 
-describe('guardAgainstDirtyRepo', () => {
+describe('guardAgainstLocalChanges', () => {
   it('should throw if history is dirty', async () => {
     await makeStatusDirty();
-    await expect(guardAgainstDirtyRepo()).rejects.toThrow(
+    await expect(guardAgainstLocalChanges()).rejects.toThrow(
       'Repository should be clean before we you can proceed',
     );
   });
   
   it('should not throw if history is clean', async () => {
-    await expect(guardAgainstDirtyRepo()).resolves.toBeUndefined();
+    await expect(guardAgainstLocalChanges()).resolves.toBeUndefined();
   });
 });
 
