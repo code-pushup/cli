@@ -46,7 +46,7 @@ describe('guardAgainstDirtyRepo', () => {
     );
   });
   it('should not throw if history is clean', async () => {
-    await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
+    await expect(guardAgainstDirtyRepo()).resolves.toBeUndefined();
   });
 });
 
