@@ -10,42 +10,54 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
+import { PackageJson } from 'nx/src/utils/package-json';
 import {
-  cpuCliVersion,
-  cpuModelVersion,
-  cpuNxPluginVersion,
-  cpuUtilsVersion,
+  cpCliVersion,
+  cpModelVersion,
+  cpNxPluginVersion,
+  cpUtilsVersion,
 } from '../../utils/versions';
 import { InitGeneratorSchema } from './schema';
 
+const nxPluginPackageName = '@code-pushup/nx-plugin';
+
 function checkDependenciesInstalled(host: Tree) {
-  const packageJson = readJson(host, 'package.json');
+  const packageJson = readJson<PackageJson>(host, 'package.json');
   const devDependencies: Record<string, string> = {};
   const dependencies = {};
-  packageJson.dependencies = packageJson.dependencies || {};
-  packageJson.devDependencies = packageJson.devDependencies || {};
+  packageJson.dependencies = packageJson.dependencies ?? {};
+  packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
-  devDependencies['@code-pushup/nx-plugin'] = cpuNxPluginVersion;
-  devDependencies['@code-pushup/models'] = cpuModelVersion;
-  devDependencies['@code-pushup/utils'] = cpuUtilsVersion;
-  devDependencies['@code-pushup/cli'] = cpuCliVersion;
+  devDependencies[nxPluginPackageName] = cpNxPluginVersion;
+  devDependencies['@code-pushup/models'] = cpModelVersion;
+  devDependencies['@code-pushup/utils'] = cpUtilsVersion;
+  devDependencies['@code-pushup/cli'] = cpCliVersion;
 
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }
 
 function moveToDevDependencies(tree: Tree) {
-  updateJson(tree, 'package.json', packageJson => {
-    packageJson.dependencies = packageJson.dependencies || {};
-    packageJson.devDependencies = packageJson.devDependencies || {};
+  updateJson(tree, 'package.json', (packageJson: PackageJson) => {
+    const newPackageJson: PackageJson = {
+      dependencies: {},
+      devDependencies: {},
+      ...packageJson,
+    };
 
-    if (packageJson.dependencies['@code-pushup/nx-plugin']) {
-      packageJson.devDependencies['@code-pushup/nx-plugin'] =
-        packageJson.dependencies['@code-pushup/nx-plugin'];
-      delete packageJson.dependencies['@code-pushup/nx-plugin'];
+    if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
+      const { [nxPluginPackageName]: version, ...dependencies } =
+        newPackageJson.dependencies;
+      return {
+        ...newPackageJson,
+        dependencies,
+        devDependencies: {
+          ...newPackageJson.devDependencies,
+          [nxPluginPackageName]: version,
+        },
+      };
     }
-
-    return packageJson;
+    return newPackageJson;
   });
 }
 
@@ -63,7 +75,7 @@ function updateNxJsonConfig(tree: Tree) {
   updateNxJson(tree, nxJson);
 }
 
-export async function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
+export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
   if (!schema.skipPackageJson) {
     moveToDevDependencies(tree);
   }

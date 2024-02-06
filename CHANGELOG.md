@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.15.0](https://github.com/code-pushup/cli/compare/v0.14.4...v0.15.0) (2024-02-06)
+
+### Features
+
+- **cli:** add logger ([#459](https://github.com/code-pushup/cli/issues/459)) ([f436299](https://github.com/code-pushup/cli/commit/f4362995108197211563b5cb77a4d37727d141af))
+
+## [0.14.4](https://github.com/code-pushup/cli/compare/v0.14.3...v0.14.4) (2024-02-06)
+
+## [0.14.3](https://github.com/code-pushup/cli/compare/v0.14.2...v0.14.3) (2024-02-06)
+
+## [0.14.2](https://github.com/code-pushup/cli/compare/v0.14.1...v0.14.2) (2024-02-06)
+
 ## [0.14.1](https://github.com/code-pushup/cli/compare/v0.14.0...v0.14.1) (2024-02-05)
 
 # [0.14.0](https://github.com/code-pushup/cli/compare/v0.13.2...v0.14.0) (2024-02-05)

@@ -12,35 +12,33 @@ describe('getLighthouseCliArguments', () => {
     ).toEqual(expect.arrayContaining(['https://code-pushup-portal.com']));
   });
 
-  it('should parse options for headless to new if true is given', async () => {
-    const pluginConfig = await create({
+  it('should parse options for headless to new if true is given', () => {
+    const args = getLighthouseCliArguments({
       url: LIGHTHOUSE_URL,
-      headless: true,
+      headless: 'new',
     });
-    expect(pluginConfig.runner.args).toEqual(
+    expect(args).toEqual(
       expect.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
-  it('should parse options for headless to new if false is given', async () => {
-    const pluginConfig = await create({
+  it('should not include options for headless if false is given', () => {
+    const args = getLighthouseCliArguments({
       url: LIGHTHOUSE_URL,
       headless: false,
     });
-    expect(pluginConfig.runner.args).toEqual(
+    expect(args).toEqual(
       expect.not.arrayContaining(['--chrome-flags="--headless=new"']),
     );
   });
 
-  it('should parse options for userDataDir correctly', async () => {
-    const pluginConfig = await create({
+  it('should use userDataDir option in chrome flags when given', () => {
+    const args = getLighthouseCliArguments({
       url: LIGHTHOUSE_URL,
       userDataDir: 'test',
     });
-    expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining([
-        '--chrome-flags="--headless=new --user-data-dir=test"',
-      ]),
+    expect(args).toEqual(
+      expect.arrayContaining(['--chrome-flags="--user-data-dir=test"']),
     );
   });
 });

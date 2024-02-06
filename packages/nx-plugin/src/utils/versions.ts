@@ -1,20 +1,25 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { PackageJson } from 'nx/src/utils/package-json';
+import { readJsonFile } from '@code-pushup/utils';
 
-const workspaceRoot = join(__dirname, '../../');
-const projectsFolder = join(__dirname, '../../../');
+const workspaceRoot = join(fileURLToPath(dirname(import.meta.url)), '../../');
+const projectsFolder = join(
+  fileURLToPath(dirname(import.meta.url)),
+  '../../../',
+);
 
-export const cpuNxPluginVersion = loadPackageJson(workspaceRoot).version;
-export const cpuModelVersion = loadPackageJson(
-  join(projectsFolder, 'cli'),
+export const cpNxPluginVersion = (await loadPackageJson(workspaceRoot)).version;
+export const cpModelVersion = (
+  await loadPackageJson(join(projectsFolder, 'cli'))
 ).version;
-export const cpuUtilsVersion = loadPackageJson(
-  join(projectsFolder, 'utils'),
+export const cpUtilsVersion = (
+  await loadPackageJson(join(projectsFolder, 'utils'))
 ).version;
-export const cpuCliVersion = loadPackageJson(
-  join(projectsFolder, 'models'),
+export const cpCliVersion = (
+  await loadPackageJson(join(projectsFolder, 'models'))
 ).version;
 
-function loadPackageJson(folderPath: string) {
-  return JSON.parse(readFileSync(join(folderPath, 'package.json')).toString());
+async function loadPackageJson(folderPath: string): Promise<PackageJson> {
+  return readJsonFile<PackageJson>(join(folderPath, 'package.json'));
 }

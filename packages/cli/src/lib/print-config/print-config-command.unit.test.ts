@@ -1,5 +1,6 @@
-import { describe, expect } from 'vitest';
+import { beforeAll, describe, expect } from 'vitest';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
+import { ui } from '../implementation/logging';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
 
@@ -14,6 +15,11 @@ vi.mock('@code-pushup/core', async () => {
 });
 
 describe('print-config-command', () => {
+  beforeAll(() => {
+    // initialize it in raw mode
+    ui().switchMode('raw');
+  });
+
   it('should filter out meta arguments and kebab duplicates', async () => {
     await yargsCli(
       [
@@ -25,17 +31,30 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    expect(console.info).not.toHaveBeenCalledWith(
-      expect.stringContaining('"$0":'),
+    const log = ui().logger.getLogs()[0];
+
+    expect(log).toEqual(
+      expect.objectContaining({
+        message: expect.not.stringContaining('"$0":'),
+      }),
     );
-    expect(console.info).not.toHaveBeenCalledWith(
-      expect.stringContaining('"_":'),
+
+    expect(log).toEqual(
+      expect.objectContaining({
+        message: expect.not.stringContaining('"_":'),
+      }),
     );
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('"outputDir": "destinationDir"'),
+
+    expect(log).toEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('"outputDir": "destinationDir"'),
+      }),
     );
-    expect(console.info).not.toHaveBeenCalledWith(
-      expect.stringContaining('"output-dir":'),
+
+    expect(log).toEqual(
+      expect.objectContaining({
+        message: expect.not.stringContaining('"output-dir":'),
+      }),
     );
   });
 });

@@ -1,8 +1,11 @@
-# lighthouse-plugin
+# lighthouse-plugin example
 
 🕵️ **Code PushUp plugin for Lighthouse reports** 🔥
 
 ---
+
+> [!NOTE]
+> The real implementation of lighthouse lives [here](../../../../packages/plugin-lighthouse)
 
 <img alt="Code PushUp plugin for lighthouse reports" src="./docs/images/lighthouse-plugin-cover.png" height="655">
 
@@ -43,9 +46,7 @@ You can configure the plugin with the following options:
    };
    ```
 
-4. (Optional) Reference audits (or groups) that you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
-
-   Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
+4. (Optional) Set up categories (use `npx code-pushup print-config` to list audits and groups).
 
    ```js
    import fileSizePlugin, { recommendedRefs as lighthouseRecommendedRefs } from './lighthouse.plugin';

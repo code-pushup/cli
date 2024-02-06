@@ -77,7 +77,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
 
-5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+5. View report file(s) in output directory (specified by `persist.outputDir` configuration).  
+   This folder should be ignored in your `.gitignore`.
 
 ### Set up categories (optional)
 
@@ -156,7 +157,7 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 - 📏 [File Size](../../examples/plugins/src/file-size)
 - 📦 [Package Json](../../examples/plugins/src/package-json)
-- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse)
+- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse))
 
 ## CLI commands and options
 

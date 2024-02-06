@@ -2,7 +2,10 @@
 // Note: The plugins of the ScoredReport are not structured correctly, hence the ESLint disables.
 import { Report } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
-import { ScoredCategoryConfig } from '../../src/lib/reports/scoring';
+import {
+  GroupRefInvalidError,
+  ScoredCategoryConfig,
+} from '../../src/lib/reports/scoring';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
@@ -37,9 +40,7 @@ export function scoreReportOptimized1(report: Report): ScoredReport {
             `${slug}-${ref.slug}-audit`,
           )?.score;
           if (score == null) {
-            throw new Error(
-              `Group has invalid ref - audit with slug ${slug}-${ref.slug}-audit not found`,
-            );
+            throw new GroupRefInvalidError(ref.slug, slug);
           }
           return score;
         }),

@@ -14,5 +14,5 @@ export { create as packageJsonPlugin } from './package-json/src/package-json.plu
 export {
   create as lighthousePlugin,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-  corePerfGroupRefs as lighthouseCorePerfGroupRefs,
+  recommendedRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';
