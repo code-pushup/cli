@@ -51,8 +51,9 @@ export function yargsAutorunCommandObject() {
       if (options.upload) {
         await upload(options);
         const commitData = await getLatestCommit();
-        validateCommitData(commitData, { throwError: true });
-        uploadSuccessfulLog(options.upload, commitData.hash);
+        if (validateCommitData(commitData, { throwError: true })) {
+          uploadSuccessfulLog(options.upload, commitData.hash);
+        }
       } else {
         ui().logger.warning('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();

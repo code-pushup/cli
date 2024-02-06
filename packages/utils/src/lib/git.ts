@@ -21,7 +21,7 @@ export async function getLatestCommit() {
 export function validateCommitData(
   commitData?: unknown,
   options: { throwError?: boolean } = {},
-): void {
+): commitData is CommitData {
   const { throwError = false } = options;
   if (!commitData) {
     const msg = 'no commit data available';
@@ -29,6 +29,8 @@ export function validateCommitData(
       throw new Error(msg);
     } else {
       console.warn(msg);
+      return false;
     }
   }
+  return true;
 }

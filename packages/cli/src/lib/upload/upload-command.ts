@@ -26,8 +26,9 @@ export function yargsUploadCommandObject() {
       await upload(options);
 
       const commitData = await getLatestCommit();
-      validateCommitData(commitData, { throwError: true });
-      uploadSuccessfulLog(options.upload, commitData.hash);
+      if (validateCommitData(commitData, { throwError: true })) {
+        uploadSuccessfulLog(options.upload, commitData.hash);
+      }
     },
   } satisfies CommandModule;
 }
