@@ -6,7 +6,7 @@ import {join} from "node:path";
 
 export async function createGitRepo(options: {
   outputDir: string,
-  isDirty: boolean
+  isDirty?: boolean
 }) {
   const {outputDir, isDirty = false} = options;
   await ensureDirectoryExists(outputDir);
