@@ -16,7 +16,7 @@ vi.mock('@code-pushup/core', async () => {
 
 describe('print-config-command', () => {
   beforeAll(() => {
-    // initialize it inn raw mode
+    // initialize it in raw mode
     ui().switchMode('raw');
   });
 
