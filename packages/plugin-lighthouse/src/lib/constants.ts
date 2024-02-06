@@ -4,7 +4,7 @@ import {
   Audit as LHAudit,
   defaultConfig,
 } from 'lighthouse';
-import { Group } from '@code-pushup/models';
+import { Audit, Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
