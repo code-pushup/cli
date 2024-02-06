@@ -11,10 +11,10 @@ import {
   updateNxJson,
 } from '@nx/devkit';
 import {
-  cpuCliVersion,
-  cpuModelVersion,
-  cpuNxPluginVersion,
-  cpuUtilsVersion,
+  cpCliVersion,
+  cpModelVersion,
+  cpNxPluginVersion,
+  cpUtilsVersion,
 } from '../../utils/versions';
 import { InitGeneratorSchema } from './schema';
 
@@ -28,10 +28,10 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
-  devDependencies[nxPluginPackageName] = cpuNxPluginVersion;
-  devDependencies['@code-pushup/models'] = cpuModelVersion;
-  devDependencies['@code-pushup/utils'] = cpuUtilsVersion;
-  devDependencies['@code-pushup/cli'] = cpuCliVersion;
+  devDependencies[nxPluginPackageName] = cpNxPluginVersion;
+  devDependencies['@code-pushup/models'] = cpModelVersion;
+  devDependencies['@code-pushup/utils'] = cpUtilsVersion;
+  devDependencies['@code-pushup/cli'] = cpCliVersion;
 
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }

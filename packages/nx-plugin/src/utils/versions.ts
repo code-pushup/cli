@@ -8,15 +8,14 @@ const projectsFolder = join(
   '../../../',
 );
 
-export const cpuNxPluginVersion = (await loadPackageJson(workspaceRoot))
-  .version;
-export const cpuModelVersion = (
+export const cpNxPluginVersion = (await loadPackageJson(workspaceRoot)).version;
+export const cpModelVersion = (
   await loadPackageJson(join(projectsFolder, 'cli'))
 ).version;
-export const cpuUtilsVersion = (
+export const cpUtilsVersion = (
   await loadPackageJson(join(projectsFolder, 'utils'))
 ).version;
-export const cpuCliVersion = (
+export const cpCliVersion = (
   await loadPackageJson(join(projectsFolder, 'models'))
 ).version;
 
