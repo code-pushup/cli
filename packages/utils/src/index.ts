@@ -67,5 +67,7 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
+  filterBySlug,
+  filterByAuditSlug,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';

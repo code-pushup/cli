@@ -5,6 +5,8 @@ import {
   deepClone,
   distinct,
   factorOf,
+  filterByAuditSlug,
+  filterBySlug,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
@@ -234,5 +236,63 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('filterBySlug', () => {
+  it('should return the given list if no slugs are given', () => {
+    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
+    expect(filterBySlug(list, [])).toEqual(list);
+  });
+
+  it('should filter if slugs is a string', () => {
+    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
+    expect(filterBySlug(list, 'a')).toEqual([{ slug: 'a' }]);
+  });
+
+  it('should filter if slugs is an array', () => {
+    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
+    expect(filterBySlug(list, ['a'])).toEqual([{ slug: 'a' }]);
+  });
+});
+
+describe('filterByAuditSlug', () => {
+  it('should return the given list if no slugs are given', () => {
+    const list = [
+      {
+        refs: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }],
+      },
+    ];
+    expect(filterByAuditSlug(list, [])).toEqual([
+      {
+        refs: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }],
+      },
+    ]);
+  });
+
+  it('should filter if slugs is a string', () => {
+    const list = [
+      {
+        refs: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }],
+      },
+    ];
+    expect(filterByAuditSlug(list, 'a')).toEqual([
+      {
+        refs: [{ slug: 'a' }],
+      },
+    ]);
+  });
+
+  it('should filter if slugs is an array', () => {
+    const list = [
+      {
+        refs: [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }],
+      },
+    ];
+    expect(filterByAuditSlug(list, ['a'])).toEqual([
+      {
+        refs: [{ slug: 'a' }],
+      },
+    ]);
   });
 });

@@ -1,6 +1,6 @@
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { Audit, AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { filterByAuditSlug, filterBySlug } from '@code-pushup/utils';
 import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { filterByAuditSlug, filterBySlug } from './utils';
 
 type AuditSlug = (typeof AUDITS)[number]['slug'];
 export type LighthousePluginOptions = {
@@ -16,8 +16,7 @@ export function lighthousePlugin(
   options: LighthousePluginOptions,
 ): PluginConfig {
   const { onlyAudits = [] } = options;
-
-  const audits = filterBySlug(AUDITS, onlyAudits);
+  const audits: Audit[] = filterBySlug(AUDITS, onlyAudits);
 
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,

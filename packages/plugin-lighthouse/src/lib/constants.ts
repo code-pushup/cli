@@ -4,7 +4,7 @@ import {
   Audit as LHAudit,
   defaultConfig,
 } from 'lighthouse';
-import { Audit, Group } from '@code-pushup/models';
+import { Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
@@ -22,7 +22,7 @@ export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
   }),
 );
 
-export const AUDITS: Audit[] = await Promise.all(
+export const AUDITS = await Promise.all(
   (audits ?? []).map(async value => {
     const audit = await loadLighthouseAudit(value);
     return {
