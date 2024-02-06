@@ -312,7 +312,6 @@ export function portalCommitLink(
   },
   commit: string,
 ): string {
-  // https://quality-metrics-staging.web.app////commit/2d9905b813824d5f7d56f4ec0143d0d9c15f6f1c
   const { organization, project, server } = config;
   // https://portal-api-r6nh2xm7mq-ez.a.run.app/graphql
   const urlObj = new URL(config.baseUrl || server);
