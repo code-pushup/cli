@@ -25,10 +25,7 @@ export async function branchHasChanges(): Promise<boolean> {
 export async function guardAgainstDirtyRepo(): Promise<void> {
   const isDirty = await branchHasChanges();
   if (isDirty) {
-    throw new Error(`
-        Repository should be clean before we you can proceed.
-        Commit your local changes or stash them.
-      `);
+    throw new Error('Repository should be clean before we you can proceed. Commit your local changes or stash them.');
   }
 }
 
