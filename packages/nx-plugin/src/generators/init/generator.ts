@@ -52,7 +52,7 @@ function moveToDevDependencies(tree: Tree) {
         dependencies,
         devDependencies: {
           ...newPackageJson.devDependencies,
-          [nxPluginPackageName as string]: version,
+          [nxPluginPackageName]: version,
         },
       };
     }
