@@ -25,7 +25,7 @@ export function branchHasChanges(): Promise<boolean> {
 export async function guardAgainstLocalChanges(): Promise<void> {
   const isDirty = await branchHasChanges();
   if (isDirty) {
-    throw new Error('Repository should be clean before we you can proceed. Commit your local changes or stash them.');
+    throw new Error('Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.');
   }
 }
 
