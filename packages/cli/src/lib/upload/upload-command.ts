@@ -18,7 +18,7 @@ export function yargsUploadCommandObject() {
       ui().logger.log(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}...`));
 
-      if (!args['upload']) {
+      if (args['upload'] === undefined) {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }
