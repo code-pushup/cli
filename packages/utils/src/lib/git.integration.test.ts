@@ -78,7 +78,7 @@ describe('safeCheckout', () => {
   it('should throw if history is dirty', async () => {
     await makeStatusDirty();
     await expect(safeCheckout('main')).rejects.toThrow(
-      'Repository should be clean before we you can proceed',
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
   });
 
