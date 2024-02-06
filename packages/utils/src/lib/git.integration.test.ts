@@ -81,7 +81,7 @@ describe('safeCheckout', () => {
     );
   });
 
-  it('should use gitRestore option', async () => {
+  it('should clean local changes and check out to main', async () => {
     await makeStatusDirty();
     await expect(
       safeCheckout('main', { clean: true }),
