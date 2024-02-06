@@ -57,8 +57,7 @@ describe('getCurrentBranchOrTag', () => {
 });
 
 describe('safeCheckout', () => {
-  // eslint-disable-next-line vitest/require-hook
-  let initialBranch: string = '';
+  let initialBranch: string;
 
   beforeAll(async () => {
     initialBranch = await getCurrentBranchOrTag();
