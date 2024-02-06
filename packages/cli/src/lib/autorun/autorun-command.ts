@@ -48,15 +48,15 @@ export function yargsAutorunCommandObject() {
         renderConfigureCategoriesHint();
       }
 
-      if (options.upload) {
+      if (args['upload']) {
+        ui().logger.warning('Upload skipped because configuration is not set.');
+        renderIntegratePortalHint();
+      } else {
         await upload(options);
         const commitData = await getLatestCommit();
         if (validateCommitData(commitData, { throwError: true })) {
           uploadSuccessfulLog(options.upload, commitData.hash);
         }
-      } else {
-        ui().logger.warning('Upload skipped because configuration is not set.');
-        renderIntegratePortalHint();
       }
     },
   } satisfies CommandModule;

@@ -18,11 +18,11 @@ export function yargsUploadCommandObject() {
       ui().logger.log(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}...`));
 
-      const options = args as unknown as UploadOptions;
-      if (!options.upload) {
+      if (!args['upload']) {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }
+      const options = args as unknown as UploadOptions;
       await upload(options);
 
       const commitData = await getLatestCommit();
