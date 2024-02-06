@@ -46,6 +46,7 @@ describe('guardAgainstDirtyRepo', () => {
       'Repository should be clean before we you can proceed',
     );
   });
+  
   it('should not throw if history is clean', async () => {
     await expect(guardAgainstDirtyRepo()).resolves.toBeUndefined();
   });
