@@ -323,7 +323,7 @@ describe('portalCommitDashboardLink', () => {
     expect(
       portalCommitDashboardLink(
         {
-          baseUrl: 'https://code-pushup.com/graphql',
+          baseUrl: 'https://code-pushup.com',
           organization: 'code-pushup',
           project: 'cli',
         },
