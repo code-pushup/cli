@@ -4,19 +4,19 @@ import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
+  UploadConfig,
 } from '@code-pushup/models';
 import { GeneralCliOptions } from './global.model';
 
 export async function coreConfigMiddleware<
   T extends Partial<GeneralCliOptions & CoreConfig>,
 >(processArgs: T) {
-  const args = processArgs;
   const {
     config,
-    persist: cliPersist,
-    upload: cliUpload,
+    persist: cliPersist = {},
+    upload: cliUpload = {},
     ...remainingCliOptions
-  } = args as GeneralCliOptions & Required<CoreConfig>;
+  } = processArgs as GeneralCliOptions & CoreConfig;
   // if config path is given use it otherwise auto-load
   const importedRc = config ? await readRcByPath(config) : await autoloadRc();
   const {
@@ -32,7 +32,7 @@ export async function coreConfigMiddleware<
     ...remainingCliOptions,
     upload: {
       ...rcUpload,
-      ...cliUpload,
+      ...(cliUpload as UploadConfig),
     },
     persist: {
       outputDir:
