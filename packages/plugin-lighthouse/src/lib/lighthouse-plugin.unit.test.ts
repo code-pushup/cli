@@ -27,11 +27,10 @@ describe('lighthousePlugin-config-object', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.audits).toHaveLength(1);
 
-    expect(pluginConfig.audits).toEqual(
-      expect.arrayContaining([
+    expect(pluginConfig.audits).toEqual([
         expect.objectContaining({
           slug: 'first-contentful-paint',
-        }),
+        }
       ]),
     );
   });
