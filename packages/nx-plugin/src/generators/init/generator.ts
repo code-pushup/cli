@@ -10,6 +10,7 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
+import { PackageJson } from 'nx/src/utils/package-json';
 import {
   cpCliVersion,
   cpModelVersion,
@@ -19,9 +20,9 @@ import {
 import { InitGeneratorSchema } from './schema';
 
 const nxPluginPackageName = '@code-pushup/nx-plugin';
-type PkgJson = Record<string, Record<string, string>>;
+
 function checkDependenciesInstalled(host: Tree) {
-  const packageJson = readJson<PkgJson>(host, 'package.json');
+  const packageJson = readJson<PackageJson>(host, 'package.json');
   const devDependencies: Record<string, string> = {};
   const dependencies = {};
   packageJson.dependencies = packageJson.dependencies ?? {};
@@ -37,8 +38,8 @@ function checkDependenciesInstalled(host: Tree) {
 }
 
 function moveToDevDependencies(tree: Tree) {
-  updateJson(tree, 'package.json', (packageJson: PkgJson) => {
-    const newPackageJson: PkgJson = {
+  updateJson(tree, 'package.json', (packageJson: PackageJson) => {
+    const newPackageJson: PackageJson = {
       dependencies: {},
       devDependencies: {},
       ...packageJson,
