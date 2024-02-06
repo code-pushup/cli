@@ -22,7 +22,7 @@ export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
   }),
 );
 
-export const AUDITS = await Promise.all(
+export const AUDITS: Audit[] = await Promise.all(
   (audits ?? []).map(async value => {
     const audit = await loadLighthouseAudit(value);
     return {
