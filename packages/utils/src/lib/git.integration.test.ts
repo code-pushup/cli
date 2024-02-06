@@ -73,6 +73,7 @@ describe('safeCheckout', () => {
     await expect(safeCheckout('main')).resolves.toBeUndefined();
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
   });
+  
   it('should throw if history is dirty', async () => {
     await makeStatusDirty();
     await expect(safeCheckout('main')).rejects.toThrow(
