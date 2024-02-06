@@ -32,7 +32,7 @@ export {
   truncateText,
   truncateTitle,
 } from './lib/formatting';
-export { getLatestCommit, git } from './lib/git';
+export { getLatestCommit, git, validateCommitData } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
@@ -52,6 +52,7 @@ export {
   calcDuration,
   compareIssueSeverity,
   loadReport,
+  portalCommitDashboardLink,
 } from './lib/reports/utils';
 export {
   CliArgsObject,
@@ -69,3 +70,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { link } from './lib/logging';
