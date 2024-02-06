@@ -304,7 +304,7 @@ describe('sortAuditIssues', () => {
 });
 
 describe('portalCommitLink', () => {
-  it('should return link to portal if upload config is given', () => {
+  it('should return link to portal', () => {
     expect(
       portalCommitLink(
         {
