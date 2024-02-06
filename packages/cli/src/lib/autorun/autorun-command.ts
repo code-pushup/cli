@@ -48,7 +48,7 @@ export function yargsAutorunCommandObject() {
         renderConfigureCategoriesHint();
       }
 
-      if (args['upload']) {
+      if (!args['upload']) {
         ui().logger.warning('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();
       } else {
