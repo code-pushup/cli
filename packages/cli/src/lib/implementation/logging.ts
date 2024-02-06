@@ -30,7 +30,11 @@ export function uploadSuccessfulLog(
   ui().logger.success('Upload successful!');
   ui().logger.success(
     link(
-      portalCommitDashboardLink({ ...options, baseUrl: '<portal>' }, commit),
+      // @TODO extend config to maintain baseUrl under upload
+      portalCommitDashboardLink(
+        { ...options, baseUrl: '<YOUR_PORTAL_URL>' },
+        commit,
+      ),
     ),
   );
 }
