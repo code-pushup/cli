@@ -18,8 +18,8 @@ export async function getLatestCommit() {
   return log.latest;
 }
 
-export async function branchHasChanges(): Promise<boolean> {
-  return await git.status(['-s']).then(r => r.files.length > 0);
+export function branchHasChanges(): Promise<boolean> {
+  return git.status(['-s']).then(r => r.files.length > 0);
 }
 
 export async function guardAgainstDirtyRepo(): Promise<void> {
