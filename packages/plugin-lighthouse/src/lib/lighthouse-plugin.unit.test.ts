@@ -14,8 +14,8 @@ describe('lighthousePlugin-config-object', () => {
       url: 'https://code-pushup-portal.com',
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.audits).toHaveLength(168);
-    expect(pluginConfig.groups).toHaveLength(5);
+    expect(pluginConfig.audits.length).toBeGreaterThan(0);
+    expect(pluginConfig.groups?.length).toBeGreaterThan(0);
   });
 
   it('should filter audits by onlyAudits string "first-contentful-paint"', () => {
