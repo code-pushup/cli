@@ -25,7 +25,6 @@ describe('lighthousePlugin-config-object', () => {
     });
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.audits).toHaveLength(1);
 
     expect(pluginConfig.audits).toEqual([
         expect.objectContaining({
@@ -44,7 +43,7 @@ describe('lighthousePlugin-config-object', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.groups).toHaveLength(1);
 
-    const refs = (pluginConfig.groups?.[0] as Group).refs;
+    const refs = pluginConfig.groups?.[0]?.refs;
     expect(refs).toHaveLength(1);
 
     expect(refs).toEqual(
