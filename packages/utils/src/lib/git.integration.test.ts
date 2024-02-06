@@ -33,6 +33,7 @@ describe('branchHasChanges', () => {
     await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toBe(true);
   });
+  
   it('should return false if no changes are given', async () => {
     await expect(branchHasChanges()).resolves.toBe(false);
   });
