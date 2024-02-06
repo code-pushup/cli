@@ -1,5 +1,6 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { PackageJson } from 'nx/src/utils/package-json';
 import { readJsonFile } from '@code-pushup/utils';
 
 const workspaceRoot = join(fileURLToPath(dirname(import.meta.url)), '../../');
@@ -19,8 +20,6 @@ export const cpCliVersion = (
   await loadPackageJson(join(projectsFolder, 'models'))
 ).version;
 
-async function loadPackageJson(
-  folderPath: string,
-): Promise<{ version: string }> {
-  return readJsonFile<{ version: string }>(join(folderPath, 'package.json'));
+async function loadPackageJson(folderPath: string): Promise<PackageJson> {
+  return readJsonFile<PackageJson>(join(folderPath, 'package.json'));
 }
