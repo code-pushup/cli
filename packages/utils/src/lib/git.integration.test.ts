@@ -69,7 +69,7 @@ describe('safeCheckout', () => {
   });
 
   it('should checkout target branch in clean state', async () => {
-    await expect(safeCheckout('main')).resolves.toBe(void 0);
+    await expect(safeCheckout('main')).resolves.toBeUndefined();
     await expect(getCurrentBranchOrTag()).resolves.toBe('main');
   });
   it('should throw if history is dirty', async () => {
