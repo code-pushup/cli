@@ -22,7 +22,7 @@ export function branchHasChanges(): Promise<boolean> {
   return git.status(['-s']).then(r => r.files.length > 0);
 }
 
-export async function guardAgainstDirtyRepo(): Promise<void> {
+export async function guardAgainstLocalChanges(): Promise<void> {
   const isDirty = await branchHasChanges();
   if (isDirty) {
     throw new Error('Repository should be clean before we you can proceed. Commit your local changes or stash them.');
