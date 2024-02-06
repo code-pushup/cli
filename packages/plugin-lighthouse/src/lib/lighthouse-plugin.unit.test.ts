@@ -26,9 +26,9 @@ describe('lighthousePlugin-config-object', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
     expect(pluginConfig.audits[0]).toEqual(
-        expect.objectContaining({
-          slug: 'first-contentful-paint',
-        }),
+      expect.objectContaining({
+        slug: 'first-contentful-paint',
+      }),
     );
   });
 
@@ -59,14 +59,15 @@ describe('constants', () => {
     'should parse audit "%s" correctly',
     (slug, audit) => {
       expect(() => auditSchema.parse(audit)).not.toThrow();
-      expect(audit.description).toEqual(slug);
+      expect(audit.slug).toEqual(slug);
     },
   );
 
-  it.each(GROUPS.map(a => [a.slug, a]))(
+  it.each(GROUPS.map(g => [g.slug, g]))(
     'should parse group "%s" correctly',
-    (_, group) => {
+    (slug, group) => {
       expect(() => groupSchema.parse(group)).not.toThrow();
+      expect(group.slug).toEqual(slug);
     },
   );
 });
