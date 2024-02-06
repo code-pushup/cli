@@ -172,9 +172,7 @@ export function filterByAuditSlug<
   T extends {
     refs: GroupRef[];
   },
-  L extends T[],
-  S extends L[number]['refs'][number]['slug'],
->(groups: L, auditSlugs: S | S[]): L {
+>(groups: T[], auditSlugs: string | string[]): T[] {
   const slugs = toArray(auditSlugs);
   if (slugs.length === 0) {
     return groups;
@@ -182,24 +180,24 @@ export function filterByAuditSlug<
   return (
     groups
       // filter out groups that have no audits includes from onlyAudits (avoid empty groups)
-      .filter(group => group.refs.some(({ slug }) => slugs.includes(slug as S)))
+      .filter(group => group.refs.some(({ slug }) => slugs.includes(slug)))
       .map(group => {
         const groupsRefs = group.refs.filter(({ slug }) =>
-          slugs.includes(slug as S),
+          slugs.includes(slug),
         );
 
         return {
           ...group,
           refs: groupsRefs,
         };
-      }) as L
+      })
   );
 }
 
-export function filterBySlug<T extends Audit, L extends T[]>(
-  list: L,
-  auditSlugs: L[number]['slug'][] | L[number]['slug'],
-): L {
+export function filterBySlug<T extends Audit>(
+  list: T[],
+  auditSlugs: string[] | string,
+): T[] {
   const slugs = toArray(auditSlugs);
   if (slugs.length === 0) {
     return list;
@@ -208,5 +206,5 @@ export function filterBySlug<T extends Audit, L extends T[]>(
     throw new AuditsNotImplementedError(list, slugs);
   }
 
-  return list.filter(({ slug }) => slugs.includes(slug)) as L;
+  return list.filter(({ slug }) => slugs.includes(slug));
 }
