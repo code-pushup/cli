@@ -308,29 +308,13 @@ describe('portalCommitLink', () => {
     expect(
       portalCommitLink(
         {
-          server: 'https://code-pushup.com/graphql',
+          baseUrl: 'https://code-pushup.com',
           organization: 'code-pushup',
           project: 'cli',
         },
         '123',
       ),
     ).toBe('https://code-pushup.com/portal/code-pushup/cli/commit/123');
-  });
-
-  it('should take baseUrl if given', () => {
-    expect(
-      portalCommitLink(
-        {
-          baseUrl: 'https://code-pushup.com/from-base-url',
-          server: 'https://code-pushup.com/graphql',
-          organization: 'code-pushup',
-          project: 'cli',
-        },
-        '123',
-      ),
-    ).toBe(
-      'https://code-pushup.com/from-base-url/portal/code-pushup/cli/commit/123',
-    );
   });
 });
 
@@ -339,7 +323,7 @@ describe('portalCommitDashboardLink', () => {
     expect(
       portalCommitDashboardLink(
         {
-          server: 'https://code-pushup.com/graphql',
+          baseUrl: 'https://code-pushup.com/graphql',
           organization: 'code-pushup',
           project: 'cli',
         },

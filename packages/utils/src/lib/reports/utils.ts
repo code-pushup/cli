@@ -306,27 +306,30 @@ export function compareIssues(a: Issue, b: Issue): number {
   return 0;
 }
 
+export type CommitLinkOptions = Pick<
+  UploadConfig,
+  'project' | 'organization'
+> & {
+  baseUrl: string;
+};
+
 export function portalCommitLink(
-  config: Pick<UploadConfig, 'project' | 'organization' | 'server'> & {
-    baseUrl?: string;
-  },
+  config: CommitLinkOptions,
   commit: string,
 ): string {
-  const { organization, project, server } = config;
-  // https://portal-api-r6nh2xm7mq-ez.a.run.app/graphql
-  const urlObj = new URL(config.baseUrl || server);
+  const { organization, project, baseUrl } = config;
+  const urlObj = new URL(baseUrl);
+
   if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
     throw new Error(
       `Protocol ${urlObj.protocol} not supported. Supported protocols are http and https.`,
     );
   }
-  // Extract the base URL
-  const baseUrl = config.baseUrl || `${urlObj.protocol}//${urlObj.hostname}`;
   return `${baseUrl}/portal/${organization}/${project}/commit/${commit}`;
 }
 
 export function portalCommitDashboardLink(
-  config: Pick<UploadConfig, 'project' | 'organization' | 'server'>,
+  config: CommitLinkOptions,
   commit: string,
 ): string {
   return `${portalCommitLink(config, commit)}/dashboard`;
