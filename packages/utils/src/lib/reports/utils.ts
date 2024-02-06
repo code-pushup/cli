@@ -318,13 +318,6 @@ export function portalCommitLink(
   commit: string,
 ): string {
   const { organization, project, baseUrl } = config;
-  const urlObj = new URL(baseUrl);
-
-  if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
-    throw new Error(
-      `Protocol ${urlObj.protocol} not supported. Supported protocols are http and https.`,
-    );
-  }
   return `${baseUrl}/portal/${organization}/${project}/commit/${commit}`;
 }
 

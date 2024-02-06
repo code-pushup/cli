@@ -28,7 +28,11 @@ export function uploadSuccessfulLog(
   commit: string,
 ): void {
   ui().logger.success('Upload successful!');
-  ui().logger.success(link(portalCommitDashboardLink(options, commit)));
+  ui().logger.success(
+    link(
+      portalCommitDashboardLink({ ...options, baseUrl: '<portal>' }, commit),
+    ),
+  );
 }
 export function collectSuccessfulLog(): void {
   ui().logger.success('Collecting report successful!');
