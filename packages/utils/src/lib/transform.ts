@@ -1,5 +1,5 @@
 import { platform } from 'node:os';
-import { Audit, GroupRef } from '@code-pushup/models';
+import { Audit, Group } from '@code-pushup/models';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -168,11 +168,10 @@ export class AuditsNotImplementedError extends Error {
   }
 }
 
-export function filterByAuditSlug<
-  T extends {
-    refs: GroupRef[];
-  },
->(groups: T[], auditSlugs: string | string[]): T[] {
+export function filterByAuditSlug(
+  groups: Group[],
+  auditSlugs: string | string[],
+): Group[] {
   const slugs = toArray(auditSlugs);
   if (slugs.length === 0) {
     return groups;
@@ -194,10 +193,10 @@ export function filterByAuditSlug<
   );
 }
 
-export function filterBySlug<T extends Audit>(
-  list: T[],
+export function filterBySlug(
+  list: Audit[],
   auditSlugs: string[] | string,
-): T[] {
+): Audit[] {
   const slugs = toArray(auditSlugs);
   if (slugs.length === 0) {
     return list;
