@@ -1,5 +1,4 @@
 import { platform } from 'node:os';
-import { Audit, Group } from '@code-pushup/models';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -157,53 +156,3 @@ export function toOrdinal(value: number): string {
   return `${value}th`;
 }
 /* eslint-enable no-magic-numbers */
-
-export class AuditsNotImplementedError extends Error {
-  constructor(list: { slug: string }[], auditSlugs: string[]) {
-    super(
-      `audits: "${auditSlugs
-        .filter(slug => !list.some(a => a.slug === slug))
-        .join(', ')}" not implemented`,
-    );
-  }
-}
-
-export function filterByAuditSlug(
-  groups: Group[],
-  auditSlugs: string | string[],
-): Group[] {
-  const slugs = toArray(auditSlugs);
-  if (slugs.length === 0) {
-    return groups;
-  }
-  return (
-    groups
-      // filter out groups that have no audits includes from onlyAudits (avoid empty groups)
-      .filter(group => group.refs.some(({ slug }) => slugs.includes(slug)))
-      .map(group => {
-        const groupsRefs = group.refs.filter(({ slug }) =>
-          slugs.includes(slug),
-        );
-
-        return {
-          ...group,
-          refs: groupsRefs,
-        };
-      })
-  );
-}
-
-export function filterBySlug(
-  list: Audit[],
-  auditSlugs: string[] | string,
-): Audit[] {
-  const slugs = toArray(auditSlugs);
-  if (slugs.length === 0) {
-    return list;
-  }
-  if (slugs.some(slug => !list.some(wS => wS.slug === slug))) {
-    throw new AuditsNotImplementedError(list, slugs);
-  }
-
-  return list.filter(({ slug }) => slugs.includes(slug));
-}
