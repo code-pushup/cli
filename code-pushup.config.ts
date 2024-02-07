@@ -48,6 +48,35 @@ const config: CoreConfig = {
     }),
 
   plugins: [
+    await eslintPlugin(await eslintConfigFromNxProjects()),
+    coveragePlugin({
+      reports: [
+        {
+          resultsPath: 'coverage/cli/unit-tests/lcov.info',
+          pathToProject: 'packages/cli',
+        },
+        {
+          resultsPath: 'coverage/core/unit-tests/lcov.info',
+          pathToProject: 'packages/core',
+        },
+        {
+          resultsPath: 'coverage/models/unit-tests/lcov.info',
+          pathToProject: 'packages/models',
+        },
+        {
+          resultsPath: 'coverage/utils/unit-tests/lcov.info',
+          pathToProject: 'packages/utils',
+        },
+        {
+          resultsPath: 'coverage/plugin-eslint/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-eslint',
+        },
+        {
+          resultsPath: 'coverage/plugin-coverage/unit-tests/lcov.info',
+          pathToProject: 'packages/plugin-coverage',
+        },
+      ],
+    }),
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -59,9 +88,51 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
+
+    await lighthousePlugin({
+      url: 'https://staging.code-pushup.dev/login',
+      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      headless: true,
+    }),
   ],
 
   categories: [
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+    },
+    {
+      slug: 'code-style',
+      title: 'Code style',
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+    {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'function-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'branch-coverage',
+          weight: 1,
+        },
+        {
+          type: 'audit',
+          plugin: 'coverage',
+          slug: 'line-coverage',
+          weight: 1,
+        },
+      ],
+    },
     {
       slug: 'custom-checks',
       title: 'Custom checks',
@@ -69,6 +140,7 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],
