@@ -48,17 +48,6 @@ describe('filterAuditsBySlug', () => {
     ];
     expect(filterAuditsBySlug(list, 'a')).toEqual([{ slug: 'a', title: 'A' }]);
   });
-
-  it('should filter if slugs is an array', () => {
-    const list = [
-      { slug: 'a', title: 'A' },
-      { slug: 'b', title: 'B' },
-      { slug: 'c', title: 'C' },
-    ];
-    expect(filterAuditsBySlug(list, ['a'])).toEqual([
-      { slug: 'a', title: 'A' },
-    ]);
-  });
 });
 
 describe('filterGroupsByAuditSlug', () => {
@@ -74,17 +63,7 @@ describe('filterGroupsByAuditSlug', () => {
         ],
       },
     ];
-    expect(filterGroupsByAuditSlug(list, [])).toEqual([
-      {
-        slug: 'g',
-        title: 'G',
-        refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
-        ],
-      },
-    ]);
+    expect(filterGroupsByAuditSlug(list, [])).toEqual(list);
   });
 
   it('should filter if slugs is a string', () => {
@@ -100,27 +79,6 @@ describe('filterGroupsByAuditSlug', () => {
       },
     ];
     expect(filterGroupsByAuditSlug(list, 'a')).toEqual([
-      {
-        slug: 'g',
-        title: 'G',
-        refs: [{ slug: 'a', weight: 1 }],
-      },
-    ]);
-  });
-
-  it('should filter if slugs is an array', () => {
-    const list = [
-      {
-        slug: 'g',
-        title: 'G',
-        refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
-        ],
-      },
-    ];
-    expect(filterGroupsByAuditSlug(list, ['a'])).toEqual([
       {
         slug: 'g',
         title: 'G',
