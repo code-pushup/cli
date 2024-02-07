@@ -33,7 +33,8 @@ export function filterAuditsBySlug(
 
 export function filterSlug<T extends { slug: string }>(
   refs: T[],
-  slugs: string | string[],
+  slugOrSlugs: string | string[],
 ): T[] {
+  const slugs = toArray(slugOrSlugs);
   return refs.filter(({ slug }) => slugs.includes(slug));
 }
