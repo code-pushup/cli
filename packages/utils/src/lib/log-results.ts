@@ -1,10 +1,11 @@
 import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
+import {ui} from "./logging";
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
   messagePrefix: string,
-  succeededCallback?: (result: PromiseFulfilledResult<T>) => void,
-  failedCallback?: (result: PromiseRejectedResult) => void,
+  succeededCallback?: (result: PromiseFulfilledResult<T>) => string,
+  failedCallback?: (result: PromiseRejectedResult) => string,
 ) {
   if (succeededCallback) {
     const succeededResults = results.filter(isPromiseFulfilledResult);
@@ -29,14 +30,17 @@ export function logMultipleResults<T>(
 
 export function logPromiseResults<
   T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
->(results: T[], logMessage: string, callback: (result: T) => void): void {
+>(results: T[], logMessage: string, getMsg: (result: T) => string): void {
   if (results.length > 0) {
-    if (results[0]?.status === 'fulfilled') {
-      console.info(logMessage);
-    } else {
-      console.warn(logMessage);
+    const log = results[0]?.status === 'fulfilled' ? (m: string) => {
+      ui().logger.info(m)
+    } : (m: string) => {
+      ui().logger.warning(m);
     }
 
-    results.forEach(callback);
+    log(logMessage);
+    results.forEach((result) => {
+      log(getMsg(result))
+    });
   }
 }

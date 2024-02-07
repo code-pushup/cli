@@ -1,7 +1,9 @@
+import { ui } from './logging';
+
 function getLogVerbose(verbose = false) {
-  return (...args: unknown[]) => {
+  return (msg: string) => {
     if (verbose) {
-      console.info(...args);
+      ui().logger.info(msg);
     }
   };
 }

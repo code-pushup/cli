@@ -1,18 +1,6 @@
-import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
 import { UploadConfig } from '@code-pushup/models';
-import { link, portalCommitDashboardLink } from '@code-pushup/utils';
-
-export type CliUi = ReturnType<typeof cliui>;
-
-// eslint-disable-next-line import/no-mutable-exports,functional/no-let
-export let singletonUiInstance: CliUi | undefined;
-export function ui(): CliUi {
-  if (singletonUiInstance === undefined) {
-    singletonUiInstance = cliui();
-  }
-  return singletonUiInstance;
-}
+import { link, portalCommitDashboardLink, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   ui().logger.info(
@@ -23,6 +11,7 @@ export function renderConfigureCategoriesHint(): void {
     ),
   );
 }
+
 export function uploadSuccessfulLog(
   options: UploadConfig,
   commit: string,
@@ -38,6 +27,7 @@ export function uploadSuccessfulLog(
     ),
   );
 }
+
 export function collectSuccessfulLog(): void {
   ui().logger.success('Collecting report successful!');
 }

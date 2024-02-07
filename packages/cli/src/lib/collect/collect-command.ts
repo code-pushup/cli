@@ -4,12 +4,11 @@ import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { link } from '@code-pushup/utils';
+import { link, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
-  ui,
 } from '../implementation/logging';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 

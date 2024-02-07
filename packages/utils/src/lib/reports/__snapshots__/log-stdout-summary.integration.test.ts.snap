@@ -7,17 +7,17 @@ exports[`generateStdoutSummary > should contain all sections when using the fixt
 ESLint audits
 
 ● Disallow missing props validation in a React component definition   6 warnings
-● Disallow variable declarations from shadowing variables declared    3 warnings
-  in the outer scope
-● Require or disallow method and property shorthand syntax for        3 warnings
-  object literals
+● Disallow variable declarations from shadowing variables declared in 3 warnings
+the outer scope
+● Require or disallow method and property shorthand syntax for object 3 warnings
+literals
 ● verifies the list of dependencies for Hooks like useEffect and      2 warnings
-  similar
+similar
 ● Disallow missing \`key\` props in iterators/collection literals       1 warning
 ● Disallow unused variables                                           1 warning
 ● Enforce a maximum number of lines of code in a function             1 warning
-● Require \`const\` declarations for variables that are never           1 warning
-  reassigned after declared
+● Require \`const\` declarations for variables that are never reassigned1 warning
+after declared
 ● Require braces around arrow function bodies                         1 warning
 ● Require the use of \`===\` and \`!==\`                                  1 warning
 ● Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`     passed
@@ -25,8 +25,7 @@ ESLint audits
 ● Disallow comments from being inserted as text nodes                 passed
 ● Disallow direct mutation of this.state                              passed
 ● Disallow duplicate properties in JSX                                passed
-● Disallow invalid regular expression strings in \`RegExp\`             passed
-  constructors
+● Disallow invalid regular expression strings in \`RegExp\` constructorspassed
 ● Disallow loops with a body that allows only one iteration           passed
 ● Disallow missing displayName in a React component definition        passed
 ● Disallow missing React when using JSX                               passed
@@ -36,7 +35,7 @@ ESLint audits
 ● Disallow reassigning \`const\` variables                              passed
 ● Disallow the use of \`debugger\`                                      passed
 ● Disallow the use of undeclared variables unless mentioned in        passed
-  \`/*global */\` comments
+\`/*global */\` comments
 ● Disallow undeclared variables in JSX                                passed
 ● Disallow unescaped HTML entities from appearing in markup           passed
 ● Disallow usage of deprecated methods                                passed
@@ -44,14 +43,14 @@ ESLint audits
 ● Disallow usage of isMounted                                         passed
 ● Disallow usage of the return value of ReactDOM.render               passed
 ● Disallow usage of unknown DOM property                              passed
-● Disallow use of optional chaining in contexts where the             passed
-  \`undefined\` value is not allowed
+● Disallow use of optional chaining in contexts where the \`undefined\` passed
+value is not allowed
 ● Disallow using Object.assign with an object literal as the first    passed
-  argument and prefer the use of object spread instead
+argument and prefer the use of object spread instead
 ● Disallow using string references                                    passed
 ● Disallow variables used in JSX to be incorrectly marked as unused   passed
 ● Disallow when a DOM element is using both children and              passed
-  dangerouslySetInnerHTML
+dangerouslySetInnerHTML
 ● Enforce a maximum number of lines per file                          passed
 ● Enforce camelcase naming convention                                 passed
 ● Enforce comparing \`typeof\` expressions against valid strings        passed
@@ -72,21 +71,13 @@ Lighthouse audits
 ● Cumulative Layout Shift                                             0
 ● Total Blocking Time                                                 0 ms
 
-
 Categories
 
-┌─────────────────────────────────────────────────────────────┬───────┬────────┐
-│ Category                                                    │ Score │ Audits │
-├─────────────────────────────────────────────────────────────┼───────┼────────┤
-│ Performance                                                 │    92 │      6 │
-├─────────────────────────────────────────────────────────────┼───────┼────────┤
-│ Bug prevention                                              │    68 │     16 │
-├─────────────────────────────────────────────────────────────┼───────┼────────┤
-│ Code style                                                  │    54 │     13 │
-└─────────────────────────────────────────────────────────────┴───────┴────────┘
-
-Made with ❤ by code-pushup.dev
-"
+Category|Score|Audits
+Performance|92|6
+Bug prevention|68|16
+Code style|54|13
+Made with ❤ by code-pushup.dev"
 `;
 
 exports[`generateStdoutSummary > should not contain category section when categories are empty 1`] = `
@@ -96,17 +87,17 @@ exports[`generateStdoutSummary > should not contain category section when catego
 ESLint audits
 
 ● Disallow missing props validation in a React component definition   6 warnings
-● Disallow variable declarations from shadowing variables declared    3 warnings
-  in the outer scope
-● Require or disallow method and property shorthand syntax for        3 warnings
-  object literals
+● Disallow variable declarations from shadowing variables declared in 3 warnings
+the outer scope
+● Require or disallow method and property shorthand syntax for object 3 warnings
+literals
 ● verifies the list of dependencies for Hooks like useEffect and      2 warnings
-  similar
+similar
 ● Disallow missing \`key\` props in iterators/collection literals       1 warning
 ● Disallow unused variables                                           1 warning
 ● Enforce a maximum number of lines of code in a function             1 warning
-● Require \`const\` declarations for variables that are never           1 warning
-  reassigned after declared
+● Require \`const\` declarations for variables that are never reassigned1 warning
+after declared
 ● Require braces around arrow function bodies                         1 warning
 ● Require the use of \`===\` and \`!==\`                                  1 warning
 ● Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`     passed
@@ -114,8 +105,7 @@ ESLint audits
 ● Disallow comments from being inserted as text nodes                 passed
 ● Disallow direct mutation of this.state                              passed
 ● Disallow duplicate properties in JSX                                passed
-● Disallow invalid regular expression strings in \`RegExp\`             passed
-  constructors
+● Disallow invalid regular expression strings in \`RegExp\` constructorspassed
 ● Disallow loops with a body that allows only one iteration           passed
 ● Disallow missing displayName in a React component definition        passed
 ● Disallow missing React when using JSX                               passed
@@ -125,7 +115,7 @@ ESLint audits
 ● Disallow reassigning \`const\` variables                              passed
 ● Disallow the use of \`debugger\`                                      passed
 ● Disallow the use of undeclared variables unless mentioned in        passed
-  \`/*global */\` comments
+\`/*global */\` comments
 ● Disallow undeclared variables in JSX                                passed
 ● Disallow unescaped HTML entities from appearing in markup           passed
 ● Disallow usage of deprecated methods                                passed
@@ -133,14 +123,14 @@ ESLint audits
 ● Disallow usage of isMounted                                         passed
 ● Disallow usage of the return value of ReactDOM.render               passed
 ● Disallow usage of unknown DOM property                              passed
-● Disallow use of optional chaining in contexts where the             passed
-  \`undefined\` value is not allowed
+● Disallow use of optional chaining in contexts where the \`undefined\` passed
+value is not allowed
 ● Disallow using Object.assign with an object literal as the first    passed
-  argument and prefer the use of object spread instead
+argument and prefer the use of object spread instead
 ● Disallow using string references                                    passed
 ● Disallow variables used in JSX to be incorrectly marked as unused   passed
 ● Disallow when a DOM element is using both children and              passed
-  dangerouslySetInnerHTML
+dangerouslySetInnerHTML
 ● Enforce a maximum number of lines per file                          passed
 ● Enforce camelcase naming convention                                 passed
 ● Enforce comparing \`typeof\` expressions against valid strings        passed
@@ -161,7 +151,5 @@ Lighthouse audits
 ● Cumulative Layout Shift                                             0
 ● Total Blocking Time                                                 0 ms
 
-
-Made with ❤ by code-pushup.dev
-"
+Made with ❤ by code-pushup.dev"
 `;

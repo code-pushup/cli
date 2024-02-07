@@ -1,11 +1,10 @@
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { UploadOptions, upload } from '@code-pushup/core';
-import { getLatestCommit, validateCommitData } from '@code-pushup/utils';
+import { getLatestCommit, ui, validateCommitData } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
   renderIntegratePortalHint,
-  ui,
   uploadSuccessfulLog,
 } from '../implementation/logging';
 

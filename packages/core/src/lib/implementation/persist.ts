@@ -5,9 +5,9 @@ import {
   MultipleFileResults,
   directoryExists,
   generateMdReport,
-  generateStdoutSummary,
   getLatestCommit,
   logMultipleFileResults,
+  logStdoutSummary,
   scoreReport,
   sortReport,
   validateCommitData,
@@ -32,7 +32,8 @@ export async function persistReport(
   const { outputDir, filename, format } = options;
 
   const sortedScoredReport = sortReport(scoreReport(report));
-  console.info(generateStdoutSummary(sortedScoredReport));
+  // terminal output
+  logStdoutSummary(sortedScoredReport);
 
   // collect physical format outputs
   const results = await Promise.all(

@@ -42,7 +42,7 @@ export { logMultipleResults } from './lib/log-results';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export { TERMINAL_WIDTH } from './lib/reports/constants';
 export { generateMdReport } from './lib/reports/generate-md-report';
-export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
+export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { ScoredReport, scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
 export {
@@ -70,7 +70,7 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
-export { link } from './lib/logging';
+export { link, ui, Column } from './lib/logging';
 export {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,

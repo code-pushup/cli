@@ -1,4 +1,5 @@
 import { simpleGit } from 'simple-git';
+import { ui } from './logging';
 
 export type CommitData = {
   hash: string;
@@ -28,7 +29,7 @@ export function validateCommitData(
     if (throwError) {
       throw new Error(msg);
     } else {
-      console.warn(msg);
+      ui().logger.warning(msg);
       return false;
     }
   }
