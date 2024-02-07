@@ -14,7 +14,7 @@ describe('filterSlug', () => {
   it('should return a empty list if no slugs are matching', () => {
     const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
     // test bad case: 'aa'.includes('a') would fail here
-    expect(filterSlug(list, 'aa')).toEqual([{ slug: 'a' }]);
+    expect(filterSlug(list, 'aa')).toEqual([]);
   });
 
   it('should filter if slugs is a string', () => {
