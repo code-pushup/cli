@@ -61,7 +61,7 @@ export function validateOnlyAudits(
   onlyAudits: string | string[],
 ): audits is Audit[] {
   const missingAudtis = toArray(onlyAudits).filter(
-    slug => !audits.some(wS => wS.slug === slug),
+    slug => !audits.some(audit => audit.slug === slug),
   );
   if (missingAudtis.length > 0) {
     throw new AuditsNotImplementedError(missingAudtis);

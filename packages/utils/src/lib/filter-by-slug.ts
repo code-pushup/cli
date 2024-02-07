@@ -1,7 +1,7 @@
 import { Audit, Group } from '@code-pushup/models';
 import { toArray } from './transform';
 
-export function filterByAuditSlug(
+export function filterGroupsByAuditSlug(
   groups: Group[],
   auditSlugs: string | string[],
 ): Group[] {
@@ -20,7 +20,7 @@ export function filterByAuditSlug(
   );
 }
 
-export function filterBySlug(
+export function filterAuditsBySlug(
   list: Audit[],
   auditSlugs: string[] | string,
 ): Audit[] {

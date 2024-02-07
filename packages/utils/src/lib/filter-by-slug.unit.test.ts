@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { filterByAuditSlug, filterBySlug, filterSlug } from './filter-by-slug';
+import {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+  filterSlug,
+} from './filter-by-slug';
 
 describe('filterSlug', () => {
   it('should return a empty list if no slugs are given', () => {
@@ -25,7 +29,7 @@ describe('filterBySlug', () => {
       { slug: 'b', title: 'B' },
       { slug: 'c', title: 'C' },
     ];
-    expect(filterBySlug(list, [])).toEqual(list);
+    expect(filterAuditsBySlug(list, [])).toEqual(list);
   });
 
   it('should filter if slugs is a string', () => {
@@ -34,7 +38,7 @@ describe('filterBySlug', () => {
       { slug: 'b', title: 'B' },
       { slug: 'c', title: 'C' },
     ];
-    expect(filterBySlug(list, 'a')).toEqual([{ slug: 'a', title: 'A' }]);
+    expect(filterAuditsBySlug(list, 'a')).toEqual([{ slug: 'a', title: 'A' }]);
   });
 
   it('should filter if slugs is an array', () => {
@@ -43,7 +47,9 @@ describe('filterBySlug', () => {
       { slug: 'b', title: 'B' },
       { slug: 'c', title: 'C' },
     ];
-    expect(filterBySlug(list, ['a'])).toEqual([{ slug: 'a', title: 'A' }]);
+    expect(filterAuditsBySlug(list, ['a'])).toEqual([
+      { slug: 'a', title: 'A' },
+    ]);
   });
 });
 
@@ -60,7 +66,7 @@ describe('filterByAuditSlug', () => {
         ],
       },
     ];
-    expect(filterByAuditSlug(list, [])).toEqual([
+    expect(filterGroupsByAuditSlug(list, [])).toEqual([
       {
         slug: 'g',
         title: 'G',
@@ -85,7 +91,7 @@ describe('filterByAuditSlug', () => {
         ],
       },
     ];
-    expect(filterByAuditSlug(list, 'a')).toEqual([
+    expect(filterGroupsByAuditSlug(list, 'a')).toEqual([
       {
         slug: 'g',
         title: 'G',
@@ -106,7 +112,7 @@ describe('filterByAuditSlug', () => {
         ],
       },
     ];
-    expect(filterByAuditSlug(list, ['a'])).toEqual([
+    expect(filterGroupsByAuditSlug(list, ['a'])).toEqual([
       {
         slug: 'g',
         title: 'G',
