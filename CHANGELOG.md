@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.16.0](https://github.com/code-pushup/cli/compare/v0.15.0...v0.16.0) (2024-02-07)
+
+### Features
+
+- **plugin-lighthouse:** add onlyAudits logic ([#472](https://github.com/code-pushup/cli/issues/472)) ([d45eac4](https://github.com/code-pushup/cli/commit/d45eac4fe9fa509f6807825f881bf26b2acb4343))
+
 # [0.15.0](https://github.com/code-pushup/cli/compare/v0.14.4...v0.15.0) (2024-02-06)
 
 ### Features
