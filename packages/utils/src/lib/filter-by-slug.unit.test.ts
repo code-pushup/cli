@@ -6,14 +6,16 @@ import {
 } from './filter-by-slug';
 
 describe('filterSlug', () => {
-  it('should return a empty list if no slugs are given', () => {
+  it('should return an empty list if no slugs are given', () => {
     const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
     expect(filterSlug(list, [])).toEqual([]);
   });
 
-  it('should return a empty list if no slugs are matching', () => {
+  it('should return an empty list if no slugs are matching', () => {
     const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
-    // test bad case: 'aa'.includes('a') would fail here
+    // test bad case:
+    // 'aa'.includes('a') // fail
+    // ['aa'].includes('a') // passes
     expect(filterSlug(list, 'aa')).toEqual([]);
   });
 
