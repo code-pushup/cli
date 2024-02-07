@@ -1,5 +1,10 @@
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import { Audit, AuditOutputs, Group, PluginConfig } from '@code-pushup/models';
+import {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+} from '@code-pushup/utils';
 import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
+import { validateOnlyAudits } from './utils';
 
 export type LighthousePluginOptions = {
   url: string;
@@ -10,16 +15,23 @@ export type LighthousePluginOptions = {
   userDataDir?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function lighthousePlugin(_: LighthousePluginOptions): PluginConfig {
+export function lighthousePlugin(
+  options: LighthousePluginOptions,
+): PluginConfig {
+  const { onlyAudits = [] } = options;
+
+  validateOnlyAudits(AUDITS, onlyAudits);
+  const audits: Audit[] = filterAuditsBySlug(AUDITS, onlyAudits);
+  const groups: Group[] = filterGroupsByAuditSlug(GROUPS, onlyAudits);
+
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: 'Lighthouse',
     icon: 'lighthouse',
-    audits: AUDITS,
-    groups: GROUPS,
+    audits,
+    groups,
     runner: (): AuditOutputs =>
-      AUDITS.map(audit => ({
+      audits.map(audit => ({
         ...audit,
         score: 0,
         value: 0,

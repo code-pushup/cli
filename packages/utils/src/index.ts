@@ -71,3 +71,7 @@ export {
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { link } from './lib/logging';
+export {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+} from './lib/filter-by-slug';
