@@ -11,6 +11,12 @@ describe('filterSlug', () => {
     expect(filterSlug(list, [])).toEqual([]);
   });
 
+  it('should return a empty list if no slugs are matching', () => {
+    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
+    // test bad case: 'aa'.includes('a') would fail here
+    expect(filterSlug(list, 'aa')).toEqual([{ slug: 'a' }]);
+  });
+
   it('should filter if slugs is a string', () => {
     const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
     expect(filterSlug(list, 'a')).toEqual([{ slug: 'a' }]);
@@ -22,7 +28,7 @@ describe('filterSlug', () => {
   });
 });
 
-describe('filterBySlug', () => {
+describe('filterAuditsBySlug', () => {
   it('should return the given list if no slugs are given', () => {
     const list = [
       { slug: 'a', title: 'A' },
@@ -53,7 +59,7 @@ describe('filterBySlug', () => {
   });
 });
 
-describe('filterByAuditSlug', () => {
+describe('filterGroupsByAuditSlug', () => {
   it('should return the given list if no slugs are given', () => {
     const list = [
       {

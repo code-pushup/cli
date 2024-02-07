@@ -35,6 +35,6 @@ export function filterSlug<T extends { slug: string }>(
   refs: T[],
   slugOrSlugs: string | string[],
 ): T[] {
-  const slugs = toArray(slugOrSlugs);
-  return refs.filter(({ slug }) => slugs.includes(slug));
+
+  return refs.filter(({ slug }) => slugOrSlugs.includes(slug));
 }
