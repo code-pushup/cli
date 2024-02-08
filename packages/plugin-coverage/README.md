@@ -1,4 +1,4 @@
-# @code-pushup/coverage-plugin
+# @code-pushup/coverage-plugin [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcoverage-plugin.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcoverage-plugin)
 
 🧪 **Code PushUp plugin for tracking code coverage.** ☂️
 
