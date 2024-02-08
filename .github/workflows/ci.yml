@@ -82,10 +82,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Unit test affected projects
-        uses: Wandalen/wretry.action@master
-        with:
-          command: npx nx affected -t unit-test --parallel=3 --coverage
-          attempt_limit: 2
+        run: npx nx affected -t unit-test --parallel=3 --coverage
 
   integration-test:
     strategy:
@@ -109,10 +106,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Integration test affected projects
-        uses: Wandalen/wretry.action@master
-        with:
-          command: npx nx affected -t integration-test --parallel=3 --coverage
-          attempt_limit: 2
+        run: npx nx affected -t integration-test --parallel=3 --coverage
 
   e2e:
     strategy:
