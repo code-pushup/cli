@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
+import { ui } from '@code-pushup/utils';
 
 export function filterPluginsBySlug(
   plugins: CoreConfig['plugins'],
@@ -32,7 +33,7 @@ export function filterCategoryByPluginSlug(
       const isNotSkipped = onlyPlugins.includes(ref.slug);
 
       if (!isNotSkipped && verbose) {
-        console.info(
+        ui().logger.info(
           `${chalk.yellow('⚠')} Category "${
             category.title
           }" is ignored because it references audits from skipped plugin "${
@@ -58,7 +59,7 @@ export function validateOnlyPluginsOption(
     : [];
 
   if (missingPlugins.length > 0 && verbose) {
-    console.warn(
+    ui().logger.warning(
       `${chalk.yellow(
         '⚠',
       )} The --onlyPlugin argument references plugins with "${missingPlugins.join(

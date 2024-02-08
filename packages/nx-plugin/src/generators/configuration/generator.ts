@@ -8,6 +8,7 @@ import {
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AddToProjectGeneratorSchema } from './schema';
+import {ui} from "@code-pushup/utils";
 
 export async function addToProjectGenerator(
   tree: Tree,
@@ -18,7 +19,7 @@ export async function addToProjectGenerator(
   const { root, targets } = projectConfiguration;
 
   if (tree.exists(join(root, 'code-pushup.config.ts'))) {
-    console.info('Code PushUp already configured for this project');
+    ui().logger.info('Code PushUp already configured for this project');
     return;
   }
 

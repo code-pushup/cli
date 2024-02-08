@@ -10,7 +10,7 @@ import {
   logStdoutSummary,
   scoreReport,
   sortReport,
-  validateCommitData,
+  validateCommitData, ui,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -59,7 +59,7 @@ export async function persistReport(
     try {
       await mkdir(outputDir, { recursive: true });
     } catch (error) {
-      console.warn(error);
+      ui().logger.warning((error as Error).toString());
       throw new PersistDirError(outputDir);
     }
   }
@@ -82,7 +82,7 @@ async function persistResult(reportPath: string, content: string) {
       .then(() => stat(reportPath))
       .then(stats => [reportPath, stats.size] as const)
       .catch(error => {
-        console.warn(error);
+        ui().logger.warning((error as Error).toString());
         throw new PersistError(reportPath);
       })
   );

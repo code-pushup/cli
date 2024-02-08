@@ -12,15 +12,11 @@ import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
+
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
-  afterEach(() => {
-    ui().flushLogs();
-  });
+
 
   it('should print a summary to stdout when no format is specified', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
