@@ -4,7 +4,7 @@ import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
-import {ui} from "./logging";
+import { ui } from './logging';
 
 export async function readTextFile(path: string): Promise<string> {
   const buffer = await readFile(path);
@@ -58,7 +58,8 @@ export function logMultipleFileResults(
     const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
     return `- ${chalk.bold(fileName)}${formattedSize}`;
   };
-  const failedCallback = (result: PromiseRejectedResult) => `- ${chalk.bold(result.reason)}`;
+  const failedCallback = (result: PromiseRejectedResult) =>
+    `- ${chalk.bold(result.reason)}`;
 
   logMultipleResults<FileResult>(
     fileResults,

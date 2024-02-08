@@ -1,38 +1,53 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
 } from '@code-pushup/testing-utils';
+import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
+  beforeAll(() => {
+    ui().switchMode('raw');
+  });
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
+  afterEach(() => {
+    ui().flushLogs();
+  });
 
-  it('should print a summary to stdout when no format is specified`', async () => {
+  it('should print a summary to stdout when no format is specified', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: [],
     });
-    expect(console.info).toHaveBeenCalledWith(
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
 
-  it('should print a summary to stdout when all formats are specified`', async () => {
+  it('should print a summary to stdout when all formats are specified', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['md', 'json'],
     });
-    expect(console.info).toHaveBeenCalledWith(
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
@@ -98,33 +113,31 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
+  beforeAll(() => {
+    ui().switchMode('raw');
+  });
+  afterEach(() => {
+    ui().flushLogs();
+  });
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports successfully: ',
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs[0]).toBe('[ blue(info) ] Generated reports successfully: ');
+    expect(logs[1]).toContain('9.77 kB');
+    expect(logs[1]).toContain('out.json');
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-
-    expect(console.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed: ',
-    );
-    expect(console.warn).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('fail'),
-    );
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
+    expect(logs[1]).toContain('fail');
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -132,27 +145,15 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs[0]).toBe('[ blue(info) ] Generated reports successfully: ');
+    expect(logs[1]).toContain('out.json');
+    expect(logs[1]).toContain('9.77 kB');
 
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports successfully: ',
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-
-    expect(console.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed: ',
-    );
-    expect(console.warn).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('fail'),
-    );
+    expect(logs[2]).toBe('[ yellow(warn) ] Generated reports failed: ');
+    expect(logs[3]).toContain('fail');
   });
 });

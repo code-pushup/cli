@@ -8,7 +8,7 @@ type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;
 export type CliUiBase = ReturnType<typeof cliui>;
 type UI = ReturnType<typeof isaacs_cliui>;
 type CliExtension = {
-  row: (r: ArgumentsType<UI['div']>) => void,
+  row: (r: ArgumentsType<UI['div']>) => void;
   flushLogs: () => void;
 };
 export type Column = {
@@ -17,7 +17,7 @@ export type Column = {
   align?: 'right' | 'left' | 'center';
   padding: number[];
   border?: boolean;
-}
+};
 export type CliUi = CliUiBase & CliExtension;
 
 // eslint-disable-next-line import/no-mutable-exports,functional/no-let
@@ -36,7 +36,9 @@ export function ui(): CliUi {
       // eslint-disable-next-line functional/immutable-data
       logs?.splice(0, logs.length);
     },
-    row: args => { logListItem(args); }
+    row: args => {
+      logListItem(args);
+    },
   };
 }
 

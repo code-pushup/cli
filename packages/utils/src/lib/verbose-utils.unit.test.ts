@@ -1,6 +1,6 @@
-import {beforeAll, describe, expect, it} from 'vitest';
-import {ui} from './logging';
-import {verboseUtils} from './verbose-utils';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { ui } from './logging';
+import { verboseUtils } from './verbose-utils';
 
 describe('verbose-utils', () => {
   beforeAll(() => {

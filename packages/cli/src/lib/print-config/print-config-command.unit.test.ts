@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect } from 'vitest';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { ui } from '@code-pushup/utils';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
 

@@ -1,7 +1,7 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {FileResult} from './file-system';
-import {logMultipleResults, logPromiseResults} from './log-results';
-import {ui} from "./logging";
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { FileResult } from './file-system';
+import { logMultipleResults, logPromiseResults } from './log-results';
+import { ui } from './logging';
 
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
@@ -26,7 +26,7 @@ describe('logMultipleResults', () => {
 
   it('should call logPromiseResults with failed plugin result', () => {
     logMultipleResults(
-      [{status: 'rejected', reason: 'fail'} as PromiseRejectedResult],
+      [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports',
       succeededCallbackMock,
       failedCallbackMock,
@@ -43,7 +43,7 @@ describe('logMultipleResults', () => {
           status: 'fulfilled',
           value: ['out.json', 10_000],
         } as PromiseFulfilledResult<FileResult>,
-        {status: 'rejected', reason: 'fail'} as PromiseRejectedResult,
+        { status: 'rejected', reason: 'fail' } as PromiseRejectedResult,
       ],
       'Generated reports',
       succeededCallbackMock,
@@ -73,20 +73,26 @@ describe('logPromiseResults', () => {
         } as PromiseFulfilledResult<FileResult>,
       ],
       'Uploaded reports successfully:',
-      (result): string => result.value.toString()
+      (result): string => result.value.toString(),
     );
-    const logs = ui().logger.getRenderer().getLogs().map(({message}) => message);
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
     expect(logs[0]).toBe('[ blue(info) ] Uploaded reports successfully:');
     expect(logs[1]).toBe('[ blue(info) ] out.json');
   });
 
   it('should log on fail', () => {
     logPromiseResults(
-      [{status: 'rejected', reason: 'fail'} as PromiseRejectedResult],
+      [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed:',
-      (result: {reason: string}) => result.reason.toString()
+      (result: { reason: string }) => result.reason.toString(),
     );
-    const logs = ui().logger.getRenderer().getLogs().map(({message}) => message);
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
     expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed:');
     expect(logs[1]).toBe('[ yellow(warn) ] fail');
   });

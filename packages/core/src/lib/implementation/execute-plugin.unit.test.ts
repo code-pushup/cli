@@ -1,10 +1,11 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
 } from '@code-pushup/testing-utils';
+import { ui } from '@code-pushup/utils';
 import {
   PluginOutputMissingAuditError,
   executePlugin,
@@ -89,6 +90,12 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
+  beforeAll(() => {
+    ui().switchMode('raw');
+  });
+  afterEach(() => {
+    ui().flushLogs();
+  });
   it('should execute valid plugins', async () => {
     const pluginResult = await executePlugins(
       [
@@ -144,8 +151,13 @@ describe('executePlugins', () => {
     ).rejects.toThrow(
       'Plugins failed: 2 errors: plugin 1 error, plugin 3 error',
     );
-    expect(console.error).toHaveBeenCalledWith('plugin 1 error');
-    expect(console.error).toHaveBeenCalledWith('plugin 3 error');
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
+    expect(logs[1]).toBe('[ yellow(warn) ] plugin 1 error');
+    expect(logs[2]).toBe('[ yellow(warn) ] plugin 3 error');
     expect(pluginConfig.runner).toHaveBeenCalled();
     expect(pluginConfig2.runner).toHaveBeenCalled();
     expect(pluginConfig3.runner).toHaveBeenCalled();

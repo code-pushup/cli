@@ -22,7 +22,7 @@ export function logStdoutSummary(report: ScoredReport): void {
   log(reportToHeaderSection(report));
   log();
   logPlugins(report);
-  if(printCategories) {
+  if (printCategories) {
     logCategories(report);
   }
   log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
