@@ -10,7 +10,8 @@ import {
   logStdoutSummary,
   scoreReport,
   sortReport,
-  validateCommitData, ui,
+  ui,
+  validateCommitData,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {

@@ -7,8 +7,8 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ui } from '@code-pushup/utils';
 import { AddToProjectGeneratorSchema } from './schema';
-import {ui} from "@code-pushup/utils";
 
 export async function addToProjectGenerator(
   tree: Tree,

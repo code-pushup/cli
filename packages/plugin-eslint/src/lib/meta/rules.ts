@@ -1,5 +1,5 @@
 import type { ESLint, Linter, Rule } from 'eslint';
-import {distinct, toArray, ui} from '@code-pushup/utils';
+import { distinct, toArray, ui } from '@code-pushup/utils';
 import { jsonHash } from './hash';
 
 export type RuleData = {

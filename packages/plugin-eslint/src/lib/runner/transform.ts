@@ -5,7 +5,8 @@ import {
   countOccurrences,
   objectToEntries,
   pluralizeToken,
-  truncateIssueMessage, ui,
+  truncateIssueMessage,
+  ui,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
