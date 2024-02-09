@@ -78,9 +78,6 @@ export function lhrDetailsToIssueDetails(
           .join(',')
           .slice(0, MAX_ISSUE_MESSAGE_LENGTH),
         severity: 'info',
-        source: {
-          file: 'required-in-portal-api',
-        },
       },
     ];
   }

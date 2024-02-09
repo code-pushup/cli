@@ -1,5 +1,4 @@
 import { AuditOutput, Issue } from '@code-pushup/models';
-import { findLineNumberInText } from '@code-pushup/utils';
 import { PackageJson, SourceResult, SourceResults } from './types';
 import {
   assertPropertyEmpty,
@@ -28,17 +27,14 @@ export function typeAudit(
     };
   }
 
-  const issues: Issue[] = packageJsonContents.map(({ file, json, content }) => {
+  const issues = packageJsonContents.map(({ file, json, content }): Issue => {
     // If type is undefined is defaults to 'commonjs'
     // https://nodejs.org/docs/latest-v13.x/api/esm.html#esm_package_json_type_field
     if (type === 'commonjs') {
       if (json.type === undefined) {
         return {
-          message: `Type is undefined. Defaults to commonjs.`,
+          message: 'Type is undefined. Defaults to commonjs.',
           severity: 'info',
-          source: {
-            file,
-          },
         };
       } else if (type !== json.type) {
         return assertTypeNotCommonJS({ file, json, content }, type);
@@ -56,9 +52,6 @@ export function typeAudit(
     return {
       message: `Type is ${json.type}`,
       severity: 'info',
-      source: {
-        file,
-      },
     };
   });
 
@@ -78,14 +71,9 @@ export function assertTypeNotCommonJS(
   result: SourceResult,
   value: unknown,
 ): Issue {
-  const { file, content, json } = result;
-  const startLine: null | number = findLineNumberInText(content, `"type":`);
+  const { json } = result;
   return {
     severity: 'error',
     message: `type should be undefined or ${value?.toString()} but is ${json.type?.toString()}`,
-    source: {
-      file,
-      ...(startLine == null ? {} : { position: { startLine } }),
-    },
   };
 }

@@ -12,7 +12,6 @@ import {
   factorOf,
   formatBytes,
   pluralizeToken,
-  toUnixPath,
 } from '@code-pushup/utils';
 
 export type PluginOptions = {
@@ -165,12 +164,6 @@ export function assertFileSize(
 ): Issue {
   // ensure size positive numbers
   const formattedSize = Math.max(size, 0);
-  // informative issue
-  const issue = {
-    source: {
-      file: toUnixPath(file, { toRelative: true }),
-    },
-  } satisfies Pick<Issue, 'source'>;
 
   if (budget !== undefined) {
     // ensure budget is positive numbers
@@ -178,19 +171,17 @@ export function assertFileSize(
     // return error Issue
     if (budget < formattedSize) {
       return {
-        ...issue,
         severity: 'error',
         message: errorMessage(file, formattedSize, formattedBudget),
-      } satisfies Issue;
+      };
     }
   }
 
   // return informative Issue
   return {
-    ...issue,
     severity: 'info',
     message: infoMessage(file, formattedSize),
-  } satisfies Issue;
+  };
 }
 
 export default create;

@@ -33,11 +33,8 @@ describe('licenseAudit', () => {
       details: {
         issues: [
           {
-            message: `license should be ANY-LICENSE but is undefined`,
+            message: 'license should be ANY-LICENSE but is undefined',
             severity: 'error',
-            source: {
-              file: 'package.json',
-            },
           },
         ],
       },
@@ -56,14 +53,8 @@ describe('licenseAudit', () => {
       details: {
         issues: [
           {
-            message: `license should be ANY-LICENSE but is `,
+            message: 'license should be ANY-LICENSE but is ',
             severity: 'error',
-            source: {
-              file: 'package.json',
-              position: {
-                startLine: 1,
-              },
-            },
           },
         ],
       },
@@ -84,12 +75,6 @@ describe('licenseAudit', () => {
           {
             message: `license should be MIT but is ${targetPackageJson.license}`,
             severity: 'error',
-            source: {
-              file: 'package.json',
-              position: {
-                startLine: 1,
-              },
-            },
           },
         ],
       },

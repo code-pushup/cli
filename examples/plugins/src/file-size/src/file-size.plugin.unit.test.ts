@@ -60,7 +60,6 @@ describe('assertFileSize', () => {
       expect(assertFileSize('test.js', size)).toEqual({
         message: infoMessage('test.js', size),
         severity: 'info',
-        source: { file: 'test.js' },
       });
     },
   );
@@ -75,7 +74,6 @@ describe('assertFileSize', () => {
       expect(assertFileSize('test.js', size, budget)).toEqual({
         message: infoMessage('test.js', size),
         severity: 'info',
-        source: { file: 'test.js' },
       });
     },
   );
@@ -86,7 +84,6 @@ describe('assertFileSize', () => {
       expect(assertFileSize('test.js', size, budget)).toEqual({
         message: errorMessage('test.js', size, budget),
         severity: 'error',
-        source: { file: 'test.js' },
       });
     },
   );
@@ -110,15 +107,10 @@ describe('fileSizeIssues', () => {
 
   it('should list all files', async () => {
     await expect(fileSizeIssues(baseOptions)).resolves.toEqual(
-      expect.arrayContaining(
-        ['project.json', 'test.js', 'README.md'].map(f => ({
-          message: expect.any(String),
-          severity: expect.any(String),
-          source: {
-            file: expect.stringContaining(f),
-          },
-        })),
-      ),
+      Array.from({ length: 3 }).map(() => ({
+        message: expect.any(String),
+        severity: expect.any(String),
+      })),
     );
   });
 
@@ -132,9 +124,6 @@ describe('fileSizeIssues', () => {
       {
         message: expect.any(String),
         severity: expect.any(String),
-        source: {
-          file: expect.stringContaining('test.js'),
-        },
       },
     ]);
   });
@@ -150,23 +139,14 @@ describe('fileSizeIssues', () => {
         {
           message: expect.any(String),
           severity: 'info',
-          source: {
-            file: expect.stringContaining('README.md'),
-          },
         },
         {
           message: expect.any(String),
           severity: 'error',
-          source: {
-            file: expect.stringContaining('project.json'),
-          },
         },
         {
           message: expect.any(String),
           severity: 'error',
-          source: {
-            file: expect.stringContaining('test.js'),
-          },
         },
       ]),
     );
@@ -183,9 +163,6 @@ describe('fileSizeIssues', () => {
       {
         message: expect.any(String),
         severity: 'error',
-        source: {
-          file: expect.stringContaining('test.js'),
-        },
       },
     ]);
   });
@@ -248,27 +225,6 @@ describe('runnerFunction', () => {
     ]);
   });
 
-  it('should have files in issues that are matching the pattern as issues', async () => {
-    await expect(
-      runnerFunction({
-        ...baseOptions,
-        pattern: /\.js$/,
-      }),
-    ).resolves.toEqual([
-      expect.objectContaining({
-        details: {
-          issues: [
-            expect.objectContaining({
-              source: {
-                file: expect.stringContaining('test.js'),
-              },
-            }),
-          ],
-        },
-      }),
-    ]);
-  });
-
   it('should have number of files that are over budget as value and listed in issues', async () => {
     await expect(
       runnerFunction({
@@ -287,9 +243,6 @@ describe('runnerFunction', () => {
               message:
                 'File test.js has 154 B, this is 26 B too big. (budget: 128 B)',
               severity: 'error',
-              source: {
-                file: expect.stringContaining('test.js'),
-              },
             },
           ]),
         },

@@ -42,9 +42,6 @@ describe('typeAudit', () => {
           {
             message: 'Type is module',
             severity: 'info',
-            source: {
-              file: 'package.json',
-            },
           },
         ],
       },
@@ -71,9 +68,6 @@ describe('typeAudit', () => {
           {
             message: 'Type is commonjs',
             severity: 'info',
-            source: {
-              file: 'package.json',
-            },
           },
         ],
       },
@@ -91,9 +85,6 @@ describe('typeAudit', () => {
           {
             message: 'Type is undefined. Defaults to commonjs.',
             severity: 'info',
-            source: {
-              file: 'package.json',
-            },
           },
         ],
       },
@@ -110,14 +101,8 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be undefined or commonjs but is `,
+            message: 'type should be undefined or commonjs but is ',
             severity: 'error',
-            source: {
-              file: 'package.json',
-              position: {
-                startLine: 1,
-              },
-            },
           },
         ],
       },
@@ -134,11 +119,8 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type should be module but is undefined`,
+            message: 'type should be module but is undefined',
             severity: 'error',
-            source: {
-              file: 'package.json',
-            },
           },
         ],
       },
@@ -155,14 +137,8 @@ describe('typeAudit', () => {
       details: {
         issues: [
           {
-            message: `type empty`,
+            message: 'type empty',
             severity: 'error',
-            source: {
-              file: 'package.json',
-              position: {
-                startLine: 1,
-              },
-            },
           },
         ],
       },
@@ -183,12 +159,6 @@ describe('typeAudit', () => {
           {
             message: `type should be module but is ${targetPackageJson.type}`,
             severity: 'error',
-            source: {
-              file: 'package.json',
-              position: {
-                startLine: 1,
-              },
-            },
           },
         ],
       },

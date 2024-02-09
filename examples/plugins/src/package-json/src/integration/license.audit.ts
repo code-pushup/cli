@@ -39,9 +39,6 @@ export function licenseAudit(
     return {
       message: `License is ${json.license}`,
       severity: 'info',
-      source: {
-        file,
-      },
     };
   });
 
