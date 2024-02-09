@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.16.7](https://github.com/code-pushup/cli/compare/v0.16.6...v0.16.7) (2024-02-09)
+
+### Bug Fixes
+
+- **core:** upload issue without source if file not linked ([2923dbd](https://github.com/code-pushup/cli/commit/2923dbddc353b069e3c7f82caf1c52a5c63eeeb0))
+
 ## [0.16.6](https://github.com/code-pushup/cli/compare/v0.16.5...v0.16.6) (2024-02-09)
 
 ## [0.16.5](https://github.com/code-pushup/cli/compare/v0.16.4...v0.16.5) (2024-02-09)

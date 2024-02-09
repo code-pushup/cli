@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/models",
-  "version": "0.16.6",
+  "version": "0.16.7",
   "license": "MIT",
   "dependencies": {
     "zod": "^3.22.1",
