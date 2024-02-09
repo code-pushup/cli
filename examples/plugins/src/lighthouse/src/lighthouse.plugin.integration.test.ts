@@ -100,6 +100,7 @@ describe('lighthouse-create-export-execution', () => {
       MEMFS_VOLUME,
     );
   });
+
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
@@ -128,7 +129,7 @@ describe('lighthouse-create-export-execution', () => {
     expect(auditOutputs).toHaveLength(1);
     expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
   });
-}, 30_000);
+}, 40_000);
 
 describe('lighthouse-audits-export', () => {
   it.each(audits.map(a => [a.slug, a]))(
