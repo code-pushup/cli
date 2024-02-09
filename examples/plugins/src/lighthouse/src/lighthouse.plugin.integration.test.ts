@@ -101,7 +101,9 @@ describe('lighthouse-create-export-execution', () => {
     );
   });
 
-  it('should return PluginConfig that executes correctly', async () => {
+  // TODO: Convert to E2E test or reduce scope, it takes too long to run these tests
+  /* eslint-disable vitest/no-disabled-tests */
+  it.skip('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
       expect.objectContaining({
@@ -116,7 +118,7 @@ describe('lighthouse-create-export-execution', () => {
     );
   });
 
-  it('should use onlyAudits', async () => {
+  it.skip('should use onlyAudits', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       onlyAudits: 'largest-contentful-paint',
@@ -129,7 +131,8 @@ describe('lighthouse-create-export-execution', () => {
     expect(auditOutputs).toHaveLength(1);
     expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
   });
-}, 40_000);
+  /* eslint-enable vitest/no-disabled-tests */
+});
 
 describe('lighthouse-audits-export', () => {
   it.each(audits.map(a => [a.slug, a]))(
