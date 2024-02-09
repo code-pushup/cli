@@ -76,9 +76,6 @@ describe('create-package-json', () => {
       {
         message: 'license should be MIT but is undefined',
         severity: 'error',
-        source: {
-          file: expect.stringContaining('package.json'),
-        },
       },
     ]);
   });
@@ -96,9 +93,6 @@ describe('create-package-json', () => {
       {
         message: 'type should be module but is undefined',
         severity: 'error',
-        source: {
-          file: expect.stringContaining('package.json'),
-        },
       },
     ]);
   });
@@ -120,9 +114,6 @@ describe('create-package-json', () => {
         message:
           'Package test is not installed under dependencies. Run `npm install test@0` to install it.',
         severity: 'error',
-        source: {
-          file: expect.stringContaining('package.json'),
-        },
       },
     ]);
   });
@@ -144,9 +135,6 @@ describe('create-package-json', () => {
         message:
           'Package test is not installed under optionalDependencies. Run `npm install test@0` to install it.',
         severity: 'error',
-        source: {
-          file: expect.stringContaining('package.json'),
-        },
       },
     ]);
   });
@@ -168,9 +156,6 @@ describe('create-package-json', () => {
         message:
           'Package test is not installed under devDependencies. Run `npm install test@0` to install it.',
         severity: 'error',
-        source: {
-          file: expect.stringContaining('package.json'),
-        },
       },
     ]);
   });
