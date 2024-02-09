@@ -69,12 +69,14 @@ export function issuesToGql(issues: Issue[] | undefined) {
     issues?.map(issue => ({
       message: issue.message,
       severity: transformSeverity(issue.severity),
-      sourceEndColumn: issue.source?.position?.endColumn,
-      sourceEndLine: issue.source?.position?.endLine,
-      sourceFilePath: issue.source?.file,
-      sourceStartColumn: issue.source?.position?.startColumn,
-      sourceStartLine: issue.source?.position?.startLine,
-      sourceType: IssueSourceType.SourceCode,
+      ...(issue.source?.file && {
+        sourceType: IssueSourceType.SourceCode,
+        sourceFilePath: issue.source.file,
+        sourceStartLine: issue.source.position?.startLine,
+        sourceStartColumn: issue.source.position?.startColumn,
+        sourceEndLine: issue.source.position?.endLine,
+        sourceEndColumn: issue.source.position?.endColumn,
+      }),
     })) ?? []
   );
 }
