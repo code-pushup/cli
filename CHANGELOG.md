@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.16.4](https://github.com/code-pushup/cli/compare/v0.16.3...v0.16.4) (2024-02-09)
+
+### Bug Fixes
+
+- **workflows:** update and improve labeler options ([146434a](https://github.com/code-pushup/cli/commit/146434aacb3741e0e4973f91d8954be3cc69e82e))
+
 ## [0.16.3](https://github.com/code-pushup/cli/compare/v0.16.2...v0.16.3) (2024-02-08)
 
 ## [0.16.2](https://github.com/code-pushup/cli/compare/v0.16.1...v0.16.2) (2024-02-08)
