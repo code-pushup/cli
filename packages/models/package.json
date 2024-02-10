@@ -4,6 +4,6 @@
   "license": "MIT",
   "dependencies": {
     "zod": "^3.22.1",
-    "@code-pushup/portal-client": "^0.5.0"
+    "vscode-material-icons": "^0.1.0"
   }
 }

@@ -1,5 +1,5 @@
+import { MATERIAL_ICONS } from 'vscode-material-icons';
 import { ZodObject, ZodOptional, ZodString, z } from 'zod';
-import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
@@ -207,10 +207,10 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   );
 }
 
-export const materialIconSchema = z.enum(
-  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
-  { description: 'Icon from VSCode Material Icons extension' },
-);
+export const materialIconSchema = z.enum(MATERIAL_ICONS, {
+  description: 'Icon from VSCode Material Icons extension',
+});
+export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
 
