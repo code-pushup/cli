@@ -34,6 +34,7 @@ export {
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
 export {
+  MaterialIcon,
   fileNameSchema,
   filePathSchema,
   materialIconSchema,
