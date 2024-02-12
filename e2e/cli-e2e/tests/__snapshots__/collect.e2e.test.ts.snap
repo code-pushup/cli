@@ -7,20 +7,8 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
       "refs": [
         {
           "plugin": "coverage",
-          "slug": "function-coverage",
-          "type": "audit",
-          "weight": 1,
-        },
-        {
-          "plugin": "coverage",
-          "slug": "branch-coverage",
-          "type": "audit",
-          "weight": 1,
-        },
-        {
-          "plugin": "coverage",
-          "slug": "line-coverage",
-          "type": "audit",
+          "slug": "coverage",
+          "type": "group",
           "weight": 1,
         },
       ],
@@ -32,6 +20,38 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
   "plugins": [
     {
       "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Function formatReportScore is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Function sortReport is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "60 %",
+          "score": 0.6,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 60,
+        },
         {
           "description": "Measures how many branches were executed after conditional statements in at least one test.",
           "details": {
@@ -85,38 +105,6 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "value": 76,
         },
         {
-          "description": "Measures how many functions were called in at least one test.",
-          "details": {
-            "issues": [
-              {
-                "message": "Function formatReportScore is not called in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
-                  "position": {
-                    "startLine": 2,
-                  },
-                },
-              },
-              {
-                "message": "Function sortReport is not called in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
-                  "position": {
-                    "startLine": 1,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "60 %",
-          "score": 0.6,
-          "slug": "function-coverage",
-          "title": "Function coverage",
-          "value": 60,
-        },
-        {
           "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
@@ -158,11 +146,11 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "description": "Group containing all defined coverage types as audits.",
           "refs": [
             {
-              "slug": "branch-coverage",
+              "slug": "function-coverage",
               "weight": 1,
             },
             {
-              "slug": "function-coverage",
+              "slug": "branch-coverage",
               "weight": 1,
             },
             {

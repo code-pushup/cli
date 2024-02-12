@@ -15,29 +15,16 @@ export default {
       title: 'Code coverage',
       refs: [
         {
-          type: 'audit',
+          type: 'group',
           plugin: 'coverage',
-          slug: 'function-coverage',
-          weight: 1,
-        },
-        {
-          type: 'audit',
-          plugin: 'coverage',
-          slug: 'branch-coverage',
-          weight: 1,
-        },
-        {
-          type: 'audit',
-          plugin: 'coverage',
-          slug: 'line-coverage',
+          slug: 'coverage',
           weight: 1,
         },
       ],
     },
   ],
   plugins: [
-    coveragePlugin({
-      coverageTypes: ['branch', 'function', 'line'],
+    await coveragePlugin({
       reports: [
         {
           resultsPath: join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info'),

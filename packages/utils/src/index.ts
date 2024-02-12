@@ -20,6 +20,7 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
+  removeDirectoryIfExists,
 } from './lib/file-system';
 export {
   formatBytes,

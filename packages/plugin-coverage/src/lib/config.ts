@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const coverageTypeSchema = z.enum(['function', 'branch', 'line']);
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
 
-export const coverageReportSchema = z.object({
+export const coverageResultSchema = z.object({
   resultsPath: z.string().includes('lcov'),
   pathToProject: z
     .string({
@@ -12,7 +12,7 @@ export const coverageReportSchema = z.object({
     })
     .optional(),
 });
-export type CoverageReport = z.infer<typeof coverageReportSchema>;
+export type CoverageResult = z.infer<typeof coverageResultSchema>;
 
 export const coveragePluginConfigSchema = z.object({
   coverageToolCommand: z
@@ -34,7 +34,7 @@ export const coveragePluginConfigSchema = z.object({
     .min(1)
     .default(['function', 'branch', 'line']),
   reports: z
-    .array(coverageReportSchema, {
+    .array(coverageResultSchema, {
       description:
         'Path to all code coverage report files. Only LCOV format is supported for now.',
     })
@@ -49,3 +49,6 @@ export const coveragePluginConfigSchema = z.object({
     .optional(),
 });
 export type CoveragePluginConfig = z.input<typeof coveragePluginConfigSchema>;
+export type FinalCoveragePluginConfig = z.infer<
+  typeof coveragePluginConfigSchema
+>;

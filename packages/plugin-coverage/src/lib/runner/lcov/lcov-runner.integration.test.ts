@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
-import { lcovResultsToAuditOutputs } from './runner';
+import { lcovResultsToAuditOutputs } from './lcov-runner';
 
 describe('lcovResultsToAuditOutputs', () => {
   it('should correctly convert lcov results to AuditOutputs', async () => {

@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import { AuditOutputs } from '@code-pushup/models';
 import { exists, readTextFile, toUnixNewlines } from '@code-pushup/utils';
-import { CoverageReport, CoverageType } from '../../config';
+import { CoverageResult, CoverageType } from '../../config';
 import { parseLcov } from './parse-lcov';
 import {
   lcovCoverageToAuditOutput,
@@ -15,40 +15,20 @@ import { LCOVStat, LCOVStats } from './types';
 
 /**
  *
- * @param reports report files
+ * @param results Paths to LCOV results
  * @param coverageTypes types of coverage to be considered
  * @returns Audit outputs with complete coverage data.
  */
 export async function lcovResultsToAuditOutputs(
-  reports: CoverageReport[],
+  results: CoverageResult[],
   coverageTypes: CoverageType[],
 ): Promise<AuditOutputs> {
-  const parsedReports = await Promise.all(
-    reports.map(async report => {
-      const reportContent = await readTextFile(report.resultsPath);
-      const parsedRecords = parseLcov(toUnixNewlines(reportContent));
-      return parsedRecords.map<LCOVRecord>(record => ({
-        ...record,
-        file:
-          report.pathToProject == null
-            ? record.file
-            : join(report.pathToProject, record.file),
-      }));
-    }),
-  );
-  if (parsedReports.length !== reports.length) {
-    throw new Error('Some provided LCOV reports were not valid.');
-  }
+  // Parse lcov files
+  const lcovResults = await parseLcovFiles(results);
 
-  const flatReports = parsedReports.flat();
-
-  if (flatReports.length === 0) {
-    throw new Error('All provided reports are empty.');
-  }
-
-  // Accumulate code coverage from all coverage result files
-  const totalCoverageStats = getTotalCoverageFromLcovReports(
-    flatReports,
+  // Calculate code coverage from all coverage results
+  const totalCoverageStats = getTotalCoverageFromLcovRecords(
+    lcovResults,
     coverageTypes,
   );
 
@@ -65,11 +45,45 @@ export async function lcovResultsToAuditOutputs(
 
 /**
  *
+ * @param results Paths to LCOV results
+ * @returns Array of parsed LCOVRecords.
+ */
+async function parseLcovFiles(
+  results: CoverageResult[],
+): Promise<LCOVRecord[]> {
+  const parsedResults = await Promise.all(
+    results.map(async result => {
+      const lcovFileContent = await readTextFile(result.resultsPath);
+      const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
+      return parsedRecords.map<LCOVRecord>(record => ({
+        ...record,
+        file:
+          result.pathToProject == null
+            ? record.file
+            : join(result.pathToProject, record.file),
+      }));
+    }),
+  );
+  if (parsedResults.length !== results.length) {
+    throw new Error('Some provided LCOV results were not valid.');
+  }
+
+  const flatResults = parsedResults.flat();
+
+  if (flatResults.length === 0) {
+    throw new Error('All provided results are empty.');
+  }
+
+  return flatResults;
+}
+
+/**
+ *
  * @param records This function aggregates coverage stats from all coverage files
  * @param coverageTypes Types of coverage to be gathered
  * @returns Complete coverage stats for all defined types of coverage.
  */
-function getTotalCoverageFromLcovReports(
+function getTotalCoverageFromLcovRecords(
   records: LCOVRecord[],
   coverageTypes: CoverageType[],
 ): LCOVStats {
