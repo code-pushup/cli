@@ -10,6 +10,9 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    coverage: {
+      reporter: ['lcov'],
+    },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: [
