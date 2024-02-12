@@ -1,7 +1,14 @@
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CoveragePluginConfig } from './config';
+import { RunnerConfig } from '@code-pushup/models';
 import { coveragePlugin } from './coverage-plugin';
+
+vi.mock('./runner/index.ts', () => ({
+  createRunnerConfig: vi.fn().mockReturnValue({
+    command: 'node',
+    outputFile: 'runner-output.json',
+  } satisfies RunnerConfig),
+}));
 
 describe('coveragePlugin', () => {
   const LCOV_PATH = join(
@@ -11,35 +18,38 @@ describe('coveragePlugin', () => {
     'single-record-lcov.info',
   );
 
-  it('should initialise a Code coverage plugin', () => {
-    expect(
+  it('should initialise a Code coverage plugin', async () => {
+    await expect(
       coveragePlugin({
         coverageTypes: ['function'],
         reports: [{ resultsPath: LCOV_PATH }],
       }),
-    ).toStrictEqual(
+    ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'coverage',
         title: 'Code coverage',
         audits: expect.any(Array),
         groups: expect.any(Array),
+        runner: expect.any(Object),
       }),
     );
   });
 
-  it('should generate audits from coverage types', () => {
-    expect(
+  it('should generate audits from coverage types', async () => {
+    await expect(
       coveragePlugin({
         coverageTypes: ['function', 'branch'],
         reports: [{ resultsPath: LCOV_PATH }],
       }),
-    ).toStrictEqual(
+    ).resolves.toStrictEqual(
       expect.objectContaining({
         audits: [
           {
             slug: 'function-coverage',
             title: 'Function coverage',
-            description: expect.stringContaining('Function coverage'),
+            description: expect.stringContaining(
+              'how many functions were called',
+            ),
           },
           expect.objectContaining({ slug: 'branch-coverage' }),
         ],
@@ -47,13 +57,13 @@ describe('coveragePlugin', () => {
     );
   });
 
-  it('should provide a group from defined coverage types', () => {
-    expect(
+  it('should provide a group from defined coverage types', async () => {
+    await expect(
       coveragePlugin({
         coverageTypes: ['branch', 'line'],
         reports: [{ resultsPath: LCOV_PATH }],
       }),
-    ).toStrictEqual(
+    ).resolves.toStrictEqual(
       expect.objectContaining({
         audits: [
           expect.objectContaining({ slug: 'branch-coverage' }),
@@ -68,43 +78,6 @@ describe('coveragePlugin', () => {
             ],
           }),
         ],
-      }),
-    );
-  });
-
-  it('should assign RunnerConfig when a command is passed', () => {
-    expect(
-      coveragePlugin({
-        coverageTypes: ['line'],
-        reports: [{ resultsPath: LCOV_PATH }],
-        coverageToolCommand: {
-          command: 'npm run-many',
-          args: ['-t', 'test', '--coverage'],
-        },
-      } satisfies CoveragePluginConfig),
-    ).toStrictEqual(
-      expect.objectContaining({
-        slug: 'coverage',
-        runner: {
-          command: 'npm run-many',
-          args: ['-t', 'test', '--coverage'],
-          outputFile: expect.stringContaining('runner-output.json'),
-          outputTransform: expect.any(Function),
-        },
-      }),
-    );
-  });
-
-  it('should assign a RunnerFunction when only reports are passed', () => {
-    expect(
-      coveragePlugin({
-        coverageTypes: ['line'],
-        reports: [{ resultsPath: LCOV_PATH }],
-      } satisfies CoveragePluginConfig),
-    ).toStrictEqual(
-      expect.objectContaining({
-        slug: 'coverage',
-        runner: expect.any(Function),
       }),
     );
   });

@@ -49,7 +49,11 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-    coveragePlugin({
+    await coveragePlugin({
+      coverageToolCommand: {
+        command: 'npx',
+        args: ['nx', 'run-many', '-t', 'unit-test', '--coverage'],
+      },
       reports: [
         {
           resultsPath: 'coverage/cli/unit-tests/lcov.info',
