@@ -117,6 +117,7 @@ The plugin accepts the following parameters:
 
 - `coverageTypes`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`. Defaults to all available types.
 - `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
+  - If you have an `nx` monorepo, you can adjust our helper function `getNxCoveragePaths` to get the path information automatically.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 

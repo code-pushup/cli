@@ -11,7 +11,9 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin from './dist/packages/plugin-coverage';
+import coveragePlugin, {
+  getNxCoveragePaths,
+} from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
@@ -54,32 +56,7 @@ const config: CoreConfig = {
         command: 'npx',
         args: ['nx', 'run-many', '-t', 'unit-test', '--coverage'],
       },
-      reports: [
-        {
-          resultsPath: 'coverage/cli/unit-tests/lcov.info',
-          pathToProject: 'packages/cli',
-        },
-        {
-          resultsPath: 'coverage/core/unit-tests/lcov.info',
-          pathToProject: 'packages/core',
-        },
-        {
-          resultsPath: 'coverage/models/unit-tests/lcov.info',
-          pathToProject: 'packages/models',
-        },
-        {
-          resultsPath: 'coverage/utils/unit-tests/lcov.info',
-          pathToProject: 'packages/utils',
-        },
-        {
-          resultsPath: 'coverage/plugin-eslint/unit-tests/lcov.info',
-          pathToProject: 'packages/plugin-eslint',
-        },
-        {
-          resultsPath: 'coverage/plugin-coverage/unit-tests/lcov.info',
-          pathToProject: 'packages/plugin-coverage',
-        },
-      ],
+      reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
