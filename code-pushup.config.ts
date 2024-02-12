@@ -54,7 +54,14 @@ const config: CoreConfig = {
     await coveragePlugin({
       coverageToolCommand: {
         command: 'npx',
-        args: ['nx', 'run-many', '-t', 'unit-test', '--coverage'],
+        args: [
+          'nx',
+          'run-many',
+          '-t',
+          'unit-test',
+          'integration-test',
+          '--coverage',
+        ],
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
