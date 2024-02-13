@@ -3,9 +3,13 @@ import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
 import { name, version } from '../../package.json';
-import { CoveragePluginConfig, coveragePluginConfigSchema } from './config';
+import {
+  CoveragePluginConfig,
+  CoverageType,
+  coveragePluginConfigSchema,
+} from './config';
 import { createRunnerConfig } from './runner';
-import { coverageDescription } from './utils';
+import { coverageDescription, coverageTypeWeightMapper } from './utils';
 
 /**
  * Instantiates Code PushUp code coverage plugin for core config.
@@ -42,7 +46,13 @@ export async function coveragePlugin(
     slug: 'coverage',
     title: 'Code coverage metrics',
     description: 'Group containing all defined coverage types as audits.',
-    refs: audits.map(audit => ({ ...audit, weight: 1 })),
+    refs: audits.map(audit => ({
+      ...audit,
+      weight:
+        coverageTypeWeightMapper[
+          audit.slug.slice(0, audit.slug.indexOf('-')) as CoverageType
+        ],
+    })),
   };
 
   const runnerScriptPath = join(

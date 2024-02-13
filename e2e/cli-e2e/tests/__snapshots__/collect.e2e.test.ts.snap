@@ -147,11 +147,11 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "refs": [
             {
               "slug": "function-coverage",
-              "weight": 1,
+              "weight": 6,
             },
             {
               "slug": "branch-coverage",
-              "weight": 1,
+              "weight": 3,
             },
             {
               "slug": "line-coverage",
