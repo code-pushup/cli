@@ -2,6 +2,14 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.17.0](https://github.com/code-pushup/cli/compare/v0.16.8...v0.17.0) (2024-02-13)
+
+### Features
+
+- **plugin-coverage:** add coverage tool run option, convert to runnerConfig ([d259c14](https://github.com/code-pushup/cli/commit/d259c14814d256bb1ad3dfb749a7c8ac25640d2b))
+- **plugin-coverage:** get coverage paths using nx ([cd499ea](https://github.com/code-pushup/cli/commit/cd499ea817b7c2fe67a8b04e4701b4f387783613))
+- **plugin-coverage:** provide coverage group ([8cddfcd](https://github.com/code-pushup/cli/commit/8cddfcd0c5b54c042962ec596883b9a0d9775c6f))
+
 ## [0.16.8](https://github.com/code-pushup/cli/compare/v0.16.7...v0.16.8) (2024-02-12)
 
 ## [0.16.7](https://github.com/code-pushup/cli/compare/v0.16.6...v0.16.7) (2024-02-09)
