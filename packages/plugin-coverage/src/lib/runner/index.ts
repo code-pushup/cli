@@ -1,7 +1,9 @@
+import chalk from 'chalk';
 import { writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { AuditOutputs, RunnerConfig } from '@code-pushup/models';
+import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
 import {
+  ProcessError,
   ensureDirectoryExists,
   executeProcess,
   readJsonFile,
@@ -18,7 +20,21 @@ export async function executeRunner(): Promise<void> {
   // Run coverage tool if provided
   if (coverageToolCommand != null) {
     const { command, args } = coverageToolCommand;
-    await executeProcess({ command, args });
+
+    try {
+      await executeProcess({ command, args });
+    } catch (error) {
+      if (error instanceof ProcessError) {
+        console.info(chalk.bold('stdout from failed process:'));
+        console.info(error.stdout);
+        console.error(chalk.bold('stderr from failed process:'));
+        console.error(error.stderr);
+      }
+
+      throw new Error(
+        'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',
+      );
+    }
   }
 
   // Caculate coverage from LCOV results

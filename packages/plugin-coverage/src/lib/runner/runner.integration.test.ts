@@ -44,7 +44,7 @@ describe('createRunnerConfig', () => {
 
 describe('executeRunner', () => {
   it('should successfully execute runner', async () => {
-    const config = {
+    const config: FinalCoveragePluginConfig = {
       reports: [
         {
           resultsPath: join(

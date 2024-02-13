@@ -10,6 +10,9 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 - the score is value converted to 0-1 range
 - missing coverage is mapped to issues in the audit details (uncalled functions, uncovered branches or lines)
 
+> [!IMPORTANT]
+> In order to successfully run your coverage tool and gather coverage results directly within the plugin, all your tests need to pass!
+
 ## Getting started
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
@@ -75,11 +78,11 @@ Measured coverage types are mapped to Code PushUp audits in the following way
 
 Code coverage is a metric that indicates what percentage of source code is executed by unit tests. It can give insights into test effectiveness and uncover parts of source code that would otherwise go untested.
 
-- Statement coverage: Measures how many statements are executed in at least one test.
-- Line coverage: Measures how many lines are executed in at least one test. Unlike statement coverage, any partially executed line counts towards line coverage.
-- Condition coverage: Measures all condition values (`true`/`false`) evaluated for a conditional statement in at least one test.
-- Branch coverage: Measures how many branches are executed as a result of conditional statements (`if`/`else` and other) in at least one test. In case of short-circuit logic, only executed paths are counted in. Unlike condition coverage, it does not ensure all combinations of condition values are tested.
-- Function coverage: Measures how many functions are called in at least one test. Argument values, usage of optional arguments or default values is irrelevant for this metric.
+- **Statement coverage**: Measures how many statements are executed in at least one test.
+- **Line coverage**: Measures how many lines are executed in at least one test. Unlike statement coverage, any partially executed line counts towards line coverage.
+- **Condition coverage**: Measures all condition values (`true`/`false`) evaluated for a conditional statement in at least one test.
+- **Branch coverage**: Measures how many branches are executed as a result of conditional statements (`if`/`else` and other) in at least one test. In case of short-circuit logic, only executed paths are counted in. Unlike condition coverage, it does not ensure all combinations of condition values are tested.
+- **Function coverage**: Measures how many functions are called in at least one test. Argument values, usage of optional arguments or default values is irrelevant for this metric.
 
 > [!IMPORTANT]
 > Please note that code coverage is not the same as test coverage. Test coverage measures the amount of acceptance criteria covered by tests and is hard to formally verify. This means that code coverage cannot guarantee that the designed software caters to the business requirements.
@@ -117,7 +120,7 @@ The plugin accepts the following parameters:
 
 - `coverageTypes`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`. Defaults to all available types.
 - `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
-  - If you have an `nx` monorepo, you can adjust our helper function `getNxCoveragePaths` to get the path information automatically.
+  - If you have an Nx monorepo, you can adjust our helper function `getNxCoveragePaths` to get the path information automatically.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 
@@ -204,3 +207,14 @@ For instance, the following can be an audit output for line coverage.
   }
 }
 ```
+
+### Providing coverage results in Nx monorepo
+
+As a part of the plugin, there is a `getNxCoveragePaths` helper for setting up paths to coverage results if you are using Nx. The helper accepts all relevant targets (e.g. `test` or `unit-test`) and searches for a coverage path option.
+Jest and Vitest configuration options are currently supported:
+
+- For `@nx/jest` executor it looks for the `coverageDirectory` option.
+- For `@nx/vite` executor it looks for the `reportsDirectory` option.
+
+> [!IMPORTANT]
+> Please note that you need to set up the coverage directory option in your `project.json` target options. Test configuration files are not searched.
