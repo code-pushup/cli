@@ -61,6 +61,7 @@ const config: CoreConfig = {
           'unit-test',
           'integration-test',
           '--coverage',
+          '--skipNxCache',
         ],
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),

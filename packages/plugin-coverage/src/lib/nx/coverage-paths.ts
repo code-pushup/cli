@@ -1,16 +1,18 @@
-import type { ProjectGraphProjectNode } from '@nx/devkit';
+import type { ProjectGraphProjectNode, TargetConfiguration } from '@nx/devkit';
+import chalk from 'chalk';
 import { join } from 'node:path';
 import { CoverageResult } from '../config';
 
 /**
- *
- * @param coverageFolder root folder containing all coverage results
  * @param targets nx targets to be used for measuring coverage, test by default
  * @returns An array of coverage result information for the coverage plugin.
  */
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
 ): Promise<CoverageResult[]> {
+  console.info(
+    chalk.bold('💡 Gathering coverage from the following nx projects:'),
+  );
   const { createProjectGraphAsync } = await import('@nx/devkit');
   const { nodes } = await createProjectGraphAsync({ exitOnError: false });
 
@@ -19,23 +21,21 @@ export async function getNxCoveragePaths(
       hasNxTarget(graph, target),
     );
 
-    return relevantNodes
-      .map(node => node.data)
-      .map<CoverageResult>(projectConfig => {
-        const { reportsDirectory } = projectConfig.targets?.[target]
-          ?.options as {
-          reportsDirectory: string;
-        };
+    return relevantNodes.map<CoverageResult>(({ name, data }) => {
+      const targetConfig = data.targets?.[target] as TargetConfiguration;
+      const coveragePath = getCoveragePathForTarget(target, targetConfig, name);
+      const rootToReportsDir = join(data.root, coveragePath);
 
-        const rootToReportsDir = join(projectConfig.root, reportsDirectory);
+      console.info(`- ${name}: ${target}`);
 
-        return {
-          pathToProject: projectConfig.root,
-          resultsPath: join(rootToReportsDir, 'lcov.info'),
-        };
-      });
+      return {
+        pathToProject: data.root,
+        resultsPath: join(rootToReportsDir, 'lcov.info'),
+      };
+    });
   });
 
+  console.info('\n');
   return coverageResults.flat();
 }
 
@@ -44,4 +44,41 @@ function hasNxTarget(
   target: string,
 ): boolean {
   return project.data.targets != null && target in project.data.targets;
+}
+
+function getCoveragePathForTarget(
+  target: string,
+  targetConfig: TargetConfiguration,
+  projectName: string,
+): string {
+  if (targetConfig.executor?.includes('@nx/vite')) {
+    const { reportsDirectory } = targetConfig.options as {
+      reportsDirectory?: string;
+    };
+
+    if (reportsDirectory == null) {
+      throw new Error(
+        `Coverage configuration not found for target ${target} in ${projectName}. Define your Vitest coverage directory in the reportsDirectory option.`,
+      );
+    }
+
+    return reportsDirectory;
+  }
+
+  if (targetConfig.executor?.includes('@nx/jest')) {
+    const { coverageDirectory } = targetConfig.options as {
+      coverageDirectory?: string;
+    };
+
+    if (coverageDirectory == null) {
+      throw new Error(
+        `Coverage configuration not found for target ${target} in ${projectName}. Define your Jest coverage directory in the coverageDirectory option.`,
+      );
+    }
+    return coverageDirectory;
+  }
+
+  throw new Error(
+    `Unsupported executor ${targetConfig.executor}. @nx/vite and @nx/jest are currently supported.`,
+  );
 }
