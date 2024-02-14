@@ -105,17 +105,8 @@ export function objectToCliArgs<
   });
 }
 
-export function toUnixPath(
-  path: string,
-  options?: { toRelative?: boolean },
-): string {
-  const unixPath = path.replace(/\\/g, '/');
-
-  if (options?.toRelative) {
-    return unixPath.replace(`${process.cwd().replace(/\\/g, '/')}/`, '');
-  }
-
-  return unixPath;
+export function toUnixPath(path: string): string {
+  return path.replace(/\\/g, '/');
 }
 
 export function toUnixNewlines(text: string): string {
