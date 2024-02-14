@@ -22,7 +22,7 @@ describe('coveragePlugin', () => {
     await expect(
       coveragePlugin({
         coverageTypes: ['function'],
-        reports: [{ resultsPath: LCOV_PATH }],
+        reports: [LCOV_PATH],
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -39,7 +39,7 @@ describe('coveragePlugin', () => {
     await expect(
       coveragePlugin({
         coverageTypes: ['function', 'branch'],
-        reports: [{ resultsPath: LCOV_PATH }],
+        reports: [LCOV_PATH],
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({

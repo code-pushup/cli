@@ -25,12 +25,7 @@ export default {
   ],
   plugins: [
     await coveragePlugin({
-      reports: [
-        {
-          resultsPath: join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info'),
-          pathToProject: join('packages', 'cli'),
-        },
-      ],
+      reports: [join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info')],
     }),
   ],
 } satisfies CoreConfig;

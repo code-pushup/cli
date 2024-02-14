@@ -11,7 +11,7 @@ import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH, WORKDIR } from './constants';
 describe('createRunnerConfig', () => {
   it('should create a valid runner config', async () => {
     const runnerConfig = await createRunnerConfig('executeRunner.ts', {
-      reports: [{ resultsPath: 'coverage/lcov.info' }],
+      reports: ['coverage/lcov.info'],
       coverageTypes: ['branch'],
       perfectScoreThreshold: 85,
     });
@@ -28,7 +28,7 @@ describe('createRunnerConfig', () => {
 
     const pluginConfig: FinalCoveragePluginConfig = {
       coverageTypes: ['line'],
-      reports: [{ resultsPath: 'coverage/lcov.info' }],
+      reports: ['coverage/lcov.info'],
       coverageToolCommand: { command: 'npm', args: ['run', 'test'] },
       perfectScoreThreshold: 85,
     };
@@ -46,16 +46,14 @@ describe('executeRunner', () => {
   it('should successfully execute runner', async () => {
     const config: FinalCoveragePluginConfig = {
       reports: [
-        {
-          resultsPath: join(
-            fileURLToPath(dirname(import.meta.url)),
-            '..',
-            '..',
-            '..',
-            'mocks',
-            'single-record-lcov.info',
-          ),
-        },
+        join(
+          fileURLToPath(dirname(import.meta.url)),
+          '..',
+          '..',
+          '..',
+          'mocks',
+          'single-record-lcov.info',
+        ),
       ],
       coverageTypes: ['line'],
     };

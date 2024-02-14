@@ -36,7 +36,7 @@ Measured coverage types are mapped to Code PushUp audits in the following way
      plugins: [
        // ...
        await coveragePlugin({
-         reports: [{ resultsPath: 'coverage/lcov.info' }],
+         reports: ['coverage/lcov.info'],
          coverageToolCommand: {
            command: 'npx',
            args: ['jest', '--coverage', '--coverageReporters=lcov'],
@@ -119,8 +119,9 @@ It recognises the following entities:
 The plugin accepts the following parameters:
 
 - `coverageTypes`: An array of types of coverage that you wish to track. Supported values: `function`, `branch`, `line`. Defaults to all available types.
-- `reports`: Array of information about files with code coverage results - paths to results, path to project root the results belong to. LCOV format is supported for now.
-  - If you have an Nx monorepo, you can adjust our helper function `getNxCoveragePaths` to get the path information automatically.
+- `reports`: Array of information about files with code coverage results. LCOV format is supported for now.
+  - For a single project, providing paths to results as strings is enough.
+  - If you have a monorepo, both path to results (`resultsPath`) and path from the root to project the results belong to (`pathToProject`) need to be provided for the LCOV format. For Nx monorepos, you can use our helper function `getNxCoveragePaths` to get the path information automatically.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
 - (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 

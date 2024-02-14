@@ -28,14 +28,14 @@ describe('coveragePluginConfigSchema', () => {
   it('accepts a minimal code coverage configuration', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
-        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
+        reports: ['coverage/cli/lcov.info'],
       } satisfies CoveragePluginConfig),
     ).not.toThrow();
   });
 
   it('replaces undefined coverage with all available types', () => {
     const config = {
-      reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
+      reports: ['coverage/cli/lcov.info'],
     } satisfies CoveragePluginConfig;
     expect(() => coveragePluginConfigSchema.parse(config)).not.toThrow();
 
@@ -51,7 +51,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageTypes: [],
-        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
+        reports: ['coverage/cli/lcov.info'],
       } satisfies CoveragePluginConfig),
     ).toThrow('too_small');
   });
@@ -69,7 +69,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageTypes: ['line'],
-        reports: [{ resultsPath: 'coverage/cli/coverage-final.json' }],
+        reports: ['coverage/cli/coverage-final.json'],
       } satisfies CoveragePluginConfig),
     ).toThrow(/Invalid input: must include.+lcov/);
   });
@@ -90,7 +90,7 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageTypes: ['line'],
-        reports: [{ resultsPath: 'coverage/cli/lcov.info' }],
+        reports: ['coverage/cli/lcov.info'],
         perfectScoreThreshold: 1.1,
       } satisfies CoveragePluginConfig),
     ).toThrow('too_big');
