@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to AuditOutputs 1`] = `
+exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to AuditOutputs and prepend project paths 1`] = `
 [
   {
     "details": {

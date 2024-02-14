@@ -53,12 +53,14 @@ async function parseLcovFiles(
 ): Promise<LCOVRecord[]> {
   const parsedResults = await Promise.all(
     results.map(async result => {
-      const lcovFileContent = await readTextFile(result.resultsPath);
+      const resultsPath =
+        typeof result === 'string' ? result : result.resultsPath;
+      const lcovFileContent = await readTextFile(resultsPath);
       const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
       return parsedRecords.map<LCOVRecord>(record => ({
         ...record,
         file:
-          result.pathToProject == null
+          typeof result === 'string' || result.pathToProject == null
             ? record.file
             : join(result.pathToProject, record.file),
       }));

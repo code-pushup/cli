@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 import { lcovResultsToAuditOutputs } from './lcov-runner';
 
 describe('lcovResultsToAuditOutputs', () => {
-  it('should correctly convert lcov results to AuditOutputs', async () => {
+  it('should correctly convert lcov results to AuditOutputs and prepend project paths', async () => {
     /**
      * The stats passed in the fixture are as follows
      * Functions: 2 found, 2 covered (100% coverage)
