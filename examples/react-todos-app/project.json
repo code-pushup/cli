@@ -51,6 +51,19 @@
           "buildTarget": "react-todos-app:build:production"
         }
       }
+    },
+    "run-collect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ../../dist/packages/cli collect --no-progress",
+        "cwd": "examples/react-todos-app"
+      },
+      "dependsOn": [
+        {
+          "projects": ["cli", "plugin-eslint"],
+          "target": "build"
+        }
+      ]
     }
   },
   "tags": ["scope:internal", "type:app"]
