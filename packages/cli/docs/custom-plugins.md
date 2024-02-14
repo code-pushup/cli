@@ -495,7 +495,7 @@ We will extend the `fileSizeAuditOutput` with `details` show which files exceed 
 // file-size.plugin.ts
 // ...
 import { basename } from 'path';
-import { formatBytes, toUnixPath } from '@code-pushup/utils';
+import { formatBytes } from '@code-pushup/utils';
 import { AuditOutput } from './plugin-process-output';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
@@ -521,8 +521,7 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 export function assertFileSize(file: string, size: number, budget?: number): Issue {
   const auditOutputBase = {
     source: {
-      // format path to be in scope of the repository
-      file: toUnixPath(file, { toRelative: true }),
+      file,
     },
   } satisfies AuditOutput['source'];
 
