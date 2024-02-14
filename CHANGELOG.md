@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.18.0](https://github.com/code-pushup/cli/compare/v0.17.0...v0.18.0) (2024-02-14)
+
+### Features
+
+- **plugin-coverage:** allow passing results as strings ([6813021](https://github.com/code-pushup/cli/commit/681302101889001774a6b5ddd375dc26a6ab3d53))
+
 # [0.17.0](https://github.com/code-pushup/cli/compare/v0.16.8...v0.17.0) (2024-02-13)
 
 ### Features
