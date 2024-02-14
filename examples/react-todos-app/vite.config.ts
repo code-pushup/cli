@@ -22,7 +22,13 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    coverage: {
+      reporter: ['lcov', 'text'],
+    },
     environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: [
+      'examples/react-todos-app/src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+    ],
+    setupFiles: ['examples/react-todos-app/test-setup.js'],
   },
 });

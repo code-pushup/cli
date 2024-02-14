@@ -31,6 +31,7 @@ node_modules
 /.sass-cache
 /connect.lock
 /coverage
+/examples/react-todos-app/coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
