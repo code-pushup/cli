@@ -1,6 +1,6 @@
 import { LCOVRecord } from 'parse-lcov';
 import { AuditOutput, Issue } from '@code-pushup/models';
-import { toNumberPrecision, toOrdinal, toUnixPath } from '@code-pushup/utils';
+import { toNumberPrecision, toOrdinal } from '@code-pushup/utils';
 import { CoverageType } from '../../config';
 import { LCOVStat } from './types';
 import { calculateCoverage, mergeConsecutiveNumbers } from './utils';
@@ -18,7 +18,7 @@ export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {
                 message: `Function ${detail.name} is not called in any test case.`,
                 severity: 'error',
                 source: {
-                  file: toUnixPath(record.file),
+                  file: record.file,
                   position: { startLine: detail.line },
                 },
               }),
@@ -51,7 +51,7 @@ export function lcovReportToLineStat(record: LCOVRecord): LCOVStat {
             message: `${lineReference} not covered in any test case.`,
             severity: 'warning',
             source: {
-              file: toUnixPath(record.file),
+              file: record.file,
               position: {
                 startLine: linePosition.start,
                 endLine: linePosition.end,
@@ -78,7 +78,7 @@ export function lcovReportToBranchStat(record: LCOVRecord): LCOVStat {
                 )} branch is not taken in any test case.`,
                 severity: 'error',
                 source: {
-                  file: toUnixPath(record.file),
+                  file: record.file,
                   position: { startLine: detail.line },
                 },
               }),
