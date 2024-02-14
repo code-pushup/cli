@@ -17,6 +17,6 @@ export async function teardown() {
   stopLocalRegistry();
   execSync('npm uninstall @code-pushup/cli');
   execSync('npm uninstall @code-pushup/eslint-plugin');
-  execSync('npm uninstall @code-pushup/coverage-plugin@e2e');
+  execSync('npm uninstall @code-pushup/coverage-plugin');
   await teardownTestFolder('tmp');
 }
