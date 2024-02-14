@@ -1,6 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
+import { osAgnosticAuditOutputs } from '@code-pushup/testing-utils';
 import { lcovResultsToAuditOutputs } from './lcov-runner';
 
 describe('lcovResultsToAuditOutputs', () => {
@@ -23,11 +24,11 @@ describe('lcovResultsToAuditOutputs', () => {
             'mocks',
             'single-record-lcov.info',
           ),
-          pathToProject: join('packages', 'cli'),
+          pathToProject: 'packages/cli',
         },
       ],
       ['branch', 'function', 'line'],
     );
-    expect(results).toMatchSnapshot();
+    expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
   });
 });
