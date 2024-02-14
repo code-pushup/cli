@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.18.1](https://github.com/code-pushup/cli/compare/v0.18.0...v0.18.1) (2024-02-14)
+
 # [0.18.0](https://github.com/code-pushup/cli/compare/v0.17.0...v0.18.0) (2024-02-14)
 
 ### Features
