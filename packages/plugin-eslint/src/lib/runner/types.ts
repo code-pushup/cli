@@ -1,12 +1,8 @@
 import type { ESLint } from 'eslint';
 
 export type LinterOutput = {
-  results: LintResult[];
+  results: ESLint.LintResult[];
   ruleOptionsPerFile: RuleOptionsPerFile;
-};
-
-export type LintResult = ESLint.LintResult & {
-  relativeFilePath: string;
 };
 
 export type RuleOptionsPerFile = {
