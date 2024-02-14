@@ -37,6 +37,14 @@
         }
       }
     },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "config": "vite.config.ts",
+        "reportsDirectory": "{workspaceRoot}/examples/react-todos-app/coverage"
+      }
+    },
     "preview": {
       "executor": "@nx/vite:preview-server",
       "defaultConfiguration": "development",
