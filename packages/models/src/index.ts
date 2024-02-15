@@ -51,6 +51,7 @@ export {
   PluginConfig,
   PluginMeta,
   pluginConfigSchema,
+  pluginMetaSchema,
 } from './lib/plugin-config';
 export {
   AuditReport,
