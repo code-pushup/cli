@@ -4,7 +4,7 @@ import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
 export const auditSchema = z
   .object({
-    slug: slugSchema('ID (unique within plugin)'),
+    slug: slugSchema.describe('ID (unique within plugin)'),
   })
   .merge(
     metaSchema({

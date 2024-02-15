@@ -15,7 +15,7 @@ export const runnerConfigSchema = z.object(
       description: 'Shell command to execute',
     }),
     args: z.array(z.string({ description: 'Command arguments' })).optional(),
-    outputFile: filePathSchema('Output path'),
+    outputFile: filePathSchema.describe('Output path'),
     outputTransform: outputTransformSchema.optional(),
   },
   {

@@ -30,13 +30,7 @@ export {
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
-export {
-  MaterialIcon,
-  fileNameSchema,
-  filePathSchema,
-  materialIconSchema,
-  urlSchema,
-} from './lib/implementation/schemas';
+export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
 export {
   Issue,

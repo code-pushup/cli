@@ -41,7 +41,7 @@ _Object containing the following properties:_
 | **`slug`** (\*)  | Reference to audit                       | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)                                      |
 | `description`    | Description (markdown)                   | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `''`                           |
 | `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                          |
 | **`value`** (\*) | Raw numeric value                        | `number` (_int, ≥0_)                                              |
 | **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                               |
@@ -58,7 +58,7 @@ _Object containing the following properties:_
 | **`slug`** (\*)  | ID (unique within plugin)         | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`title`** (\*) | Descriptive name                  | `string` (_max length: 256_)                                      |
 | `description`    | Description (markdown)            | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Link to documentation (rationale) | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`        | Link to documentation (rationale) | `string` (_url_) (_optional_) _or_ `''`                           |
 
 _(\*) Required._
 
@@ -72,7 +72,7 @@ _Object containing the following properties:_
 | **`refs`** (\*)  |                                                                            | _Array of at least 1 [CategoryRef](#categoryref) items_           |
 | **`title`** (\*) | Category Title                                                             | `string` (_max length: 256_)                                      |
 | `description`    | Category description                                                       | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Category docs URL                                                          | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`        | Category docs URL                                                          | `string` (_url_) (_optional_) _or_ `''`                           |
 | `isBinary`       | Is this a binary category (i.e. only a perfect score considered a "pass")? | `boolean`                                                         |
 
 _(\*) Required._
@@ -133,7 +133,7 @@ _Object containing the following properties:_
 | **`refs`** (\*)  |                                              | _Array of at least 1 [GroupRef](#groupref) items_                 |
 | **`title`** (\*) | Descriptive name for the group               | `string` (_max length: 256_)                                      |
 | `description`    | Description of the group (markdown)          | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `''`                           |
 
 _(\*) Required._
 
@@ -147,7 +147,7 @@ _Object containing the following properties:_
 | :------------------ | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)                                                                                                                                                                                                                                                                                                                                                                                                |
-| `source`            | Source file location      | _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, ≥0_) - Start line</li><li>`startColumn`: `number` (_int, ≥0_) - Start column</li><li>`endLine`: `number` (_int, ≥0_) - End line</li><li>`endColumn`: `number` (_int, ≥0_) - End column</li></ul> - Location in file</li></ul> |
+| `source`            | Source file location      | _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> - Location in file</li></ul> |
 
 _(\*) Required._
 
@@ -1046,7 +1046,7 @@ _Object containing the following properties:_
 | `version`         | NPM version of the package                | `string`                                                             |
 | **`title`** (\*)  | Descriptive name                          | `string` (_max length: 256_)                                         |
 | `description`     | Description (markdown)                    | `string` (_max length: 65536_)                                       |
-| `docsUrl`         | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)        |
+| `docsUrl`         | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                              |
 | **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)    |
 | **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                        |
 | **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
@@ -1065,7 +1065,7 @@ _Object containing the following properties:_
 | `version`        | NPM version of the package                | `string`                                                          |
 | **`title`** (\*) | Descriptive name                          | `string` (_max length: 256_)                                      |
 | `description`    | Description (markdown)                    | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`        | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                           |
 | **`slug`** (\*)  | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`icon`** (\*)  | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                     |
 
@@ -1081,7 +1081,7 @@ _Object containing the following properties:_
 | `version`           | NPM version of the package                | `string`                                                          |
 | **`title`** (\*)    | Descriptive name                          | `string` (_max length: 256_)                                      |
 | `description`       | Description (markdown)                    | `string` (_max length: 65536_)                                    |
-| `docsUrl`           | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `docsUrl`           | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                           |
 | **`slug`** (\*)     | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`icon`** (\*)     | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                     |
 | **`date`** (\*)     | Start date and time of plugin run         | `string`                                                          |
