@@ -1,6 +1,6 @@
 import { type Options, bundleRequire } from 'bundle-require';
 import chalk from 'chalk';
-import { mkdir, readFile, readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
@@ -43,6 +43,12 @@ export async function ensureDirectoryExists(baseDir: string) {
     if ((error as { code: string }).code !== 'EEXIST') {
       throw error;
     }
+  }
+}
+
+export async function removeDirectoryIfExists(dir: string) {
+  if (await directoryExists(dir)) {
+    await rm(dir, { recursive: true, force: true });
   }
 }
 

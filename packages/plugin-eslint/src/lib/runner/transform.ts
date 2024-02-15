@@ -12,7 +12,7 @@ import { ruleIdToSlug } from '../meta/hash';
 import type { LinterOutput } from './types';
 
 type LintIssue = Linter.LintMessage & {
-  relativeFilePath: string;
+  filePath: string;
 };
 
 export function lintResultsToAudits({
@@ -20,16 +20,16 @@ export function lintResultsToAudits({
   ruleOptionsPerFile,
 }: LinterOutput): AuditOutput[] {
   const issuesPerAudit = results
-    .flatMap(({ messages, relativeFilePath }) =>
-      messages.map((message): LintIssue => ({ ...message, relativeFilePath })),
+    .flatMap(({ messages, filePath }) =>
+      messages.map((message): LintIssue => ({ ...message, filePath })),
     )
     .reduce<Record<string, LintIssue[]>>((acc, issue) => {
-      const { ruleId, message, relativeFilePath } = issue;
+      const { ruleId, message, filePath } = issue;
       if (!ruleId) {
         ui().logger.warning(`ESLint core error - ${message}`);
         return acc;
       }
-      const options = ruleOptionsPerFile[relativeFilePath]?.[ruleId] ?? [];
+      const options = ruleOptionsPerFile[filePath]?.[ruleId] ?? [];
       const auditSlug = ruleIdToSlug(ruleId, options);
       return { ...acc, [auditSlug]: [...(acc[auditSlug] ?? []), issue] };
     }, {});
@@ -64,7 +64,7 @@ function convertIssue(issue: LintIssue): Issue {
     message: truncateIssueMessage(issue.message),
     severity: convertSeverity(issue.severity),
     source: {
-      file: issue.relativeFilePath,
+      file: issue.filePath,
       position: {
         startLine: issue.line,
         startColumn: issue.column,

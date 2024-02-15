@@ -1,15 +1,67 @@
-🧩 cli: packages/cli/**
-🧩 core: packages/core/**
-🧩 models: packages/models/**
-🧩 nx-plugin: packages/nx-plugin/**
-🧩 eslint-plugin: packages/plugin-eslint/**
-🧩 lighthouse-plugin: packages/plugin-lighthouse/**
-🧩 coverage-plugin: packages/plugin-coverage/**
-🧩 utils: packages/utils/**
+🧩 cli:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/cli/src/**'
+
+🧩 core:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/core/src/**'
+
+🧩 models:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/models/src/**'
+
+🧩 nx-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/nx-plugin/src/**'
+
+🧩 eslint-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-eslint/src/**'
+
+🧩 lighthouse-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-lighthouse/src/**'
+
+🧩 coverage-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-coverage/src/**'
+
+🧩 utils:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/utils/src/**'
 
 🔬 testing:
-  - '**/*.test.ts'
-  - e2e/**
-  - testing-utils/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.test.ts'
+          - '**/mocks/**'
+          - e2e/**
+          - testing-utils/**
+          - '**/vitest.config*.ts'
+          - 'vitest.workspace.ts'
+          - 'global-setup*.ts'
+          - '.verdaccio/config.yml'
 
-🦾 CI/CD: .github/workflows/**
+🦾 CI/CD:
+  - changed-files:
+      - any-glob-to-any-file: .github/workflows/**
+
+📖 Project documentation:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+
+🛠️ tooling:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tools/**'
+          - '**/tsconfig*.json'
+          - '**/project.json'
+          - '**/package*.json'
+          - '**/*eslintrc*'
+          - 'nx.json'
+          - '.nvmrc'
+          - '.prettierrc'
+          - 'esbuild.config.js'
+          - '.github/ISSUE_TEMPLATE/**'
+          - '.husky/**'
+          - 'commitlint.config.js'

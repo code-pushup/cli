@@ -40,7 +40,7 @@ describe('pluginConfigSchema', () => {
     ).not.toThrow();
   });
 
-  it('should accept a plugin configuration with no audits or groups', () => {
+  it('should throw for a plugin configuration without audits', () => {
     expect(() =>
       pluginConfigSchema.parse({
         slug: 'jest',
@@ -48,9 +48,8 @@ describe('pluginConfigSchema', () => {
         icon: 'jest',
         runner: { command: 'npm run test', outputFile: 'jest-output.json' },
         audits: [],
-        groups: [],
       } satisfies PluginConfig),
-    ).not.toThrow();
+    ).toThrow('too_small');
   });
 
   it('should throw for a configuration with a group reference missing among audits', () => {

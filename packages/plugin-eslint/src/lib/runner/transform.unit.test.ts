@@ -1,6 +1,6 @@
+import type { ESLint } from 'eslint';
 import type { AuditOutput } from '@code-pushup/models';
 import { lintResultsToAudits } from './transform';
-import type { LintResult } from './types';
 
 describe('lintResultsToAudits', () => {
   it('should convert ESLint results with custom options to Code PushUp audits', () => {
@@ -8,8 +8,7 @@ describe('lintResultsToAudits', () => {
       lintResultsToAudits({
         results: [
           {
-            filePath: `${process.cwd()}/src/app/app.component.ts`,
-            relativeFilePath: 'src/app/app.component.ts',
+            filePath: 'src/app/app.component.ts',
             messages: [
               {
                 ruleId: 'max-lines',
@@ -40,8 +39,7 @@ describe('lintResultsToAudits', () => {
             ],
           },
           {
-            filePath: `${process.cwd()}/src/app/app.component.spec.ts`,
-            relativeFilePath: 'src/app/app.component.spec.ts',
+            filePath: 'src/app/app.component.spec.ts',
             messages: [
               {
                 ruleId: 'max-lines',
@@ -63,8 +61,7 @@ describe('lintResultsToAudits', () => {
             ],
           },
           {
-            filePath: `${process.cwd()}/src/app/pages/settings.component.ts`,
-            relativeFilePath: 'src/app/pages/settings.component.ts',
+            filePath: 'src/app/pages/settings.component.ts',
             messages: [
               {
                 ruleId: 'max-lines',
@@ -76,7 +73,7 @@ describe('lintResultsToAudits', () => {
               },
             ],
           },
-        ] as LintResult[],
+        ] as ESLint.LintResult[],
         ruleOptionsPerFile: {
           'src/app/app.component.ts': {
             'max-lines': [500],

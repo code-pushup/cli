@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/cli-source",
-  "version": "0.16.0",
+  "version": "0.19.0",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli#readme",
   "bugs": {
@@ -46,7 +46,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.4.1",
+    "@code-pushup/portal-client": "^0.5.0",
     "@isaacs/cliui": "^8.0.2",
     "@poppinss/cliui": "^6.3.0",
     "@swc/helpers": "0.5.3",
@@ -56,6 +56,7 @@
     "multi-progress-bars": "^5.0.3",
     "parse-lcov": "^1.0.4",
     "simple-git": "^3.20.0",
+    "vscode-material-icons": "^0.1.0",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
   },

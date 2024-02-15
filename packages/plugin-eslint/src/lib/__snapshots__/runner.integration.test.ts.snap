@@ -81,7 +81,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'loading' is assigned a value but never used.",
           "severity": "warning",
           "source": {
-            "file": "src/App.jsx",
+            "file": "<CWD>/src/App.jsx",
             "position": {
               "endColumn": 18,
               "endLine": 8,
@@ -122,7 +122,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoFilter.jsx",
+            "file": "<CWD>/src/components/TodoFilter.jsx",
             "position": {
               "endColumn": 2,
               "endLine": 25,
@@ -163,7 +163,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Expected '===' and instead saw '=='.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 43,
               "endLine": 41,
@@ -186,7 +186,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Arrow function has too many lines (71). Maximum allowed is 50.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 2,
               "endLine": 73,
@@ -218,7 +218,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'data' is already declared in the upper scope on line 5 column 10.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 17,
               "endLine": 11,
@@ -231,7 +231,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'data' is already declared in the upper scope on line 5 column 10.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 21,
               "endLine": 29,
@@ -244,7 +244,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'data' is already declared in the upper scope on line 5 column 10.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 17,
               "endLine": 41,
@@ -276,7 +276,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Expected property shorthand.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 19,
               "endLine": 19,
@@ -289,7 +289,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Expected property shorthand.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 19,
               "endLine": 32,
@@ -302,7 +302,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Expected property shorthand.",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 25,
               "endLine": 33,
@@ -334,7 +334,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'root' is never reassigned. Use 'const' instead.",
           "severity": "warning",
           "source": {
-            "file": "src/index.jsx",
+            "file": "<CWD>/src/index.jsx",
             "position": {
               "endColumn": 9,
               "endLine": 5,
@@ -375,7 +375,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "Missing \\"key\\" prop for element in iterator",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoList.jsx",
+            "file": "<CWD>/src/components/TodoList.jsx",
             "position": {
               "endColumn": 12,
               "endLine": 28,
@@ -398,7 +398,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'onCreate' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/CreateTodo.jsx",
+            "file": "<CWD>/src/components/CreateTodo.jsx",
             "position": {
               "endColumn": 23,
               "endLine": 15,
@@ -411,7 +411,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'setQuery' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoFilter.jsx",
+            "file": "<CWD>/src/components/TodoFilter.jsx",
             "position": {
               "endColumn": 25,
               "endLine": 10,
@@ -424,7 +424,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'setHideComplete' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoFilter.jsx",
+            "file": "<CWD>/src/components/TodoFilter.jsx",
             "position": {
               "endColumn": 34,
               "endLine": 18,
@@ -437,7 +437,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'todos' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoList.jsx",
+            "file": "<CWD>/src/components/TodoList.jsx",
             "position": {
               "endColumn": 17,
               "endLine": 6,
@@ -450,7 +450,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'todos.map' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoList.jsx",
+            "file": "<CWD>/src/components/TodoList.jsx",
             "position": {
               "endColumn": 21,
               "endLine": 6,
@@ -463,7 +463,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "'onEdit' is missing in props validation",
           "severity": "warning",
           "source": {
-            "file": "src/components/TodoList.jsx",
+            "file": "<CWD>/src/components/TodoList.jsx",
             "position": {
               "endColumn": 27,
               "endLine": 13,
@@ -504,7 +504,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 31,
               "endLine": 17,
@@ -517,7 +517,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
           "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
           "severity": "warning",
           "source": {
-            "file": "src/hooks/useTodos.js",
+            "file": "<CWD>/src/hooks/useTodos.js",
             "position": {
               "endColumn": 29,
               "endLine": 40,

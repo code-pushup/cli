@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AuditOutput } from '@code-pushup/models';
-import {
-  packageJson,
-  packageJsonName,
-  packageResult,
-} from '../../../../mocks/constants';
+import { packageJson, packageResult } from '../../../../mocks/constants';
 import {
   assertDependency,
   dependenciesAudit,
@@ -13,24 +9,20 @@ import {
 
 describe('packageNotInstalledIssue', () => {
   it.each([
-    [packageJsonName, 'lib1', '*'],
-    [packageJsonName, 'lib1', '^.0.0.0'],
-    [packageJsonName, 'lib1', '0.0.0'],
-  ])('should return correct issue', (file, packageName, targetVersion) => {
-    expect(
-      packageNotInstalledIssue(
-        { file },
-        [packageName, targetVersion],
-        'dependencies',
-      ),
-    ).toEqual({
-      message: `Package ${packageName} is not installed under dependencies. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
-      severity: 'error',
-      source: {
-        file,
-      },
-    });
-  });
+    ['lib1', '*'],
+    ['lib1', '^.0.0.0'],
+    ['lib1', '0.0.0'],
+  ])(
+    'should return correct issue for package %p with version %p',
+    (packageName, targetVersion) => {
+      expect(
+        packageNotInstalledIssue([packageName, targetVersion], 'dependencies'),
+      ).toEqual({
+        message: `Package ${packageName} is not installed under dependencies. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
+        severity: 'error',
+      });
+    },
+  );
 });
 
 describe('assertPackageVersion', () => {
@@ -45,9 +37,6 @@ describe('assertPackageVersion', () => {
     ).toEqual({
       message: `Package ${packageName}@0.0.0 is installed as dependencies.`,
       severity: 'info',
-      source: {
-        file: packageJsonName,
-      },
     });
   });
 
@@ -62,12 +51,6 @@ describe('assertPackageVersion', () => {
     ).toEqual({
       message: `Package ${packageName} in dependencies has wrong version. Wanted 0.0.1 but got 0.0.0`,
       severity: 'error',
-      source: {
-        file: packageJsonName,
-        position: {
-          startLine: 1,
-        },
-      },
     });
   });
 });
@@ -106,9 +89,6 @@ describe('dependenciesAudit', () => {
             {
               message: `Package ${packageName}@${targetVersion} is installed as dependencies.`,
               severity: 'info',
-              source: {
-                file: 'package.json',
-              },
             },
           ],
         },
@@ -148,24 +128,19 @@ describe('dependenciesAudit', () => {
           issues: [
             {
               message: expect.stringMatching(/^(?=.*foo)(?=.*dependencies).*/),
-
               severity: 'info',
-              source: expect.any(Object),
             },
             {
               message: expect.stringMatching(
                 /^(?=.*bar)(?=.*devDependencies).*/,
               ),
-
               severity: 'info',
-              source: expect.any(Object),
             },
             {
               message: expect.stringMatching(
                 /^(?=.*baz)(?=.*optionalDependencies).*/,
               ),
               severity: 'info',
-              source: expect.any(Object),
             },
           ],
         },
@@ -194,12 +169,6 @@ describe('dependenciesAudit', () => {
               message:
                 'Package lib1 in dependencies has wrong version. Wanted 0.0.1 but got 0.0.0',
               severity: 'error',
-              source: {
-                file: 'package.json',
-                position: {
-                  startLine: 1,
-                },
-              },
             },
           ],
         },
@@ -246,24 +215,19 @@ describe('dependenciesAudit', () => {
           issues: [
             {
               message: expect.stringMatching(/^(?=.*foo)(?=.*dependencies).*/),
-
               severity: 'error',
-              source: expect.any(Object),
             },
             {
               message: expect.stringMatching(
                 /^(?=.*bar)(?=.*devDependencies).*/,
               ),
-
               severity: 'error',
-              source: expect.any(Object),
             },
             {
               message: expect.stringMatching(
                 /^(?=.*baz)(?=.*optionalDependencies).*/,
               ),
               severity: 'error',
-              source: expect.any(Object),
             },
           ],
         },
