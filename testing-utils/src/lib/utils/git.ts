@@ -1,18 +1,17 @@
 import { spawn } from 'node:child_process';
-import simpleGit from "simple-git";
-import {mkdir, writeFile} from "node:fs/promises";
-import {join} from "node:path";
-
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import simpleGit from 'simple-git';
 
 export async function createGitRepo(options: {
-  outputDir: string,
-  isDirty?: boolean
+  outputDir: string;
+  isDirty?: boolean;
 }) {
-  const {outputDir, isDirty = false} = options;
+  const { outputDir, isDirty = false } = options;
   await ensureDirectoryExists(outputDir);
   await simpleGit().init();
-  if(isDirty) {
-    await writeFile(join(outputDir, 'random.txt'), Math.random().toString())
+  if (isDirty) {
+    await writeFile(join(outputDir, 'random.txt'), Math.random().toString());
   }
 }
 
