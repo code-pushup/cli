@@ -1,0 +1,26 @@
+{
+  "migrations": [
+    {
+      "cli": "nx",
+      "version": "17.3.0-beta.6",
+      "description": "Updates the nx wrapper.",
+      "implementation": "./src/migrations/update-17-3-0/update-nxw",
+      "package": "nx",
+      "name": "17.3.0-update-nx-wrapper"
+    },
+    {
+      "version": "17.2.0-beta.10",
+      "description": "Update vite config.",
+      "implementation": "./src/migrations/update-17-2-0/update-vite-config",
+      "package": "@nx/vite",
+      "name": "update-vite-config"
+    },
+    {
+      "version": "17.3.0-beta.0",
+      "description": "Move the vitest coverage thresholds in their own object if exists and add reporters.",
+      "implementation": "./src/migrations/update-17-3-0/vitest-coverage-and-reporters",
+      "package": "@nx/vite",
+      "name": "vitest-coverage-and-reporters"
+    }
+  ]
+}
