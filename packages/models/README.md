@@ -2,6 +2,8 @@
 
 **Model definitions and validators** for the [Code PushUp CLI](../cli/README.md).
 
+For a full list of models defined by this package, see the auto-generated [Code PushUp models reference](./docs/models-reference.md).
+
 ## Setup
 
 If you've already installed another `@code-pushup/*` package, then you may have already installed `@code-pushup/models` indirectly.
