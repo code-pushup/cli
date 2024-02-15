@@ -1004,6 +1004,22 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## PluginMeta
+
+_Object containing the following properties:_
+
+| Property         | Description                               | Type                                                              |
+| :--------------- | :---------------------------------------- | :---------------------------------------------------------------- |
+| `packageName`    | NPM package name                          | `string`                                                          |
+| `version`        | NPM version of the package                | `string`                                                          |
+| **`title`** (\*) | Descriptive name                          | `string` (_max length: 256_)                                      |
+| `description`    | Description (markdown)                    | `string` (_max length: 65536_)                                    |
+| `docsUrl`        | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| **`slug`** (\*)  | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`icon`** (\*)  | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                     |
+
+_(\*) Required._
+
 ## PluginReport
 
 _Object containing the following properties:_
