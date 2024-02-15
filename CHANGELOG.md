@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.20.1](https://github.com/code-pushup/cli/compare/v0.20.0...v0.20.1) (2024-02-15)
+
+### Bug Fixes
+
+- **cli:** make onlyPlugins filter based on plugin not audit/group slug ([e963c36](https://github.com/code-pushup/cli/commit/e963c36219295d5b48f1e6c836ba321bcc01e90a))
+
 # [0.20.0](https://github.com/code-pushup/cli/compare/v0.19.0...v0.20.0) (2024-02-15)
 
 ### Bug Fixes
