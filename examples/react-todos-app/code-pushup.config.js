@@ -18,13 +18,7 @@ export default {
       reports: [join('coverage', 'lcov.info')],
       coverageToolCommand: {
         command: 'npx',
-        args: [
-          'nx',
-          'run',
-          'react-todos-app:test',
-          '--coverage',
-          '--skipNxCache',
-        ],
+        args: ['vitest', 'run', '--coverage'],
       },
     }),
     await eslintPlugin({
