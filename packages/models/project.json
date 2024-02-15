@@ -29,13 +29,6 @@
         ]
       }
     },
-    "generate-types": {
-      "outputs": ["{projectRoot}/packages/models/docs/core-config-types.md"],
-      "command": "npx tsx --tsconfig=../tsconfig.tools.json generate-types",
-      "options": {
-        "cwd": "./packages/models/tools"
-      }
-    },
     "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
