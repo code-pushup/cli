@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { positiveIntSchema, slugSchema } from './implementation/schemas';
+import { nonnegativeIntSchema, slugSchema } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 import { issueSchema } from './issue';
 
@@ -13,11 +13,11 @@ export type AuditDetails = z.infer<typeof auditDetailsSchema>;
 
 export const auditOutputSchema = z.object(
   {
-    slug: slugSchema('Reference to audit'),
+    slug: slugSchema.describe('Reference to audit'),
     displayValue: z
       .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
       .optional(),
-    value: positiveIntSchema('Raw numeric value'),
+    value: nonnegativeIntSchema.describe('Raw numeric value'),
     score: z
       .number({
         description: 'Value between 0 and 1',
