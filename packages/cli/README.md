@@ -147,6 +147,10 @@ jobs:
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
 
+## Configuration
+
+For a comprehensive list of all options available in the config file, refer to [`CoreConfig` docs](../models/docs/models-reference.md#coreconfig).
+
 ## Custom Plugins
 
 We provide comprehensive documentation on [how to create a custom plugin](./docs/custom-plugins.md).
