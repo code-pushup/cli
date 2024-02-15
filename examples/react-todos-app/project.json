@@ -41,8 +41,9 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "vite.config.ts",
-        "reportsDirectory": "{workspaceRoot}/examples/react-todos-app/coverage"
+        "config": "examples/react-todos-app/vite.config.ts",
+        "reportsDirectory": "../../coverage/examples/react-todos-app",
+        "coverage": true
       }
     },
     "preview": {
