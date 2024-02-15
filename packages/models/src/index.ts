@@ -1,8 +1,10 @@
-export { Audit, auditSchema, pluginAuditsSchema } from './lib/audit';
-export { Issue, IssueSeverity } from './lib/audit-issue';
+export { Audit, auditSchema } from './lib/audit';
 export {
+  AuditDetails,
   AuditOutput,
   AuditOutputs,
+  auditDetailsSchema,
+  auditOutputSchema,
   auditOutputsSchema,
 } from './lib/audit-output';
 export {
@@ -11,13 +13,8 @@ export {
   categoryConfigSchema,
   categoryRefSchema,
 } from './lib/category-config';
-export {
-  CoreConfig,
-  coreConfigSchema,
-  refineCoreConfig,
-  unrefinedCoreConfigSchema,
-} from './lib/core-config';
-export { Group, GroupRef, groupSchema } from './lib/group';
+export { CoreConfig, coreConfigSchema } from './lib/core-config';
+export { Group, GroupRef, groupRefSchema, groupSchema } from './lib/group';
 export {
   CONFIG_FILE_NAME,
   SUPPORTED_CONFIG_FILE_FORMATS,
@@ -41,6 +38,12 @@ export {
   urlSchema,
 } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
+export {
+  Issue,
+  IssueSeverity,
+  issueSchema,
+  issueSeveritySchema,
+} from './lib/issue';
 export {
   Format,
   PersistConfig,
@@ -67,5 +70,6 @@ export {
   RunnerFunction,
   onProgressSchema,
   runnerConfigSchema,
+  runnerFunctionSchema,
 } from './lib/runner-config';
 export { UploadConfig, uploadConfigSchema } from './lib/upload-config';

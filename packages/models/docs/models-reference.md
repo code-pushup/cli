@@ -1,33 +1,51 @@
 # Code PushUp models reference
 
-## AuditOutputs
+## AuditDetails
 
-_Array of objects containing the following properties:_
+Detailed information
 
-| Property         | Description                              | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| :--------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`slug`** (\*)  | Reference to audit                       | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **`value`** (\*) | Raw numeric value                        | `number` (_int, ≥0_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `details`        | Detailed information                     | _Object with properties:_<ul><li>`issues`: _Array of objects:_<br /><ul><li>`message`: `string` (_max length: 1024_) - Descriptive error message</li><li>`severity`: `'info' \| 'warning' \| 'error'` - Severity level</li><li>`source`: _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, ≥0_) - Start line</li><li>`startColumn`: `number` (_int, ≥0_) - Start column</li><li>`endLine`: `number` (_int, ≥0_) - End line</li><li>`endColumn`: `number` (_int, ≥0_) - End column</li></ul> - Location in file</li></ul> - Source file location</li></ul> - List of findings</li></ul> |
+_Object containing the following properties:_
+
+| Property          | Description      | Type                             |
+| :---------------- | :--------------- | :------------------------------- |
+| **`issues`** (\*) | List of findings | _Array of [Issue](#issue) items_ |
 
 _(\*) Required._
+
+## AuditOutput
+
+Audit information
+
+_Object containing the following properties:_
+
+| Property         | Description                              | Type                                                              |
+| :--------------- | :--------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)  | Reference to audit                       | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                          |
+| **`value`** (\*) | Raw numeric value                        | `number` (_int, ≥0_)                                              |
+| **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                               |
+| `details`        | Detailed information                     | [AuditDetails](#auditdetails)                                     |
+
+_(\*) Required._
+
+## AuditOutputs
+
+_Array of [AuditOutput](#auditoutput) items._
 
 ## AuditReport
 
 _Object containing the following properties:_
 
-| Property         | Description                              | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| :--------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`slug`** (\*)  | Reference to audit                       | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `description`    | Description (markdown)                   | `string` (_max length: 65536_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **`value`** (\*) | Raw numeric value                        | `number` (_int, ≥0_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `details`        | Detailed information                     | _Object with properties:_<ul><li>`issues`: _Array of objects:_<br /><ul><li>`message`: `string` (_max length: 1024_) - Descriptive error message</li><li>`severity`: `'info' \| 'warning' \| 'error'` - Severity level</li><li>`source`: _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, ≥0_) - Start line</li><li>`startColumn`: `number` (_int, ≥0_) - Start column</li><li>`endLine`: `number` (_int, ≥0_) - End line</li><li>`endColumn`: `number` (_int, ≥0_) - End column</li></ul> - Location in file</li></ul> - Source file location</li></ul> - List of findings</li></ul> |
+| Property         | Description                              | Type                                                              |
+| :--------------- | :--------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)  | Reference to audit                       | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)                                      |
+| `description`    | Description (markdown)                   | `string` (_max length: 65536_)                                    |
+| `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
+| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                          |
+| **`value`** (\*) | Raw numeric value                        | `number` (_int, ≥0_)                                              |
+| **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                               |
+| `details`        | Detailed information                     | [AuditDetails](#auditdetails)                                     |
 
 _(\*) Required._
 
@@ -92,19 +110,56 @@ _Enum string, one of the following possible values:_
 - `'json'`
 - `'md'`
 
+## GroupRef
+
+Weighted reference to a group
+
+_Object containing the following properties:_
+
+| Property          | Description                                                     | Type                                                              |
+| :---------------- | :-------------------------------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)   | Reference slug to a group within this plugin (e.g. 'max-lines') | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`weight`** (\*) | Weight used to calculate score                                  | `number` (_int, ≥0_)                                              |
+
+_(\*) Required._
+
 ## Group
 
 _Object containing the following properties:_
 
-| Property         | Description                                  | Type                                                                                                                                                                                                                                                                      |
-| :--------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`slug`** (\*)  | Human-readable unique ID, e.g. "performance" | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                         |
-| **`refs`** (\*)  |                                              | _Array of at least 1 objects:_<br /><ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Reference slug to a group within this plugin (e.g. 'max-lines')</li><li>`weight`: `number` (_int, ≥0_) - Weight used to calculate score</li></ul> |
-| **`title`** (\*) | Descriptive name for the group               | `string` (_max length: 256_)                                                                                                                                                                                                                                              |
-| `description`    | Description of the group (markdown)          | `string` (_max length: 65536_)                                                                                                                                                                                                                                            |
-| `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)                                                                                                                                                                                                             |
+| Property         | Description                                  | Type                                                              |
+| :--------------- | :------------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)  | Human-readable unique ID, e.g. "performance" | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`refs`** (\*)  |                                              | _Array of at least 1 [GroupRef](#groupref) items_                 |
+| **`title`** (\*) | Descriptive name for the group               | `string` (_max length: 256_)                                      |
+| `description`    | Description of the group (markdown)          | `string` (_max length: 65536_)                                    |
+| `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)     |
 
 _(\*) Required._
+
+## Issue
+
+Issue information
+
+_Object containing the following properties:_
+
+| Property            | Description               | Type                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| :------------------ | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)                                                                                                                                                                                                                                                                                                                                                                                                |
+| `source`            | Source file location      | _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, ≥0_) - Start line</li><li>`startColumn`: `number` (_int, ≥0_) - Start column</li><li>`endLine`: `number` (_int, ≥0_) - End line</li><li>`endColumn`: `number` (_int, ≥0_) - End column</li></ul> - Location in file</li></ul> |
+
+_(\*) Required._
+
+## IssueSeverity
+
+Severity level
+
+_Enum string, one of the following possible values:_
+
+- `'info'`
+- `'warning'`
+- `'error'`
 
 ## MaterialIcon
 
@@ -981,26 +1036,22 @@ _Object containing the following properties:_
 
 _All properties are optional._
 
-## PluginAudits
-
-_Array of at least 1 [Audit](#audit) items._
-
 ## PluginConfig
 
 _Object containing the following properties:_
 
-| Property          | Description                               | Type                                                                                                                                                                                                                                          |
-| :---------------- | :---------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packageName`     | NPM package name                          | `string`                                                                                                                                                                                                                                      |
-| `version`         | NPM version of the package                | `string`                                                                                                                                                                                                                                      |
-| **`title`** (\*)  | Descriptive name                          | `string` (_max length: 256_)                                                                                                                                                                                                                  |
-| `description`     | Description (markdown)                    | `string` (_max length: 65536_)                                                                                                                                                                                                                |
-| `docsUrl`         | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)                                                                                                                                                                                 |
-| **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                             |
-| **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                                                                                                                                                                                                 |
-| **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ _Function:_<br /><ul><li>_parameters:_ <ol><li>[OnProgress](#onprogress) (_optional_)</li></ol></li><li>_returns:_ [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)</li></ul> |
-| **`audits`** (\*) |                                           | [PluginAudits](#pluginaudits)                                                                                                                                                                                                                 |
-| `groups`          |                                           | _Array of [Group](#group) items_                                                                                                                                                                                                              |
+| Property          | Description                               | Type                                                                 |
+| :---------------- | :---------------------------------------- | :------------------------------------------------------------------- |
+| `packageName`     | NPM package name                          | `string`                                                             |
+| `version`         | NPM version of the package                | `string`                                                             |
+| **`title`** (\*)  | Descriptive name                          | `string` (_max length: 256_)                                         |
+| `description`     | Description (markdown)                    | `string` (_max length: 65536_)                                       |
+| `docsUrl`         | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `string` (_max length: 0_)        |
+| **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)    |
+| **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                        |
+| **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
+| **`audits`** (\*) |                                           | _Array of at least 1 [Audit](#audit) items_                          |
+| `groups`          |                                           | _Array of [Group](#group) items_                                     |
 
 _(\*) Required._
 
@@ -1070,18 +1121,17 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
-## UnrefinedCoreConfig
+## RunnerFunction
 
-_Object containing the following properties:_
+_Function._
 
-| Property           | Description                                                          | Type                                                      |
-| :----------------- | :------------------------------------------------------------------- | :-------------------------------------------------------- |
-| **`plugins`** (\*) | List of plugins to be used (official, community-provided, or custom) | _Array of at least 1 [PluginConfig](#pluginconfig) items_ |
-| `persist`          |                                                                      | [PersistConfig](#persistconfig)                           |
-| `upload`           |                                                                      | [UploadConfig](#uploadconfig)                             |
-| `categories`       |                                                                      | _Array of [CategoryConfig](#categoryconfig) items_        |
+_Parameters:_
 
-_(\*) Required._
+1. [OnProgress](#onprogress) (_optional_)
+
+_Returns:_
+
+- [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)
 
 ## UploadConfig
 

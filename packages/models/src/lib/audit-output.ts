@@ -1,7 +1,15 @@
 import { z } from 'zod';
-import { issueSchema } from './audit-issue';
 import { positiveIntSchema, slugSchema } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
+import { issueSchema } from './issue';
+
+export const auditDetailsSchema = z.object(
+  {
+    issues: z.array(issueSchema, { description: 'List of findings' }),
+  },
+  { description: 'Detailed information' },
+);
+export type AuditDetails = z.infer<typeof auditDetailsSchema>;
 
 export const auditOutputSchema = z.object(
   {
@@ -16,14 +24,7 @@ export const auditOutputSchema = z.object(
       })
       .min(0)
       .max(1),
-    details: z
-      .object(
-        {
-          issues: z.array(issueSchema, { description: 'List of findings' }),
-        },
-        { description: 'Detailed information' },
-      )
-      .optional(),
+    details: auditDetailsSchema.optional(),
   },
   { description: 'Audit information' },
 );
