@@ -1,17 +1,17 @@
 {
-  "name": "testing-utils",
+  "name": "test-utils",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "testing-utils/src",
+  "sourceRoot": "testing/test-utils/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/testing-utils",
-        "main": "testing-utils/src/index.ts",
-        "tsConfig": "testing-utils/tsconfig.lib.json",
-        "assets": ["testing-utils/*.md"],
+        "outputPath": "dist/testing/test-utils",
+        "main": "testing/test-utils/src/index.ts",
+        "tsConfig": "testing/test-utils/tsconfig.lib.json",
+        "assets": ["testing/test-utils/*.md"],
         "esbuildConfig": "esbuild.config.js"
       }
     },
@@ -19,17 +19,17 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["testing-utils/**/*.ts"]
+        "lintFilePatterns": ["testing/test-utils/**/*.ts"]
       }
     },
     "unit-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "testing-utils/vite.config.unit.ts",
-        "reportsDirectory": "../coverage/testing-utils/unit-tests"
+        "config": "testing/test-utils/vite.config.unit.ts",
+        "reportsDirectory": "../coverage/test-utils/unit-tests"
       }
     }
   },
-  "tags": ["scope:shared", "type:testing-util"]
+  "tags": ["scope:shared", "type:testing"]
 }
