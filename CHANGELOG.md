@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.19.0](https://github.com/code-pushup/cli/compare/v0.18.1...v0.19.0) (2024-02-15)
+
+### Features
+
+- **core:** convert all issue file paths after executing plugin ([d82c68d](https://github.com/code-pushup/cli/commit/d82c68da9aaa4d3e4132ee5b8eb3766d60369440))
+- **utils:** implement helpers for making paths relative to git root ([b12df6d](https://github.com/code-pushup/cli/commit/b12df6d05f81d7c26df40c5435ad0efad7fdb687))
+
 ## [0.18.1](https://github.com/code-pushup/cli/compare/v0.18.0...v0.18.1) (2024-02-14)
 
 # [0.18.0](https://github.com/code-pushup/cli/compare/v0.17.0...v0.18.0) (2024-02-14)
