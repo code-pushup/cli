@@ -4,5 +4,5 @@
     "outDir": "../../dist/out-tsc",
     "types": ["nodenext"]
   },
-  "include": ["tools/**/*.ts"]
+  "include": ["tools/**/*.ts", "zod2md.config.ts"]
 }
