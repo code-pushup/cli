@@ -2,6 +2,16 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.20.0](https://github.com/code-pushup/cli/compare/v0.19.0...v0.20.0) (2024-02-15)
+
+### Bug Fixes
+
+- **models:** issue file positions must be positive integers ([727926e](https://github.com/code-pushup/cli/commit/727926e987b526703d7fd46994b442dce3ac4a25))
+
+### Features
+
+- **models:** add missing schema exports ([36d3eea](https://github.com/code-pushup/cli/commit/36d3eeafba94f41dfded28b97e8af5f9441b4062))
+
 # [0.19.0](https://github.com/code-pushup/cli/compare/v0.18.1...v0.19.0) (2024-02-15)
 
 ### Features
