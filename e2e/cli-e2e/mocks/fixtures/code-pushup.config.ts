@@ -1,3 +1,5 @@
+import { join } from 'node:path';
+import coveragePlugin from '@code-pushup/coverage-plugin';
 import eslintPlugin from '@code-pushup/eslint-plugin';
 import { CoreConfig } from '@code-pushup/models';
 
@@ -21,8 +23,23 @@ export default {
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
+    {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'group',
+          plugin: 'coverage',
+          slug: 'coverage',
+          weight: 1,
+        },
+      ],
+    },
   ],
   plugins: [
     await eslintPlugin({ eslintrc: '.eslintrc.json', patterns: '**/*.ts' }),
+    await coveragePlugin({
+      reports: [join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info')],
+    }),
   ],
 } satisfies CoreConfig;
