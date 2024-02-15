@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect } from 'vitest';
+import { afterEach, beforeAll, describe, expect } from 'vitest';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -18,6 +18,10 @@ describe('print-config-command', () => {
   beforeAll(() => {
     // initialize it in raw mode
     ui().switchMode('raw');
+  });
+  afterEach(() => {
+    // clean previous logs
+    ui().flushLogs();
   });
 
   it('should filter out meta arguments and kebab duplicates', async () => {

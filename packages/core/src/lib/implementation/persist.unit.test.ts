@@ -12,8 +12,18 @@ import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
+  beforeAll(() => {
+    // initialize it in raw mode
+    ui().switchMode('raw');
+  });
+
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
+  });
+
+  afterEach(() => {
+    // clean previous logs
+    ui().flushLogs();
   });
 
   it('should print a summary to stdout when no format is specified', async () => {
@@ -41,6 +51,7 @@ describe('persistReport', () => {
       .logger.getRenderer()
       .getLogs()
       .map(({ message }) => message);
+
     expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
