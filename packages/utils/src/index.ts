@@ -23,10 +23,6 @@ export {
   removeDirectoryIfExists,
 } from './lib/file-system';
 export {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-} from './lib/filter-by-slug';
-export {
   formatBytes,
   formatDuration,
   pluralize,
@@ -50,7 +46,6 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { link } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export { TERMINAL_WIDTH } from './lib/reports/constants';
 export { generateMdReport } from './lib/reports/generate-md-report';
