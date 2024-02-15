@@ -17,11 +17,11 @@ export default defineConfig({
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['global-setup.ts'],
     setupFiles: [
-      '../../testing-utils/src/lib/setup/fs.mock.ts',
-      '../../testing-utils/src/lib/setup/git.mock.ts',
-      '../../testing-utils/src/lib/setup/console.mock.ts',
-      '../../testing-utils/src/lib/setup/reset.mocks.ts',
-      '../../testing-utils/src/lib/setup/portal-client.mock.ts',
+      '../../testing/test-setup/src/lib/fs.mock.ts',
+      '../../testing/test-setup/src/lib/git.mock.ts',
+      '../../testing/test-setup/src/lib/console.mock.ts',
+      '../../testing/test-setup/src/lib/reset.mocks.ts',
+      '../../testing/test-setup/src/lib/portal-client.mock.ts',
     ],
   },
 });

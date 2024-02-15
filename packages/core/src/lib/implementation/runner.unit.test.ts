@@ -9,7 +9,7 @@ import {
   MEMFS_VOLUME,
   MINIMAL_RUNNER_CONFIG_MOCK,
   MINIMAL_RUNNER_FUNCTION_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import {
   RunnerResult,
   executeRunnerConfig,

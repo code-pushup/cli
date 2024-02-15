@@ -6,7 +6,7 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { LIGHTHOUSE_URL } from '../mock/constants';
 import { lhr } from '../mock/fixtures/lhr';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';

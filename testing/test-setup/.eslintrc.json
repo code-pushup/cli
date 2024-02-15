@@ -1,11 +1,11 @@
 {
-  "extends": ["../.eslintrc.json"],
+  "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "parserOptions": {
-        "project": ["testing-utils/tsconfig.*?.json"]
+        "project": ["testing/test-setup/tsconfig.*?.json"]
       }
     }
   ]
