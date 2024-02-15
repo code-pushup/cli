@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -12,18 +12,8 @@ import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
-  beforeAll(() => {
-    // initialize it in raw mode
-    ui().switchMode('raw');
-  });
-
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
-  });
-
-  afterEach(() => {
-    // clean previous logs
-    ui().flushLogs();
   });
 
   it('should print a summary to stdout when no format is specified', async () => {
@@ -118,12 +108,6 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-  afterEach(() => {
-    ui().flushLogs();
-  });
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
     const logs = ui()

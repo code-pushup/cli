@@ -36,22 +36,12 @@ const config = {
         zod: '^3.22.4',
       },
     }),
-    await lighthousePlugin({
-      url: 'https://staging.code-pushup.dev/login',
-      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
-      headless: false,
-      verbose: true,
-    }),
   ],
   categories: [
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [
-        ...fileSizeRecommendedRefs,
-        packageJsonPerformanceGroupRef,
-        ...lighthouseCorePerfGroupRefs,
-      ],
+      refs: [...fileSizeRecommendedRefs, packageJsonPerformanceGroupRef],
     },
     {
       slug: 'bug-prevention',

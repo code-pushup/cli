@@ -21,6 +21,7 @@ export default defineConfig({
       '../../testing-utils/src/lib/setup/console.mock.ts',
       '../../testing-utils/src/lib/setup/reset.mocks.ts',
       '../../testing-utils/src/lib/setup/portal-client.mock.ts',
+      '../../testing-utils/src/lib/setup/cliui.mock.ts',
     ],
   },
 });

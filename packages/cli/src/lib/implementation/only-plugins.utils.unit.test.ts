@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import {
@@ -36,12 +36,6 @@ describe('filterPluginsBySlug', () => {
 });
 
 describe('filterCategoryByPluginSlug', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-  afterEach(() => {
-    ui().flushLogs();
-  });
   it('should return all categories if no onlyPlugins option', () => {
     expect(
       filterCategoryByPluginSlug(
@@ -97,13 +91,6 @@ describe('filterCategoryByPluginSlug', () => {
 });
 
 describe('validateOnlyPluginsOption', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-  afterEach(() => {
-    ui().flushLogs();
-  });
-
   it('should warn if onlyPlugins option contains non-existing plugin', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],

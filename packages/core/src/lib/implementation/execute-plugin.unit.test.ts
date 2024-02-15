@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -90,12 +90,6 @@ describe('executePlugin', () => {
 });
 
 describe('executePlugins', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-  afterEach(() => {
-    ui().flushLogs();
-  });
   it('should execute valid plugins', async () => {
     const pluginResult = await executePlugins(
       [
