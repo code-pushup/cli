@@ -38,14 +38,14 @@ export async function toGitPath(
 
 export function validateCommitData(
   commitData: CommitData | null,
-  options: { throwError?: boolean } = {},
+  options: { throwError?: true } = {},
 ): commitData is CommitData {
-  const { throwError = false } = options;
   if (!commitData) {
     const msg = 'no commit data available';
-    if (throwError) {
+    if (options?.throwError) {
       throw new Error(msg);
     } else {
+      // @TODO replace with ui().logger.warning
       console.warn(msg);
       return false;
     }
@@ -54,10 +54,7 @@ export function validateCommitData(
 }
 
 export function statusIsClean(git = simpleGit()): Promise<boolean> {
-  return git.status(['-s']).then(r => 
-    // throw new Error(JSON.stringify(r));
-     r.files.length === 0
-  );
+  return git.status(['-s']).then(r => r.files.length === 0);
 }
 
 export async function guardAgainstLocalChanges(
@@ -84,13 +81,13 @@ export async function getCurrentBranchOrTag(
 export async function safeCheckout(
   branchOrHash: string,
   options: {
-    clean?: boolean;
+    reset?: true;
   } = {},
   git = simpleGit(),
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options?.clean) {
-    await git.clean(['f']);
+  if (options?.reset) {
+    await git.raw(['reset', '--hard']);
     // @TODO replace with ui().logger.info
     console.info(`branch cleaned`);
   }
