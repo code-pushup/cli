@@ -33,7 +33,7 @@ describe('upload', () => {
       },
     });
 
-    expect(result).toEqual({ packageName: '@code-pushup/cli' });
+    expect(result).toEqual({ url: expect.stringContaining('code-pushup/cli') });
 
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',
