@@ -20,7 +20,12 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
+  removeDirectoryIfExists,
 } from './lib/file-system';
+export {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+} from './lib/filter-by-slug';
 export {
   formatBytes,
   formatDuration,
@@ -32,13 +37,20 @@ export {
   truncateText,
   truncateTitle,
 } from './lib/formatting';
-export { getLatestCommit, git, validateCommitData } from './lib/git';
+export {
+  formatGitPath,
+  getGitRoot,
+  getLatestCommit,
+  toGitPath,
+  validateCommitData,
+} from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
+export { link } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export { TERMINAL_WIDTH } from './lib/reports/constants';
 export { generateMdReport } from './lib/reports/generate-md-report';
@@ -70,8 +82,3 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
-export { link } from './lib/logging';
-export {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-} from './lib/filter-by-slug';

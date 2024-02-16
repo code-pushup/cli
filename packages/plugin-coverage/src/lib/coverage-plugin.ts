@@ -1,20 +1,15 @@
-import { join } from 'node:path';
-import type {
-  Audit,
-  PluginConfig,
-  RunnerConfig,
-  RunnerFunction,
-} from '@code-pushup/models';
-import { capitalize, pluginWorkDir } from '@code-pushup/utils';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { Audit, Group, PluginConfig } from '@code-pushup/models';
+import { capitalize } from '@code-pushup/utils';
 import { name, version } from '../../package.json';
-import { CoveragePluginConfig, coveragePluginConfigSchema } from './config';
-import { lcovResultsToAuditOutputs } from './runner/lcov/runner';
-import { applyMaxScoreAboveThreshold } from './utils';
-
-export const RUNNER_OUTPUT_PATH = join(
-  pluginWorkDir('coverage'),
-  'runner-output.json',
-);
+import {
+  CoveragePluginConfig,
+  CoverageType,
+  coveragePluginConfigSchema,
+} from './config';
+import { createRunnerConfig } from './runner';
+import { coverageDescription, coverageTypeWeightMapper } from './utils';
 
 /**
  * Instantiates Code PushUp code coverage plugin for core config.
@@ -34,37 +29,36 @@ export const RUNNER_OUTPUT_PATH = join(
  *
  * @returns Plugin configuration.
  */
-export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
-  const { reports, perfectScoreThreshold, coverageTypes, coverageToolCommand } =
-    coveragePluginConfigSchema.parse(config);
+export async function coveragePlugin(
+  config: CoveragePluginConfig,
+): Promise<PluginConfig> {
+  const coverageConfig = coveragePluginConfigSchema.parse(config);
 
-  const audits = coverageTypes.map(
+  const audits = coverageConfig.coverageTypes.map(
     (type): Audit => ({
       slug: `${type}-coverage`,
       title: `${capitalize(type)} coverage`,
-      description: `${capitalize(type)} coverage percentage on the project.`,
+      description: coverageDescription[type],
     }),
   );
 
-  const getAuditOutputs = async () =>
-    perfectScoreThreshold
-      ? applyMaxScoreAboveThreshold(
-          await lcovResultsToAuditOutputs(reports, coverageTypes),
-          perfectScoreThreshold,
-        )
-      : await lcovResultsToAuditOutputs(reports, coverageTypes);
+  const group: Group = {
+    slug: 'coverage',
+    title: 'Code coverage metrics',
+    description: 'Group containing all defined coverage types as audits.',
+    refs: audits.map(audit => ({
+      ...audit,
+      weight:
+        coverageTypeWeightMapper[
+          audit.slug.slice(0, audit.slug.indexOf('-')) as CoverageType
+        ],
+    })),
+  };
 
-  // if coverage results are provided, only convert them to AuditOutputs
-  // if not, run coverage command and then run result conversion
-  const runner: RunnerConfig | RunnerFunction =
-    coverageToolCommand == null
-      ? getAuditOutputs
-      : {
-          command: coverageToolCommand.command,
-          args: coverageToolCommand.args,
-          outputFile: RUNNER_OUTPUT_PATH,
-          outputTransform: getAuditOutputs,
-        };
+  const runnerScriptPath = join(
+    fileURLToPath(dirname(import.meta.url)),
+    'bin.js',
+  );
 
   return {
     slug: 'coverage',
@@ -75,6 +69,7 @@ export function coveragePlugin(config: CoveragePluginConfig): PluginConfig {
     packageName: name,
     version,
     audits,
-    runner,
+    groups: [group],
+    runner: await createRunnerConfig(runnerScriptPath, coverageConfig),
   };
 }

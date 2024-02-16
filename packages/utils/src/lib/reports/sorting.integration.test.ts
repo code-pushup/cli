@@ -1,4 +1,4 @@
-import { REPORT_MOCK } from '@code-pushup/testing-utils';
+import { REPORT_MOCK } from '@code-pushup/test-utils';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 

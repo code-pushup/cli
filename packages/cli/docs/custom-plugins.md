@@ -26,14 +26,14 @@ export default {
 
 ## Plugin Structure
 
-Every plugin is defined in [`PluginConfig`](../../models/docs/core-config-types.md) object.
+Every plugin is defined in [`PluginConfig`](../../models/docs/models-reference.md#pluginconfig) object.
 
 The plugin configuration contains:
 
-- metadata about the plugin [`PluginMeta`](../../models/docs/core-config-types.md)
-- metadata about the available [audit](#audits) [`Audit`](../../models/docs/core-config-types.md)
-- a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](../../models/docs/core-config-types.md).
-- optional [`groups`](#audit-groups) to pre score audits
+- metadata about the plugin [`PluginMeta`](../../models/docs/models-reference.md#pluginmeta)
+- metadata about the available [audit](#audits) [`Audit`](../../models/docs/models-reference.md#audit)
+- a [runner](#plugin-runner) that maintains the internal logic that produces the [plugin output](#plugin-output) as [`AuditOutputs`](../../models/docs/models-reference.md#auditoutputs).
+- optional [`groups`](#groups) to pre score audits
 
 See the following example that shows a minimal implementation of a custom plugin containing all required fields:
 
@@ -121,7 +121,7 @@ const myAuditOutput: AuditOutput = {
 };
 ```
 
-- An audit output always includes the metadata of the audit. [`Audit`](../../models/docs/core-config-types.md)
+- An audit output always includes the metadata of the audit. [`Audit`](../../models/docs/models-reference.md#audit)
 
 - `score` and `value` are important to calculate a score from a given metric and display it.
   Here you can read more about [audits and scoring](#audit-score).
@@ -140,7 +140,7 @@ const pluginOutput: AuditOutputs = [myAuditOutput];
 ## Plugin runner
 
 The `runner` property defines the core of a plugin.
-It also serves as the entry point of your plugin and is executed by the CLI. It should return the audit results as [`AuditOutputs`](../../models/docs/core-config-types.md).
+It also serves as the entry point of your plugin and is executed by the CLI. It should return the audit results as [`AuditOutputs`](../../models/docs/models-reference.md#auditoutputs).
 
 A runner can be implemented in two ways:
 
@@ -495,7 +495,7 @@ We will extend the `fileSizeAuditOutput` with `details` show which files exceed 
 // file-size.plugin.ts
 // ...
 import { basename } from 'path';
-import { formatBytes, toUnixPath } from '@code-pushup/utils';
+import { formatBytes } from '@code-pushup/utils';
 import { AuditOutput } from './plugin-process-output';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
@@ -521,8 +521,7 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
 export function assertFileSize(file: string, size: number, budget?: number): Issue {
   const auditOutputBase = {
     source: {
-      // format path to be in scope of the repository
-      file: toUnixPath(file, { toRelative: true }),
+      file,
     },
   } satisfies AuditOutput['source'];
 

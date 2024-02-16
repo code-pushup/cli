@@ -50,7 +50,8 @@
       "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
-      "!{projectRoot}/code-pushup.config.?(m)[jt]s"
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
+      "!{projectRoot}/zod2md.config.ts"
     ],
     "sharedGlobals": []
   },

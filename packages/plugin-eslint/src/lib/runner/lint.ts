@@ -1,8 +1,8 @@
 import type { Linter } from 'eslint';
-import { distinct, toArray, toUnixPath } from '@code-pushup/utils';
+import { distinct, toArray } from '@code-pushup/utils';
 import { ESLintPluginConfig } from '../config';
 import { setupESLint } from '../setup';
-import type { LintResult, LinterOutput, RuleOptionsPerFile } from './types';
+import type { LinterOutput, RuleOptionsPerFile } from './types';
 
 export async function lint({
   eslintrc,
@@ -10,16 +10,10 @@ export async function lint({
 }: ESLintPluginConfig): Promise<LinterOutput> {
   const eslint = setupESLint(eslintrc);
 
-  const lintResults = await eslint.lintFiles(patterns);
-  const results = lintResults.map(
-    (result): LintResult => ({
-      ...result,
-      relativeFilePath: toUnixPath(result.filePath, { toRelative: true }),
-    }),
-  );
+  const results = await eslint.lintFiles(patterns);
 
   const ruleOptionsPerFile = await results.reduce(
-    async (acc, { filePath, relativeFilePath, messages }) => {
+    async (acc, { filePath, messages }) => {
       const filesMap = await acc;
       const config = (await eslint.calculateConfigForFile(
         filePath,
@@ -37,8 +31,8 @@ export async function lint({
       );
       return {
         ...filesMap,
-        [relativeFilePath]: {
-          ...filesMap[relativeFilePath],
+        [filePath]: {
+          ...filesMap[filePath],
           ...rulesMap,
         },
       };

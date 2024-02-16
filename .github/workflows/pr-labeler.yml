@@ -11,8 +11,8 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
-      - uses: actions/labeler@v4
+        uses: actions/checkout@v4
+      - uses: actions/labeler@v5
         with:
-          dot: true
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          sync-labels: true

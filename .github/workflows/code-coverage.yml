@@ -18,19 +18,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: .nvmrc
           cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Execute all tests and generate coverage reports
         run: npx nx run ${{ matrix.lib }}:${{ matrix.scope }}-test --coverage
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
+        uses: codecov/codecov-action@v4
+        with:
           files: ./coverage/${{ matrix.lib }}/${{ matrix.scope }}-tests/coverage-final.json
           flags: ${{ matrix.lib }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}

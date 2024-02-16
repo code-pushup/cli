@@ -6,7 +6,7 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   PluginOptions,
   audits,

@@ -4,7 +4,8 @@ import os from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SpyInstance, describe, expect, it } from 'vitest';
-import type { AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
+import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
 import { listAuditsAndGroups } from './meta';
 import {
@@ -32,15 +33,16 @@ describe('executeRunner', () => {
     return [runnerConfig.command, ...(runnerConfig.args ?? [])];
   };
 
+  const appDir = join(
+    fileURLToPath(dirname(import.meta.url)),
+    '..',
+    '..',
+    'mocks',
+    'fixtures',
+    'todos-app',
+  );
+
   beforeAll(async () => {
-    const appDir = join(
-      fileURLToPath(dirname(import.meta.url)),
-      '..',
-      '..',
-      'mocks',
-      'fixtures',
-      'todos-app',
-    );
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(appDir);
     // Windows does not require additional quotation marks for globs
     platformSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
@@ -64,8 +66,8 @@ describe('executeRunner', () => {
 
     await executeRunner(argv);
 
-    const json = await readJsonFile(RUNNER_OUTPUT_PATH);
-    expect(json).toMatchSnapshot();
+    const json = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
+    expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
   });
 
   it('should execute runner with inline config using @code-pushup/eslint-config', async () => {
@@ -86,7 +88,7 @@ describe('executeRunner', () => {
               message:
                 'Filename is not in kebab case. Rename it to `use-todos.js`.',
               source: expect.objectContaining({
-                file: 'src/hooks/useTodos.js',
+                file: join(appDir, 'src', 'hooks', 'useTodos.js'),
               } satisfies Partial<Issue['source']>),
             } satisfies Issue,
           ]),

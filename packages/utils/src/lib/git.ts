@@ -1,4 +1,6 @@
+import { isAbsolute, join, relative } from 'node:path';
 import { simpleGit } from 'simple-git';
+import { toUnixPath } from './transform';
 
 export type CommitData = {
   hash: string;
@@ -7,19 +9,35 @@ export type CommitData = {
   date: string;
 };
 
-export const git = simpleGit();
-
-export async function getLatestCommit() {
+export async function getLatestCommit(git = simpleGit()) {
   // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
   const log = await git.log({
     maxCount: 1,
     format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
   });
-  return log.latest;
+  return log.latest satisfies CommitData | null;
+}
+
+export function getGitRoot(git = simpleGit()): Promise<string> {
+  return git.revparse('--show-toplevel');
+}
+
+export function formatGitPath(path: string, gitRoot: string): string {
+  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
+  const relativePath = relative(gitRoot, absolutePath);
+  return toUnixPath(relativePath);
+}
+
+export async function toGitPath(
+  path: string,
+  git = simpleGit(),
+): Promise<string> {
+  const gitRoot = await getGitRoot(git);
+  return formatGitPath(path, gitRoot);
 }
 
 export function validateCommitData(
-  commitData?: unknown,
+  commitData: CommitData | null,
   options: { throwError?: boolean } = {},
 ): commitData is CommitData {
   const { throwError = false } = options;

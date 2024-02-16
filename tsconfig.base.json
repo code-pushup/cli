@@ -28,7 +28,8 @@
       ],
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
-      "@code-pushup/testing-utils": ["testing-utils/src/index.ts"],
+      "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
+      "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
       "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },
