@@ -15,10 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -62,11 +58,6 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/cli"
-      }
     }
   },
   "tags": ["scope:core", "type:app"]

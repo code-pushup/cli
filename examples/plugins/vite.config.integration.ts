@@ -15,7 +15,7 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['global-setup.ts'],
+    globalSetup: ['../../global-setup.ts'],
     setupFiles: [
       '../../testing-utils/src/lib/setup/fs.mock.ts',
       '../../testing-utils/src/lib/setup/git.mock.ts',
