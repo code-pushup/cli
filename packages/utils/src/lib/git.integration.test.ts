@@ -1,6 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { type SimpleGit, simpleGit, ResetMode } from 'simple-git';
+import { type SimpleGit, simpleGit } from 'simple-git';
 import { expect } from 'vitest';
 import {
   getCurrentBranchOrTag,
@@ -12,7 +12,6 @@ import {
   toGitPath,
 } from './git';
 import { toUnixPath } from './transform';
-
 
 describe('git utils', () => {
   const baseDir = join(process.cwd(), 'tmp', 'testing-git-repo');
@@ -96,40 +95,42 @@ describe('git utils', () => {
     );
   });
 
-      it('guardAgainstLocalChanges should not throw if history is clean', async () => {
-        await expect(guardAgainstLocalChanges(git)).resolves.toBeUndefined();
-      });
+  it('guardAgainstLocalChanges should not throw if history is clean', async () => {
+    await expect(guardAgainstLocalChanges(git)).resolves.toBeUndefined();
+  });
 
-       it('safeCheckout should checkout target branch in clean state', async () => {
-         await expect(git.branch()).resolves.toEqual(expect.objectContaining({current: 'master'}));
-         await expect(safeCheckout('feature-branch',{}, git)).resolves.toBeUndefined();
-         await expect(git.branch()).resolves.toEqual(expect.objectContaining({current: 'feature-branch'}));
-       });
+  it('safeCheckout should checkout target branch in clean state', async () => {
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'master' }),
+    );
+    await expect(
+      safeCheckout('feature-branch', {}, git),
+    ).resolves.toBeUndefined();
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'feature-branch' }),
+    );
+  });
 
-       it('safeCheckout should throw if history is dirty', async () => {
-         await mkdir(changesDir, { recursive: true });
-         await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
-         await expect(safeCheckout('master',{}, git)).rejects.toThrow(
-           'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
-         );
-       });
+  it('safeCheckout should throw if history is dirty', async () => {
+    await mkdir(changesDir, { recursive: true });
+    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
+    await expect(safeCheckout('master', {}, git)).rejects.toThrow(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
+  });
 
-       it('safeCheckout should clean local changes and check out to master', async () => {
-         await mkdir(changesDir, { recursive: true });
-         await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
-         await expect(
-           safeCheckout('feature-branch', { clean: true }, git),
-         ).resolves.toBeUndefined();
-         await expect(git.branch()).resolves.toEqual(expect.objectContaining({current: 'feature-branch'}));
-       });
+  it('safeCheckout should clean local changes and check out to master', async () => {
+    await mkdir(changesDir, { recursive: true });
+    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
+    await expect(
+      safeCheckout('feature-branch', { clean: true }, git),
+    ).resolves.toBeUndefined();
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'feature-branch' }),
+    );
+  });
 
-});
-
-/*
-describe('getCurrentBranchOrTag', () => {
-  it('should log current branch', async () => {
-    await expect(getCurrentBranchOrTag()).resolves.toEqual(expect.any(String));
+  it('getCurrentBranchOrTag should log current branch', async () => {
+    await expect(getCurrentBranchOrTag(git)).resolves.toBe('master');
   });
 });
-
-*/
