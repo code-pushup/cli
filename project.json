@@ -10,24 +10,6 @@
         "storage": "tmp/local-registry/storage"
       }
     },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "syncVersions": true,
-        "preset": "angular",
-        "commitMessageFormat": "release: {version} [skip ci]",
-        "postTargets": ["github"],
-        "push": true,
-        "skipProjectChangelog": true
-      }
-    },
-    "github": {
-      "executor": "@jscutlery/semver:github",
-      "options": {
-        "tag": "{tag}",
-        "notes": "{notes}"
-      }
-    },
     "run-collect": {
       "command": "npx dist/packages/cli collect",
       "dependsOn": [

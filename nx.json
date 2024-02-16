@@ -28,11 +28,12 @@
         "passWithNoTests": true
       }
     },
-    "deploy": {
+    "nx-release-publish": {
       "dependsOn": ["build"],
-      "executor": "ngx-deploy-npm:deploy",
+      "executor": "@nx/js:release-publish",
       "options": {
-        "access": "public"
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/"
       }
     }
   },
@@ -73,6 +74,33 @@
       "library": {
         "style": "css",
         "linter": "eslint"
+      }
+    }
+  },
+  "release": {
+    "groups": {
+      "@code-pushup/cli-source": {
+        "projects": ["packages/*"],
+        "projectsRelationship": "fixed",
+        "changelog": {
+          "automaticFromRef": true,
+          "projectChangelogs": false,
+          "workspaceChangelog": {
+            "createRelease": "github"
+          }
+        },
+        "git": {
+          "commit": true,
+          "push": true,
+          "pushRemote": "origin",
+          "tag": true,
+          "commitMessage": "release: {version} [skip ci]",
+          "commitArgs": "--no-verify"
+        },
+        "version": {
+          "conventionalCommits": true
+        },
+        "releaseTagPattern": "v{version}"
       }
     }
   }

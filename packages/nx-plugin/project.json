@@ -66,11 +66,6 @@
         "config": "packages/nx-plugin/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/models/integration-tests"
       }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/nx-plugin"
-      }
     }
   },
   "tags": ["scope:tooling", "type:feature"]

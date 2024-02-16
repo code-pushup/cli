@@ -15,10 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs models {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -43,11 +39,6 @@
       "options": {
         "config": "packages/models/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/models/integration-tests"
-      }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/models"
       }
     },
     "generate-docs": {

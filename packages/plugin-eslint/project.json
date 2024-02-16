@@ -16,10 +16,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -44,11 +40,6 @@
       "options": {
         "config": "packages/plugin-eslint/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
-      }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/plugin-eslint"
       }
     }
   },
