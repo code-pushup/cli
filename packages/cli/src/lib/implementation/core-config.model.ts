@@ -15,7 +15,10 @@ export type UploadConfigCliOptions = {
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export type ConfigCliOptions = { config: string };
+export type ConfigCliOptions = {
+  config: string;
+  tsconfig?: string;
+};
 
 export type CoreConfigCliOptions = ConfigCliOptions &
   PersistConfigCliOptions &

@@ -13,12 +13,15 @@ export async function coreConfigMiddleware<
   const args = processArgs;
   const {
     config,
+    tsconfig,
     persist: cliPersist,
     upload: cliUpload,
     ...remainingCliOptions
   } = args as GeneralCliOptions & Required<CoreConfig>;
   // if config path is given use it otherwise auto-load
-  const importedRc = config ? await readRcByPath(config) : await autoloadRc();
+  const importedRc = config
+    ? await readRcByPath(config, tsconfig)
+    : await autoloadRc(tsconfig);
   const {
     persist: rcPersist,
     upload: rcUpload,
