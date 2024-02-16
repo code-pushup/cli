@@ -23,11 +23,11 @@ export function yargsUploadCommandObject() {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }
-      await upload(options);
+      const { url } = await upload(options);
 
       const commitData = await getLatestCommit();
       if (validateCommitData(commitData, { throwError: true })) {
-        uploadSuccessfulLog(options.upload, commitData.hash);
+        uploadSuccessfulLog(url);
       }
     },
   } satisfies CommandModule;

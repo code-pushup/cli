@@ -64,7 +64,6 @@ export {
   calcDuration,
   compareIssueSeverity,
   loadReport,
-  portalCommitDashboardLink,
 } from './lib/reports/utils';
 export {
   CliArgsObject,
