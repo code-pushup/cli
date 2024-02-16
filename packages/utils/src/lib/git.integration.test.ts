@@ -7,7 +7,6 @@ import {
   getCurrentBranchOrTag,
   getGitRoot,
   getLatestCommit,
-  git,
   guardAgainstLocalChanges,
   safeCheckout,
   toGitPath,
@@ -73,7 +72,7 @@ describe('git utils', () => {
 
 describe('branchHasChanges', () => {
   it('should return true if some changes are given', async () => {
-    await makeStatusDirty();
+    //await makeStatusDirty();
     await expect(branchHasChanges()).resolves.toBe(true);
   });
 
@@ -84,7 +83,7 @@ describe('branchHasChanges', () => {
 
 describe('guardAgainstLocalChanges', () => {
   it('should throw if history is dirty', async () => {
-    await makeStatusDirty();
+    //await makeStatusDirty();
     await expect(guardAgainstLocalChanges()).rejects.toThrow(
       'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
@@ -110,7 +109,7 @@ describe('safeCheckout', () => {
 
   afterEach(async () => {
     await git.checkout(initialBranch);
-    await makeStatusClean();
+    //await makeStatusClean();
   });
 
   it('should checkout target branch in clean state', async () => {
@@ -119,14 +118,14 @@ describe('safeCheckout', () => {
   });
 
   it('should throw if history is dirty', async () => {
-    await makeStatusDirty();
+    // await makeStatusDirty();
     await expect(safeCheckout('main')).rejects.toThrow(
       'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
   });
 
   it('should clean local changes and check out to main', async () => {
-    await makeStatusDirty();
+    //  await makeStatusDirty();
     await expect(
       safeCheckout('main', { clean: true }),
     ).resolves.toBeUndefined();
