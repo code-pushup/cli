@@ -1,4 +1,8 @@
-# @code-pushup/cli [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
+# @code-pushup/cli
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcli.svg)](https://www.npmjs.com/package/@code-pushup/cli)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcli)](https://npmtrends.com/@code-pushup/cli)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/cli)](https://www.npmjs.com/package/@code-pushup/cli?activeTab=dependencies)
 
 🔎🔬 **Quality metrics for your software project.** 📉🔍
 
