@@ -1,4 +1,8 @@
-# @code-pushup/utils [![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/%40code-pushup%2Futils)
+# @code-pushup/utils
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/@code-pushup/utils)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Futils)](https://npmtrends.com/@code-pushup/utils)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/utils)](https://www.npmjs.com/package/@code-pushup/utils?activeTab=dependencies)
 
 Low-level **utilities** (helper functions, etc.) used by [Code PushUp CLI](../cli/README.md).
 
