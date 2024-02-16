@@ -1,6 +1,6 @@
-import { isAbsolute, join, relative } from 'node:path';
-import { simpleGit } from 'simple-git';
-import { toUnixPath } from './transform';
+import {isAbsolute, join, relative} from 'node:path';
+import {simpleGit} from 'simple-git';
+import {toUnixPath} from './transform';
 
 export type CommitData = {
   hash: string;
@@ -53,20 +53,23 @@ export function validateCommitData(
   return true;
 }
 
-export function branchHasChanges(): Promise<boolean> {
-  return git.status(['-s']).then(r => r.files.length > 0);
+export function statusIsClean(git = simpleGit()): Promise<boolean> {
+  return git.status(['-s']).then(r => {
+    // throw new Error(JSON.stringify(r));
+    return r.files.length === 0;
+  });
 }
 
-export async function guardAgainstLocalChanges(): Promise<void> {
-  const isDirty = await branchHasChanges();
-  if (isDirty) {
+export async function guardAgainstLocalChanges(git = simpleGit()): Promise<void> {
+  const isClean = await statusIsClean(git);
+  if (!isClean) {
     throw new Error(
       'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
   }
 }
 
-export async function getCurrentBranchOrTag(): Promise<string> {
+export async function getCurrentBranchOrTag(git = simpleGit()): Promise<string> {
   return (
     (await git.branch().then(r => r.current)) ||
     // @TODO replace with simple git
@@ -79,12 +82,14 @@ export async function safeCheckout(
   options: {
     clean?: boolean;
   } = {},
+  git = simpleGit()
 ): Promise<void> {
   // git requires a clean history to check out a branch
   if (options?.clean) {
     await git.clean(['f']);
+    // @TODO replace with ui().logger.info
     console.info(`branch cleaned`);
   }
-  await guardAgainstLocalChanges();
+  await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);
 }
