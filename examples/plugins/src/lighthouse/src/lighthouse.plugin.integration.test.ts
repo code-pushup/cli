@@ -90,17 +90,6 @@ describe('lighthouse-create-export-config', () => {
   });
 });
 
-describe('lighthouse-create-export-execution', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
-      },
-      MEMFS_VOLUME,
-    );
-  });
-});
-
 describe('lighthouse-audits-export', () => {
   it.each(audits.map(a => [a.slug, a]))(
     'should have a valid audit meta info for %s',
