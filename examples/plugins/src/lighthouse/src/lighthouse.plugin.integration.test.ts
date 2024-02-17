@@ -1,16 +1,9 @@
-import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
-import {
-  auditSchema,
-  categoryRefSchema,
-  pluginConfigSchema,
-} from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { LIGHTHOUSE_URL } from '../mock/constants';
-import { lhr } from '../mock/fixtures/lhr';
-import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
-import { audits, PLUGIN_SLUG as slug } from './index';
-import { create } from './lighthouse.plugin';
+import {describe, expect, it} from 'vitest';
+import {auditSchema, categoryRefSchema, pluginConfigSchema,} from '@code-pushup/models';
+import {LIGHTHOUSE_URL} from '../mock/constants';
+import {corePerfGroupRefs} from './constants';
+import {audits, PLUGIN_SLUG as slug} from './index';
+import {create} from './lighthouse.plugin';
 
 describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
