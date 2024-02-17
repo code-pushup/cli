@@ -81,15 +81,16 @@ export async function getCurrentBranchOrTag(
 export async function safeCheckout(
   branchOrHash: string,
   options: {
-    reset?: true;
+    forceCleanStatus?: true;
   } = {},
   git = simpleGit(),
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options?.reset) {
+  if (options?.forceCleanStatus) {
     await git.raw(['reset', '--hard']);
+    await git.clean(['f', 'd']);
     // @TODO replace with ui().logger.info
-    console.info(`branch cleaned`);
+    console.info(`git status cleaned`);
   }
   await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);
