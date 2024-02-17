@@ -1,9 +1,13 @@
-import {describe, expect, it} from 'vitest';
-import {auditSchema, categoryRefSchema, pluginConfigSchema,} from '@code-pushup/models';
-import {LIGHTHOUSE_URL} from '../mock/constants';
-import {corePerfGroupRefs} from './constants';
-import {audits, PLUGIN_SLUG as slug} from './index';
-import {create} from './lighthouse.plugin';
+import { describe, expect, it } from 'vitest';
+import {
+  auditSchema,
+  categoryRefSchema,
+  pluginConfigSchema,
+} from '@code-pushup/models';
+import { LIGHTHOUSE_URL } from '../mock/constants';
+import { corePerfGroupRefs } from './constants';
+import { audits, PLUGIN_SLUG as slug } from './index';
+import { create } from './lighthouse.plugin';
 
 describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
