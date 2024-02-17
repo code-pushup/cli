@@ -4,7 +4,7 @@ import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
   PluginOutputMissingAuditError,

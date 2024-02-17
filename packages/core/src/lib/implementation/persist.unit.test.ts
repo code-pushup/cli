@@ -7,7 +7,7 @@ import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 

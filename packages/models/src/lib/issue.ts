@@ -4,14 +4,14 @@ import { filePathSchema, positiveIntSchema } from './implementation/schemas';
 
 const sourceFileLocationSchema = z.object(
   {
-    file: filePathSchema('Relative path to source file in Git repo'),
+    file: filePathSchema.describe('Relative path to source file in Git repo'),
     position: z
       .object(
         {
-          startLine: positiveIntSchema('Start line'),
-          startColumn: positiveIntSchema('Start column').optional(),
-          endLine: positiveIntSchema('End line').optional(),
-          endColumn: positiveIntSchema('End column').optional(),
+          startLine: positiveIntSchema.describe('Start line'),
+          startColumn: positiveIntSchema.describe('Start column').optional(),
+          endLine: positiveIntSchema.describe('End line').optional(),
+          endColumn: positiveIntSchema.describe('End column').optional(),
         },
         { description: 'Location in file' },
       )

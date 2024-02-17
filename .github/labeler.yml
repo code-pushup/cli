@@ -36,11 +36,9 @@
           - '**/*.test.ts'
           - '**/mocks/**'
           - e2e/**
-          - testing-utils/**
+          - testing/**
           - '**/vitest.config*.ts'
           - 'vitest.workspace.ts'
-          - 'global-setup*.ts'
-          - '.verdaccio/config.yml'
 
 🦾 CI/CD:
   - changed-files:
@@ -65,3 +63,4 @@
           - '.github/ISSUE_TEMPLATE/**'
           - '.husky/**'
           - 'commitlint.config.js'
+          - '.verdaccio/config.yml'

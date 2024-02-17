@@ -1,6 +1,16 @@
 import chalk from 'chalk';
-import { UploadConfig } from '@code-pushup/models';
 import { link, portalCommitDashboardLink, ui } from '@code-pushup/utils';
+
+export type CliUi = ReturnType<typeof cliui>;
+
+// eslint-disable-next-line import/no-mutable-exports,functional/no-let
+export let singletonUiInstance: CliUi | undefined;
+export function ui(): CliUi {
+  if (singletonUiInstance === undefined) {
+    singletonUiInstance = cliui();
+  }
+  return singletonUiInstance;
+}
 
 export function renderConfigureCategoriesHint(): void {
   ui().logger.info(
@@ -11,21 +21,9 @@ export function renderConfigureCategoriesHint(): void {
     ),
   );
 }
-
-export function uploadSuccessfulLog(
-  options: UploadConfig,
-  commit: string,
-): void {
+export function uploadSuccessfulLog(url: string): void {
   ui().logger.success('Upload successful!');
-  ui().logger.success(
-    link(
-      // @TODO extend config to maintain baseUrl under upload
-      portalCommitDashboardLink(
-        { ...options, baseUrl: '<YOUR_PORTAL_URL>' },
-        commit,
-      ),
-    ),
-  );
+  ui().logger.success(link(url));
 }
 
 export function collectSuccessfulLog(): void {

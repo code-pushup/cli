@@ -8,7 +8,7 @@ import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,

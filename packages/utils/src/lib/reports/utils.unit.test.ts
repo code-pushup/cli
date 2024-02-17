@@ -1,11 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { Issue, IssueSeverity, Report } from '@code-pushup/models';
-import {
-  MEMFS_VOLUME,
-  REPORT_MOCK,
-  reportMock,
-} from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
 import {
   EnrichedAuditReport,
   ScoredReport,
@@ -21,8 +17,6 @@ import {
   formatReportScore,
   getPluginNameFromSlug,
   loadReport,
-  portalCommitDashboardLink,
-  portalCommitLink,
 } from './utils';
 
 describe('calcDuration', () => {
@@ -300,37 +294,5 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
     ]);
-  });
-});
-
-describe('portalCommitLink', () => {
-  it('should return link to portal', () => {
-    expect(
-      portalCommitLink(
-        {
-          baseUrl: 'https://code-pushup.com',
-          organization: 'code-pushup',
-          project: 'cli',
-        },
-        '123',
-      ),
-    ).toBe('https://code-pushup.com/portal/code-pushup/cli/commit/123');
-  });
-});
-
-describe('portalCommitDashboardLink', () => {
-  it('should return link to portal dashboard', () => {
-    expect(
-      portalCommitDashboardLink(
-        {
-          baseUrl: 'https://code-pushup.com',
-          organization: 'code-pushup',
-          project: 'cli',
-        },
-        '123',
-      ),
-    ).toBe(
-      'https://code-pushup.com/portal/code-pushup/cli/commit/123/dashboard',
-    );
   });
 });

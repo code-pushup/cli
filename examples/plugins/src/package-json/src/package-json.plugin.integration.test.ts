@@ -7,7 +7,7 @@ import {
   pluginConfigSchema,
   pluginReportSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { audits, pluginSlug as slug } from './constants';
 import { PluginOptions, create } from './package-json.plugin';
 import {

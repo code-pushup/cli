@@ -5,7 +5,7 @@ import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import { upload } from './upload';
 
 describe('upload', () => {
@@ -33,7 +33,7 @@ describe('upload', () => {
       },
     });
 
-    expect(result).toEqual({ packageName: '@code-pushup/cli' });
+    expect(result).toEqual({ url: expect.stringContaining('code-pushup/cli') });
 
     expect(uploadToPortal).toHaveBeenCalledWith({
       apiKey: 'dummy-api-key',

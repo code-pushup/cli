@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { setup as globalSetup } from './global-setup';
-import { setupTestFolder, teardownTestFolder } from './testing-utils/src';
+import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
 import startLocalRegistry from './tools/scripts/start-local-registry';
 import stopLocalRegistry from './tools/scripts/stop-local-registry';
 

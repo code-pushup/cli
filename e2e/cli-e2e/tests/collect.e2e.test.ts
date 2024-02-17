@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/testing-utils';
+import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
@@ -30,7 +30,7 @@ describe('CLI collect', () => {
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
-      args: ['collect', '--no-progress'],
+      args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
       cwd: 'examples/react-todos-app',
     });
 
@@ -43,7 +43,7 @@ describe('CLI collect', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  it('should run Code coverage plugin and create report.json', async () => {
+  it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
     /**
      * The stats passed in the fixture are as follows
      * 3 files: one partially covered, one with no coverage, one with full coverage
@@ -57,7 +57,7 @@ describe('CLI collect', () => {
       '..',
       'mocks',
       'fixtures',
-      'code-pushup.config.coverage.ts',
+      'code-pushup.config.ts',
     );
 
     const { code, stderr } = await executeProcess({
@@ -66,7 +66,8 @@ describe('CLI collect', () => {
         'collect',
         '--no-progress',
         `--config=${configPath}`,
-        `--persist.outputDir=tmp/e2e`,
+        '--persist.outputDir=tmp/e2e',
+        '--onlyPlugins=coverage',
       ],
     });
 
@@ -74,6 +75,22 @@ describe('CLI collect', () => {
     expect(stderr).toBe('');
 
     const report = await readJsonFile(join('tmp', 'e2e', 'report.json'));
+
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+  });
+
+  it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
+    const { code, stderr } = await executeProcess({
+      command: 'code-pushup',
+      args: ['collect', '--no-progress', '--onlyPlugins=coverage'],
+      cwd: 'examples/react-todos-app',
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+
+    const report = await readJsonFile('tmp/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();

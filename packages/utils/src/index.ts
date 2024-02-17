@@ -59,7 +59,6 @@ export {
   calcDuration,
   compareIssueSeverity,
   loadReport,
-  portalCommitDashboardLink,
 } from './lib/reports/utils';
 export {
   CliArgsObject,
@@ -82,4 +81,3 @@ export {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,
 } from './lib/filter-by-slug';
-

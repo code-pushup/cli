@@ -40,14 +40,18 @@ describe('filterCategoryByPluginSlug', () => {
     expect(
       filterCategoryByPluginSlug(
         [
-          { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
-          { refs: [{ slug: 'plugin3' }] },
+          {
+            refs: [{ plugin: 'plugin1' }, { plugin: 'plugin2' }],
+          },
+          { refs: [{ plugin: 'plugin3' }] },
         ] as CategoryConfig[],
         {},
       ),
     ).toEqual([
-      { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
-      { refs: [{ slug: 'plugin3' }] },
+      {
+        refs: [{ plugin: 'plugin1' }, { plugin: 'plugin2' }],
+      },
+      { refs: [{ plugin: 'plugin3' }] },
     ]);
   });
 
@@ -55,12 +59,14 @@ describe('filterCategoryByPluginSlug', () => {
     expect(
       filterCategoryByPluginSlug(
         [
-          { refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }] },
-          { refs: [{ slug: 'plugin3' }] },
+          {
+            refs: [{ plugin: 'plugin1' }, { plugin: 'plugin2' }],
+          },
+          { refs: [{ plugin: 'plugin3' }] },
         ] as CategoryConfig[],
         { onlyPlugins: ['plugin1', 'plugin3'] },
       ),
-    ).toEqual([{ refs: [{ slug: 'plugin3' }] }]);
+    ).toEqual([{ refs: [{ plugin: 'plugin3' }] }]);
   });
 
   it('should print ignored category and its first violating plugin', () => {
@@ -68,9 +74,13 @@ describe('filterCategoryByPluginSlug', () => {
       [
         {
           title: 'category1',
-          refs: [{ slug: 'plugin1' }, { slug: 'plugin2' }, { slug: 'plugin4' }],
+          refs: [
+            { plugin: 'plugin1' },
+            { plugin: 'plugin2' },
+            { plugin: 'plugin4' },
+          ],
         },
-        { title: 'category2', refs: [{ slug: 'plugin3' }] },
+        { title: 'category2', refs: [{ plugin: 'plugin3' }] },
       ] as CategoryConfig[],
       {
         onlyPlugins: ['plugin1', 'plugin3'],

@@ -1,4 +1,5 @@
-// TODO: import plugins using NPM package names using local registry: https://github.com/flowup/quality-metrics-cli/issues/33
+import { join } from 'node:path';
+import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 
 const eslintAuditRef = (slug, weight) => ({
@@ -13,6 +14,13 @@ export default {
     outputDir: '../../tmp/react-todos-app',
   },
   plugins: [
+    await coveragePlugin({
+      reports: [join('coverage', 'lcov.info')],
+      coverageToolCommand: {
+        command: 'npx',
+        args: ['vitest', 'run', '--coverage'],
+      },
+    }),
     await eslintPlugin({
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
@@ -20,7 +28,18 @@ export default {
   ],
   categories: [
     // TODO: add performance category once Lighthouse plugin implemented, include eslintAuditRef('react-jsx-key', 0)
-
+    {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'group',
+          plugin: 'coverage',
+          slug: 'coverage',
+          weight: 1,
+        },
+      ],
+    },
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',

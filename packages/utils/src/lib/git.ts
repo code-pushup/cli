@@ -3,7 +3,6 @@ import { simpleGit } from 'simple-git';
 import { ui } from './logging';
 import { toUnixPath } from './transform';
 
-
 export type CommitData = {
   hash: string;
   message: string;

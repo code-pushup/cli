@@ -2,6 +2,32 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.21.1](https://github.com/code-pushup/cli/compare/v0.21.0...v0.21.1) (2024-02-16)
+
+# [0.21.0](https://github.com/code-pushup/cli/compare/v0.20.2...v0.21.0) (2024-02-16)
+
+### Features
+
+- **cli:** print full report url after upload ([0eb7771](https://github.com/code-pushup/cli/commit/0eb777107fc56317622fb7000306b33a8d085598))
+
+## [0.20.2](https://github.com/code-pushup/cli/compare/v0.20.1...v0.20.2) (2024-02-16)
+
+## [0.20.1](https://github.com/code-pushup/cli/compare/v0.20.0...v0.20.1) (2024-02-15)
+
+### Bug Fixes
+
+- **cli:** make onlyPlugins filter based on plugin not audit/group slug ([e963c36](https://github.com/code-pushup/cli/commit/e963c36219295d5b48f1e6c836ba321bcc01e90a))
+
+# [0.20.0](https://github.com/code-pushup/cli/compare/v0.19.0...v0.20.0) (2024-02-15)
+
+### Bug Fixes
+
+- **models:** issue file positions must be positive integers ([727926e](https://github.com/code-pushup/cli/commit/727926e987b526703d7fd46994b442dce3ac4a25))
+
+### Features
+
+- **models:** add missing schema exports ([36d3eea](https://github.com/code-pushup/cli/commit/36d3eeafba94f41dfded28b97e8af5f9441b4062))
+
 # [0.19.0](https://github.com/code-pushup/cli/compare/v0.18.1...v0.19.0) (2024-02-15)
 
 ### Features

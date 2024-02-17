@@ -22,7 +22,11 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    coverage: {
+      reporter: ['lcov', 'text'],
+    },
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    setupFiles: ['test-setup.js'],
   },
 });
