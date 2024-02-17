@@ -141,7 +141,6 @@ describe('git utils in a git repo with a branch and commits', () => {
 
 describe('git utils in a git repo without a branch and commits', () => {
   const baseDir = join(process.cwd(), 'tmp', 'testing-git-repo');
-  const changesDir = join(baseDir, 'changes-dir');
   let git: SimpleGit;
 
   beforeAll(async () => {
