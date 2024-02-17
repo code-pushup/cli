@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { executePlugin } from '@code-pushup/core';
 import {
   auditSchema,
   categoryRefSchema,
@@ -37,7 +36,7 @@ describe('lighthouse-create-export-config', () => {
       'https://code-pushup.com',
       '--no-verbose',
       '--output="json"',
-      '--output-path="lighthouse-report.json"',
+      `--output-path="lighthouse-report.json"`,
       '--onlyAudits="first-contentful-paint"',
       '--onlyAudits="largest-contentful-paint"',
       '--onlyAudits="speed-index"',
@@ -100,38 +99,6 @@ describe('lighthouse-create-export-execution', () => {
       MEMFS_VOLUME,
     );
   });
-
-  // TODO: Convert to E2E test or reduce scope, it takes too long to run these tests
-  /* eslint-disable vitest/no-disabled-tests */
-  it.skip('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = await create({ url: LIGHTHOUSE_URL });
-    await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
-      expect.objectContaining({
-        slug,
-        title: 'Lighthouse',
-        description: 'Chrome lighthouse CLI as code-pushup plugin',
-        duration: expect.any(Number),
-        date: expect.any(String),
-        audits: expect.any(Array),
-        groups: expect.any(Array),
-      }),
-    );
-  });
-
-  it.skip('should use onlyAudits', async () => {
-    const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
-      onlyAudits: 'largest-contentful-paint',
-    });
-    expect(pluginConfig.runner.args).toEqual(
-      expect.arrayContaining(['--onlyAudits="largest-contentful-paint"']),
-    );
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
-
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
-  });
-  /* eslint-enable vitest/no-disabled-tests */
 });
 
 describe('lighthouse-audits-export', () => {
