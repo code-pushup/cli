@@ -128,7 +128,11 @@
     "verdaccio": "^5.0.4",
     "vite": "~4.3.9",
     "vitest": "~0.32.0",
-    "zod2md": "^0.1.1"
+    "zod2md": "^0.1.1",
+    "@nodelib/fs.walk": "^2.0.0",
+    "fast-glob": "^3.3.2",
+    "glob": "^10.3.10",
+    "globby": "^14.0.1"
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.19.4",
