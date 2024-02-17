@@ -146,22 +146,12 @@ describe('git utils in a git repo without a branch and commits', () => {
 
   beforeAll(async () => {
     await mkdir(baseDir, { recursive: true });
-    await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
-
     git = simpleGit(baseDir);
     await git.init();
-
-    await git.addConfig('user.name', 'John Doe');
-    await git.addConfig('user.email', 'john.doe@example.com');
   });
 
   afterAll(async () => {
     await rm(baseDir, { recursive: true, force: true });
-  });
-
-  afterEach(async () => {
-    await rm(changesDir, { recursive: true, force: true });
-    await git.checkout(['master']);
   });
 
   it('getCurrentBranchOrTag should throw if no branch is given', async () => {
