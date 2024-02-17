@@ -3,16 +3,27 @@ import { z } from 'zod';
 export const coverageTypeSchema = z.enum(['function', 'branch', 'line']);
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
 
-export const coverageReportSchema = z.object({
-  resultsPath: z.string().includes('lcov'),
-  pathToProject: z
+export const coverageResultSchema = z.union([
+  z.object({
+    resultsPath: z
+      .string({
+        description: 'Path to coverage results for Nx setup.',
+      })
+      .includes('lcov'),
+    pathToProject: z
+      .string({
+        description:
+          'Path from workspace root to project root. Necessary for LCOV reports which provide a relative path.',
+      })
+      .optional(),
+  }),
+  z
     .string({
-      description:
-        'Path from workspace root to project root. Necessary for LCOV reports.',
+      description: 'Path to coverage results for a single project setup.',
     })
-    .optional(),
-});
-export type CoverageReport = z.infer<typeof coverageReportSchema>;
+    .includes('lcov'),
+]);
+export type CoverageResult = z.infer<typeof coverageResultSchema>;
 
 export const coveragePluginConfigSchema = z.object({
   coverageToolCommand: z
@@ -34,7 +45,7 @@ export const coveragePluginConfigSchema = z.object({
     .min(1)
     .default(['function', 'branch', 'line']),
   reports: z
-    .array(coverageReportSchema, {
+    .array(coverageResultSchema, {
       description:
         'Path to all code coverage report files. Only LCOV format is supported for now.',
     })
@@ -49,3 +60,6 @@ export const coveragePluginConfigSchema = z.object({
     .optional(),
 });
 export type CoveragePluginConfig = z.input<typeof coveragePluginConfigSchema>;
+export type FinalCoveragePluginConfig = z.infer<
+  typeof coveragePluginConfigSchema
+>;

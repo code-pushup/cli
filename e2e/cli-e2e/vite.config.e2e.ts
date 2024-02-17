@@ -14,6 +14,6 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['global-setup.e2e.ts'],
-    setupFiles: ['../../testing-utils/src/lib/setup/reset.mocks.ts'],
+    setupFiles: ['../../testing/test-setup/src/lib/reset.mocks.ts'],
   },
 });

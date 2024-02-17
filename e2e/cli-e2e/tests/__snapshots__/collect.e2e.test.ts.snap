@@ -1,26 +1,14 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CLI collect > should run Code coverage plugin and create report.json 1`] = `
+exports[`CLI collect > should run Code coverage plugin that runs coverage tool and creates report.json 1`] = `
 {
   "categories": [
     {
       "refs": [
         {
           "plugin": "coverage",
-          "slug": "function-coverage",
-          "type": "audit",
-          "weight": 1,
-        },
-        {
-          "plugin": "coverage",
-          "slug": "branch-coverage",
-          "type": "audit",
-          "weight": 1,
-        },
-        {
-          "plugin": "coverage",
-          "slug": "line-coverage",
-          "type": "audit",
+          "slug": "coverage",
+          "type": "group",
           "weight": 1,
         },
       ],
@@ -33,66 +21,249 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
     {
       "audits": [
         {
-          "description": "Branch coverage percentage on the project.",
+          "description": "Measures how many functions were called in at least one test.",
           "details": {
             "issues": [
               {
-                "message": "2nd branch is not taken in any test case.",
+                "message": "Function onSubmit is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "file": "examples/react-todos-app/src/components/CreateTodo.jsx",
                   "position": {
-                    "startLine": 6,
+                    "startLine": 13,
                   },
                 },
               },
               {
-                "message": "2nd branch is not taken in any test case.",
+                "message": "Function onInput is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "file": "examples/react-todos-app/src/components/CreateTodo.jsx",
                   "position": {
-                    "startLine": 10,
+                    "startLine": 21,
                   },
                 },
               },
               {
-                "message": "1st branch is not taken in any test case.",
+                "message": "Function onInput is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
                   "position": {
-                    "startLine": 7,
+                    "startLine": 9,
                   },
                 },
               },
               {
-                "message": "2nd branch is not taken in any test case.",
+                "message": "Function onChange is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
                   "position": {
-                    "startLine": 7,
+                    "startLine": 17,
                   },
                 },
               },
             ],
           },
-          "displayValue": "76 %",
-          "score": 0.7647,
-          "slug": "branch-coverage",
-          "title": "Branch coverage",
-          "value": 76,
+          "displayValue": "56 %",
+          "score": 0.5556,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 56,
         },
         {
-          "description": "Function coverage percentage on the project.",
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 100,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Lines 14-17 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/CreateTodo.jsx",
+                  "position": {
+                    "endLine": 17,
+                    "startLine": 14,
+                  },
+                },
+              },
+              {
+                "message": "Lines 22-23 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/CreateTodo.jsx",
+                  "position": {
+                    "endLine": 23,
+                    "startLine": 22,
+                  },
+                },
+              },
+              {
+                "message": "Lines 10-11 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
+                  "position": {
+                    "endLine": 11,
+                    "startLine": 10,
+                  },
+                },
+              },
+              {
+                "message": "Lines 18-19 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
+                  "position": {
+                    "endLine": 19,
+                    "startLine": 18,
+                  },
+                },
+              },
+              {
+                "message": "Lines 10-28 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
+                  "position": {
+                    "endLine": 28,
+                    "startLine": 10,
+                  },
+                },
+              },
+              {
+                "message": "Lines 7-9 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
+                  "position": {
+                    "endLine": 9,
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "Lines 12-13 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
+                  "position": {
+                    "endLine": 13,
+                    "startLine": 12,
+                  },
+                },
+              },
+              {
+                "message": "Lines 18-37 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
+                  "position": {
+                    "endLine": 37,
+                    "startLine": 18,
+                  },
+                },
+              },
+              {
+                "message": "Lines 41-45 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
+                  "position": {
+                    "endLine": 45,
+                    "startLine": 41,
+                  },
+                },
+              },
+              {
+                "message": "Lines 54-60 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
+                  "position": {
+                    "endLine": 60,
+                    "startLine": 54,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "64 %",
+          "score": 0.6413,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 64,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
+exports[`CLI collect > should run Code coverage plugin which collects passed results and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
           "details": {
             "issues": [
               {
                 "message": "Function formatReportScore is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "file": "src/lib/partly-covered/utils.ts",
                   "position": {
                     "startLine": 2,
                   },
@@ -102,7 +273,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Function sortReport is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "file": "src/lib/not-covered/sorting.ts",
                   "position": {
                     "startLine": 1,
                   },
@@ -117,14 +288,66 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
           "value": 60,
         },
         {
-          "description": "Line coverage percentage on the project.",
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 6,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 10,
+                  },
+                },
+              },
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "76 %",
+          "score": 0.7647,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 76,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
               {
                 "message": "Lines 7-9 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "packages/cli/src/lib/partly-covered/utils.ts",
+                  "file": "src/lib/partly-covered/utils.ts",
                   "position": {
                     "endLine": 9,
                     "startLine": 7,
@@ -135,7 +358,7 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
                 "message": "Lines 1-5 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "packages/cli/src/lib/not-covered/sorting.ts",
+                  "file": "src/lib/not-covered/sorting.ts",
                   "position": {
                     "endLine": 5,
                     "startLine": 1,
@@ -153,6 +376,27 @@ exports[`CLI collect > should run Code coverage plugin and create report.json 1`
       ],
       "description": "Official Code PushUp code coverage plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
       "icon": "folder-coverage-open",
       "packageName": "@code-pushup/coverage-plugin",
       "slug": "coverage",
@@ -460,7 +704,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'loading' is assigned a value but never used.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/App.jsx",
+                  "file": "examples/react-todos-app/src/App.jsx",
                   "position": {
                     "endColumn": 18,
                     "endLine": 8,
@@ -510,7 +754,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoFilter.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
                   "position": {
                     "endColumn": 2,
                     "endLine": 25,
@@ -560,7 +804,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Expected '===' and instead saw '=='.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 43,
                     "endLine": 41,
@@ -586,7 +830,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Arrow function has too many lines (71). Maximum allowed is 50.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 2,
                     "endLine": 73,
@@ -624,7 +868,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'data' is already declared in the upper scope on line 5 column 10.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 17,
                     "endLine": 11,
@@ -637,7 +881,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'data' is already declared in the upper scope on line 5 column 10.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 21,
                     "endLine": 29,
@@ -650,7 +894,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'data' is already declared in the upper scope on line 5 column 10.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 17,
                     "endLine": 41,
@@ -688,7 +932,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Expected property shorthand.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 19,
                     "endLine": 19,
@@ -701,7 +945,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Expected property shorthand.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 19,
                     "endLine": 32,
@@ -714,7 +958,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Expected property shorthand.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 25,
                     "endLine": 33,
@@ -752,7 +996,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'root' is never reassigned. Use 'const' instead.",
                 "severity": "warning",
                 "source": {
-                  "file": "src/index.jsx",
+                  "file": "examples/react-todos-app/src/index.jsx",
                   "position": {
                     "endColumn": 9,
                     "endLine": 5,
@@ -802,7 +1046,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "Missing \\"key\\" prop for element in iterator",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoList.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
                   "position": {
                     "endColumn": 12,
                     "endLine": 28,
@@ -828,7 +1072,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'onCreate' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/CreateTodo.jsx",
+                  "file": "examples/react-todos-app/src/components/CreateTodo.jsx",
                   "position": {
                     "endColumn": 23,
                     "endLine": 15,
@@ -841,7 +1085,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'setQuery' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoFilter.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
                   "position": {
                     "endColumn": 25,
                     "endLine": 10,
@@ -854,7 +1098,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'setHideComplete' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoFilter.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoFilter.jsx",
                   "position": {
                     "endColumn": 34,
                     "endLine": 18,
@@ -867,7 +1111,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'todos' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoList.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
                   "position": {
                     "endColumn": 17,
                     "endLine": 6,
@@ -880,7 +1124,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'todos.map' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoList.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
                   "position": {
                     "endColumn": 21,
                     "endLine": 6,
@@ -893,7 +1137,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "'onEdit' is missing in props validation",
                 "severity": "warning",
                 "source": {
-                  "file": "src/components/TodoList.jsx",
+                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
                   "position": {
                     "endColumn": 27,
                     "endLine": 13,
@@ -943,7 +1187,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 31,
                     "endLine": 17,
@@ -956,7 +1200,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
                 "message": "React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?",
                 "severity": "warning",
                 "source": {
-                  "file": "src/hooks/useTodos.js",
+                  "file": "examples/react-todos-app/src/hooks/useTodos.js",
                   "position": {
                     "endColumn": 29,
                     "endLine": 40,

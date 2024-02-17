@@ -1,7 +1,10 @@
-import { uploadToPortal } from '@code-pushup/portal-client';
+import {
+  type SaveReportMutationVariables,
+  uploadToPortal,
+} from '@code-pushup/portal-client';
 import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
-import { jsonReportToGql } from './implementation/json-to-gql';
+import { reportToGQL } from './implementation/report-to-gql';
 import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
@@ -29,11 +32,11 @@ export async function upload(
     throw new Error('no commit data available');
   }
 
-  const data = {
+  const data: SaveReportMutationVariables = {
     organization,
     project,
     commit: commitData.hash,
-    ...jsonReportToGql(report),
+    ...reportToGQL(report),
   };
 
   return uploadFn({ apiKey, server, data, timeout });

@@ -60,30 +60,17 @@ describe('lint', () => {
     vi.clearAllMocks();
   });
 
-  it('should add relativeFilePath to each lint result', async () => {
-    const { results } = await lint(config);
-    expect(results).toEqual([
-      expect.objectContaining({ relativeFilePath: 'src/app/app.component.ts' }),
-      expect.objectContaining({
-        relativeFilePath: 'src/app/app.component.spec.ts',
-      }),
-      expect.objectContaining({
-        relativeFilePath: 'src/app/pages/settings.component.ts',
-      }),
-    ]);
-  });
-
   it('should get rule options for each file', async () => {
     const { ruleOptionsPerFile } = await lint(config);
     expect(ruleOptionsPerFile).toEqual({
-      'src/app/app.component.ts': {
+      [`${process.cwd()}/src/app/app.component.ts`]: {
         'max-lines': [500],
         '@typescript-eslint/no-explicit-any': [],
       },
-      'src/app/pages/settings.component.ts': {
+      [`${process.cwd()}/src/app/pages/settings.component.ts`]: {
         'max-lines': [500],
       },
-      'src/app/app.component.spec.ts': {
+      [`${process.cwd()}/src/app/app.component.spec.ts`]: {
         'max-lines': [800],
         '@typescript-eslint/no-explicit-any': [],
       },

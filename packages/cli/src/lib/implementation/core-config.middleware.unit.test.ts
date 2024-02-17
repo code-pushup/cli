@@ -3,8 +3,8 @@ import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import { coreConfigMiddleware } from './core-config.middleware';
 
 vi.mock('@code-pushup/core', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
-    await vi.importActual('@code-pushup/testing-utils');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
+    await vi.importActual('@code-pushup/test-utils');
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,

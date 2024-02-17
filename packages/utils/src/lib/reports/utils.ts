@@ -7,7 +7,6 @@ import {
   Issue,
   PersistConfig,
   Report,
-  UploadConfig,
   reportSchema,
 } from '@code-pushup/models';
 import {
@@ -304,26 +303,4 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   return 0;
-}
-
-export type CommitLinkOptions = Pick<
-  UploadConfig,
-  'project' | 'organization'
-> & {
-  baseUrl: string;
-};
-
-export function portalCommitLink(
-  config: CommitLinkOptions,
-  commit: string,
-): string {
-  const { organization, project, baseUrl } = config;
-  return `${baseUrl}/portal/${organization}/${project}/commit/${commit}`;
-}
-
-export function portalCommitDashboardLink(
-  config: CommitLinkOptions,
-  commit: string,
-): string {
-  return `${portalCommitLink(config, commit)}/dashboard`;
 }

@@ -14,6 +14,7 @@ import {
   groupByStatus,
   logMultipleResults,
 } from '@code-pushup/utils';
+import { normalizeAuditOutputs } from '../normalize';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
 
 /**
@@ -71,8 +72,10 @@ export async function executePlugin(
   const auditOutputs = auditOutputsSchema.parse(unvalidatedAuditOutputs);
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
+  const normalizedAuditOutputs = await normalizeAuditOutputs(auditOutputs);
+
   // enrich `AuditOutputs` to `AuditReport`
-  const auditReports: AuditReport[] = auditOutputs.map(
+  const auditReports: AuditReport[] = normalizedAuditOutputs.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(

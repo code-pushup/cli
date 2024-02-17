@@ -36,9 +36,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: .nvmrc
           cache: npm
       - name: Install dependencies
         run: npm ci
@@ -73,9 +73,9 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: .nvmrc
           cache: npm
       - name: Install dependencies
         run: npm ci
@@ -90,8 +90,6 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
           npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin
-      - name: Collect unit test coverage (temporary due to coverage plugin)
-        run: npx nx run-many -t unit-test --coverage
       - name: Collect and upload Code PushUp report
         run: npx nx run-autorun
         env:
@@ -100,7 +98,7 @@ jobs:
           CP_ORGANIZATION: code-pushup
           CP_PROJECT: cli
       - name: Save report files as workflow artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code-pushup-report
           path: .code-pushup/

@@ -1,5 +1,9 @@
 import { expect } from 'vitest';
-import { getLighthouseCliArguments } from './utils';
+import {
+  AuditsNotImplementedError,
+  getLighthouseCliArguments,
+  validateOnlyAudits,
+} from './utils';
 
 describe('getLighthouseCliArguments', () => {
   it('should parse valid options', () => {
@@ -20,5 +24,33 @@ describe('getLighthouseCliArguments', () => {
         '--chromeFlags="--headless=new --user-data-dir=test"',
       ]),
     );
+  });
+});
+
+describe('validateOnlyAudits', () => {
+  it('should not throw for audit slugs existing in given audits', () => {
+    expect(
+      validateOnlyAudits(
+        [
+          { slug: 'a', title: 'A' },
+          { slug: 'b', title: 'B' },
+          { slug: 'c', title: 'C' },
+        ],
+        'a',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('should throw if given onlyAudits do not exist', () => {
+    expect(() =>
+      validateOnlyAudits(
+        [
+          { slug: 'a', title: 'A' },
+          { slug: 'b', title: 'B' },
+          { slug: 'c', title: 'C' },
+        ],
+        'd',
+      ),
+    ).toThrow(new AuditsNotImplementedError(['d']));
   });
 });

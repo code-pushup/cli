@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { CategoryConfig, CoreConfig } from '@code-pushup/models';
+import type { CategoryConfig, CoreConfig } from '@code-pushup/models';
 
 export function filterPluginsBySlug(
   plugins: CoreConfig['plugins'],
@@ -29,14 +29,14 @@ export function filterCategoryByPluginSlug(
 
   return categories.filter(category =>
     category.refs.every(ref => {
-      const isNotSkipped = onlyPlugins.includes(ref.slug);
+      const isNotSkipped = onlyPlugins.includes(ref.plugin);
 
       if (!isNotSkipped && verbose) {
         console.info(
           `${chalk.yellow('⚠')} Category "${
             category.title
           }" is ignored because it references audits from skipped plugin "${
-            ref.slug
+            ref.plugin
           }"`,
         );
       }

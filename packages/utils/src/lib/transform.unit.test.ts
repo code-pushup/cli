@@ -181,14 +181,6 @@ describe('toUnixPath', () => {
   ])('should transform "%s" to valid slug "%s"', (path, unixPath) => {
     expect(toUnixPath(path)).toBe(unixPath);
   });
-
-  it('should transform absolute Windows path to relative UNIX path', () => {
-    expect(
-      toUnixPath(`${process.cwd()}\\windows\\path\\config.ts`, {
-        toRelative: true,
-      }),
-    ).toBe('windows/path/config.ts');
-  });
 });
 
 describe('capitalize', () => {

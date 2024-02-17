@@ -3,12 +3,11 @@ const { execSync } = require('child_process');
 const { readFileSync, writeFileSync, existsSync } = require('fs');
 
 const project = process.env.NX_TASK_TARGET_PROJECT;
-const projectPath =
-  project === 'testing-utils'
-    ? 'testing-utils'
-    : project === 'examples-plugins'
-    ? 'examples/plugins'
-    : `packages/${project}`;
+const projectPath = project.startsWith('test-')
+  ? `testing/${project}`
+  : project === 'examples-plugins'
+  ? 'examples/plugins'
+  : `packages/${project}`;
 
 esbuild.build({
   plugins: [

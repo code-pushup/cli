@@ -16,7 +16,7 @@ export const categoryRefSchema = weightedRefSchema(
       description:
         'Discriminant for reference kind, affects where `slug` is looked up',
     }),
-    plugin: slugSchema(
+    plugin: slugSchema.describe(
       'Plugin slug (plugin should contain referenced audit or group)',
     ),
   }),

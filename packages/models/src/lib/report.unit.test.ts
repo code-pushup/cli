@@ -110,9 +110,29 @@ describe('pluginReportSchema', () => {
         icon: 'cypress',
         date: '2024-01-11T11:00:00.000Z',
         duration: 123_000,
-        audits: [],
+        audits: [
+          {
+            slug: 'cyct',
+            title: 'Component tests',
+            score: 0.96,
+            value: 96,
+          },
+        ],
       } satisfies PluginReport),
     ).not.toThrow();
+  });
+
+  it('should throw for a plugin report with no audit outputs', () => {
+    expect(() =>
+      pluginReportSchema.parse({
+        slug: 'cypress',
+        title: 'Cypress',
+        icon: 'cypress',
+        date: '2024-01-11T11:00:00.000Z',
+        duration: 123_000,
+        audits: [],
+      } satisfies PluginReport),
+    ).toThrow('too_small');
   });
 
   it('should throw for a group reference without audits mention', () => {
@@ -185,15 +205,15 @@ describe('reportSchema', () => {
     ).not.toThrow();
   });
 
-  it('should throw for an empty report', () => {
+  it('should throw for a report with no plugins', () => {
     expect(() =>
       reportSchema.parse({
         date: '2024-01-03T08:00:00.000Z',
         duration: 14_500,
         packageName: 'cli',
         version: '1.0.1',
-        categories: [],
         plugins: [],
+        categories: [],
       }),
     ).toThrow('too_small');
   });

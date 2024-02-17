@@ -1,5 +1,5 @@
+import { MATERIAL_ICONS } from 'vscode-material-icons';
 import { ZodObject, ZodOptional, ZodString, z } from 'zod';
-import { MATERIAL_ICONS, MaterialIcon } from '@code-pushup/portal-client';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
@@ -25,55 +25,36 @@ export function executionMetaSchema(
   });
 }
 
-/**
- * Schema for a slug of a categories, plugins or audits.
- * @param description
- */
-export function slugSchema(
-  description = 'Unique ID (human-readable, URL-safe)',
-) {
-  return z
-    .string({ description })
-    .regex(slugRegex, {
-      message:
-        'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
-    })
-    .max(MAX_SLUG_LENGTH, {
-      message: `slug can be max ${MAX_SLUG_LENGTH} characters long`,
-    });
-}
+/** Schema for a slug of a categories, plugins or audits. */
+export const slugSchema = z
+  .string({ description: 'Unique ID (human-readable, URL-safe)' })
+  .regex(slugRegex, {
+    message:
+      'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
+  })
+  .max(MAX_SLUG_LENGTH, {
+    message: `slug can be max ${MAX_SLUG_LENGTH} characters long`,
+  });
 
-/**
- * Schema for a general description property
- * @param description
- */
-export function descriptionSchema(description = 'Description (markdown)') {
-  return z.string({ description }).max(MAX_DESCRIPTION_LENGTH).optional();
-}
+/**  Schema for a general description property */
+export const descriptionSchema = z
+  .string({ description: 'Description (markdown)' })
+  .max(MAX_DESCRIPTION_LENGTH)
+  .optional();
 
-/**
- * Schema for a docsUrl
- * @param description
- */
-export function docsUrlSchema(description = 'Documentation site') {
-  return urlSchema(description).optional().or(z.string().max(0)); // allow empty string (no URL validation)
-}
+/* Schema for a URL */
+export const urlSchema = z.string().url();
 
-/**
- * Schema for a URL
- * @param description
- */
-export function urlSchema(description: string) {
-  return z.string({ description }).url();
-}
+/**  Schema for a docsUrl */
+export const docsUrlSchema = urlSchema
+  .optional()
+  .or(z.literal(''))
+  .describe('Documentation site'); // allow empty string (no URL validation)
 
-/**
- * Schema for a title of a plugin, category and audit
- * @param description
- */
-export function titleSchema(description = 'Descriptive name') {
-  return z.string({ description }).max(MAX_TITLE_LENGTH);
-}
+/** Schema for a title of a plugin, category and audit */
+export const titleSchema = z
+  .string({ description: 'Descriptive name' })
+  .max(MAX_TITLE_LENGTH);
 
 /**
  * Used for categories, plugins and audits
@@ -93,46 +74,39 @@ export function metaSchema(options?: {
   } = options ?? {};
   return z.object(
     {
-      title: titleSchema(titleDescription),
-      description: descriptionSchema(descriptionDescription),
-      docsUrl: docsUrlSchema(docsUrlDescription),
+      title: titleDescription
+        ? titleSchema.describe(titleDescription)
+        : titleSchema,
+      description: descriptionDescription
+        ? descriptionSchema.describe(descriptionDescription)
+        : descriptionSchema,
+      docsUrl: docsUrlDescription
+        ? docsUrlSchema.describe(docsUrlDescription)
+        : docsUrlSchema,
     },
     { description },
   );
 }
 
-/**
- * Schema for a generalFilePath
- * @param description
- */
-export function filePathSchema(description: string) {
-  return z
-    .string({ description })
-    .trim()
-    .min(1, { message: 'path is invalid' });
-}
+/** Schema for a generalFilePath */
+export const filePathSchema = z
+  .string()
+  .trim()
+  .min(1, { message: 'path is invalid' });
 
-/**
- * Schema for a fileNameSchema
- * @param description
- */
-export function fileNameSchema(description: string) {
-  return z
-    .string({ description })
-    .trim()
-    .regex(filenameRegex, {
-      message: `The filename has to be valid`,
-    })
-    .min(1, { message: 'file name is invalid' });
-}
+/** Schema for a fileNameSchema */
+export const fileNameSchema = z
+  .string()
+  .trim()
+  .regex(filenameRegex, {
+    message: `The filename has to be valid`,
+  })
+  .min(1, { message: 'file name is invalid' });
 
-/**
- * Schema for a positiveInt
- * @param description
- */
-export function positiveIntSchema(description: string) {
-  return z.number({ description }).int().nonnegative();
-}
+/** Schema for a positiveInt */
+export const positiveIntSchema = z.number().int().positive();
+
+export const nonnegativeIntSchema = z.number().int().nonnegative();
 
 export function packageVersionSchema<TRequired extends boolean>(options?: {
   versionDescription?: string;
@@ -154,15 +128,10 @@ export function packageVersionSchema<TRequired extends boolean>(options?: {
   }>;
 }
 
-/**
- * Schema for a weight
- * @param description
- */
-export function weightSchema(
-  description = 'Coefficient for the given score (use weight 0 if only for display)',
-) {
-  return positiveIntSchema(description);
-}
+/** Schema for a weight */
+export const weightSchema = nonnegativeIntSchema.describe(
+  'Coefficient for the given score (use weight 0 if only for display)',
+);
 
 export function weightedRefSchema(
   description: string,
@@ -170,8 +139,8 @@ export function weightedRefSchema(
 ) {
   return z.object(
     {
-      slug: slugSchema(slugDescription),
-      weight: weightSchema('Weight used to calculate score'),
+      slug: slugSchema.describe(slugDescription),
+      weight: weightSchema.describe('Weight used to calculate score'),
     },
     { description },
   );
@@ -187,7 +156,7 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 ) {
   return z.object(
     {
-      slug: slugSchema('Human-readable unique ID, e.g. "performance"'),
+      slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
       refs: z
         .array(refSchema)
         .min(1)
@@ -199,21 +168,22 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
           }),
         )
         // categories weights are correct
-        .refine(hasWeightedRefsInCategories, () => ({
-          message: `In a category there has to be at least one ref with weight > 0`,
+        .refine(hasNonZeroWeightedRef, () => ({
+          message:
+            'In a category there has to be at least one ref with weight > 0',
         })),
     },
     { description },
   );
 }
 
-export const materialIconSchema = z.enum(
-  MATERIAL_ICONS as [MaterialIcon, MaterialIcon, ...MaterialIcon[]],
-  { description: 'Icon from VSCode Material Icons extension' },
-);
+export const materialIconSchema = z.enum(MATERIAL_ICONS, {
+  description: 'Icon from VSCode Material Icons extension',
+});
+export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
 
-function hasWeightedRefsInCategories(categoryRefs: Ref[]) {
-  return categoryRefs.reduce((acc, { weight }) => weight + acc, 0) !== 0;
+function hasNonZeroWeightedRef(refs: Ref[]) {
+  return refs.reduce((acc, { weight }) => weight + acc, 0) !== 0;
 }
