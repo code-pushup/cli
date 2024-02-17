@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FileResult } from './file-system';
 import { logMultipleResults, logPromiseResults } from './log-results';
 import { ui } from './logging';
@@ -56,14 +56,6 @@ describe('logMultipleResults', () => {
 });
 
 describe('logPromiseResults', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-
-  afterEach(() => {
-    ui().flushLogs();
-  });
-
   it('should log on success', () => {
     logPromiseResults(
       [

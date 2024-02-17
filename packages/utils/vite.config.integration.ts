@@ -19,6 +19,7 @@ export default defineConfig({
     setupFiles: [
       '../../testing/test-setup/src/lib/console.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
+      '../../testing/test-setup/src/lib/cliui.mock.ts',
     ],
   },
 });

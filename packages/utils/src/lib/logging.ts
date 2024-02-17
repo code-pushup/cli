@@ -9,7 +9,6 @@ export type CliUiBase = ReturnType<typeof cliui>;
 type UI = ReturnType<typeof isaacs_cliui>;
 type CliExtension = {
   row: (r: ArgumentsType<UI['div']>) => void;
-  flushLogs: () => void;
 };
 export type Column = {
   text: string;
@@ -29,13 +28,6 @@ export function ui(): CliUi {
   }
   return {
     ...singletonUiInstance,
-    flushLogs: () => {
-      const logs = singletonUiInstance?.logger.getRenderer().getLogs();
-      // mutate internal array as there is no public API to reset the internal logs array.
-      // if we don't do it we carry items from across tests
-      // eslint-disable-next-line functional/immutable-data
-      logs?.splice(0, logs.length);
-    },
     row: args => {
       logListItem(args);
     },
