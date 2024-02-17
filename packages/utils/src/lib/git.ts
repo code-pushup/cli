@@ -38,17 +38,60 @@ export async function toGitPath(
 
 export function validateCommitData(
   commitData: CommitData | null,
-  options: { throwError?: boolean } = {},
+  options: { throwError?: true } = {},
 ): commitData is CommitData {
-  const { throwError = false } = options;
   if (!commitData) {
     const msg = 'no commit data available';
-    if (throwError) {
+    if (options?.throwError) {
       throw new Error(msg);
     } else {
+      // @TODO replace with ui().logger.warning
       console.warn(msg);
       return false;
     }
   }
   return true;
+}
+
+export function statusIsClean(git = simpleGit()): Promise<boolean> {
+  return git.status(['-s']).then(r => r.files.length === 0);
+}
+
+export async function guardAgainstLocalChanges(
+  git = simpleGit(),
+): Promise<void> {
+  const isClean = await statusIsClean(git);
+  if (!isClean) {
+    throw new Error(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
+  }
+}
+
+export async function getCurrentBranchOrTag(
+  git = simpleGit(),
+): Promise<string> {
+  return (
+    (await git.branch().then(r => r.current)) ||
+    // @TODO replace with simple git
+    (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
+  );
+}
+
+export async function safeCheckout(
+  branchOrHash: string,
+  options: {
+    forceCleanStatus?: true;
+  } = {},
+  git = simpleGit(),
+): Promise<void> {
+  // git requires a clean history to check out a branch
+  if (options?.forceCleanStatus) {
+    await git.raw(['reset', '--hard']);
+    await git.clean(['f', 'd']);
+    // @TODO replace with ui().logger.info
+    console.info(`git status cleaned`);
+  }
+  await guardAgainstLocalChanges(git);
+  await git.checkout(branchOrHash);
 }
