@@ -48,6 +48,7 @@ export function yargsAutorunCommandObject() {
         renderConfigureCategoriesHint();
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (options.upload) {
         const { url } = await upload(options);
         const commitData = await getLatestCommit();
