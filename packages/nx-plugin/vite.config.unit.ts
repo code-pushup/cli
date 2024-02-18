@@ -10,12 +10,15 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    coverage: {
+      reporter: ['lcov'],
+    },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: [
-      '../../testing-utils/src/lib/setup/fs.mock.ts',
-      '../../testing-utils/src/lib/setup/console.mock.ts',
-      '../../testing-utils/src/lib/setup/reset.mocks.ts',
+      '../../testing/test-setup/src/lib/fs.mock.ts',
+      '../../testing/test-setup/src/lib/console.mock.ts',
+      '../../testing/test-setup/src/lib/reset.mocks.ts',
     ],
   },
 });

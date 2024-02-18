@@ -1,5 +1,5 @@
 import { Audit, AuditOutput, Issue } from '@code-pushup/models';
-import { factorOf, findLineNumberInText } from '@code-pushup/utils';
+import { factorOf } from '@code-pushup/utils';
 import {
   DependencyMap,
   DependencyType,
@@ -74,7 +74,6 @@ export function dependenciesIssues(
             // Generate the appropriate issue based on whether the dependency exists
             return existingVersion === undefined
               ? packageNotInstalledIssue(
-                  packageResult,
                   [dependencyName, requiredVersion],
                   dependencyType as DependencyType,
                 )
@@ -91,19 +90,14 @@ export function dependenciesIssues(
 }
 
 export function packageNotInstalledIssue(
-  packageResult: Pick<SourceResult, 'file'>,
   requiredDependency: [string, string],
   dependencyType: DependencyType,
 ): Issue {
-  const { file } = packageResult;
   const [packageName, targetVersion] = requiredDependency;
   return {
     message: `Package ${packageName} is not installed under ${dependencyType}. Run \`npm install ${packageName}@${targetVersion}\` to install it.`,
     severity: 'error',
-    source: {
-      file,
-    },
-  } satisfies Issue;
+  };
 }
 
 export function assertDependency(
@@ -111,30 +105,19 @@ export function assertDependency(
   requiredDependency: [string, string],
   dependencyType: DependencyType,
 ): Issue {
-  const { file = '', json = {}, content = '' } = packageResult;
+  const { json = {} } = packageResult;
   const [packageName, targetVersion] = requiredDependency;
-
-  const source: Issue['source'] = {
-    file,
-  };
 
   const existingVersion = json[dependencyType]?.[packageName];
   if (targetVersion !== existingVersion) {
     return {
       severity: 'error',
       message: `Package ${packageName} in ${dependencyType} has wrong version. Wanted ${targetVersion} but got ${existingVersion}`,
-      source: {
-        ...source,
-        position: {
-          startLine: findLineNumberInText(content, `"${packageName}":`) ?? 0,
-        },
-      },
     };
   }
 
   return {
     message: `Package ${packageName}@${targetVersion} is installed as ${dependencyType}.`,
     severity: 'info',
-    source,
   };
 }

@@ -6,7 +6,15 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
+import { getLatestCommit, validateCommitData } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
+import {
+  collectSuccessfulLog,
+  renderConfigureCategoriesHint,
+  renderIntegratePortalHint,
+  ui,
+  uploadSuccessfulLog,
+} from '../implementation/logging';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
@@ -18,8 +26,8 @@ export function yargsAutorunCommandObject() {
     describe: 'Shortcut for running collect followed by upload',
     builder: yargsOnlyPluginsOptionsDefinition(),
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      console.info(chalk.bold(CLI_NAME));
-      console.info(chalk.gray(`Run ${command}...`));
+      ui().logger.log(chalk.bold(CLI_NAME));
+      ui().logger.info(chalk.gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
 
       // we need to ensure `json` is part of the formats as we want to upload
@@ -34,28 +42,21 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
+      collectSuccessfulLog();
 
       if (options.categories.length === 0) {
-        console.info(
-          chalk.gray(
-            '💡 Configure categories to see the scores in an overview table. See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
-          ),
-        );
+        renderConfigureCategoriesHint();
       }
 
       if (options.upload) {
-        await upload(options);
+        const { url } = await upload(options);
+        const commitData = await getLatestCommit();
+        if (validateCommitData(commitData, { throwError: true })) {
+          uploadSuccessfulLog(url);
+        }
       } else {
-        console.warn('Upload skipped because configuration is not set.');
-        console.info(
-          [
-            '💡 Integrate the portal:',
-            '- npx code-pushup upload - Run upload to upload the created report to the server',
-            '  https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
-            '- Portal Integration - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-            '- Upload Command - https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-          ].join('\n'),
-        );
+        ui().logger.warning('Upload skipped because configuration is not set.');
+        renderIntegratePortalHint();
       }
     },
   } satisfies CommandModule;

@@ -25,6 +25,7 @@ describe('print-config', () => {
 
       expect(code).toBe(0);
       expect(stderr).toBe('');
+
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
@@ -42,10 +43,15 @@ describe('print-config', () => {
           },
           plugins: [
             expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
+            expect.objectContaining({
+              slug: 'coverage',
+              title: 'Code coverage',
+            }),
           ],
           categories: [
             expect.objectContaining({ slug: 'bug-prevention' }),
             expect.objectContaining({ slug: 'code-style' }),
+            expect.objectContaining({ slug: 'code-coverage' }),
           ],
           onlyPlugins: [],
         }),

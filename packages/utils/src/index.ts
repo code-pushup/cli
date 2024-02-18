@@ -20,7 +20,12 @@ export {
   pluginWorkDir,
   readJsonFile,
   readTextFile,
+  removeDirectoryIfExists,
 } from './lib/file-system';
+export {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+} from './lib/filter-by-slug';
 export {
   formatBytes,
   formatDuration,
@@ -33,8 +38,12 @@ export {
   truncateTitle,
 } from './lib/formatting';
 export {
-  git,
+  formatGitPath,
+  getGitRoot,
   getLatestCommit,
+  toGitPath,
+  validateCommitData,
+  git,
   getCurrentBranchOrTag,
   branchHasChanges,
   guardAgainstDirtyRepo,
@@ -47,6 +56,7 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
+export { link } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export { TERMINAL_WIDTH } from './lib/reports/constants';
 export { generateMdReport } from './lib/reports/generate-md-report';

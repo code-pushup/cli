@@ -1,13 +1,13 @@
 import { vol } from 'memfs';
 import { describe, expect, vi } from 'vitest';
 import { CONFIG_FILE_NAME, CoreConfig } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { autoloadRc } from './read-rc-file';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/testing-utils');
+    await vi.importActual('@code-pushup/test-utils');
 
   return {
     bundleRequire: vi

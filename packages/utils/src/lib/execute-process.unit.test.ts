@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getAsyncProcessRunnerConfig } from '@code-pushup/testing-utils';
+import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
 import { ProcessObserver, executeProcess } from './execute-process';
 
 describe('executeProcess', () => {
@@ -20,7 +20,9 @@ describe('executeProcess', () => {
       args: ['-v'],
       observer: spyObserver,
     });
-    expect(spyObserver.onStdout).toHaveBeenCalledTimes(1);
+
+    // Note: called once or twice depending on environment (2nd time for a new line)
+    expect(spyObserver.onStdout).toHaveBeenCalled();
     expect(spyObserver.onComplete).toHaveBeenCalledTimes(1);
     expect(spyObserver.onError).toHaveBeenCalledTimes(0);
     expect(processResult.stdout).toMatch(/v\d{1,2}(\.\d{1,2}){0,2}/);

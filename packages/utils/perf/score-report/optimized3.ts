@@ -5,6 +5,7 @@ import { ScoredReport } from '../../src';
 import {
   EnrichedAuditReport,
   EnrichedScoredGroup,
+  GroupRefInvalidError,
   ScoredCategoryConfig,
 } from '../../src/lib/reports/scoring';
 
@@ -41,7 +42,6 @@ export function deepClone<T>(obj: T): T {
   return cloned;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map<
@@ -64,9 +64,7 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
         `${slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
-        throw new Error(
-          `Group has invalid ref - audit with slug ${slug}-${ref.slug}-audit not found`,
-        );
+        throw new GroupRefInvalidError(ref.slug, slug);
       }
       return score;
     }

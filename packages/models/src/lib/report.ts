@@ -27,7 +27,7 @@ export const pluginReportSchema = pluginMetaSchema
   )
   .merge(
     z.object({
-      audits: z.array(auditReportSchema),
+      audits: z.array(auditReportSchema).min(1),
       groups: z.array(groupSchema).optional(),
     }),
   )

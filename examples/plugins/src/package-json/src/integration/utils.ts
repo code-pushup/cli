@@ -1,9 +1,5 @@
 import { AuditOutput, Issue } from '@code-pushup/models';
-import {
-  factorOf,
-  findLineNumberInText,
-  pluralizeToken,
-} from '@code-pushup/utils';
+import { factorOf, pluralizeToken } from '@code-pushup/utils';
 import { PackageJson, SourceResult } from './types';
 
 export function baseAuditOutput(slug: string): AuditOutput {
@@ -27,17 +23,13 @@ export function assertPropertyEmpty(
   result: SourceResult,
   property: keyof PackageJson,
 ): Issue {
-  const { file, content, json } = result;
+  const { json } = result;
   const value = json[property] as string | undefined;
-  const source: Issue['source'] = {
-    file,
-  };
 
   if (value === undefined) {
     return {
       message: `${property} undefined`,
       severity: 'error',
-      source,
     };
   }
 
@@ -45,19 +37,12 @@ export function assertPropertyEmpty(
     return {
       message: `${property} empty`,
       severity: 'error',
-      source: {
-        ...source,
-        position: {
-          startLine: findLineNumberInText(content, `"${property}":`) as number,
-        },
-      },
     };
   }
 
   return {
     message: `${property} OK`,
     severity: 'info',
-    source,
   };
 }
 
@@ -66,29 +51,18 @@ export function assertPropertyEqual(
   property: keyof PackageJson,
   value: unknown,
 ): Issue {
-  const { file, content, json } = result;
+  const { json } = result;
   if (json[property] !== value) {
-    const startLine: null | number = findLineNumberInText(
-      content,
-      `"${property}":`,
-    );
     return {
       severity: 'error',
       message: `${property} should be ${value?.toString()} but is ${json[
         property
       ]?.toString()}`,
-      source: {
-        file,
-        ...(startLine == null ? {} : { position: { startLine } }),
-      },
     };
   }
   return {
     message: `${property} value is given`,
     severity: 'info',
-    source: {
-      file,
-    },
   };
 }
 

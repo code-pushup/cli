@@ -1,4 +1,6 @@
+import { isAbsolute, join, relative } from 'node:path';
 import { simpleGit } from 'simple-git';
+import { toUnixPath } from './transform';
 
 export type CommitData = {
   hash: string;
@@ -6,7 +8,6 @@ export type CommitData = {
   author: string;
   date: string;
 };
-
 export type GitTag = {
   name: string;
   semver: string;
@@ -15,13 +16,48 @@ export type GitTag = {
 
 export const git = simpleGit();
 
-export async function getLatestCommit() {
+export async function getLatestCommit(git = simpleGit()) {
   // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
   const log = await git.log({
     maxCount: 1,
     format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
   });
-  return log.latest;
+  return log.latest satisfies CommitData | null;
+}
+
+export function getGitRoot(git = simpleGit()): Promise<string> {
+  return git.revparse('--show-toplevel');
+}
+
+export function formatGitPath(path: string, gitRoot: string): string {
+  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
+  const relativePath = relative(gitRoot, absolutePath);
+  return toUnixPath(relativePath);
+}
+
+export async function toGitPath(
+  path: string,
+  git = simpleGit(),
+): Promise<string> {
+  const gitRoot = await getGitRoot(git);
+  return formatGitPath(path, gitRoot);
+}
+
+export function validateCommitData(
+  commitData: CommitData | null,
+  options: { throwError?: boolean } = {},
+): commitData is CommitData {
+  const { throwError = false } = options;
+  if (!commitData) {
+    const msg = 'no commit data available';
+    if (throwError) {
+      throw new Error(msg);
+    } else {
+      console.warn(msg);
+      return false;
+    }
+  }
+  return true;
 }
 
 export async function branchHasChanges(): Promise<boolean> {
@@ -55,7 +91,7 @@ export async function safeCheckout(
   // git requires a clean history to check out a branch
   if (options?.gitRestore !== undefined) {
     await git.clean(['f']);
-    console.info('branch restored with: '+options.gitRestore)
+    console.info('branch restored with: ' + options.gitRestore);
   }
   await guardAgainstDirtyRepo();
   await git.checkout(branchOrHash);

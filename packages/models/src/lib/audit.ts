@@ -4,7 +4,7 @@ import { errorItems, hasDuplicateStrings } from './implementation/utils';
 
 export const auditSchema = z
   .object({
-    slug: slugSchema('ID (unique within plugin)'),
+    slug: slugSchema.describe('ID (unique within plugin)'),
   })
   .merge(
     metaSchema({
@@ -20,6 +20,7 @@ export const pluginAuditsSchema = z
   .array(auditSchema, {
     description: 'List of audits maintained in a plugin',
   })
+  .min(1)
   // audit slugs are unique
   .refine(
     auditMetadata => !getDuplicateSlugsInAudits(auditMetadata),

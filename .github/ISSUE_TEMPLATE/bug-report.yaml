@@ -29,6 +29,11 @@ body:
       description: Please provide a step-by-step guide on how to reproduce this issue.
     validations:
       required: true
+  - type: input
+    id: package-version
+    attributes:
+      label: Code PushUp package version
+      description: What version of `@code-pushup/` packages are you using? (check with e.g. `npm list @code-pushup/cli`)
   - type: dropdown
     id: os
     attributes:
@@ -41,10 +46,10 @@ body:
     validations:
       required: true
   - type: input
-    id: version
+    id: node-version
     attributes:
       label: Node version
-      description: What Node version are you running?
+      description: What Node version are you running? (check with `node -v`)
       placeholder: e.g. 20.0.0
     validations:
       required: false

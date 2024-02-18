@@ -1,4 +1,12 @@
 import type { AuditOutputs } from '@code-pushup/models';
+import { CoverageType } from './config';
+
+export const coverageDescription: Record<CoverageType, string> = {
+  branch:
+    'Measures how many branches were executed after conditional statements in at least one test.',
+  line: 'Measures how many lines of code were executed in at least one test.',
+  function: 'Measures how many functions were called in at least one test.',
+};
 
 /**
  * Since more code coverage does not necessarily mean better score, this optional override allows for defining custom coverage goals.
@@ -14,3 +22,11 @@ export function applyMaxScoreAboveThreshold(
     output.score >= threshold ? { ...output, score: 1 } : output,
   );
 }
+
+/* eslint-disable no-magic-numbers */
+export const coverageTypeWeightMapper: Record<CoverageType, number> = {
+  function: 6,
+  branch: 3,
+  line: 1,
+};
+/* eslint-enable no-magic-numbers */

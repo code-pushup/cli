@@ -1,10 +1,19 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.14.0",
+  "version": "0.21.1",
   "dependencies": {
     "@code-pushup/models": "*",
     "@code-pushup/utils": "*",
     "parse-lcov": "^1.0.4",
+    "chalk": "^5.3.0",
     "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "@nx/devkit": "^17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nx/devkit": {
+      "optional": true
+    }
   }
 }

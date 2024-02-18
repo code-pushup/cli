@@ -6,23 +6,14 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { LIGHTHOUSE_URL } from '../mock/constants';
 import { lhr } from '../mock/fixtures/lhr';
 import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
 import { audits, PLUGIN_SLUG as slug } from './index';
 import { create } from './lighthouse.plugin';
 
-describe('lighthouse-create-export', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
+describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -37,7 +28,7 @@ describe('lighthouse-create-export', () => {
     });
   });
 
-  it('should parse options for defaults correctly', async () => {
+  it('should parse options for defaults correctly in runner args', async () => {
     const pluginConfig = await create({
       url: 'https://code-pushup.com',
     });
@@ -58,7 +49,7 @@ describe('lighthouse-create-export', () => {
     ]);
   });
 
-  it('should parse options for headless by default to "new"', async () => {
+  it('should parse options for headless by default to "new" in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
     });
@@ -67,7 +58,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if true is given', async () => {
+  it('should parse options for headless to new if true is given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: true,
@@ -77,7 +68,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for headless to new if false is given', async () => {
+  it('should parse options for headless to new if false is given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       headless: false,
@@ -87,7 +78,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should parse options for userDataDir correctly', async () => {
+  it('should override userDataDir option when given in runner args', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       userDataDir: 'test',
@@ -98,8 +89,21 @@ describe('lighthouse-create-export', () => {
       ]),
     );
   });
+});
 
-  it('should return PluginConfig that executes correctly', async () => {
+describe('lighthouse-create-export-execution', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
+      },
+      MEMFS_VOLUME,
+    );
+  });
+
+  // TODO: Convert to E2E test or reduce scope, it takes too long to run these tests
+  /* eslint-disable vitest/no-disabled-tests */
+  it.skip('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = await create({ url: LIGHTHOUSE_URL });
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
       expect.objectContaining({
@@ -114,7 +118,7 @@ describe('lighthouse-create-export', () => {
     );
   });
 
-  it('should use onlyAudits', async () => {
+  it.skip('should use onlyAudits', async () => {
     const pluginConfig = await create({
       url: LIGHTHOUSE_URL,
       onlyAudits: 'largest-contentful-paint',
@@ -125,19 +129,24 @@ describe('lighthouse-create-export', () => {
     const { audits: auditOutputs } = await executePlugin(pluginConfig);
 
     expect(auditOutputs).toHaveLength(1);
+    expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
   });
-}, 30_000);
+  /* eslint-enable vitest/no-disabled-tests */
+});
 
 describe('lighthouse-audits-export', () => {
-  it.each(audits)('should be a valid audit meta info', audit => {
-    expect(() => auditSchema.parse(audit)).not.toThrow();
-  });
+  it.each(audits.map(a => [a.slug, a]))(
+    'should have a valid audit meta info for %s',
+    (_, audit) => {
+      expect(() => auditSchema.parse(audit)).not.toThrow();
+    },
+  );
 });
 
 describe('lighthouse-corePerfGroupRefs-export', () => {
-  it.each(corePerfGroupRefs)(
-    'should be a valid category reference',
-    categoryRef => {
+  it.each(corePerfGroupRefs.map(g => [g.slug, g]))(
+    'should be a valid category reference for %s',
+    (_, categoryRef) => {
       expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
     },
   );

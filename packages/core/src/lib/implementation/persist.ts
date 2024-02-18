@@ -10,6 +10,7 @@ import {
   logMultipleFileResults,
   scoreReport,
   sortReport,
+  validateCommitData,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -71,12 +72,6 @@ export async function persistReport(
       ),
     ),
   );
-}
-
-function validateCommitData(commitData?: unknown) {
-  if (!commitData) {
-    console.warn('no commit data available');
-  }
 }
 
 async function persistResult(reportPath: string, content: string) {

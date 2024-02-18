@@ -25,8 +25,8 @@ describe('init generator', () => {
     tree = createTreeWithEmptyWorkspace();
   });
 
-  it('should run successfully', async () => {
-    await initGenerator(tree, options);
+  it('should run successfully', () => {
+    initGenerator(tree, options);
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).toHaveProperty(cpTargetName);
@@ -43,8 +43,8 @@ describe('init generator', () => {
     ).toHaveLength(devDependencyNames.length);
   });
 
-  it('should skip packageJson', async () => {
-    await initGenerator(tree, { ...options, skipPackageJson: true });
+  it('should skip packageJson', () => {
+    initGenerator(tree, { ...options, skipPackageJson: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).toHaveProperty(cpTargetName);

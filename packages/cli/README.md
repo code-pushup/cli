@@ -8,9 +8,10 @@
 
 ---
 
-|                  📊 Getting Started                  |               🌐 Portal Integration                |              🛠️ CI Automation              |
-| :--------------------------------------------------: | :------------------------------------------------: | :----------------------------------------: |
-| **[How to setup](#getting-started)** a basic project | Sort, filter **[your goals](#portal-integration)** | Updates **[on every PR](#-ci-automation)** |
+|                                                                                     📊 Getting Started                                                                                      |                                                                                 🌐 Portal Integration                                                                                 |                                                                     🛠️ CI Automation                                                                      |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                                                                    **[How to setup](#getting-started)** a basic project                                                                     |                                                                  Sort, filter **[your goals](#portal-integration)**                                                                   |                                                        Updates **[on every PR](#-ci-automation)**                                                         |
+| <a href="#getting-started"><img alt="Getting started cover image" title="Getting started with code-pushup" src="./docs/images/getting-started-cover.png" max-height="200" width="auto"></a> | <a href="#portal-integration"><img alt="Portal integration cover image" title="Inetegrate code-pushup portal" src="./docs/images/portal-cover.png" max-height="200" width="auto"></a> | <a href="#-ci-automation"><img alt="CI Automation cover" title="CI automation guide" src="./docs/images/cli-cover.png" max-height="200" width="auto"></a> |
 
 ---
 
@@ -77,7 +78,8 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 4. Run the CLI with `npx code-pushup` (see `--help` for list of commands and arguments).
 
-5. View report file(s) in output directory (specified by `persist.outputDir` configuration).
+5. View report file(s) in output directory (specified by `persist.outputDir` configuration).  
+   This folder should be ignored in your `.gitignore`.
 
 ### Set up categories (optional)
 
@@ -139,11 +141,15 @@ jobs:
   collect-and-upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - run: npm ci
       - run: npx code-pushup autorun --upload.apiKey=${{ secrets.PORTAL_API_KEY }}
 ```
+
+## Configuration
+
+For a comprehensive list of all options available in the config file, refer to [`CoreConfig` docs](../models/docs/models-reference.md#coreconfig).
 
 ## Custom Plugins
 
@@ -156,7 +162,7 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 - 📏 [File Size](../../examples/plugins/src/file-size)
 - 📦 [Package Json](../../examples/plugins/src/package-json)
-- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse)
+- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse))
 
 ## CLI commands and options
 

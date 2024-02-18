@@ -2,6 +2,99 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.21.1](https://github.com/code-pushup/cli/compare/v0.21.0...v0.21.1) (2024-02-16)
+
+# [0.21.0](https://github.com/code-pushup/cli/compare/v0.20.2...v0.21.0) (2024-02-16)
+
+### Features
+
+- **cli:** print full report url after upload ([0eb7771](https://github.com/code-pushup/cli/commit/0eb777107fc56317622fb7000306b33a8d085598))
+
+## [0.20.2](https://github.com/code-pushup/cli/compare/v0.20.1...v0.20.2) (2024-02-16)
+
+## [0.20.1](https://github.com/code-pushup/cli/compare/v0.20.0...v0.20.1) (2024-02-15)
+
+### Bug Fixes
+
+- **cli:** make onlyPlugins filter based on plugin not audit/group slug ([e963c36](https://github.com/code-pushup/cli/commit/e963c36219295d5b48f1e6c836ba321bcc01e90a))
+
+# [0.20.0](https://github.com/code-pushup/cli/compare/v0.19.0...v0.20.0) (2024-02-15)
+
+### Bug Fixes
+
+- **models:** issue file positions must be positive integers ([727926e](https://github.com/code-pushup/cli/commit/727926e987b526703d7fd46994b442dce3ac4a25))
+
+### Features
+
+- **models:** add missing schema exports ([36d3eea](https://github.com/code-pushup/cli/commit/36d3eeafba94f41dfded28b97e8af5f9441b4062))
+
+# [0.19.0](https://github.com/code-pushup/cli/compare/v0.18.1...v0.19.0) (2024-02-15)
+
+### Features
+
+- **core:** convert all issue file paths after executing plugin ([d82c68d](https://github.com/code-pushup/cli/commit/d82c68da9aaa4d3e4132ee5b8eb3766d60369440))
+- **utils:** implement helpers for making paths relative to git root ([b12df6d](https://github.com/code-pushup/cli/commit/b12df6d05f81d7c26df40c5435ad0efad7fdb687))
+
+## [0.18.1](https://github.com/code-pushup/cli/compare/v0.18.0...v0.18.1) (2024-02-14)
+
+# [0.18.0](https://github.com/code-pushup/cli/compare/v0.17.0...v0.18.0) (2024-02-14)
+
+### Features
+
+- **plugin-coverage:** allow passing results as strings ([6813021](https://github.com/code-pushup/cli/commit/681302101889001774a6b5ddd375dc26a6ab3d53))
+
+# [0.17.0](https://github.com/code-pushup/cli/compare/v0.16.8...v0.17.0) (2024-02-13)
+
+### Features
+
+- **plugin-coverage:** add coverage tool run option, convert to runnerConfig ([d259c14](https://github.com/code-pushup/cli/commit/d259c14814d256bb1ad3dfb749a7c8ac25640d2b))
+- **plugin-coverage:** get coverage paths using nx ([cd499ea](https://github.com/code-pushup/cli/commit/cd499ea817b7c2fe67a8b04e4701b4f387783613))
+- **plugin-coverage:** provide coverage group ([8cddfcd](https://github.com/code-pushup/cli/commit/8cddfcd0c5b54c042962ec596883b9a0d9775c6f))
+
+## [0.16.8](https://github.com/code-pushup/cli/compare/v0.16.7...v0.16.8) (2024-02-12)
+
+## [0.16.7](https://github.com/code-pushup/cli/compare/v0.16.6...v0.16.7) (2024-02-09)
+
+### Bug Fixes
+
+- **core:** upload issue without source if file not linked ([2923dbd](https://github.com/code-pushup/cli/commit/2923dbddc353b069e3c7f82caf1c52a5c63eeeb0))
+
+## [0.16.6](https://github.com/code-pushup/cli/compare/v0.16.5...v0.16.6) (2024-02-09)
+
+## [0.16.5](https://github.com/code-pushup/cli/compare/v0.16.4...v0.16.5) (2024-02-09)
+
+## [0.16.4](https://github.com/code-pushup/cli/compare/v0.16.3...v0.16.4) (2024-02-09)
+
+### Bug Fixes
+
+- **workflows:** update and improve labeler options ([146434a](https://github.com/code-pushup/cli/commit/146434aacb3741e0e4973f91d8954be3cc69e82e))
+
+## [0.16.3](https://github.com/code-pushup/cli/compare/v0.16.2...v0.16.3) (2024-02-08)
+
+## [0.16.2](https://github.com/code-pushup/cli/compare/v0.16.1...v0.16.2) (2024-02-08)
+
+## [0.16.1](https://github.com/code-pushup/cli/compare/v0.16.0...v0.16.1) (2024-02-07)
+
+# [0.16.0](https://github.com/code-pushup/cli/compare/v0.15.0...v0.16.0) (2024-02-07)
+
+### Features
+
+- **plugin-lighthouse:** add onlyAudits logic ([#472](https://github.com/code-pushup/cli/issues/472)) ([d45eac4](https://github.com/code-pushup/cli/commit/d45eac4fe9fa509f6807825f881bf26b2acb4343))
+
+# [0.15.0](https://github.com/code-pushup/cli/compare/v0.14.4...v0.15.0) (2024-02-06)
+
+### Features
+
+- **cli:** add logger ([#459](https://github.com/code-pushup/cli/issues/459)) ([f436299](https://github.com/code-pushup/cli/commit/f4362995108197211563b5cb77a4d37727d141af))
+
+## [0.14.4](https://github.com/code-pushup/cli/compare/v0.14.3...v0.14.4) (2024-02-06)
+
+## [0.14.3](https://github.com/code-pushup/cli/compare/v0.14.2...v0.14.3) (2024-02-06)
+
+## [0.14.2](https://github.com/code-pushup/cli/compare/v0.14.1...v0.14.2) (2024-02-06)
+
+## [0.14.1](https://github.com/code-pushup/cli/compare/v0.14.0...v0.14.1) (2024-02-05)
+
 # [0.14.0](https://github.com/code-pushup/cli/compare/v0.13.2...v0.14.0) (2024-02-05)
 
 ### Features

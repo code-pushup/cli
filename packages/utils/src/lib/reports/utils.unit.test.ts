@@ -1,11 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { Issue, IssueSeverity, Report } from '@code-pushup/models';
-import {
-  MEMFS_VOLUME,
-  REPORT_MOCK,
-  reportMock,
-} from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
 import {
   EnrichedAuditReport,
   ScoredReport,

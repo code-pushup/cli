@@ -5,7 +5,7 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { CORE_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import { CORE_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
