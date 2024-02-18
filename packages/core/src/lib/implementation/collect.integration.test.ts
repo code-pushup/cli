@@ -1,13 +1,13 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
-import { collect } from './collect';
+import { CollectOptions, collect } from './collect';
 
 describe('collect', () => {
   it('should execute with valid options', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
     const report = await collect({
-      ...MINIMAL_CONFIG_MOCK,
+      ...(MINIMAL_CONFIG_MOCK as CollectOptions),
       verbose: true,
       progress: false,
     });
