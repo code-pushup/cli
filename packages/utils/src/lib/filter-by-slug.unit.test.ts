@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,
+  filterGroupsByCategorySlug,
   filterSlug,
 } from './filter-by-slug';
 
@@ -83,6 +84,57 @@ describe('filterGroupsByAuditSlug', () => {
         slug: 'g',
         title: 'G',
         refs: [{ slug: 'a', weight: 1 }],
+      },
+    ]);
+  });
+});
+
+describe('filterGroupsByCategorySlug', () => {
+  it('should return the given groups if no slugs are given', () => {
+    const list = [
+      {
+        slug: 'g',
+        title: 'G',
+        refs: [
+          { slug: 'a', weight: 1 },
+          { slug: 'b', weight: 1 },
+          { slug: 'c', weight: 1 },
+        ],
+      },
+    ];
+    expect(filterGroupsByCategorySlug(list, [])).toEqual(list);
+  });
+
+  it('should filter groups if slugs is a string', () => {
+    const list = [
+      {
+        slug: 'g1',
+        title: 'G 1',
+        refs: [
+          { slug: 'a', weight: 1 },
+          { slug: 'b', weight: 1 },
+          { slug: 'c', weight: 1 },
+        ],
+      },
+      {
+        slug: 'g2',
+        title: 'G 2',
+        refs: [
+          { slug: 'd', weight: 1 },
+          { slug: 'e', weight: 1 },
+          { slug: 'f', weight: 1 },
+        ],
+      },
+    ];
+    expect(filterGroupsByCategorySlug(list, 'g2')).toEqual([
+      {
+        slug: 'g2',
+        title: 'G 2',
+        refs: [
+          { slug: 'd', weight: 1 },
+          { slug: 'e', weight: 1 },
+          { slug: 'f', weight: 1 },
+        ],
       },
     ]);
   });

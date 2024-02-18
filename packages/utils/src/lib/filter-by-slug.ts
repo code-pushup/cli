@@ -1,6 +1,17 @@
 import { Audit, Group } from '@code-pushup/models';
 import { toArray } from './transform';
 
+export function filterGroupsByCategorySlug(
+  groups: Group[],
+  categorySlugs: string | string[],
+): Group[] {
+  const slugs = toArray(categorySlugs);
+  if (slugs.length === 0) {
+    return groups;
+  }
+  return groups.filter(group => slugs.includes(group.slug));
+}
+
 export function filterGroupsByAuditSlug(
   groups: Group[],
   auditSlugs: string | string[],

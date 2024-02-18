@@ -1,14 +1,20 @@
-import type { CliFlags } from 'lighthouse';
-import { Audit } from '@code-pushup/models';
-import { objectToCliArgs, toArray } from '@code-pushup/utils';
+import type { CliFlags as LighthouseFlags } from 'lighthouse';
+import { Audit, Group } from '@code-pushup/models';
+import {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+  filterGroupsByCategorySlug,
+  objectToCliArgs,
+  toArray,
+} from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
 type RefinedLighthouseOption = {
-  url: CliFlags['_'];
-  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
+  url: LighthouseFlags['_'];
+  chromeFlags?: Record<LighthouseFlags['chromeFlags'][number], string>;
 };
 export type LighthouseCliOptions = RefinedLighthouseOption &
-  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
+  Partial<Omit<LighthouseFlags, keyof RefinedLighthouseOption>>;
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
@@ -59,7 +65,7 @@ export class AuditsNotImplementedError extends Error {
 export function validateOnlyAudits(
   audits: Audit[],
   onlyAudits: string | string[],
-): audits is Audit[] {
+): boolean {
   const missingAudtis = toArray(onlyAudits).filter(
     slug => !audits.some(audit => audit.slug === slug),
   );
@@ -67,4 +73,61 @@ export function validateOnlyAudits(
     throw new AuditsNotImplementedError(missingAudtis);
   }
   return true;
+}
+
+export class CategoriesNotImplementedError extends Error {
+  constructor(categorySlugs: string[]) {
+    super(`categories: "${categorySlugs.join(', ')}" not implemented`);
+  }
+}
+
+export function validateOnlyCategories(
+  groups: Group[],
+  onlyCategories: string | string[],
+): boolean {
+  const missingCategories = toArray(onlyCategories).filter(
+    slug => !groups.some(group => group.slug === slug),
+  );
+  if (missingCategories.length > 0) {
+    throw new CategoriesNotImplementedError(missingCategories);
+  }
+  return true;
+}
+
+export function filterAuditsAndGroupsByOnlyOptions(
+  audits: Audit[],
+  groups: Group[],
+  options?: Pick<LighthouseFlags, 'onlyAudits' | 'onlyCategories'>,
+): {
+  audits: Audit[];
+  groups: Group[];
+} {
+  const { onlyAudits, onlyCategories } = options ?? {};
+
+  // category wins over audits
+  if (onlyCategories && onlyCategories.length > 0) {
+    validateOnlyCategories(groups, onlyCategories);
+    const filteredGroups: Group[] = filterGroupsByCategorySlug(
+      groups,
+      onlyCategories,
+    );
+    const auditSlugsFromRemainingGroups: string[] = filteredGroups.flatMap(
+      ({ refs }) => refs.map(({ slug }) => slug),
+    );
+    return {
+      audits: filterAuditsBySlug(audits, auditSlugsFromRemainingGroups),
+      groups: filteredGroups,
+    };
+  } else if (onlyAudits && onlyAudits.length > 0) {
+    validateOnlyAudits(audits, onlyAudits);
+    return {
+      audits: filterAuditsBySlug(audits, onlyAudits),
+      groups: filterGroupsByAuditSlug(groups, onlyAudits),
+    };
+  }
+  // return unchanged
+  return {
+    audits,
+    groups,
+  };
 }
