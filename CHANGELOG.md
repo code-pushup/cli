@@ -8,6 +8,12 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 - **cli:** add --tsconfig option ([67abfb7](https://github.com/code-pushup/cli/commit/67abfb728548344c7e25310fc21eb0446ceecb7f))
 
+# [0.22.0](https://github.com/code-pushup/cli/compare/v0.21.1...v0.22.0) (2024-02-19)
+
+### Features
+
+- **cli:** add --tsconfig option ([67abfb7](https://github.com/code-pushup/cli/commit/67abfb728548344c7e25310fc21eb0446ceecb7f))
+
 ## [0.21.1](https://github.com/code-pushup/cli/compare/v0.21.0...v0.21.1) (2024-02-16)
 
 # [0.21.0](https://github.com/code-pushup/cli/compare/v0.20.2...v0.21.0) (2024-02-16)
