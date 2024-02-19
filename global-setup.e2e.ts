@@ -1,6 +1,9 @@
 import { execSync } from 'child_process';
-import { setup as globalSetup } from './global-setup';
-import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
+import {
+  setup as globalSetup,
+  teardown as globalTeardown,
+} from './global-setup';
+import { setupTestFolder } from './testing/test-setup/src';
 import startLocalRegistry from './tools/scripts/start-local-registry';
 import stopLocalRegistry from './tools/scripts/stop-local-registry';
 
@@ -18,5 +21,5 @@ export async function teardown() {
   execSync('npm uninstall @code-pushup/cli');
   execSync('npm uninstall @code-pushup/eslint-plugin');
   execSync('npm uninstall @code-pushup/coverage-plugin');
-  await teardownTestFolder('tmp');
+  await globalTeardown();
 }
