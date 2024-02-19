@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.22.3](https://github.com/code-pushup/cli/compare/v0.22.2...v0.22.3) (2024-02-19)
+
+### Performance Improvements
+
+- **utils:** add benchmarks for file system walk and glob libs ([#514](https://github.com/code-pushup/cli/issues/514)) ([50e5f96](https://github.com/code-pushup/cli/commit/50e5f962e400d2721c583c17c216bb770b2f26eb))
+
 ## [0.22.2](https://github.com/code-pushup/cli/compare/v0.22.1...v0.22.2) (2024-02-19)
 
 ## [0.22.1](https://github.com/code-pushup/cli/compare/v0.22.0...v0.22.1) (2024-02-19)

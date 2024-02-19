@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.22.2",
+  "version": "0.22.3",
   "license": "MIT",
   "dependencies": {
     "@code-pushup/models": "*",
