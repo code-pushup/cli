@@ -119,7 +119,7 @@ describe('git utils in a git repo with a branch and commits', () => {
     );
   });
 
-  it('safeCheckout should clean local changes and check out to master', async () => {
+  it('safeCheckout should clean local changes and check out to feature-branch', async () => {
     // needs to get reset to be clean
     await mkdir(changesDir, { recursive: true });
     await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
