@@ -1,17 +1,17 @@
-import { Format } from '@code-pushup/models';
+import type { CoreConfig, Format, UploadConfig } from '@code-pushup/models';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type PersistConfigCliOptions = {
-  'persist.outputDir': string;
-  'persist.filename': string;
-  'persist.format': Format;
+  'persist.outputDir'?: string;
+  'persist.filename'?: string;
+  'persist.format'?: Format;
 };
 
 export type UploadConfigCliOptions = {
-  'upload.organization': string;
-  'upload.project': string;
-  'upload.apiKey': string;
-  'upload.server': string;
+  'upload.organization'?: string;
+  'upload.project'?: string;
+  'upload.apiKey'?: string;
+  'upload.server'?: string;
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -20,6 +20,6 @@ export type ConfigCliOptions = {
   tsconfig?: string;
 };
 
-export type CoreConfigCliOptions = ConfigCliOptions &
-  PersistConfigCliOptions &
-  UploadConfigCliOptions;
+export type CoreConfigCliOptions = Omit<CoreConfig, 'upload'> & {
+  upload?: Partial<Omit<UploadConfig, 'timeout'>>;
+};

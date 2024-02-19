@@ -40,7 +40,5 @@ export function logErrorBeforeThrow<T extends (...args: any[]) => any>(
 }
 
 export function coerceArray<T extends string>(param: T | T[] = []): T[] {
-  return [
-    ...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]) || []),
-  ];
+  return [...new Set(toArray(param).flatMap((f: T) => f.split(',') as T[]))];
 }
