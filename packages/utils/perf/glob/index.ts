@@ -1,28 +1,19 @@
 import * as Benchmark from 'benchmark';
 import { join } from 'node:path';
-import {
-  CrawlFileSystemOptions,
-  crawlFileSystem,
-} from '../../src/lib/file-system';
-import { crawlFileSystemFsWalk } from './fs-walk';
-
-const PROCESS_ARGUMENT_TARGET_DIRECTORY =
-  process.argv
-    .find(arg => arg.startsWith('--directory'))
-    ?.split('=')
-    .at(-1) ?? '';
-const PROCESS_ARGUMENT_PATTERN =
-  process.argv
-    .find(arg => arg.startsWith('--pattern'))
-    ?.split('=')
-    .at(-1) ?? '';
+import { fastGlob } from './fast-glob';
+import { glob } from './glob';
+import { globby } from './globby';
 
 const suite = new Benchmark.Suite('report-scoring');
 
-const TARGET_DIRECTORY =
-  PROCESS_ARGUMENT_TARGET_DIRECTORY ||
-  join(process.cwd(), '..', '..', '..', 'node_modules');
-const PATTERN = PROCESS_ARGUMENT_PATTERN || /.json$/;
+const BASE_PATH = join(
+  process.cwd(),
+  '..',
+  '..',
+  '..',
+  'node_modules',
+  '**/*.js',
+);
 
 // ==================
 
@@ -49,12 +40,10 @@ const listeners = {
 // ==================
 
 // Add tests
-const options = {
-  directory: TARGET_DIRECTORY,
-  pattern: PATTERN,
-};
-suite.add('Base', wrapWithDefer(crawlFileSystem));
-suite.add('nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk));
+const pattern = [BASE_PATH];
+suite.add('glob', wrapWithDefer(glob));
+suite.add('globby', wrapWithDefer(globby));
+suite.add('fastGlob', wrapWithDefer(fastGlob));
 
 // ==================
 
@@ -66,12 +55,7 @@ Object.entries(listeners).forEach(([name, fn]) => {
 // ==================
 
 console.info('You can adjust the test with the following arguments:');
-console.info(
-  `directory      target directory of test      --directory=${TARGET_DIRECTORY}`,
-);
-console.info(
-  `pattern        pattern to search             --pattern=${PATTERN}`,
-);
+console.info(`pattern      glob pattern of test      --pattern=${BASE_PATH}`);
 console.info(' ');
 console.info('Start benchmark...');
 console.info(' ');
@@ -82,18 +66,23 @@ suite.run({
 
 // ==============================================================
 
-function wrapWithDefer<T>(
-  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<unknown[]>,
-) {
+function wrapWithDefer(asyncFn: (pattern: string[]) => Promise<string[]>) {
+  const logged: Record<string, boolean> = {};
   return {
     defer: true, // important for async functions
     fn: function (deferred: { resolve: () => void }) {
-      return asyncFn(options)
+      return asyncFn(pattern)
         .catch(() => [])
         .then((result: unknown[]) => {
           if (result.length === 0) {
             throw new Error(`Result length is ${result.length}`);
           } else {
+            if (!logged[asyncFn.name]) {
+              // eslint-disable-next-line functional/immutable-data
+              logged[asyncFn.name] = true;
+              // eslint-disable-next-line no-console
+              console.log(`${asyncFn.name} found ${result.length} files`);
+            }
             deferred.resolve();
           }
           return void 0;
