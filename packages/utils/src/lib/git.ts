@@ -74,7 +74,7 @@ export async function getCurrentBranchOrTag(
   return (
     (await git.branch().then(r => r.current)) ||
     // @TODO replace with simple git
-    (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
+    (await git.raw(['describe', '--tags', '--exact-match']).then(out => out.trim()))
   );
 }
 
