@@ -148,7 +148,7 @@ describe('git utils in a git repo without a branch and commits', () => {
 
   it('getCurrentBranchOrTag should throw if no branch is given', async () => {
     await expect(getCurrentBranchOrTag(git)).rejects.toThrow(
-      "git: 'describe --tags --exact-match' is not a git command. See 'git --help'",
+      'could not check out current tag or branch',
     );
   });
 });
