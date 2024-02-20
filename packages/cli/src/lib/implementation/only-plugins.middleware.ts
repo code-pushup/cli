@@ -8,22 +8,16 @@ import {
 } from './only-plugins.utils';
 
 export function onlyPluginsMiddleware<
-  T extends Partial<GeneralCliOptions & CoreConfig & OnlyPluginsOptions>,
->(processArgs: T) {
-  const args = processArgs;
-  const cliOptions = args as GeneralCliOptions &
-    Required<CoreConfig> &
-    OnlyPluginsOptions;
+  T extends GeneralCliOptions &
+    Omit<CoreConfig, 'categories'> &
+    Required<Pick<CoreConfig, 'categories'>> &
+    OnlyPluginsOptions,
+>(processArgs: T): GeneralCliOptions & CoreConfig & OnlyPluginsOptions {
+  validateOnlyPluginsOption(processArgs.plugins, processArgs);
 
-  validateOnlyPluginsOption(cliOptions.plugins, cliOptions);
-
-  const parsedProcessArgs: Required<CoreConfig> &
-    GeneralCliOptions &
-    OnlyPluginsOptions = {
-    ...cliOptions,
-    plugins: filterPluginsBySlug(cliOptions.plugins, cliOptions),
-    categories: filterCategoryByPluginSlug(cliOptions.categories, cliOptions),
+  return {
+    ...processArgs,
+    plugins: filterPluginsBySlug(processArgs.plugins, processArgs),
+    categories: filterCategoryByPluginSlug(processArgs.categories, processArgs),
   };
-
-  return parsedProcessArgs;
 }

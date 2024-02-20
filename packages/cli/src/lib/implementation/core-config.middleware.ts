@@ -1,5 +1,6 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
+  CoreConfig,
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
@@ -7,10 +8,13 @@ import {
 } from '@code-pushup/models';
 import { CoreConfigCliOptions } from './core-config.model';
 import { GeneralCliOptions } from './global.model';
+import { OnlyPluginsOptions } from './only-plugins.model';
 
 export async function coreConfigMiddleware<
-  T extends Partial<GeneralCliOptions & CoreConfigCliOptions>,
->(processArgs: T) {
+  T extends GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions,
+>(
+  processArgs: T,
+): Promise<GeneralCliOptions & CoreConfig & OnlyPluginsOptions> {
   const {
     config,
     tsconfig,
@@ -19,7 +23,7 @@ export async function coreConfigMiddleware<
     ...remainingCliOptions
   } = processArgs;
 
-  // if config path is given use it otherwise auto-load
+  // Search for possible configuration file extensions if path is not given
   const importedRc = config
     ? await readRcByPath(config, tsconfig)
     : await autoloadRc(tsconfig);

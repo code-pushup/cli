@@ -16,10 +16,10 @@ export type UploadConfigCliOptions = {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export type ConfigCliOptions = {
-  config: string;
+  config?: string;
   tsconfig?: string;
 };
 
-export type CoreConfigCliOptions = Omit<CoreConfig, 'upload'> & {
+export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {
   upload?: Partial<Omit<UploadConfig, 'timeout'>>;
 };
