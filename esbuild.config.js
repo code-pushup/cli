@@ -1,4 +1,3 @@
-const esbuild = require('esbuild');
 const { execSync } = require('child_process');
 const { readFileSync, writeFileSync, existsSync } = require('fs');
 
@@ -9,7 +8,7 @@ const projectPath = project.startsWith('test-')
   ? 'examples/plugins'
   : `packages/${project}`;
 
-esbuild.build({
+module.exports = {
   plugins: [
     {
       name: 'TypeScriptDeclarations',
@@ -79,4 +78,4 @@ esbuild.build({
       },
     },
   ],
-});
+};
