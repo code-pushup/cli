@@ -31,6 +31,7 @@ describe('git utils in a git repo with a branch and commits', () => {
     await git.commit('Create README');
 
     await git.checkout(['-b', 'feature-branch']);
+    await git.checkout(['master']);
   });
 
   afterAll(async () => {
@@ -120,6 +121,9 @@ describe('git utils in a git repo with a branch and commits', () => {
     ).resolves.toBeUndefined();
     await expect(git.branch()).resolves.toEqual(
       expect.objectContaining({ current: 'feature-branch' }),
+    );
+    await expect(git.status()).resolves.toEqual(
+      expect.objectContaining({ files: [] }),
     );
   });
 
