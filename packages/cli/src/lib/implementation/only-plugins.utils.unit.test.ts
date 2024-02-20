@@ -93,6 +93,12 @@ describe('filterCategoryByPluginSlug', () => {
       expect.stringContaining('skipped plugin "plugin2"'),
     );
   });
+
+  it('should return empty array for no categories', () => {
+    expect(
+      filterCategoryByPluginSlug([], { onlyPlugins: ['plugin1'] }),
+    ).toEqual([]);
+  });
 });
 
 describe('validateOnlyPluginsOption', () => {
