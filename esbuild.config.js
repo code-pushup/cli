@@ -8,6 +8,7 @@ const projectPath = project.startsWith('test-')
   ? 'examples/plugins'
   : `packages/${project}`;
 
+/** @type {import('esbuild').BuildOptions} */
 module.exports = {
   plugins: [
     {
@@ -33,7 +34,7 @@ module.exports = {
           if (result.errors.length > 0) return;
 
           if (!existsSync(`${projectPath}/package.json`)) {
-            /** @type {import('type-fest').PackageJson} */
+            /** @type {import('nx/src/utils/package-json').PackageJson} */
             const newPackageJson = {
               name: `@code-pushup/${project}`,
               private: true,
@@ -48,12 +49,12 @@ module.exports = {
             return;
           }
 
-          /** @type {import('type-fest').PackageJson} */
+          /** @type {import('nx/src/utils/package-json').PackageJson} */
           const packageJson = JSON.parse(
             readFileSync(`${projectPath}/package.json`).toString(),
           );
 
-          /** @type {import('type-fest').PackageJson} */
+          /** @type {import('nx/src/utils/package-json').PackageJson} */
           const rootPackageJson = JSON.parse(
             readFileSync('package.json').toString(),
           );
