@@ -8,7 +8,6 @@ import {
   getLatestCommit,
   guardAgainstLocalChanges,
   safeCheckout,
-  statusIsClean,
   toGitPath,
 } from './git';
 import { toUnixPath } from './transform';
@@ -75,16 +74,6 @@ describe('git utils in a git repo with a branch and commits', () => {
     await expect(toGitPath('Backend/API/Startup.cs')).resolves.toBe(
       'Backend/API/Startup.cs',
     );
-  });
-
-  it('statusIsClean should return false if some changes are given', async () => {
-    await mkdir(changesDir, { recursive: true });
-    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
-    await expect(statusIsClean(git)).resolves.toBe(false);
-  });
-
-  it('statusIsClean should return true if no changes are given', async () => {
-    await expect(statusIsClean(git)).resolves.toBe(true);
   });
 
   it('guardAgainstLocalChanges should throw if history is dirty', async () => {

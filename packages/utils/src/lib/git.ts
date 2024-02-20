@@ -53,14 +53,10 @@ export function validateCommitData(
   return true;
 }
 
-export function statusIsClean(git = simpleGit()): Promise<boolean> {
-  return git.status(['-s']).then(r => r.files.length === 0);
-}
-
 export async function guardAgainstLocalChanges(
   git = simpleGit(),
 ): Promise<void> {
-  const isClean = await statusIsClean(git);
+  const isClean = await git.status(['-s']).then(r => r.files.length === 0);
   if (!isClean) {
     throw new Error(
       'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
