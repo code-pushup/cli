@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.22.8](https://github.com/code-pushup/cli/compare/v0.22.7...v0.22.8) (2024-02-23)
+
+### Bug Fixes
+
+- **plugin-eslint:** handle rules which emit column 0 ([de791e1](https://github.com/code-pushup/cli/commit/de791e12de1f8856f12b0d574f15232df5138cb2))
+
 ## [0.22.7](https://github.com/code-pushup/cli/compare/v0.22.6...v0.22.7) (2024-02-21)
 
 ## [0.22.6](https://github.com/code-pushup/cli/compare/v0.22.5...v0.22.6) (2024-02-21)
