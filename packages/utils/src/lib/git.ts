@@ -81,7 +81,7 @@ export async function getCurrentBranchOrTag(
     }
   } catch {
     // Return a custom error message when something goes wrong
-    throw new Error('could not check out current tag or branch');
+    throw new Error('Could not get current tag or branch.');
   }
 }
 
