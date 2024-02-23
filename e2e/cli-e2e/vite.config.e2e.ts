@@ -13,6 +13,11 @@ export default defineConfig({
     },
     alias: [
       {
+        find: '@code-pushup/test-setup',
+        replacement: new URL('../../testing/test-setup/src', import.meta.url)
+          .pathname,
+      },
+      {
         find: '@code-pushup/models',
         replacement: new URL('../../packages/models/src', import.meta.url)
           .pathname,
@@ -23,6 +28,9 @@ export default defineConfig({
       threads: {
         singleThread: true,
       },
+    },
+    snapshotFormat: {
+      escapeString: true,
     },
     environment: 'node',
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

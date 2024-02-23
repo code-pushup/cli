@@ -60,7 +60,7 @@
       "dependsOn": ["build"]
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
       "dependsOn": ["build"]
     }
   },
