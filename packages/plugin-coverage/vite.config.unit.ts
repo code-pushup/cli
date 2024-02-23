@@ -12,6 +12,11 @@ export default defineConfig({
     },
     alias: [
       {
+        find: '@code-pushup/test-utils',
+        replacement: new URL('../../testing/test-utils/src', import.meta.url)
+          .pathname,
+      },
+      {
         find: '@code-pushup/models',
         replacement: new URL('../models/src', import.meta.url).pathname,
       },

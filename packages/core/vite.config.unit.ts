@@ -18,8 +18,8 @@ export default defineConfig({
     },
     alias: [
       {
-        find: '@code-pushup/testing-utils',
-        replacement: new URL('../../testing-utils/src', import.meta.url)
+        find: '@code-pushup/test-utils',
+        replacement: new URL('../../testing/test-utils/src', import.meta.url)
           .pathname,
       },
       {

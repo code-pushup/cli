@@ -12,7 +12,7 @@ describe('eslintPlugin', () => {
   const fixturesDir = join(thisDir, '..', '..', 'mocks', 'fixtures');
 
   let cwdSpy: MockInstance<[], string>;
-  let platformSpy: MockInstance<[], string>;
+  let platformSpy: MockInstance<[], NodeJS.Platform>;
 
   const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
     ...plugin,

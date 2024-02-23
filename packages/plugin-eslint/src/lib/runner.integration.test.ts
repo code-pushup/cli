@@ -18,7 +18,7 @@ import { setupESLint } from './setup';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
-  let platformSpy: MockInstance<[], string>;
+  let platformSpy: MockInstance<[], NodeJS.Platform>;
 
   const createArgv = async (eslintrc: string) => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
