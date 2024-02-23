@@ -1,6 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { type SimpleGit, simpleGit } from 'simple-git';
+import { ResetMode, type SimpleGit, simpleGit } from 'simple-git';
 import { expect } from 'vitest';
 import {
   getCurrentBranchOrTag,
@@ -30,7 +30,6 @@ describe('git utils in a git repo with a branch and commits', () => {
     await git.add('README.md');
     await git.commit('Create README');
 
-    await git.checkout(['-b', 'feature-branch']);
     await git.checkout(['master']);
   });
 
@@ -38,9 +37,16 @@ describe('git utils in a git repo with a branch and commits', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
+  beforeEach(async () => {
+    await git.checkout(['-b', 'feature-branch']);
+    await git.checkout(['master']);
+  });
+
   afterEach(async () => {
+    // @TODO try why restore/stash/clean/reset hard etc does not work
     await rm(changesDir, { recursive: true, force: true });
     await git.checkout(['master']);
+    await git.deleteLocalBranch('feature-branch');
   });
 
   it('should log latest commit', async () => {
@@ -148,7 +154,7 @@ describe('git utils in a git repo without a branch and commits', () => {
 
   it('getCurrentBranchOrTag should throw if no branch is given', async () => {
     await expect(getCurrentBranchOrTag(git)).rejects.toThrow(
-      'could not check out current tag or branch',
+      'Could not get current tag or branch.',
     );
   });
 });
