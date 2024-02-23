@@ -19,7 +19,7 @@ export function yargsUploadCommandObject() {
       ui().logger.info(chalk.gray(`Run ${command}...`));
 
       const options = args as unknown as UploadOptions;
-      if (!options.upload) {
+      if (options.upload == null) {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }

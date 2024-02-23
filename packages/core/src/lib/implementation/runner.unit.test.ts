@@ -1,9 +1,5 @@
 import { vol } from 'memfs';
-import {
-  AuditOutputs,
-  RunnerFunction,
-  auditOutputsSchema,
-} from '@code-pushup/models';
+import { AuditOutputs, auditOutputsSchema } from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
@@ -106,7 +102,8 @@ describe('executeRunnerFunction', () => {
 
   it('should throw with an invalid runner type', async () => {
     await expect(
-      executeRunnerFunction('' as unknown as RunnerFunction),
+      // @ts-expect-error Testing a use case with invalid type passed as a function.
+      executeRunnerFunction(''),
     ).rejects.toThrow('runner is not a function');
   });
 });

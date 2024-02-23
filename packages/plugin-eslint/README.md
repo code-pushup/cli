@@ -1,4 +1,8 @@
-# @code-pushup/eslint-plugin [![npm](https://img.shields.io/npm/v/%40code-pushup%2Feslint-plugin.svg)](https://www.npmjs.com/package/%40code-pushup%2Feslint-plugin)
+# @code-pushup/eslint-plugin
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Feslint-plugin.svg)](https://www.npmjs.com/package/@code-pushup/eslint-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Feslint-plugin)](https://npmtrends.com/@code-pushup/eslint-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/eslint-plugin)](https://www.npmjs.com/package/@code-pushup/eslint-plugin?activeTab=dependencies)
 
 🕵️ **Code PushUp plugin for detecting problems in source code using ESLint.** 📋
 
