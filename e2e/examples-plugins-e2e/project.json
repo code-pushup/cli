@@ -20,9 +20,6 @@
       }
     }
   },
-  "implicitDependencies": [
-    "core",
-    "examples-plugins"
-  ],
+  "implicitDependencies": ["core", "examples-plugins"],
   "tags": ["scope:core", "type:e2e"]
 }

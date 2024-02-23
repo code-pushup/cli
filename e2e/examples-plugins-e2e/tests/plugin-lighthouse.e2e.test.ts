@@ -1,9 +1,7 @@
 import { join } from 'node:path';
 import { expect, it } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
-import {
-  lighthousePlugin,
-} from '@code-pushup/examples-plugins';
+import { lighthousePlugin } from '@code-pushup/examples-plugins';
 
 describe('example plugin lighthouse', () => {
   it('should return PluginConfig that executes correctly', async () => {

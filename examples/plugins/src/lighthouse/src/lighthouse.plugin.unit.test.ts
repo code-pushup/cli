@@ -3,11 +3,12 @@ import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
 import { runnerConfig } from './lighthouse.plugin';
 
 describe('lighthouse-runnerConfig', () => {
-
   it('should execute if url is given', () => {
-    expect(runnerConfig({
-      url: 'http://localhost:8080',
-    })).toEqual(
+    expect(
+      runnerConfig({
+        url: 'http://localhost:8080',
+      }),
+    ).toEqual(
       expect.objectContaining({
         args: expect.arrayContaining(['lighthouse', 'http://localhost:8080']),
         command: 'npx',
@@ -17,9 +18,11 @@ describe('lighthouse-runnerConfig', () => {
   });
 
   it('should execute with output "json" and output-path "lighthouse-report.json" by default', () => {
-    expect(runnerConfig({
-      url: 'http://localhost:8080',
-    })).toEqual(
+    expect(
+      runnerConfig({
+        url: 'http://localhost:8080',
+      }),
+    ).toEqual(
       expect.objectContaining({
         args: expect.arrayContaining([
           '--output="json"',
@@ -35,7 +38,7 @@ describe('lighthouse-runnerConfig', () => {
   it('should run only audits included in given onlyAudits', () => {
     expect(
       runnerConfig({
-      url: 'http://localhost:8080',
+        url: 'http://localhost:8080',
         onlyAudits: ['largest-contentful-paint'],
       }),
     ).toEqual(
@@ -59,7 +62,7 @@ describe('lighthouse-runnerConfig', () => {
   it('should run headless "new" if set to true', () => {
     expect(
       runnerConfig({
-      url: 'http://localhost:8080',
+        url: 'http://localhost:8080',
         headless: 'new',
       }),
     ).toEqual(

@@ -47,7 +47,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless by default to "new" in runner args', async () => {
     const pluginConfig = await create({
-      url: 'http://localhost:8080' ,
+      url: 'http://localhost:8080',
     });
     expect(pluginConfig.runner.args).toEqual(
       expect.arrayContaining(['--chrome-flags="--headless=new"']),
@@ -56,7 +56,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless to new if true is given in runner args', async () => {
     const pluginConfig = await create({
-      url: 'http://localhost:8080' ,
+      url: 'http://localhost:8080',
       headless: true,
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -66,7 +66,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless to new if false is given in runner args', async () => {
     const pluginConfig = await create({
-      url: 'http://localhost:8080' ,
+      url: 'http://localhost:8080',
       headless: false,
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -76,7 +76,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should override userDataDir option when given in runner args', async () => {
     const pluginConfig = await create({
-      url: 'http://localhost:8080' ,
+      url: 'http://localhost:8080',
       userDataDir: 'test',
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -88,7 +88,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should use onlyAudits', async () => {
     const pluginConfig = await create({
-      url: 'http://localhost:8080' ,
+      url: 'http://localhost:8080',
       outputPath: `${join('tmp', 'lighthouse-report.json')}`,
       onlyAudits: 'largest-contentful-paint',
     });
