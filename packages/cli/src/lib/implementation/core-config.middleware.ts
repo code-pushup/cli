@@ -4,21 +4,29 @@ import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
-  UploadConfig,
+  uploadConfigSchema,
 } from '@code-pushup/models';
+import { CoreConfigCliOptions } from './core-config.model';
 import { GeneralCliOptions } from './global.model';
+import { OnlyPluginsOptions } from './only-plugins.model';
 
 export async function coreConfigMiddleware<
-  T extends Partial<GeneralCliOptions & CoreConfig>,
->(processArgs: T) {
+  T extends GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions,
+>(
+  processArgs: T,
+): Promise<GeneralCliOptions & CoreConfig & OnlyPluginsOptions> {
   const {
     config,
-    persist: cliPersist = {},
-    upload: cliUpload = {},
+    tsconfig,
+    persist: cliPersist,
+    upload: cliUpload,
     ...remainingCliOptions
-  } = processArgs as GeneralCliOptions & CoreConfig;
-  // if config path is given use it otherwise auto-load
-  const importedRc = config ? await readRcByPath(config) : await autoloadRc();
+  } = processArgs;
+
+  // Search for possible configuration file extensions if path is not given
+  const importedRc = config
+    ? await readRcByPath(config, tsconfig)
+    : await autoloadRc(tsconfig);
   const {
     persist: rcPersist,
     upload: rcUpload,
@@ -26,22 +34,25 @@ export async function coreConfigMiddleware<
     ...remainingRcConfig
   } = importedRc;
 
-  const parsedProcessArgs: CoreConfig & GeneralCliOptions = {
-    config,
-    ...remainingRcConfig,
-    ...remainingCliOptions,
-    upload: {
-      ...rcUpload,
-      ...(cliUpload as UploadConfig),
-    },
+  const upload =
+    rcUpload == null && cliUpload == null
+      ? undefined
+      : uploadConfigSchema.parse({
+          ...rcUpload,
+          ...cliUpload,
+        });
+
+  return {
+    ...(config != null && { config }),
     persist: {
       outputDir:
-        cliPersist.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
-      format: cliPersist.format ?? rcPersist?.format ?? PERSIST_FORMAT,
-      filename: cliPersist.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
+        cliPersist?.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
+      format: cliPersist?.format ?? rcPersist?.format ?? PERSIST_FORMAT,
+      filename: cliPersist?.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
     },
+    ...(upload != null && { upload }),
     categories: rcCategories ?? [],
+    ...remainingRcConfig,
+    ...remainingCliOptions,
   };
-
-  return parsedProcessArgs;
 }

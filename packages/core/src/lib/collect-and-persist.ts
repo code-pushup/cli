@@ -1,14 +1,16 @@
-import { CoreConfig, pluginReportSchema } from '@code-pushup/models';
+import {
+  CoreConfig,
+  PersistConfig,
+  pluginReportSchema,
+} from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
-import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
 export type CollectAndPersistReportsOptions = Required<
-  Pick<CoreConfig, 'persist' | 'plugins' | 'categories'>
-> &
-  GlobalOptions;
+  Pick<CoreConfig, 'plugins' | 'categories'>
+> & { persist: Required<PersistConfig> } & GlobalOptions;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
@@ -16,9 +18,7 @@ export async function collectAndPersistReports(
   const { exec } = verboseUtils(options.verbose);
 
   const report = await collect(options);
-
-  const persist = normalizePersistConfig(options.persist);
-  const persistResults = await persistReport(report, persist);
+  const persistResults = await persistReport(report, options.persist);
   exec(() => {
     logPersistedResults(persistResults);
   });
