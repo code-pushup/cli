@@ -1,6 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { ResetMode, type SimpleGit, simpleGit } from 'simple-git';
+import { type SimpleGit, simpleGit } from 'simple-git';
 import { expect } from 'vitest';
 import {
   getCurrentBranchOrTag,
