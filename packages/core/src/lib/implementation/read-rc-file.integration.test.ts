@@ -11,7 +11,8 @@ describe('readRcByPath', () => {
     '..',
     '..',
     '..',
-    'testing-utils',
+    'testing',
+    'test-utils',
     'src',
     'lib',
     'fixtures',
@@ -34,6 +35,23 @@ describe('readRcByPath', () => {
         ]),
       }),
     );
+  });
+
+  it('should load the configuration using provided tsconfig', async () => {
+    await expect(
+      readRcByPath(
+        join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+        'tsconfig.base.json',
+      ),
+    ).resolves.toEqual({
+      plugins: [
+        expect.objectContaining({
+          slug: 'good-feels',
+          audits: [{ slug: 'always-perfect', title: 'Always perfect' }],
+          runner: expect.any(Function),
+        }),
+      ],
+    });
   });
 
   it('should throw if the path is empty', async () => {

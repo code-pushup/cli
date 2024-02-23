@@ -6,7 +6,7 @@ import type {
 import type { ESLint } from 'eslint';
 import { vol } from 'memfs';
 import type { MockInstance } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 

@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { collect } from './collect';
 
 describe('collect', () => {

@@ -1,4 +1,4 @@
-# testing-utils
+# test-utils
 
 This library contains testing utilities, such as helper functions or fixtures.
 Any reusable mocks should live here.
@@ -17,16 +17,3 @@ Please prefer using static mocks over dynamic ones for better readability. Dynam
 ### Fixtures
 
 Example configuration files that are to be used in integration or E2E tests live in [`configs`](./src//lib/fixtures/configs/).
-
-### Mock setup
-
-In the [`setup`](./src/lib/setup/) folder you can find all files that can be used in `setupFiles` property of `vitest.config.(unit|integration|e2e).ts` files. Currently include:
-
-- [console](./src/lib/setup/console.mock.ts) mocking
-- [file system](./src/lib/setup/fs.mock.ts) mocking
-- [`portal-client`](./src/lib/setup/portal-client.mock.ts) mocking
-
-Additionally, you may find helper functions for:
-
-- setting up and tearing down a [testing folder](./src/lib/setup/test-folder.setup.ts)
-- [resetting](./src/lib/setup/reset.mocks.ts) mocks

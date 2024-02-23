@@ -2,14 +2,14 @@ import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
-import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/test-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsAutorunCommandObject } from './autorun-command';
 
 vi.mock('@code-pushup/core', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
-    await vi.importActual('@code-pushup/testing-utils');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
+    await vi.importActual('@code-pushup/test-utils');
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,
@@ -41,7 +41,10 @@ describe('autorun-command', () => {
       },
     ).parseAsync();
 
-    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -49,10 +49,10 @@ export function yargsAutorunCommandObject() {
       }
 
       if (options.upload) {
-        await upload(options);
+        const { url } = await upload(options);
         const commitData = await getLatestCommit();
         if (validateCommitData(commitData, { throwError: true })) {
-          uploadSuccessfulLog(options.upload, commitData.hash);
+          uploadSuccessfulLog(url);
         }
       } else {
         ui().logger.warning('Upload skipped because configuration is not set.');

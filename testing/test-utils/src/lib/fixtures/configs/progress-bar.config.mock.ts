@@ -2,7 +2,7 @@
  * This config file is here to demonstrate the progress bar for plugins
  *
  * Usage:
- * npx ./dist/packages/cli collect --config=./testing-utils/src/lib/fixtures/configs/progress-bar.config.mock.ts
+ * npx ./dist/packages/cli collect --config=./testing/test-utils/src/lib/fixtures/configs/progress-bar.config.mock.ts
  */
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';

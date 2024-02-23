@@ -5,7 +5,7 @@ import {
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { CORE_CONFIG_MOCK } from '@code-pushup/testing-utils';
+import { CORE_CONFIG_MOCK, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { yargsCli } from '../yargs-cli';
 import { coreConfigMiddleware } from './core-config.middleware';
 import { yargsCoreConfigOptionsDefinition } from './core-config.options';
@@ -31,6 +31,7 @@ vi.mock('@code-pushup/core', async () => {
       };
       const noPersist = CORE_CONFIG_MOCK;
       const noCategory = { plugins: CORE_CONFIG_MOCK.plugins };
+      const noUpload = MINIMAL_CONFIG_MOCK;
 
       return filepath.includes('all-persist-options')
         ? allPersistOptions
@@ -40,6 +41,8 @@ vi.mock('@code-pushup/core', async () => {
         ? noPersist
         : filepath.includes('no-category')
         ? noCategory
+        : filepath.includes('no-upload')
+        ? noUpload
         : CORE_CONFIG_MOCK;
     }),
   };
@@ -149,5 +152,50 @@ describe('parsing values from CLI and middleware', () => {
     ).parseAsync();
 
     expect(categories).toEqual([]);
+  });
+
+  it('should accept an upload configuration with CLI overrides', async () => {
+    const { upload } = await yargsCli<CoreConfig>(
+      ['--config=./upload.config.ts', '--upload.project=portal'],
+      {
+        options: { ...yargsCoreConfigOptionsDefinition() },
+        middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+      },
+    ).parseAsync();
+
+    expect(upload).toStrictEqual({
+      organization: 'code-pushup',
+      project: 'portal',
+      apiKey: 'dummy-api-key',
+      server: 'https://example.com/api',
+    });
+  });
+
+  it('should accept an empty upload configuration', async () => {
+    const { upload } = await yargsCli<CoreConfig>(
+      ['--config=./no-upload.config.ts'],
+      {
+        options: { ...yargsCoreConfigOptionsDefinition() },
+        middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+      },
+    ).parseAsync();
+
+    expect(upload).toBeUndefined();
+  });
+
+  it('should throw for an incomplete upload configuration', async () => {
+    await expect(
+      yargsCli<CoreConfig>(
+        [
+          '--config=./no-upload.config.ts',
+          '--upload.project=portal',
+          '--upload.organization=code-pushup',
+        ],
+        {
+          options: { ...yargsCoreConfigOptionsDefinition() },
+          middlewares: [{ middlewareFunction: coreConfigMiddleware }],
+        },
+      ).parseAsync(),
+    ).rejects.toThrow('invalid_type');
   });
 });

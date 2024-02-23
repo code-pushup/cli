@@ -4,7 +4,7 @@ import {
   CrawlFileSystemOptions,
   crawlFileSystem,
 } from '../../src/lib/file-system';
-import { crawlFileSystemOptimized0 } from './optimized0';
+import { crawlFileSystemFsWalk } from './fs-walk';
 
 const PROCESS_ARGUMENT_TARGET_DIRECTORY =
   process.argv
@@ -54,7 +54,7 @@ const options = {
   pattern: PATTERN,
 };
 suite.add('Base', wrapWithDefer(crawlFileSystem));
-suite.add('Optimized 0', wrapWithDefer(crawlFileSystemOptimized0));
+suite.add('nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk));
 
 // ==================
 

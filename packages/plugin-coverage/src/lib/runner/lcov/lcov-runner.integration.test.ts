@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
-import { osAgnosticAuditOutputs } from '@code-pushup/testing-utils';
+import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { lcovResultsToAuditOutputs } from './lcov-runner';
 
 describe('lcovResultsToAuditOutputs', () => {

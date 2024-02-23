@@ -1,4 +1,8 @@
-# @code-pushup/models [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fmodels.svg)](https://www.npmjs.com/package/%40code-pushup%2Fmodels)
+# @code-pushup/models
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fmodels.svg)](https://www.npmjs.com/package/@code-pushup/models)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fmodels)](https://npmtrends.com/@code-pushup/models)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/models)](https://www.npmjs.com/package/@code-pushup/models?activeTab=dependencies)
 
 **Model definitions and validators** for the [Code PushUp CLI](../cli/README.md).
 

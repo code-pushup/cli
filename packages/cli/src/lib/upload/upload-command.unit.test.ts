@@ -6,14 +6,14 @@ import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
-} from '@code-pushup/testing-utils';
+} from '@code-pushup/test-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsUploadCommandObject } from './upload-command';
 
 vi.mock('@code-pushup/core', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/testing-utils') =
-    await vi.importActual('@code-pushup/testing-utils');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
+    await vi.importActual('@code-pushup/test-utils');
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,
@@ -46,7 +46,10 @@ describe('upload-command-object', () => {
       },
     ).parseAsync();
 
-    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadToPortal).toHaveBeenCalledWith({

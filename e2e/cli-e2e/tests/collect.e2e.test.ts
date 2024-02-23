@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/testing-utils';
+import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {

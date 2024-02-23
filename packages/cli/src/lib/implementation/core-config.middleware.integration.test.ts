@@ -10,7 +10,8 @@ const configDirPath = join(
   '..',
   '..',
   '..',
-  'testing-utils',
+  'testing',
+  'test-utils',
   'src',
   'lib',
   'fixtures',
@@ -33,5 +34,22 @@ describe('coreConfigMiddleware', () => {
     await expect(
       coreConfigMiddleware({ config: 'wrong/path/to/config' }),
     ).rejects.toThrow(/Provided path .* is not valid./);
+  });
+
+  it('should load config which relies on provided --tsconfig', async () => {
+    await expect(
+      coreConfigMiddleware({
+        config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+        tsconfig: 'tsconfig.base.json',
+      }),
+    ).resolves.toBeTruthy();
+  });
+
+  it('should throw if --tsconfig is missing but needed to resolve import', async () => {
+    await expect(
+      coreConfigMiddleware({
+        config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+      }),
+    ).rejects.toThrow("Cannot find package '@code-pushup/models'");
   });
 });

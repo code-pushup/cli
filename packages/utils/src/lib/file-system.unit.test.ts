@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/testing-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   FileResult,
   crawlFileSystem,
