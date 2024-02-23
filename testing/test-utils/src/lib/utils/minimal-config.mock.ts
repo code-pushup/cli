@@ -47,11 +47,5 @@ export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
 };
 
 export const MINIMAL_CONFIG_MOCK: CoreConfig = {
-  upload: {
-    organization: 'code-pushup',
-    project: 'cli',
-    apiKey: 'dummy-api-key',
-    server: 'https://example.com/api',
-  },
   plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
 };
