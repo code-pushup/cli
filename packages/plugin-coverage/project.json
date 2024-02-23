@@ -41,6 +41,10 @@
         "config": "packages/plugin-coverage/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-coverage/integration-tests"
       }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
+      "dependsOn": ["build"]
     }
   },
   "tags": ["scope:plugin", "type:feature"]

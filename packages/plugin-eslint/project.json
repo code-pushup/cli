@@ -41,6 +41,10 @@
         "config": "packages/plugin-eslint/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
+      "dependsOn": ["build"]
     }
   },
   "tags": ["scope:plugin", "type:feature"]

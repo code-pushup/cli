@@ -40,6 +40,10 @@
         "config": "packages/plugin-lighthouse/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
       }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
+      "dependsOn": ["build"]
     }
   },
   "tags": ["scope:plugin", "type:feature"]

@@ -1,14 +1,41 @@
 /// <reference types="vitest" />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { URL } from 'node:url';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/core',
-  plugins: [nxViteTsPaths()],
+  cacheDir: '../../node_modules/.vite/cli',
+  plugins: [
+    nxViteTsPaths({
+      debug: true,
+    }),
+  ],
   test: {
+    name: 'core',
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
+    },
+    alias: [
+      {
+        find: '@code-pushup/testing-utils',
+        replacement: new URL('../../testing-utils/src', import.meta.url)
+          .pathname,
+      },
+      {
+        find: '@code-pushup/models',
+        replacement: new URL('../models/src', import.meta.url).pathname,
+      },
+      {
+        find: '@code-pushup/utils',
+        replacement: new URL('../utils/src', import.meta.url).pathname,
+      },
+    ],
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
     },
     coverage: {
       reporter: ['lcov'],

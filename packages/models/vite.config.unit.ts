@@ -10,6 +10,12 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
     coverage: {
       reporter: ['lcov'],
     },

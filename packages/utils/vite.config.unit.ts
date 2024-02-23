@@ -10,6 +10,23 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    alias: [
+      {
+        find: '@code-pushup/testing-utils',
+        replacement: new URL('../../testing-utils/src', import.meta.url)
+          .pathname,
+      },
+      {
+        find: '@code-pushup/models',
+        replacement: new URL('../models/src', import.meta.url).pathname,
+      },
+    ],
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
     coverage: {
       reporter: ['lcov'],
     },
