@@ -80,5 +80,5 @@
       ]
     }
   },
-  "tags": ["scope:internal", "type:feature"]
+  "tags": ["scope:internal", "scope:core", "type:feature"]
 }
