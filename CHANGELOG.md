@@ -2,6 +2,42 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.22.8](https://github.com/code-pushup/cli/compare/v0.22.7...v0.22.8) (2024-02-23)
+
+### Bug Fixes
+
+- **plugin-eslint:** handle rules which emit column 0 ([de791e1](https://github.com/code-pushup/cli/commit/de791e12de1f8856f12b0d574f15232df5138cb2))
+
+## [0.22.7](https://github.com/code-pushup/cli/compare/v0.22.6...v0.22.7) (2024-02-21)
+
+## [0.22.6](https://github.com/code-pushup/cli/compare/v0.22.5...v0.22.6) (2024-02-21)
+
+## [0.22.5](https://github.com/code-pushup/cli/compare/v0.22.4...v0.22.5) (2024-02-21)
+
+## [0.22.4](https://github.com/code-pushup/cli/compare/v0.22.3...v0.22.4) (2024-02-20)
+
+## [0.22.3](https://github.com/code-pushup/cli/compare/v0.22.2...v0.22.3) (2024-02-19)
+
+### Performance Improvements
+
+- **utils:** add benchmarks for file system walk and glob libs ([#514](https://github.com/code-pushup/cli/issues/514)) ([50e5f96](https://github.com/code-pushup/cli/commit/50e5f962e400d2721c583c17c216bb770b2f26eb))
+
+## [0.22.2](https://github.com/code-pushup/cli/compare/v0.22.1...v0.22.2) (2024-02-19)
+
+## [0.22.1](https://github.com/code-pushup/cli/compare/v0.22.0...v0.22.1) (2024-02-19)
+
+# [0.22.0](https://github.com/code-pushup/cli/compare/v0.21.1...v0.22.0) (2024-02-19)
+
+### Features
+
+- **cli:** add --tsconfig option ([67abfb7](https://github.com/code-pushup/cli/commit/67abfb728548344c7e25310fc21eb0446ceecb7f))
+
+# [0.22.0](https://github.com/code-pushup/cli/compare/v0.21.1...v0.22.0) (2024-02-19)
+
+### Features
+
+- **cli:** add --tsconfig option ([67abfb7](https://github.com/code-pushup/cli/commit/67abfb728548344c7e25310fc21eb0446ceecb7f))
+
 ## [0.21.1](https://github.com/code-pushup/cli/compare/v0.21.0...v0.21.1) (2024-02-16)
 
 # [0.21.0](https://github.com/code-pushup/cli/compare/v0.20.2...v0.21.0) (2024-02-16)

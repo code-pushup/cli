@@ -67,9 +67,13 @@ function convertIssue(issue: LintIssue): Issue {
       file: issue.filePath,
       position: {
         startLine: issue.line,
-        startColumn: issue.column,
-        endLine: issue.endLine,
-        endColumn: issue.endColumn,
+        ...(issue.column > 0 && { startColumn: issue.column }),
+        ...(issue.endLine &&
+          issue.endLine > 0 && {
+            endLine: issue.endLine,
+          }),
+        ...(issue.endColumn &&
+          issue.endColumn > 0 && { endColumn: issue.endColumn }),
       },
     },
   };

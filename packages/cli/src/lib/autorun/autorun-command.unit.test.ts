@@ -41,7 +41,10 @@ describe('autorun-command', () => {
       },
     ).parseAsync();
 
-    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
 
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
