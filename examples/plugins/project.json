@@ -38,14 +38,6 @@
         "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
       }
     },
-    "e2e": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "config": "examples/plugins/vite.config.e2e.ts",
-        "reportsDirectory": "../../coverage/examples-plugins/e2e-tests"
-      }
-    },
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
       "dependsOn": [
