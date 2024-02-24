@@ -2,20 +2,19 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { expect } from 'vitest';
-import { toUnixPath } from './transform';
-import {afterEach, beforeAll, beforeEach, expect} from 'vitest';
-import { makeStatusClean, makeStatusDirty } from '@code-pushup/testing-utils';
 import {
-  branchHasChanges,
   getCurrentBranchOrTag,
-  getLatestCommit, git,
-  guardAgainstDirtyRepo,
+  getGitRoot,
+  getLatestCommit,
+  guardAgainstLocalChanges,
   safeCheckout,
-  getGitRoot, toGitPath
+  toGitPath,
 } from './git';
+import { toUnixPath } from './transform';
 
-describe('git utils', () => {
+describe('git utils in a git repo with a branch and commits', () => {
   const baseDir = join(process.cwd(), 'tmp', 'testing-git-repo');
+  const changesDir = join(baseDir, 'changes-dir');
   let git: SimpleGit;
 
   beforeAll(async () => {
@@ -27,12 +26,27 @@ describe('git utils', () => {
 
     await git.addConfig('user.name', 'John Doe');
     await git.addConfig('user.email', 'john.doe@example.com');
+
     await git.add('README.md');
     await git.commit('Create README');
+
+    await git.checkout(['master']);
   });
 
   afterAll(async () => {
     await rm(baseDir, { recursive: true, force: true });
+  });
+
+  beforeEach(async () => {
+    await git.checkout(['-b', 'feature-branch']);
+    await git.checkout(['master']);
+  });
+
+  afterEach(async () => {
+    // @TODO try why restore/stash/clean/reset hard etc does not work
+    await rm(changesDir, { recursive: true, force: true });
+    await git.checkout(['master']);
+    await git.deleteLocalBranch('feature-branch');
   });
 
   it('should log latest commit', async () => {
@@ -68,64 +82,79 @@ describe('git utils', () => {
       'Backend/API/Startup.cs',
     );
   });
-});
 
-describe('branchHasChanges', () => {
-  it('should return true if some changes are given', async () => {
-    await makeStatusDirty();
-    await expect(branchHasChanges()).resolves.toBe(true);
-    await makeStatusClean();
-  });
-  it('should return false if no changes are given', async () => {
-    await expect(branchHasChanges()).resolves.toBe(false);
-  });
-});
-
-describe('guardAgainstDirtyRepo', () => {
-  it('should throw if history is dirty', async () => {
-    await makeStatusDirty();
-    await expect(guardAgainstDirtyRepo()).rejects.toThrow(
-      'Repository should be clean before we you can proceed',
+  it('guardAgainstLocalChanges should throw if history is dirty', async () => {
+    await mkdir(changesDir, { recursive: true });
+    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
+    await expect(guardAgainstLocalChanges(git)).rejects.toThrow(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
-    await makeStatusClean();
   });
-  it('should not throw if history is clean', async () => {
-    await expect(guardAgainstDirtyRepo()).resolves.toEqual(void 0);
+
+  it('guardAgainstLocalChanges should not throw if history is clean', async () => {
+    await expect(guardAgainstLocalChanges(git)).resolves.toBeUndefined();
+  });
+
+  it('safeCheckout should checkout target branch in clean state', async () => {
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'master' }),
+    );
+    await expect(
+      safeCheckout('feature-branch', {}, git),
+    ).resolves.toBeUndefined();
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'feature-branch' }),
+    );
+  });
+
+  it('safeCheckout should throw if history is dirty', async () => {
+    await mkdir(changesDir, { recursive: true });
+    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
+    await expect(safeCheckout('master', {}, git)).rejects.toThrow(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
+  });
+
+  it('safeCheckout should clean local changes and check out to feature-branch', async () => {
+    // needs to get reset to be clean
+    await mkdir(changesDir, { recursive: true });
+    await writeFile(join(changesDir, 'change.md'), '# hello-change\n');
+    // needs to get cleaned to be clean
+    await writeFile(join(baseDir, 'README.md'), '# hello-world-2\n');
+
+    await expect(
+      safeCheckout('feature-branch', { forceCleanStatus: true }, git),
+    ).resolves.toBeUndefined();
+    await expect(git.branch()).resolves.toEqual(
+      expect.objectContaining({ current: 'feature-branch' }),
+    );
+    await expect(git.status()).resolves.toEqual(
+      expect.objectContaining({ files: [] }),
+    );
+  });
+
+  it('getCurrentBranchOrTag should log current branch', async () => {
+    await expect(getCurrentBranchOrTag(git)).resolves.toBe('master');
   });
 });
 
-describe('getCurrentBranchOrTag', () => {
-  it('should log current branch', async () => {
-    await expect(getCurrentBranchOrTag()).resolves.toEqual(expect.any(String));
-  });
-});
-
-describe('safeCheckout', () => {
-  let initialBranch: string = '';
+describe('git utils in a git repo without a branch and commits', () => {
+  const baseDir = join(process.cwd(), 'tmp', 'testing-git-repo');
+  let git: SimpleGit;
 
   beforeAll(async () => {
-    initialBranch = await getCurrentBranchOrTag();
+    await mkdir(baseDir, { recursive: true });
+    git = simpleGit(baseDir);
+    await git.init();
   });
 
-  afterEach(async () => {
-    await git.checkout(initialBranch);
-    await makeStatusClean();
+  afterAll(async () => {
+    await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should checkout target branch in clean state', async () => {
-    await expect(safeCheckout('main')).resolves.toBe(void 0);
-    await expect(getCurrentBranchOrTag()).resolves.toBe('main');
-  });
-  it('should throw if history is dirty', async () => {
-    await makeStatusDirty();
-    await expect(safeCheckout('main')).rejects.toThrow(
-      'Repository should be clean before we you can proceed',
+  it('getCurrentBranchOrTag should throw if no branch is given', async () => {
+    await expect(getCurrentBranchOrTag(git)).rejects.toThrow(
+      'Could not get current tag or branch.',
     );
-  });
-
-  it('should use gitRestore option', async () => {
-    await makeStatusDirty();
-    await expect(safeCheckout('main', {gitRestore: '.'})).resolves.toBeUndefined();
-    await expect(getCurrentBranchOrTag()).resolves.toBe('main');
   });
 });

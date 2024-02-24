@@ -8,13 +8,6 @@ export type CommitData = {
   author: string;
   date: string;
 };
-export type GitTag = {
-  name: string;
-  semver: string;
-  date: string;
-};
-
-export const git = simpleGit();
 
 export async function getLatestCommit(git = simpleGit()) {
   // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
@@ -45,14 +38,14 @@ export async function toGitPath(
 
 export function validateCommitData(
   commitData: CommitData | null,
-  options: { throwError?: boolean } = {},
+  options: { throwError?: true } = {},
 ): commitData is CommitData {
-  const { throwError = false } = options;
   if (!commitData) {
     const msg = 'no commit data available';
-    if (throwError) {
+    if (options?.throwError) {
       throw new Error(msg);
     } else {
+      // @TODO replace with ui().logger.warning
       console.warn(msg);
       return false;
     }
@@ -60,39 +53,52 @@ export function validateCommitData(
   return true;
 }
 
-export async function branchHasChanges(): Promise<boolean> {
-  return await git.status(['-s']).then(r => r.files.length > 0);
-}
-
-export async function guardAgainstDirtyRepo(): Promise<void> {
-  const isDirty = await branchHasChanges();
-  if (isDirty) {
-    throw new Error(`
-        Repository should be clean before we you can proceed.
-        Commit your local changes or stash them.
-      `);
+export async function guardAgainstLocalChanges(
+  git = simpleGit(),
+): Promise<void> {
+  const isClean = await git.status(['-s']).then(r => r.files.length === 0);
+  if (!isClean) {
+    throw new Error(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
   }
 }
 
-export async function getCurrentBranchOrTag(): Promise<string> {
-  return (
-    (await git.branch().then(r => r.current)) ||
-    // @TODO replace with simple git
-    (await git.raw(['describe --tags --exact-match']).then(out => out.trim()))
-  );
+export async function getCurrentBranchOrTag(
+  git = simpleGit(),
+): Promise<string> {
+  try {
+    const branch = await git.branch().then(r => r.current);
+    // eslint-disable-next-line unicorn/prefer-ternary
+    if (branch) {
+      return branch;
+    } else {
+      // If no current branch, try to get the tag
+      // @TODO use simple git
+      return await git
+        .raw(['describe', '--tags', '--exact-match'])
+        .then(out => out.trim());
+    }
+  } catch {
+    // Return a custom error message when something goes wrong
+    throw new Error('Could not get current tag or branch.');
+  }
 }
 
 export async function safeCheckout(
   branchOrHash: string,
   options: {
-    gitRestore?: string;
+    forceCleanStatus?: true;
   } = {},
+  git = simpleGit(),
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options?.gitRestore !== undefined) {
-    await git.clean(['f']);
-    console.info('branch restored with: ' + options.gitRestore);
+  if (options?.forceCleanStatus) {
+    await git.raw(['reset', '--hard']);
+    await git.clean(['f', 'd']);
+    // @TODO replace with ui().logger.info
+    console.info(`git status cleaned`);
   }
-  await guardAgainstDirtyRepo();
+  await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);
 }
