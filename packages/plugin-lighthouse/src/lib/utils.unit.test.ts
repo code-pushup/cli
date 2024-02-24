@@ -1,5 +1,11 @@
 import { expect } from 'vitest';
 import {
+  Audit,
+  Group,
+  PluginConfig,
+  pluginConfigSchema,
+} from '@code-pushup/models';
+import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
   filterAuditsAndGroupsByOnlyOptions,
@@ -107,14 +113,14 @@ describe('validateOnlyCategories', () => {
   });
 });
 
-describe('filterAuditsAndGroupsByOnlyOptions', () => {
+describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () => {
   it('should return given audits and groups if no only filter is set', () => {
-    const audits = [
+    const audits: Audit[] = [
       { slug: 'a', title: 'A' },
       { slug: 'b', title: 'B' },
       { slug: 'c', title: 'C' },
     ];
-    const groups = [
+    const groups: Group[] = [
       {
         slug: 'g1',
         title: 'G 1',
@@ -125,13 +131,30 @@ describe('filterAuditsAndGroupsByOnlyOptions', () => {
         ],
       },
     ];
-    expect(
-      filterAuditsAndGroupsByOnlyOptions(audits, groups, {}),
-    ).toStrictEqual({ audits, groups });
+    const { audits: filteredAudits, groups: filteredGroups } =
+      filterAuditsAndGroupsByOnlyOptions(audits, groups, {});
+
+    expect(filteredAudits).toStrictEqual(audits);
+    expect(filteredGroups).toStrictEqual(groups);
+
+    const pluginConfig: PluginConfig = {
+      slug: 'p',
+      title: 'P',
+      icon: 'abc',
+      description: 'd',
+      audits: filteredAudits,
+      groups: filteredGroups,
+      runner: {
+        command: 'node',
+        outputFile: 'out.json',
+      },
+    };
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should filter audits if onlyAudits is set', () => {
-    expect(
+    const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
           { slug: 'a', title: 'A' },
@@ -150,21 +173,35 @@ describe('filterAuditsAndGroupsByOnlyOptions', () => {
           },
         ],
         { onlyAudits: ['a'] },
-      ),
-    ).toStrictEqual({
-      audits: [{ slug: 'a', title: 'A' }],
-      groups: [
-        {
-          slug: 'g1',
-          title: 'G 1',
-          refs: [{ slug: 'a', weight: 1 }],
-        },
-      ],
-    });
+      );
+
+    expect(filteredAudits).toStrictEqual([{ slug: 'a', title: 'A' }]);
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'g1',
+        title: 'G 1',
+        refs: [{ slug: 'a', weight: 1 }],
+      },
+    ]);
+
+    const pluginConfig: PluginConfig = {
+      slug: 'p',
+      title: 'P',
+      icon: 'abc',
+      description: 'd',
+      audits: filteredAudits,
+      groups: filteredGroups,
+      runner: {
+        command: 'node',
+        outputFile: 'out.json',
+      },
+    };
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a missing audit slug', () => {
-    expect(
+    const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
           { slug: 'a', title: 'A' },
@@ -183,21 +220,34 @@ describe('filterAuditsAndGroupsByOnlyOptions', () => {
           },
         ],
         { onlyAudits: ['a'] },
-      ),
-    ).toStrictEqual({
-      audits: [{ slug: 'a', title: 'A' }],
-      groups: [
-        {
-          slug: 'g1',
-          title: 'G 1',
-          refs: [{ slug: 'a', weight: 1 }],
-        },
-      ],
-    });
+      );
+    expect(filteredAudits).toStrictEqual([{ slug: 'a', title: 'A' }]);
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'g1',
+        title: 'G 1',
+        refs: [{ slug: 'a', weight: 1 }],
+      },
+    ]);
+
+    const pluginConfig: PluginConfig = {
+      slug: 'p',
+      title: 'P',
+      icon: 'abc',
+      description: 'd',
+      audits: filteredAudits,
+      groups: filteredGroups,
+      runner: {
+        command: 'node',
+        outputFile: 'out.json',
+      },
+    };
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should filter categories if onlyCategories is set', () => {
-    expect(
+    const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
           { slug: 'a', title: 'A' },
@@ -228,29 +278,43 @@ describe('filterAuditsAndGroupsByOnlyOptions', () => {
           },
         ],
         { onlyCategories: ['g2'] },
-      ),
-    ).toStrictEqual({
-      audits: [
-        { slug: 'd', title: 'D' },
-        { slug: 'e', title: 'E' },
-        { slug: 'f', title: 'F' },
-      ],
-      groups: [
-        {
-          slug: 'g2',
-          title: 'G 2',
-          refs: [
-            { slug: 'd', weight: 1 },
-            { slug: 'e', weight: 1 },
-            { slug: 'f', weight: 1 },
-          ],
-        },
-      ],
-    });
+      );
+
+    expect(filteredAudits).toStrictEqual([
+      { slug: 'd', title: 'D' },
+      { slug: 'e', title: 'E' },
+      { slug: 'f', title: 'F' },
+    ]);
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'g2',
+        title: 'G 2',
+        refs: [
+          { slug: 'd', weight: 1 },
+          { slug: 'e', weight: 1 },
+          { slug: 'f', weight: 1 },
+        ],
+      },
+    ]);
+
+    const pluginConfig: PluginConfig = {
+      slug: 'p',
+      title: 'P',
+      icon: 'abc',
+      description: 'd',
+      audits: filteredAudits,
+      groups: filteredGroups,
+      runner: {
+        command: 'node',
+        outputFile: 'out.json',
+      },
+    };
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should ignore onlyAudits and only filter categories if onlyCategories and onlyAudits is set', () => {
-    expect(
+    const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
           { slug: 'a', title: 'A' },
@@ -284,25 +348,39 @@ describe('filterAuditsAndGroupsByOnlyOptions', () => {
           onlyAudits: ['a'],
           onlyCategories: ['g2'],
         },
-      ),
-    ).toStrictEqual({
-      audits: [
-        { slug: 'd', title: 'D' },
-        { slug: 'e', title: 'E' },
-        { slug: 'f', title: 'F' },
-      ],
-      groups: [
-        {
-          slug: 'g2',
-          title: 'G 2',
-          refs: [
-            { slug: 'd', weight: 1 },
-            { slug: 'e', weight: 1 },
-            { slug: 'f', weight: 1 },
-          ],
-        },
-      ],
-    });
+      );
+
+    expect(filteredAudits).toStrictEqual([
+      { slug: 'd', title: 'D' },
+      { slug: 'e', title: 'E' },
+      { slug: 'f', title: 'F' },
+    ]);
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'g2',
+        title: 'G 2',
+        refs: [
+          { slug: 'd', weight: 1 },
+          { slug: 'e', weight: 1 },
+          { slug: 'f', weight: 1 },
+        ],
+      },
+    ]);
+
+    const pluginConfig: PluginConfig = {
+      slug: 'p',
+      title: 'P',
+      icon: 'abc',
+      description: 'd',
+      audits: filteredAudits,
+      groups: filteredGroups,
+      runner: {
+        command: 'node',
+        outputFile: 'out.json',
+      },
+    };
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a audit slug that is not implemented', () => {
