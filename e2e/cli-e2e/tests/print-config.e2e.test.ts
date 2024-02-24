@@ -17,6 +17,7 @@ describe('print-config', () => {
           '--verbose',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
+          '--tsconfig=tsconfig.base.json',
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
@@ -29,6 +30,7 @@ describe('print-config', () => {
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
+          tsconfig: 'tsconfig.base.json',
           // filled by command options
           persist: {
             outputDir: 'output-dir',

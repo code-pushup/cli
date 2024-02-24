@@ -1,4 +1,8 @@
-# @code-pushup/coverage-plugin [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcoverage-plugin.svg)](https://www.npmjs.com/package/%40code-pushup%2Fcoverage-plugin)
+# @code-pushup/coverage-plugin
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fcoverage-plugin.svg)](https://www.npmjs.com/package/@code-pushup/coverage-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcoverage-plugin)](https://npmtrends.com/@code-pushup/coverage-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/coverage-plugin)](https://www.npmjs.com/package/@code-pushup/coverage-plugin?activeTab=dependencies)
 
 🧪 **Code PushUp plugin for tracking code coverage.** ☂️
 

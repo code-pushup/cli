@@ -46,7 +46,10 @@ describe('upload-command-object', () => {
       },
     ).parseAsync();
 
-    expect(readRcByPath).toHaveBeenCalledWith('/test/code-pushup.config.ts');
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadToPortal).toHaveBeenCalledWith({

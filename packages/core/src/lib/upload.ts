@@ -5,10 +5,9 @@ import {
 import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { getLatestCommit, loadReport } from '@code-pushup/utils';
 import { reportToGQL } from './implementation/report-to-gql';
-import { normalizePersistConfig } from './normalize';
 import { GlobalOptions } from './types';
 
-export type UploadOptions = { upload: UploadConfig } & {
+export type UploadOptions = { upload?: UploadConfig } & {
   persist: Required<PersistConfig>;
 } & GlobalOptions;
 
@@ -20,13 +19,12 @@ export async function upload(
   options: UploadOptions,
   uploadFn: typeof uploadToPortal = uploadToPortal,
 ) {
-  const persist = normalizePersistConfig(options.persist);
-  if (!options.upload) {
-    throw new Error('upload config must be set');
+  if (options.upload == null) {
+    throw new Error('Upload configuration is not set.');
   }
   const { apiKey, server, organization, project, timeout } = options.upload;
   const report: Report = await loadReport({
-    ...persist,
+    ...options.persist,
     format: 'json',
   });
   const commitData = await getLatestCommit();

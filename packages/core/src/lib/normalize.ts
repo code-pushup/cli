@@ -1,22 +1,5 @@
-import {
-  type AuditOutputs,
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
-  PersistConfig,
-} from '@code-pushup/models';
+import { type AuditOutputs } from '@code-pushup/models';
 import { formatGitPath, getGitRoot } from '@code-pushup/utils';
-
-export function normalizePersistConfig(
-  cfg?: Partial<PersistConfig>,
-): Required<PersistConfig> {
-  return {
-    outputDir: PERSIST_OUTPUT_DIR,
-    filename: PERSIST_FILENAME,
-    format: PERSIST_FORMAT,
-    ...cfg,
-  };
-}
 
 export async function normalizeAuditOutputs(
   audits: AuditOutputs,

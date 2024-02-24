@@ -13,7 +13,10 @@ export class ConfigPathError extends Error {
   }
 }
 
-export async function readRcByPath(filepath: string): Promise<CoreConfig> {
+export async function readRcByPath(
+  filepath: string,
+  tsconfig?: string,
+): Promise<CoreConfig> {
   if (filepath.length === 0) {
     throw new Error('The path to the configuration file is empty.');
   }
@@ -22,12 +25,12 @@ export async function readRcByPath(filepath: string): Promise<CoreConfig> {
     throw new ConfigPathError(filepath);
   }
 
-  const cfg = await importEsmModule({ filepath });
+  const cfg = await importEsmModule({ filepath, tsconfig });
 
   return coreConfigSchema.parse(cfg);
 }
 
-export async function autoloadRc(): Promise<CoreConfig> {
+export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
   // eslint-disable-next-line functional/no-let
   let ext = '';
   // eslint-disable-next-line functional/no-loop-statements
@@ -49,5 +52,8 @@ export async function autoloadRc(): Promise<CoreConfig> {
     );
   }
 
-  return readRcByPath(join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`));
+  return readRcByPath(
+    join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`),
+    tsconfig,
+  );
 }

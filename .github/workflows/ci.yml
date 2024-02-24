@@ -130,10 +130,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: E2E test affected projects
-        uses: Wandalen/wretry.action@master
-        with:
-          command: npx nx affected:e2e --parallel=3
-          attempt_limit: 2
+        run: npx nx affected:e2e --parallel=3
 
   build:
     runs-on: ubuntu-latest

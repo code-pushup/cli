@@ -61,6 +61,18 @@ describe('lintResultsToAudits', () => {
             ],
           },
           {
+            filePath: 'src/app/graphql/generated.ts',
+            messages: [
+              {
+                ruleId: 'unicorn/no-abusive-eslint-disable',
+                message: 'Specify the rules you want to disable',
+                severity: 1,
+                line: 1,
+                column: 0, // testing we omit non-positive columns
+              },
+            ],
+          },
+          {
             filePath: 'src/app/pages/settings.component.ts',
             messages: [
               {
@@ -78,13 +90,22 @@ describe('lintResultsToAudits', () => {
           'src/app/app.component.ts': {
             'max-lines': [500],
             '@typescript-eslint/no-explicit-any': [],
+            'unicorn/no-abusive-eslint-disable': [],
           },
           'src/app/pages/settings.component.ts': {
             'max-lines': [500],
+            '@typescript-eslint/no-explicit-any': [],
+            'unicorn/no-abusive-eslint-disable': [],
+          },
+          'src/app/graphql/generated.ts': {
+            'max-lines': [500],
+            '@typescript-eslint/no-explicit-any': [],
+            'unicorn/no-abusive-eslint-disable': [],
           },
           'src/app/app.component.spec.ts': {
             'max-lines': [800],
             '@typescript-eslint/no-explicit-any': [],
+            'unicorn/no-abusive-eslint-disable': [],
           },
         },
       }),
@@ -177,6 +198,24 @@ describe('lintResultsToAudits', () => {
               source: {
                 file: 'src/app/app.component.spec.ts',
                 position: { startLine: 801, startColumn: 1 },
+              },
+            },
+          ],
+        },
+      },
+      {
+        slug: 'unicorn-no-abusive-eslint-disable',
+        score: 0,
+        value: 1,
+        displayValue: '1 warning',
+        details: {
+          issues: [
+            {
+              message: 'Specify the rules you want to disable',
+              severity: 'warning',
+              source: {
+                file: 'src/app/graphql/generated.ts',
+                position: { startLine: 1 },
               },
             },
           ],

@@ -9,14 +9,16 @@ import {
 import { upload } from './upload';
 
 describe('upload', () => {
-  it('upload should be called with correct data', async () => {
+  beforeEach(() => {
     vol.fromJSON(
       {
         'report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
       },
       MEMFS_VOLUME,
     );
+  });
 
+  it('should call upload with correct data', async () => {
     const result = await upload({
       verbose: false,
       progress: false,
@@ -50,6 +52,21 @@ describe('upload', () => {
         commit: expect.any(String),
       },
     } satisfies PortalUploadArgs);
+  });
+
+  it('should throw for missing upload configuration', async () => {
+    await expect(
+      upload({
+        verbose: false,
+        progress: false,
+        persist: {
+          outputDir: MEMFS_VOLUME,
+          filename: 'report',
+          format: ['json'],
+        },
+        upload: undefined,
+      }),
+    ).rejects.toThrow('Upload configuration is not set.');
   });
 
   // @TODO add tests for failed upload
