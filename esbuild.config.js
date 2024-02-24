@@ -1,28 +1,55 @@
-const esbuild = require('esbuild');
-const { execSync } = require('child_process');
-const { readFileSync, writeFileSync, existsSync } = require('fs');
+const { readFile, writeFile, stat } = require('node:fs/promises');
+const { exec } = require('node:child_process');
+const { promisify } = require('node:util');
 
-const project = process.env.NX_TASK_TARGET_PROJECT;
-const projectPath = project.startsWith('test-')
-  ? `testing/${project}`
-  : project === 'examples-plugins'
-  ? 'examples/plugins'
-  : `packages/${project}`;
+const { createProjectGraphAsync } = require('@nx/devkit');
 
-esbuild.build({
+const { NX_TASK_TARGET_PROJECT, NX_TASK_TARGET_TARGET } = process.env;
+if (!NX_TASK_TARGET_PROJECT) {
+  throw new Error('Missing NX_TASK_TARGET_PROJECT environment variable');
+}
+if (!NX_TASK_TARGET_TARGET) {
+  throw new Error('Missing NX_TASK_TARGET_TARGET environment variable');
+}
+
+const getNxProject = async () => {
+  const graph = await createProjectGraphAsync();
+  return graph.nodes[NX_TASK_TARGET_PROJECT];
+};
+
+/**
+ * @param {import('@nx/devkit').ProjectGraphProjectNode} project
+ * @returns {import('@nx/esbuild/src/executors/esbuild/schema').EsBuildExecutorOptions}
+ */
+const getESBuildExecutorOptions = project => {
+  const target = project.data.targets[NX_TASK_TARGET_TARGET];
+  if (target.executor !== '@nx/esbuild:esbuild') {
+    throw new Error(
+      `Unexpected ${target.executor} executor for ${NX_TASK_TARGET_TARGET} target, expected @nx/esbuild:esbuild`,
+    );
+  }
+  return target.options;
+};
+
+/** @type {import('esbuild').BuildOptions} */
+module.exports = {
   plugins: [
     {
       name: 'TypeScriptDeclarations',
       setup(build) {
-        build.onEnd(result => {
+        build.onEnd(async result => {
           if (result.errors.length > 0) return;
 
+          const project = await getNxProject();
+          const { tsConfig } = getESBuildExecutorOptions(project);
+
           try {
-            execSync(
-              `tsc --emitDeclarationOnly --project ${projectPath}/tsconfig.lib.json --outDir dist`,
+            await promisify(exec)(
+              `tsc --emitDeclarationOnly --project ${tsConfig} --outDir dist`,
             );
           } catch (err) {
             console.error(err);
+            throw err;
           }
         });
       },
@@ -30,33 +57,43 @@ esbuild.build({
     {
       name: 'PackageJSON',
       setup(build) {
-        build.onEnd(result => {
+        build.onEnd(async result => {
           if (result.errors.length > 0) return;
 
-          if (!existsSync(`${projectPath}/package.json`)) {
-            /** @type {import('type-fest').PackageJson} */
+          const project = await getNxProject();
+          const { outputPath } = getESBuildExecutorOptions(project);
+
+          const sourcePackageJsonPath = `${project.data.root}/package.json`;
+          const outputPackageJsonPath = `${outputPath}/package.json`;
+
+          const isPublishable = await stat(sourcePackageJsonPath)
+            .then(stats => stats.isFile())
+            .catch(() => false);
+
+          if (!isPublishable) {
+            /** @type {import('nx/src/utils/package-json').PackageJson} */
             const newPackageJson = {
-              name: `@code-pushup/${project}`,
+              name: `@code-pushup/${project.name}`,
               private: true,
               type: 'module',
               main: 'index.js',
               types: 'src/index.d.ts',
             };
-            writeFileSync(
-              `dist/${projectPath}/package.json`,
+            await writeFile(
+              outputPackageJsonPath,
               JSON.stringify(newPackageJson, null, 2),
             );
             return;
           }
 
-          /** @type {import('type-fest').PackageJson} */
+          /** @type {import('nx/src/utils/package-json').PackageJson} */
           const packageJson = JSON.parse(
-            readFileSync(`${projectPath}/package.json`).toString(),
+            await readFile(sourcePackageJsonPath, 'utf8'),
           );
 
-          /** @type {import('type-fest').PackageJson} */
+          /** @type {import('nx/src/utils/package-json').PackageJson} */
           const rootPackageJson = JSON.parse(
-            readFileSync('package.json').toString(),
+            await readFile('package.json', 'utf8'),
           );
 
           packageJson.license = rootPackageJson.license;
@@ -64,19 +101,19 @@ esbuild.build({
           packageJson.bugs = rootPackageJson.bugs;
           packageJson.repository = {
             ...rootPackageJson.repository,
-            directory: projectPath,
+            directory: project.data.root,
           };
           packageJson.contributors = rootPackageJson.contributors;
           packageJson.type = 'module';
           packageJson.main = './index.js';
           packageJson.types = './src/index.d.ts';
 
-          writeFileSync(
-            `dist/${projectPath}/package.json`,
+          await writeFile(
+            outputPackageJsonPath,
             JSON.stringify(packageJson, null, 2),
           );
         });
       },
     },
   ],
-});
+};
