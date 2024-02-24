@@ -1,5 +1,12 @@
-import type { CliFlags } from 'lighthouse';
-import { Audit } from '@code-pushup/models';
+import { type CliFlags } from 'lighthouse';
+import Details from 'lighthouse/types/lhr/audit-details';
+import { Result } from 'lighthouse/types/lhr/audit-result';
+import {
+  Audit,
+  AuditDetails,
+  AuditOutput,
+  AuditOutputs,
+} from '@code-pushup/models';
 import { objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
@@ -67,4 +74,90 @@ export function validateOnlyAudits(
     throw new AuditsNotImplementedError(missingAudtis);
   }
   return true;
+}
+
+type UnsupportedDetail =
+  | Details.CriticalRequestChain
+  | Details.List
+  | Details.TreemapData
+  | Details.Screenshot
+  | Details.Filmstrip
+  | Details.DebugData;
+type UnsupportedDetailTypes = UnsupportedDetail['type'];
+
+export function toAuditOutputs(
+  lhrAudits: Record<string, Result>,
+): AuditOutputs {
+  return Object.values(lhrAudits).map(
+    ({
+      id: slug,
+      score,
+      numericValue: value = 0, // not every audit has a numericValue
+      details,
+      displayValue,
+    }: Result) => {
+      const auditOutput: AuditOutput = {
+        slug,
+        score: score ?? 1, // score can be null
+        value,
+        displayValue,
+      };
+
+      if (details != null) {
+        const type = details.type;
+        switch (type) {
+          case 'opportunity':
+            return {
+              ...auditOutput,
+              details: opportunityToDetails(details),
+            };
+          case 'table':
+            return {
+              ...auditOutput,
+              details: tableToDetails(details),
+            };
+          default:
+            const unsupportedType: UnsupportedDetailTypes = type;
+            return {
+              ...auditOutput,
+              details: {
+                issues: [
+                  {
+                    message: `Parsing details from type ${unsupportedType} is not implemented.`,
+                    severity: 'info',
+                  },
+                ],
+              },
+            };
+        }
+      }
+
+      return auditOutput;
+    },
+  );
+}
+
+export function tableToDetails(tableDetails: Details.Table): AuditDetails {
+  const headings = tableDetails.headings.map(({ key }) => key || '');
+  return {
+    issues: [
+      {
+        message: headings.length > 0 ? headings.join(', ') : 'no data present',
+        severity: 'info',
+      },
+    ],
+  };
+}
+
+export function opportunityToDetails(
+  opportunityDetails: Details.Opportunity,
+): AuditDetails {
+  return {
+    issues: [
+      {
+        message: opportunityDetails.headings.map(({ key }) => key).join(', '),
+        severity: 'info',
+      },
+    ],
+  };
 }
