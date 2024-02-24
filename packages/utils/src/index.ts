@@ -43,11 +43,8 @@ export {
   getLatestCommit,
   toGitPath,
   validateCommitData,
-  git,
   getCurrentBranchOrTag,
-  branchHasChanges,
-  guardAgainstDirtyRepo,
-  GitTag,
+  guardAgainstLocalChanges,
   safeCheckout,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';

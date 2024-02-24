@@ -11,10 +11,9 @@ export function yargsHistoryOptionsDefinition(): Record<
       type: 'string',
       default: 'main',
     },
-    gitRestore: {
+    forceCleanStatus: {
       describe: 'Folder to restore using "git restore [folder]"',
-      type: 'string',
-      // default: '.', // @TODO remove after debugging
+      type: 'boolean',
     },
     numSteps: {
       describe: 'Number of steps in history',

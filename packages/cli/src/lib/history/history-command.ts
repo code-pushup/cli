@@ -1,12 +1,11 @@
 import chalk from 'chalk';
-import { CommandModule, Options } from 'yargs';
-import { HistoryOptions, history } from '@code-pushup/core';
-import { CoreConfig } from '@code-pushup/models';
-import { getCurrentBranchOrTag, git, safeCheckout } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
-import { GeneralCliOptions } from '../implementation/global.model';
-import { HistoryCliOptions } from './history.model';
-import { yargsHistoryOptionsDefinition } from './history.options';
+import {simpleGit} from 'simple-git';
+import {CommandModule, Options} from 'yargs';
+import {history, HistoryOptions} from '@code-pushup/core';
+import {getCurrentBranchOrTag, safeCheckout} from '@code-pushup/utils';
+import {CLI_NAME} from '../constants';
+import {HistoryCliOptions} from './history.model';
+import {yargsHistoryOptionsDefinition} from './history.options';
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
@@ -25,13 +24,13 @@ export function yargsHistoryCommandObject() {
       const currentBranch = await getCurrentBranchOrTag();
       const {
         targetBranch = currentBranch,
-        gitRestore,
+        forceCleanStatus,
         numSteps = 1,
         ...config
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
       // determine history to walk
-      await safeCheckout(targetBranch, { gitRestore });
+      const git = simpleGit();
       const log = await git.log();
       const commitsToAudit = log.all
         .map(({ hash }) => hash)
@@ -44,7 +43,8 @@ export function yargsHistoryCommandObject() {
       const reports: unknown[] = await history(
         {
           ...config,
-          gitRestore,
+          targetBranch,
+          forceCleanStatus,
         },
         commitsToAudit,
       );

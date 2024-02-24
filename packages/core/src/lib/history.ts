@@ -1,78 +1,65 @@
-import { join } from 'node:path';
-import { CoreConfig } from '@code-pushup/models';
-import {
-  getCurrentBranchOrTag,
-  getProgressBar,
-  getStartDuration,
-  safeCheckout,
-} from '@code-pushup/utils';
-import {
-  CollectAndPersistReportsOptions,
-  collectAndPersistReports,
-} from './collect-and-persist';
-import { GlobalOptions } from './types';
-import { UploadOptions, upload as uploadCommandLogic } from './upload';
+import {CoreConfig, Format, PersistConfig, UploadConfig, uploadConfigSchema,} from '@code-pushup/models';
+import {getCurrentBranchOrTag, safeCheckout,} from '@code-pushup/utils';
+import {collectAndPersistReports,} from './collect-and-persist';
+import {GlobalOptions} from './types';
+import {upload as uploadCommandLogic} from './upload';
 
 export type HistoryOnlyOptions = {
+  targetBranch?: string;
   uploadReports?: boolean;
-  gitRestore?: string;
+  forceCleanStatus?: true;
 };
-export type HistoryOptions = Required<CoreConfig> &
+export type HistoryOptions = Required<
+  Pick<CoreConfig, 'plugins' | 'categories'> & {
+    persist: Required<PersistConfig>;
+  } & { upload: Required<UploadConfig> }
+> &
   GlobalOptions &
   HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
   commits: string[],
-): Promise<Record<string, unknown>[]> {
-  const reports: Record<string, unknown>[] = [];
-  const progressBar = config?.progress ? getProgressBar('history') : null;
+): Promise<string[]> {
+  const reports: string[] = [];
 
   const initialBranch: string = await getCurrentBranchOrTag();
 
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    const start: number = getStartDuration();
-    const result: Record<string, unknown> = {
-      commit,
-      start,
-    };
-    progressBar?.incrementInSteps(commits.length);
+    await safeCheckout(commit, { forceCleanStatus: config.forceCleanStatus });
+    console.info(`Collect ${commit}`);
 
-    await safeCheckout(commit, { gitRestore: config.gitRestore });
-    progressBar?.updateTitle(`Collect ${commit}`);
-
-    const currentConfig = {
+    const currentConfig: HistoryOptions = {
       ...config,
       persist: {
         ...config.persist,
-        format: ['json'],
+        format: ['json' as Format],
         filename: `${commit}-report`,
       },
-    } satisfies CollectAndPersistReportsOptions;
+    };
+
     await collectAndPersistReports(currentConfig);
 
-    const { uploadReports, progress } =
-      currentConfig as unknown as HistoryOptions;
+    const { uploadReports = true } = currentConfig as unknown as HistoryOptions;
     if (uploadReports) {
-      progressBar?.updateTitle(`Upload ${commit}`);
-      if (!progress) {
-        console.warn(`Upload ${commit}`); // @TODO log verbose
+      const result = uploadConfigSchema.safeParse(currentConfig.upload);
+      if (result.success) {
+        await uploadCommandLogic({ ...currentConfig, upload: result.data });
+      } else {
+        console.error(result.error);
       }
-      await uploadCommandLogic(currentConfig as unknown as UploadOptions);
-      // eslint-disable-next-line functional/immutable-data
-      result['uploadDate'] = new Date().toISOString();
     } else {
-      console.warn('Upload skipped because configuration is not set.'); // @TODO log verbose
+      console.warn('Upload skipped because uploadReports is set to false');
     }
 
     // eslint-disable-next-line functional/immutable-data
-    reports.push({
-      [join(currentConfig.persist.filename)]: result,
-    });
+    reports.push(currentConfig.persist.filename);
   }
 
-  await safeCheckout(initialBranch, { gitRestore: config.gitRestore });
+  await safeCheckout(initialBranch, {
+    forceCleanStatus: config.forceCleanStatus,
+  });
   // eslint-disable-next-line no-console
   console.log('Current Branch:', initialBranch);
 
