@@ -26,23 +26,3 @@ export function lighthousePlugin(
     runner: () => audits.map(({ slug }) => ({ slug, value: 0, score: 0 })),
   };
 }
-
-/*
-@TODO implement
-export function runnerFunction(
-  url: string,
-  flags?: Partial<LighthouseFlags>,
-  config?: Partial<LighthouseConfig>
-): RunnerFunction {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return async (onProgress?: OnProgress): Promise<AuditOutputs> => {
-    const { lhr } = (await lighthouse(url, flags, config)) as RunnerResult;
-
-    return Object.values(lhr.audits).map(({ id: slug }) => ({
-      slug,
-      value: 0,
-      score: 0,
-    }));
-  };
-}
-*/
