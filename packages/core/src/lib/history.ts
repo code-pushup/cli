@@ -1,8 +1,14 @@
-import {CoreConfig, Format, PersistConfig, UploadConfig, uploadConfigSchema,} from '@code-pushup/models';
-import {getCurrentBranchOrTag, safeCheckout,} from '@code-pushup/utils';
-import {collectAndPersistReports,} from './collect-and-persist';
-import {GlobalOptions} from './types';
-import {upload as uploadCommandLogic} from './upload';
+import {
+  CoreConfig,
+  Format,
+  PersistConfig,
+  UploadConfig,
+  uploadConfigSchema,
+} from '@code-pushup/models';
+import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
+import { collectAndPersistReports } from './collect-and-persist';
+import { GlobalOptions } from './types';
+import { upload as uploadCommandLogic } from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;

@@ -1,11 +1,11 @@
 import chalk from 'chalk';
-import {simpleGit} from 'simple-git';
-import {CommandModule, Options} from 'yargs';
-import {history, HistoryOptions} from '@code-pushup/core';
-import {getCurrentBranchOrTag, safeCheckout} from '@code-pushup/utils';
-import {CLI_NAME} from '../constants';
-import {HistoryCliOptions} from './history.model';
-import {yargsHistoryOptionsDefinition} from './history.options';
+import { simpleGit } from 'simple-git';
+import { CommandModule, Options } from 'yargs';
+import { HistoryOptions, history } from '@code-pushup/core';
+import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
+import { CLI_NAME } from '../constants';
+import { HistoryCliOptions } from './history.model';
+import { yargsHistoryOptionsDefinition } from './history.options';
 
 export function yargsHistoryCommandObject() {
   const command = 'history';
