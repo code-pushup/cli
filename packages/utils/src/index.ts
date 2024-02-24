@@ -25,6 +25,7 @@ export {
 export {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,
+  filterGroupsByCategorySlug,
 } from './lib/filter-by-slug';
 export {
   formatBytes,
