@@ -1,25 +1,23 @@
-import { CategoryRef } from '@code-pushup/models';
-import { filterBy, filterItemsWithRefBy, toArray } from '@code-pushup/utils';
-import { OnlyPluginsOptions } from './only-plugins.model';
-import { validateOnlyPluginsOption } from './only-plugins.utils';
+import {OnlyPluginsOptions} from './only-plugins.model';
+import {validateOnlyPluginsOption} from './only-plugins.utils';
+import {filterBy, filterItemRefsBy, toArray} from "@code-pushup/utils";
 
 export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
   processArgs: T,
 ): T {
-  validateOnlyPluginsOption(processArgs.plugins, processArgs);
+  if (processArgs.onlyPlugins && processArgs.onlyPlugins.length > 0) {
+    const {plugins, categories, ...rest} = processArgs;
 
-  if (processArgs.onlyPlugins) {
-    const onlyPlugins = new Set(toArray(processArgs.onlyPlugins));
-    const filteredPlugins = filterBy(processArgs.plugins, ({ slug }) =>
-      onlyPlugins.has(slug),
-    );
+    validateOnlyPluginsOption(plugins, processArgs);
+
+    const onlyPluginsSet = new Set(toArray(processArgs.onlyPlugins));
+
     return {
-      ...processArgs,
-      plugins: filteredPlugins,
-      categories: filterItemsWithRefBy<CategoryRef>(
-        processArgs.categories,
-        ({ plugin }) => onlyPlugins.has(plugin),
+      ...rest,
+      plugins: filterBy(plugins, ({slug}) =>
+        onlyPluginsSet.has(slug),
       ),
+      categories: filterItemRefsBy(categories, ({plugin}) => onlyPluginsSet.has(plugin)),
     };
   }
 

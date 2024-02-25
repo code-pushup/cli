@@ -1,5 +1,6 @@
 import { describe, expect, vi } from 'vitest';
 import { onlyPluginsMiddleware } from './only-plugins.middleware';
+import {filterPluginsAndCategoriesByOnlyPlugins} from "./only-plugins.utils";
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -24,6 +25,7 @@ describe('onlyPluginsMiddleware', () => {
       categories: [],
     });
   });
+
 
   it('should filter plugins', () => {
     const { plugins } = onlyPluginsMiddleware({
@@ -94,4 +96,5 @@ describe('onlyPluginsMiddleware', () => {
       }),
     ]);
   });
+
 });

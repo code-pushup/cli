@@ -1,8 +1,8 @@
 import type { CliFlags as LighthouseFlags } from 'lighthouse';
-import { Audit, Group, GroupRef } from '@code-pushup/models';
+import { Audit, Group } from '@code-pushup/models';
 import {
   filterBy,
-  filterItemsWithRefBy,
+  filterItemRefsBy,
   objectToCliArgs,
   toArray,
 } from '@code-pushup/utils';
@@ -106,6 +106,7 @@ export function filterAuditsAndGroupsByOnlyOptions(
   // category wins over audits
   if (onlyCategories && onlyCategories.length > 0) {
     validateOnlyCategories(groups, onlyCategories);
+
     const categorieSlugs = new Set(onlyCategories);
     const filteredGroups: Group[] = filterBy<Group>(groups, ({ slug }) =>
       categorieSlugs.has(slug),
@@ -114,7 +115,7 @@ export function filterAuditsAndGroupsByOnlyOptions(
       filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
     );
     return {
-      audits: filterBy<Audit>(audits, ({ slug }) =>
+      audits: filterBy(audits, ({ slug }) =>
         auditSlugsFromRemainingGroups.has(slug),
       ),
       groups: filteredGroups,
@@ -123,10 +124,8 @@ export function filterAuditsAndGroupsByOnlyOptions(
     validateOnlyAudits(audits, onlyAudits);
     const auditSlugs = new Set(onlyAudits);
     return {
-      audits: filterBy<Audit>(audits, ({ slug }) => auditSlugs.has(slug)),
-      groups: filterItemsWithRefBy<GroupRef>(groups, ({ slug }) =>
-        auditSlugs.has(slug),
-      ) as Group[],
+      audits: filterBy(audits, ({ slug }) => auditSlugs.has(slug)),
+      groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
     };
   }
   // return unchanged

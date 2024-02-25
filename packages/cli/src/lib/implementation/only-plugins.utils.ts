@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import type { PluginConfig } from '@code-pushup/models';
+import {PluginConfig} from '@code-pushup/models';
 
 export function validateOnlyPluginsOption(
   plugins: PluginConfig[] = [],

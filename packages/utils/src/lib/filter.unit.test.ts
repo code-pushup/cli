@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterBy, filterItemsWithRefBy } from './filter-by-slug';
+import { filterBy, filterItemRefsBy } from './filter';
 
 describe('filterBy', () => {
   it('should return same items if no filterFn is given', () => {
@@ -32,7 +32,7 @@ describe('filterItemsWithRefBy', () => {
         ],
       },
     ];
-    expect(filterItemsWithRefBy<{ slug: string }>(list)).toEqual(list);
+    expect(filterItemRefsBy<{ slug: string }>(list)).toEqual(list);
   });
 
   it('should return the filtered list if filterFn is given', () => {
@@ -46,7 +46,7 @@ describe('filterItemsWithRefBy', () => {
       },
     ];
     expect(
-      filterItemsWithRefBy<{ plugin: string }>(
+      filterItemRefsBy<{ plugin: string }>(
         list,
         ({ plugin }) => plugin === 'a',
       ),

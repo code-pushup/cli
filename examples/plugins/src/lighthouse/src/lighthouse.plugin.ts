@@ -1,18 +1,15 @@
 import Result from 'lighthouse/types/lhr/lhr';
 import { dirname } from 'node:path';
 import {
-  Audit,
   AuditOutput,
   AuditOutputs,
-  Group,
-  GroupRef,
   PluginConfig,
   RunnerConfig,
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   filterBy,
-  filterItemsWithRefBy,
+  filterItemRefsBy,
   toArray,
 } from '@code-pushup/utils';
 import {
@@ -77,11 +74,10 @@ export async function create(options: PluginOptions) {
       onlyCategories: ['performance'],
       headless,
     }),
-    audits: filterBy<Audit>(audits, ({ slug }) => onlyAudits.includes(slug)),
-    groups: filterItemsWithRefBy<GroupRef>(
-      [categoryCorePerfGroup],
-      ({ slug }) => onlyAudits.includes(slug),
-    ) as Group[],
+    audits: filterBy(audits, ({ slug }) => onlyAudits.includes(slug)),
+    groups: filterItemRefsBy([categoryCorePerfGroup], ({ slug }) =>
+      onlyAudits.includes(slug),
+    ),
   } satisfies PluginConfig;
 }
 

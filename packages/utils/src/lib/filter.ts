@@ -1,9 +1,7 @@
-type WithRefs<T extends object = object> = { refs: T[] };
-
-export function filterItemsWithRefBy<T extends object>(
-  items: WithRefs<T>[],
-  refFilterFn?: (item: T) => boolean,
-): WithRefs<T>[] {
+export function filterItemRefsBy<T extends { refs: object[] }>(
+  items: T[],
+  refFilterFn?: (item: T['refs'][number]) => boolean,
+) {
   return filterBy(
     items
       .map(item => ({
