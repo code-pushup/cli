@@ -1,10 +1,6 @@
 # How types flow
 
-## CLI Types
-
-Types consumed over user input via the terminal
-
-### General
+## General
 
 **Naming:**  
 The naming for arguments consumed over the CLI like user input directly in the process arguments. 
@@ -18,9 +14,15 @@ In our example we use `zod` as parser.
 Parsing should be used when a unknown source for your data is present. e.g. data from `rc.config.json`.
 Another situation would be the terminal input over prompts or CLI `flags`.
 
-**Packages**  
-The 3 main packages to use are `models`, `core`, `cli`.
-`core`
+**Packages and Types:**  
+The 3 main packages to use are `models`, `core`, `cli`.  
+
+1. `model` - should  maintain types and parser for the logic in `core`.  
+2. `core` - should reuse final typing. All less strict types should be maintained in `cli` oth other consumer of `core`.  
+3. `cli` - reuses `model` and maintains all validations and parsing logic for less sctircter types. It executes the `core` logic.  
+  examples are rc config or cli flags
+
+## Example 
 
 ```ts
 // === @code-pushup/model
