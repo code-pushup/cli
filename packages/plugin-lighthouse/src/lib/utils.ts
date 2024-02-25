@@ -1,9 +1,8 @@
 import type { CliFlags as LighthouseFlags } from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
 import {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-  filterGroupsByCategorySlug,
+  filterBy,
+  filterItemRefsBy,
   objectToCliArgs,
   toArray,
 } from '@code-pushup/utils';
@@ -107,22 +106,26 @@ export function filterAuditsAndGroupsByOnlyOptions(
   // category wins over audits
   if (onlyCategories && onlyCategories.length > 0) {
     validateOnlyCategories(groups, onlyCategories);
-    const filteredGroups: Group[] = filterGroupsByCategorySlug(
-      groups,
-      onlyCategories,
+
+    const categorieSlugs = new Set(onlyCategories);
+    const filteredGroups: Group[] = filterBy<Group>(groups, ({ slug }) =>
+      categorieSlugs.has(slug),
     );
-    const auditSlugsFromRemainingGroups: string[] = filteredGroups.flatMap(
-      ({ refs }) => refs.map(({ slug }) => slug),
+    const auditSlugsFromRemainingGroups = new Set(
+      filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
     );
     return {
-      audits: filterAuditsBySlug(audits, auditSlugsFromRemainingGroups),
+      audits: filterBy(audits, ({ slug }) =>
+        auditSlugsFromRemainingGroups.has(slug),
+      ),
       groups: filteredGroups,
     };
   } else if (onlyAudits && onlyAudits.length > 0) {
     validateOnlyAudits(audits, onlyAudits);
+    const auditSlugs = new Set(onlyAudits);
     return {
-      audits: filterAuditsBySlug(audits, onlyAudits),
-      groups: filterGroupsByAuditSlug(groups, onlyAudits),
+      audits: filterBy(audits, ({ slug }) => auditSlugs.has(slug)),
+      groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
     };
   }
   // return unchanged
