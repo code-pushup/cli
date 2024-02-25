@@ -1,23 +1,27 @@
-import { CoreConfig } from '@code-pushup/models';
-import { GeneralCliOptions } from './global.model';
+import { CategoryRef } from '@code-pushup/models';
+import { filterBy, filterItemsWithRefBy, toArray } from '@code-pushup/utils';
 import { OnlyPluginsOptions } from './only-plugins.model';
-import {
-  filterCategoryByPluginSlug,
-  filterPluginsBySlug,
-  validateOnlyPluginsOption,
-} from './only-plugins.utils';
+import { validateOnlyPluginsOption } from './only-plugins.utils';
 
-export function onlyPluginsMiddleware<
-  T extends GeneralCliOptions &
-    Omit<CoreConfig, 'categories'> &
-    Required<Pick<CoreConfig, 'categories'>> &
-    OnlyPluginsOptions,
->(processArgs: T): GeneralCliOptions & CoreConfig & OnlyPluginsOptions {
+export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
+  processArgs: T,
+): T {
   validateOnlyPluginsOption(processArgs.plugins, processArgs);
 
-  return {
-    ...processArgs,
-    plugins: filterPluginsBySlug(processArgs.plugins, processArgs),
-    categories: filterCategoryByPluginSlug(processArgs.categories, processArgs),
-  };
+  if (processArgs.onlyPlugins) {
+    const onlyPlugins = new Set(toArray(processArgs.onlyPlugins));
+    const filteredPlugins = filterBy(processArgs.plugins, ({ slug }) =>
+      onlyPlugins.has(slug),
+    );
+    return {
+      ...processArgs,
+      plugins: filteredPlugins,
+      categories: filterItemsWithRefBy<CategoryRef>(
+        processArgs.categories,
+        ({ plugin }) => onlyPlugins.has(plugin),
+      ),
+    };
+  }
+
+  return processArgs;
 }

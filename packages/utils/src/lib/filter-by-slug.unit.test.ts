@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-  filterGroupsByCategorySlug,
-  filterSlug,
-} from './filter-by-slug';
+import { filterBy, filterItemsWithRefBy } from './filter-by-slug';
 
-describe('filterSlug', () => {
-  it('should return an empty list if no slugs are given', () => {
-    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
-    expect(filterSlug(list, [])).toEqual([]);
+describe('filterBy', () => {
+  it('should return same items if no filterFn is given', () => {
+    const items = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
+    expect(filterBy(items)).toEqual(items);
+  });
+
+  it('should return same items if empty items are given', () => {
+    const list: { slug: string }[] = [];
+    expect(filterBy(list, r => !!r)).toBe(list);
   });
 
   it('should return an empty list if no slugs are matching', () => {
@@ -17,46 +17,14 @@ describe('filterSlug', () => {
     // test bad case:
     // 'aa'.includes('a') // fail
     // ['aa'].includes('a') // passes
-    expect(filterSlug(list, 'aa')).toEqual([]);
-  });
-
-  it('should filter if slugs is a string', () => {
-    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
-    expect(filterSlug(list, 'a')).toEqual([{ slug: 'a' }]);
-  });
-
-  it('should filter if slugs is an array', () => {
-    const list = [{ slug: 'a' }, { slug: 'b' }, { slug: 'c' }];
-    expect(filterSlug(list, ['a'])).toEqual([{ slug: 'a' }]);
+    expect(filterBy(list, ({ slug }) => slug === 'aa')).toEqual([]);
   });
 });
 
-describe('filterAuditsBySlug', () => {
-  it('should return the given list if no slugs are given', () => {
-    const list = [
-      { slug: 'a', title: 'A' },
-      { slug: 'b', title: 'B' },
-      { slug: 'c', title: 'C' },
-    ];
-    expect(filterAuditsBySlug(list, [])).toEqual(list);
-  });
-
-  it('should filter if slugs is a string', () => {
-    const list = [
-      { slug: 'a', title: 'A' },
-      { slug: 'b', title: 'B' },
-      { slug: 'c', title: 'C' },
-    ];
-    expect(filterAuditsBySlug(list, 'a')).toEqual([{ slug: 'a', title: 'A' }]);
-  });
-});
-
-describe('filterGroupsByAuditSlug', () => {
+describe('filterItemsWithRefBy', () => {
   it('should return the given list if no slugs are given', () => {
     const list = [
       {
-        slug: 'g',
-        title: 'G',
         refs: [
           { slug: 'a', weight: 1 },
           { slug: 'b', weight: 1 },
@@ -64,78 +32,28 @@ describe('filterGroupsByAuditSlug', () => {
         ],
       },
     ];
-    expect(filterGroupsByAuditSlug(list, [])).toEqual(list);
+    expect(filterItemsWithRefBy<{ slug: string }>(list)).toEqual(list);
   });
 
-  it('should filter if slugs is a string', () => {
+  it('should return the filtered list if filterFn is given', () => {
     const list = [
       {
-        slug: 'g',
-        title: 'G',
         refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
+          { plugin: 'a', weight: 1 },
+          { plugin: 'b', weight: 1 },
+          { plugin: 'c', weight: 1 },
         ],
       },
     ];
-    expect(filterGroupsByAuditSlug(list, 'a')).toEqual([
-      {
-        slug: 'g',
-        title: 'G',
-        refs: [{ slug: 'a', weight: 1 }],
-      },
-    ]);
-  });
-});
-
-describe('filterGroupsByCategorySlug', () => {
-  it('should return the given groups if no slugs are given', () => {
-    const list = [
-      {
-        slug: 'g',
-        title: 'G',
-        refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
-        ],
-      },
-    ];
-    expect(filterGroupsByCategorySlug(list, [])).toEqual(list);
-  });
-
-  it('should filter groups if slugs is a string', () => {
-    const list = [
-      {
-        slug: 'g1',
-        title: 'G 1',
-        refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
-        ],
-      },
-      {
-        slug: 'g2',
-        title: 'G 2',
-        refs: [
-          { slug: 'd', weight: 1 },
-          { slug: 'e', weight: 1 },
-          { slug: 'f', weight: 1 },
-        ],
-      },
-    ];
-    expect(filterGroupsByCategorySlug(list, 'g2')).toEqual([
-      {
-        slug: 'g2',
-        title: 'G 2',
-        refs: [
-          { slug: 'd', weight: 1 },
-          { slug: 'e', weight: 1 },
-          { slug: 'f', weight: 1 },
-        ],
-      },
+    expect(
+      filterItemsWithRefBy<{ plugin: string }>(
+        list,
+        ({ plugin }) => plugin === 'a',
+      ),
+    ).toStrictEqual([
+      expect.objectContaining({
+        refs: [{ plugin: 'a', weight: 1 }],
+      }),
     ]);
   });
 });

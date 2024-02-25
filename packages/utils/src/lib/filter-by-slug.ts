@@ -1,51 +1,26 @@
-import { Audit, Group } from '@code-pushup/models';
-import { toArray } from './transform';
+type WithRefs<T extends object = object> = { refs: T[] };
 
-export function filterGroupsByCategorySlug(
-  groups: Group[],
-  categorySlugs: string | string[],
-): Group[] {
-  const slugs = toArray(categorySlugs);
-  if (slugs.length === 0) {
-    return groups;
-  }
-  return groups.filter(group => slugs.includes(group.slug));
-}
-
-export function filterGroupsByAuditSlug(
-  groups: Group[],
-  auditSlugs: string | string[],
-): Group[] {
-  const slugs = toArray(auditSlugs);
-  if (slugs.length === 0) {
-    return groups;
-  }
-  return (
-    groups
-      .map(group => ({
-        ...group,
-        refs: filterSlug(group.refs, slugs),
+export function filterItemsWithRefBy<T extends object>(
+  items: WithRefs<T>[],
+  refFilterFn?: (item: T) => boolean,
+): WithRefs<T>[] {
+  return filterBy(
+    items
+      .map(item => ({
+        ...item,
+        refs: filterBy(item.refs, refFilterFn),
       }))
-      // filter out groups that have no audits includes from onlyAudits (avoid empty groups)
-      .filter(group => group.refs.length)
+      // remove item with empty refs
+      .filter(item => item.refs.length),
   );
 }
 
-export function filterAuditsBySlug(
-  list: Audit[],
-  auditSlugs: string[] | string,
-): Audit[] {
-  const slugs = toArray(auditSlugs);
-  if (slugs.length === 0) {
-    return list;
-  }
-  return filterSlug(list, slugs);
-}
-
-export function filterSlug<T extends { slug: string }>(
-  refs: T[],
-  slugOrSlugs: string | string[],
+export function filterBy<T = unknown>(
+  refs: T[] = [],
+  filterFn?: (t: T) => boolean,
 ): T[] {
-  const slugs = toArray(slugOrSlugs);
-  return refs.filter(({ slug }) => slugs.includes(slug));
+  if (filterFn === undefined || refs.length === 0) {
+    return refs;
+  }
+  return refs.filter(filterFn);
 }
