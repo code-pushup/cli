@@ -81,7 +81,7 @@
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "@types/benchmark": "^2.1.4",
+    "@types/benchmark": "^2.1.5",
     "@types/chalk": "^2.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "18.14.2",

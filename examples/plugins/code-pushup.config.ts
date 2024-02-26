@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  benchmarkJsPlugin,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   lighthouseCorePerfGroupRefs,
@@ -41,6 +42,11 @@ const config = {
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: false,
       verbose: true,
+    }),
+    await benchmarkJsPlugin({
+      suits: ['glob'],
+      tsconfig: join('examples', 'plugins', 'tsconfig.lib.ts'),
+      targetFolder: join('examples', 'plugins', 'src', 'benchmark-js', 'perf'),
     }),
   ],
   categories: [

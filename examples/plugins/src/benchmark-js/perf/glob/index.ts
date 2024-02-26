@@ -22,12 +22,9 @@ const cli = yargs(process.argv).options({
   },
 });
 
-// eslint-disable-next-line n/no-sync
 const { pattern, outputDir } = cli.parseSync();
 
-// eslint-disable-next-line no-console
 console.log('You can adjust the test with the following arguments:');
-// eslint-disable-next-line no-console
 console.log(
   `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
 );

@@ -17,6 +17,7 @@ import coveragePlugin, {
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
+import { benchmarkJsPlugin } from './dist/examples/plugins';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
@@ -82,6 +83,11 @@ const config: CoreConfig = {
       url: 'https://staging.code-pushup.dev/login',
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
+    }),
+    await benchmarkJsPlugin({
+      suits: ['glob'],
+      tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
+      targetFolder: join('packages', 'utils', 'perf'),
     }),
   ],
 
