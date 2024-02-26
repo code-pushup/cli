@@ -64,8 +64,8 @@ export async function create(
   );
 
   return {
-    slug: 'js-benchmark',
-    title: 'JS Benchmark',
+    slug: 'benchmark-js',
+    title: 'Benchmark JS',
     icon: 'flash',
     audits,
     groups: results.map(

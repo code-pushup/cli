@@ -72,6 +72,21 @@
           "target": "build"
         }
       ]
+    },
+    "run-print-config": {
+      "command": "npx dist/packages/cli print-config",
+      "dependsOn": [
+        {
+          "projects": [
+            "cli",
+            "plugin-eslint",
+            "plugin-coverage",
+            "examples-plugins",
+            "react-todos-app"
+          ],
+          "target": "build"
+        }
+      ]
     }
   }
 }
