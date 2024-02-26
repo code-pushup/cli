@@ -69,10 +69,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     formattedValue: audit.displayValue,
     ...(audit.details && {
       details: {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        ...(audit.details.issues && {
-          issues: audit.details.issues.map(issueToGQL),
-        }),
+          issues: audit.details.issues.map(issueToGQL)
       },
     }),
   };
