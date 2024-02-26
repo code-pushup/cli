@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.23.0](https://github.com/code-pushup/cli/compare/v0.22.8...v0.23.0) (2024-02-26)
+
+### Features
+
+- **utils:** add git helper ([#469](https://github.com/code-pushup/cli/issues/469)) ([d927a61](https://github.com/code-pushup/cli/commit/d927a6153554a4bc7eecabde7386bbbd3c9b2de1))
+
 ## [0.22.8](https://github.com/code-pushup/cli/compare/v0.22.7...v0.22.8) (2024-02-23)
 
 ### Bug Fixes
