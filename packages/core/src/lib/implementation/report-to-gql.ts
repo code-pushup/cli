@@ -69,7 +69,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     formattedValue: audit.displayValue,
     ...(audit.details && {
       details: {
-          issues: audit.details.issues.map(issueToGQL)
+        issues: audit.details.issues.map(issueToGQL),
       },
     }),
   };
