@@ -1,6 +1,5 @@
-import { CategoryRef, PluginReport } from '@code-pushup/models';
+import { AuditReport, CategoryRef, PluginReport } from '@code-pushup/models';
 import {
-  EnrichedAuditReport,
   EnrichedScoredGroup,
   EnrichedScoredGroupWithAudits,
   ScoredReport,
@@ -65,7 +64,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
 
 function sortPlugins(
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: EnrichedAuditReport[];
+    audits: AuditReport[];
     groups: EnrichedScoredGroup[];
   })[],
 ) {

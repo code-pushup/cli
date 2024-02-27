@@ -1,9 +1,13 @@
 /* eslint-disable no-param-reassign, functional/immutable-data */
 // Note: The mutability issues are resolved in production code
-import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
+import {
+  AuditReport,
+  CategoryRef,
+  GroupRef,
+  Report,
+} from '@code-pushup/models';
 import { ScoredReport } from '../../src';
 import {
-  EnrichedAuditReport,
   EnrichedScoredGroup,
   GroupRefInvalidError,
   ScoredCategoryConfig,
@@ -46,7 +50,7 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map<
     string,
-    EnrichedAuditReport | EnrichedScoredGroup
+    AuditReport | EnrichedScoredGroup
   >();
 
   scoredReport.plugins?.forEach(plugin => {
@@ -55,7 +59,6 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
 
     audits.forEach(audit => {
       const key = `${slug}-${audit.slug}-audit`;
-      audit.plugin = slug;
       allScoredAuditsAndGroups.set(key, audit);
     });
 

@@ -1,12 +1,8 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { Issue, IssueSeverity, Report } from '@code-pushup/models';
+import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
-import {
-  EnrichedAuditReport,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+import { ScoredReport, WeighedAuditReport } from './scoring';
 import {
   calcDuration,
   compareAudits,
@@ -199,7 +195,7 @@ describe('sortAudits', () => {
       { score: 1, value: 1 },
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
-    ] as EnrichedAuditReport[];
+    ] as AuditReport[];
     const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
@@ -210,12 +206,12 @@ describe('sortAudits', () => {
   });
 
   it('should sort audits by value and title', () => {
-    const mockAudits: EnrichedAuditReport[] = [
+    const mockAudits = [
       { value: 1, title: 'c' },
       { value: 0, title: 'b' },
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
-    ] as EnrichedAuditReport[];
+    ] as AuditReport[];
     const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },

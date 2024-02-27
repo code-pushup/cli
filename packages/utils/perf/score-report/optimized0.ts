@@ -1,11 +1,13 @@
-import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
-import { ScoredReport } from '../../src';
 import {
-  EnrichedAuditReport,
-  EnrichedScoredGroup,
-} from '../../src/lib/reports/scoring';
+  AuditReport,
+  CategoryRef,
+  GroupRef,
+  Report,
+} from '@code-pushup/models';
+import { ScoredReport } from '../../src';
+import { EnrichedScoredGroup } from '../../src/lib/reports/scoring';
 
-function groupRefToScore(audits: EnrichedAuditReport[]) {
+function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {
     const score = audits.find(audit => audit.slug === ref.slug)?.score;
     if (score == null) {
@@ -18,15 +20,13 @@ function groupRefToScore(audits: EnrichedAuditReport[]) {
 }
 
 function categoryRefToScore(
-  audits: EnrichedAuditReport[],
+  audits: AuditReport[],
   groups: EnrichedScoredGroup[],
 ) {
   return (ref: CategoryRef) => {
     switch (ref.type) {
       case 'audit':
-        const audit = audits.find(
-          a => a.slug === ref.slug && a.plugin === ref.plugin,
-        );
+        const audit = audits.find(a => a.slug === ref.slug);
         if (!audit) {
           throw new Error(
             `Category has invalid ref - audit with slug ${ref.slug} not found in ${ref.plugin} plugin`,
