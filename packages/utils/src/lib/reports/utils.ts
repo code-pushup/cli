@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import {
+  AuditReport,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
@@ -16,7 +17,6 @@ import {
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
 import {
-  EnrichedAuditReport,
   EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
@@ -152,7 +152,6 @@ export function getAuditByRef(
   return {
     ...audit,
     weight,
-    plugin,
   };
 }
 
@@ -207,10 +206,7 @@ export function compareCategoryAudits(
   return a.title.localeCompare(b.title);
 }
 
-export function compareAudits(
-  a: EnrichedAuditReport,
-  b: EnrichedAuditReport,
-): number {
+export function compareAudits(a: AuditReport, b: AuditReport): number {
   if (a.score !== b.score) {
     return a.score - b.score;
   }

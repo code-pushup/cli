@@ -14,7 +14,6 @@ import {
   tableMd,
 } from './md';
 import {
-  EnrichedAuditReport,
   EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
@@ -103,7 +102,8 @@ function reportToCategoriesSection(report: ScoredReport): string {
         return refAcc + mdGroupItem + NEW_LINE;
       } else {
         const audit = getAuditByRef(ref, plugins);
-        const mdAuditItem = auditItemToCategorySection(audit, plugins);
+        const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+        const mdAuditItem = auditItemToCategorySection(audit, pluginTitle);
         return refAcc + mdAuditItem + NEW_LINE;
       }
     }, '');
@@ -126,9 +126,8 @@ function reportToCategoriesSection(report: ScoredReport): string {
 
 function auditItemToCategorySection(
   audit: WeighedAuditReport,
-  plugins: ScoredReport['plugins'],
+  pluginTitle: string,
 ): string {
-  const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
     `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
     audit.title,
@@ -168,7 +167,7 @@ function reportToAuditsSection(report: ScoredReport): string {
   const auditsSection = report.plugins.reduce((pluginAcc, plugin) => {
     const auditsData = plugin.audits.reduce((auditAcc, audit) => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
-        audit.plugin,
+        plugin.slug,
         report.plugins,
       )})`;
 
@@ -189,7 +188,7 @@ function reportToAuditsSection(report: ScoredReport): string {
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsSection;
 }
 
-function reportToDetailsSection(audit: EnrichedAuditReport) {
+function reportToDetailsSection(audit: AuditReport) {
   const detailsTitle = `${getSquaredScoreMarker(audit.score)} ${getAuditResult(
     audit,
     true,

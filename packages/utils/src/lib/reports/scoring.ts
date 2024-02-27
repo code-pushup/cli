@@ -9,8 +9,7 @@ import {
 } from '@code-pushup/models';
 import { deepClone } from '../transform';
 
-export type EnrichedAuditReport = AuditReport & { plugin: string };
-export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
+export type WeighedAuditReport = AuditReport & { weight: number };
 export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
   audits: AuditReport[];
 };
@@ -23,7 +22,7 @@ export type EnrichedScoredGroup = Group & {
 
 export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: EnrichedAuditReport[];
+    audits: AuditReport[];
     groups: EnrichedScoredGroup[];
   })[];
   categories: ScoredCategoryConfig[];
@@ -37,19 +36,16 @@ export class GroupRefInvalidError extends Error {
   }
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
   const allScoredAuditsAndGroups = new Map<
     string,
-    EnrichedAuditReport | EnrichedScoredGroup
+    AuditReport | EnrichedScoredGroup
   >();
 
   const scoredPlugins = report.plugins.map(plugin => {
     const { slug, audits, groups } = plugin;
 
-    const updatedAudits = audits.map(audit => ({ ...audit, plugin: slug }));
-
-    updatedAudits.forEach(audit => {
+    audits.forEach(audit => {
       allScoredAuditsAndGroups.set(`${slug}-${audit.slug}-audit`, audit);
     });
 
@@ -74,7 +70,7 @@ export function scoreReport(report: Report): ScoredReport {
       allScoredAuditsAndGroups.set(`${slug}-${group.slug}-group`, group);
     });
 
-    return { ...plugin, audits: updatedAudits, groups: scoredGroups };
+    return { ...plugin, audits, groups: scoredGroups };
   });
 
   function catScoreFn(ref: CategoryRef) {
