@@ -34,6 +34,7 @@ console.log(
 export default {
   outputDir,
   suitName: 'glob',
+  targetImplementation: 'current-implementation',
   cases: [
     ['current-implementation', wrapWithDefer(fastGlob)],
     ['glob', wrapWithDefer(glob)],

@@ -19,6 +19,7 @@ import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
+import {suitNameToCategoryRef} from "./examples/plugins/src/benchmark-js/src";
 
 // load upload configuration from environment
 const envSchema = z
@@ -31,7 +32,7 @@ const envSchema = z
   .partial();
 const env = await envSchema.parseAsync(process.env);
 
-const benchmarkJsSuits = ['glob' /*'crawl-file-system', 'score-report'*/];
+const benchmarkJsSuitNames = ['glob' /*,'crawl-file-system', 'score-report'*/];
 
 const config: CoreConfig = {
   persist: {
@@ -86,8 +87,9 @@ const config: CoreConfig = {
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
     }),
+
     await benchmarkJsPlugin({
-      suits: benchmarkJsSuits,
+      suits: benchmarkJsSuitNames,
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
       targetFolder: join('packages', 'utils', 'perf'),
     }),
@@ -126,12 +128,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuits.map(suit => ({
-          type: 'group',
-          plugin: 'benchmark-js',
-          slug: `${suit}-benchmark-js`,
-          weight: suit === ('current-implementation') ? 2 : 1,
-        })),
+        ...benchmarkJsSuitNames.map(suitNameToCategoryRef),
       ],
     },
   ],

@@ -1,5 +1,4 @@
 import { join } from 'node:path';
-import { n } from 'vitest/dist/types-198fd1d9';
 import {
   Audit,
   AuditOutput,
@@ -50,11 +49,11 @@ export async function create(
   const { suits: suitNames, tsconfig, targetFolder } = options;
   const suits = await Promise.all(
     suitNames.map(async (suitName: string) => {
-      const r = (await importEsmModule({
+      const options = (await importEsmModule({
         tsconfig,
         filepath: join(targetFolder, suitName, 'index.ts'),
       })) as SuitOptions;
-      return r;
+      return options;
     }),
   );
 
@@ -105,18 +104,28 @@ export function runnerFunction(
     );
 
     return allSuitResults.flatMap(results => {
-      const { suitName = '', hz: maxHz = 0 } =
-        results.find(({ isFastest }) => isFastest === 1) ?? {};
-
-      return results.map(
-        ({ name, hz }) =>
-          ({
-            slug: toAuditSlug(suitName, name),
-            displayValue: `${hz.toFixed(3)} ops/sec`,
-            score: hz / maxHz,
-            value: parseInt(hz.toString(), 10),
-          } satisfies AuditOutput),
-      );
+      const { hz: maxHz = 0 } =
+        results.find(({ isFastest }) => isFastest) ?? {};
+      const target =  results.find(({ isTarget }) => isTarget) ?? {} as BenchmarkResult;
+      return scoredAuditOutput(target, maxHz);
     });
   };
 }
+
+/**
+ * scoring of js computation time can be used in 2 ways:
+ * - many implementations against the current implementation to maintain the fastest (score is 100 based on fastest)
+ * - testing many implementations/libs to pick the fastest
+ * @param result
+ */
+export function scoredAuditOutput(result: BenchmarkResult, maxHz: number ): AuditOutput {
+  const {suitName, name, hz} = result;
+  return {
+    slug: toAuditSlug(suitName, name),
+    displayValue: `${hz.toFixed(3)} ops/sec`,
+    // score is based on fastest implementation (fastest is 100%)
+    score: hz / maxHz,
+    value: parseInt(hz.toString(), 10),
+  };
+}
+

@@ -11,6 +11,7 @@ import {
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from '../../dist/examples/plugins';
+import {suitNameToCategoryRef} from "./src/benchmark-js/src";
 
 /**
  * Run it with:
@@ -45,7 +46,7 @@ const config = {
       verbose: true,
     }),
     await benchmarkJsPlugin({
-      suits: ['glob'],
+      suits: benchmarkJsSuits,
       tsconfig: join('examples', 'plugins', 'tsconfig.lib.ts'),
       targetFolder: join('examples', 'plugins', 'src', 'benchmark-js', 'perf'),
     }),
@@ -58,12 +59,7 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuits.map(suit => ({
-          type: 'group',
-          plugin: 'benchmark-js',
-          slug: `${suit}-benchmark-js`,
-          weight: suit === 'current-implementation' ? 2 : 1,
-        })),
+        ...suitNameToCategoryRef(benchmarkJsSuits),
       ],
     },
     {

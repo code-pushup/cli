@@ -4,12 +4,14 @@ import { BenchmarkResult } from './utils';
 export type SuitOptions = {
   tsconfig?: string;
   suitName: string;
+  targetImplementation: string;
   cases: [string, () => void][];
   verbose?: true;
 };
 
 export async function runSuit({
   verbose = true,
+  targetImplementation,
   suitName,
   cases,
 }: SuitOptions): Promise<BenchmarkResult[]> {
@@ -35,7 +37,8 @@ export async function runSuit({
               hz: bench.hz ?? 0, // operations per second
               rme: bench.stats?.rme ?? 0, // relative margin of error
               samples: bench.stats?.sample.length ?? 0, // number of samples
-              isFastest: fastest === bench.name ? 1 : 0,
+              isFastest: fastest === bench.name,
+              isTarget: targetImplementation === bench.name,
             } satisfies BenchmarkResult),
         );
 
