@@ -1,84 +1,45 @@
-import * as Benchmark from 'benchmark';
 import { join } from 'node:path';
+import yargs from 'yargs';
 import {
-  CrawlFileSystemOptions,
+  type CrawlFileSystemOptions,
   crawlFileSystem,
 } from '../../src/lib/file-system';
 import { crawlFileSystemFsWalk } from './fs-walk';
 
-const PROCESS_ARGUMENT_TARGET_DIRECTORY =
-  process.argv
-    .find(arg => arg.startsWith('--directory'))
-    ?.split('=')
-    .at(-1) ?? '';
-const PROCESS_ARGUMENT_PATTERN =
-  process.argv
-    .find(arg => arg.startsWith('--pattern'))
-    ?.split('=')
-    .at(-1) ?? '';
-
-const suite = new Benchmark.Suite('report-scoring');
-
-const TARGET_DIRECTORY =
-  PROCESS_ARGUMENT_TARGET_DIRECTORY ||
-  join(process.cwd(), '..', '..', '..', 'node_modules');
-const PATTERN = PROCESS_ARGUMENT_PATTERN || /.json$/;
-
-// ==================
-
-const start = performance.now();
-
-// Add listener
-const listeners = {
-  cycle: function (event: Benchmark.Event) {
-    console.info(String(event.target));
+const cli = yargs(process.argv).options({
+  directory: {
+    type: 'string',
+    default: join(process.cwd(), '..', '..', '..', 'node_modules'),
   },
-  complete: () => {
-    if (typeof suite.filter === 'function') {
-      console.info(' ');
-      console.info(
-        `Total Duration: ${((performance.now() - start) / 1000).toFixed(
-          2,
-        )} sec`,
-      );
-      console.info(`Fastest is ${String(suite.filter('fastest').map('name'))}`);
-    }
+  pattern: {
+    type: 'string',
+    default: '.json$',
   },
-};
-
-// ==================
-
-// Add tests
-const options = {
-  directory: TARGET_DIRECTORY,
-  pattern: PATTERN,
-};
-suite.add('Base', wrapWithDefer(crawlFileSystem));
-suite.add('nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk));
-
-// ==================
-
-// Add Listener
-Object.entries(listeners).forEach(([name, fn]) => {
-  suite.on(name, fn);
+  verbose: {
+    type: 'boolean',
+    default: false,
+  },
+  outputDir: {
+    type: 'string',
+    default: '.code-pushup',
+  },
 });
+const { directory, pattern, verbose } = cli.parseSync();
 
-// ==================
+verbose &&
+  console.info(
+    'You can adjust the test with the following arguments:' +
+      `directory      target directory of test      --directory=${directory}` +
+      `pattern        pattern to search             --pattern=${pattern}`,
+  );
 
-console.info('You can adjust the test with the following arguments:');
-console.info(
-  `directory      target directory of test      --directory=${TARGET_DIRECTORY}`,
-);
-console.info(
-  `pattern        pattern to search             --pattern=${PATTERN}`,
-);
-console.info(' ');
-console.info('Start benchmark...');
-console.info(' ');
-
-suite.run({
-  async: true,
-});
+export default {
+  suitName: 'crawl-file-system',
+  cases: [
+    ['@code-pushup/utils#crawlFileSystem', wrapWithDefer(crawlFileSystem)],
+    ['nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk)],
+  ],
+};
 
 // ==============================================================
 
@@ -88,11 +49,14 @@ function wrapWithDefer<T>(
   return {
     defer: true, // important for async functions
     fn: function (deferred: { resolve: () => void }) {
-      return asyncFn(options)
+      return asyncFn({ directory, pattern })
         .catch(() => [])
         .then((result: unknown[]) => {
+          // custom validation based on the case result
           if (result.length === 0) {
-            throw new Error(`Result length is ${result.length}`);
+            throw new Error(
+              `Result length is ${result.length}. If the test result returns 0 hits the logic or configuration might be wrong.`,
+            );
           } else {
             deferred.resolve();
           }

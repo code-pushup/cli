@@ -43,7 +43,7 @@ export async function create(
   } & BenchmarkJSRunnerOptions,
 ): Promise<PluginConfig> {
   const { suits: suitNames, tsconfig, targetFolder } = options;
-  const results = await Promise.all(
+  const suits = await Promise.all(
     suitNames.map(async (suitName: string) => {
       const r = (await importEsmModule({
         tsconfig,
@@ -53,7 +53,7 @@ export async function create(
     }),
   );
 
-  const audits = results.flatMap(({ suitName, cases }) =>
+  const audits = suits.flatMap(({ suitName, cases }) =>
     cases.map(
       ([name]) =>
         ({
@@ -68,7 +68,7 @@ export async function create(
     title: 'Benchmark JS',
     icon: 'flash',
     audits,
-    groups: results.map(
+    groups: suits.map(
       ({ suitName, cases }) =>
         ({
           slug: `${slugify(suitName)}-benchmark-js`,
@@ -80,7 +80,7 @@ export async function create(
           })),
         } satisfies Group),
     ),
-    runner: runnerFunction({ ...options, suits: results }),
+    runner: runnerFunction({ ...options, suits: suits }),
   } satisfies PluginConfig;
 }
 

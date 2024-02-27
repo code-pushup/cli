@@ -11,13 +11,13 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
+import { benchmarkJsPlugin } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
-import { benchmarkJsPlugin } from './dist/examples/plugins';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
@@ -30,6 +30,8 @@ const envSchema = z
   })
   .partial();
 const env = await envSchema.parseAsync(process.env);
+
+const benchmarkJsSuits = ['glob' /*'crawl-file-system', 'score-report'*/];
 
 const config: CoreConfig = {
   persist: {
@@ -85,7 +87,7 @@ const config: CoreConfig = {
       headless: true,
     }),
     await benchmarkJsPlugin({
-      suits: ['glob'],
+      suits: benchmarkJsSuits,
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
       targetFolder: join('packages', 'utils', 'perf'),
     }),
@@ -124,12 +126,12 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        {
+        ...benchmarkJsSuits.map(suit => ({
           type: 'group',
           plugin: 'benchmark-js',
-          slug: 'glob-benchmark-js',
+          slug: `${suit}-benchmark-js`,
           weight: 1,
-        }
+        })),
       ],
     },
   ],
