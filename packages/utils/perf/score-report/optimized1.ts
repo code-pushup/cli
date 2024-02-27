@@ -5,7 +5,7 @@ import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
 import {
   ScoredCategoryConfig,
   ScoredReport,
-} from '../../src/lib/reports/utils';
+} from '../../src/lib/reports/types';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

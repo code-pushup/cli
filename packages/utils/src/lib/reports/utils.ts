@@ -1,14 +1,12 @@
 import { join } from 'node:path';
 import {
   AuditReport,
-  CategoryConfig,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
   Group,
   Issue,
   PersistConfig,
-  PluginReport,
   Report,
   reportSchema,
 } from '@code-pushup/models';
@@ -18,32 +16,7 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
-
-export type WeighedScoredGroup = EnrichedScoredGroupWithAudits & {
-  weight: number;
-};
-
-export type WeighedAuditReport = AuditReport & {
-  weight: number;
-  plugin: string;
-};
-export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
-  audits: AuditReport[];
-};
-export type ScoredCategoryConfig = CategoryConfig & { score: number };
-
-export type EnrichedScoredGroup = Group & {
-  plugin: string;
-  score: number;
-};
-
-export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
-  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: AuditReport[];
-    groups: EnrichedScoredGroup[];
-  })[];
-  categories: ScoredCategoryConfig[];
-};
+import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -158,10 +131,10 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getAuditByRef(
+export function getSortableAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
-): WeighedAuditReport {
+): SortableAuditReport {
   const auditPlugin = plugins.find(p => p.slug === plugin);
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
@@ -179,42 +152,60 @@ export function getAuditByRef(
   };
 }
 
-export function getGroupWithAudits(
-  ref: CategoryRef,
+export function getSortableGroupByRef(
+  { plugin, slug, weight }: CategoryRef,
   plugins: ScoredReport['plugins'],
-): WeighedScoredGroup {
-  const plugin = plugins.find(({ slug }) => slug === ref.plugin);
-  if (!plugin) {
-    throwIsNotPresentError(`Plugin ${ref.plugin}`, 'report');
+): SortableGroup {
+  const groupPlugin = plugins.find(p => p.slug === plugin);
+  if (!groupPlugin) {
+    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
-  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === ref.slug);
 
-  if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${ref.slug}`, plugin.slug);
-  }
-  const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
-    (acc: WeighedAuditReport[], groupRef) => {
-      const audit = getAuditByRef(
-        { ...groupRef, plugin: ref.plugin, type: 'audit' },
-        plugins,
-      );
-      return [...acc, audit];
-    },
-    [],
+  const group = groupPlugin.groups?.find(
+    ({ slug: groupSlug }) => groupSlug === slug,
   );
-  const audits = [...groupAudits].sort(compareCategoryAuditsAndGroups);
+  if (!group) {
+    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
+  }
+
+  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
+  const sortedAuditRefs = [...group.refs].sort((a, b) => {
+    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
+    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
+    return aIndex - bIndex;
+  });
 
   return {
-    ...groupWithAudits,
-    audits,
-    weight: ref.weight,
-    plugin: ref.plugin,
+    ...group,
+    refs: sortedAuditRefs,
+    plugin,
+    weight,
   };
 }
 
+export function getSortedGroupAudits(
+  group: Group,
+  plugin: string,
+  plugins: ScoredReport['plugins'],
+): SortableAuditReport[] {
+  return group.refs
+    .map(ref =>
+      getSortableAuditByRef(
+        {
+          plugin,
+          slug: ref.slug,
+          weight: ref.weight,
+          type: 'audit',
+        },
+        plugins,
+      ),
+    )
+    .sort(compareCategoryAuditsAndGroups);
+}
+
 export function compareCategoryAuditsAndGroups(
-  a: WeighedAuditReport | WeighedScoredGroup,
-  b: WeighedAuditReport | WeighedScoredGroup,
+  a: SortableAuditReport | SortableGroup,
+  b: SortableAuditReport | SortableGroup,
 ): number {
   if (a.weight !== b.weight) {
     return b.weight - a.weight;

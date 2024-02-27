@@ -4,7 +4,7 @@ import {
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { EnrichedScoredGroup, ScoredReport } from '../../src/lib/reports/utils';
+import { ScoredGroup, ScoredReport } from '../../src/lib/reports/types';
 
 function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {
@@ -18,10 +18,7 @@ function groupRefToScore(audits: AuditReport[]) {
   };
 }
 
-function categoryRefToScore(
-  audits: AuditReport[],
-  groups: EnrichedScoredGroup[],
-) {
+function categoryRefToScore(audits: AuditReport[], groups: ScoredGroup[]) {
   return (ref: CategoryRef) => {
     switch (ref.type) {
       case 'audit':
@@ -34,9 +31,7 @@ function categoryRefToScore(
         return audit.score;
 
       case 'group':
-        const group = groups.find(
-          g => g.slug === ref.slug && g.plugin === ref.plugin,
-        );
+        const group = groups.find(g => g.slug === ref.slug);
         if (!group) {
           throw new Error(
             `Category has invalid ref - group with slug ${ref.slug} not found in ${ref.plugin} plugin`,

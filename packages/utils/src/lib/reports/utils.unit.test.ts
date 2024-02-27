@@ -2,9 +2,8 @@ import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
+import { ScoredReport, SortableAuditReport } from './types';
 import {
-  ScoredReport,
-  WeighedAuditReport,
   calcDuration,
   compareAudits,
   compareCategoryAuditsAndGroups,
@@ -146,7 +145,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { weight: 5, score: 1 },
       { weight: 0, score: 0.7 },
       { weight: 10, score: 1 },
-    ] as WeighedAuditReport[];
+    ] as SortableAuditReport[];
     const sortedAudits = [...mockAudits].sort(compareCategoryAuditsAndGroups);
     expect(sortedAudits).toEqual([
       { weight: 10, score: 1 },
@@ -162,7 +161,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { score: 1, value: 1 },
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
-    ] as WeighedAuditReport[];
+    ] as SortableAuditReport[];
     const sortedAudits = [...mockAudits].sort(compareCategoryAuditsAndGroups);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
@@ -178,7 +177,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { value: 0, title: 'b' },
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
-    ] as WeighedAuditReport[];
+    ] as SortableAuditReport[];
     const sortedAudits = [...mockAudits].sort(compareCategoryAuditsAndGroups);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },
