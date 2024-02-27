@@ -62,7 +62,7 @@ const config = {
           type: 'group',
           plugin: 'benchmark-js',
           slug: `${suit}-benchmark-js`,
-          weight: suit === 'current-implementation' ? 1 : 0,
+          weight: suit === 'current-implementation' ? 2 : 1,
         })),
       ],
     },
