@@ -106,7 +106,7 @@ export function runnerFunction(
         ({ name = '', hz = 0 }) =>
           ({
             slug: toAuditSlug(suitName, name),
-            displayValue: `${hz} ops/sec`,
+            displayValue: `${hz.toFixed(3)} ops/sec`,
             score: name === 'current-implementation' ? 1 : 0,
             value: parseInt(hz.toString(), 10),
           } satisfies AuditOutput),
