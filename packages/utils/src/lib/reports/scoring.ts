@@ -5,7 +5,7 @@ import {
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform';
-import { EnrichedScoredGroup, ScoredReport } from './utils';
+import { ScoredGroup, ScoredReport } from './types';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {
@@ -16,10 +16,7 @@ export class GroupRefInvalidError extends Error {
 }
 
 export function scoreReport(report: Report): ScoredReport {
-  const allScoredAuditsAndGroups = new Map<
-    string,
-    AuditReport | EnrichedScoredGroup
-  >();
+  const allScoredAuditsAndGroups = new Map<string, AuditReport | ScoredGroup>();
 
   const scoredPlugins = report.plugins.map(plugin => {
     const { slug, audits, groups } = plugin;
@@ -42,7 +39,6 @@ export function scoreReport(report: Report): ScoredReport {
       groups?.map(group => ({
         ...group,
         score: calculateScore(group.refs, groupScoreFn),
-        plugin: slug,
       })) ?? [];
 
     scoredGroups.forEach(group => {
@@ -67,6 +63,7 @@ export function scoreReport(report: Report): ScoredReport {
     ...category,
     score: calculateScore(category.refs, catScoreFn),
   }));
+
   return {
     ...deepClone(report),
     plugins: scoredPlugins,

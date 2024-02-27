@@ -1,14 +1,16 @@
 import { AuditReport, CategoryRef, PluginReport } from '@code-pushup/models';
 import {
-  EnrichedScoredGroup,
+  ScoredGroup,
   ScoredReport,
-  WeighedAuditReport,
-  WeighedScoredGroup,
+  SortableAuditReport,
+  SortableGroup,
+} from './types';
+import {
   compareAudits,
   compareCategoryAuditsAndGroups,
   compareIssues,
-  getAuditByRef,
-  getGroupWithAudits,
+  getSortableAuditByRef,
+  getSortableGroupByRef,
 } from './utils';
 
 export function sortReport(report: ScoredReport): ScoredReport {
@@ -17,18 +19,18 @@ export function sortReport(report: ScoredReport): ScoredReport {
     const { audits, groups } = category.refs.reduce(
       (
         acc: {
-          audits: WeighedAuditReport[];
-          groups: WeighedScoredGroup[];
+          audits: SortableAuditReport[];
+          groups: SortableGroup[];
         },
         ref: CategoryRef,
       ) => ({
         ...acc,
         ...(ref.type === 'group'
           ? {
-              groups: [...acc.groups, getGroupWithAudits(ref, plugins)],
+              groups: [...acc.groups, getSortableGroupByRef(ref, plugins)],
             }
           : {
-              audits: [...acc.audits, getAuditByRef(ref, plugins)],
+              audits: [...acc.audits, getSortableAuditByRef(ref, plugins)],
             }),
       }),
       { groups: [], audits: [] },
@@ -60,7 +62,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
 function sortPlugins(
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
     audits: AuditReport[];
-    groups: EnrichedScoredGroup[];
+    groups: ScoredGroup[];
   })[],
 ) {
   return plugins.map(plugin => ({

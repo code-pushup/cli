@@ -8,10 +8,7 @@ import {
 } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
 import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
-import {
-  EnrichedScoredGroup,
-  ScoredCategoryConfig,
-} from '../../src/lib/reports/utils';
+import { ScoredCategoryConfig, ScoredGroup } from '../../src/lib/reports/types';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],
@@ -48,10 +45,7 @@ export function deepClone<T>(obj: T): T {
 
 export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
-  const allScoredAuditsAndGroups = new Map<
-    string,
-    AuditReport | EnrichedScoredGroup
-  >();
+  const allScoredAuditsAndGroups = new Map<string, AuditReport | ScoredGroup>();
 
   scoredReport.plugins?.forEach(plugin => {
     const { audits, slug } = plugin;
@@ -75,7 +69,6 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
     groups.forEach(group => {
       const key = `${slug}-${group.slug}-group`;
       group.score = calculateScore(group.refs, groupScoreFn);
-      group.plugin = slug;
       allScoredAuditsAndGroups.set(key, group);
     });
     plugin.groups = groups;

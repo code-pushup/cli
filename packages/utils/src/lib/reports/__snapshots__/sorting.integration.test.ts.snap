@@ -194,7 +194,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
       "duration": 624,
       "groups": [
         {
-          "plugin": "eslint",
           "refs": [
             {
               "slug": "typescript-eslint-typing",
@@ -214,7 +213,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "title": "TypeScript ESLint",
         },
         {
-          "plugin": "eslint",
           "refs": [
             {
               "slug": "typescript-eslint-experimental",
