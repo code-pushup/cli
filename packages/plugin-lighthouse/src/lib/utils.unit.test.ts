@@ -82,7 +82,7 @@ describe('toAuditOutputs', () => {
     ]);
   });
 
-  it('should not parse lhr details debugdata', () => {
+  it('should inform that debugdata type is not supported yet', () => {
     const outputs = toAuditOutputs({
       audit: {
         scoreDisplayMode: 'binary',
@@ -130,12 +130,19 @@ describe('toAuditOutputs', () => {
       },
     });
 
-    expect(outputs[0]?.details?.issues[0]).toEqual(
+    expect(outputs).toStrictEqual([
       expect.objectContaining({
-        message: 'Parsing details from type filmstrip is not implemented.',
-        severity: 'info',
+        details: {
+          issues: [
+            {
+              message:
+                'Parsing details from type criticalrequestchain is not implemented.',
+              severity: 'info',
+            },
+          ],
+        },
       }),
-    );
+    ]);
   });
 
   it('should parse valid lhr details screenshot', () => {
@@ -287,7 +294,7 @@ describe('tableToDetails', () => {
 });
 
 describe('opportunityToDetails', () => {
-  it('should parse valid lhr details', () => {
+  it('should parse a valid non-empty lhr opportunity type', () => {
     expect(
       opportunityToDetails({
         type: 'opportunity',
