@@ -29,7 +29,7 @@ export type PluginOptions = { verbose: boolean } & {
  *       slug: 'performance',
  *       title: 'Performance',
  *       refs: [
- *         ...jsBenchmarkPluginRecommended
+ *         ...jsBenchmarkPluginRecommended(suits)
  *       ]
  *     }
  *   ]
