@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
 // Note: The plugins of the ScoredReport are not structured correctly, hence the ESLint disables.
 import { Report } from '@code-pushup/models';
-import { ScoredReport } from '../../src';
+import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
 import {
-  GroupRefInvalidError,
   ScoredCategoryConfig,
-} from '../../src/lib/reports/scoring';
+  ScoredReport,
+} from '../../src/lib/reports/utils';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

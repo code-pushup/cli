@@ -7,11 +7,11 @@ import {
   Report,
 } from '@code-pushup/models';
 import { ScoredReport } from '../../src';
+import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
 import {
   EnrichedScoredGroup,
-  GroupRefInvalidError,
   ScoredCategoryConfig,
-} from '../../src/lib/reports/scoring';
+} from '../../src/lib/reports/utils';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

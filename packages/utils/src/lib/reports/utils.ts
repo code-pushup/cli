@@ -1,12 +1,14 @@
 import { join } from 'node:path';
 import {
   AuditReport,
+  CategoryConfig,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
   Group,
   Issue,
   PersistConfig,
+  PluginReport,
   Report,
   reportSchema,
 } from '@code-pushup/models';
@@ -16,11 +18,32 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
-import {
-  EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+
+export type WeighedScoredGroup = EnrichedScoredGroupWithAudits & {
+  weight: number;
+};
+
+export type WeighedAuditReport = AuditReport & {
+  weight: number;
+  plugin: string;
+};
+export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
+  audits: AuditReport[];
+};
+export type ScoredCategoryConfig = CategoryConfig & { score: number };
+
+export type EnrichedScoredGroup = Group & {
+  plugin: string;
+  score: number;
+};
+
+export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
+  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
+    audits: AuditReport[];
+    groups: EnrichedScoredGroup[];
+  })[];
+  categories: ScoredCategoryConfig[];
+};
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
@@ -152,44 +175,46 @@ export function getAuditByRef(
   return {
     ...audit,
     weight,
+    plugin,
   };
 }
 
 export function getGroupWithAudits(
-  refSlug: string,
-  refPlugin: string,
+  ref: CategoryRef,
   plugins: ScoredReport['plugins'],
-): EnrichedScoredGroupWithAudits {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin);
+): WeighedScoredGroup {
+  const plugin = plugins.find(({ slug }) => slug === ref.plugin);
   if (!plugin) {
-    throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
+    throwIsNotPresentError(`Plugin ${ref.plugin}`, 'report');
   }
-  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === refSlug);
+  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === ref.slug);
 
   if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin.slug);
+    throwIsNotPresentError(`Group ${ref.slug}`, plugin.slug);
   }
   const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
-    (acc: WeighedAuditReport[], ref) => {
+    (acc: WeighedAuditReport[], groupRef) => {
       const audit = getAuditByRef(
-        { ...ref, plugin: refPlugin, type: 'audit' },
+        { ...groupRef, plugin: ref.plugin, type: 'audit' },
         plugins,
       );
       return [...acc, audit];
     },
     [],
   );
-  const audits = [...groupAudits].sort(compareCategoryAudits);
+  const audits = [...groupAudits].sort(compareCategoryAuditsAndGroups);
 
   return {
     ...groupWithAudits,
     audits,
+    weight: ref.weight,
+    plugin: ref.plugin,
   };
 }
 
-export function compareCategoryAudits(
-  a: WeighedAuditReport,
-  b: WeighedAuditReport,
+export function compareCategoryAuditsAndGroups(
+  a: WeighedAuditReport | WeighedScoredGroup,
+  b: WeighedAuditReport | WeighedScoredGroup,
 ): number {
   if (a.weight !== b.weight) {
     return b.weight - a.weight;
@@ -199,7 +224,7 @@ export function compareCategoryAudits(
     return a.score - b.score;
   }
 
-  if (a.value !== b.value) {
+  if ('value' in a && 'value' in b && a.value !== b.value) {
     return b.value - a.value;
   }
 

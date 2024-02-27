@@ -44,6 +44,12 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
         },
         {
           "plugin": "eslint",
+          "slug": "typescript-eslint-extra",
+          "type": "group",
+          "weight": 0,
+        },
+        {
+          "plugin": "eslint",
           "slug": "eslint-cypress",
           "type": "audit",
           "weight": 0,
@@ -206,6 +212,18 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "score": 0.25,
           "slug": "typescript-eslint",
           "title": "TypeScript ESLint",
+        },
+        {
+          "plugin": "eslint",
+          "refs": [
+            {
+              "slug": "typescript-eslint-experimental",
+              "weight": 1,
+            },
+          ],
+          "score": 0,
+          "slug": "typescript-eslint-extra",
+          "title": "TypeScript ESLint Extra",
         },
       ],
       "icon": "eslint",
