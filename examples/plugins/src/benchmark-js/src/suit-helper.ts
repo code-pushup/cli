@@ -1,13 +1,6 @@
 import { type Event, type Target } from 'benchmark';
+import { BenchmarkResult } from './utils';
 
-export type BenchmarkResult = {
-  suitName: string;
-  name: string;
-  hz: number; // operations per second
-  rme: number; // relative margin of error
-  samples: number;
-  isFastest: number;
-};
 export type SuitOptions = {
   tsconfig?: string;
   suitName: string;

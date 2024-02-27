@@ -20,6 +20,7 @@ import {
  * - For better debugging use `--verbose --no-progress`
  *
  */
+const benchmarkJsSuits = ['glob'];
 
 const config = {
   plugins: [
@@ -57,6 +58,12 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
+        ...benchmarkJsSuits.map(suit => ({
+          type: 'group',
+          plugin: 'benchmark-js',
+          slug: `${suit}-benchmark-js`,
+          weight: suit === 'current-implementation' ? 1 : 0,
+        })),
       ],
     },
     {

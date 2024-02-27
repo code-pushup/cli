@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { n } from 'vitest/dist/types-198fd1d9';
 import {
   Audit,
   AuditOutput,
@@ -9,7 +10,11 @@ import {
 } from '@code-pushup/models';
 import { importEsmModule, slugify } from '@code-pushup/utils';
 import { SuitOptions, runSuit } from './suit-helper';
-import { BenchmarkJSRunnerOptions, toAuditSlug } from './utils';
+import {
+  BenchmarkJSRunnerOptions,
+  BenchmarkResult,
+  toAuditSlug,
+} from './utils';
 
 export type PluginOptions = { verbose: boolean } & {
   suits: string[];
@@ -93,21 +98,22 @@ export function runnerFunction(
   return async (): Promise<AuditOutputs> => {
     const { suits } = options;
 
-    const allResults = await Promise.all(
+    const allSuitResults = await Promise.all(
       suits.map(async suit => {
         return runSuit(suit);
       }),
     );
 
-    return allResults.flatMap(results => {
-      const { suitName = '' } =
+    return allSuitResults.flatMap(results => {
+      const { suitName = '', hz: maxHz = 0 } =
         results.find(({ isFastest }) => isFastest === 1) ?? {};
+
       return results.map(
-        ({ name = '', hz = 0 }) =>
+        ({ name, hz }) =>
           ({
             slug: toAuditSlug(suitName, name),
             displayValue: `${hz.toFixed(3)} ops/sec`,
-            score: name === 'current-implementation' ? 1 : 0,
+            score: hz / maxHz,
             value: parseInt(hz.toString(), 10),
           } satisfies AuditOutput),
       );

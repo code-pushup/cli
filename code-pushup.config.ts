@@ -130,7 +130,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'benchmark-js',
           slug: `${suit}-benchmark-js`,
-          weight: suit === 'current-implementation' ? 1 : 0,
+          weight: 1,
         })),
       ],
     },
