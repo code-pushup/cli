@@ -10,9 +10,15 @@ const CATEGORIES_MAP = {
     refs: [
       {
         type: 'group',
-        plugin: 'lighthouse',
+        plugin: 'eslint',
         slug: 'performance',
         weight: 1,
+      },
+      {
+        type: 'group',
+        plugin: 'lighthouse',
+        slug: 'performance',
+        weight: 4,
       },
       eslintAuditRefMock('react-jsx-key', 0),
     ],

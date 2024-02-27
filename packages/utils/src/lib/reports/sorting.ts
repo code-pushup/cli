@@ -1,13 +1,11 @@
 import { AuditReport, CategoryRef, PluginReport } from '@code-pushup/models';
 import {
   EnrichedScoredGroup,
-  EnrichedScoredGroupWithAudits,
   ScoredReport,
   WeighedAuditReport,
-} from './scoring';
-import {
+  WeighedScoredGroup,
   compareAudits,
-  compareCategoryAudits,
+  compareCategoryAuditsAndGroups,
   compareIssues,
   getAuditByRef,
   getGroupWithAudits,
@@ -20,17 +18,14 @@ export function sortReport(report: ScoredReport): ScoredReport {
       (
         acc: {
           audits: WeighedAuditReport[];
-          groups: EnrichedScoredGroupWithAudits[];
+          groups: WeighedScoredGroup[];
         },
         ref: CategoryRef,
       ) => ({
         ...acc,
         ...(ref.type === 'group'
           ? {
-              groups: [
-                ...acc.groups,
-                getGroupWithAudits(ref.slug, ref.plugin, plugins),
-              ],
+              groups: [...acc.groups, getGroupWithAudits(ref, plugins)],
             }
           : {
               audits: [...acc.audits, getAuditByRef(ref, plugins)],
@@ -38,16 +33,16 @@ export function sortReport(report: ScoredReport): ScoredReport {
       }),
       { groups: [], audits: [] },
     );
-    const sortedAuditsAndGroups = [
-      ...groups,
-      ...[...audits].sort(compareCategoryAudits),
-    ];
+    const sortedAuditsAndGroups = [...audits, ...groups].sort(
+      compareCategoryAuditsAndGroups,
+    );
+
     const sortedRefs = [...category.refs].sort((a, b) => {
       const aIndex = sortedAuditsAndGroups.findIndex(
-        ref => ref.slug === a.slug,
+        ref => ref.slug === a.slug && ref.plugin === a.plugin,
       );
       const bIndex = sortedAuditsAndGroups.findIndex(
-        ref => ref.slug === b.slug,
+        ref => ref.slug === b.slug && ref.plugin === b.plugin,
       );
       return aIndex - bIndex;
     });

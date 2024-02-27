@@ -1,32 +1,11 @@
 import {
   AuditReport,
-  CategoryConfig,
   CategoryRef,
-  Group,
   GroupRef,
-  PluginReport,
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform';
-
-export type WeighedAuditReport = AuditReport & { weight: number };
-export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
-  audits: AuditReport[];
-};
-export type ScoredCategoryConfig = CategoryConfig & { score: number };
-
-export type EnrichedScoredGroup = Group & {
-  plugin: string;
-  score: number;
-};
-
-export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
-  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: AuditReport[];
-    groups: EnrichedScoredGroup[];
-  })[];
-  categories: ScoredCategoryConfig[];
-};
+import { EnrichedScoredGroup, ScoredReport } from './utils';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {

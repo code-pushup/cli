@@ -15,12 +15,10 @@ import {
 } from './md';
 import {
   EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
-import {
   FOOTER_PREFIX,
   README_LINK,
+  ScoredReport,
+  WeighedAuditReport,
   countCategoryAudits,
   detailsTableHeaders,
   formatReportScore,
@@ -97,7 +95,7 @@ function reportToCategoriesSection(report: ScoredReport): string {
     const categoryDocs = getDocsAndDescription(category);
     const categoryMDItems = category.refs.reduce((refAcc, ref) => {
       if (ref.type === 'group') {
-        const group = getGroupWithAudits(ref.slug, ref.plugin, plugins);
+        const group = getGroupWithAudits(ref, plugins);
         const mdGroupItem = groupItemToCategorySection(group, plugins);
         return refAcc + mdGroupItem + NEW_LINE;
       } else {

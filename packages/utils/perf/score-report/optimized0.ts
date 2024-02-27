@@ -4,8 +4,7 @@ import {
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { ScoredReport } from '../../src';
-import { EnrichedScoredGroup } from '../../src/lib/reports/scoring';
+import { EnrichedScoredGroup, ScoredReport } from '../../src/lib/reports/utils';
 
 function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {
