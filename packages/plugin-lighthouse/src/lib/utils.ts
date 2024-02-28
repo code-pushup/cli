@@ -103,7 +103,9 @@ export function toAuditOutputs(
         displayValue,
       };
 
-      if (details != null) {
+      if (details == null) {
+        return auditOutput;
+      } else {
         const type = details.type;
         switch (type) {
           case 'opportunity':
@@ -131,8 +133,6 @@ export function toAuditOutputs(
             };
         }
       }
-
-      return auditOutput;
     },
   );
 }
