@@ -23,7 +23,6 @@
       "@code-pushup/core": ["packages/core/src/index.ts"],
       "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
       "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
-      "@code-pushup/examples-plugins": ["examples/plugins/src/index.ts"],
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
