@@ -86,7 +86,7 @@ type UnsupportedDetail =
 type UnsupportedDetailTypes = UnsupportedDetail['type'];
 
 export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
-  return Object.values(lhrAudits).map(
+  return lhrAudits.map(
     ({
       id: slug,
       score,
