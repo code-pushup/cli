@@ -24,22 +24,24 @@ const cli = yargs(process.argv).options({
     default: '.code-pushup',
   },
 });
-const { directory, pattern, verbose } = cli.parseSync();
+const { directory, pattern, verbose } = await cli.parseAsync();
 
-verbose &&
+if (verbose) {
   console.info(
     'You can adjust the test with the following arguments:' +
       `directory      target directory of test      --directory=${directory}` +
       `pattern        pattern to search             --pattern=${pattern}`,
   );
+}
 
-export default {
+const suitConfig = {
   suitName: 'crawl-file-system',
   cases: [
     ['@code-pushup/utils#crawlFileSystem', wrapWithDefer(crawlFileSystem)],
     ['nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk)],
   ],
 };
+export default suitConfig;
 
 // ==============================================================
 

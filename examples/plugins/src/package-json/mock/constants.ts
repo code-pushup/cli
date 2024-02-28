@@ -1,7 +1,4 @@
-import {
-  PackageJson,
-  SourceResult,
-} from '../src/package-json/src/integration/types';
+import { PackageJson, SourceResult } from '../src/integration/types';
 
 export const packageJsonName = 'package.json';
 export const packageJson: PackageJson = {

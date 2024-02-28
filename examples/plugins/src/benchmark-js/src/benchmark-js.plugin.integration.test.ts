@@ -1,41 +1,56 @@
-import { describe, expect, it } from 'vitest';
-import { pluginConfigSchema } from '@code-pushup/models';
+import { describe, expect } from 'vitest';
+import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { create } from './benchmark-js.plugin';
+import { BenchmarkResult } from './suit-helper';
 
-describe('lighthouse-create-export-config', () => {
-  it('should return valid PluginConfig if create is called', () => {
-    const pluginConfig = create({ suits: ['test-case-1'], targetFolder: '.' });
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig).toEqual({
-      slug: 'benchmark-js',
-      title: 'Benchmark JS',
-      description: 'Chrome lighthouse CLI as code-pushup plugin',
-      icon: 'flash',
-      runner: expect.any(Object),
-      audits: [],
-      groups: expect.any(Array),
-    });
-  });
+vi.mock('./utils', async () => {
+  const examplesPlugins: object = await vi.importActual('./utils');
+  return {
+    ...examplesPlugins,
+    loadSuits: vi.fn().mockImplementation((suitNames: string[]) =>
+      suitNames.map(
+        (suitName, index) =>
+          ({
+            suitName: suitName,
+            name:
+              index === 0
+                ? 'current-implementation'
+                : `implementation-${index}`,
+            rme: index === 0 ? 1 : Math.random(),
+            hz: index === 0 ? 1 : Math.random(),
+            isFastest: index === 0,
+            isTarget: index === 0,
+            samples: suitNames.length * 10,
+          } satisfies BenchmarkResult),
+      ),
+    ),
+  };
+});
 
-  it('should parse options for defaults correctly in runner args', () => {
-    const pluginConfig = create({
-      suits: ['https://code-pushup.com'],
+describe('benchmark-js-create-export-config', () => {
+  it('should execute', async () => {
+    const pluginConfig = await create({
+      suits: ['suit-1', 'suit-2'],
       targetFolder: '.',
     });
-    expect(pluginConfig.runner).toEqual([
-      'lighthouse',
-      'https://code-pushup.com',
-      '--no-verbose',
-      '--output="json"',
-      '--output-path="lighthouse-report.json"',
-      '--onlyAudits="first-contentful-paint"',
-      '--onlyAudits="largest-contentful-paint"',
-      '--onlyAudits="speed-index"',
-      '--onlyAudits="total-blocking-time"',
-      '--onlyAudits="cumulative-layout-shift"',
-      '--onlyAudits="server-response-time"',
-      '--onlyAudits="interactive"',
-      '--chrome-flags="--headless=new"',
-    ]);
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig).toBe(
+      expect.objectContaining({
+        slug: 'benchmark-js',
+        title: 'Benchmark JS',
+        description: 'Benchmark JS as code-pushup plugin',
+        icon: 'flash',
+        audits: [
+          {
+            slug: 'suit-1-benchmark-js',
+            title: 'suit-1 Benchmark JS',
+          },
+          {
+            slug: 'suit-2-benchmark-js',
+            title: 'suit-2 Benchmark JS',
+          },
+        ],
+      } satisfies Omit<PluginConfig, 'runner'>),
+    );
   });
 });

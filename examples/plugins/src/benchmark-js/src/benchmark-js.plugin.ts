@@ -1,23 +1,20 @@
-import { join } from 'node:path';
 import {
-  Audit,
-  AuditOutput,
   AuditOutputs,
-  Group,
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { importEsmModule, slugify } from '@code-pushup/utils';
-import { SuitOptions, runSuit } from './suit-helper';
+import { SuitConfig, runSuit } from './suit-helper';
 import {
-  BenchmarkJSRunnerOptions,
-  BenchmarkResult,
-  toAuditSlug,
+  LoadOptions,
+  loadSuits,
+  suitResultToAuditOutput,
+  toAuditMetadata,
 } from './utils';
 
-export type PluginOptions = { verbose: boolean } & {
+export type PluginOptions = {
   suits: string[];
-} & BenchmarkJSRunnerOptions;
+  verbose?: boolean;
+} & LoadOptions;
 
 /**
  * @example
@@ -40,92 +37,27 @@ export type PluginOptions = { verbose: boolean } & {
  * }
  *
  */
-export async function create(
-  options: {
-    suits: string[];
-    targetFolder: string;
-  } & BenchmarkJSRunnerOptions,
-): Promise<PluginConfig> {
+export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { suits: suitNames, tsconfig, targetFolder } = options;
-  const suits = await Promise.all(
-    suitNames.map(async (suitName: string) => {
-      const options = (await importEsmModule({
-        tsconfig,
-        filepath: join(targetFolder, suitName, 'index.ts'),
-      })) as SuitOptions;
-      return options;
-    }),
-  );
-
-  const audits = suits.flatMap(({ suitName, cases }) =>
-    cases.map(
-      ([name]) =>
-        ({
-          slug: toAuditSlug(suitName, name),
-          title: `${suitName} ${name} Benchmark JS`,
-        } satisfies Audit),
-    ),
-  );
+  // load the siutes at before returning the plugin config to be able to return a more dynamic config
+  const suits = await loadSuits(suitNames, { tsconfig, targetFolder });
 
   return {
     slug: 'benchmark-js',
     title: 'Benchmark JS',
     icon: 'flash',
-    audits,
-    groups: suits.map(
-      ({ suitName, cases }) =>
-        ({
-          slug: `${slugify(suitName)}-benchmark-js`,
-          title: `${suitName} Benchmark JS`,
-          refs: cases.map(([name]) => ({
-            slug: toAuditSlug(suitName, name),
-            title: `${suitName} ${name} Benchmark JS`,
-            weight: 1,
-          })),
-        } satisfies Group),
-    ),
-    runner: runnerFunction({ ...options, suits: suits }),
+    audits: toAuditMetadata(suitNames),
+    runner: runnerFunction(suits),
   } satisfies PluginConfig;
 }
 
-export function runnerFunction(
-  options: {
-    suits: SuitOptions[];
-    targetFolder: string;
-  } & BenchmarkJSRunnerOptions,
-): RunnerFunction {
+export function runnerFunction(suits: SuitConfig[]): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const { suits } = options;
-
+    // execute benchmark
     const allSuitResults = await Promise.all(
-      suits.map(async suit => {
-        return runSuit(suit);
-      }),
+      suits.map(async suit => runSuit(suit)),
     );
-
-    return allSuitResults.flatMap(results => {
-      const { hz: maxHz = 0 } =
-        results.find(({ isFastest }) => isFastest) ?? {};
-      const target =  results.find(({ isTarget }) => isTarget) ?? {} as BenchmarkResult;
-      return scoredAuditOutput(target, maxHz);
-    });
+    // create audit output
+    return allSuitResults.flatMap(results => suitResultToAuditOutput(results));
   };
 }
-
-/**
- * scoring of js computation time can be used in 2 ways:
- * - many implementations against the current implementation to maintain the fastest (score is 100 based on fastest)
- * - testing many implementations/libs to pick the fastest
- * @param result
- */
-export function scoredAuditOutput(result: BenchmarkResult, maxHz: number ): AuditOutput {
-  const {suitName, name, hz} = result;
-  return {
-    slug: toAuditSlug(suitName, name),
-    displayValue: `${hz.toFixed(3)} ops/sec`,
-    // score is based on fastest implementation (fastest is 100%)
-    score: hz / maxHz,
-    value: parseInt(hz.toString(), 10),
-  };
-}
-

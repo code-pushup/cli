@@ -22,16 +22,17 @@ const cli = yargs(process.argv).options({
   },
 });
 
-const { pattern, outputDir } = cli.parseSync();
+const { pattern, outputDir } = await cli.parseAsync();
 
+// eslint-disable-next-line no-console
 console.log('You can adjust the test with the following arguments:');
+// eslint-disable-next-line no-console
 console.log(
   `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
 );
 
 // ==================
-
-export default {
+const suitConfig = {
   outputDir,
   suitName: 'glob',
   targetImplementation: 'current-implementation',
@@ -41,6 +42,8 @@ export default {
     ['globby', wrapWithDefer(globby)],
   ],
 };
+
+export default suitConfig;
 
 // ==============================================================
 

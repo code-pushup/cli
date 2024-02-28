@@ -16,4 +16,7 @@ export {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   recommendedRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';
-export { create as benchmarkJsPlugin } from './benchmark-js/src/index';
+export {
+  create as benchmarkJsPlugin,
+  suitNameToCategoryRef,
+} from './benchmark-js/src/index';

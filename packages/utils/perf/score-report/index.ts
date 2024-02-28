@@ -25,12 +25,13 @@ const cli = yargs(process.argv).options({
   },
 });
 
-const { numAudits1, numAudits2, numGroupRefs2, verbose } = cli.parseSync();
+const { numAudits1, numAudits2, numGroupRefs2, verbose } =
+  await cli.parseAsync();
 
 // ==================
 
 // Add tests
-export default {
+const suitConfig = {
   suitName: 'report-scoring',
   cases: [
     ['@code-pushup/utils#scoreReport', scoreReport],
@@ -41,17 +42,21 @@ export default {
   ],
 };
 
+export default suitConfig;
+
 // ==================
 
 // ==================
-verbose &&
+
+if (verbose) {
+  // eslint-disable-next-line no-console
   console.log(
     'You can adjust the number of runs with the following arguments:' +
       `numAudits1      Number of audits in plugin 1.       --numAudits1=${numAudits1}` +
       `numAudits2      Number of audits in plugin 2.       --numAudits2=${numAudits2}` +
       `numGroupRefs2   Number of groups refs in plugin 2.  --numGroupRefs2=${numGroupRefs2}`,
   );
-
+}
 // ==============================================================
 const options = { numAudits1, numAudits2, numGroupRefs2 };
 function scoreMinimalReportOptimized0() {
@@ -88,19 +93,17 @@ type MinimalReportOptions = {
 };
 
 // eslint-disable-next-line max-lines-per-function
-function minimalReport({
-  numAuditsP1,
-  numAuditsP2,
-  numGroupRefs2,
-}: MinimalReportOptions = {}): Report {
+function minimalReport(cfg: MinimalReportOptions = {}): Report {
   return {
     date: '2022-01-01',
     duration: 0,
+    packageName: '@code-pushup/cli',
+    version: '1.0.0',
     categories: [
       {
         slug: 'c1_',
         title: 'Category 1',
-        refs: Array.from({ length: numAuditsP1 }).map((_, idx) => ({
+        refs: Array.from({ length: cfg.numAuditsP1 }).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P1,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
@@ -111,7 +114,7 @@ function minimalReport({
       {
         slug: 'c2_',
         title: 'Category 2',
-        refs: Array.from({ length: numAuditsP2 }).map((_, idx) => ({
+        refs: Array.from({ length: cfg.numAuditsP2 }).map((_, idx) => ({
           type: 'audit',
           plugin: SLUG_PLUGIN_P2,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
@@ -127,7 +130,7 @@ function minimalReport({
         slug: SLUG_PLUGIN_P1,
         title: 'Plugin 1',
         icon: 'slug',
-        audits: Array.from({ length: numAuditsP1 }).map(
+        audits: Array.from({ length: cfg.numAuditsP1 }).map(
           (_, idx) =>
             ({
               value: 0,
@@ -144,7 +147,7 @@ function minimalReport({
         slug: SLUG_PLUGIN_P2,
         title: 'Plugin 2',
         icon: 'slug',
-        audits: Array.from({ length: numAuditsP2 }).map(
+        audits: Array.from({ length: cfg.numAuditsP2 }).map(
           (_, idx) =>
             ({
               value: 0,
@@ -157,7 +160,7 @@ function minimalReport({
           {
             title: 'Group 1',
             slug: GROUP_P2_PREFIX + 1,
-            refs: Array.from({ length: numGroupRefs2 }).map(
+            refs: Array.from({ length: cfg.numGroupRefs2 }).map(
               (_, idx) =>
                 ({
                   slug: `${AUDIT_P2_PREFIX}${idx}`,
@@ -168,5 +171,5 @@ function minimalReport({
         ],
       },
     ],
-  } as Report;
+  } satisfies Report;
 }

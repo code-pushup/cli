@@ -1,101 +1,74 @@
-import {type AuditOutput, type CategoryRef} from '@code-pushup/models';
-import {slugify} from '@code-pushup/utils';
-
-export function toAuditSlug(suitName: string, caseName: string): string {
-  return `${slugify(suitName)}-benchmark-${slugify(caseName)}`;
-}
-
-export function suitNameToCategoryRef(suitName: string): CategoryRef {
-  return ({
-    type: 'group',
-    plugin: 'benchmark-js',
-    slug: `${suitName}-benchmark-js`,
-    weight: 1,
-  } satisfies CategoryRef)
-}
-
-export type BenchmarkJSRunnerOptions = {
-  tsconfig?: string;
-  outputDir?: string;
-  targetFolder?: string;
-};
+import { join } from 'node:path';
+import { Audit, type AuditOutput, type CategoryRef } from '@code-pushup/models';
+import { importEsmModule, slugify } from '@code-pushup/utils';
+import { BenchmarkResult, SuitConfig } from './suit-helper';
 
 /**
  * scoring of js computation time can be used in 2 ways:
  * - many implementations against the current implementation to maintain the fastest (score is 100 based on fastest)
  * - testing many implementations/libs to pick the fastest
- * @param result
+ * @param results
  */
-export function scoredAuditOutput(result: BenchmarkResult, maxHz: number ): AuditOutput {
-  const {suitName, name, hz} = result;
+export function suitResultToAuditOutput(
+  results: BenchmarkResult[],
+): AuditOutput {
+  const { hz: maxHz, suitName } = results.find(
+    ({ isFastest }) => isFastest,
+  ) as BenchmarkResult;
+  const { hz } = results.find(({ isTarget }) => isTarget) as BenchmarkResult;
+
   return {
-    slug: toAuditSlug(suitName, name),
-    displayValue: `${hz.toFixed(3)} ops/sec`,
+    slug: toAuditSlug(suitName),
+    displayValue: `${hz.toFixed(1)} ops/sec`,
     score: hz / maxHz,
-    value: parseInt(hz.toString(), 10),
+    value: Number.parseInt(hz.toString(), 10),
   };
 }
 
+export function toAuditSlug(suitName: string): string {
+  return `${slugify(suitName)}-benchmark-js`;
+}
 
-export type BenchmarkResult = {
-  suitName: string;
-  name: string;
-  hz: number; // operations per second
-  rme: number; // relative margin of error
-  samples: number;
-  isFastest: boolean;
-  isTarget: boolean;
+export function toAuditTitle(suitName: string): string {
+  return `${suitName} Benchmark JS`;
+}
+
+export function toAuditMetadata(suitNames: string[]): Audit[] {
+  return suitNames.map(
+    suitName =>
+      ({
+        slug: toAuditSlug(suitName),
+        title: toAuditTitle(suitName),
+      } satisfies Audit),
+  );
+}
+
+export type LoadOptions = {
+  targetFolder: string;
+  tsconfig?: string;
 };
-/*
-export function toBenchmarkJSRunnerConfig(
-  suit: string,
-  {
-    outputDir = '.',
-    targetFolder = '.',
-    tsconfig,
-  }: BenchmarkJSRunnerOptions = {},
-): RunnerConfig {
+
+export function loadSuits(
+  suitNames: string[],
+  options: LoadOptions,
+): Promise<SuitConfig[]> {
+  const { tsconfig, targetFolder } = options;
+  return Promise.all(
+    suitNames.map(
+      (suitName: string) =>
+        importEsmModule({
+          tsconfig,
+          filepath: join(targetFolder, suitName, 'index.ts'),
+        }) as Promise<SuitConfig>,
+    ),
+  );
+}
+
+export function suitNameToCategoryRef(suitName: string): CategoryRef {
   return {
-    command: 'npx',
-    args: ['tsx', join(targetFolder, suit)]
-      // concat is used to avoid branching boilerplate
-      .concat(tsconfig ? [`--tsconfig=${tsconfig}`] : [])
-      .concat(outputDir ? [`--outputDir=${outputDir}`] : []),
-    outputFile: join(outputDir, `${suit}-benchmark-results.json`),
-    outputTransform: (raw: unknown): AuditOutputs => {
-      const benchmarkResult = raw as BenchmarkResult[];
-      const {
-        suitName = '',
-        name = '',
-        hz = 0,
-      } = benchmarkResult.find(({ isFastest }) => isFastest) ?? {};
-      return [
-        {
-          slug: `${slugify(String(suitName))}-benchmark-js`,
-          displayValue: `${Math.round(hz)} ops/sec`,
-          score: name === 'current-implementation' ? 1 : 0,
-          value: Math.round(hz),
-        } satisfies AuditOutput,
-      ];
-    },
-  } satisfies RunnerConfig;
+    type: 'audit',
+    plugin: 'benchmark-js',
+    slug: toAuditSlug(suitName),
+    weight: 1,
+  } satisfies CategoryRef;
 }
-
-export async function executeRunnerConfig(
-  cfg: RunnerConfig,
-): Promise<AuditOutputs> {
-  const { args, command, outputFile, outputTransform } = cfg;
-
-  // execute process
-  console.log('executeProcess: ', command, args?.join(' '));
-  await executeProcess({ command, args });
-
-  // read process output from file system and parse it
-  const outputs = await readJsonFile(join(process.cwd(), outputFile));
-
-  // transform unknownAuditOutputs to auditOutputs
-  return outputTransform
-    ? await outputTransform(outputs)
-    : (outputs as AuditOutputs);
-}
-*/

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  benchmarkJsPlugin,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   lighthouseCorePerfGroupRefs,
@@ -10,16 +11,12 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
+  suitNameToCategoryRef,
 } from './dist/examples/plugins';
-import { benchmarkJsPlugin } from './dist/examples/plugins';
-import coveragePlugin, {
-  getNxCoveragePaths,
-} from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
-import {suitNameToCategoryRef} from "./examples/plugins/src/benchmark-js/src";
 
 // load upload configuration from environment
 const envSchema = z
@@ -55,21 +52,7 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-    /*await coveragePlugin({
-      coverageToolCommand: {
-        command: 'npx',
-        args: [
-          'nx',
-          'run-many',
-          '-t',
-          'unit-test',
-          'integration-test',
-          '--coverage',
-          '--skipNxCache',
-        ],
-      },
-      reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
-    }),*/
+
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,

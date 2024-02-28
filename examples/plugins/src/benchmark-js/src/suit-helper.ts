@@ -1,25 +1,34 @@
 import { type Event, type Target } from 'benchmark';
-import { BenchmarkResult } from './utils';
 
-export type SuitOptions = {
-  tsconfig?: string;
+export type SuitConfig = {
   suitName: string;
   targetImplementation: string;
   cases: [string, () => void][];
-  verbose?: true;
+};
+export type BenchmarkResult = {
+  suitName: string;
+  name: string;
+  hz: number; // operations per second
+  rme: number; // relative margin of error
+  samples: number;
+  isFastest: boolean;
+  isTarget: boolean;
 };
 
-export async function runSuit({
-  verbose = true,
-  targetImplementation,
-  suitName,
-  cases,
-}: SuitOptions): Promise<BenchmarkResult[]> {
+export async function runSuit(
+  { suitName, cases, targetImplementation }: SuitConfig,
+  options: {
+    verbose: boolean;
+    maxTime: number;
+  } = { verbose: false, maxTime: 4500 },
+): Promise<BenchmarkResult[]> {
+  const { verbose, maxTime } = options;
+  // @TODO figure out how to import it in esm. This would allow better testing and simpler code.
   const Benchmark = await import('benchmark').then(({ default: m }) => m);
   const { Suite } = Benchmark;
 
   return new Promise((resolve, reject) => {
-    const suite = new Suite(suitName);
+    const suite = new Suite(suitName, { maxTime });
 
     // Add Listener
     Object.entries({
@@ -44,16 +53,11 @@ export async function runSuit({
 
         resolve(json);
       },
-    }).forEach(([name, fn]) => {
-      suite.on(name, fn);
-    });
+    }).forEach(([name, fn]) => suite.on(name, fn));
 
     // register test cases
     cases.forEach(tuple => suite.add(...tuple));
 
-    // eslint-disable-next-line functional/immutable-data
-    suite.run({
-      async: true,
-    });
+    suite.run({ async: true });
   });
 }

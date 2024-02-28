@@ -13,28 +13,28 @@ const cli = yargs(process.argv).options({
     type: 'array',
     default: [join(process.cwd(), 'node_modules', '**/*.js')],
   },
+  outputDir: {
+    type: 'string',
+  },
   verbose: {
     type: 'boolean',
     default: false,
   },
-  outputDir: {
-    type: 'string',
-  },
 });
 
 // eslint-disable-next-line n/no-sync
-const { pattern, outputDir } = cli.parseSync();
+const { pattern, outputDir, verbose } = cli.parseSync();
 
-// eslint-disable-next-line no-console
-console.log('You can adjust the test with the following arguments:');
-// eslint-disable-next-line no-console
-console.log(
-  `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
-);
-
+if (verbose) {
+  // eslint-disable-next-line no-console
+  console.log('You can adjust the test with the following arguments:');
+  // eslint-disable-next-line no-console
+  console.log(
+    `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
+  );
+}
 // ==================
-
-export default {
+const suitConfig = {
   outputDir,
   suitName: 'glob',
   cases: [
@@ -43,6 +43,7 @@ export default {
     ['globby', wrapWithDefer(globby)],
   ],
 };
+export default suitConfig;
 
 // ==============================================================
 
