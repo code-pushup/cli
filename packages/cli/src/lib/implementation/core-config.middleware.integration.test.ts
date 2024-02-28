@@ -19,11 +19,18 @@ const configDirPath = join(
 );
 
 describe('coreConfigMiddleware', () => {
+  const CLI_DEFAULTS = {
+    progress: true,
+    verbose: false,
+    onlyPlugins: [],
+  };
+
   it.each(['ts', 'mjs', 'js'])(
     'should load a valid .%s config',
     async extension => {
       const config = await coreConfigMiddleware({
         config: join(configDirPath, `code-pushup.config.${extension}`),
+        ...CLI_DEFAULTS,
       });
       expect(config.config).toContain(`code-pushup.config.${extension}`);
       expect(config.upload?.project).toContain(extension);
@@ -32,7 +39,7 @@ describe('coreConfigMiddleware', () => {
 
   it('should throw with invalid config path', async () => {
     await expect(
-      coreConfigMiddleware({ config: 'wrong/path/to/config' }),
+      coreConfigMiddleware({ config: 'wrong/path/to/config', ...CLI_DEFAULTS }),
     ).rejects.toThrow(/Provided path .* is not valid./);
   });
 
@@ -41,6 +48,7 @@ describe('coreConfigMiddleware', () => {
       coreConfigMiddleware({
         config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
         tsconfig: 'tsconfig.base.json',
+        ...CLI_DEFAULTS,
       }),
     ).resolves.toBeTruthy();
   });
@@ -49,6 +57,7 @@ describe('coreConfigMiddleware', () => {
     await expect(
       coreConfigMiddleware({
         config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+        ...CLI_DEFAULTS,
       }),
     ).rejects.toThrow("Cannot find package '@code-pushup/models'");
   });
