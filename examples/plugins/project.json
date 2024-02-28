@@ -72,5 +72,5 @@
       ]
     }
   },
-  "tags": ["scope:internal", "scope:core", "type:feature"]
+  "tags": ["scope:internal", "type:feature"]
 }
