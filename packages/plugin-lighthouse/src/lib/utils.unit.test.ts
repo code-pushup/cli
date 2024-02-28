@@ -81,7 +81,7 @@ describe('toAuditOutputs', () => {
         displayValue: '2.8 s',
         score: 0.55,
         slug: 'first-contentful-paint',
-        value: 0,
+        value: 2838.974,
       },
     ]);
   });
@@ -98,7 +98,7 @@ describe('toAuditOutputs', () => {
           scoreDisplayMode: 'notApplicable',
         },
       ]),
-    ).toStrictEqual(expect.arrayContaining([{ score: 1 }]));
+    ).toStrictEqual(expect.arrayContaining([expect.objectContaining({ score: 1 })]));
   });
 
   it('should inform that debugdata type is not supported yet', () => {
@@ -110,7 +110,7 @@ describe('toAuditOutputs', () => {
           'Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more about the Cumulative Layout Shift metric](https://web.dev/cls/).',
         score: 1,
         scoreDisplayMode: 'numeric',
-        numericValue: 0.00035097885272859395,
+        numericValue: 0.000_350_978_852_728_593_95,
         numericUnit: 'unitless',
         displayValue: '0',
         details: {
