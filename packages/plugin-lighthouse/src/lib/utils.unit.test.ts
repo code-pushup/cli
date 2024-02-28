@@ -98,7 +98,9 @@ describe('toAuditOutputs', () => {
           scoreDisplayMode: 'notApplicable',
         },
       ]),
-    ).toStrictEqual(expect.arrayContaining([expect.objectContaining({ score: 1 })]));
+    ).toStrictEqual(
+      expect.arrayContaining([expect.objectContaining({ score: 1 })]),
+    );
   });
 
   it('should inform that debugdata type is not supported yet', () => {
