@@ -1,7 +1,16 @@
 import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
 import { formatDate, formatDuration, slugify } from '../formatting';
 import { CommitData } from '../git';
-import { NEW_LINE } from './constants';
+import {
+  FOOTER_PREFIX,
+  NEW_LINE,
+  README_LINK,
+  detailsTableHeaders,
+  pluginMetaTableHeaders,
+  reportHeadlineText,
+  reportMetaTableHeaders,
+  reportOverviewTableHeaders,
+} from './constants';
 import {
   details,
   h2,
@@ -15,10 +24,7 @@ import {
 } from './md';
 import { ScoredGroup, ScoredReport } from './types';
 import {
-  FOOTER_PREFIX,
-  README_LINK,
   countCategoryAudits,
-  detailsTableHeaders,
   formatReportScore,
   getPluginNameFromSlug,
   getRoundScoreMarker,
@@ -26,10 +32,6 @@ import {
   getSortableAuditByRef,
   getSortableGroupByRef,
   getSquaredScoreMarker,
-  pluginMetaTableHeaders,
-  reportHeadlineText,
-  reportMetaTableHeaders,
-  reportOverviewTableHeaders,
 } from './utils';
 
 export function generateMdReport(
