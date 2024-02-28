@@ -85,9 +85,7 @@ type UnsupportedDetail =
   | Details.DebugData;
 type UnsupportedDetailTypes = UnsupportedDetail['type'];
 
-export function toAuditOutputs(
-  lhrAudits: Result[],
-): AuditOutputs {
+export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
   return Object.values(lhrAudits).map(
     ({
       id: slug,
@@ -120,17 +118,10 @@ export function toAuditOutputs(
             };
           default:
             const unsupportedType: UnsupportedDetailTypes = type;
-            return {
-              ...auditOutput,
-              details: {
-                issues: [
-                  {
-                    message: `Parsing details from type ${unsupportedType} is not implemented.`,
-                    severity: 'info',
-                  },
-                ],
-              },
-            };
+            console.info(
+              `Parsing details from type ${unsupportedType} is not implemented.`,
+            );
+            return auditOutput;
         }
       }
     },
