@@ -63,15 +63,15 @@ describe('validateOnlyAudits', () => {
 describe('toAuditOutputs', () => {
   it('should parse valid lhr details', () => {
     expect(
-      toAuditOutputs({
-        audit: {
+      toAuditOutputs([
+        {
           scoreDisplayMode: 'binary',
           title: 'audit',
           description: 'audit',
           score: null,
           id: 'audit',
         },
-      }),
+      ]),
     ).toStrictEqual([
       {
         displayValue: undefined,
@@ -83,8 +83,8 @@ describe('toAuditOutputs', () => {
   });
 
   it('should inform that debugdata type is not supported yet', () => {
-    const outputs = toAuditOutputs({
-      audit: {
+    const outputs = toAuditOutputs([
+      {
         scoreDisplayMode: 'binary',
         title: 'audit',
         description: 'audit',
@@ -99,18 +99,13 @@ describe('toAuditOutputs', () => {
           ],
         },
       },
-    });
-    expect(outputs[0]?.details?.issues[0]).toEqual(
-      expect.objectContaining({
-        message: 'Parsing details from type debugdata is not implemented.',
-        severity: 'info',
-      }),
-    );
+    ]);
+    expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should not parse lhr details filmstrip', () => {
-    const outputs = toAuditOutputs({
-      audit: {
+  it('should inform that filmstrip type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
         scoreDisplayMode: 'binary',
         title: 'audit',
         description: 'audit',
@@ -128,26 +123,14 @@ describe('toAuditOutputs', () => {
           ],
         },
       },
-    });
-
-    expect(outputs).toStrictEqual([
-      expect.objectContaining({
-        details: {
-          issues: [
-            {
-              message:
-                'Parsing details from type criticalrequestchain is not implemented.',
-              severity: 'info',
-            },
-          ],
-        },
-      }),
     ]);
+
+    expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should parse valid lhr details screenshot', () => {
-    const outputs = toAuditOutputs({
-      audit: {
+  it('should inform that screenshot type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
         scoreDisplayMode: 'binary',
         title: 'audit',
         description: 'audit',
@@ -160,19 +143,14 @@ describe('toAuditOutputs', () => {
           data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//2Q==',
         },
       },
-    });
+    ]);
 
-    expect(outputs[0]?.details?.issues[0]).toEqual(
-      expect.objectContaining({
-        message: 'Parsing details from type screenshot is not implemented.',
-        severity: 'info',
-      }),
-    );
+    expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should parse valid lhr details treemap-data', () => {
-    const outputs = toAuditOutputs({
-      audit: {
+  it('should inform that treemap-data type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
         scoreDisplayMode: 'binary',
         title: 'audit',
         description: 'audit',
@@ -183,19 +161,14 @@ describe('toAuditOutputs', () => {
           nodes: [],
         },
       },
-    });
+    ]);
 
-    expect(outputs[0]?.details?.issues[0]).toEqual(
-      expect.objectContaining({
-        message: 'Parsing details from type treemap-data is not implemented.',
-        severity: 'info',
-      }),
-    );
+    expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should parse valid lhr details criticalrequestchain', () => {
-    const outputs = toAuditOutputs({
-      audit: {
+  it('should inform that criticalrequestchain type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
         scoreDisplayMode: 'binary',
         title: 'audit',
         description: 'audit',
@@ -221,15 +194,9 @@ describe('toAuditOutputs', () => {
           },
         },
       },
-    });
+    ]);
 
-    expect(outputs[0]?.details?.issues[0]).toEqual(
-      expect.objectContaining({
-        message:
-          'Parsing details from type criticalrequestchain is not implemented.',
-        severity: 'info',
-      }),
-    );
+    expect(outputs[0]?.details).toBeUndefined();
   });
 });
 

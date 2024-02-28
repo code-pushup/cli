@@ -103,26 +103,27 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
 
       if (details == null) {
         return auditOutput;
-      } else {
-        const type = details.type;
-        switch (type) {
-          case 'opportunity':
-            return {
-              ...auditOutput,
-              details: opportunityToDetails(details),
-            };
-          case 'table':
-            return {
-              ...auditOutput,
-              details: tableToDetails(details),
-            };
-          default:
-            const unsupportedType: UnsupportedDetailTypes = type;
-            console.info(
-              `Parsing details from type ${unsupportedType} is not implemented.`,
-            );
-            return auditOutput;
-        }
+      }
+
+      const type = details.type;
+
+      switch (type) {
+        case 'opportunity':
+          return {
+            ...auditOutput,
+            details: opportunityToDetails(details),
+          };
+        case 'table':
+          return {
+            ...auditOutput,
+            details: tableToDetails(details),
+          };
+        default:
+          const unsupportedType: UnsupportedDetailTypes = type;
+          console.info(
+            `Parsing details from type ${unsupportedType} is not implemented.`,
+          );
+          return auditOutput;
       }
     },
   );
