@@ -65,31 +65,54 @@ describe('toAuditOutputs', () => {
     expect(
       toAuditOutputs([
         {
-          scoreDisplayMode: 'binary',
-          title: 'audit',
-          description: 'audit',
-          score: null,
-          id: 'audit',
+          id: 'first-contentful-paint',
+          title: 'First Contentful Paint',
+          description:
+            'First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).',
+          score: 0.55,
+          scoreDisplayMode: 'numeric',
+          numericValue: 2838.974,
+          numericUnit: 'millisecond',
+          displayValue: '2.8 s',
         },
       ]),
     ).toStrictEqual([
       {
-        displayValue: undefined,
-        score: 1,
-        slug: 'audit',
+        displayValue: '2.8 s',
+        score: 0.55,
+        slug: 'first-contentful-paint',
         value: 0,
       },
     ]);
   });
 
+  it('should parse lhr audits with score null to score 1', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'performance-budget',
+          title: 'Performance budget',
+          description:
+            'Keep the quantity and size of network requests under the targets set by the provided performance budget. [Learn more about performance budgets](https://developers.google.com/web/tools/lighthouse/audits/budgets).',
+          score: null,
+          scoreDisplayMode: 'notApplicable',
+        },
+      ]),
+    ).toStrictEqual(expect.arrayContaining([{ score: 1 }]));
+  });
+
   it('should inform that debugdata type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
-        scoreDisplayMode: 'binary',
-        title: 'audit',
-        description: 'audit',
-        score: null,
-        id: 'audit',
+        id: 'cumulative-layout-shift',
+        title: 'Cumulative Layout Shift',
+        description:
+          'Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more about the Cumulative Layout Shift metric](https://web.dev/cls/).',
+        score: 1,
+        scoreDisplayMode: 'numeric',
+        numericValue: 0.00035097885272859395,
+        numericUnit: 'unitless',
+        displayValue: '0',
         details: {
           type: 'debugdata',
           items: [
@@ -106,11 +129,11 @@ describe('toAuditOutputs', () => {
   it('should inform that filmstrip type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
-        scoreDisplayMode: 'binary',
-        title: 'audit',
-        description: 'audit',
+        id: 'screenshot-thumbnails',
+        title: 'Screenshot Thumbnails',
+        description: 'This is what the load of your site looked like.',
         score: null,
-        id: 'audit',
+        scoreDisplayMode: 'informative',
         details: {
           type: 'filmstrip',
           scale: 3000,
@@ -131,11 +154,11 @@ describe('toAuditOutputs', () => {
   it('should inform that screenshot type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
-        scoreDisplayMode: 'binary',
-        title: 'audit',
-        description: 'audit',
+        id: 'final-screenshot',
+        title: 'Final Screenshot',
+        description: 'The last screenshot captured of the pageload.',
         score: null,
-        id: 'audit',
+        scoreDisplayMode: 'informative',
         details: {
           type: 'screenshot',
           timing: 541,
@@ -151,11 +174,11 @@ describe('toAuditOutputs', () => {
   it('should inform that treemap-data type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
-        scoreDisplayMode: 'binary',
-        title: 'audit',
-        description: 'audit',
+        id: 'script-treemap-data',
+        title: 'Script Treemap Data',
+        description: 'Used for treemap app',
         score: null,
-        id: 'audit',
+        scoreDisplayMode: 'informative',
         details: {
           type: 'treemap-data',
           nodes: [],
@@ -169,11 +192,13 @@ describe('toAuditOutputs', () => {
   it('should inform that criticalrequestchain type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
-        scoreDisplayMode: 'binary',
-        title: 'audit',
-        description: 'audit',
+        id: 'critical-request-chains',
+        title: 'Avoid chaining critical requests',
+        description:
+          'The Critical Request Chains below show you what resources are loaded with a high priority. Consider reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load. [Learn how to avoid chaining critical requests](https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains/).',
         score: null,
-        id: 'audit',
+        scoreDisplayMode: 'notApplicable',
+        displayValue: '',
         details: {
           type: 'criticalrequestchain',
           chains: {
