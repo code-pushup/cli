@@ -86,7 +86,7 @@ describe('toAuditOutputs', () => {
     ]);
   });
 
-  it('should parse lhr audits with score null to score 1', () => {
+  it('should convert null score to 1', () => {
     expect(
       toAuditOutputs([
         {
