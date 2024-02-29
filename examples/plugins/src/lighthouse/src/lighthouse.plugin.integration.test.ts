@@ -33,7 +33,7 @@ describe('lighthouse-create-export-config', () => {
       'https://code-pushup.com',
       '--no-verbose',
       '--output="json"',
-      `--output-path="lighthouse-report.json"`,
+      '--output-path="lighthouse-report.json"',
       '--onlyAudits="first-contentful-paint"',
       '--onlyAudits="largest-contentful-paint"',
       '--onlyAudits="speed-index"',
