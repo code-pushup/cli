@@ -5,7 +5,7 @@ exports[`generateMdReport > should contain all sections when using the fixture r
 
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Performance](#performance)|🟢 **92**|6|
+|[Performance](#performance)|🟢 **92**|8|
 |[Bug prevention](#bug-prevention)|🟡 **68**|16|
 |[Code style](#code-style)|🟡 **54**|13|
 
@@ -24,6 +24,10 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 
 - 🟥 [Disallow missing \`key\` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
+- 🟢 Maximum lines limitation (_ESLint_)
+  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
+  - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+
 
 ### Bug prevention
 

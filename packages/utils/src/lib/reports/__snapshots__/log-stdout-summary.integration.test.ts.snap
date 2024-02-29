@@ -73,11 +73,18 @@ Lighthouse audits
 
 Categories
 
-Category|Score|Audits
-Performance|92|6
-Bug prevention|68|16
-Code style|54|13
-Made with ❤ by code-pushup.dev"
+┌─────────────────────────────────────────────────────────────┬───────┬────────┐
+│ Category                                                    │ Score │ Audits │
+├─────────────────────────────────────────────────────────────┼───────┼────────┤
+│ Performance                                                 │    92 │      8 │
+├─────────────────────────────────────────────────────────────┼───────┼────────┤
+│ Bug prevention                                              │    68 │     16 │
+├─────────────────────────────────────────────────────────────┼───────┼────────┤
+│ Code style                                                  │    54 │     13 │
+└─────────────────────────────────────────────────────────────┴───────┴────────┘
+
+Made with ❤ by code-pushup.dev
+"
 `;
 
 exports[`generateStdoutSummary > should not contain category section when categories are empty 1`] = `

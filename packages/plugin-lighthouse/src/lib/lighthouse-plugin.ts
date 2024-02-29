@@ -1,40 +1,28 @@
-import { Audit, AuditOutputs, Group, PluginConfig } from '@code-pushup/models';
 import {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-} from '@code-pushup/utils';
+  type Config as LighthouseConfig,
+  type CliFlags as LighthouseFlags,
+} from 'lighthouse';
+import { PluginConfig } from '@code-pushup/models';
 import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { validateOnlyAudits } from './utils';
-
-export type LighthousePluginOptions = {
-  url: string;
-  outputPath?: string;
-  onlyAudits?: string | string[];
-  verbose?: boolean;
-  headless?: boolean;
-  userDataDir?: string;
-};
+import { filterAuditsAndGroupsByOnlyOptions } from './utils';
 
 export function lighthousePlugin(
-  options: LighthousePluginOptions,
+  url: string,
+  flags?: Partial<LighthouseFlags>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  config?: Partial<LighthouseConfig>,
 ): PluginConfig {
-  const { onlyAudits = [] } = options;
-
-  validateOnlyAudits(AUDITS, onlyAudits);
-  const audits: Audit[] = filterAuditsBySlug(AUDITS, onlyAudits);
-  const groups: Group[] = filterGroupsByAuditSlug(GROUPS, onlyAudits);
-
+  const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
+    AUDITS,
+    GROUPS,
+    flags,
+  );
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: 'Lighthouse',
     icon: 'lighthouse',
     audits,
     groups,
-    runner: (): AuditOutputs =>
-      audits.map(audit => ({
-        ...audit,
-        score: 0,
-        value: 0,
-      })),
+    runner: () => audits.map(({ slug }) => ({ slug, value: 0, score: 0 })),
   };
 }

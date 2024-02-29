@@ -22,6 +22,7 @@ export {
   readTextFile,
   removeDirectoryIfExists,
 } from './lib/file-system';
+export { filterItemRefsBy } from './lib/filter';
 export {
   formatBytes,
   formatDuration,
@@ -56,6 +57,14 @@ export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
+  TERMINAL_WIDTH,
+} from './lib/reports/constants';
+export { generateMdReport } from './lib/reports/generate-md-report';
+export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
+export { scoreReport } from './lib/reports/scoring';
+export { sortReport } from './lib/reports/sorting';
+export { ScoredReport } from './lib/reports/types';
+export {
   calcDuration,
   compareIssueSeverity,
   loadReport,
