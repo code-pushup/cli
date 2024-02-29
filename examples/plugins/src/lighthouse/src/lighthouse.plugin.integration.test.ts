@@ -96,7 +96,7 @@ describe('lighthouse-create-export-config', () => {
       expect.arrayContaining(['--onlyAudits="largest-contentful-paint"']),
     );
     expect(pluginConfig).toStrictEqual([expect.objectContaining({
-      audits: [expect.object.Containing({ slug: 'largest-contentful-paint'})]
+      audits: [expect.objectContaining({ slug: 'largest-contentful-paint'})]
     })])
   });
 });
