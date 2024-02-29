@@ -67,19 +67,19 @@ describe('git utils in a git repo with a branch and commits', () => {
 
   it('should convert absolute path to relative Git path', async () => {
     await expect(
-      toGitPath(join(process.cwd(), 'src', 'utils.ts')),
+      toGitPath(join(baseDir, 'src', 'utils.ts'), git),
     ).resolves.toBe('src/utils.ts');
   });
 
   it('should convert relative Windows path to relative Git path', async () => {
-    await expect(toGitPath('Backend\\API\\Startup.cs')).resolves.toBe(
-      'Backend/API/Startup.cs',
+    await expect(toGitPath('Backend\\API\\Startup.cs', git)).resolves.toBe(
+      '../../Backend/API/Startup.cs',
     );
   });
 
   it('should keep relative Unix path as is (already a Git path)', async () => {
-    await expect(toGitPath('Backend/API/Startup.cs')).resolves.toBe(
-      'Backend/API/Startup.cs',
+    await expect(toGitPath('Backend/API/Startup.cs', git)).resolves.toBe(
+      '../../Backend/API/Startup.cs',
     );
   });
 
