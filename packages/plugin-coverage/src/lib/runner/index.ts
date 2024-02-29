@@ -20,14 +20,13 @@ export async function executeRunner(): Promise<void> {
   // Run coverage tool if provided
   if (coverageToolCommand != null) {
     const { command, args } = coverageToolCommand;
-
     try {
       await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
-        console.info(chalk.bold('stdout from failed process:'));
-        console.info(error.stdout);
-        console.error(chalk.bold('stderr from failed process:'));
+        console.error(chalk.bold('stdout from failed coverage tool process:'));
+        console.error(error.stdout);
+        console.error(chalk.bold('stderr from failed coverage tool process:'));
         console.error(error.stderr);
       }
 

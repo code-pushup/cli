@@ -44,6 +44,12 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
         },
         {
           "plugin": "eslint",
+          "slug": "typescript-eslint-extra",
+          "type": "group",
+          "weight": 0,
+        },
+        {
+          "plugin": "eslint",
           "slug": "eslint-cypress",
           "type": "audit",
           "weight": 0,
@@ -77,14 +83,12 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
               },
             ],
           },
-          "plugin": "cypress",
           "score": 0.5,
           "slug": "cypress-e2e-tests",
           "title": "Cypress e2e tests",
           "value": 3,
         },
         {
-          "plugin": "cypress",
           "score": 1,
           "slug": "cypress-component-tests",
           "title": "Cypress component tests",
@@ -131,7 +135,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
               },
             ],
           },
-          "plugin": "eslint",
           "score": 0,
           "slug": "typescript-eslint-typing",
           "title": "Type checking",
@@ -149,7 +152,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
               },
             ],
           },
-          "plugin": "eslint",
           "score": 0,
           "slug": "eslint-functional",
           "title": "Functional principles",
@@ -164,28 +166,24 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
               },
             ],
           },
-          "plugin": "eslint",
           "score": 0,
           "slug": "typescript-eslint-experimental",
           "title": "TypeScript experimental checks",
           "value": 1,
         },
         {
-          "plugin": "eslint",
           "score": 1,
           "slug": "eslint-jest-consistent-naming",
           "title": "Consistent naming",
           "value": 0,
         },
         {
-          "plugin": "eslint",
           "score": 1,
           "slug": "eslint-cypress",
           "title": "Cypress rules",
           "value": 0,
         },
         {
-          "plugin": "eslint",
           "score": 1,
           "slug": "typescript-eslint-enums",
           "title": "Enumeration value checks",
@@ -196,7 +194,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
       "duration": 624,
       "groups": [
         {
-          "plugin": "eslint",
           "refs": [
             {
               "slug": "typescript-eslint-typing",
@@ -214,6 +211,17 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "score": 0.25,
           "slug": "typescript-eslint",
           "title": "TypeScript ESLint",
+        },
+        {
+          "refs": [
+            {
+              "slug": "typescript-eslint-experimental",
+              "weight": 1,
+            },
+          ],
+          "score": 0,
+          "slug": "typescript-eslint-extra",
+          "title": "TypeScript ESLint Extra",
         },
       ],
       "icon": "eslint",

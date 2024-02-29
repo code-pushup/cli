@@ -1,23 +1,41 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { Issue, IssueSeverity, Report } from '@code-pushup/models';
+import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
-import {
-  EnrichedAuditReport,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
+import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   calcDuration,
   compareAudits,
-  compareCategoryAudits,
+  compareCategoryAuditsAndGroups,
   compareIssueSeverity,
   compareIssues,
   countWeightedRefs,
   formatReportScore,
   getPluginNameFromSlug,
+  getSortableAuditByRef,
+  getSortableGroupByRef,
+  getSortedGroupAudits,
   loadReport,
 } from './utils';
+
+describe('formatReportScore', () => {
+  it.each([
+    [0, '0'],
+    [0.0049, '0'],
+    [0.005, '1'],
+    [0.01, '1'],
+    [0.123, '12'],
+    [0.99, '99'],
+    [0.994, '99'],
+    [0.995, '100'],
+    [1, '100'],
+  ] satisfies readonly [number, string][])(
+    "should format a score of %d as '%s'",
+    (score, expected) => {
+      expect(formatReportScore(score)).toBe(expected);
+    },
+  );
+});
 
 describe('calcDuration', () => {
   it('should calculate the duration correctly if start and stop are given', () => {
@@ -29,6 +47,243 @@ describe('calcDuration', () => {
   it('should calculate the duration correctly if only start is given', () => {
     const start = performance.now();
     expect(calcDuration(start)).toBe(0);
+  });
+});
+
+describe('getSortableAuditByRef', () => {
+  it('should return a sortable audit', () => {
+    expect(
+      getSortableAuditByRef(
+        {
+          slug: 'function-coverage',
+          weight: 6,
+          plugin: 'coverage',
+          type: 'audit',
+        },
+        [
+          {
+            slug: 'coverage',
+            date: 'today',
+            duration: 0,
+            title: 'Coverage',
+            icon: 'folder-coverage-open',
+            audits: [
+              {
+                slug: 'function-coverage',
+                score: 1,
+                title: 'Function coverage',
+                value: 100,
+              },
+            ],
+            groups: [],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      slug: 'function-coverage',
+      title: 'Function coverage',
+      score: 1,
+      value: 100,
+      weight: 6,
+      plugin: 'coverage',
+    });
+  });
+
+  it('should throw for a non-existent audit', () => {
+    expect(() =>
+      getSortableAuditByRef(
+        {
+          slug: 'pancake-coverage',
+          weight: 2,
+          plugin: 'coverage',
+          type: 'audit',
+        },
+        [
+          {
+            slug: 'coverage',
+            date: 'today',
+            duration: 0,
+            title: 'Coverage',
+            icon: 'folder-coverage-open',
+            audits: [
+              {
+                slug: 'branch-coverage',
+                score: 0.5,
+                title: 'Branch coverage',
+                value: 50,
+              },
+            ],
+            groups: [],
+          },
+        ],
+      ),
+    ).toThrow('Audit pancake-coverage is not present in coverage');
+  });
+});
+
+describe('getSortableGroupByRef', () => {
+  it('should return a sortable group with sorted references', () => {
+    expect(
+      getSortableGroupByRef(
+        {
+          slug: 'code-coverage',
+          weight: 2,
+          plugin: 'coverage',
+          type: 'group',
+        },
+        [
+          {
+            slug: 'coverage',
+            date: 'today',
+            duration: 0,
+            title: 'Coverage',
+            icon: 'folder-coverage-open',
+            audits: [
+              {
+                slug: 'function-coverage',
+                score: 1,
+                title: 'Function coverage',
+                value: 100,
+              },
+              {
+                slug: 'branch-coverage',
+                score: 0.5,
+                title: 'Branch coverage',
+                value: 50,
+              },
+            ],
+            groups: [
+              {
+                slug: 'code-coverage',
+                title: 'Code coverage',
+                score: 0.66,
+                refs: [
+                  {
+                    slug: 'branch-coverage',
+                    weight: 1,
+                  },
+                  {
+                    slug: 'function-coverage',
+                    weight: 2,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      score: 0.66,
+      refs: [
+        {
+          slug: 'function-coverage',
+          weight: 2,
+        },
+        {
+          slug: 'branch-coverage',
+          weight: 1,
+        },
+      ],
+      weight: 2,
+      plugin: 'coverage',
+    });
+  });
+
+  it('should throw for a non-existent group', () => {
+    expect(() =>
+      getSortableGroupByRef(
+        {
+          slug: 'test-coverage',
+          weight: 2,
+          plugin: 'coverage',
+          type: 'group',
+        },
+        [
+          {
+            slug: 'coverage',
+            date: 'today',
+            duration: 0,
+            title: 'Coverage',
+            icon: 'folder-coverage-open',
+            audits: [
+              {
+                slug: 'function-coverage',
+                score: 0.75,
+                title: 'Function coverage',
+                value: 75,
+              },
+            ],
+            groups: [],
+          },
+        ],
+      ),
+    ).toThrow('Group test-coverage is not present in coverage');
+  });
+});
+
+describe('getSortedGroupAudits', () => {
+  it('should return sorted group audits based on weight > score > value > title', () => {
+    expect(
+      getSortedGroupAudits(
+        {
+          slug: 'code-coverage',
+          title: 'Code coverage',
+          refs: [
+            { slug: 'branch-coverage', weight: 3 },
+            { slug: 'function-coverage', weight: 6 },
+            { slug: 'line-coverage', weight: 3 },
+          ],
+        },
+        'coverage',
+        [
+          {
+            slug: 'coverage',
+            date: 'today',
+            duration: 0,
+            title: 'Coverage',
+            icon: 'folder-coverage-open',
+            audits: [
+              {
+                slug: 'branch-coverage',
+                score: 0.75,
+                title: 'Branch coverage',
+                value: 75,
+              },
+              {
+                slug: 'function-coverage',
+                score: 1,
+                title: 'Function coverage',
+                value: 100,
+              },
+              {
+                slug: 'line-coverage',
+                score: 0.5,
+                title: 'Line coverage',
+                value: 50,
+              },
+            ],
+            groups: [],
+          },
+        ],
+      ),
+    ).toStrictEqual([
+      expect.objectContaining({
+        weight: 6,
+        slug: 'function-coverage',
+      }),
+      expect.objectContaining({
+        weight: 3,
+        score: 0.5,
+        slug: 'line-coverage',
+      }),
+      expect.objectContaining({
+        weight: 3,
+        score: 0.75,
+        slug: 'branch-coverage',
+      }),
+    ]);
   });
 });
 
@@ -62,25 +317,6 @@ describe('compareIssueSeverity', () => {
       'error',
     ]);
   });
-});
-
-describe('formatReportScore', () => {
-  it.each([
-    [0, '0'],
-    [0.0049, '0'],
-    [0.005, '1'],
-    [0.01, '1'],
-    [0.123, '12'],
-    [0.99, '99'],
-    [0.994, '99'],
-    [0.995, '100'],
-    [1, '100'],
-  ] satisfies readonly [number, string][])(
-    "should format a score of %d as '%s'",
-    (score, expected) => {
-      expect(formatReportScore(score)).toBe(expected);
-    },
-  );
 });
 
 describe('loadReport', () => {
@@ -142,16 +378,15 @@ describe('loadReport', () => {
   });
 });
 
-describe('sortCategoryAudits', () => {
+describe('compareCategoryAuditsAndGroups', () => {
   it('should sort audits by weight and score', () => {
     const mockAudits = [
       { weight: 0, score: 0.1 },
       { weight: 5, score: 1 },
       { weight: 0, score: 0.7 },
       { weight: 10, score: 1 },
-    ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
-    expect(sortedAudits).toEqual([
+    ] as SortableAuditReport[];
+    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
       { weight: 10, score: 1 },
       { weight: 5, score: 1 },
       { weight: 0, score: 0.1 },
@@ -165,9 +400,8 @@ describe('sortCategoryAudits', () => {
       { score: 1, value: 1 },
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
-    ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
-    expect(sortedAudits).toEqual([
+    ] as SortableAuditReport[];
+    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
       { score: 0, value: 1 },
       { score: 0.7, value: 1 },
       { score: 0.7, value: 0 },
@@ -181,13 +415,34 @@ describe('sortCategoryAudits', () => {
       { value: 0, title: 'b' },
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
-    ] as WeighedAuditReport[];
-    const sortedAudits = [...mockAudits].sort(compareCategoryAudits);
-    expect(sortedAudits).toEqual([
+    ] as SortableAuditReport[];
+    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
       { value: 1, title: 'c' },
       { value: 1, title: 'd' },
       { value: 0, title: 'a' },
       { value: 0, title: 'b' },
+    ]);
+  });
+
+  it('should sort audits and groups together', () => {
+    const mockAudits = [
+      { weight: 1, score: 1, value: 100, title: 'audit A' },
+      { weight: 1, score: 0, value: 0, title: 'audit B' },
+      { weight: 1, score: 0, value: 5, title: 'audit C' },
+    ] as SortableAuditReport[];
+    const mockGroups = [
+      { weight: 2, score: 1, title: 'group A' },
+      { weight: 1, score: 1, title: 'group B' },
+    ] as SortableGroup[];
+
+    expect(
+      [...mockAudits, ...mockGroups].sort(compareCategoryAuditsAndGroups),
+    ).toEqual([
+      { weight: 2, score: 1, title: 'group A' },
+      { weight: 1, score: 0, value: 5, title: 'audit C' },
+      { weight: 1, score: 0, value: 0, title: 'audit B' },
+      { weight: 1, score: 1, value: 100, title: 'audit A' },
+      { weight: 1, score: 1, title: 'group B' },
     ]);
   });
 });
@@ -199,7 +454,7 @@ describe('sortAudits', () => {
       { score: 1, value: 1 },
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
-    ] as EnrichedAuditReport[];
+    ] as AuditReport[];
     const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
@@ -210,12 +465,12 @@ describe('sortAudits', () => {
   });
 
   it('should sort audits by value and title', () => {
-    const mockAudits: EnrichedAuditReport[] = [
+    const mockAudits = [
       { value: 1, title: 'c' },
       { value: 0, title: 'b' },
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
-    ] as EnrichedAuditReport[];
+    ] as AuditReport[];
     const sortedAudits = [...mockAudits].sort(compareAudits);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },
