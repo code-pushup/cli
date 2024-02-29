@@ -1,12 +1,6 @@
 import { type CliFlags } from 'lighthouse';
-import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import {
-  Audit,
-  AuditDetails,
-  AuditOutput,
-  AuditOutputs,
-} from '@code-pushup/models';
+import { Audit, AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
@@ -75,15 +69,6 @@ export function validateOnlyAudits(
   }
   return true;
 }
-
-type UnsupportedDetail =
-  | Details.CriticalRequestChain
-  | Details.List
-  | Details.TreemapData
-  | Details.Screenshot
-  | Details.Filmstrip
-  | Details.DebugData;
-type UnsupportedDetailTypes = UnsupportedDetail['type'];
 
 export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
   return lhrAudits.map(
