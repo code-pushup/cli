@@ -79,8 +79,8 @@ export function validateOnlyCategories(
   groups: Group[],
   onlyCategories: string | string[],
 ): boolean {
-  const missingCategories = toArray(onlyCategories).filter(
-    slug => groups.every(group => group.slug !== slug),
+  const missingCategories = toArray(onlyCategories).filter(slug =>
+    groups.every(group => group.slug !== slug),
   );
   if (missingCategories.length > 0) {
     throw new CategoriesNotImplementedError(missingCategories);
