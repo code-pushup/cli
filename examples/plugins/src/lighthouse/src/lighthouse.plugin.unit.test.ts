@@ -26,7 +26,7 @@ describe('lighthouse-runnerConfig', () => {
       expect.objectContaining({
         args: expect.arrayContaining([
           '--output="json"',
-          '--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"',
+          `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
         ]),
         command: 'npx',
         outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
