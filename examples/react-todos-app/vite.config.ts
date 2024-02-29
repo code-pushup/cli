@@ -1,15 +1,15 @@
 /// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: __dirname,
+  root: fileURLToPath(dirname(import.meta.url)),
   build: {
     outDir: '../../dist/examples/react-todos-app',
+    emptyOutDir: true,
     reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
   },
   cacheDir: '../../node_modules/.vite/react-todos-app',
 
@@ -27,14 +27,14 @@ export default defineConfig({
 
   test: {
     reporters: ['default'],
-    reportsDirectory: '../../coverage/examples/react-todos-app',
-    provider: 'v8',
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
     },
     coverage: {
       reporter: ['lcov', 'text'],
+      provider: 'v8',
+      reportsDirectory: '../../coverage/examples/react-todos-app',
     },
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
