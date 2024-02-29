@@ -6,6 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/plugin-lighthouse',
   plugins: [nxViteTsPaths()],
   test: {
+    reporters: ['default'],
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',

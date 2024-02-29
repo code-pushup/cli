@@ -6,6 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/cli',
   plugins: [nxViteTsPaths()],
   test: {
+    reporters: ['default'],
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
