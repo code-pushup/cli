@@ -1,14 +1,14 @@
-import type { CliFlags } from 'lighthouse';
-import { Audit } from '@code-pushup/models';
-import { objectToCliArgs, toArray } from '@code-pushup/utils';
+import type { CliFlags as LighthouseFlags } from 'lighthouse';
+import { Audit, Group } from '@code-pushup/models';
+import { filterItemRefsBy, objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
 type RefinedLighthouseOption = {
-  url: CliFlags['_'];
-  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
+  url: LighthouseFlags['_'];
+  chromeFlags?: Record<LighthouseFlags['chromeFlags'][number], string>;
 };
 export type LighthouseCliOptions = RefinedLighthouseOption &
-  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
+  Partial<Omit<LighthouseFlags, keyof RefinedLighthouseOption>>;
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
@@ -59,7 +59,7 @@ export class AuditsNotImplementedError extends Error {
 export function validateOnlyAudits(
   audits: Audit[],
   onlyAudits: string | string[],
-): audits is Audit[] {
+): boolean {
   const missingAudtis = toArray(onlyAudits).filter(
     slug => !audits.some(audit => audit.slug === slug),
   );
@@ -67,4 +67,65 @@ export function validateOnlyAudits(
     throw new AuditsNotImplementedError(missingAudtis);
   }
   return true;
+}
+
+export class CategoriesNotImplementedError extends Error {
+  constructor(categorySlugs: string[]) {
+    super(`categories: "${categorySlugs.join(', ')}" not implemented`);
+  }
+}
+
+export function validateOnlyCategories(
+  groups: Group[],
+  onlyCategories: string | string[],
+): boolean {
+  const missingCategories = toArray(onlyCategories).filter(slug =>
+    groups.every(group => group.slug !== slug),
+  );
+  if (missingCategories.length > 0) {
+    throw new CategoriesNotImplementedError(missingCategories);
+  }
+  return true;
+}
+
+export function filterAuditsAndGroupsByOnlyOptions(
+  audits: Audit[],
+  groups: Group[],
+  options?: Pick<LighthouseFlags, 'onlyAudits' | 'onlyCategories'>,
+): {
+  audits: Audit[];
+  groups: Group[];
+} {
+  const { onlyAudits, onlyCategories } = options ?? {};
+
+  // category wins over audits
+  if (onlyCategories && onlyCategories.length > 0) {
+    validateOnlyCategories(groups, onlyCategories);
+
+    const categorieSlugs = new Set(onlyCategories);
+    const filteredGroups: Group[] = groups.filter(({ slug }) =>
+      categorieSlugs.has(slug),
+    );
+    const auditSlugsFromRemainingGroups = new Set(
+      filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
+    );
+    return {
+      audits: audits.filter(({ slug }) =>
+        auditSlugsFromRemainingGroups.has(slug),
+      ),
+      groups: filteredGroups,
+    };
+  } else if (onlyAudits && onlyAudits.length > 0) {
+    validateOnlyAudits(audits, onlyAudits);
+    const auditSlugs = new Set(onlyAudits);
+    return {
+      audits: audits.filter(({ slug }) => auditSlugs.has(slug)),
+      groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
+    };
+  }
+  // return unchanged
+  return {
+    audits,
+    groups,
+  };
 }

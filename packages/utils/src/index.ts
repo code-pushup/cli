@@ -22,10 +22,7 @@ export {
   readTextFile,
   removeDirectoryIfExists,
 } from './lib/file-system';
-export {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-} from './lib/filter-by-slug';
+export { filterItemRefsBy } from './lib/filter';
 export {
   formatBytes,
   formatDuration,
