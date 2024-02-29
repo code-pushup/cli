@@ -70,25 +70,17 @@ describe('validateOnlyCategories', () => {
       validateOnlyCategories(
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
           {
-            slug: 'g2',
-            title: 'G 2',
-            refs: [
-              { slug: 'd', weight: 1 },
-              { slug: 'e', weight: 1 },
-              { slug: 'f', weight: 1 },
-            ],
+            slug: 'coverage',
+            title: 'Code coverage',
+            refs: [{ slug: 'function-coverage', weight: 1 }],
           },
         ],
-        'g2',
+        'coverage',
       ),
     ).toBeTruthy();
   });
@@ -98,13 +90,9 @@ describe('validateOnlyCategories', () => {
       validateOnlyCategories(
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
         ],
         'missing-category',
@@ -115,20 +103,12 @@ describe('validateOnlyCategories', () => {
 
 describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () => {
   it('should return given audits and groups if no only filter is set', () => {
-    const audits: Audit[] = [
-      { slug: 'a', title: 'A' },
-      { slug: 'b', title: 'B' },
-      { slug: 'c', title: 'C' },
-    ];
+    const audits: Audit[] = [{ slug: 'speed-index', title: 'Speed Index' }];
     const groups: Group[] = [
       {
-        slug: 'g1',
-        title: 'G 1',
-        refs: [
-          { slug: 'a', weight: 1 },
-          { slug: 'b', weight: 1 },
-          { slug: 'c', weight: 1 },
-        ],
+        slug: 'performance',
+        title: 'Performance',
+        refs: [{ slug: 'speed-index', weight: 1 }],
       },
     ];
     const { audits: filteredAudits, groups: filteredGroups } =
@@ -138,10 +118,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     expect(filteredGroups).toStrictEqual(groups);
 
     const pluginConfig: PluginConfig = {
-      slug: 'p',
-      title: 'P',
-      icon: 'abc',
-      description: 'd',
+      slug: 'coverage',
+      title: 'Code Coverage',
+      icon: 'file',
+      description: 'Runs test coverage and created audits',
       audits: filteredAudits,
       groups: filteredGroups,
       runner: {
@@ -157,38 +137,35 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'a', title: 'A' },
-          { slug: 'b', title: 'B' },
-          { slug: 'c', title: 'C' },
+          { slug: 'speed-index', title: 'Speed Index' },
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
         ],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
         ],
-        { onlyAudits: ['a'] },
+        { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual([{ slug: 'a', title: 'A' }]);
+    expect(filteredAudits).toStrictEqual([
+      { slug: 'speed-index', title: 'Speed Index' },
+    ]);
     expect(filteredGroups).toStrictEqual([
       {
-        slug: 'g1',
-        title: 'G 1',
-        refs: [{ slug: 'a', weight: 1 }],
+        slug: 'performance',
+        title: 'Performance',
+        refs: [{ slug: 'speed-index', weight: 1 }],
       },
     ]);
 
     const pluginConfig: PluginConfig = {
-      slug: 'p',
-      title: 'P',
-      icon: 'abc',
-      description: 'd',
+      slug: 'coverage',
+      title: 'Code Coverage',
+      icon: 'file',
+      description: 'Runs test coverage and created audits',
       audits: filteredAudits,
       groups: filteredGroups,
       runner: {
@@ -204,37 +181,34 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'a', title: 'A' },
-          { slug: 'b', title: 'B' },
-          { slug: 'c', title: 'C' },
+          { slug: 'speed-index', title: 'Speed Index' },
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
         ],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
         ],
-        { onlyAudits: ['a'] },
+        { onlyAudits: ['speed-index'] },
       );
-    expect(filteredAudits).toStrictEqual([{ slug: 'a', title: 'A' }]);
+    expect(filteredAudits).toStrictEqual([
+      { slug: 'speed-index', title: 'Speed Index' },
+    ]);
     expect(filteredGroups).toStrictEqual([
       {
-        slug: 'g1',
-        title: 'G 1',
-        refs: [{ slug: 'a', weight: 1 }],
+        slug: 'performance',
+        title: 'Performance',
+        refs: [{ slug: 'speed-index', weight: 1 }],
       },
     ]);
 
     const pluginConfig: PluginConfig = {
-      slug: 'p',
-      title: 'P',
-      icon: 'abc',
-      description: 'd',
+      slug: 'coverage',
+      title: 'Code Coverage',
+      icon: 'file',
+      description: 'Runs test coverage and created audits',
       audits: filteredAudits,
       groups: filteredGroups,
       runner: {
@@ -250,58 +224,41 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'a', title: 'A' },
-          { slug: 'b', title: 'B' },
-          { slug: 'c', title: 'C' },
-          { slug: 'd', title: 'D' },
-          { slug: 'e', title: 'E' },
-          { slug: 'f', title: 'F' },
+          { slug: 'speed-index', title: 'Speed Index' },
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
+          { slug: 'function-coverage', title: 'Function Coverage' },
         ],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
           {
-            slug: 'g2',
-            title: 'G 2',
-            refs: [
-              { slug: 'd', weight: 1 },
-              { slug: 'e', weight: 1 },
-              { slug: 'f', weight: 1 },
-            ],
+            slug: 'coverage',
+            title: 'Code coverage',
+            refs: [{ slug: 'function-coverage', weight: 1 }],
           },
         ],
-        { onlyCategories: ['g2'] },
+        { onlyCategories: ['coverage'] },
       );
 
     expect(filteredAudits).toStrictEqual([
-      { slug: 'd', title: 'D' },
-      { slug: 'e', title: 'E' },
-      { slug: 'f', title: 'F' },
+      { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
     expect(filteredGroups).toStrictEqual([
       {
-        slug: 'g2',
-        title: 'G 2',
-        refs: [
-          { slug: 'd', weight: 1 },
-          { slug: 'e', weight: 1 },
-          { slug: 'f', weight: 1 },
-        ],
+        slug: 'coverage',
+        title: 'Code coverage',
+        refs: [{ slug: 'function-coverage', weight: 1 }],
       },
     ]);
 
     const pluginConfig: PluginConfig = {
-      slug: 'p',
-      title: 'P',
-      icon: 'abc',
-      description: 'd',
+      slug: 'coverage',
+      title: 'Code Coverage',
+      icon: 'file',
+      description: 'Runs test coverage and created audits',
       audits: filteredAudits,
       groups: filteredGroups,
       runner: {
@@ -317,61 +274,44 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'a', title: 'A' },
-          { slug: 'b', title: 'B' },
-          { slug: 'c', title: 'C' },
-          { slug: 'd', title: 'D' },
-          { slug: 'e', title: 'E' },
-          { slug: 'f', title: 'F' },
+          { slug: 'speed-index', title: 'Speed Index' },
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
+          { slug: 'function-coverage', title: 'Function Coverage' },
         ],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [
-              { slug: 'a', weight: 1 },
-              { slug: 'b', weight: 1 },
-              { slug: 'c', weight: 1 },
-            ],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
           {
-            slug: 'g2',
-            title: 'G 2',
-            refs: [
-              { slug: 'd', weight: 1 },
-              { slug: 'e', weight: 1 },
-              { slug: 'f', weight: 1 },
-            ],
+            slug: 'coverage',
+            title: 'Code coverage',
+            refs: [{ slug: 'function-coverage', weight: 1 }],
           },
         ],
         {
-          onlyAudits: ['a'],
-          onlyCategories: ['g2'],
+          onlyAudits: ['speed-index'],
+          onlyCategories: ['coverage'],
         },
       );
 
     expect(filteredAudits).toStrictEqual([
-      { slug: 'd', title: 'D' },
-      { slug: 'e', title: 'E' },
-      { slug: 'f', title: 'F' },
+      { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
     expect(filteredGroups).toStrictEqual([
       {
-        slug: 'g2',
-        title: 'G 2',
-        refs: [
-          { slug: 'd', weight: 1 },
-          { slug: 'e', weight: 1 },
-          { slug: 'f', weight: 1 },
-        ],
+        slug: 'coverage',
+        title: 'Code coverage',
+        refs: [{ slug: 'function-coverage', weight: 1 }],
       },
     ]);
 
     const pluginConfig: PluginConfig = {
-      slug: 'p',
-      title: 'P',
-      icon: 'abc',
-      description: 'd',
+      slug: 'coverage',
+      title: 'Code Coverage',
+      icon: 'file',
+      description: 'Runs test coverage and created audits',
       audits: filteredAudits,
       groups: filteredGroups,
       runner: {
@@ -386,12 +326,12 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
   it('should throw if onlyAudits is set with a audit slug that is not implemented', () => {
     expect(() =>
       filterAuditsAndGroupsByOnlyOptions(
-        [{ slug: 'a', title: 'A' }],
+        [{ slug: 'speed-index', title: 'Speed Index' }],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [{ slug: 'a', weight: 1 }],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
         ],
         {
@@ -404,12 +344,12 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
   it('should throw if onlyCategories is set with a category slug that is not implemented', () => {
     expect(() =>
       filterAuditsAndGroupsByOnlyOptions(
-        [{ slug: 'a', title: 'A' }],
+        [{ slug: 'speed-index', title: 'Speed Index' }],
         [
           {
-            slug: 'g1',
-            title: 'G 1',
-            refs: [{ slug: 'a', weight: 1 }],
+            slug: 'performance',
+            title: 'Performance',
+            refs: [{ slug: 'speed-index', weight: 1 }],
           },
         ],
         {
