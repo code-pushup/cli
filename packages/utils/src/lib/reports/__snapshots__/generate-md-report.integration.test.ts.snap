@@ -5,7 +5,7 @@ exports[`generateMdReport > should contain all sections when using the fixture r
 
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Performance](#performance)|🟡 **74**|8|
+|[Performance](#performance)|🟢 **92**|8|
 |[Bug prevention](#bug-prevention)|🟡 **68**|16|
 |[Code style](#code-style)|🟡 **54**|13|
 
@@ -15,7 +15,7 @@ exports[`generateMdReport > should contain all sections when using the fixture r
 
 Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/performance)
 
-🟡 Score:  **74**
+🟢 Score:  **92**
 - 🟢 Performance (_Lighthouse_)
   - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
@@ -23,11 +23,11 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
   - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 
-- 🔴 ESLint performance rules (_ESLint_)
-  - 🟥 [Disallow unused variables](#disallow-unused-variables-eslint) - **1 warning**
-  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
-
 - 🟥 [Disallow missing \`key\` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
+- 🟢 Maximum lines limitation (_ESLint_)
+  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
+  - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+
 
 ### Bug prevention
 
