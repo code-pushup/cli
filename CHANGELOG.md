@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.23.3](https://github.com/code-pushup/cli/compare/v0.23.2...v0.23.3) (2024-02-29)
+
+### Bug Fixes
+
+- stop CLI when a plugin fails ([263537c](https://github.com/code-pushup/cli/commit/263537c0a85ba290287cc5a29af1ac125c4191b3))
+
 ## [0.23.2](https://github.com/code-pushup/cli/compare/v0.23.1...v0.23.2) (2024-02-28)
 
 ## [0.23.1](https://github.com/code-pushup/cli/compare/v0.23.0...v0.23.1) (2024-02-27)
