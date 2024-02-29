@@ -1,15 +1,15 @@
 import { type CliFlags } from 'lighthouse';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import { Audit, Group } from '@code-pushup/models';
+import { Audit, AuditOutput, AuditOutputs, Group } from '@code-pushup/models';
 import { filterItemRefsBy, objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
 type RefinedLighthouseOption = {
-  url: LighthouseFlags['_'];
-  chromeFlags?: Record<LighthouseFlags['chromeFlags'][number], string>;
+  url: CliFlags['_'];
+  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
 };
 export type LighthouseCliOptions = RefinedLighthouseOption &
-  Partial<Omit<LighthouseFlags, keyof RefinedLighthouseOption>>;
+  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
@@ -100,6 +100,7 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       return auditOutput;
     },
   );
+}
 
 export class CategoriesNotImplementedError extends Error {
   constructor(categorySlugs: string[]) {
@@ -123,7 +124,7 @@ export function validateOnlyCategories(
 export function filterAuditsAndGroupsByOnlyOptions(
   audits: Audit[],
   groups: Group[],
-  options?: Pick<LighthouseFlags, 'onlyAudits' | 'onlyCategories'>,
+  options?: Pick<CliFlags, 'onlyAudits' | 'onlyCategories'>,
 ): {
   audits: Audit[];
   groups: Group[];
@@ -160,5 +161,4 @@ export function filterAuditsAndGroupsByOnlyOptions(
     audits,
     groups,
   };
-
 }
