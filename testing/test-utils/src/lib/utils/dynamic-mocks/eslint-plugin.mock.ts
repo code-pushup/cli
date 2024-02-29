@@ -9,17 +9,17 @@ import type {
 import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
 import { echoRunnerConfigMock } from './runner-config.mock';
 
-export const ESLINT_PLUGIN_GROUP_PERFORMANCE: Group = {
-  slug: 'performance',
-  title: 'ESLint performance rules',
+const ESLINT_PLUGIN_GROUP_MAX_LINES: Group = {
+  slug: 'max-line-limitation',
+  title: 'Maximum lines limitation',
   refs: [
     {
       slug: ESLINT_AUDITS_MAP['max-lines-per-function'].slug,
-      weight: 10,
+      weight: 1,
     },
     {
-      slug: ESLINT_AUDITS_MAP['no-unused-vars'].slug,
-      weight: 25,
+      slug: ESLINT_AUDITS_MAP['max-lines'].slug,
+      weight: 1,
     },
   ],
 };
@@ -59,7 +59,7 @@ export function eslintPluginReportMock(): PluginReport {
     date: '2023-10-18T07:49:45.531Z',
     duration: 368,
     audits: Object.values(ESLINT_AUDITS_MAP),
-    groups: [ESLINT_PLUGIN_GROUP_PERFORMANCE],
+    groups: [ESLINT_PLUGIN_GROUP_MAX_LINES],
   };
 }
 

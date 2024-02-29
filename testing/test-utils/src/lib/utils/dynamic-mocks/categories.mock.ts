@@ -11,14 +11,14 @@ const CATEGORIES_MAP = {
       {
         type: 'group',
         plugin: 'eslint',
-        slug: 'performance',
-        weight: 1,
+        slug: 'max-line-limitation',
+        weight: 0,
       },
       {
         type: 'group',
         plugin: 'lighthouse',
         slug: 'performance',
-        weight: 4,
+        weight: 1,
       },
       eslintAuditRefMock('react-jsx-key', 0),
     ],
