@@ -26,7 +26,7 @@ describe('lighthouse-runnerConfig', () => {
       expect.objectContaining({
         args: expect.arrayContaining([
           '--output="json"',
-          `--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"`,
+          '--output-path="${LIGHTHOUSE_OUTPUT_FILE_DEFAULT}"',
         ]),
         command: 'npx',
         outputFile: LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
@@ -44,7 +44,7 @@ describe('lighthouse-runnerConfig', () => {
     ).toEqual(
       expect.objectContaining({
         args: expect.arrayContaining([
-          `--onlyAudits="largest-contentful-paint"`,
+          '--onlyAudits="largest-contentful-paint"',
         ]),
       }),
     );
@@ -67,7 +67,7 @@ describe('lighthouse-runnerConfig', () => {
       }),
     ).toEqual(
       expect.objectContaining({
-        args: expect.arrayContaining([`--chrome-flags="--headless=new"`]),
+        args: expect.arrayContaining(['--chrome-flags="--headless=new"']),
       }),
     );
   });
