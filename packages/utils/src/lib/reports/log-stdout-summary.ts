@@ -1,15 +1,18 @@
 import chalk from 'chalk';
 import { AuditReport } from '@code-pushup/models';
 import { ui } from '../logging';
-import { SCORE_COLOR_RANGE, TERMINAL_WIDTH } from './constants';
-import { ScoredReport } from './scoring';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
-  countCategoryAudits,
-  formatReportScore,
   reportHeadlineText,
   reportRawOverviewTableHeaders,
+  SCORE_COLOR_RANGE,
+  TERMINAL_WIDTH
+} from './constants';
+import { ScoredReport } from './types';
+import {
+  countCategoryAudits,
+  formatReportScore,
 } from './utils';
 
 function log(msg = ''): void {
