@@ -54,11 +54,18 @@ export const REPORT_MOCK: Report = {
       title: 'Bug prevention',
       refs: [
         {
+          type: 'group',
+          slug: 'typescript-eslint-extra',
+          plugin: 'eslint',
+          weight: 0,
+        },
+        {
           type: 'audit',
           slug: 'eslint-functional',
           plugin: 'eslint',
           weight: 1,
         },
+
         {
           type: 'group',
           slug: 'typescript-eslint',
@@ -140,6 +147,16 @@ export const REPORT_MOCK: Report = {
             {
               slug: 'typescript-eslint-experimental',
               weight: 0,
+            },
+          ],
+        },
+        {
+          slug: 'typescript-eslint-extra',
+          title: 'TypeScript ESLint Extra',
+          refs: [
+            {
+              slug: 'typescript-eslint-experimental',
+              weight: 1,
             },
           ],
         },

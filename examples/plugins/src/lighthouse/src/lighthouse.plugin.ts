@@ -8,8 +8,7 @@ import {
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
+  filterItemRefsBy,
   toArray,
 } from '@code-pushup/utils';
 import {
@@ -74,8 +73,10 @@ export async function create(options: PluginOptions) {
       onlyCategories: ['performance'],
       headless,
     }),
-    audits: filterAuditsBySlug(audits, onlyAudits),
-    groups: filterGroupsByAuditSlug([categoryCorePerfGroup], onlyAudits),
+    audits: audits.filter(({ slug }) => onlyAudits.includes(slug)),
+    groups: filterItemRefsBy([categoryCorePerfGroup], ({ slug }) =>
+      onlyAudits.includes(slug),
+    ),
   } satisfies PluginConfig;
 }
 
