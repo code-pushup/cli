@@ -1,11 +1,6 @@
 import type { CliFlags as LighthouseFlags } from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
-import {
-  filterBy,
-  filterItemRefsBy,
-  objectToCliArgs,
-  toArray,
-} from '@code-pushup/utils';
+import { filterItemRefsBy, objectToCliArgs, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 
 type RefinedLighthouseOption = {
@@ -108,14 +103,14 @@ export function filterAuditsAndGroupsByOnlyOptions(
     validateOnlyCategories(groups, onlyCategories);
 
     const categorieSlugs = new Set(onlyCategories);
-    const filteredGroups = filterBy(groups, ({ slug }) =>
+    const filteredGroups: Group[] = groups.filter(({ slug }) =>
       categorieSlugs.has(slug),
     );
     const auditSlugsFromRemainingGroups = new Set(
       filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
     );
     return {
-      audits: filterBy(audits, ({ slug }) =>
+      audits: audits.filter(({ slug }) =>
         auditSlugsFromRemainingGroups.has(slug),
       ),
       groups: filteredGroups,
@@ -124,7 +119,7 @@ export function filterAuditsAndGroupsByOnlyOptions(
     validateOnlyAudits(audits, onlyAudits);
     const auditSlugs = new Set(onlyAudits);
     return {
-      audits: filterBy(audits, ({ slug }) => auditSlugs.has(slug)),
+      audits: audits.filter(({ slug }) => auditSlugs.has(slug)),
       groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
     };
   }

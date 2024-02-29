@@ -8,7 +8,6 @@ import {
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
-  filterBy,
   filterItemRefsBy,
   toArray,
 } from '@code-pushup/utils';

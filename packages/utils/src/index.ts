@@ -22,7 +22,7 @@ export {
   readTextFile,
   removeDirectoryIfExists,
 } from './lib/file-system';
-export { filterBy, filterItemRefsBy } from './lib/filter';
+export { filterItemRefsBy } from './lib/filter';
 export {
   formatBytes,
   formatDuration,
