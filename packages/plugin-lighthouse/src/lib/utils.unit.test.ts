@@ -1,11 +1,8 @@
 import Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
-import { Issue } from '@code-pushup/models';
 import {
   AuditsNotImplementedError,
   getLighthouseCliArguments,
-  opportunityToDetails,
-  tableToDetails,
   toAuditOutputs,
   validateOnlyAudits,
 } from './utils';
@@ -103,6 +100,61 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should inform that opportunity type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
+        id: 'dummy-audit',
+        title: 'Dummy Audit',
+        description: 'This is a dummy audit.',
+        score: null,
+        scoreDisplayMode: 'informative',
+        details: {
+          type: 'opportunity',
+          headings: [
+            {
+              key: 'url',
+              valueType: 'url',
+              label: 'URL',
+            },
+            {
+              key: 'responseTime',
+              valueType: 'timespanMs',
+              label: 'Time Spent',
+            },
+          ],
+          items: [
+            {
+              url: 'https://staging.code-pushup.dev/login',
+              responseTime: 449.292_000_000_000_03,
+            },
+          ],
+          overallSavingsMs: 349.292_000_000_000_03,
+        } satisfies Details.Opportunity,
+      },
+    ]);
+
+    expect(outputs[0]?.details).toBeUndefined();
+  });
+
+  it('should inform that table type is not supported yet', () => {
+    const outputs = toAuditOutputs([
+      {
+        id: 'dummy-audit',
+        title: 'Dummy Audit',
+        description: 'This is a dummy audit.',
+        score: null,
+        scoreDisplayMode: 'informative',
+        details: {
+          type: 'table',
+          headings: [],
+          items: [],
+        },
+      },
+    ]);
+
+    expect(outputs[0]?.details).toBeUndefined();
+  });
+
   it('should inform that debugdata type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
@@ -125,6 +177,9 @@ describe('toAuditOutputs', () => {
         },
       },
     ]);
+
+    // @TODO add check that cliui.logger is called. Resolve TODO after PR #487 is merged.
+
     expect(outputs[0]?.details).toBeUndefined();
   });
 
@@ -224,101 +279,5 @@ describe('toAuditOutputs', () => {
     ]);
 
     expect(outputs[0]?.details).toBeUndefined();
-  });
-});
-
-describe('tableToDetails', () => {
-  it('should parse empty lhr details table', () => {
-    expect(
-      tableToDetails({
-        type: 'table',
-        headings: [],
-        items: [],
-      } satisfies Details.Table),
-    ).toStrictEqual({
-      issues: [
-        {
-          message: 'no data present',
-          severity: 'info',
-        } satisfies Issue,
-      ],
-    });
-  });
-
-  it('should parse lhr details table with data', () => {
-    expect(
-      tableToDetails({
-        type: 'table',
-        headings: [
-          {
-            key: 'sourceLocation',
-            valueType: 'source-location',
-            label: 'Source',
-          },
-          {
-            key: 'description',
-            valueType: 'code',
-            label: 'Description',
-          },
-        ],
-        items: [
-          {
-            source: 'network',
-            description:
-              'Failed to load resource: the server responded with a status of 404 ()',
-            sourceLocation: {
-              type: 'source-location',
-              url: 'https://example.com/favicon.ico',
-              urlProvider: 'network',
-              line: 0,
-              column: 0,
-            },
-          },
-        ],
-      } satisfies Details.Table),
-    ).toStrictEqual({
-      issues: [
-        {
-          message: 'sourceLocation, description',
-          severity: 'info',
-        } satisfies Issue,
-      ],
-    });
-  });
-});
-
-describe('opportunityToDetails', () => {
-  it('should parse a valid non-empty lhr opportunity type', () => {
-    expect(
-      opportunityToDetails({
-        type: 'opportunity',
-        headings: [
-          {
-            key: 'url',
-            valueType: 'url',
-            label: 'URL',
-          },
-          {
-            key: 'responseTime',
-            valueType: 'timespanMs',
-            label: 'Time Spent',
-          },
-        ],
-        items: [
-          {
-            url: 'https://staging.code-pushup.dev/login',
-            responseTime: 449.292_000_000_000_03,
-          },
-        ],
-        overallSavingsMs: 349.292_000_000_000_03,
-      } satisfies Details.Opportunity),
-    ).toStrictEqual({
-      issues: [
-        {
-          message: 'url, responseTime',
-          severity: 'info',
-        } satisfies Issue,
-      ],
-    });
   });
 });

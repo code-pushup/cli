@@ -105,51 +105,14 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
         return auditOutput;
       }
 
-      const type = details.type;
+      // @TODO implement switch case for detail parsing. Related to #90
+      const unsupportedType = details.type;
+      // @TODO use cliui.logger.info Resolve TODO after PR #487 is merged.
+      console.info(
+        `Parsing details from type ${unsupportedType} is not implemented.`,
+      );
 
-      switch (type) {
-        case 'opportunity':
-          return {
-            ...auditOutput,
-            details: opportunityToDetails(details),
-          };
-        case 'table':
-          return {
-            ...auditOutput,
-            details: tableToDetails(details),
-          };
-        default:
-          const unsupportedType: UnsupportedDetailTypes = type;
-          console.info(
-            `Parsing details from type ${unsupportedType} is not implemented.`,
-          );
-          return auditOutput;
-      }
+      return auditOutput;
     },
   );
-}
-
-export function tableToDetails(tableDetails: Details.Table): AuditDetails {
-  const headings = tableDetails.headings.map(({ key }) => key || '');
-  return {
-    issues: [
-      {
-        message: headings.length > 0 ? headings.join(', ') : 'no data present',
-        severity: 'info',
-      },
-    ],
-  };
-}
-
-export function opportunityToDetails(
-  opportunityDetails: Details.Opportunity,
-): AuditDetails {
-  return {
-    issues: [
-      {
-        message: opportunityDetails.headings.map(({ key }) => key).join(', '),
-        severity: 'info',
-      },
-    ],
-  };
 }
