@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.24.0](https://github.com/code-pushup/cli/compare/v0.23.4...v0.24.0) (2024-02-29)
+
+### Features
+
+- **plugin-lighthouse:** add only filters logic for categories ([#515](https://github.com/code-pushup/cli/issues/515)) ([3cb8fa4](https://github.com/code-pushup/cli/commit/3cb8fa47ac57ac9ae8c74e9c166e638f8180a1cd))
+
 ## [0.23.4](https://github.com/code-pushup/cli/compare/v0.23.3...v0.23.4) (2024-02-29)
 
 ### Bug Fixes

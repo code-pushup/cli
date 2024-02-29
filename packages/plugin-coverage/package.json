@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.23.4",
+  "version": "0.24.0",
   "dependencies": {
     "@code-pushup/models": "*",
     "@code-pushup/utils": "*",
