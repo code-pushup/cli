@@ -108,7 +108,7 @@ export function filterAuditsAndGroupsByOnlyOptions(
     validateOnlyCategories(groups, onlyCategories);
 
     const categorieSlugs = new Set(onlyCategories);
-    const filteredGroups: Group[] = filterBy<Group>(groups, ({ slug }) =>
+    const filteredGroups = filterBy(groups, ({ slug }) =>
       categorieSlugs.has(slug),
     );
     const auditSlugsFromRemainingGroups = new Set(
