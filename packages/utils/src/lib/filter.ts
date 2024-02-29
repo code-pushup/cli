@@ -13,7 +13,7 @@ export function filterItemRefsBy<T extends { refs: object[] }>(
   );
 }
 
-export function filterBy<T = unknown>(
+export function filterBy<T>(
   refs: T[] = [],
   filterFn?: (t: T) => boolean,
 ): T[] {
