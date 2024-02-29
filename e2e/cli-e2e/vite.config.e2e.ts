@@ -6,6 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/cli-e2e',
   plugins: [nxViteTsPaths()],
   test: {
+    reporters: ['default'],
     testTimeout: 120_000,
     globals: true,
     cache: {
