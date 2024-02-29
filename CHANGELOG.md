@@ -2,6 +2,12 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.23.4](https://github.com/code-pushup/cli/compare/v0.23.3...v0.23.4) (2024-02-29)
+
+### Bug Fixes
+
+- **utils:** sort groups and category refs correctly in report ([76a7636](https://github.com/code-pushup/cli/commit/76a7636dae231520b386c634e4ed945c267e89c5))
+
 ## [0.23.3](https://github.com/code-pushup/cli/compare/v0.23.2...v0.23.3) (2024-02-29)
 
 ### Bug Fixes
