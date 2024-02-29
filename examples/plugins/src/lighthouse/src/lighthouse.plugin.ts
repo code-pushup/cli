@@ -74,7 +74,7 @@ export async function create(options: PluginOptions) {
       onlyCategories: ['performance'],
       headless,
     }),
-    audits: filterBy(audits, ({ slug }) => onlyAudits.includes(slug)),
+    audits: audits.filter(({ slug }) => onlyAudits.includes(slug)),
     groups: filterItemRefsBy([categoryCorePerfGroup], ({ slug }) =>
       onlyAudits.includes(slug),
     ),
