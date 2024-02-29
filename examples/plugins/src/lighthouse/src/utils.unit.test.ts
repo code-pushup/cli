@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { LIGHTHOUSE_URL } from '../mock/constants';
 import { getLighthouseCliArguments } from './utils';
 
 describe('getLighthouseCliArguments', () => {
@@ -13,7 +12,7 @@ describe('getLighthouseCliArguments', () => {
 
   it('should parse options for headless to new if true is given', () => {
     const args = getLighthouseCliArguments({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       headless: 'new',
     });
     expect(args).toEqual(
@@ -23,7 +22,7 @@ describe('getLighthouseCliArguments', () => {
 
   it('should not include options for headless if false is given', () => {
     const args = getLighthouseCliArguments({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       headless: false,
     });
     expect(args).toEqual(
@@ -33,7 +32,7 @@ describe('getLighthouseCliArguments', () => {
 
   it('should use userDataDir option in chrome flags when given', () => {
     const args = getLighthouseCliArguments({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       userDataDir: 'test',
     });
     expect(args).toEqual(
