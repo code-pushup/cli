@@ -11,5 +11,10 @@ export function tsconfigPathAliases(): AliasOptions {
   return Object.entries(result.paths)
     .map(([key, value]) => [key, value[0]])
     .filter((pair): pair is [string, string] => pair[1] != null)
-    .map(([find, replacement]): Alias => ({ find, replacement }));
+    .map(
+      ([importPath, relativePath]): Alias => ({
+        find: importPath,
+        replacement: new URL(`../${relativePath}`, import.meta.url).pathname,
+      }),
+    );
 }
