@@ -9,6 +9,7 @@ export default defineConfig({
     testTimeout: 120_000,
     globals: true,
     alias: tsconfigPathAliases(),
+    threads: false,
     cache: {
       dir: '../../node_modules/.vitest',
     },
