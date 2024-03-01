@@ -11,7 +11,8 @@ export default defineConfig({
       dir: '../node_modules/.vitest',
     },
     alias: tsconfigPathAliases(),
-    threads: false,
+    pool: 'threads',
+    poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['lcov'],
     },

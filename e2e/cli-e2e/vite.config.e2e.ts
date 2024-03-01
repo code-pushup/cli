@@ -9,7 +9,8 @@ export default defineConfig({
     testTimeout: 120_000,
     globals: true,
     alias: tsconfigPathAliases(),
-    threads: false,
+    pool: 'threads',
+    poolOptions: { threads: { singleThread: true } },
     cache: {
       dir: '../../node_modules/.vitest',
     },
