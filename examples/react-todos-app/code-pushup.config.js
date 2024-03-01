@@ -1,4 +1,3 @@
-import { join } from 'node:path';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 
@@ -15,7 +14,7 @@ export default {
   },
   plugins: [
     await coveragePlugin({
-      reports: [join('coverage', 'lcov.info')],
+      reports: ['../../coverage/examples/react-todos-app/lcov.info'],
       coverageToolCommand: {
         command: 'npx',
         args: ['vitest', 'run', '--coverage'],

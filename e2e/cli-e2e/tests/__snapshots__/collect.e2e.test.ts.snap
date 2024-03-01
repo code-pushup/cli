@@ -25,6 +25,16 @@ exports[`CLI collect > should run Code coverage plugin that runs coverage tool a
           "details": {
             "issues": [
               {
+                "message": "Function (empty-report) is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "examples/react-todos-app/src/index.jsx",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+              {
                 "message": "Function onSubmit is not called in any test case.",
                 "severity": "error",
                 "source": {
@@ -66,24 +76,49 @@ exports[`CLI collect > should run Code coverage plugin that runs coverage tool a
               },
             ],
           },
-          "displayValue": "56 %",
-          "score": 0.5556,
+          "displayValue": "50 %",
+          "score": 0.5,
           "slug": "function-coverage",
           "title": "Function coverage",
-          "value": 56,
+          "value": 50,
         },
         {
           "description": "Measures how many branches were executed after conditional statements in at least one test.",
-          "displayValue": "100 %",
-          "score": 1,
+          "details": {
+            "issues": [
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "examples/react-todos-app/src/index.jsx",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "88 %",
+          "score": 0.875,
           "slug": "branch-coverage",
           "title": "Branch coverage",
-          "value": 100,
+          "value": 88,
         },
         {
           "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
+              {
+                "message": "Lines 1-6 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "examples/react-todos-app/src/index.jsx",
+                  "position": {
+                    "endLine": 6,
+                    "startLine": 1,
+                  },
+                },
+              },
               {
                 "message": "Lines 14-17 are not covered in any test case.",
                 "severity": "warning",
@@ -196,11 +231,11 @@ exports[`CLI collect > should run Code coverage plugin that runs coverage tool a
               },
             ],
           },
-          "displayValue": "64 %",
-          "score": 0.6413,
+          "displayValue": "62 %",
+          "score": 0.6211,
           "slug": "line-coverage",
           "title": "Line coverage",
-          "value": 64,
+          "value": 62,
         },
       ],
       "description": "Official Code PushUp code coverage plugin.",
@@ -1035,7 +1070,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
           "score": 1,
           "slug": "yoda",
-          "title": "Require or disallow \\"Yoda\\" conditions",
+          "title": "Require or disallow "Yoda" conditions",
           "value": 0,
         },
         {
@@ -1043,7 +1078,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "details": {
             "issues": [
               {
-                "message": "Missing \\"key\\" prop for element in iterator",
+                "message": "Missing "key" prop for element in iterator",
                 "severity": "warning",
                 "source": {
                   "file": "examples/react-todos-app/src/components/TodoList.jsx",
@@ -1263,7 +1298,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
           "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
           "score": 1,
           "slug": "react-jsx-no-target-blank",
-          "title": "Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`",
+          "title": "Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\`",
           "value": 0,
         },
         {
