@@ -14,7 +14,7 @@ export default {
   },
   plugins: [
     await coveragePlugin({
-      reports: ['../../coverage/examples/react-todos-app/lcov.info'],
+      reports: ['../../coverage/react-todos-app/lcov.info'],
       coverageToolCommand: {
         command: 'npx',
         args: ['vitest', 'run', '--coverage'],
