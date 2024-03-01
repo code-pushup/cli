@@ -1,7 +1,7 @@
 import { ESLint } from 'eslint';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { SpyInstance } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { RuleData, listRules, parseRuleId } from './rules';
 
 describe('listRules', () => {
@@ -14,7 +14,7 @@ describe('listRules', () => {
     'fixtures',
   );
 
-  let cwdSpy: SpyInstance;
+  let cwdSpy: MockInstance<[], string>;
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd');

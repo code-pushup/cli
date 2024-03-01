@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { SpyInstance } from 'vitest';
+import type { MockInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin';
@@ -11,8 +11,8 @@ describe('eslintPlugin', () => {
 
   const fixturesDir = join(thisDir, '..', '..', 'mocks', 'fixtures');
 
-  let cwdSpy: SpyInstance;
-  let platformSpy: SpyInstance;
+  let cwdSpy: MockInstance<[], string>;
+  let platformSpy: MockInstance<[], NodeJS.Platform>;
 
   const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
     ...plugin,
