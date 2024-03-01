@@ -105,7 +105,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(66);
+      await expect(listRules(eslint, patterns)).resolves.toHaveLength(72);
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {

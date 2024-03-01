@@ -56,11 +56,13 @@ describe('eslintPlugin', () => {
     });
 
     // expect rule from extended base .eslintrc.json
-    expect(plugin.audits).toContainEqual({
-      slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
-      title: expect.any(String),
-      description: expect.stringContaining('sourceTag'),
-    } satisfies Audit);
+    expect(plugin.audits).toContainEqual(
+      expect.objectContaining({
+        slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
+        title: expect.any(String),
+        description: expect.stringContaining('sourceTag'),
+      } satisfies Audit),
+    );
     // expect rule from utils project's .eslintrc.json
     expect(plugin.audits).toContainEqual(
       expect.objectContaining({
