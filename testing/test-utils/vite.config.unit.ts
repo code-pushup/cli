@@ -11,6 +11,7 @@ export default defineConfig({
       dir: '../node_modules/.vitest',
     },
     alias: tsconfigPathAliases(),
+    threads: false,
     coverage: {
       reporter: ['lcov'],
     },
