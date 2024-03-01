@@ -34,7 +34,7 @@ export default defineConfig({
     coverage: {
       reporter: ['lcov', 'text'],
       provider: 'v8',
-      reportsDirectory: '../../coverage/examples/react-todos-app',
+      reportsDirectory: '../../coverage/react-todos-app',
       include: ['src/**/*.{js,jsx}'],
     },
     environment: 'jsdom',
