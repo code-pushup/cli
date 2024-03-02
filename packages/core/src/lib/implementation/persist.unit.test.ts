@@ -8,7 +8,6 @@ import {
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
 } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
@@ -16,33 +15,24 @@ describe('persistReport', () => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
 
-  it('should print a summary to stdout when no format is specified', async () => {
+  it('should print a summary to stdout when no format is specified`', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: [],
     });
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-    expect(logs.at(-1)).toEqual(
+    expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
 
-  it('should print a summary to stdout when all formats are specified', async () => {
+  it('should print a summary to stdout when all formats are specified`', async () => {
     await persistReport(MINIMAL_REPORT_MOCK, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['md', 'json'],
     });
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-
-    expect(logs.at(-1)).toEqual(
+    expect(console.info).toHaveBeenCalledWith(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
@@ -110,23 +100,31 @@ describe('persistReport', () => {
 describe('logPersistedResults', () => {
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-    expect(logs[0]).toBe('[ blue(info) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('9.77 kB');
-    expect(logs[1]).toContain('out.json');
+    expect(console.info).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports successfully: ',
+    );
+    expect(console.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('9.77 kB'),
+    );
+    expect(console.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('out.json'),
+    );
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
-    expect(logs[1]).toContain('fail');
+
+    expect(console.warn).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports failed: ',
+    );
+    expect(console.warn).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('fail'),
+    );
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -134,15 +132,27 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-    expect(logs[0]).toBe('[ blue(info) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('out.json');
-    expect(logs[1]).toContain('9.77 kB');
 
-    expect(logs[2]).toBe('[ yellow(warn) ] Generated reports failed: ');
-    expect(logs[3]).toContain('fail');
+    expect(console.info).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports successfully: ',
+    );
+    expect(console.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('out.json'),
+    );
+    expect(console.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('9.77 kB'),
+    );
+
+    expect(console.warn).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports failed: ',
+    );
+    expect(console.warn).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('fail'),
+    );
   });
 });

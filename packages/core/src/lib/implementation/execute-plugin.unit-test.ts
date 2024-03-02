@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -49,8 +49,8 @@ describe('executePlugin', () => {
       runner: () => [
         {
           slug: 'node-version',
-          score: 0.3,
-          value: 16,
+          score: 0.1,
+          value: 1,
         },
       ],
     });
