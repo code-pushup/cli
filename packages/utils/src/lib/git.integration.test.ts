@@ -12,10 +12,13 @@ import {
 } from './git';
 import { toUnixPath } from './transform';
 
+// we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
+const gitTestFolder = 'git-test';
+
 describe('git utils in a git repo without a branch and commits', () => {
   const baseDir = join(
     process.cwd(),
-    'tmp',
+    gitTestFolder,
     'testing-git-repo-without-branch-and-commits',
   );
   let emptyGit: SimpleGit;
@@ -40,7 +43,7 @@ describe('git utils in a git repo without a branch and commits', () => {
 describe('git utils in a git repo with a branch and commits clean', () => {
   const baseDir = join(
     process.cwd(),
-    'tmp',
+    gitTestFolder,
     'testing-git-repo-with-branch-and-commits-clean',
   );
   let intiGit: SimpleGit;
@@ -129,7 +132,7 @@ describe('git utils in a git repo with a branch and commits clean', () => {
 describe('git utils in a git repo with a branch and commits dirty', () => {
   const baseDir = join(
     process.cwd(),
-    'tmp',
+    gitTestFolder,
     'testing-git-repo-with-branch-and-commits-dirty',
   );
   const newFilePath = join(baseDir, 'new-file.md');
@@ -140,12 +143,6 @@ describe('git utils in a git repo with a branch and commits dirty', () => {
 
     dirtyGt = simpleGit(baseDir);
     await dirtyGt.init();
-
-    await dirtyGt.addConfig('user.name', 'John Doe');
-    await dirtyGt.addConfig('user.email', 'john.doe@example.com');
-
-    await dirtyGt.addConfig('user.name', 'John Doe');
-    await dirtyGt.addConfig('user.email', 'john.doe@example.com');
 
     await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
     await dirtyGt.add('README.md');
@@ -174,18 +171,6 @@ describe('git utils in a git repo with a branch and commits dirty', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('guardAgainstLocalChanges should throw if history is dirty', async () => {
-    await expect(guardAgainstLocalChanges(dirtyGt)).rejects.toThrow(
-      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
-    );
-  });
-
-  it('safeCheckout should throw if history is dirty', async () => {
-    await expect(safeCheckout('master', {}, dirtyGt)).rejects.toThrow(
-      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
-    );
-  });
-
   it('safeCheckout should clean local changes and check out to feature-branch', async () => {
     await expect(
       safeCheckout('feature-branch', { forceCleanStatus: true }, dirtyGt),
@@ -195,6 +180,18 @@ describe('git utils in a git repo with a branch and commits dirty', () => {
     );
     await expect(dirtyGt.status()).resolves.toEqual(
       expect.objectContaining({ files: [] }),
+    );
+  });
+
+  it('safeCheckout should throw if history is dirty', async () => {
+    await expect(safeCheckout('master', {}, dirtyGt)).rejects.toThrow(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
+  });
+
+  it('guardAgainstLocalChanges should throw if history is dirty', async () => {
+    await expect(guardAgainstLocalChanges(dirtyGt)).rejects.toThrow(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
     );
   });
 });
