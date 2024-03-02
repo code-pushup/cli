@@ -36,7 +36,7 @@ export async function executeRunner(): Promise<void> {
     }
   }
 
-  // Caculate coverage from LCOV results
+  // Calculate coverage from LCOV results
   const auditOutputs = await lcovResultsToAuditOutputs(reports, coverageTypes);
 
   await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
