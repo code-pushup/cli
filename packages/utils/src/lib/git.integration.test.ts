@@ -143,6 +143,8 @@ describe('git utils in a git repo with a branch and commits dirty', () => {
 
     dirtyGt = simpleGit(baseDir);
     await dirtyGt.init();
+    await dirtyGt.addConfig('user.name', 'John Doe');
+    await dirtyGt.addConfig('user.email', 'john.doe@example.com');
 
     await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
     await dirtyGt.add('README.md');
