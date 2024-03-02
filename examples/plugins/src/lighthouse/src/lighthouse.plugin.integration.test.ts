@@ -1,21 +1,17 @@
-import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { executePlugin } from '@code-pushup/core';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 import {
   auditSchema,
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { LIGHTHOUSE_URL } from '../mock/constants';
-import { lhr } from '../mock/fixtures/lhr';
-import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT, corePerfGroupRefs } from './constants';
+import { corePerfGroupRefs } from './constants';
 import { audits, PLUGIN_SLUG as slug } from './index';
 import { create } from './lighthouse.plugin';
 
 describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
-    const pluginConfig = await create({ url: LIGHTHOUSE_URL });
+    const pluginConfig = await create({ url: 'http://localhost:8080' });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
       slug,
@@ -51,7 +47,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless by default to "new" in runner args', async () => {
     const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
     });
     expect(pluginConfig.runner.args).toEqual(
       expect.arrayContaining(['--chrome-flags="--headless=new"']),
@@ -60,7 +56,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless to new if true is given in runner args', async () => {
     const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       headless: true,
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -70,7 +66,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should parse options for headless to new if false is given in runner args', async () => {
     const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       headless: false,
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -80,7 +76,7 @@ describe('lighthouse-create-export-config', () => {
 
   it('should override userDataDir option when given in runner args', async () => {
     const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
       userDataDir: 'test',
     });
     expect(pluginConfig.runner.args).toEqual(
@@ -89,49 +85,24 @@ describe('lighthouse-create-export-config', () => {
       ]),
     );
   });
-});
 
-describe('lighthouse-create-export-execution', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        [LIGHTHOUSE_OUTPUT_FILE_DEFAULT]: JSON.stringify(lhr),
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
-  // TODO: Convert to E2E test or reduce scope, it takes too long to run these tests
-  /* eslint-disable vitest/no-disabled-tests */
-  it.skip('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = await create({ url: LIGHTHOUSE_URL });
-    await expect(executePlugin(pluginConfig)).resolves.toMatchObject(
-      expect.objectContaining({
-        slug,
-        title: 'Lighthouse',
-        description: 'Chrome lighthouse CLI as code-pushup plugin',
-        duration: expect.any(Number),
-        date: expect.any(String),
-        audits: expect.any(Array),
-        groups: expect.any(Array),
-      }),
-    );
-  });
-
-  it.skip('should use onlyAudits', async () => {
+  it('should use onlyAudits', async () => {
     const pluginConfig = await create({
-      url: LIGHTHOUSE_URL,
+      url: 'http://localhost:8080',
+      outputPath: `${join('tmp', 'lighthouse-report.json')}`,
       onlyAudits: 'largest-contentful-paint',
     });
     expect(pluginConfig.runner.args).toEqual(
       expect.arrayContaining(['--onlyAudits="largest-contentful-paint"']),
     );
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
-
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.slug).toBe('largest-contentful-paint');
+    expect(pluginConfig).toStrictEqual(
+      expect.objectContaining({
+        audits: expect.arrayContaining([
+          expect.objectContaining({ slug: 'largest-contentful-paint' }),
+        ]),
+      }),
+    );
   });
-  /* eslint-enable vitest/no-disabled-tests */
 });
 
 describe('lighthouse-audits-export', () => {

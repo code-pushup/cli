@@ -1,33 +1,11 @@
 import {
   AuditReport,
-  CategoryConfig,
   CategoryRef,
-  Group,
   GroupRef,
-  PluginReport,
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform';
-
-export type EnrichedAuditReport = AuditReport & { plugin: string };
-export type WeighedAuditReport = EnrichedAuditReport & { weight: number };
-export type EnrichedScoredGroupWithAudits = EnrichedScoredGroup & {
-  audits: AuditReport[];
-};
-export type ScoredCategoryConfig = CategoryConfig & { score: number };
-
-export type EnrichedScoredGroup = Group & {
-  plugin: string;
-  score: number;
-};
-
-export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
-  plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
-    audits: EnrichedAuditReport[];
-    groups: EnrichedScoredGroup[];
-  })[];
-  categories: ScoredCategoryConfig[];
-};
+import { ScoredGroup, ScoredReport } from './types';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {
@@ -37,19 +15,13 @@ export class GroupRefInvalidError extends Error {
   }
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function scoreReport(report: Report): ScoredReport {
-  const allScoredAuditsAndGroups = new Map<
-    string,
-    EnrichedAuditReport | EnrichedScoredGroup
-  >();
+  const allScoredAuditsAndGroups = new Map<string, AuditReport | ScoredGroup>();
 
   const scoredPlugins = report.plugins.map(plugin => {
     const { slug, audits, groups } = plugin;
 
-    const updatedAudits = audits.map(audit => ({ ...audit, plugin: slug }));
-
-    updatedAudits.forEach(audit => {
+    audits.forEach(audit => {
       allScoredAuditsAndGroups.set(`${slug}-${audit.slug}-audit`, audit);
     });
 
@@ -67,14 +39,13 @@ export function scoreReport(report: Report): ScoredReport {
       groups?.map(group => ({
         ...group,
         score: calculateScore(group.refs, groupScoreFn),
-        plugin: slug,
       })) ?? [];
 
     scoredGroups.forEach(group => {
       allScoredAuditsAndGroups.set(`${slug}-${group.slug}-group`, group);
     });
 
-    return { ...plugin, audits: updatedAudits, groups: scoredGroups };
+    return { ...plugin, audits, groups: scoredGroups };
   });
 
   function catScoreFn(ref: CategoryRef) {
@@ -92,6 +63,7 @@ export function scoreReport(report: Report): ScoredReport {
     ...category,
     score: calculateScore(category.refs, catScoreFn),
   }));
+
   return {
     ...deepClone(report),
     plugins: scoredPlugins,

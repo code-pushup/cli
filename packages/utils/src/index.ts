@@ -23,10 +23,7 @@ export {
   readTextFile,
   removeDirectoryIfExists,
 } from './lib/file-system';
-export {
-  filterAuditsBySlug,
-  filterGroupsByAuditSlug,
-} from './lib/filter-by-slug';
+export { filterItemRefsBy } from './lib/filter';
 export {
   formatBytes,
   formatDuration,
@@ -53,15 +50,18 @@ export {
 export { logMultipleResults } from './lib/log-results';
 export { link } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
-export { TERMINAL_WIDTH } from './lib/reports/constants';
-export { generateMdReport } from './lib/reports/generate-md-report';
-export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
-export { ScoredReport, scoreReport } from './lib/reports/scoring';
-export { sortReport } from './lib/reports/sorting';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
+  TERMINAL_WIDTH,
+} from './lib/reports/constants';
+export { generateMdReport } from './lib/reports/generate-md-report';
+export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
+export { scoreReport } from './lib/reports/scoring';
+export { sortReport } from './lib/reports/sorting';
+export { ScoredReport } from './lib/reports/types';
+export {
   calcDuration,
   compareIssueSeverity,
   loadReport,

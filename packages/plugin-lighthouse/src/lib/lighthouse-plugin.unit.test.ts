@@ -9,18 +9,15 @@ import { lighthousePlugin } from './lighthouse-plugin';
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {
-    const pluginConfig = lighthousePlugin({
-      url: 'https://code-pushup-portal.com',
-    });
+    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com');
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.audits.length).toBeGreaterThan(0);
     expect(pluginConfig.groups?.length).toBeGreaterThan(0);
   });
 
   it('should filter audits by onlyAudits string "first-contentful-paint"', () => {
-    const pluginConfig = lighthousePlugin({
-      url: 'https://code-pushup-portal.com',
-      onlyAudits: 'first-contentful-paint',
+    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
+      onlyAudits: ['first-contentful-paint'],
     });
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -33,9 +30,8 @@ describe('lighthousePlugin-config-object', () => {
   });
 
   it('should filter groups by onlyAudits string "first-contentful-paint"', () => {
-    const pluginConfig = lighthousePlugin({
-      url: 'https://code-pushup-portal.com',
-      onlyAudits: 'first-contentful-paint',
+    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
+      onlyAudits: ['first-contentful-paint'],
     });
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();

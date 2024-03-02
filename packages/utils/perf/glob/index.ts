@@ -61,8 +61,7 @@ function wrapWithDefer(asyncFn: (pattern: string[]) => Promise<string[]>) {
             if (!logged[asyncFn.name]) {
               // eslint-disable-next-line functional/immutable-data
               logged[asyncFn.name] = true;
-              // eslint-disable-next-line no-console
-              console.log(`${asyncFn.name} found ${result.length} files`);
+              console.info(`${asyncFn.name} found ${result.length} files`);
             }
             deferred.resolve();
           }

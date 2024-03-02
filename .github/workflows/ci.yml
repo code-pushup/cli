@@ -170,6 +170,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Check git version
+        run: git -v
       - name: Collect Code PushUp report
         run: npx nx run-collect
       - name: Upload Code PushUp report to portal
