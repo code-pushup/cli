@@ -1,4 +1,5 @@
 import { type Event, type Target } from 'benchmark';
+import {importCjsBundle} from "@code-pushup/utils";
 
 export type SuitConfig = {
   suitName: string;
@@ -18,13 +19,13 @@ export type BenchmarkResult = {
 export async function runSuit(
   { suitName, cases, targetImplementation }: SuitConfig,
   options: {
-    verbose: boolean;
+    verbose?: boolean;
     maxTime: number;
   } = { verbose: false, maxTime: 4500 },
 ): Promise<BenchmarkResult[]> {
   const { verbose, maxTime } = options;
   // @TODO figure out how to import it in esm. This would allow better testing and simpler code.
-  const Benchmark = await import('benchmark').then(({ default: m }) => m);
+  const Benchmark = await importCjsBundle('benchmark').then(({ default: m }) => m);
   const { Suite } = Benchmark;
 
   return new Promise((resolve, reject) => {

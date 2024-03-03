@@ -12,7 +12,7 @@ import {
 } from './utils';
 
 export type PluginOptions = {
-  suits: string[];
+  targetFolders: string[];
   verbose?: boolean;
 } & LoadOptions;
 
@@ -38,15 +38,15 @@ export type PluginOptions = {
  *
  */
 export async function create(options: PluginOptions): Promise<PluginConfig> {
-  const { suits: suitNames, tsconfig, targetFolder } = options;
+  const { tsconfig, targetFolders } = options;
   // load the siutes at before returning the plugin config to be able to return a more dynamic config
-  const suits = await loadSuits(suitNames, { tsconfig, targetFolder });
+  const suits = await loadSuits(targetFolders, { tsconfig });
 
   return {
     slug: 'benchmark-js',
     title: 'Benchmark JS',
     icon: 'flash',
-    audits: toAuditMetadata(suitNames),
+    audits: toAuditMetadata(suits.map(({suitName}) => suitName)),
     runner: runnerFunction(suits),
   } satisfies PluginConfig;
 }

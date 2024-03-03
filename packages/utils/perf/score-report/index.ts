@@ -5,6 +5,7 @@ import { scoreReportOptimized0 } from './optimized0';
 import { scoreReportOptimized1 } from './optimized1';
 import { scoreReportOptimized2 } from './optimized2';
 import { scoreReportOptimized3 } from './optimized3';
+import {join} from "node:path";
 
 const cli = yargs(process.argv).options({
   numAudits1: {
@@ -40,6 +41,7 @@ const suitConfig = {
     ['scoreReportv2', scoreMinimalReportOptimized2],
     ['scoreReportv3', scoreMinimalReportOptimized3],
   ],
+  tsconfig: join(process.cwd(), 'packages/utils/tsconfig.perf.json')
 };
 
 export default suitConfig;

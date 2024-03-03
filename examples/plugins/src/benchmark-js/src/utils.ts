@@ -44,21 +44,20 @@ export function toAuditMetadata(suitNames: string[]): Audit[] {
 }
 
 export type LoadOptions = {
-  targetFolder: string;
   tsconfig?: string;
 };
 
 export function loadSuits(
-  suitNames: string[],
+  targetFolders: string[],
   options: LoadOptions,
 ): Promise<SuitConfig[]> {
-  const { tsconfig, targetFolder } = options;
+  const { tsconfig } = options;
   return Promise.all(
-    suitNames.map(
+    targetFolders.map(
       (suitName: string) =>
         importEsmModule({
           tsconfig,
-          filepath: join(targetFolder, suitName, 'index.ts'),
+          filepath: join(suitName, 'index.ts'),
         }) as Promise<SuitConfig>,
     ),
   );
