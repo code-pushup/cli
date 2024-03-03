@@ -30,15 +30,13 @@ vi.mock('./utils', async () => {
 describe('benchmark-js-create-export-config', () => {
   it('should execute', async () => {
     const pluginConfig = await create({
-      suits: ['suit-1', 'suit-2'],
-      targetFolder: '.',
+      targets: ['suit-1', 'suit-2']
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig).toBe(
+    expect(pluginConfig).toEqual(
       expect.objectContaining({
         slug: 'benchmark-js',
         title: 'Benchmark JS',
-        description: 'Benchmark JS as code-pushup plugin',
         icon: 'flash',
         audits: [
           {
