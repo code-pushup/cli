@@ -21,6 +21,8 @@ import {
  * - For better debugging use `--verbose --no-progress`
  *
  */
+
+const projectRoot = join('quality-metrics-cli', 'examples', 'plugins');
 const benchmarkJsSuitNames = ['glob'];
 
 const config = {
@@ -46,9 +48,10 @@ const config = {
       verbose: true,
     }),
     await benchmarkJsPlugin({
-      suits: benchmarkJsSuitNames,
-      tsconfig: join('examples', 'plugins', 'tsconfig.lib.ts'),
-      targetFolder: join('examples', 'plugins', 'src', 'benchmark-js', 'perf'),
+      targets: benchmarkJsSuitNames.map(folder =>
+        join(projectRoot, 'perf', folder, 'index.ts'),
+      ),
+      tsconfig: join(projectRoot, 'tsconfig.lib.json'),
     }),
   ],
   categories: [

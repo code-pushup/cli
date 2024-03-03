@@ -73,7 +73,9 @@ const config: CoreConfig = {
 
     await benchmarkJsPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
-      targetFolder: benchmarkJsSuitNames.map((suit) => join('packages', 'utils', 'perf', suit)),
+      targetFolder: benchmarkJsSuitNames.map(suit =>
+        join('packages', 'utils', 'perf', suit),
+      ),
     }),
   ],
 

@@ -1,7 +1,6 @@
-import { join } from 'node:path';
 import { Audit, type AuditOutput, type CategoryRef } from '@code-pushup/models';
 import { importEsmModule, slugify } from '@code-pushup/utils';
-import { BenchmarkResult, SuitConfig } from './suit-helper';
+import { BenchmarkResult, SuiteConfig } from './suit-helper';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -48,21 +47,20 @@ export type LoadOptions = {
 };
 
 export function loadSuits(
-  targetFolders: string[],
+  targets: string[],
   options: LoadOptions,
-): Promise<SuitConfig[]> {
+): Promise<SuiteConfig[]> {
   const { tsconfig } = options;
   return Promise.all(
-    targetFolders.map(
-      (suitName: string) =>
+    targets.map(
+      (filepath: string) =>
         importEsmModule({
           tsconfig,
-          filepath: join(suitName, 'index.ts'),
-        }) as Promise<SuitConfig>,
+          filepath,
+        }) as Promise<SuiteConfig>,
     ),
   );
 }
-
 export function suitNameToCategoryRef(suitName: string): CategoryRef {
   return {
     type: 'audit',

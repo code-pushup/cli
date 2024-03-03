@@ -1,31 +1,28 @@
+// eslint-ignore-next-line import/no-named-as-default-member
+import fastGlob from 'fast-glob';
+import { glob } from 'glob';
+import { globby } from 'globby';
 import { join } from 'node:path';
 import yargs from 'yargs';
-import { glob } from './glob';
-import { globby } from './globby';
-
-const fg = await import('fast-glob').then(({ default: m }) => m);
-export function fastGlob(pattern: string[]): Promise<string[]> {
-  return fg.async(pattern);
-}
 
 const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
-    default: [join(process.cwd(), 'node_modules', '**/*.js')],
+    default: [join(process.cwd(), '**/*.ts')],
   },
   outputDir: {
     type: 'string',
   },
-  verbose: {
+  logs: {
     type: 'boolean',
     default: false,
   },
 });
 
 // eslint-disable-next-line n/no-sync
-const { pattern, outputDir, verbose } = cli.parseSync();
+const { pattern, outputDir, logs } = cli.parseSync();
 
-if (verbose) {
+if (logs) {
   // eslint-disable-next-line no-console
   console.log('You can adjust the test with the following arguments:');
   // eslint-disable-next-line no-console
@@ -37,8 +34,10 @@ if (verbose) {
 const suitConfig = {
   outputDir,
   suitName: 'glob',
+  targetImplementation: 'fast-glob',
   cases: [
-    ['current-implementation', wrapWithDefer(fastGlob)],
+    // eslint-disable-next-line import/no-named-as-default-member
+    ['fast-glob', wrapWithDefer(fastGlob.async)],
     ['glob', wrapWithDefer(glob)],
     ['globby', wrapWithDefer(globby)],
   ],

@@ -1,10 +1,9 @@
-import { type Event, type Target } from 'benchmark';
-import {importCjsBundle} from "@code-pushup/utils";
+import { type Event, type Target, Suite } from 'benchmark';
 
-export type SuitConfig = {
+export type SuiteConfig = {
   suitName: string;
   targetImplementation: string;
-  cases: [string, () => void][];
+  cases: [string, (...args: unknown[]) => Promise<unknown>][];
 };
 export type BenchmarkResult = {
   suitName: string;
@@ -17,25 +16,26 @@ export type BenchmarkResult = {
 };
 
 export async function runSuit(
-  { suitName, cases, targetImplementation }: SuitConfig,
+  { suitName, cases, targetImplementation }: SuiteConfig,
   options: {
     verbose?: boolean;
-    maxTime: number;
-  } = { verbose: false, maxTime: 4500 },
+  } = { verbose: false },
 ): Promise<BenchmarkResult[]> {
-  const { verbose, maxTime } = options;
-  // @TODO figure out how to import it in esm. This would allow better testing and simpler code.
-  const Benchmark = await importCjsBundle('benchmark').then(({ default: m }) => m);
-  const { Suite } = Benchmark;
+  const { verbose } = options;
 
   return new Promise((resolve, reject) => {
-    const suite = new Suite(suitName, { maxTime });
+    const suite = new Suite(suitName);
 
     // Add Listener
     Object.entries({
-      error: reject,
+      error: (e: { target?: { error?: unknown } }) =>
+        { reject(e.target?.error ?? e); },
       cycle: function (event: Event) {
-        verbose && console.log(String(event.target));
+        if (verbose) {
+          // @TODO use cliui.logger.info(String(event.target))
+          // eslint-disable-next-line no-console
+          console.log(String(event.target));
+        }
       },
       complete: (event: Event) => {
         const fastest = String(suite.filter('fastest').map('name')[0]);

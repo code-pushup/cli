@@ -15,7 +15,7 @@ const cli = yargs(process.argv).options({
     type: 'string',
     default: '.json$',
   },
-  verbose: {
+  logs: {
     type: 'boolean',
     default: false,
   },
@@ -24,9 +24,9 @@ const cli = yargs(process.argv).options({
     default: '.code-pushup',
   },
 });
-const { directory, pattern, verbose } = await cli.parseAsync();
+const { directory, pattern, logs } = await cli.parseAsync();
 
-if (verbose) {
+if (logs) {
   console.info(
     'You can adjust the test with the following arguments:' +
       `directory      target directory of test      --directory=${directory}` +
@@ -36,6 +36,7 @@ if (verbose) {
 
 const suitConfig = {
   suitName: 'crawl-file-system',
+  targetImplementation: '@code-pushup/utils#crawlFileSystem',
   cases: [
     ['@code-pushup/utils#crawlFileSystem', wrapWithDefer(crawlFileSystem)],
     ['nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk)],

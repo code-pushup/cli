@@ -1,48 +1,43 @@
+import { async as fastGlob } from 'fast-glob';
+import { glob } from 'glob';
+import { globby } from 'globby';
 import { join } from 'node:path';
 import yargs from 'yargs';
-import { glob } from './glob';
-import { globby } from './globby';
-
-const fg = await import('fast-glob').then(({ default: m }) => m);
-export function fastGlob(pattern: string[]): Promise<string[]> {
-  return fg.async(pattern);
-}
+import { SuiteConfig } from '../../src/benchmark-js/src/suit-helper';
 
 const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
-    default: [join(process.cwd(), 'node_modules', '**/*.js')],
+    default: [join(process.cwd(), '**/*.ts')],
   },
-  verbose: {
+  logs: {
     type: 'boolean',
     default: false,
   },
-  outputDir: {
-    type: 'string',
-  },
 });
 
-const { pattern, outputDir } = await cli.parseAsync();
+// eslint-disable-next-line n/no-sync
+const { pattern, logs } = cli.parseSync();
 
-// eslint-disable-next-line no-console
-console.log('You can adjust the test with the following arguments:');
-// eslint-disable-next-line no-console
-console.log(
-  `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
-);
-
+if (logs) {
+  // eslint-disable-next-line no-console
+  console.log('You can adjust the test with the following arguments:');
+  // eslint-disable-next-line no-console
+  console.log(
+    `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
+  );
+}
 // ==================
-const suitConfig = {
-  outputDir,
+const suitConfig: SuiteConfig = {
   suitName: 'glob',
-  targetImplementation: 'current-implementation',
+  targetImplementation: 'fast-glob',
   cases: [
-    ['current-implementation', wrapWithDefer(fastGlob)],
+     
+    ['fast-glob', wrapWithDefer(fastGlob.async)],
     ['glob', wrapWithDefer(glob)],
     ['globby', wrapWithDefer(globby)],
   ],
 };
-
 export default suitConfig;
 
 // ==============================================================
@@ -61,8 +56,7 @@ function wrapWithDefer(asyncFn: (pattern: string[]) => Promise<string[]>) {
             if (!logged[asyncFn.name]) {
               // eslint-disable-next-line functional/immutable-data
               logged[asyncFn.name] = true;
-              // eslint-disable-next-line no-console
-              console.log(`${asyncFn.name} found ${result.length} files`);
+              console.info(`${asyncFn.name} found ${result.length} files`);
             }
             deferred.resolve();
           }

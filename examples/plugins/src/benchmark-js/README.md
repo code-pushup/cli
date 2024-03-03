@@ -4,13 +4,14 @@
 
 ---
 
-The plugin analyzes a given suit name and creates benchmark audits.
+The plugin analyzes a given suit name and creates benchmark audits.  
+It uses [benchmark](https://www.npmjs.com/package/benchmark) under the hood.
 
 You can configure the plugin with the following options:
 
-- `suits` - target to crawl
-- `outputDir` - path to lighthouse report in json format _(optional)_
-- `verbose` - additional information _(optional)_
+- `targets` - files to load that export a suit
+- `tsconfig` - path to tsconfig file _(optional)_
+- `logs` - additional information _(optional)_
 
 ## Getting started
 
@@ -20,28 +21,42 @@ You can configure the plugin with the following options:
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass in the path on the directory to crawl (relative to `process.cwd()`), as well as patterns and a budget.
+   Pass in the path on the directory to load the test suite form (relative to `process.cwd()`), for more options see [BenchmarkJsPluginOptions]().
 
    ```js
    import { join } from 'node:path';
-   import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './lighthouse-plugin.constants';
-   import lighthousePlugin from './lighthouse.plugin';
+   import benchmarkJsPlugin from './benchmark-js.plugin';
 
    export default {
      // ...
      plugins: [
        // ...
-       lighthousePlugin({
-         url: 'https://example.com',
+       await benchmarkJsPlugin({
+         targets: ['suits/score-report.ts'],
        }),
      ],
    };
    ```
 
+3.1. Create benchmark suite:
+
+```ts
+// typescript
+const suitConfig = {
+  suitName: 'glob',
+  targetImplementation: 'version-2',
+  cases: [
+    ['version-1', () => new Promise(resolve => setTimeout(resolve, 30))],
+    ['version-2', () => new Promise(resolve => setTimeout(resolve, 10))],
+    ['version-3', () => new Promise(resolve => setTimeout(resolve, 20))],
+  ],
+};
+```
+
 4. (Optional) Set up categories (use `npx code-pushup print-config` to list audits and groups).
 
    ```js
-   import fileSizePlugin, { recommendedRefs as lighthouseRecommendedRefs } from './lighthouse.plugin';
+   import benchmarkJsPlugin, { suitesToCategorieGroupRef } from './benchmark-js.plugin';
 
    export default {
      // ...
@@ -50,7 +65,7 @@ You can configure the plugin with the following options:
        {
          slug: 'performance',
          title: 'Performance',
-         refs: lighthouseRecommendedRefs,
+         refs: suitesToCategorieGroupRef(suites),
        },
      ],
    };
@@ -59,5 +74,3 @@ You can configure the plugin with the following options:
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../../../../packages/cli/README.m)).
 
 ## Audits
-
-Detailed information about the audits can be found in the docs of [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview/).

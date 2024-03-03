@@ -30,10 +30,7 @@
       }
     },
     "perf": {
-      "command": "node ./tools/benchmark/bin.mjs"
-    },
-    "_perf": {
-      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
+      "command": "node ../../../tools/benchmark/bin.mjs",
       "options": {
         "cwd": "./packages/utils/perf"
       }
