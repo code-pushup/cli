@@ -51,7 +51,7 @@ const config = {
       targets: benchmarkJsSuitNames.map(folder =>
         join(projectRoot, 'perf', folder, 'index.ts'),
       ),
-      tsconfig: join(projectRoot, 'tsconfig.lib.json'),
+      tsconfig: join(projectRoot, 'tsconfig.perf.json'),
     }),
   ],
   categories: [

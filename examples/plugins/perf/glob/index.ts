@@ -1,4 +1,4 @@
-import { async as fastGlob } from 'fast-glob';
+import fastGlob from 'fast-glob';
 import { glob } from 'glob';
 import { globby } from 'globby';
 import { join } from 'node:path';
@@ -32,8 +32,7 @@ const suitConfig: SuiteConfig = {
   suitName: 'glob',
   targetImplementation: 'fast-glob',
   cases: [
-     
-    ['fast-glob', wrapWithDefer(fastGlob.async)],
+    ['fast-glob', wrapWithDefer(fastGlob)],
     ['glob', wrapWithDefer(glob)],
     ['globby', wrapWithDefer(globby)],
   ],

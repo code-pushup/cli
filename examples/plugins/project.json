@@ -70,6 +70,12 @@
           "target": "build"
         }
       ]
+    },
+    "perf": {
+      "command": "node ../../../tools/benchmark/bin.mjs",
+      "options": {
+        "cwd": "./examples/plugins/perf"
+      }
     }
   },
   "tags": ["scope:internal", "type:feature"]

@@ -1,4 +1,4 @@
-import { type Event, type Target, Suite } from 'benchmark';
+import Benchmark, { type Event, type Target } from 'benchmark';
 
 export type SuiteConfig = {
   suitName: string;
@@ -24,12 +24,15 @@ export async function runSuit(
   const { verbose } = options;
 
   return new Promise((resolve, reject) => {
-    const suite = new Suite(suitName);
+    // This is not working with named imports
+    // eslint-disable-next-line import/no-named-as-default-member
+    const suite = new Benchmark.Suite(suitName);
 
     // Add Listener
     Object.entries({
-      error: (e: { target?: { error?: unknown } }) =>
-        { reject(e.target?.error ?? e); },
+      error: (e: { target?: { error?: unknown } }) => {
+        reject(e.target?.error ?? e);
+      },
       cycle: function (event: Event) {
         if (verbose) {
           // @TODO use cliui.logger.info(String(event.target))
