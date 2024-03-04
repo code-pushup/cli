@@ -73,6 +73,8 @@ const suitConfig = {
 
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../../../../packages/cli/README.m)).
 
+For a standalone usage uf the test runner use our helpers
+
 ## Audits
 
 The plugin creates an audit for each suite.
@@ -94,3 +96,23 @@ Each audit has the test cases listed as issue.
 - is target and fastest - `🎯 version-1     🔥 59.9 ops/sec`
 
 <img width="600px" src="./docs/images/audits-readme-example.png">
+
+## Standalone helper
+
+The plugin also provides a helper function to execute a test suit.
+
+```ts
+import { SuiteConfig, runSuit } from './suite-helper.ts';
+
+const suite: SuiteConfig = {
+  suiteName: 'dummy-suite',
+  targetImplementation: 'version-2',
+  cases: [
+    ['version-1', async () => new Promise(resolve => setTimeout(resolve, 30))],
+    ['version-2', async () => new Promise(resolve => setTimeout(resolve, 50))],
+    ['version-3', async () => new Promise(resolve => setTimeout(resolve, 80))],
+  ],
+};
+const results = await runSuite(suite);
+console.log(`Fastest is: ${results.filter(({ isFastest }) => isFastest)}`);
+```

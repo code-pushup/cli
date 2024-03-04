@@ -51,11 +51,11 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
   } satisfies PluginConfig;
 }
 
-export function runnerFunction(suits: SuiteConfig[]): RunnerFunction {
+export function runnerFunction(suites: SuiteConfig[]): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     // execute benchmark
     const allSuiteResults = await Promise.all(
-      suits.map(async suit => runSuite(suit)),
+      suites.map(async suite => runSuite(suite)),
     );
     // create audit output
     return allSuiteResults.flatMap(results =>

@@ -1,6 +1,5 @@
 import {
   Audit,
-  AuditDetails,
   type AuditOutput,
   type CategoryRef,
   Issue,
