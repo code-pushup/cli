@@ -47,9 +47,9 @@ export function scoreReportOptimized3(report: Report): ScoredReport {
   const scoredReport = deepClone(report) as ScoredReport;
   const allScoredAuditsAndGroups = new Map<string, AuditReport | ScoredGroup>();
 
-  scoredReport.plugins?.forEach(plugin => {
+  scoredReport.plugins.forEach(plugin => {
     const { audits, slug } = plugin;
-    const groups = plugin.groups || [];
+    const groups = plugin.groups ?? [];
 
     audits.forEach(audit => {
       const key = `${slug}-${audit.slug}-audit`;

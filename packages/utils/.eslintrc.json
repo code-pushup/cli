@@ -1,8 +1,24 @@
 {
-  "extends": ["./code-pushup.eslintrc.json"],
-  // temporarily disable failing rules so `nx lint` passes
-  // number of errors/warnings per rule recorded at Wed Jan 17 2024 15:00:00 GMT+0100 (Central European Standard Time)
-  "rules": {
-    "@typescript-eslint/no-unnecessary-condition": "off" // 5 warnings
-  }
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["packages/utils/tsconfig.*?.json"]
+      },
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": ["error"]
+      }
+    }
+  ]
 }

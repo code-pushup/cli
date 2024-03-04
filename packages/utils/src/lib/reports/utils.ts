@@ -71,7 +71,7 @@ export function countCategoryAudits(
   // Create lookup object for groups within each plugin
   const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
     (lookup, plugin) => {
-      if (plugin.groups.length === 0) {
+      if (plugin.groups == null || plugin.groups.length === 0) {
         return lookup;
       }
 
