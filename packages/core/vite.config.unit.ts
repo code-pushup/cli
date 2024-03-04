@@ -5,7 +5,7 @@ import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases';
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/core',
   test: {
-    reporters: ['default'],
+    reporters: ['basic'],
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
