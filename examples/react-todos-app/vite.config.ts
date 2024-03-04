@@ -26,7 +26,7 @@ export default defineConfig({
   plugins: [react()],
 
   test: {
-    reporters: ['default'],
+    reporters: ['basic'],
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
