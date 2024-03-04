@@ -16,27 +16,7 @@ export type PluginOptions = {
   verbose?: boolean;
 } & LoadOptions;
 
-/**
- * @example
- * // code-pushup.config.ts
- * import { create as jsBenchmarkPlugin } from 'jsBenchmark.plugin.ts';
- *
- * export default {
- *   plugins: [
- *     jsBenchmarkPlugin({ suits: ['crawl-file-system'] })
- *   ],
- *   categories: [
- *     {
- *       slug: 'performance',
- *       title: 'Performance',
- *       refs: [
- *         ...jsBenchmarkPluginRecommended(suits)
- *       ]
- *     }
- *   ]
- * }
- *
- */
+
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { tsconfig, targets } = options;
   // load the suites at before returning the plugin config to be able to return a more dynamic config
