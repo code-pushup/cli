@@ -25,7 +25,7 @@ export async function readRcByPath(
   if (tsconfig) {
     const s = await stat(tsconfig);
     if (!s.isFile()) {
-      throw new Error('The tsconfig path is not a file.');
+      throw new Error(`The tsconfig path '${tsconfig}' is not a file.`);
     }
   }
 
