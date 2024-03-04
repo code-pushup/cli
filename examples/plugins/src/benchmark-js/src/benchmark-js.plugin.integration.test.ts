@@ -40,12 +40,12 @@ describe('benchmark-js-create-export-config', () => {
         icon: 'flash',
         audits: [
           {
-            slug: 'suite-1-benchmark-js',
-            title: 'suite-1 Benchmark JS',
+            slug: 'benchmark-js-suite-1',
+            title: 'suite-1',
           },
           {
-            slug: 'suite-2-benchmark-js',
-            title: 'suite-2 Benchmark JS',
+            slug: 'benchmark-js-suite-2',
+            title: 'suite-2',
           },
         ],
       } satisfies Omit<PluginConfig, 'runner'>),
