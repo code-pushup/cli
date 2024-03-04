@@ -1,4 +1,3 @@
-import { stat } from 'node:fs/promises';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   CoreConfig,

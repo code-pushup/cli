@@ -66,6 +66,7 @@ function callAndValidate<T = string | string[]>(
       if (!logged[fnName]) {
         // eslint-disable-next-line functional/immutable-data
         logged[fnName] = true;
+        // eslint-disable-next-line no-console
         console.log(
           `${fnName} found ${result.length} files for pattern ${pattern.join(
             ', ',

@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { join } from 'node:path';
 import yargs from 'yargs';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   type CrawlFileSystemOptions,
   crawlFileSystem,
@@ -78,6 +79,7 @@ function callAndValidate<T = CrawlFileSystemOptions<string>>(
       if (!logged[fnName]) {
         // eslint-disable-next-line functional/immutable-data
         logged[fnName] = true;
+        // eslint-disable-next-line no-console
         console.log(
           `${chalk.bold(fnName)} found ${chalk.bold(
             result.length,
