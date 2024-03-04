@@ -14,7 +14,7 @@ describe('runSuite', () => {
           ],
           [
             'slower-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 8)),
+            () => new Promise(resolve => setTimeout(resolve, 50)),
           ],
         ],
       }),
