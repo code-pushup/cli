@@ -138,7 +138,6 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const start = performance.now();
 
   return new Promise((resolve, reject) => {
-    // @TODO add logging `Spawn process ${command} with args ${args?.join(' ')}`
     // shell:true tells Windows to use shell command for spawning a child process
     const process = spawn(command, args, { cwd, shell: true });
     // eslint-disable-next-line functional/no-let
