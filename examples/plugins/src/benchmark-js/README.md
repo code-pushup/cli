@@ -74,3 +74,21 @@ const suitConfig = {
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../../../../packages/cli/README.m)).
 
 ## Audits
+
+The plugin created an audit for each suit. 
+
+The audit scoring is based on fastest case, that means the fastest audit has a score of 100. 
+If the target implementation is not the fastest, the audit shows how much slower the target implementation is compared to the fastest. 
+
+`● crawl-file-system - Benchmark JS           59.9 ops/sec`
+
+### Issues
+
+Each audit has the test cases listed as issue. 
+
+**Possible issues:**
+- is slower - `version-1    59.9 ops/sec (20% slower)`
+- is target and slower - `🎯 version-1    59.9 ops/sec (20% slower)`
+- is fastest - `version-1     🔥 59.9 ops/sec`
+- is target and fastest - `🎯 version-1     🔥 59.9 ops/sec`
+

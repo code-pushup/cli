@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { auditOutputSchema } from '@code-pushup/models';
 import {
   suiteNameToCategoryRef,
-  suiteResultToAuditOutput,
+  suiteResultToAuditOutput, toAuditDetails,
   toAuditMetadata,
   toAuditSlug,
   toAuditTitle,
@@ -188,4 +188,5 @@ describe('scoredAuditOutput', () => {
       }),
     );
   });
+
 });
