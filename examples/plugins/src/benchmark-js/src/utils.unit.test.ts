@@ -10,13 +10,13 @@ import {
 
 describe('toAuditSlug', () => {
   it('should create slug string', () => {
-    expect(toAuditSlug('glob')).toBe('glob-benchmark-js');
+    expect(toAuditSlug('glob')).toBe('benchmark-js-glob');
   });
 });
 
 describe('toAuditTitle', () => {
   it('should create title string', () => {
-    expect(toAuditTitle('glob')).toBe('glob Benchmark JS');
+    expect(toAuditTitle('glob')).toBe('glob');
   });
 });
 
@@ -263,7 +263,7 @@ describe('scoredAuditOutput', () => {
             },
             {
               message: `🎯implementation-2 60.12 ops/sec (39.88hz slower)`,
-              severity: 'info',
+              severity: 'error',
             },
           ]),
         },

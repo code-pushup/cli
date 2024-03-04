@@ -37,7 +37,7 @@ export function suiteResultToAuditOutput(
           message: `${targetIcon}${name} ${fastestIcon}${hz.toFixed(
             2,
           )} ops/sec${postfix}`,
-          severity: 'info',
+          severity: hz < maxHz && isTarget ? 'error' : 'info',
         } satisfies Issue;
       }),
     },
@@ -45,11 +45,11 @@ export function suiteResultToAuditOutput(
 }
 
 export function toAuditSlug(suiteName: string): string {
-  return `${slugify(suiteName)}-benchmark-js`;
+  return `benchmark-js-${slugify(suiteName)}`;
 }
 
 export function toAuditTitle(suiteName: string): string {
-  return `${suiteName} Benchmark JS`;
+  return `${suiteName}`;
 }
 
 export function toAuditMetadata(suiteNames: string[]): Audit[] {

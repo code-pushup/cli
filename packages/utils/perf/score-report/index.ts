@@ -43,7 +43,7 @@ const options = { numAudits1, numAudits2, numGroupRefs2 };
 
 // Add tests
 const suiteConfig = {
-  suiteName: 'report-scoring',
+  suiteName: 'score-report',
   targetImplementation: '@code-pushup/utils#scoreReport',
   cases: [
     [

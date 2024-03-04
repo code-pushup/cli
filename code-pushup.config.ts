@@ -29,7 +29,10 @@ const envSchema = z
   .partial();
 const env = await envSchema.parseAsync(process.env);
 
-const benchmarkJsSuitNames = ['score-report', 'glob' /*'crawl-file-system'*/];
+const benchmarkJsSuitNames = [
+  'score-report',
+  'glob-matching' /*'crawl-file-system'*/,
+];
 
 const config: CoreConfig = {
   persist: {
@@ -90,18 +93,6 @@ const config: CoreConfig = {
       title: 'Code style',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
-      ],
-    },
-    {
-      slug: 'code-coverage',
-      title: 'Code coverage',
-      refs: [
-        {
-          type: 'group',
-          plugin: 'coverage',
-          slug: 'coverage',
-          weight: 1,
-        },
       ],
     },
     {
