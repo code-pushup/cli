@@ -7,7 +7,7 @@ import { SuiteConfig, runSuite } from './suite-helper';
 import {
   LoadOptions,
   loadSuits,
-  suitResultToAuditOutput,
+  suiteResultToAuditOutput,
   toAuditMetadata,
 } from './utils';
 
@@ -58,6 +58,6 @@ export function runnerFunction(suits: SuiteConfig[]): RunnerFunction {
       suits.map(async suit => runSuite(suit)),
     );
     // create audit output
-    return allSuiteResults.flatMap(results => suitResultToAuditOutput(results));
+    return allSuiteResults.flatMap(results => suiteResultToAuditOutput(results));
   };
 }
