@@ -1,8 +1,8 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as process from 'node:process';
 import { describe, expect } from 'vitest';
 import { readRcByPath } from './read-rc-file';
-import * as process from "process";
 
 describe('readRcByPath', () => {
   const configDirPath = join(
@@ -73,7 +73,9 @@ describe('readRcByPath', () => {
         join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
         'tsconfig.wrong.json',
       ),
-    ).rejects.toThrow("ENOENT: no such file or directory, stat 'tsconfig.wrong.json'");
+    ).rejects.toThrow(
+      "ENOENT: no such file or directory, stat 'tsconfig.wrong.json'",
+    );
   });
 
   it('should throw the configuration using a tsconfig path is not a file', async () => {
