@@ -75,7 +75,7 @@ const suitConfig = {
 
 ## Audits
 
-The plugin created an audit for each suit.
+The plugin creates an audit for each suite.
 
 The audit scoring is based on fastest case, that means the fastest audit has a score of 100.
 If the target implementation is not the fastest, the audit shows how much slower the target implementation is compared to the fastest.
@@ -92,3 +92,5 @@ Each audit has the test cases listed as issue.
 - is target and slower - `🎯 version-1    59.9 ops/sec (20% slower)`
 - is fastest - `version-1     🔥 59.9 ops/sec`
 - is target and fastest - `🎯 version-1     🔥 59.9 ops/sec`
+
+<img width="600px" src="./docs/images/audits-readme-example.png">
