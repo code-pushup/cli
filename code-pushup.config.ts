@@ -13,6 +13,9 @@ import {
   packageJsonPlugin,
   suiteNameToCategoryRef,
 } from './dist/examples/plugins';
+import coveragePlugin, {
+  getNxCoveragePaths,
+} from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
@@ -55,7 +58,21 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-
+    await coveragePlugin({
+      coverageToolCommand: {
+        command: 'npx',
+        args: [
+          'nx',
+          'run-many',
+          '-t',
+          'unit-test',
+          'integration-test',
+          '--coverage',
+          '--skipNxCache',
+        ],
+      },
+      reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
+    }),
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -93,6 +110,18 @@ const config: CoreConfig = {
       title: 'Code style',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+    {
+      slug: 'code-coverage',
+      title: 'Code coverage',
+      refs: [
+        {
+          type: 'group',
+          plugin: 'coverage',
+          slug: 'coverage',
+          weight: 1,
+        },
       ],
     },
     {
