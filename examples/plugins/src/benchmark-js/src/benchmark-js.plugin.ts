@@ -45,7 +45,7 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
   return {
     slug: 'benchmark-js',
     title: 'Benchmark JS',
-    icon: 'flash',
+    icon: 'folder-benchmark',
     audits: toAuditMetadata(suits.map(({ suiteName }) => suiteName)),
     runner: runnerFunction(suits),
   } satisfies PluginConfig;
