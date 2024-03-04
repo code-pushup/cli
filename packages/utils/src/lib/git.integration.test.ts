@@ -141,7 +141,7 @@ describe('git utils in a git repo with a branch and commits dirty', () => {
   beforeAll(async () => {
     await mkdir(baseDir, { recursive: true });
 
-    dirtyGt = simpleGit(baseDir);
+    dirtyGit = simpleGit(baseDir);
     await dirtyGt.init();
     await dirtyGt.addConfig('user.name', 'John Doe');
     await dirtyGt.addConfig('user.email', 'john.doe@example.com');
