@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { auditOutputSchema } from '@code-pushup/models';
 import {
-  suitNameToCategoryRef,
-  suitResultToAuditOutput,
+  suiteNameToCategoryRef,
+  suiteResultToAuditOutput,
   toAuditMetadata,
   toAuditSlug,
   toAuditTitle,
@@ -31,9 +31,9 @@ describe('toAuditMetadata', () => {
   });
 });
 
-describe('suitNameToCategoryRef', () => {
-  it('should create a valid CategoryRef form suitName', () => {
-    expect(suitNameToCategoryRef('glob')).toEqual({
+describe('suiteNameToCategoryRef', () => {
+  it('should create a valid CategoryRef form suiteName', () => {
+    expect(suiteNameToCategoryRef('glob')).toEqual({
       slug: toAuditSlug('glob'),
       type: 'audit',
       weight: 1,
@@ -44,9 +44,9 @@ describe('suitNameToCategoryRef', () => {
 
 describe('scoredAuditOutput', () => {
   it('should produce valid AuditOutput for a single result', () => {
-    const auditOutput = suitResultToAuditOutput([
+    const auditOutput = suiteResultToAuditOutput([
       {
-        suitName: 'sort',
+        suiteName: 'sort',
         hz: 100,
         rme: 1,
         name: 'implementation-1',
@@ -66,9 +66,9 @@ describe('scoredAuditOutput', () => {
 
   it('should have integer value', () => {
     expect(
-      suitResultToAuditOutput([
+      suiteResultToAuditOutput([
         {
-          suitName: 'glob',
+          suiteName: 'glob',
           hz: 100.1111,
           rme: 2.5,
           name: 'globby',
@@ -86,9 +86,9 @@ describe('scoredAuditOutput', () => {
 
   it('should score based on maxHz', () => {
     expect(
-      suitResultToAuditOutput([
+      suiteResultToAuditOutput([
         {
-          suitName: 'glob',
+          suiteName: 'glob',
           hz: 100,
           rme: 2.5,
           name: 'globby',
@@ -97,7 +97,7 @@ describe('scoredAuditOutput', () => {
           samples: 4,
         },
         {
-          suitName: 'glob',
+          suiteName: 'glob',
           hz: 10,
           rme: 2.5,
           name: 'globby2',
@@ -115,9 +115,9 @@ describe('scoredAuditOutput', () => {
 
   it('should format value to 1 floating positions', () => {
     expect(
-      suitResultToAuditOutput([
+      suiteResultToAuditOutput([
         {
-          suitName: 'glob',
+          suiteName: 'glob',
           hz: 1.111_111,
           rme: 2.5,
           name: 'globby',
@@ -135,9 +135,9 @@ describe('scoredAuditOutput', () => {
 
   it('should pick fastest test result as scoring base', () => {
     expect(
-      suitResultToAuditOutput([
+      suiteResultToAuditOutput([
         {
-          suitName: 'sort',
+          suiteName: 'sort',
           hz: 100,
           rme: 1,
           name: 'implementation-1',
@@ -146,7 +146,7 @@ describe('scoredAuditOutput', () => {
           samples: 4,
         },
         {
-          suitName: 'sort',
+          suiteName: 'sort',
           hz: 10,
           rme: 1,
           name: 'implementation-2',
@@ -160,9 +160,9 @@ describe('scoredAuditOutput', () => {
 
   it('should pick target test result for AuditOutput data', () => {
     expect(
-      suitResultToAuditOutput([
+      suiteResultToAuditOutput([
         {
-          suitName: 'sort',
+          suiteName: 'sort',
           hz: 99,
           rme: 1,
           name: 'implementation-1',
@@ -171,7 +171,7 @@ describe('scoredAuditOutput', () => {
           samples: 4,
         },
         {
-          suitName: 'sort',
+          suiteName: 'sort',
           hz: 10,
           rme: 1,
           name: 'implementation-2',

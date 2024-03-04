@@ -39,8 +39,8 @@ if (logs) {
 const targetImplementation = '@code-pushup/utils#crawlFileSystem';
 const fsWalkName = 'nodelib.fsWalk';
 
-const suitConfig = {
-  suitName: 'crawl-file-system',
+const suiteConfig = {
+  suiteName: 'crawl-file-system',
   targetImplementation: fsWalkName,
   cases: [
     [
@@ -61,7 +61,7 @@ const suitConfig = {
     ],
   ],
 };
-export default suitConfig;
+export default suiteConfig;
 
 // ==============================================================
 

@@ -1,6 +1,6 @@
 import { Audit, type AuditOutput, type CategoryRef } from '@code-pushup/models';
 import { importEsmModule, slugify } from '@code-pushup/utils';
-import { BenchmarkResult, SuiteConfig } from './suit-helper';
+import { BenchmarkResult, SuiteConfig } from './suite-helper';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -8,36 +8,36 @@ import { BenchmarkResult, SuiteConfig } from './suit-helper';
  * - testing many implementations/libs to pick the fastest
  * @param results
  */
-export function suitResultToAuditOutput(
+export function suiteResultToAuditOutput(
   results: BenchmarkResult[],
 ): AuditOutput {
-  const { hz: maxHz, suitName } = results.find(
+  const { hz: maxHz, suiteName } = results.find(
     ({ isFastest }) => isFastest,
   ) as BenchmarkResult;
   const { hz } = results.find(({ isTarget }) => isTarget) as BenchmarkResult;
 
   return {
-    slug: toAuditSlug(suitName),
+    slug: toAuditSlug(suiteName),
     displayValue: `${hz.toFixed(1)} ops/sec`,
     score: hz / maxHz,
     value: Number.parseInt(hz.toString(), 10),
   };
 }
 
-export function toAuditSlug(suitName: string): string {
-  return `${slugify(suitName)}-benchmark-js`;
+export function toAuditSlug(suiteName: string): string {
+  return `${slugify(suiteName)}-benchmark-js`;
 }
 
-export function toAuditTitle(suitName: string): string {
-  return `${suitName} Benchmark JS`;
+export function toAuditTitle(suiteName: string): string {
+  return `${suiteName} Benchmark JS`;
 }
 
-export function toAuditMetadata(suitNames: string[]): Audit[] {
-  return suitNames.map(
-    suitName =>
+export function toAuditMetadata(suiteNames: string[]): Audit[] {
+  return suiteNames.map(
+    suiteName =>
       ({
-        slug: toAuditSlug(suitName),
-        title: toAuditTitle(suitName),
+        slug: toAuditSlug(suiteName),
+        title: toAuditTitle(suiteName),
       } satisfies Audit),
   );
 }
@@ -61,11 +61,11 @@ export function loadSuits(
     ),
   );
 }
-export function suitNameToCategoryRef(suitName: string): CategoryRef {
+export function suiteNameToCategoryRef(suiteName: string): CategoryRef {
   return {
     type: 'audit',
     plugin: 'benchmark-js',
-    slug: toAuditSlug(suitName),
+    slug: toAuditSlug(suiteName),
     weight: 1,
   } satisfies CategoryRef;
 }

@@ -38,9 +38,9 @@ const globName = 'glob';
 const globbyName = 'globby';
 
 // ==================
-const suitConfig = {
+const suiteConfig = {
   outputDir,
-  suitName: 'glob-matching',
+  suiteName: 'glob-matching',
   targetImplementation: 'fast-glob',
   cases: [
     // eslint-disable-next-line import/no-named-as-default-member
@@ -49,7 +49,7 @@ const suitConfig = {
     [globbyName, callAndValidate(globby, pattern, globbyName)],
   ],
 };
-export default suitConfig;
+export default suiteConfig;
 
 // ==============================================================
 const logged: Record<string, boolean> = {};

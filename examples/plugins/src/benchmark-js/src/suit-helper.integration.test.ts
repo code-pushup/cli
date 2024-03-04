@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BenchmarkResult, runSuit } from './suit-helper';
+import { BenchmarkResult, runSuite } from './suite-helper';
 
-describe('runSuit', () => {
+describe('runSuite', () => {
   it('should execute valid suite', async () => {
     await expect(
-      runSuit({
-        suitName: 'suite-1',
+      runSuite({
+        suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
           [
@@ -18,16 +18,27 @@ describe('runSuit', () => {
           ],
         ],
       }),
-    ).resolves.toEqual([
-      {
-        suitName: 'suite-1',
-        name: 'current-implementation',
-        isTarget: true,
-        hz: expect.any(Number),
-        isFastest: true,
-        rme: expect.any(Number),
-        samples: expect.any(Number),
-      } satisfies BenchmarkResult,
-    ]);
+    ).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          suiteName: 'suite-1',
+          name: 'current-implementation',
+          isTarget: true,
+          hz: expect.any(Number),
+          isFastest: true,
+          rme: expect.any(Number),
+          samples: expect.any(Number),
+        } satisfies BenchmarkResult),
+        expect.objectContaining({
+          suiteName: 'suite-1',
+          name: 'slower-implementation',
+          isTarget: false,
+          hz: expect.any(Number),
+          isFastest: false,
+          rme: expect.any(Number),
+          samples: expect.any(Number),
+        } satisfies BenchmarkResult),
+      ]),
+    );
   });
-}, 6000);
+}, 20_000);

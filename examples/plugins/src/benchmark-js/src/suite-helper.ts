@@ -1,12 +1,12 @@
 import Benchmark, { type Event, type Target } from 'benchmark';
 
 export type SuiteConfig = {
-  suitName: string;
+  suiteName: string;
   targetImplementation: string;
   cases: [string, (...args: unknown[]) => Promise<unknown>][];
 };
 export type BenchmarkResult = {
-  suitName: string;
+  suiteName: string;
   name: string;
   hz: number; // operations per second
   rme: number; // relative margin of error
@@ -15,8 +15,8 @@ export type BenchmarkResult = {
   isTarget: boolean;
 };
 
-export async function runSuit(
-  { suitName, cases, targetImplementation }: SuiteConfig,
+export async function runSuite(
+  { suiteName, cases, targetImplementation }: SuiteConfig,
   options: {
     verbose?: boolean;
   } = { verbose: false },
@@ -26,7 +26,7 @@ export async function runSuit(
   return new Promise((resolve, reject) => {
     // This is not working with named imports
     // eslint-disable-next-line import/no-named-as-default-member
-    const suite = new Benchmark.Suite(suitName);
+    const suite = new Benchmark.Suite(suiteName);
 
     // Add Listener
     Object.entries({
@@ -45,7 +45,7 @@ export async function runSuit(
         const json = (event.currentTarget as unknown as Target[]).map(
           bench =>
             ({
-              suitName,
+              suiteName,
               name: bench.name || '',
               hz: bench.hz ?? 0, // operations per second
               rme: bench.stats?.rme ?? 0, // relative margin of error

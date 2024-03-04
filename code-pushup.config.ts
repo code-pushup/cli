@@ -29,9 +29,7 @@ const envSchema = z
   .partial();
 const env = await envSchema.parseAsync(process.env);
 
-const benchmarkJsSuitNames = [
-  'score-report', 'glob' /*'crawl-file-system'*/,
-];
+const benchmarkJsSuitNames = ['score-report', 'glob' /*'crawl-file-system'*/];
 
 const config: CoreConfig = {
   persist: {

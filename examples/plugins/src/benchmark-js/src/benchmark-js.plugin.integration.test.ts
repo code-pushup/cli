@@ -1,17 +1,17 @@
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { create } from './benchmark-js.plugin';
-import { BenchmarkResult } from './suit-helper';
+import { BenchmarkResult } from './suite-helper';
 
 vi.mock('./utils', async () => {
   const examplesPlugins: object = await vi.importActual('./utils');
   return {
     ...examplesPlugins,
-    loadSuits: vi.fn().mockImplementation((suitNames: string[]) =>
-      suitNames.map(
-        (suitName, index) =>
+    loadSuits: vi.fn().mockImplementation((suiteNames: string[]) =>
+      suiteNames.map(
+        (suiteName, index) =>
           ({
-            suitName: suitName,
+            suiteName,
             name:
               index === 0
                 ? 'current-implementation'
@@ -20,7 +20,7 @@ vi.mock('./utils', async () => {
             hz: index === 0 ? 1 : Math.random(),
             isFastest: index === 0,
             isTarget: index === 0,
-            samples: suitNames.length * 10,
+            samples: suiteNames.length * 10,
           } satisfies BenchmarkResult),
       ),
     ),
@@ -30,7 +30,7 @@ vi.mock('./utils', async () => {
 describe('benchmark-js-create-export-config', () => {
   it('should execute', async () => {
     const pluginConfig = await create({
-      targets: ['suit-1', 'suit-2'],
+      targets: ['suite-1', 'suite-2'],
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual(
@@ -40,12 +40,12 @@ describe('benchmark-js-create-export-config', () => {
         icon: 'flash',
         audits: [
           {
-            slug: 'suit-1-benchmark-js',
-            title: 'suit-1 Benchmark JS',
+            slug: 'suite-1-benchmark-js',
+            title: 'suite-1 Benchmark JS',
           },
           {
-            slug: 'suit-2-benchmark-js',
-            title: 'suit-2 Benchmark JS',
+            slug: 'suite-2-benchmark-js',
+            title: 'suite-2 Benchmark JS',
           },
         ],
       } satisfies Omit<PluginConfig, 'runner'>),

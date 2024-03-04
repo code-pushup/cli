@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { SuiteConfig } from '../../src/benchmark-js/src/suit-helper';
+import { SuiteConfig } from '../../src/benchmark-js/src/suite-helper';
 
 const cli = yargs(process.argv).options({
   numCases: {
@@ -36,8 +36,8 @@ if (logs) {
 
 // ==================
 
-const suitConfig: SuiteConfig = {
-  suitName: 'dummy-suite',
+const suiteConfig: SuiteConfig = {
+  suiteName: 'dummy-suite',
   targetImplementation: 'case-1',
   cases: Array.from({ length: numCases }).map((_, idx) => [
     `case-${idx + 1}`,
@@ -48,4 +48,4 @@ const suitConfig: SuiteConfig = {
   ]),
 };
 
-export default suitConfig;
+export default suiteConfig;

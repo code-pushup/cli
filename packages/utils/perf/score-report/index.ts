@@ -42,8 +42,8 @@ if (logs) {
 const options = { numAudits1, numAudits2, numGroupRefs2 };
 
 // Add tests
-const suitConfig = {
-  suitName: 'report-scoring',
+const suiteConfig = {
+  suiteName: 'report-scoring',
   targetImplementation: '@code-pushup/utils#scoreReport',
   cases: [
     [
@@ -57,4 +57,4 @@ const suitConfig = {
   ],
 };
 
-export default suitConfig;
+export default suiteConfig;

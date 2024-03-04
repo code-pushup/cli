@@ -3,7 +3,7 @@ import {
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { SuiteConfig, runSuit } from './suit-helper';
+import { SuiteConfig, runSuite } from './suite-helper';
 import {
   LoadOptions,
   loadSuits,
@@ -40,14 +40,14 @@ export type PluginOptions = {
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { tsconfig, targets } = options;
   // load the suites at before returning the plugin config to be able to return a more dynamic config
-  const suites = await loadSuits(targets, { tsconfig });
+  const suits = await loadSuits(targets, { tsconfig });
 
   return {
     slug: 'benchmark-js',
     title: 'Benchmark JS',
     icon: 'flash',
-    audits: toAuditMetadata(suites.map(({ suitName }) => suitName)),
-    runner: runnerFunction(suites),
+    audits: toAuditMetadata(suits.map(({ suiteName }) => suiteName)),
+    runner: runnerFunction(suits),
   } satisfies PluginConfig;
 }
 
@@ -55,7 +55,7 @@ export function runnerFunction(suits: SuiteConfig[]): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     // execute benchmark
     const allSuiteResults = await Promise.all(
-      suits.map(async suit => runSuit(suit)),
+      suits.map(async suit => runSuite(suit)),
     );
     // create audit output
     return allSuiteResults.flatMap(results => suitResultToAuditOutput(results));
