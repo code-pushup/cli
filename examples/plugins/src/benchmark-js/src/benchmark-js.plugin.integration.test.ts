@@ -37,7 +37,7 @@ describe('benchmark-js-create-export-config', () => {
       expect.objectContaining({
         slug: 'benchmark-js',
         title: 'Benchmark JS',
-        icon: 'flash',
+        icon: 'folder-benchmark',
         audits: [
           {
             slug: 'benchmark-js-suite-1',

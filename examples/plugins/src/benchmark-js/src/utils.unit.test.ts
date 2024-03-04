@@ -222,7 +222,7 @@ describe('scoredAuditOutput', () => {
               severity: 'info',
             },
             {
-              message: `implementation-2 60.00 ops/sec (40.00hz slower)`,
+              message: `implementation-2 60.00 ops/sec (40.0% slower)`,
               severity: 'info',
             },
           ]),
@@ -231,7 +231,7 @@ describe('scoredAuditOutput', () => {
     );
   });
 
-  it('should have correct details for a suit with score 60', () => {
+  it('should have correct details for a suit with score long floating number', () => {
     expect(
       suiteResultToAuditOutput([
         {
@@ -262,7 +262,7 @@ describe('scoredAuditOutput', () => {
               severity: 'info',
             },
             {
-              message: `🎯implementation-2 60.12 ops/sec (39.88hz slower)`,
+              message: `🎯implementation-2 60.12 ops/sec (39.9% slower)`,
               severity: 'error',
             },
           ]),

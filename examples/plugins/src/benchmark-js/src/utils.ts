@@ -19,19 +19,21 @@ export function suiteResultToAuditOutput(
   const { hz: maxHz, suiteName } = results.find(
     ({ isFastest }) => isFastest,
   ) as BenchmarkResult;
-  const { hz } = results.find(({ isTarget }) => isTarget) as BenchmarkResult;
+  const { hz: targetHz } = results.find(
+    ({ isTarget }) => isTarget,
+  ) as BenchmarkResult;
 
   return {
     slug: toAuditSlug(suiteName),
-    displayValue: `${hz.toFixed(2)} ops/sec`,
-    score: hz / maxHz,
-    value: Number.parseInt(hz.toString(), 10),
+    displayValue: `${targetHz.toFixed(2)} ops/sec`,
+    score: targetHz / maxHz,
+    value: Number.parseInt(targetHz.toString(), 10),
     details: {
       issues: results.map(({ name, hz, isTarget, isFastest }) => {
         const targetIcon = isTarget ? '🎯' : '';
         const fastestIcon = isFastest ? '🔥' : '';
         const postfix =
-          hz < maxHz ? ` (${(maxHz - hz).toFixed(2)}hz slower)` : '';
+          hz < maxHz ? ` (${((1 - hz / maxHz) * 100).toFixed(1)}% slower)` : '';
         return {
           message: `${targetIcon}${name} ${fastestIcon}${hz.toFixed(
             2,
