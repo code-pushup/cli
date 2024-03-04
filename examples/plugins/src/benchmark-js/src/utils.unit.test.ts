@@ -201,12 +201,12 @@ describe('scoredAuditOutput', () => {
           name: 'implementation-1',
           isFastest: true,
           isTarget: true,
-          samples: 4,
+          samples: 5,
         },
         {
           suiteName: 'sort',
           hz: 60,
-          rme: 1,
+          rme: 1.12,
           name: 'implementation-2',
           isFastest: false,
           isTarget: false,
@@ -218,11 +218,11 @@ describe('scoredAuditOutput', () => {
         details: {
           issues: expect.arrayContaining([
             {
-              message: `🎯implementation-1 100.00 ops/sec (fastest 🔥)`,
+              message: `🎯implementation-1 x 100.00 ops/sec ±1.00; 5 samples (fastest 🔥)`,
               severity: 'info',
             },
             {
-              message: `implementation-2 60.00 ops/sec (40.0% slower)`,
+              message: `implementation-2 x 60.00 ops/sec ±1.12; 4 samples (40.0% slower)`,
               severity: 'info',
             },
           ]),
@@ -241,12 +241,12 @@ describe('scoredAuditOutput', () => {
           name: 'implementation-1',
           isFastest: true,
           isTarget: false,
-          samples: 4,
+          samples: 5,
         },
         {
           suiteName: 'sort',
           hz: 60.123,
-          rme: 1,
+          rme: 1.12,
           name: 'implementation-2',
           isFastest: false,
           isTarget: true,
@@ -258,11 +258,11 @@ describe('scoredAuditOutput', () => {
         details: {
           issues: expect.arrayContaining([
             {
-              message: `implementation-1 100.00 ops/sec (fastest 🔥)`,
+              message: `implementation-1 x 100.00 ops/sec ±1.00; 5 samples (fastest 🔥)`,
               severity: 'info',
             },
             {
-              message: `🎯implementation-2 60.12 ops/sec (39.9% slower)`,
+              message: `🎯implementation-2 x 60.12 ops/sec ±1.12; 4 samples (39.9% slower)`,
               severity: 'error',
             },
           ]),

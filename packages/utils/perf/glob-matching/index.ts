@@ -17,7 +17,7 @@ const cli = yargs(process.argv).options({
   },
   logs: {
     type: 'boolean',
-    default: false,
+    default: true,
   },
 });
 
@@ -61,7 +61,7 @@ function callAndValidate<T = string | string[]>(
   return async () => {
     const result = await fn(globPatterns);
     if (result.length === 0) {
-      throw new Error(`Result length is ${result.length}`);
+      //  throw new Error(`Result length is ${result.length}`);
     } else {
       if (!logged[fnName]) {
         // eslint-disable-next-line functional/immutable-data

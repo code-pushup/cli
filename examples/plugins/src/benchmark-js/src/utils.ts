@@ -29,13 +29,16 @@ export function suiteResultToAuditOutput(
     score: targetHz / maxHz,
     value: Number.parseInt(targetHz.toString(), 10),
     details: {
-      issues: results.map(({ name, hz, isTarget, isFastest }) => {
+      issues: results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
         const targetIcon = isTarget ? '🎯' : '';
         const postfix = isFastest
           ? '(fastest 🔥)'
           : `(${((1 - hz / maxHz) * 100).toFixed(1)}% slower)`;
         return {
-          message: `${targetIcon}${name} ${hz.toFixed(2)} ops/sec ${postfix}`,
+          // fast-glob x 40,824 ops/sec ±4.44% (85 runs sampled)
+          message: `${targetIcon}${name} x ${hz.toFixed(
+            2,
+          )} ops/sec ±${rme.toFixed(2)}; ${samples} samples ${postfix}`,
           severity: hz < maxHz && isTarget ? 'error' : 'info',
         } satisfies Issue;
       }),
