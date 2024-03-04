@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { packageResult } from '../../mock/constants';
+import { packageResult } from '../../../../mocks/constants';
 import { licenseAudit } from './license.audit';
 
 describe('licenseAudit', () => {
