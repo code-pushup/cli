@@ -16,7 +16,6 @@ export type PluginOptions = {
   verbose?: boolean;
 } & LoadOptions;
 
-
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { tsconfig, targets } = options;
   // load the suites at before returning the plugin config to be able to return a more dynamic config
