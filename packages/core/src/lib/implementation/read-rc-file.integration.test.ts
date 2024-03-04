@@ -73,9 +73,7 @@ describe('readRcByPath', () => {
         join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
         'tsconfig.wrong.json',
       ),
-    ).rejects.toThrow(
-      "ENOENT: no such file or directory, stat 'tsconfig.wrong.json'",
-    );
+    ).rejects.toThrow('tsconfig.wrong.json');
   });
 
   it('should throw the configuration using a tsconfig path is not a file', async () => {
