@@ -11,7 +11,7 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-  suitNameToCategoryRef,
+  suiteNameToCategoryRef,
 } from './dist/examples/plugins';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
@@ -92,7 +92,7 @@ const config: CoreConfig = {
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
-    /*{
+    {
       slug: 'code-coverage',
       title: 'Code coverage',
       refs: [
@@ -103,7 +103,7 @@ const config: CoreConfig = {
           weight: 1,
         },
       ],
-    },*/
+    },
     {
       slug: 'custom-checks',
       title: 'Custom checks',
@@ -112,7 +112,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        //  ...benchmarkJsSuitNames.map(suitNameToCategoryRef),
+        ...benchmarkJsSuitNames.map(suiteNameToCategoryRef),
       ],
     },
   ],

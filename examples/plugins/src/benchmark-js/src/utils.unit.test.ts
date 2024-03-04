@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { auditOutputSchema } from '@code-pushup/models';
 import {
   suiteNameToCategoryRef,
-  suiteResultToAuditOutput, toAuditDetails,
+  suiteResultToAuditOutput,
   toAuditMetadata,
   toAuditSlug,
   toAuditTitle,
@@ -43,7 +43,7 @@ describe('suiteNameToCategoryRef', () => {
 });
 
 describe('scoredAuditOutput', () => {
-  it('should produce valid AuditOutput for a single result', () => {
+  it('should produce valid minimal AuditOutput for a single result', () => {
     const auditOutput = suiteResultToAuditOutput([
       {
         suiteName: 'sort',
@@ -55,12 +55,14 @@ describe('scoredAuditOutput', () => {
         samples: 4,
       },
     ]);
-    expect(auditOutput).toEqual({
-      slug: toAuditSlug('sort'),
-      score: 1,
-      value: 100,
-      displayValue: '100.0 ops/sec',
-    });
+    expect(auditOutput).toEqual(
+      expect.objectContaining({
+        slug: toAuditSlug('sort'),
+        score: 1,
+        value: 100,
+        displayValue: '100.00 ops/sec',
+      }),
+    );
     expect(() => auditOutputSchema.parse(auditOutput)).not.toThrow();
   });
 
@@ -113,7 +115,7 @@ describe('scoredAuditOutput', () => {
     );
   });
 
-  it('should format value to 1 floating positions', () => {
+  it('should format value to 2 floating positions', () => {
     expect(
       suiteResultToAuditOutput([
         {
@@ -128,7 +130,7 @@ describe('scoredAuditOutput', () => {
       ]),
     ).toEqual(
       expect.objectContaining({
-        displayValue: '1.1 ops/sec',
+        displayValue: '1.11 ops/sec',
       }),
     );
   });
@@ -184,9 +186,88 @@ describe('scoredAuditOutput', () => {
       expect.objectContaining({
         slug: toAuditSlug('sort'),
         value: 99,
-        displayValue: '99.0 ops/sec',
+        displayValue: '99.00 ops/sec',
       }),
     );
   });
 
+  it('should have correct details for a suit with score 100', () => {
+    expect(
+      suiteResultToAuditOutput([
+        {
+          suiteName: 'sort',
+          hz: 100,
+          rme: 1,
+          name: 'implementation-1',
+          isFastest: true,
+          isTarget: true,
+          samples: 4,
+        },
+        {
+          suiteName: 'sort',
+          hz: 60,
+          rme: 1,
+          name: 'implementation-2',
+          isFastest: false,
+          isTarget: false,
+          samples: 4,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        details: {
+          issues: expect.arrayContaining([
+            {
+              message: `🎯implementation-1 🔥100.00 ops/sec`,
+              severity: 'info',
+            },
+            {
+              message: `implementation-2 60.00 ops/sec (40.00hz slower)`,
+              severity: 'info',
+            },
+          ]),
+        },
+      }),
+    );
+  });
+
+  it('should have correct details for a suit with score 60', () => {
+    expect(
+      suiteResultToAuditOutput([
+        {
+          suiteName: 'sort',
+          hz: 100.0001,
+          rme: 1,
+          name: 'implementation-1',
+          isFastest: true,
+          isTarget: false,
+          samples: 4,
+        },
+        {
+          suiteName: 'sort',
+          hz: 60.123,
+          rme: 1,
+          name: 'implementation-2',
+          isFastest: false,
+          isTarget: true,
+          samples: 4,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        details: {
+          issues: expect.arrayContaining([
+            {
+              message: `implementation-1 🔥100.00 ops/sec`,
+              severity: 'info',
+            },
+            {
+              message: `🎯implementation-2 60.12 ops/sec (39.88hz slower)`,
+              severity: 'info',
+            },
+          ]),
+        },
+      }),
+    );
+  });
 });

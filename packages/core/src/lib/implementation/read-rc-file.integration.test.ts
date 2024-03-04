@@ -1,6 +1,6 @@
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import * as process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { readRcByPath } from './read-rc-file';
 

@@ -1,6 +1,12 @@
-import {Audit, AuditDetails, type AuditOutput, type CategoryRef, Issue} from '@code-pushup/models';
-import {importEsmModule, slugify} from '@code-pushup/utils';
-import {BenchmarkResult, SuiteConfig} from './suite-helper';
+import {
+  Audit,
+  AuditDetails,
+  type AuditOutput,
+  type CategoryRef,
+  Issue,
+} from '@code-pushup/models';
+import { importEsmModule, slugify } from '@code-pushup/utils';
+import { BenchmarkResult, SuiteConfig } from './suite-helper';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -9,44 +15,33 @@ import {BenchmarkResult, SuiteConfig} from './suite-helper';
  * @param results
  */
 export function suiteResultToAuditOutput(
-  results: BenchmarkResult[]
+  results: BenchmarkResult[],
 ): AuditOutput {
-  const {hz: maxHz, suiteName} = results.find(
-    ({isFastest}) => isFastest,
+  const { hz: maxHz, suiteName } = results.find(
+    ({ isFastest }) => isFastest,
   ) as BenchmarkResult;
-  const {hz, name: targetCaseName} = results.find(({isTarget}) => isTarget) as BenchmarkResult;
+  const { hz } = results.find(({ isTarget }) => isTarget) as BenchmarkResult;
 
-  const audit = {
-    slug: toAuditSlug(suiteName),
-    displayValue: `${hz.toFixed(1)} ops/sec`,
-    score: hz / maxHz,
-    value: Number.parseInt(hz.toString(), 10)
-  };
-  const details= toAuditDetails(results, targetCaseName, maxHz);
-  if(details) {
-    return {
-      ...audit,
-      ...details
-    }
-  }
-  return audit;
-}
-
-
-export function toAuditDetails(results: BenchmarkResult[], targetCaseName: string, maxHz: number): { details: AuditDetails } {
   return {
+    slug: toAuditSlug(suiteName),
+    displayValue: `${hz.toFixed(2)} ops/sec`,
+    score: hz / maxHz,
+    value: Number.parseInt(hz.toString(), 10),
     details: {
-      issues: results.map(({name, hz}) => {
-        const targetIcon = name === targetCaseName ? '🎯' : '';
-        const fastestIcon = name === targetCaseName ? '🔥' : '';
-        const postfix = hz < maxHz ? `(${maxHz - hz}hz slower)` : '';
+      issues: results.map(({ name, hz, isTarget, isFastest }) => {
+        const targetIcon = isTarget ? '🎯' : '';
+        const fastestIcon = isFastest ? '🔥' : '';
+        const postfix =
+          hz < maxHz ? ` (${(maxHz - hz).toFixed(2)}hz slower)` : '';
         return {
-          message: `${targetIcon}${name} ${fastestIcon}${hz} ops/sec ${postfix}`,
-          severity: 'info'
-        } satisfies Issue
-      })
-    }
-  }
+          message: `${targetIcon}${name} ${fastestIcon}${hz.toFixed(
+            2,
+          )} ops/sec${postfix}`,
+          severity: 'info',
+        } satisfies Issue;
+      }),
+    },
+  };
 }
 
 export function toAuditSlug(suiteName: string): string {
@@ -75,7 +70,7 @@ export function loadSuits(
   targets: string[],
   options: LoadOptions,
 ): Promise<SuiteConfig[]> {
-  const {tsconfig} = options;
+  const { tsconfig } = options;
   return Promise.all(
     targets.map(
       (filepath: string) =>
