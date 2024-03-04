@@ -218,7 +218,7 @@ describe('scoredAuditOutput', () => {
         details: {
           issues: expect.arrayContaining([
             {
-              message: `🎯implementation-1 🔥100.00 ops/sec`,
+              message: `🎯implementation-1 100.00 ops/sec (fastest 🔥)`,
               severity: 'info',
             },
             {
@@ -258,7 +258,7 @@ describe('scoredAuditOutput', () => {
         details: {
           issues: expect.arrayContaining([
             {
-              message: `implementation-1 🔥100.00 ops/sec`,
+              message: `implementation-1 100.00 ops/sec (fastest 🔥)`,
               severity: 'info',
             },
             {

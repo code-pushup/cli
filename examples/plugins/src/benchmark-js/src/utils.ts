@@ -31,13 +31,11 @@ export function suiteResultToAuditOutput(
     details: {
       issues: results.map(({ name, hz, isTarget, isFastest }) => {
         const targetIcon = isTarget ? '🎯' : '';
-        const fastestIcon = isFastest ? '🔥' : '';
-        const postfix =
-          hz < maxHz ? ` (${((1 - hz / maxHz) * 100).toFixed(1)}% slower)` : '';
+        const postfix = isFastest
+          ? '(fastest 🔥)'
+          : `(${((1 - hz / maxHz) * 100).toFixed(1)}% slower)`;
         return {
-          message: `${targetIcon}${name} ${fastestIcon}${hz.toFixed(
-            2,
-          )} ops/sec${postfix}`,
+          message: `${targetIcon}${name} ${hz.toFixed(2)} ops/sec ${postfix}`,
           severity: hz < maxHz && isTarget ? 'error' : 'info',
         } satisfies Issue;
       }),

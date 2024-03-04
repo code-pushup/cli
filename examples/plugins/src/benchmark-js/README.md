@@ -1,6 +1,6 @@
 # benchmark js example
 
-🕵️ **Code PushUp plugin to benchmark JS execution performance** 🔥
+📊️ **Code PushUp plugin to benchmark JS execution performance** 🔥
 
 ---
 
@@ -90,10 +90,10 @@ Each audit has the test cases listed as issue.
 
 **Possible issues:**
 
-- is slower - `version-1    59.9 ops/sec (20% slower)`
-- is target and slower - `🎯 version-1    59.9 ops/sec (20% slower)`
-- is fastest - `version-1     🔥 59.9 ops/sec`
-- is target and fastest - `🎯 version-1     🔥 59.9 ops/sec`
+- is slower - `version-1    59.90 ops/sec (20% slower)`
+- is target and slower - `🎯 version-1    59.90 ops/sec (20% slower)`
+- is fastest - `version-1     59.90 ops/sec 🔥 `
+- is target and fastest - `🎯 version-1     59.90 ops/sec 🔥`
 
 <img width="600px" src="./docs/images/audits-readme-example.png">
 
