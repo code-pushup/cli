@@ -10,7 +10,7 @@ import {
 } from '@code-pushup/utils';
 import { FinalCoveragePluginConfig } from '../config';
 import { applyMaxScoreAboveThreshold } from '../utils';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH, WORKDIR } from './constants';
+import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { lcovResultsToAuditOutputs } from './lcov/lcov-runner';
 
 export async function executeRunner(): Promise<void> {
@@ -48,7 +48,7 @@ export async function createRunnerConfig(
   config: FinalCoveragePluginConfig,
 ): Promise<RunnerConfig> {
   // Create JSON config for executeRunner
-  await ensureDirectoryExists(WORKDIR);
+  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
   await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
 
   const threshold = config.perfectScoreThreshold;
