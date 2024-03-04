@@ -46,7 +46,7 @@ describe('git utils in a git repo with a branch and commits clean', () => {
     gitTestFolder,
     'testing-git-repo-with-branch-and-commits-clean',
   );
-  let intiGit: SimpleGit;
+  let cleanGit: SimpleGit;
 
   beforeAll(async () => {
     await mkdir(baseDir, { recursive: true });
