@@ -58,6 +58,8 @@ export function runnerFunction(suits: SuiteConfig[]): RunnerFunction {
       suits.map(async suit => runSuite(suit)),
     );
     // create audit output
-    return allSuiteResults.flatMap(results => suiteResultToAuditOutput(results));
+    return allSuiteResults.flatMap(results =>
+      suiteResultToAuditOutput(results),
+    );
   };
 }
