@@ -14,7 +14,7 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
     coverage: {
-      reporter: ['lcov'],
+      reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/nx-plugin/integration-tests',
     },
     environment: 'node',
