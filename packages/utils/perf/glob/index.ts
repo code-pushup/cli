@@ -8,7 +8,9 @@ import yargs from 'yargs';
 const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
-    default: [join(process.cwd(), '**/*.ts')],
+    string: true,
+    //default: [join(process.cwd(), 'node_modules/**/*.md')],
+    default: [join(process.cwd(), 'packages/utils/**/*.md')],
   },
   outputDir: {
     type: 'string',
@@ -30,42 +32,46 @@ if (logs) {
     `pattern      glob pattern of test      --pattern=${pattern.toString()}`,
   );
 }
+
+const fastGlobName = 'fast-glob';
+const globName = 'glob';
+const globbyName = 'globby';
+
 // ==================
 const suitConfig = {
   outputDir,
-  suitName: 'glob',
+  suitName: 'glob-matching',
   targetImplementation: 'fast-glob',
   cases: [
     // eslint-disable-next-line import/no-named-as-default-member
-    ['fast-glob', wrapWithDefer(fastGlob.async)],
-    ['glob', wrapWithDefer(glob)],
-    ['globby', wrapWithDefer(globby)],
+    [fastGlobName, callAndValidate(fastGlob.async, pattern, fastGlobName)],
+    [globName, callAndValidate(glob, pattern, globName)],
+    [globbyName, callAndValidate(globby, pattern, globbyName)],
   ],
 };
 export default suitConfig;
 
 // ==============================================================
-
-function wrapWithDefer(asyncFn: (pattern: string[]) => Promise<string[]>) {
-  const logged: Record<string, boolean> = {};
-  return {
-    defer: true, // important for async functions
-    fn: function (deferred: { resolve: () => void }) {
-      return asyncFn([pattern.toString()])
-        .catch(() => [])
-        .then((result: unknown[]) => {
-          if (result.length === 0) {
-            throw new Error(`Result length is ${result.length}`);
-          } else {
-            if (!logged[asyncFn.name]) {
-              // eslint-disable-next-line functional/immutable-data
-              logged[asyncFn.name] = true;
-              console.info(`${asyncFn.name} found ${result.length} files`);
-            }
-            deferred.resolve();
-          }
-          return void 0;
-        });
-    },
+const logged: Record<string, boolean> = {};
+function callAndValidate<T = string | string[]>(
+  fn: (patterns: T) => Promise<unknown[]>,
+  globPatterns: T,
+  fnName: string,
+) {
+  return async () => {
+    const result = await fn(globPatterns);
+    if (result.length === 0) {
+      throw new Error(`Result length is ${result.length}`);
+    } else {
+      if (!logged[fnName]) {
+        // eslint-disable-next-line functional/immutable-data
+        logged[fnName] = true;
+        console.log(
+          `${fnName} found ${result.length} files for pattern ${pattern.join(
+            ', ',
+          )}`,
+        );
+      }
+    }
   };
 }

@@ -1,19 +1,20 @@
+import chalk from 'chalk';
 import { join } from 'node:path';
 import yargs from 'yargs';
 import {
   type CrawlFileSystemOptions,
   crawlFileSystem,
-} from '../../src/lib/file-system';
+} from '../../../../dist/packages/utils';
 import { crawlFileSystemFsWalk } from './fs-walk';
 
 const cli = yargs(process.argv).options({
   directory: {
     type: 'string',
-    default: join(process.cwd(), '..', '..', '..', 'node_modules'),
+    default: join(process.cwd(), 'packages', 'utils'),
   },
   pattern: {
     type: 'string',
-    default: '.json$',
+    default: '.md',
   },
   logs: {
     type: 'boolean',
@@ -34,37 +35,55 @@ if (logs) {
   );
 }
 
+const targetImplementation = '@code-pushup/utils#crawlFileSystem';
+const fsWalkName = 'nodelib.fsWalk';
+
 const suitConfig = {
   suitName: 'crawl-file-system',
-  targetImplementation: '@code-pushup/utils#crawlFileSystem',
+  targetImplementation: fsWalkName,
   cases: [
-    ['@code-pushup/utils#crawlFileSystem', wrapWithDefer(crawlFileSystem)],
-    ['nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk)],
+    [
+      targetImplementation,
+      callAndValidate(
+        crawlFileSystem,
+        { directory, pattern },
+        targetImplementation,
+      ),
+    ],
+    [
+      fsWalkName,
+      callAndValidate(
+        crawlFileSystemFsWalk,
+        { directory, pattern },
+        fsWalkName,
+      ),
+    ],
   ],
 };
 export default suitConfig;
 
 // ==============================================================
 
-function wrapWithDefer<T>(
-  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<unknown[]>,
+const logged: Record<string, boolean> = {};
+function callAndValidate<T = CrawlFileSystemOptions<string>>(
+  fn: (arg: T) => Promise<unknown[]>,
+  options: T,
+  fnName: string,
 ) {
-  return {
-    defer: true, // important for async functions
-    fn: function (deferred: { resolve: () => void }) {
-      return asyncFn({ directory, pattern })
-        .catch(() => [])
-        .then((result: unknown[]) => {
-          // custom validation based on the case result
-          if (result.length === 0) {
-            throw new Error(
-              `Result length is ${result.length}. If the test result returns 0 hits the logic or configuration might be wrong.`,
-            );
-          } else {
-            deferred.resolve();
-          }
-          return void 0;
-        });
-    },
+  return async () => {
+    const result = await fn(options);
+    if (result.length === 0) {
+      throw new Error(`Result length is ${result.length}`);
+    } else {
+      if (!logged[fnName]) {
+        // eslint-disable-next-line functional/immutable-data
+        logged[fnName] = true;
+        console.log(
+          `${chalk.bold(fnName)} found ${chalk.bold(
+            result.length,
+          )} files for pattern ${chalk.bold(options.pattern)}`,
+        );
+      }
+    }
   };
 }

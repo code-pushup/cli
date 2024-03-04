@@ -29,7 +29,9 @@ const envSchema = z
   .partial();
 const env = await envSchema.parseAsync(process.env);
 
-const benchmarkJsSuitNames = ['glob' /*,'crawl-file-system', 'score-report'*/];
+const benchmarkJsSuitNames = [
+  'crawl-file-system' /*'crawl-file-system', 'score-report', 'glob''*/,
+];
 
 const config: CoreConfig = {
   persist: {
@@ -73,8 +75,8 @@ const config: CoreConfig = {
 
     await benchmarkJsPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
-      targetFolder: benchmarkJsSuitNames.map(suit =>
-        join('packages', 'utils', 'perf', suit),
+      targets: benchmarkJsSuitNames.map(suit =>
+        join('packages', 'utils', 'perf', suit, 'index.ts'),
       ),
     }),
   ],
@@ -112,7 +114,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuitNames.map(suitNameToCategoryRef),
+        //  ...benchmarkJsSuitNames.map(suitNameToCategoryRef),
       ],
     },
   ],

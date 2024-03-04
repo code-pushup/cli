@@ -1,3 +1,4 @@
+import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   CONFIG_FILE_NAME,
@@ -19,6 +20,13 @@ export async function readRcByPath(
 ): Promise<CoreConfig> {
   if (filepath.length === 0) {
     throw new Error('The path to the configuration file is empty.');
+  }
+
+  if (tsconfig) {
+    const s = await stat(tsconfig);
+    if (!s.isFile()) {
+      throw new Error('The tsconfig path is not a file.');
+    }
   }
 
   if (!(await fileExists(filepath))) {

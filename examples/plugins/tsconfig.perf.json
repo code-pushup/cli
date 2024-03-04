@@ -5,7 +5,7 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "perf/**/*.ts"],
+  "include": ["src/**/*.ts", "perf/**/*.ts", "code-pushup.config.ts"],
   "exclude": [
     "vite.config.unit.ts",
     "vite.config.integration.ts",
