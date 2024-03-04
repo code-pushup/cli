@@ -16,7 +16,6 @@ export {
   fileExists,
   findLineNumberInText,
   importEsmModule,
-  importCjsBundle,
   logMultipleFileResults,
   pluginWorkDir,
   readJsonFile,

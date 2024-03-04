@@ -10,7 +10,7 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-  suitNameToCategoryRef,
+  suiteNameToCategoryRef,
 } from '../../dist/examples/plugins';
 
 /**
@@ -62,7 +62,7 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuitNames.map(suitNameToCategoryRef),
+        ...benchmarkJsSuitNames.map(suiteNameToCategoryRef),
       ],
     },
     {

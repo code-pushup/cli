@@ -93,18 +93,6 @@ export async function importEsmModule(options: Options): Promise<unknown> {
   return mod.default;
 }
 
-export async function importCjsBundle(options: Options): Promise<unknown> {
-  const { mod } = await bundleRequire<object>({
-    format: 'cjs',
-    ...options,
-  });
-
-  if (!('default' in mod)) {
-    throw new NoExportError(options.filepath);
-  }
-  return mod.default;
-}
-
 export function pluginWorkDir(slug: string): string {
   return join('node_modules', '.code-pushup', slug);
 }
