@@ -4,7 +4,7 @@ import { SuiteConfig } from '../../src/benchmark-js/src/suite-helper';
 const cli = yargs(process.argv).options({
   numCases: {
     type: 'number',
-    default: 2,
+    default: 5,
   },
   executionTime: {
     type: 'number',

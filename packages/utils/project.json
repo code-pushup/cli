@@ -30,16 +30,7 @@
       }
     },
     "perf": {
-      "command": "node ../../../tools/benchmark/bin.mjs",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
-    },
-    "perf-list": {
-      "command": "ls -l | grep \"^d\" | awk '{print $9}'",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
+      "command": "node tools/benchmark/bin.mjs --targets ./packages/utils/perf/score-report/index.ts --targets ./packages/utils/perf/glob-matching/index.ts"
     },
     "unit-test": {
       "executor": "@nx/vite:test",

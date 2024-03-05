@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { loadSuits, runSuit } from './utils.mjs';
+import { loadSuits, runSuite } from './utils.mjs';
 
 const cli = yargs(process.argv).options({
   targets: {
@@ -32,15 +32,37 @@ const cli = yargs(process.argv).options({
     );
   }
   // create audit output
-  const allSuitResults = await Promise.all(
-    allSuits.map(suite => runSuit(suite, { verbose })),
-  );
+  const allSuiteResults = [];
+  // Execute each suite sequentially
+  for (const suite of allSuits) {
+    const result = await runSuite(suite);
+    allSuiteResults.push(result);
+  }
 
-  allSuitResults.forEach(results => {
-    const { suiteName, name } = results.find(({ isFastest }) => isFastest);
+  allSuiteResults.forEach(results => {
+    const {
+      suiteName,
+      name,
+      hz: maxHz,
+    } = results.find(({ isFastest }) => isFastest);
     const target = results.find(({ isTarget }) => isTarget);
     console.log(
       `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
+    );
+    console.table(
+      results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
+        const targetIcon = isTarget ? '🎯' : '';
+        const postfix = isFastest
+          ? '(fastest 🔥)'
+          : `(${((1 - hz / maxHz) * 100).toFixed(1)}% slower)`;
+        return {
+          // fast-glob x 40,824 ops/sec ±4.44% (85 runs sampled)
+          message: `${targetIcon}${name} x ${hz.toFixed(
+            2,
+          )} ops/sec ±${rme.toFixed(2)}; ${samples} samples ${postfix}`,
+          severity: hz < maxHz && isTarget ? 'error' : 'info',
+        };
+      }),
     );
   });
 })();

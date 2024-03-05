@@ -72,10 +72,7 @@
       ]
     },
     "perf": {
-      "command": "node ../../../tools/benchmark/bin.mjs",
-      "options": {
-        "cwd": "./examples/plugins/perf"
-      }
+      "command": "node tools/benchmark/bin.mjs --targets ./examples/plugins/perf/dummy-suite/index.ts"
     }
   },
   "tags": ["scope:internal", "type:feature"]

@@ -3,13 +3,8 @@ import {
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { SuiteConfig, runSuite } from './suite-helper';
-import {
-  LoadOptions,
-  loadSuits,
-  suiteResultToAuditOutput,
-  toAuditMetadata,
-} from './utils';
+import { LoadOptions, SuiteConfig, loadSuits, runSuite } from './suite-helper';
+import { suiteResultToAuditOutput, toAuditMetadata } from './utils';
 
 export type PluginOptions = {
   targets: string[];
@@ -32,10 +27,15 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
 
 export function runnerFunction(suites: SuiteConfig[]): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    // execute benchmark
-    const allSuiteResults = await Promise.all(
-      suites.map(async suite => runSuite(suite)),
-    );
+    const allSuiteResults = [];
+    // Execute each suite sequentially
+    // eslint-disable-next-line functional/no-loop-statements
+    for (const suite of suites) {
+      const result = await runSuite(suite);
+      // eslint-disable-next-line functional/immutable-data
+      allSuiteResults.push(result);
+    }
+
     // create audit output
     return allSuiteResults.flatMap(results =>
       suiteResultToAuditOutput(results),

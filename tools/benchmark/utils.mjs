@@ -35,7 +35,7 @@ export function loadSuits(targets, options) {
   );
 }
 
-export function runSuit(
+export function runSuite(
   { suiteName, cases, targetImplementation, tsconfig },
   options = { verbose: false },
 ) {

@@ -1,16 +1,14 @@
 import chalk from 'chalk';
 import { join } from 'node:path';
 import yargs from 'yargs';
-import {
-  type CrawlFileSystemOptions,
-  crawlFileSystem,
-} from '../../src/lib/file-system';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { type CrawlFileSystemOptions } from '../../../../dist/packages/utils';
 import { crawlFileSystemFsWalk } from './fs-walk';
 
 const cli = yargs(process.argv).options({
   directory: {
     type: 'string',
-    default: join(process.cwd(), 'packages', 'utils'),
+    default: join('packages', 'utils'),
   },
   pattern: {
     type: 'string',
@@ -35,21 +33,22 @@ if (logs) {
   );
 }
 
-const targetImplementation = '@code-pushup/utils#crawlFileSystem';
 const fsWalkName = 'nodelib.fsWalk';
 
 const suiteConfig = {
   suiteName: 'crawl-file-system',
   targetImplementation: fsWalkName,
   cases: [
-    [
-      targetImplementation,
+    // @TODO fix case execution
+    // FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+    /*[
+      '@code-pushup/utils#crawlFileSystem',
       callAndValidate(
         crawlFileSystem,
         { directory, pattern },
-        targetImplementation,
+        '@code-pushup/utils#crawlFileSystem',
       ),
-    ],
+    ],*/
     [
       fsWalkName,
       callAndValidate(

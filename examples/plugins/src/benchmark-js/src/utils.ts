@@ -4,8 +4,8 @@ import {
   type CategoryRef,
   Issue,
 } from '@code-pushup/models';
-import { importEsmModule, slugify } from '@code-pushup/utils';
-import { BenchmarkResult, SuiteConfig } from './suite-helper';
+import { slugify } from '@code-pushup/utils';
+import { BenchmarkResult } from './suite-helper';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -61,26 +61,6 @@ export function toAuditMetadata(suiteNames: string[]): Audit[] {
         slug: toAuditSlug(suiteName),
         title: toAuditTitle(suiteName),
       } satisfies Audit),
-  );
-}
-
-export type LoadOptions = {
-  tsconfig?: string;
-};
-
-export function loadSuits(
-  targets: string[],
-  options: LoadOptions,
-): Promise<SuiteConfig[]> {
-  const { tsconfig } = options;
-  return Promise.all(
-    targets.map(
-      (filepath: string) =>
-        importEsmModule({
-          tsconfig,
-          filepath,
-        }) as Promise<SuiteConfig>,
-    ),
   );
 }
 

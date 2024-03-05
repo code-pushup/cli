@@ -1,4 +1,5 @@
 import Benchmark, { type Event, type Target } from 'benchmark';
+import { importEsmModule } from '@code-pushup/utils';
 
 export type SuiteConfig = {
   suiteName: string;
@@ -15,10 +16,31 @@ export type BenchmarkResult = {
   isTarget: boolean;
 };
 
+export type LoadOptions = {
+  tsconfig?: string;
+};
+
+export function loadSuits(
+  targets: string[],
+  options: LoadOptions,
+): Promise<SuiteConfig[]> {
+  const { tsconfig } = options;
+  return Promise.all(
+    targets.map(
+      (filepath: string) =>
+        importEsmModule({
+          tsconfig,
+          filepath,
+        }) as Promise<SuiteConfig>,
+    ),
+  );
+}
+
 export async function runSuite(
   { suiteName, cases, targetImplementation }: SuiteConfig,
   options: {
     verbose?: boolean;
+    outputPath?: string;
   } = { verbose: false },
 ): Promise<BenchmarkResult[]> {
   const { verbose } = options;
