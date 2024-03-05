@@ -20,7 +20,7 @@ export type LoadOptions = {
   tsconfig?: string;
 };
 
-export function loadSuits(
+export function loadSuites(
   targets: string[],
   options: LoadOptions,
 ): Promise<SuiteConfig[]> {

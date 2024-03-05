@@ -3,7 +3,7 @@ import {
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { LoadOptions, SuiteConfig, loadSuits, runSuite } from './suite-helper';
+import { LoadOptions, SuiteConfig, loadSuites, runSuite } from './suite-helper';
 import { suiteResultToAuditOutput, toAuditMetadata } from './utils';
 
 export type PluginOptions = {
@@ -14,7 +14,7 @@ export type PluginOptions = {
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { tsconfig, targets } = options;
   // load the suites at before returning the plugin config to be able to return a more dynamic config
-  const suits = await loadSuits(targets, { tsconfig });
+  const suits = await loadSuites(targets, { tsconfig });
 
   return {
     slug: 'benchmark-js',

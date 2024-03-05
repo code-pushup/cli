@@ -3,15 +3,15 @@ import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { create } from './benchmark-js.plugin';
 import { BenchmarkResult } from './suite-helper';
 
-vi.mock('./utils', async () => {
-  const examplesPlugins: object = await vi.importActual('./utils');
+vi.mock('./suite-helper', async () => {
+  const all: object = await vi.importActual('./suite-helper');
   return {
-    ...examplesPlugins,
-    loadSuits: vi.fn().mockImplementation((suiteNames: string[]) =>
+    ...all,
+    loadSuites: vi.fn().mockImplementation((suiteNames: string[]) =>
       suiteNames.map(
         (suiteName, index) =>
           ({
-            suiteName,
+            suiteName: suiteName.replace('.ts', ''),
             name:
               index === 0
                 ? 'current-implementation'
@@ -30,7 +30,7 @@ vi.mock('./utils', async () => {
 describe('benchmark-js-create-export-config', () => {
   it('should execute', async () => {
     const pluginConfig = await create({
-      targets: ['suite-1', 'suite-2'],
+      targets: ['suite-1.ts', 'suite-2.ts'],
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual(
