@@ -26,19 +26,21 @@ const cli = yargs(process.argv).options({
   const allSuits = await loadSuits(targets, { tsconfig });
   if (verbose) {
     console.log(
-      `Loaded targets: ${allSuits.map(({ suitName }) => suitName).join(', ')}`,
+      `Loaded targets: ${allSuits
+        .map(({ suiteName }) => suiteName)
+        .join(', ')}`,
     );
   }
   // create audit output
   const allSuitResults = await Promise.all(
-    allSuits.map(suit => runSuit(suit, { verbose })),
+    allSuits.map(suite => runSuit(suite, { verbose })),
   );
 
   allSuitResults.forEach(results => {
-    const { suitName, name } = results.find(({ isFastest }) => isFastest);
+    const { suiteName, name } = results.find(({ isFastest }) => isFastest);
     const target = results.find(({ isTarget }) => isTarget);
     console.log(
-      `In suit ${suitName} fastest is: ${name} target is ${target?.name}`,
+      `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
     );
   });
 })();

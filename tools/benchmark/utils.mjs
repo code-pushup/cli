@@ -22,27 +22,27 @@ export async function importEsmModule(options) {
 export function loadSuits(targets, options) {
   const { tsconfig } = options;
   return Promise.all(
-    targets.map(suitPath =>
+    targets.map(suitePath =>
       importEsmModule(
         tsconfig
           ? {
               tsconfig,
-              filepath: suitPath,
+              filepath: suitePath,
             }
-          : { filepath: suitPath },
+          : { filepath: suitePath },
       ),
     ),
   );
 }
 
 export function runSuit(
-  { suitName, cases, targetImplementation, tsconfig },
+  { suiteName, cases, targetImplementation, tsconfig },
   options = { verbose: false },
 ) {
   const { verbose, maxTime } = options;
 
   return new Promise((resolve, reject) => {
-    const suite = new Benchmark.Suite(suitName);
+    const suite = new Benchmark.Suite(suiteName);
 
     // Add Listener
     Object.entries({
@@ -53,7 +53,7 @@ export function runSuit(
       complete: event => {
         const fastest = String(suite.filter('fastest').map('name')[0]);
         const json = event.currentTarget.map(bench => ({
-          suitName,
+          suiteName,
           name: bench.name || '',
           hz: bench.hz ?? 0, // operations per second
           rme: bench.stats?.rme ?? 0, // relative margin of error
