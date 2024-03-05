@@ -13,10 +13,8 @@
     },
     "e2e": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "e2e/cli-e2e/vite.config.e2e.ts",
-        "reportsDirectory": "../../coverage/examples/cli-e2e"
+        "config": "e2e/cli-e2e/vite.config.e2e.ts"
       }
     }
   },

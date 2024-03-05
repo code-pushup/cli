@@ -1,4 +1,4 @@
-import { SpyInstance, afterEach, beforeEach, vi } from 'vitest';
+import { MockInstance, afterEach, beforeEach, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 
 vi.mock('fs', async () => {
@@ -10,7 +10,7 @@ vi.mock('fs/promises', async () => {
   return memfs.fs.promises;
 });
 
-let cwdSpy: SpyInstance;
+let cwdSpy: MockInstance<[], string>;
 
 beforeEach(() => {
   cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);

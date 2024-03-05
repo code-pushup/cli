@@ -19,18 +19,18 @@ export function scoreReport(report: Report): ScoredReport {
   const allScoredAuditsAndGroups = new Map<string, AuditReport | ScoredGroup>();
 
   const scoredPlugins = report.plugins.map(plugin => {
-    const { slug, audits, groups } = plugin;
+    const { groups, ...pluginProps } = plugin;
 
-    audits.forEach(audit => {
-      allScoredAuditsAndGroups.set(`${slug}-${audit.slug}-audit`, audit);
+    plugin.audits.forEach(audit => {
+      allScoredAuditsAndGroups.set(`${plugin.slug}-${audit.slug}-audit`, audit);
     });
 
     function groupScoreFn(ref: GroupRef) {
       const score = allScoredAuditsAndGroups.get(
-        `${slug}-${ref.slug}-audit`,
+        `${plugin.slug}-${ref.slug}-audit`,
       )?.score;
       if (score == null) {
-        throw new GroupRefInvalidError(ref.slug, slug);
+        throw new GroupRefInvalidError(ref.slug, plugin.slug);
       }
       return score;
     }
@@ -42,10 +42,13 @@ export function scoreReport(report: Report): ScoredReport {
       })) ?? [];
 
     scoredGroups.forEach(group => {
-      allScoredAuditsAndGroups.set(`${slug}-${group.slug}-group`, group);
+      allScoredAuditsAndGroups.set(`${plugin.slug}-${group.slug}-group`, group);
     });
 
-    return { ...plugin, audits, groups: scoredGroups };
+    return {
+      ...pluginProps,
+      ...(scoredGroups.length > 0 && { groups: scoredGroups }),
+    };
   });
 
   function catScoreFn(ref: CategoryRef) {

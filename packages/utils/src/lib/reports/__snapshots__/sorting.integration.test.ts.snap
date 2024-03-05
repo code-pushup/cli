@@ -97,7 +97,6 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
       ],
       "date": "2023-08-16T09:00:00.000Z",
       "duration": 42,
-      "groups": [],
       "icon": "cypress",
       "slug": "cypress",
       "title": "Cypress results",
