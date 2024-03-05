@@ -49,22 +49,6 @@
         }
       ]
     },
-    "run-upload": {
-      "command": "npx dist/packages/cli upload --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": [
-        "build",
-        "^build",
-        { "projects": ["cli"], "target": "build" }
-      ]
-    },
-    "run-history": {
-      "command": "npx dist/packages/cli history --config=examples/plugins/code-pushup.config.ts",
-      "dependsOn": [
-        "build",
-        "^build",
-        { "projects": ["cli"], "target": "build" }
-      ]
-    },
     "run-print-config": {
       "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
       "dependsOn": [

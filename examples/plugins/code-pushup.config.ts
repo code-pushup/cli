@@ -10,7 +10,6 @@ import {
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
 } from '../../dist/examples/plugins';
-import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
 
 /**
  * Run it with:
@@ -21,13 +20,7 @@ import { uploadConfigFromEnv } from '../../testing-utils/src/lib/utils/env';
  *
  */
 
-const outputDir = '.code-pushup';
-// eslint-disable-next-line unicorn/no-unreadable-iife
 const config = {
-  persist: {
-    outputDir,
-  },
-  upload: uploadConfigFromEnv(),
   plugins: [
     fileSizePlugin({
       directory: './dist/packages',
@@ -69,11 +62,6 @@ const config = {
       slug: 'documentation',
       title: 'Documentation',
       refs: [packageJsonDocumentationGroupRef],
-    },
-    {
-      slug: 'new-category',
-      title: 'New Category',
-      refs: [...fileSizeRecommendedRefs],
     },
   ],
 };
