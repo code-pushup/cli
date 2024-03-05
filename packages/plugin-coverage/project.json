@@ -28,7 +28,7 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/plugin-coverage"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/plugin-coverage/vite.config.unit.ts",
         "reportsDirectory": "../../coverage/plugin-coverage/unit-tests"
@@ -36,7 +36,7 @@
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/plugin-coverage"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/plugin-coverage/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-coverage/integration-tests"

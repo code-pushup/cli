@@ -2,6 +2,20 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.25.6](https://github.com/code-pushup/cli/compare/v0.25.5...v0.25.6) (2024-03-05)
+
+### Bug Fixes
+
+- **plugin-eslint:** pass arguments via config file instead of argv ([dca0266](https://github.com/code-pushup/cli/commit/dca026617c6f7e33e25bab06922dec417dfbc63e))
+
+## [0.25.5](https://github.com/code-pushup/cli/compare/v0.25.4...v0.25.5) (2024-03-05)
+
+## [0.25.4](https://github.com/code-pushup/cli/compare/v0.25.3...v0.25.4) (2024-03-05)
+
+## [0.25.3](https://github.com/code-pushup/cli/compare/v0.25.2...v0.25.3) (2024-03-05)
+
+## [0.25.2](https://github.com/code-pushup/cli/compare/v0.25.1...v0.25.2) (2024-03-05)
+
 ## [0.25.1](https://github.com/code-pushup/cli/compare/v0.25.0...v0.25.1) (2024-02-29)
 
 # [0.25.0](https://github.com/code-pushup/cli/compare/v0.24.0...v0.25.0) (2024-02-29)

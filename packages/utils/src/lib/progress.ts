@@ -29,6 +29,7 @@ let mpb: MultiProgressBars;
 export function getSingletonProgressBars(
   options?: Partial<CtorOptions>,
 ): MultiProgressBars {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!mpb) {
     mpb = new MultiProgressBars({
       progressWidth: TERMINAL_WIDTH,

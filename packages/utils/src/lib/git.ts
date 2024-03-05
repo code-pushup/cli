@@ -43,7 +43,7 @@ export function validateCommitData(
 ): commitData is CommitData {
   if (!commitData) {
     const msg = 'no commit data available';
-    if (options?.throwError) {
+    if (options.throwError) {
       throw new Error(msg);
     } else {
       ui().logger.warning(msg);
@@ -93,7 +93,7 @@ export async function safeCheckout(
   git = simpleGit(),
 ): Promise<void> {
   // git requires a clean history to check out a branch
-  if (options?.forceCleanStatus) {
+  if (options.forceCleanStatus) {
     await git.raw(['reset', '--hard']);
     await git.clean(['f', 'd']);
     // @TODO replace with ui().logger.info

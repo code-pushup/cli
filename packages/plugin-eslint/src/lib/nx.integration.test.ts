@@ -1,12 +1,13 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { setWorkspaceRoot } from 'nx/src/utils/workspace-root';
-import type { SpyInstance } from 'vitest';
+import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
+import type { MockInstance } from 'vitest';
 import { ESLintPluginConfig } from './config';
 import { eslintConfigFromNxProject, eslintConfigFromNxProjects } from './nx';
 
 describe('Nx helpers', () => {
-  let cwdSpy: SpyInstance;
+  let cwdSpy: MockInstance<[], string>;
+  const originalWorkspaceRoot = workspaceRoot;
 
   beforeAll(() => {
     const workspaceDir = join(
@@ -27,6 +28,7 @@ describe('Nx helpers', () => {
 
   afterAll(() => {
     cwdSpy.mockRestore();
+    setWorkspaceRoot(originalWorkspaceRoot);
   });
 
   describe('create config from all Nx projects', () => {

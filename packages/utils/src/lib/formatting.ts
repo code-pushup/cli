@@ -41,7 +41,7 @@ export function formatBytes(bytes: number, decimals = 2) {
   }`;
 }
 
-export function pluralizeToken(token: string, times: number = 0): string {
+export function pluralizeToken(token: string, times = 0): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 
