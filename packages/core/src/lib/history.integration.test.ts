@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { getHashes } from './history';
 
 // we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
-const gitTestFolder = 'git-test';
+const gitTestFolder = 'core-history-git-test';
 describe('git utils in a git repo', () => {
   const baseDir = join(process.cwd(), gitTestFolder);
   let emptyGit: SimpleGit;
