@@ -20,7 +20,7 @@ ESLint audits
   reassigned after declared
 ● Require braces around arrow function bodies                         1 warning
 ● Require the use of \`===\` and \`!==\`                                  1 warning
-● Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`     passed
+● Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\`     passed
 ● Disallow assignment operators in conditional expressions            passed
 ● Disallow comments from being inserted as text nodes                 passed
 ● Disallow direct mutation of this.state                              passed
@@ -60,7 +60,7 @@ ESLint audits
 ● enforces the Rules of Hooks                                         passed
 ● Require \`let\` or \`const\` instead of \`var\`                           passed
 ● Require calls to \`isNaN()\` when checking for \`NaN\`                  passed
-● Require or disallow \\"Yoda\\" conditions                               passed
+● Require or disallow "Yoda" conditions                               passed
 ● Require using arrow functions for callbacks                         passed
 
 
@@ -109,7 +109,7 @@ ESLint audits
   reassigned after declared
 ● Require braces around arrow function bodies                         1 warning
 ● Require the use of \`===\` and \`!==\`                                  1 warning
-● Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`     passed
+● Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\`     passed
 ● Disallow assignment operators in conditional expressions            passed
 ● Disallow comments from being inserted as text nodes                 passed
 ● Disallow direct mutation of this.state                              passed
@@ -149,7 +149,7 @@ ESLint audits
 ● enforces the Rules of Hooks                                         passed
 ● Require \`let\` or \`const\` instead of \`var\`                           passed
 ● Require calls to \`isNaN()\` when checking for \`NaN\`                  passed
-● Require or disallow \\"Yoda\\" conditions                               passed
+● Require or disallow "Yoda" conditions                               passed
 ● Require using arrow functions for callbacks                         passed
 
 

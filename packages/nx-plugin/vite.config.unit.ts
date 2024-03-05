@@ -1,17 +1,21 @@
 /// <reference types="vitest" />
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
+import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/cli',
-  plugins: [nxViteTsPaths()],
+  cacheDir: '../../node_modules/.vite/nx-plugin',
   test: {
+    reporters: ['basic'],
     globals: true,
     cache: {
       dir: '../../node_modules/.vitest',
     },
+    alias: tsconfigPathAliases(),
+    pool: 'threads',
+    poolOptions: { threads: { singleThread: true } },
     coverage: {
-      reporter: ['lcov'],
+      reporter: ['text', 'lcov'],
+      reportsDirectory: '../../coverage/nx-plugin/unit-tests',
     },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

@@ -59,10 +59,11 @@ export function sortReport(report: ScoredReport): ScoredReport {
   };
 }
 
+// NOTE: Only audits are sorted as groups are only listed within categories, not separately
 function sortPlugins(
   plugins: (Omit<PluginReport, 'audits' | 'groups'> & {
     audits: AuditReport[];
-    groups: ScoredGroup[];
+    groups?: ScoredGroup[];
   })[],
 ) {
   return plugins.map(plugin => ({

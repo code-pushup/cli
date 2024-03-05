@@ -53,18 +53,18 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/models"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/nx-plugin/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/packages/models/unit-tests"
+        "reportsDirectory": "../../coverage/nx-plugin/unit-tests"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/models"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/nx-plugin/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/packages/models/integration-tests"
+        "reportsDirectory": "../../coverage/nx-plugin/integration-tests"
       }
     },
     "deploy": {

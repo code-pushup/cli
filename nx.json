@@ -34,7 +34,8 @@
       "cache": true,
       "inputs": ["default", "^production"],
       "options": {
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "deploy": {

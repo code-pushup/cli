@@ -60,7 +60,7 @@ const config: CoreConfig = {
           '-t',
           'unit-test',
           'integration-test',
-          '--coverage',
+          '--coverage.enabled',
           '--skipNxCache',
         ],
       },

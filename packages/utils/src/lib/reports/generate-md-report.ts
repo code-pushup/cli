@@ -153,7 +153,7 @@ function groupItemToCategorySection(
   groupAudits: AuditReport[],
   pluginTitle: string,
 ): string {
-  const groupScore = Number(formatReportScore(group?.score || 0));
+  const groupScore = Number(formatReportScore(group.score || 0));
   const groupTitle = li(
     `${getRoundScoreMarker(groupScore)} ${group.title} (_${pluginTitle}_)`,
   );

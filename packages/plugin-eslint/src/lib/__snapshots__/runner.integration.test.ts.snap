@@ -372,7 +372,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "details": {
       "issues": [
         {
-          "message": "Missing \\"key\\" prop for element in iterator",
+          "message": "Missing "key" prop for element in iterator",
           "severity": "warning",
           "source": {
             "file": "<CWD>/src/components/TodoList.jsx",

@@ -145,7 +145,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "ESLint rule **yoda**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
       "slug": "yoda",
-      "title": "Require or disallow \\"Yoda\\" conditions",
+      "title": "Require or disallow "Yoda" conditions",
     },
     {
       "description": "ESLint rule **jsx-key**, from _react_ plugin.",
@@ -199,7 +199,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "ESLint rule **jsx-no-target-blank**, from _react_ plugin.",
       "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
       "slug": "react-jsx-no-target-blank",
-      "title": "Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`",
+      "title": "Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\`",
     },
     {
       "description": "ESLint rule **jsx-no-undef**, from _react_ plugin.",
