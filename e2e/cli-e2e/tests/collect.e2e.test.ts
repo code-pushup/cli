@@ -14,14 +14,13 @@ describe('CLI collect', () => {
     duration,
     version,
     ...report
-  }: Report | PluginReport) => report;
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-
-  const omitVariableReportData = (report: Report) =>
+  }: Omit<Report, 'commit'> | PluginReport) => report;
+  const omitVariableReportData = ({ commit, ...report }: Report) =>
     omitVariableData({
       ...report,
       plugins: report.plugins.map(omitVariableData) as PluginReport[],
     });
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e');
