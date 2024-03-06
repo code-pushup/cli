@@ -128,12 +128,13 @@ function scoreMinimalReportOptimized3() {
 // eslint-disable-next-line max-lines-per-function
 function minimalReport(opt?: MinimalReportOptions): Report {
   const auditType = 'audit';
+  const date = '2022-01-01';
   const numAuditsP1 = opt?.numAuditsP1 ?? NUM_AUDITS_P1;
   const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;
   const numGroupRefs2 = opt?.numGroupRefs2 ?? NUM_GROUPS_P2;
 
   return {
-    date: '2022-01-01',
+    date,
     duration: 0,
     categories: [
       {
@@ -161,7 +162,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
     ],
     plugins: [
       {
-        date: '2022-01-01',
+        date,
         duration: 0,
         slug: SLUG_PLUGIN_P1,
         title: 'Plugin 1',

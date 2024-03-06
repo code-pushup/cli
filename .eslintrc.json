@@ -100,10 +100,7 @@
     },
     {
       "files": ["perf/**/*.ts"],
-      "rules": {
-        "no-magic-numbers": "off",
-        "sonarjs/no-duplicate-string": "off"
-      }
+      "rules": {}
     }
   ]
 }
