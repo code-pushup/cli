@@ -35,7 +35,7 @@ export function logPromiseResults<
     const log =
       results[0]?.status === 'fulfilled'
         ? (m: string) => {
-            ui().logger.info(m);
+            ui().logger.success(m);
           }
         : (m: string) => {
             ui().logger.warning(m);

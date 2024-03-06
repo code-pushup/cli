@@ -71,8 +71,8 @@ describe('logPromiseResults', () => {
       .logger.getRenderer()
       .getLogs()
       .map(({ message }) => message);
-    expect(logs[0]).toBe('[ blue(info) ] Uploaded reports successfully:');
-    expect(logs[1]).toBe('[ blue(info) ] out.json');
+    expect(logs[0]).toBe('[ green(success) ] Uploaded reports successfully:');
+    expect(logs[1]).toBe('[ green(success) ] out.json');
   });
 
   it('should log on fail', () => {
