@@ -44,8 +44,8 @@ const AUDIT_P1_PREFIX = AUDIT_PREFIX + SLUG_PLUGIN_P1;
 const SLUG_PLUGIN_P2 = PLUGIN_PREFIX + 2;
 const AUDIT_P2_PREFIX = AUDIT_PREFIX + SLUG_PLUGIN_P2;
 const GROUP_P2_PREFIX = GROUP_PREFIX + SLUG_PLUGIN_P2;
-const NUM_AUDITS_P1 = PROCESS_ARGUMENT_NUM_AUDITS_P1 || 27;
-const NUM_AUDITS_P2 = PROCESS_ARGUMENT_NUM_AUDITS_P2 || 18;
+const NUM_AUDITS_P1 = PROCESS_ARGUMENT_NUM_AUDITS_P1 || (2 + 2) * 10;
+const NUM_AUDITS_P2 = PROCESS_ARGUMENT_NUM_AUDITS_P2 || 2 * 10;
 const NUM_GROUPS_P2 = PROCESS_ARGUMENT_NUM_GROUPS_P2 || NUM_AUDITS_P2 / 2;
 
 // ==================
@@ -127,6 +127,7 @@ function scoreMinimalReportOptimized3() {
 
 // eslint-disable-next-line max-lines-per-function
 function minimalReport(opt?: MinimalReportOptions): Report {
+  const auditType = 'audit';
   const numAuditsP1 = opt?.numAuditsP1 ?? NUM_AUDITS_P1;
   const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;
   const numGroupRefs2 = opt?.numGroupRefs2 ?? NUM_GROUPS_P2;
@@ -139,7 +140,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         slug: 'c1_',
         title: 'Category 1',
         refs: Array.from({ length: numAuditsP1 }).map((_, idx) => ({
-          type: 'audit',
+          type: auditType,
           plugin: SLUG_PLUGIN_P1,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
           weight: 1,
@@ -150,7 +151,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         slug: 'c2_',
         title: 'Category 2',
         refs: Array.from({ length: numAuditsP2 }).map((_, idx) => ({
-          type: 'audit',
+          type: auditType,
           plugin: SLUG_PLUGIN_P2,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
           weight: 1,
@@ -164,12 +165,12 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         duration: 0,
         slug: SLUG_PLUGIN_P1,
         title: 'Plugin 1',
-        icon: 'slug',
+        icon: 'file',
         audits: Array.from({ length: numAuditsP1 }).map((_, idx) => ({
           value: 0,
           slug: `${AUDIT_P1_PREFIX}${idx}`,
-          title: 'Default Title',
-          score: 0.1,
+          title: `Default Title ${idx}`,
+          score: 10 / 2,
         })),
         groups: [],
       },
@@ -178,12 +179,12 @@ function minimalReport(opt?: MinimalReportOptions): Report {
         duration: 0,
         slug: SLUG_PLUGIN_P2,
         title: 'Plugin 2',
-        icon: 'slug',
+        icon: 'makefile',
         audits: Array.from({ length: numAuditsP2 }).map((_, idx) => ({
           value: 0,
           slug: `${AUDIT_P2_PREFIX}${idx}`,
-          title: 'Default Title',
-          score: 0.1,
+          title: `Default Title ${idx}`,
+          score: 10 / 2,
         })),
         groups: [
           {
