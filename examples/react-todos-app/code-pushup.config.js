@@ -1,5 +1,6 @@
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
+import lighthousePlugin from '../../dist/packages/plugin-lighthouse';
 
 const eslintAuditRef = (slug, weight) => ({
   type: 'audit',
@@ -13,6 +14,9 @@ export default {
     outputDir: '../../tmp/react-todos-app',
   },
   plugins: [
+    await lighthousePlugin('https://example.com', {
+   //   chromeFlags: ['--headless']
+    }),
     await coveragePlugin({
       reports: ['../../coverage/react-todos-app/lcov.info'],
       coverageToolCommand: {

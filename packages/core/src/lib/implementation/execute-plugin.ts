@@ -65,7 +65,7 @@ export async function executePlugin(
   const runnerResult =
     typeof runner === 'object'
       ? await executeRunnerConfig(runner, onProgress)
-      : await executeRunnerFunction(runner, onProgress);
+      : await executeRunnerFunction(runner, onProgress)
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   // validate auditOutputs

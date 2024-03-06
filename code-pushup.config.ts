@@ -2,15 +2,13 @@ import 'dotenv/config';
 import { join } from 'node:path';
 import { z } from 'zod';
 import {
-  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
-  lighthouseCorePerfGroupRefs,
-  lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
+import lighthousePlugin, {LIGHTHOUSE_REPORT_NAME} from './dist/packages/plugin-lighthouse';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
@@ -78,10 +76,8 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin({
-      url: 'https://staging.code-pushup.dev/login',
-      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
-      headless: true,
+    await lighthousePlugin('https://example.com', {
+      outputPath: join('.code-pushup', LIGHTHOUSE_REPORT_NAME),
     }),
   ],
 
@@ -117,7 +113,6 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
-        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],
