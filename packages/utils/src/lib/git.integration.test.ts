@@ -54,14 +54,11 @@ describe('git utils in a git repo', () => {
     });
 
     it('should log latest commit', async () => {
-      const gitCommitDateRegex =
-        /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} \d{4} [+|-]\d{4}$/;
-
       await expect(getLatestCommit(emptyGit)).resolves.toEqual({
         hash: expect.stringMatching(/^[\da-f]{40}$/),
         message: 'Create README',
         author: 'John Doe',
-        date: expect.stringMatching(gitCommitDateRegex),
+        date: expect.any(Date),
       });
     });
 

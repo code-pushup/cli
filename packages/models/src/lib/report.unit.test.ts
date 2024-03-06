@@ -183,6 +183,12 @@ describe('reportSchema', () => {
             title: 'Bug prevention',
           },
         ],
+        commit: {
+          hash: 'abcdef0123456789abcdef0123456789abcdef01',
+          message: 'Minor fixes',
+          author: 'John Doe',
+          date: new Date('2024-01-07T09:15:00.000Z'),
+        },
         date: '2024-01-07T09:30:00.000Z',
         duration: 600,
         plugins: [
@@ -235,6 +241,7 @@ describe('reportSchema', () => {
             title: 'Bug prevention',
           },
         ],
+        commit: null,
         date: '2024-01-07T09:30:00.000Z',
         duration: 600,
         plugins: [
