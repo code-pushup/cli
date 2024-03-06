@@ -17,9 +17,7 @@ import {
 } from './runner';
 import { setupESLint } from './setup';
 
-// FIXME: tests fail when run in same thread as other integration tests
-// eslint-disable-next-line vitest/no-disabled-tests
-describe.skip('executeRunner', () => {
+describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
