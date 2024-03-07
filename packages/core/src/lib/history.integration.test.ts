@@ -4,10 +4,8 @@ import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { getHashes } from './history';
 
-// we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
-const gitTestFolder = 'core-history-git-test';
 describe('getHashes', () => {
-  const baseDir = join(process.cwd(), gitTestFolder);
+  const baseDir = join(process.cwd(), 'tmp', 'core-history-git-test');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
@@ -43,13 +41,13 @@ describe('getHashes', () => {
       await emptyGit.add('README.md');
       await emptyGit.commit('Update README 1');
       // eslint-disable-next-line functional/immutable-data
-      commits.push((await emptyGit.log()).latest?.hash);
+      commits.push((await emptyGit.log()).latest!.hash);
 
       await writeFile(join(baseDir, 'README.md'), '# hello-world-2\n');
       await emptyGit.add('README.md');
       await emptyGit.commit('Update README 2');
       // eslint-disable-next-line functional/immutable-data
-      commits.push((await emptyGit.log()).latest?.hash);
+      commits.push((await emptyGit.log()).latest!.hash);
 
       await emptyGit.branch(['feature-branch']);
       await emptyGit.checkout(['master']);
@@ -73,13 +71,13 @@ describe('getHashes', () => {
     it('getHashes should get commits from log based on "from" and "to"', async () => {
       await expect(
         getHashes({ from: commits[2], to: commits[0] }, emptyGit),
-      ).resolves.toEqual([commits[1], commits[2]]);
+      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
     });
 
     it('getHashes should get commits from log based on "from" and "to" and "maxCount"', async () => {
       await expect(
         getHashes({ from: commits[2], to: commits[0], maxCount: 1 }, emptyGit),
-      ).resolves.toEqual([commits[2]]);
+      ).resolves.toEqual([commits.at(-1)]);
     });
 
     it('getHashes should throw if "from" or "to" are invalid', async () => {

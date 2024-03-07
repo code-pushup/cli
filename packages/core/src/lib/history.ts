@@ -10,14 +10,11 @@ export type HistoryOnlyOptions = {
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'> & {
-    persist: Required<PersistConfig>;
-    upload?: Required<UploadConfig>;
-  }
-> &
-  GlobalOptions &
-  HistoryOnlyOptions;
+export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
+  persist: Required<PersistConfig>;
+  upload?: Required<UploadConfig>;
+} & HistoryOnlyOptions &
+  GlobalOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -25,18 +22,18 @@ export async function history(
 ): Promise<string[]> {
   const initialBranch: string = await getCurrentBranchOrTag();
 
-  const { skipUploads = false } = config;
+  const { skipUploads = false, forceCleanStatus, persist } = config;
 
   const reports: string[] = [];
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
     console.info(`Collect ${commit}`);
-    await safeCheckout(commit, { forceCleanStatus: config.forceCleanStatus });
+    await safeCheckout(commit, { forceCleanStatus });
 
     const currentConfig: HistoryOptions = {
       ...config,
       persist: {
-        ...config.persist,
+        ...persist,
         format: ['json'],
         filename: `${commit}-report`,
       },
@@ -44,23 +41,21 @@ export async function history(
 
     await collectAndPersistReports(currentConfig);
 
-    if (!skipUploads) {
-      if (currentConfig?.upload) {
+    if (skipUploads) {
+      console.warn('Upload is skipped because skipUploads is set to true.');
+    } else {
+      if (currentConfig.upload) {
         await upload(currentConfig);
       } else {
         console.warn('Upload is skipped because upload config is undefined.');
       }
-    } else {
-      console.warn('Upload is skipped because skipUploads is set to true.');
     }
 
     // eslint-disable-next-line functional/immutable-data
     reports.push(currentConfig.persist.filename);
   }
 
-  await safeCheckout(initialBranch, {
-    forceCleanStatus: config.forceCleanStatus,
-  });
+  await safeCheckout(initialBranch, { forceCleanStatus });
 
   return reports;
 }

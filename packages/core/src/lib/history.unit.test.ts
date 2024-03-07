@@ -13,7 +13,6 @@ vi.mock('@code-pushup/utils', async () => {
     getCurrentBranchOrTag: vi.fn().mockReturnValue('main'),
   };
 });
-});
 
 vi.mock('./collect-and-persist', () => ({
   collectAndPersistReports: vi.fn(),
@@ -119,7 +118,43 @@ describe('history', () => {
 describe('prepareHashes', () => {
   it('should get all commits from log if no option is passed', () => {
     expect(
-      prepareHashes({ all: [{ hash: '1' }, { hash: '5' }] }),
-    ).toStrictEqual(['5', '1']);
+      prepareHashes({
+        all: [
+          {
+            hash: '22287eb716a84f82b5d59e7238ffcae7147f707a',
+            date: 'Thu Mar 7 20:13:33 2024 +0100',
+            message:
+              'test: replace default (buggy on Windows) with basic reporter',
+            refs: 'string',
+            body: 'string',
+            author_name: 'string',
+            author_email: 'string',
+          },
+          {
+            hash: '111b284e48ddf464a498dcf22426a9ce65e2c01c',
+            date: 'Thu Mar 7 20:13:34 2024 +0100',
+            message: 'chore: exclude fixtures from ESLint',
+            refs: 'string',
+            body: 'string',
+            author_name: 'string',
+            author_email: 'string',
+          },
+        ],
+        total: 2,
+        latest: {
+          hash: '22287eb716a84f82b5d59e7238ffcae7147f707a',
+          date: 'Thu Mar 7 20:13:33 2024 +0100',
+          message:
+            'test: replace default (buggy on Windows) with basic reporter',
+          refs: 'string',
+          body: 'string',
+          author_name: 'string',
+          author_email: 'string',
+        },
+      }),
+    ).toStrictEqual([
+      '111b284e48ddf464a498dcf22426a9ce65e2c01c',
+      '22287eb716a84f82b5d59e7238ffcae7147f707a',
+    ]);
   });
 });
