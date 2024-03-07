@@ -37,7 +37,7 @@ describe('git utils in a git repo', () => {
       await emptyGit.add('README.md');
       await emptyGit.commit('Create README');
       // eslint-disable-next-line functional/immutable-data
-      commits.push((await emptyGit.log()).latest?.hash);
+      commits.push((await emptyGit.log()).latest!.hash);
 
       await writeFile(join(baseDir, 'README.md'), '# hello-world-1\n');
       await emptyGit.add('README.md');
