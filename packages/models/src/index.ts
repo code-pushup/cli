@@ -60,6 +60,16 @@ export {
   reportSchema,
 } from './lib/report';
 export {
+  ReportsDiff,
+  auditDiffSchema,
+  auditResultSchema,
+  categoryDiffSchema,
+  categoryResultSchema,
+  groupDiffSchema,
+  groupResultSchema,
+  reportsDiffSchema,
+} from './lib/reports-diff';
+export {
   OnProgress,
   RunnerConfig,
   RunnerFunction,
