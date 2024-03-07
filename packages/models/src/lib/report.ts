@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { auditSchema } from './audit';
 import { auditOutputSchema } from './audit-output';
 import { categoryConfigSchema } from './category-config';
+import { commitSchema } from './commit';
 import { Group, groupSchema } from './group';
 import {
   executionMetaSchema,
@@ -76,6 +77,9 @@ export const reportSchema = packageVersionSchema({
       {
         categories: z.array(categoryConfigSchema),
         plugins: z.array(pluginReportSchema).min(1),
+        commit: commitSchema
+          .describe('Git commit for which report was collected')
+          .nullable(),
       },
       { description: 'Collect output data' },
     ),

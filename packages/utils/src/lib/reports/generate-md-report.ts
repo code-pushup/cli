@@ -1,6 +1,5 @@
 import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
 import { formatDate, formatDuration, slugify } from '../formatting';
-import { CommitData } from '../git';
 import {
   FOOTER_PREFIX,
   NEW_LINE,
@@ -34,10 +33,7 @@ import {
   getSquaredScoreMarker,
 } from './utils';
 
-export function generateMdReport(
-  report: ScoredReport,
-  commitData: CommitData | null,
-): string {
+export function generateMdReport(report: ScoredReport): string {
   const printCategories = report.categories.length > 0;
 
   return (
@@ -58,7 +54,7 @@ export function generateMdReport(
     NEW_LINE +
     NEW_LINE +
     // about section
-    reportToAboutSection(report, commitData) +
+    reportToAboutSection(report) +
     NEW_LINE +
     NEW_LINE +
     // footer section
@@ -235,15 +231,12 @@ function reportToDetailsSection(audit: AuditReport) {
   return details(detailsTitle, detailsTable);
 }
 
-function reportToAboutSection(
-  report: ScoredReport,
-  commitData: CommitData | null,
-): string {
+function reportToAboutSection(report: ScoredReport): string {
   const date = formatDate(new Date());
 
-  const { duration, version, plugins, categories } = report;
-  const commitInfo = commitData
-    ? `${commitData.message} (${commitData.hash.slice(0, 7)})`
+  const { duration, version, commit, plugins, categories } = report;
+  const commitInfo = commit
+    ? `${commit.message} (${commit.hash.slice(0, 7)})`
     : 'N/A';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,

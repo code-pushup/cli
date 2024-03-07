@@ -1,5 +1,6 @@
 import { Report, reportSchema } from '@code-pushup/models';
 import { categoryConfigsMock } from './categories.mock';
+import { COMMIT_MOCK } from './commit.mock';
 import { eslintPluginReportMock } from './eslint-plugin.mock';
 import { lighthousePluginReportMock } from './lighthouse-plugin.mock';
 
@@ -12,7 +13,8 @@ export function reportMock(): Report {
       eslintPluginReportMock().duration +
       lighthousePluginReportMock().duration +
       50,
+    commit: COMMIT_MOCK,
     categories: categoryConfigsMock(),
     plugins: [eslintPluginReportMock(), lighthousePluginReportMock()],
-  });
+  } satisfies Report);
 }

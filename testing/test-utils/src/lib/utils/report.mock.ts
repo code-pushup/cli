@@ -1,10 +1,16 @@
-import type { Report } from '@code-pushup/models';
+import type { PluginConfig, PluginReport, Report } from '@code-pushup/models';
+import { COMMIT_MOCK } from './dynamic-mocks/commit.mock';
+import {
+  auditReportMock,
+  pluginConfigMock,
+} from './dynamic-mocks/plugin-config.mock';
 
 export const MINIMAL_REPORT_MOCK: Report = {
   packageName: '@code-pushup/core',
   version: '0.0.1',
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
+  commit: COMMIT_MOCK,
   categories: [],
   plugins: [
     {
@@ -30,6 +36,7 @@ export const REPORT_MOCK: Report = {
   version: '1.0.0',
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
+  commit: COMMIT_MOCK,
   categories: [
     {
       slug: 'test-results',
@@ -246,3 +253,48 @@ export const REPORT_MOCK: Report = {
     },
   ],
 };
+
+export function minimalReportMock(outputDir = 'tmp'): Report {
+  const PLUGIN_1_SLUG = 'plugin-1';
+  const AUDIT_1_SLUG = 'audit-1';
+
+  const plg1: PluginConfig = pluginConfigMock([], {
+    slug: PLUGIN_1_SLUG,
+    outputDir,
+  });
+
+  const { runner: _, ...rest } = plg1;
+  const pluginReport: PluginReport = {
+    ...rest,
+    duration: 0,
+    date: 'dummy-data-string',
+    version: '',
+    packageName: '',
+    audits: [auditReportMock({ slug: AUDIT_1_SLUG })],
+  };
+
+  return JSON.parse(
+    JSON.stringify({
+      packageName: '@code-pushup/core',
+      version: '0.1.0',
+      date: 'today',
+      commit: null,
+      duration: 42,
+      categories: [
+        {
+          slug: 'category-1',
+          title: 'Category 1',
+          refs: [
+            {
+              type: 'audit',
+              plugin: PLUGIN_1_SLUG,
+              slug: AUDIT_1_SLUG,
+              weight: 1,
+            },
+          ],
+        },
+      ],
+      plugins: [pluginReport],
+    } satisfies Report),
+  );
+}

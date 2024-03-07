@@ -39,7 +39,6 @@ export {
   getGitRoot,
   getLatestCommit,
   toGitPath,
-  validateCommitData,
   getCurrentBranchOrTag,
   safeCheckout,
 } from './lib/git';

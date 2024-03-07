@@ -90,6 +90,21 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## Commit
+
+Git commit
+
+_Object containing the following properties:_
+
+| Property           | Description                            | Type                                  |
+| :----------------- | :------------------------------------- | :------------------------------------ |
+| **`hash`** (\*)    | Commit SHA (full)                      | `string` (_regex: `/^[\da-f]{40}$/`_) |
+| **`message`** (\*) | Commit message                         | `string`                              |
+| **`date`** (\*)    | Date and time when commit was authored | `Date` (_nullable_)                   |
+| **`author`** (\*)  | Commit author name                     | `string`                              |
+
+_(\*) Required._
+
 ## CoreConfig
 
 _Object containing the following properties:_
@@ -1095,14 +1110,15 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property               | Description                            | Type                                                      |
-| :--------------------- | :------------------------------------- | :-------------------------------------------------------- |
-| **`packageName`** (\*) | NPM package name                       | `string`                                                  |
-| **`version`** (\*)     | NPM version of the CLI                 | `string`                                                  |
-| **`date`** (\*)        | Start date and time of the collect run | `string`                                                  |
-| **`duration`** (\*)    | Duration of the collect run in ms      | `number`                                                  |
-| **`categories`** (\*)  |                                        | _Array of [CategoryConfig](#categoryconfig) items_        |
-| **`plugins`** (\*)     |                                        | _Array of at least 1 [PluginReport](#pluginreport) items_ |
+| Property               | Description                               | Type                                                                                                                                                                                                                                                                                                |
+| :--------------------- | :---------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`packageName`** (\*) | NPM package name                          | `string`                                                                                                                                                                                                                                                                                            |
+| **`version`** (\*)     | NPM version of the CLI                    | `string`                                                                                                                                                                                                                                                                                            |
+| **`date`** (\*)        | Start date and time of the collect run    | `string`                                                                                                                                                                                                                                                                                            |
+| **`duration`** (\*)    | Duration of the collect run in ms         | `number`                                                                                                                                                                                                                                                                                            |
+| **`categories`** (\*)  |                                           | _Array of [CategoryConfig](#categoryconfig) items_                                                                                                                                                                                                                                                  |
+| **`plugins`** (\*)     |                                           | _Array of at least 1 [PluginReport](#pluginreport) items_                                                                                                                                                                                                                                           |
+| **`commit`** (\*)      | Git commit for which report was collected | _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> (_nullable_) |
 
 _(\*) Required._
 
