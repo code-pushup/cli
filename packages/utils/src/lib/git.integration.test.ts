@@ -12,10 +12,8 @@ import {
 } from './git';
 import { toUnixPath } from './transform';
 
-// we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
-const gitTestFolder = 'git-test';
 describe('git utils in a git repo', () => {
-  const baseDir = join(process.cwd(), gitTestFolder);
+  const baseDir = join(process.cwd(), 'tmp', 'git-tests');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
@@ -75,12 +73,12 @@ describe('git utils in a git repo', () => {
     it('should convert relative Windows path to relative Git path', async () => {
       await expect(
         toGitPath('Backend\\API\\Startup.cs', emptyGit),
-      ).resolves.toBe('../Backend/API/Startup.cs');
+      ).resolves.toBe('../../Backend/API/Startup.cs');
     });
 
     it('should keep relative Unix path as is (already a Git path)', async () => {
       await expect(toGitPath('Backend/API/Startup.cs', emptyGit)).resolves.toBe(
-        '../Backend/API/Startup.cs',
+        '../../Backend/API/Startup.cs',
       );
     });
 

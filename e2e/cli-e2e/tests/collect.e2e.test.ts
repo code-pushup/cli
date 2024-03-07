@@ -36,7 +36,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile('tmp/react-todos-app/report.json');
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
@@ -89,7 +89,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile('tmp/react-todos-app/report.json');
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
@@ -105,7 +105,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile('tmp/react-todos-app/report.md');
+    const md = await readTextFile('tmp/e2e/react-todos-app/report.md');
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);
