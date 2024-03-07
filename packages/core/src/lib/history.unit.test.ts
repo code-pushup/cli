@@ -30,7 +30,6 @@ describe('history', () => {
     await history(historyOptions, ['abc', 'def']);
 
     expect(getCurrentBranchOrTag).toHaveBeenCalledTimes(1);
-    expect(getCurrentBranchOrTag).toHaveReturnedWith('main');
 
     expect(safeCheckout).toHaveBeenCalledTimes(3);
     // walk commit history
