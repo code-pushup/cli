@@ -6,7 +6,7 @@ import { getHashes } from './history';
 
 // we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
 const gitTestFolder = 'core-history-git-test';
-describe('git utils in a git repo', () => {
+describe('getHashes', () => {
   const baseDir = join(process.cwd(), gitTestFolder);
   let emptyGit: SimpleGit;
 
