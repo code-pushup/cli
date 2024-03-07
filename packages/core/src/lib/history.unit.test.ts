@@ -36,16 +36,10 @@ describe('history', () => {
 
     expect(safeCheckout).toHaveBeenCalledTimes(3);
     // walk commit history
-    expect(safeCheckout).toHaveBeenNthCalledWith(1, 'abc', {
-      forceCleanStatus: undefined,
-    });
-    expect(safeCheckout).toHaveBeenNthCalledWith(2, 'def', {
-      forceCleanStatus: undefined,
-    });
+    expect(safeCheckout).toHaveBeenNthCalledWith(1, 'abc', {});
+    expect(safeCheckout).toHaveBeenNthCalledWith(2, 'def', {});
     // reset
-    expect(safeCheckout).toHaveBeenNthCalledWith(3, 'main', {
-      forceCleanStatus: undefined,
-    });
+    expect(safeCheckout).toHaveBeenNthCalledWith(3, 'main', {});
   });
 
   it('should return correct number of results', async () => {
