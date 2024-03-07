@@ -27,9 +27,7 @@ vi.mock('./upload', () => ({
 
 describe('history', () => {
   it('should check out all passed commits and reset to initial branch or tag', async () => {
-    const historyOptions: HistoryOptions = {
-      ...(MINIMAL_CONFIG_MOCK as HistoryOptions),
-    };
+    const historyOptions = MINIMAL_CONFIG_MOCK as HistoryOptions;
 
     await history(historyOptions, ['abc', 'def']);
 
