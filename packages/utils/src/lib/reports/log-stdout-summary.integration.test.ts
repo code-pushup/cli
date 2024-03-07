@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe } from 'vitest';
+import { beforeEach, describe } from 'vitest';
 import { reportMock } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';

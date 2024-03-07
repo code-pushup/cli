@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, vi } from 'vitest';
+import { beforeEach, describe, expect } from 'vitest';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import {
