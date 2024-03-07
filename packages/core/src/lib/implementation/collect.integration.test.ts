@@ -1,8 +1,15 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { commitSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { collect } from './collect';
+
+vi.mock('@code-pushup/utils', async () => {
+  const module = await vi.importActual('@code-pushup/utils');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  module.ui().switchMode('raw');
+  return module;
+});
 
 describe('collect', () => {
   it('should execute with valid options', async () => {

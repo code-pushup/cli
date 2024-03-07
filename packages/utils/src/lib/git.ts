@@ -80,8 +80,7 @@ export async function safeCheckout(
   if (options.forceCleanStatus) {
     await git.raw(['reset', '--hard']);
     await git.clean(['f', 'd']);
-    // @TODO replace with ui().logger.info
-    console.info(`git status cleaned`);
+    ui().logger.info(`git status cleaned`);
   }
   await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);

@@ -12,10 +12,13 @@ import {
   executePlugins,
 } from './execute-plugin';
 
+const nodePluginSlug = MINIMAL_PLUGIN_CONFIG_MOCK.slug;
+
+// eslint-disable-next-line max-lines-per-function
 describe('executePlugin', () => {
   it('should execute a valid plugin config', async () => {
     const pluginResult = await executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK);
-    expect(pluginResult.audits[0]?.slug).toBe('node-version');
+    expect(pluginResult.audits[0]?.slug).toBe(nodePluginSlug);
   });
 
   it('should yield audit outputs for valid runner config', async () => {
@@ -23,7 +26,7 @@ describe('executePlugin', () => {
       {
         'output.json': JSON.stringify([
           {
-            slug: 'node-version',
+            slug: nodePluginSlug,
             score: 1,
             value: 2,
           },
@@ -40,7 +43,7 @@ describe('executePlugin', () => {
         outputFile: 'output.json',
       },
     });
-    expect(pluginResult.audits[0]?.slug).toBe('node-version');
+    expect(pluginResult.audits[0]?.slug).toBe(nodePluginSlug);
   });
 
   it('should yield audit outputs for a valid runner function', async () => {
@@ -48,7 +51,7 @@ describe('executePlugin', () => {
       ...MINIMAL_PLUGIN_CONFIG_MOCK,
       runner: () => [
         {
-          slug: 'node-version',
+          slug: nodePluginSlug,
           score: 0,
           value: 1,
         },
@@ -56,7 +59,7 @@ describe('executePlugin', () => {
     });
     expect(pluginResult.audits).toEqual([
       expect.objectContaining({
-        slug: 'node-version',
+        slug: nodePluginSlug,
         title: 'Node version',
         score: 0,
         value: 2,
@@ -70,7 +73,7 @@ describe('executePlugin', () => {
         ...MINIMAL_PLUGIN_CONFIG_MOCK,
         audits: [{ slug: '-invalid-slug', title: 'Invalid audit' }],
       }),
-    ).rejects.toThrow(new PluginOutputMissingAuditError('node-version'));
+    ).rejects.toThrow(new PluginOutputMissingAuditError(nodePluginSlug));
   });
 
   it('should throw if invalid runnerOutput is produced', async () => {
@@ -89,6 +92,7 @@ describe('executePlugin', () => {
   });
 });
 
+// eslint-disable-next-line max-lines-per-function
 describe('executePlugins', () => {
   it('should execute valid plugins', async () => {
     const pluginResult = await executePlugins(
@@ -104,7 +108,7 @@ describe('executePlugins', () => {
 
     expect(pluginResult[0]?.icon).toBe('javascript');
     expect(pluginResult[1]?.icon).toBe('nodejs');
-    expect(pluginResult[0]?.audits[0]?.slug).toBe('node-version');
+    expect(pluginResult[0]?.audits[0]?.slug).toBe(nodePluginSlug);
   });
 
   it('should throw for invalid plugins', async () => {
@@ -162,7 +166,7 @@ describe('executePlugins', () => {
       {
         'output.json': JSON.stringify([
           {
-            slug: 'node-version',
+            slug: nodePluginSlug,
             score: 1,
             value: 2,
           },
@@ -193,7 +197,7 @@ describe('executePlugins', () => {
       ],
       { progress: false },
     );
-    expect(pluginResult[0]?.audits[0]?.slug).toBe('node-version');
+    expect(pluginResult[0]?.audits[0]?.slug).toBe(nodePluginSlug);
     expect(pluginResult[0]?.audits[0]?.displayValue).toBe('2.0.0');
   });
 });
