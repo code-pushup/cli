@@ -20,7 +20,7 @@ describe('history-command', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        'code-pushup.config.ts': '', // only needs to exist for stat inside readCodePushupConfig
+        'code-pushup.config.ts': '', // only needs to exist for stat call inside readRcPath
       },
       '/test',
     );

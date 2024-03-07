@@ -15,7 +15,7 @@ export function yargsHistoryOptionsDefinition(): Record<
       describe: 'Folder to restore using "git restore [folder]"',
       type: 'boolean',
     },
-    skipUpload: {
+    skipUploads: {
       describe: 'Upload created reports',
       type: 'boolean',
       default: true,
