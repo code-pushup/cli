@@ -116,7 +116,7 @@ describe('history', () => {
 });
 
 describe('prepareHashes', () => {
-  it('should get all commits from log if no option is passed', () => {
+  it('should return commit hashes in reverse order, () => {
     expect(
       prepareHashes({
         all: [
