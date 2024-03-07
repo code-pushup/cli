@@ -1,9 +1,9 @@
-import { LogResult, simpleGit } from 'simple-git';
-import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
-import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
-import { collectAndPersistReports } from './collect-and-persist';
-import { GlobalOptions } from './types';
-import { upload } from './upload';
+import {LogResult} from 'simple-git';
+import {CoreConfig, PersistConfig, UploadConfig} from '@code-pushup/models';
+import {getCurrentBranchOrTag, safeCheckout} from '@code-pushup/utils';
+import {collectAndPersistReports} from './collect-and-persist';
+import {GlobalOptions} from './types';
+import {upload} from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;
@@ -60,33 +60,6 @@ export async function history(
   await safeCheckout(initialBranch, forceCleanStatus);
 
   return reports;
-}
-
-export async function getHashes(
-  options: {
-    from?: string;
-    to?: string;
-    maxCount?: number;
-  } = {},
-  git = simpleGit(),
-): Promise<string[]> {
-  const { from, to, maxCount } = options;
-
-  if (from || to) {
-    // validate from & to
-    if (from === undefined || from === '') {
-      throw new Error('from has to be defined');
-    }
-    if (to === undefined || to === '') {
-      throw new Error('to has to be defined');
-    }
-
-    const logsFromTo = await git.log({ from, to, maxCount });
-    return prepareHashes(logsFromTo);
-  }
-
-  const logs = await git.log(maxCount ? { maxCount } : {});
-  return prepareHashes(logs);
 }
 
 export function prepareHashes(logs: LogResult): string[] {
