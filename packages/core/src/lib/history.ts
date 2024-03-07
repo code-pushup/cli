@@ -1,21 +1,20 @@
-import {LogResult} from 'simple-git';
-import {CoreConfig, PersistConfig, UploadConfig} from '@code-pushup/models';
-import {getCurrentBranchOrTag, safeCheckout} from '@code-pushup/utils';
-import {collectAndPersistReports} from './collect-and-persist';
-import {GlobalOptions} from './types';
-import {upload} from './upload';
+import { LogOptions, LogResult } from 'simple-git';
+import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
+import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
+import { collectAndPersistReports } from './collect-and-persist';
+import { GlobalOptions } from './types';
+import { upload } from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'>
-> & {
-  persist: Required<PersistConfig>;
-  upload?: Required<UploadConfig>;
-} & HistoryOnlyOptions &
+export type HistoryOptions = Pick<LogOptions, 'maxCount' | 'from' | 'to'> &
+  Required<Pick<CoreConfig, 'plugins' | 'categories'>> & {
+    persist: Required<PersistConfig>;
+    upload?: Required<UploadConfig>;
+  } & HistoryOnlyOptions &
   GlobalOptions;
 
 export async function history(
