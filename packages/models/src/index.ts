@@ -60,6 +60,12 @@ export {
   reportSchema,
 } from './lib/report';
 export {
+  AuditDiff,
+  AuditResult,
+  CategoryDiff,
+  CategoryResult,
+  GroupDiff,
+  GroupResult,
   ReportsDiff,
   auditDiffSchema,
   auditResultSchema,
