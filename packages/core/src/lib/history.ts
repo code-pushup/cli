@@ -1,4 +1,4 @@
-import { LogOptions, LogResult } from 'simple-git';
+import { LogResult } from 'simple-git';
 import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
@@ -10,8 +10,7 @@ export type HistoryOnlyOptions = {
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Pick<LogOptions, 'maxCount' | 'from' | 'to'> &
-  Required<Pick<CoreConfig, 'plugins' | 'categories'>> & {
+export type HistoryOptions = Required<Pick<CoreConfig, 'plugins' | 'categories'>> & {
     persist: Required<PersistConfig>;
     upload?: Required<UploadConfig>;
   } & HistoryOnlyOptions &
