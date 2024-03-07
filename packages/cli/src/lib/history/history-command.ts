@@ -25,24 +25,22 @@ export function yargsHistoryCommandObject() {
       const {
         targetBranch = currentBranch,
         forceCleanStatus,
-        numSteps = 1,
-        ...config
+        ...logOptions
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
       // determine history to walk
       const git = simpleGit();
-      const log = await git.log();
+
+      const log = await git.log(logOptions);
       const commitsToAudit = log.all
         .map(({ hash }) => hash)
         // crawl from oldest to newest
-        .reverse()
-        // adjust length
-        .slice(-numSteps);
+        .reverse();
 
       // run history logic
       const reports: unknown[] = await history(
         {
-          ...config,
+          ...logOptions,
           targetBranch,
           forceCleanStatus,
         },

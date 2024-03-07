@@ -1,3 +1,4 @@
+import { LogOptions } from 'simple-git';
 import {
   CoreConfig,
   Format,
@@ -12,14 +13,15 @@ import { upload as uploadCommandLogic } from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;
-  uploadReports?: boolean;
+  skipUpload?: boolean;
   forceCleanStatus?: true;
 };
-export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'> & {
-    persist: Required<PersistConfig>;
-  } & { upload: Required<UploadConfig> }
-> &
+export type HistoryOptions = Pick<LogOptions, 'maxCount' | 'from' | 'to'> &
+  Required<
+    Pick<CoreConfig, 'plugins' | 'categories'> & {
+      persist: Required<PersistConfig>;
+    } & { upload: Required<UploadConfig> }
+  > &
   GlobalOptions &
   HistoryOnlyOptions;
 
@@ -47,8 +49,8 @@ export async function history(
 
     await collectAndPersistReports(currentConfig);
 
-    const { uploadReports = true } = currentConfig as unknown as HistoryOptions;
-    if (uploadReports) {
+    const { skipUpload = false } = currentConfig as unknown as HistoryOptions;
+    if (skipUpload) {
       const result = uploadConfigSchema.safeParse(currentConfig.upload);
       if (result.success) {
         await uploadCommandLogic({ ...currentConfig, upload: result.data });
