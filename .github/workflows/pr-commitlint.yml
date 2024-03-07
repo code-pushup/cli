@@ -1,4 +1,4 @@
-name: PR Title Commitlint Check
+name: PR Commitlint
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   check:
+    name: Check PR title
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
