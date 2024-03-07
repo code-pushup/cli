@@ -46,7 +46,6 @@ describe('history', () => {
 
     const results = await history(historyOptions, ['abc', 'def']);
 
-    expect(results).toHaveLength(2);
     expect(results).toStrictEqual(['abc-report', 'def-report']);
   });
 
