@@ -14,7 +14,7 @@ import { upload as uploadCommandLogic } from './upload';
 export type HistoryOnlyOptions = {
   targetBranch?: string;
   uploadReports?: boolean;
-  forceCleanStatus?: true;
+  forceCleanStatus?: boolean;
 };
 export type HistoryOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'> & {
