@@ -30,7 +30,7 @@ export async function history(
 ): Promise<string[]> {
   const initialBranch: string = await getCurrentBranchOrTag();
 
-  const { uploadReports = true } = config as unknown as HistoryOptions;
+  const { uploadReports = true } = config;
   if (!uploadReports) {
     console.warn('Upload is skipped because uploadReports is set to false');
   }
