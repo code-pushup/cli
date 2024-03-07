@@ -2,6 +2,7 @@ import Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
 import {
   Audit,
+  AuditOutput,
   Group,
   PluginConfig,
   pluginConfigSchema,
@@ -152,10 +153,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'speed-index', title: 'Speed Index' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'performance',
         title: 'Performance',
@@ -195,10 +196,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         ],
         { onlyAudits: ['speed-index'] },
       );
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'speed-index', title: 'Speed Index' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'performance',
         title: 'Performance',
@@ -245,10 +246,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyCategories: ['coverage'] },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'coverage',
         title: 'Code coverage',
@@ -298,10 +299,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'coverage',
         title: 'Code coverage',
@@ -378,7 +379,7 @@ describe('toAuditOutputs', () => {
           displayValue: '2.8 s',
         },
       ]),
-    ).toStrictEqual([
+    ).toStrictEqual<AuditOutput[]>([
       {
         displayValue: '2.8 s',
         score: 0.55,

@@ -11,16 +11,16 @@ describe('applyMaxScoreAboveThreshold', () => {
             slug: 'branch-coverage',
             value: 75,
             score: 0.75,
-          } satisfies AuditOutput,
+          },
         ],
         0.7,
       ),
-    ).toEqual([
+    ).toEqual<AuditOutput[]>([
       {
         slug: 'branch-coverage',
         value: 75,
         score: 1,
-      } satisfies AuditOutput,
+      },
     ]);
   });
 
@@ -32,16 +32,16 @@ describe('applyMaxScoreAboveThreshold', () => {
             slug: 'line-coverage',
             value: 60,
             score: 0.6,
-          } satisfies AuditOutput,
+          },
         ],
         0.7,
       ),
-    ).toEqual([
+    ).toEqual<AuditOutput[]>([
       {
         slug: 'line-coverage',
         value: 60,
         score: 0.6,
-      } satisfies AuditOutput,
+      },
     ]);
   });
 });
