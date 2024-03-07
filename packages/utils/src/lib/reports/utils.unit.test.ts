@@ -79,7 +79,7 @@ describe('getSortableAuditByRef', () => {
           },
         ],
       ),
-    ).toStrictEqual({
+    ).toStrictEqual<SortableAuditReport>({
       slug: 'function-coverage',
       title: 'Function coverage',
       score: 1,
@@ -172,7 +172,7 @@ describe('getSortableGroupByRef', () => {
           },
         ],
       ),
-    ).toStrictEqual({
+    ).toStrictEqual<SortableGroup>({
       slug: 'code-coverage',
       title: 'Code coverage',
       score: 0.66,
@@ -311,11 +311,9 @@ describe('countWeightedRefs', () => {
 describe('compareIssueSeverity', () => {
   it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
     const severityArr = ['error', 'info', 'warning'] satisfies IssueSeverity[];
-    expect([...severityArr].sort(compareIssueSeverity)).toEqual([
-      'info',
-      'warning',
-      'error',
-    ]);
+    expect([...severityArr].sort(compareIssueSeverity)).toEqual<
+      IssueSeverity[]
+    >(['info', 'warning', 'error']);
   });
 });
 
