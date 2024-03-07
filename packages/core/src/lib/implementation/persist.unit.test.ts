@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
@@ -11,9 +11,19 @@ import {
 import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
+vi.mock('@code-pushup/utils', async () => {
+  const module = await vi.importActual('@code-pushup/utils');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  module.ui().switchMode('raw');
+  return module;
+});
+
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
+  });
+  afterEach(() => {
+    ui().logger.flushLogs();
   });
 
   it('should print a summary to stdout when no format is specified`', async () => {
@@ -22,7 +32,11 @@ describe('persistReport', () => {
       filename: 'report',
       format: [],
     });
-    expect(console.info).toHaveBeenCalledWith(
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
@@ -33,7 +47,11 @@ describe('persistReport', () => {
       filename: 'report',
       format: ['md', 'json'],
     });
-    expect(console.info).toHaveBeenCalledWith(
+    const logs = ui()
+      .logger.getRenderer()
+      .getLogs()
+      .map(({ message }) => message);
+    expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
@@ -99,6 +117,10 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
+  afterEach(() => {
+    ui().logger.flushLogs();
+  });
+
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
     const logs = ui()

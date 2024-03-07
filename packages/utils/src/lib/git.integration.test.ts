@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, beforeEach, expect } from 'vitest';

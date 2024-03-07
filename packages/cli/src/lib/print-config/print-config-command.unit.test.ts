@@ -1,4 +1,4 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -12,6 +12,15 @@ vi.mock('@code-pushup/core', async () => {
     ...core,
     readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
+});
+
+vi.mock('@code-pushup/utils', async () => {
+  const module = await vi.importActual('@code-pushup/utils');
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  module.ui().switchMode('raw');
+
+  return module;
 });
 
 describe('print-config-command', () => {

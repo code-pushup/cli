@@ -24,8 +24,8 @@ describe('executePlugin', () => {
         'output.json': JSON.stringify([
           {
             slug: 'node-version',
-            score: 0.3,
-            value: 16,
+            score: 1,
+            value: 2,
           },
         ]),
       },
@@ -49,7 +49,7 @@ describe('executePlugin', () => {
       runner: () => [
         {
           slug: 'node-version',
-          score: 0.1,
+          score: 0,
           value: 1,
         },
       ],
@@ -58,8 +58,8 @@ describe('executePlugin', () => {
       expect.objectContaining({
         slug: 'node-version',
         title: 'Node version',
-        score: 0.3,
-        value: 16,
+        score: 0,
+        value: 2,
       }),
     ]);
   });
@@ -163,8 +163,8 @@ describe('executePlugins', () => {
         'output.json': JSON.stringify([
           {
             slug: 'node-version',
-            score: 0.3,
-            value: 16,
+            score: 1,
+            value: 2,
           },
         ]),
       },
@@ -182,10 +182,10 @@ describe('executePlugins', () => {
             outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
               Promise.resolve([
                 {
-                  slug: (outputs as AuditOutputs)[0]!.slug,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
+                  slug: (outputs as AuditOutputs)[0]?.slug || '',
+                  score: 1,
+                  value: 2,
+                  displayValue: '2.0.0',
                 },
               ]),
           },
@@ -194,6 +194,6 @@ describe('executePlugins', () => {
       { progress: false },
     );
     expect(pluginResult[0]?.audits[0]?.slug).toBe('node-version');
-    expect(pluginResult[0]?.audits[0]?.displayValue).toBe('16.0.0');
+    expect(pluginResult[0]?.audits[0]?.displayValue).toBe('2.0.0');
   });
 });
