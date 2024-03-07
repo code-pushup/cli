@@ -46,7 +46,7 @@ export async function history(
       ...config,
       persist: {
         ...config.persist,
-        format: ['json' as Format],
+        format: ['json'],
         filename: `${commit}-report`,
       },
     };
