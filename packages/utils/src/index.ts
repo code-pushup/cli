@@ -39,7 +39,6 @@ export {
   getGitRoot,
   getLatestCommit,
   toGitPath,
-  validateCommitData,
   getCurrentBranchOrTag,
   guardAgainstLocalChanges,
   safeCheckout,

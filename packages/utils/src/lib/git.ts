@@ -1,21 +1,21 @@
 import { isAbsolute, join, relative } from 'node:path';
 import { simpleGit } from 'simple-git';
+import { Commit, commitSchema } from '@code-pushup/models';
 import { toUnixPath } from './transform';
 
-export type CommitData = {
-  hash: string;
-  message: string;
-  author: string;
-  date: string;
-};
-
-export async function getLatestCommit(git = simpleGit()) {
-  // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
+export async function getLatestCommit(
+  git = simpleGit(),
+): Promise<Commit | null> {
+  // git log -1 --pretty=format:"%H %s %an %aI"
+  // https://git-scm.com/docs/pretty-formats
   const log = await git.log({
     maxCount: 1,
-    format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
+    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
   });
-  return log.latest satisfies CommitData | null;
+  if (!log.latest) {
+    return null;
+  }
+  return commitSchema.parse(log.latest);
 }
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
@@ -34,23 +34,6 @@ export async function toGitPath(
 ): Promise<string> {
   const gitRoot = await getGitRoot(git);
   return formatGitPath(path, gitRoot);
-}
-
-export function validateCommitData(
-  commitData: CommitData | null,
-  options: { throwError?: true } = {},
-): commitData is CommitData {
-  if (!commitData) {
-    const msg = 'no commit data available';
-    if (options.throwError) {
-      throw new Error(msg);
-    } else {
-      // @TODO replace with ui().logger.warning
-      console.warn(msg);
-      return false;
-    }
-  }
-  return true;
 }
 
 export async function guardAgainstLocalChanges(
