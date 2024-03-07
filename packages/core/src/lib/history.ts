@@ -19,7 +19,8 @@ export type HistoryOnlyOptions = {
 export type HistoryOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'> & {
     persist: Required<PersistConfig>;
-  } & { upload: Required<UploadConfig> }
+    upload: Required<UploadConfig>;
+  }
 > &
   GlobalOptions &
   HistoryOnlyOptions;
