@@ -23,7 +23,7 @@ describe('getHashes', () => {
   });
 
   describe('without a branch and commits', () => {
-    it('getHashes should throw', async () => {
+    it('should throw', async () => {
       await expect(getHashes({}, emptyGit)).rejects.toThrow(
         "your current branch 'master' does not have any commits yet",
       );
