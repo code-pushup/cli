@@ -1,25 +1,19 @@
 import { LogResult, simpleGit } from 'simple-git';
-import {
-  CoreConfig,
-  Format,
-  PersistConfig,
-  UploadConfig,
-  uploadConfigSchema,
-} from '@code-pushup/models';
+import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
 import { GlobalOptions } from './types';
-import { upload as uploadCommandLogic } from './upload';
+import { upload } from './upload';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;
-  uploadReports?: boolean;
+  skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
 export type HistoryOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'> & {
     persist: Required<PersistConfig>;
-    upload: Required<UploadConfig>;
+    upload?: Required<UploadConfig>;
   }
 > &
   GlobalOptions &
@@ -31,10 +25,7 @@ export async function history(
 ): Promise<string[]> {
   const initialBranch: string = await getCurrentBranchOrTag();
 
-  const { uploadReports = true } = config;
-  if (!uploadReports) {
-    console.warn('Upload is skipped because uploadReports is set to false');
-  }
+  const { skipUploads = false } = config;
 
   const reports: string[] = [];
   // eslint-disable-next-line functional/no-loop-statements
@@ -53,14 +44,14 @@ export async function history(
 
     await collectAndPersistReports(currentConfig);
 
-    if (uploadReports) {
-      const result = uploadConfigSchema.safeParse(currentConfig.upload);
-      if (result.success) {
-        await uploadCommandLogic({ ...currentConfig, upload: result.data });
+    if (!skipUploads) {
+      if (currentConfig?.upload) {
+        await upload(currentConfig);
       } else {
-        console.error(`Collecting ${commit} failed.`);
-        console.error(result.error);
+        console.warn('Upload is skipped because upload config is undefined.');
       }
+    } else {
+      console.warn('Upload is skipped because skipUploads is set to true.');
     }
 
     // eslint-disable-next-line functional/immutable-data

@@ -93,7 +93,7 @@ describe('history', () => {
     );
   });
 
-  it('should not call upload if uploadReports is set to false', async () => {
+  it('should not call upload if skipUploads is set to false', async () => {
     const historyOptions: HistoryOptions = {
       ...(MINIMAL_CONFIG_MOCK as HistoryOptions),
       upload: {
@@ -103,7 +103,7 @@ describe('history', () => {
         organization: 'code-pushup',
         timeout: 4000,
       },
-      uploadReports: false,
+      skipUploads: true,
     };
     await history(historyOptions, ['abc']);
 
