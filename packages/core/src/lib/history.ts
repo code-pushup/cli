@@ -10,7 +10,9 @@ export type HistoryOnlyOptions = {
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
+export type HistoryOptions = Required<
+  Pick<CoreConfig, 'plugins' | 'categories'>
+> & {
   persist: Required<PersistConfig>;
   upload?: Required<UploadConfig>;
 } & HistoryOnlyOptions &
@@ -28,7 +30,7 @@ export async function history(
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
     console.info(`Collect ${commit}`);
-    await safeCheckout(commit, { forceCleanStatus });
+    await safeCheckout(commit, forceCleanStatus);
 
     const currentConfig: HistoryOptions = {
       ...config,
@@ -55,7 +57,7 @@ export async function history(
     reports.push(currentConfig.persist.filename);
   }
 
-  await safeCheckout(initialBranch, { forceCleanStatus });
+  await safeCheckout(initialBranch, forceCleanStatus);
 
   return reports;
 }

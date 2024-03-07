@@ -32,10 +32,10 @@ describe('history', () => {
 
     expect(safeCheckout).toHaveBeenCalledTimes(3);
     // walk commit history
-    expect(safeCheckout).toHaveBeenNthCalledWith(1, 'abc', {});
-    expect(safeCheckout).toHaveBeenNthCalledWith(2, 'def', {});
+    expect(safeCheckout).toHaveBeenNthCalledWith(1, 'abc', undefined);
+    expect(safeCheckout).toHaveBeenNthCalledWith(2, 'def', undefined);
     // reset
-    expect(safeCheckout).toHaveBeenNthCalledWith(3, 'main', {});
+    expect(safeCheckout).toHaveBeenNthCalledWith(3, 'main', undefined);
   });
 
   it('should return correct number of results', async () => {
