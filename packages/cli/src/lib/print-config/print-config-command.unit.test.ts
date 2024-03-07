@@ -14,15 +14,6 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
-vi.mock('@code-pushup/utils', async () => {
-  const module = await vi.importActual('@code-pushup/utils');
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  module.ui().switchMode('raw');
-
-  return module;
-});
-
 describe('print-config-command', () => {
   it('should filter out meta arguments and kebab duplicates', async () => {
     await yargsCli(

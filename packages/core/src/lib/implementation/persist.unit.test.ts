@@ -11,18 +11,9 @@ import {
 import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
-vi.mock('@code-pushup/utils', async () => {
-  const module = await vi.importActual('@code-pushup/utils');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  module.ui().switchMode('raw');
-  return module;
-});
-
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
-  });
-  afterEach(() => {
     ui().logger.flushLogs();
   });
 
@@ -117,7 +108,7 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
-  afterEach(() => {
+  beforeEach(() => {
     ui().logger.flushLogs();
   });
 

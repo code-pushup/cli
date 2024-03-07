@@ -1,4 +1,4 @@
-import {afterEach, vi} from "vitest";
+import {beforeEach, vi} from "vitest";
 import {ui} from "../../src/lib/logging";
 
 vi.mock('../../src/lib/logging', async () => {
@@ -8,6 +8,6 @@ vi.mock('../../src/lib/logging', async () => {
   return module;
 });
 
-afterEach(() => {
+beforeEach(() => {
    ui().logger.flushLogs();
 })

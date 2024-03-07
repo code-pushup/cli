@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, vi } from 'vitest';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import {
@@ -6,15 +6,6 @@ import {
   filterPluginsBySlug,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
-
-vi.mock('@code-pushup/utils', async () => {
-  const module = await vi.importActual('@code-pushup/utils');
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  module.ui().switchMode('raw');
-
-  return module;
-});
 
 describe('filterPluginsBySlug', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {
@@ -45,7 +36,7 @@ describe('filterPluginsBySlug', () => {
 });
 
 describe('filterCategoryByPluginSlug', () => {
-  afterEach(() => {
+  beforeEach(() => {
     ui().logger.flushLogs();
   });
   it('should return all categories if no onlyPlugins option', () => {
@@ -119,6 +110,9 @@ describe('filterCategoryByPluginSlug', () => {
 });
 
 describe('validateOnlyPluginsOption', () => {
+  beforeEach(() => {
+    ui().logger.flushLogs();
+  });
   it('should warn if onlyPlugins option contains non-existing plugin', () => {
     validateOnlyPluginsOption(
       [{ slug: 'plugin1' }, { slug: 'plugin2' }] as CoreConfig['plugins'],
