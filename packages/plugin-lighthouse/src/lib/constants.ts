@@ -2,7 +2,7 @@ import {
   type Config,
   type IcuMessage,
   Audit as LHAudit,
-  defaultConfig,
+  defaultConfig, CliFlags,
 } from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
 
@@ -62,4 +62,21 @@ async function loadLighthouseAudit(
     default: typeof LHAudit;
   };
   return module.default;
+}
+
+export const DEFAULT_CLI_FLAGS: Partial<CliFlags> = {
+  // default values extracted from
+  // https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80
+  verbose: false,
+  quiet: false,
+  saveAssets: false,
+  chromeFlags: "",
+  port: 0,
+  hostname: "127.0.0.1",
+  view: false,
+  channel: "cli",
+  chromeIgnoreDefaultFlags: false,
+  // custom overwrites in favour of the plugin
+  output: ["json"],
+  outputPath: LIGHTHOUSE_REPORT_NAME,
 }

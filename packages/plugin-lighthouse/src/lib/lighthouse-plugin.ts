@@ -7,7 +7,7 @@ import {
   defaultConfig
 } from 'lighthouse';
 import {AuditOutputs, PluginConfig, RunnerFunction} from '@code-pushup/models';
-import {AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG, LIGHTHOUSE_REPORT_NAME} from './constants';
+import {AUDITS, DEFAULT_CLI_FLAGS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG, LIGHTHOUSE_REPORT_NAME} from './constants';
 import {filterAuditsAndGroupsByOnlyOptions, toAuditOutputs} from './utils';
 import {runLighthouse} from 'lighthouse/cli/run.js';
 import path from "path";
@@ -74,64 +74,43 @@ export async function getBudgets(budgetPath?: string | null): Promise<Budget[] |
   return null;
 }
 
-export function getRunner(targetUrl: string,
+export function setLogLevel({verbose, quiet}: { verbose?: boolean, quiet?: boolean }) {
+  // set logging preferences
+  if (verbose) {
+    log.setLevel('verbose');
+  } else if (quiet) {
+    log.setLevel('silent');
+  } else {
+    log.setLevel('info');
+  }
+}
+
+export function getRunner(urlUnderTest: string,
                           flags: Flags): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const urlUnderTest = targetUrl;
-    // eslint-disable-next-line functional/no-let
-    let {
-      logLevel = 'info',
-    } = flags;
     const {
-      verbose = false,
-      quiet = false
-    } = flags;
-    // set logging preferences
-    if (verbose) {
-      logLevel = 'verbose';
-    } else if (quiet) {
-      logLevel = 'silent';
-    }
-    log.setLevel(logLevel);
+      precomputedLanternDataPath,
+      budgetPath,
+      budgets = [],
+      ...parsedFlags
+    } = {
+      ...DEFAULT_CLI_FLAGS,
+      flags
+    };
 
-    const {budgetPath, budgets = [], ...restFlags} = flags;
+    setLogLevel(parsedFlags);
 
-    const config = getConfig(flags);
+    const config = getConfig(parsedFlags);
+
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
 
-    // Logging
-    let flagsWithDefaults = {
-      'save-assets': true,
-      'list-all-audits': false,
-      'list-locales': false,
-      'list-trace-categories': false,
-      port: 0,
-      hostname: '127.0.0.1',
-      view: false,
-      channel: 'cli',
-      'chrome-ignore-default-flags': false,
-      //
-      verbose,
-      quiet,
-      logLevel,
-      enableErrorReporting: false,
-      output: 'json',
-      outputPath: LIGHTHOUSE_REPORT_NAME,
-      budgets: budgetsJson,
-      ...restFlags,
-    }
+    const flagsWithDefaults = {
+      ...parsedFlags,
+      budgets: budgetsJson
+    };
 
-    // eslint-disable-next-line functional/no-let
-    if (flags.precomputedLanternDataPath) {
-      const data = await readJsonFile<Partial<PrecomputedLanternData>>(flags.precomputedLanternDataPath);
-      /** @type {LH.PrecomputedLanternData} */
-      if (!data.additionalRttByOrigin || !data.serverResponseTimeByOrigin) {
-        throw new Error('Invalid precomputed lantern data file');
-      }
-      flagsWithDefaults = {
-        ...flagsWithDefaults,
-        precomputedLanternData: data as PrecomputedLanternData
-      }
+    if(precomputedLanternDataPath) {
+      console.info(`The parsing precomputedLanternDataPath ${precomputedLanternDataPath} is skipped as not implemented.`);
     }
 
     const runnerResult: unknown = await runLighthouse(urlUnderTest, flagsWithDefaults, config);
