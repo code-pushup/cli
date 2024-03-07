@@ -2,6 +2,14 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.26.1](https://github.com/code-pushup/cli/compare/v0.26.0...v0.26.1) (2024-03-07)
+
+# [0.26.0](https://github.com/code-pushup/cli/compare/v0.25.7...v0.26.0) (2024-03-06)
+
+### Features
+
+- **cli:** include commit info in report.json ([5965900](https://github.com/code-pushup/cli/commit/596590082c76b0b7915b2b339fa27baee9eaa678))
+
 ## [0.25.7](https://github.com/code-pushup/cli/compare/v0.25.6...v0.25.7) (2024-03-06)
 
 ## [0.25.6](https://github.com/code-pushup/cli/compare/v0.25.5...v0.25.6) (2024-03-05)

@@ -12,10 +12,8 @@ import {
 } from './git';
 import { toUnixPath } from './transform';
 
-// we need a separate folder that is not cleaned in `global-setup.ts`, otherwise the tests can't execute in parallel
-const gitTestFolder = 'git-test';
 describe('git utils in a git repo', () => {
-  const baseDir = join(process.cwd(), gitTestFolder);
+  const baseDir = join(process.cwd(), 'tmp', 'git-tests');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
@@ -54,14 +52,11 @@ describe('git utils in a git repo', () => {
     });
 
     it('should log latest commit', async () => {
-      const gitCommitDateRegex =
-        /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2} \d{2}:\d{2}:\d{2} \d{4} [+|-]\d{4}$/;
-
       await expect(getLatestCommit(emptyGit)).resolves.toEqual({
         hash: expect.stringMatching(/^[\da-f]{40}$/),
         message: 'Create README',
         author: 'John Doe',
-        date: expect.stringMatching(gitCommitDateRegex),
+        date: expect.any(Date),
       });
     });
 
@@ -78,12 +73,12 @@ describe('git utils in a git repo', () => {
     it('should convert relative Windows path to relative Git path', async () => {
       await expect(
         toGitPath('Backend\\API\\Startup.cs', emptyGit),
-      ).resolves.toBe('../Backend/API/Startup.cs');
+      ).resolves.toBe('../../Backend/API/Startup.cs');
     });
 
     it('should keep relative Unix path as is (already a Git path)', async () => {
       await expect(toGitPath('Backend/API/Startup.cs', emptyGit)).resolves.toBe(
-        '../Backend/API/Startup.cs',
+        '../../Backend/API/Startup.cs',
       );
     });
 

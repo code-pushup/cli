@@ -6,7 +6,7 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
-import { getLatestCommit, ui, validateCommitData } from '@code-pushup/utils';
+import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
   collectSuccessfulLog,
@@ -49,10 +49,7 @@ export function yargsAutorunCommandObject() {
 
       if (options.upload) {
         const { url } = await upload(options);
-        const commitData = await getLatestCommit();
-        if (validateCommitData(commitData, { throwError: true })) {
-          uploadSuccessfulLog(url);
-        }
+        uploadSuccessfulLog(url);
       } else {
         ui().logger.warning('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();

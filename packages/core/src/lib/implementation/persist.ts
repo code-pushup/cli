@@ -5,13 +5,11 @@ import {
   MultipleFileResults,
   directoryExists,
   generateMdReport,
-  getLatestCommit,
   logMultipleFileResults,
   logStdoutSummary,
   scoreReport,
   sortReport,
   ui,
-  validateCommitData,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -37,24 +35,20 @@ export async function persistReport(
   logStdoutSummary(sortedScoredReport);
 
   // collect physical format outputs
-  const results = await Promise.all(
-    format.map(async reportType => {
-      switch (reportType) {
-        case 'json':
-          return {
-            format: 'json',
-            content: JSON.stringify(report, null, 2),
-          };
-        case 'md':
-          const commitData = await getLatestCommit();
-          validateCommitData(commitData);
-          return {
-            format: 'md',
-            content: generateMdReport(sortedScoredReport, commitData),
-          };
-      }
-    }),
-  );
+  const results = format.map(reportType => {
+    switch (reportType) {
+      case 'json':
+        return {
+          format: 'json',
+          content: JSON.stringify(report, null, 2),
+        };
+      case 'md':
+        return {
+          format: 'md',
+          content: generateMdReport(sortedScoredReport),
+        };
+    }
+  });
 
   if (!(await directoryExists(outputDir))) {
     try {
