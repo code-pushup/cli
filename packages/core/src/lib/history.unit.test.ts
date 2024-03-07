@@ -7,14 +7,12 @@ import { upload } from './upload';
 
 vi.mock('@code-pushup/utils', async () => {
   const utils: object = await vi.importActual('@code-pushup/utils');
-  let currentBranchOrTag = 'main';
   return {
     ...utils,
-    safeCheckout: vi.fn().mockImplementation((branch: string) => {
-      currentBranchOrTag = branch;
-    }),
-    getCurrentBranchOrTag: vi.fn().mockImplementation(() => currentBranchOrTag),
+    safeCheckout: vi.fn(),
+    getCurrentBranchOrTag: vi.fn().mockReturnValue('main'),
   };
+});
 });
 
 vi.mock('./collect-and-persist', () => ({
