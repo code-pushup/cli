@@ -6,9 +6,6 @@ import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
 describe('logStdoutSummary', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
   beforeEach(() => {
     ui().logger.flushLogs();
   });

@@ -3,13 +3,6 @@ import { FileResult } from './file-system';
 import { logMultipleResults, logPromiseResults } from './log-results';
 import { ui } from './logging';
 
-vi.mock('./logging', async () => {
-  const module: typeof import('./logging') = await vi.importActual('./logging');
-
-  module.ui().switchMode('raw');
-  return module;
-});
-
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
   const failedCallbackMock = vi.fn();

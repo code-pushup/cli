@@ -2,13 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ui } from './logging';
 import { verboseUtils } from './verbose-utils';
 
-vi.mock('./logging', async () => {
-  const module: typeof import('./logging') = await vi.importActual('./logging');
-
-  module.ui().switchMode('raw');
-  return module;
-});
-
 describe('verbose-utils', () => {
   beforeEach(() => {
     ui().logger.flushLogs();
