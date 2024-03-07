@@ -1,4 +1,4 @@
-import { LogResult } from 'simple-git';
+import { LogOptions, LogResult, simpleGit } from 'simple-git';
 import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
@@ -10,10 +10,12 @@ export type HistoryOnlyOptions = {
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Required<Pick<CoreConfig, 'plugins' | 'categories'>> & {
-    persist: Required<PersistConfig>;
-    upload?: Required<UploadConfig>;
-  } & HistoryOnlyOptions &
+export type HistoryOptions = Required<
+  Pick<CoreConfig, 'plugins' | 'categories'>
+> & {
+  persist: Required<PersistConfig>;
+  upload?: Required<UploadConfig>;
+} & HistoryOnlyOptions &
   GlobalOptions;
 
 export async function history(
@@ -58,6 +60,21 @@ export async function history(
   await safeCheckout(initialBranch, forceCleanStatus);
 
   return reports;
+}
+
+export async function getHashes(
+  options: LogOptions,
+  git = simpleGit(),
+): Promise<string[]> {
+  const { from, to } = options;
+
+  // validate from & to
+  if (to && (from === '' || from == null)) {
+    throw new Error('from has to be defined if to is defined');
+  }
+
+  const logs = await git.log(options);
+  return prepareHashes(logs);
 }
 
 export function prepareHashes(logs: LogResult): string[] {

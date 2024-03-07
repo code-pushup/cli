@@ -116,7 +116,7 @@ describe('history', () => {
 });
 
 describe('prepareHashes', () => {
-  it('should return commit hashes in reverse order, () => {
+  it('should return commit hashes in reverse order', () => {
     expect(
       prepareHashes({
         all: [
