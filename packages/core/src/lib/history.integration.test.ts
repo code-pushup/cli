@@ -66,7 +66,7 @@ describe('git utils in a git repo', () => {
 
     it('getHashes should get last 2 commits from log if maxCount is set to 2', async () => {
       await expect(getHashes({ maxCount: 2 }, emptyGit)).resolves.toStrictEqual(
-        [commits[1], commits[2]],
+        [commits.at(-2), commits.at(-1)],
       );
     });
 
