@@ -37,7 +37,7 @@ if (cliFlags.enableErrorReporting) {
     },
   });
  */
-export function lighthousePlugin(url: string, flags: Flags): PluginConfig {
+export function lighthousePlugin(url: string, flags?: Flags): PluginConfig {
   const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
     AUDITS,
     GROUPS,

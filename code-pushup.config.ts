@@ -14,9 +14,7 @@ import coveragePlugin, {
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
-import lighthousePlugin, {
-  LIGHTHOUSE_REPORT_NAME,
-} from './dist/packages/plugin-lighthouse';
+import lighthousePlugin from './dist/packages/plugin-lighthouse';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
@@ -78,9 +76,7 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin('https://example.com', {
-      outputPath: join('.code-pushup', LIGHTHOUSE_REPORT_NAME),
-    }),
+    await lighthousePlugin('https://example.com'),
   ],
 
   categories: [
