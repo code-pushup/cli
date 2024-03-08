@@ -80,8 +80,7 @@ describe('history', () => {
     await history(historyOptions, ['abc']);
 
     expect(upload).toHaveBeenCalledTimes(1);
-    expect(upload).toHaveBeenNthCalledWith(
-      1,
+    expect(upload).toHaveBeenCalledWith(
       expect.objectContaining({
         persist: expect.objectContaining({ filename: 'abc-report' }),
       }),
