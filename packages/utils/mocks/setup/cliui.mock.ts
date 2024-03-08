@@ -8,6 +8,8 @@ vi.mock('../../src/lib/logging', async () => {
 });
 
 beforeEach(async () => {
-  const module = await vi.importActual<{ui: () => CliUi}>('../../src/lib/logging');
-  module.ui().logger.flushLogs();
+  const {ui} = await vi.importActual<{ ui: () => CliUi }>(
+    '../../src/lib/logging',
+  );
+  ui().logger.flushLogs();
 });

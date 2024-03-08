@@ -11,8 +11,8 @@ vi.mock('@code-pushup/utils', async () => {
 });
 
 beforeEach(async () => {
-  const module = await vi.importActual<{ ui: () => CliUi }>(
+  const {ui} = await vi.importActual<{ ui: () => CliUi }>(
     '@code-pushup/utils',
   );
-  module.ui().logger.flushLogs();
+  ui().logger.flushLogs();
 });
