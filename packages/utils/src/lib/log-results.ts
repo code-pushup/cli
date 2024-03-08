@@ -34,12 +34,8 @@ export function logPromiseResults<
   if (results.length > 0) {
     const log =
       results[0]?.status === 'fulfilled'
-        ? (m: string) => {
-            ui().logger.success(m);
-          }
-        : (m: string) => {
-            ui().logger.warning(m);
-          };
+        ? ui().logger.success
+        : ui().logger.warning;
 
     log(logMessage);
     results.forEach(result => {
