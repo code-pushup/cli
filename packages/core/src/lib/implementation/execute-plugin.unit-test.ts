@@ -186,7 +186,7 @@ describe('executePlugins', () => {
             outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
               Promise.resolve([
                 {
-                  slug: (outputs as AuditOutputs)[0]?.slug || '',
+                  slug: (outputs as AuditOutputs)[0]!.slug,
                   score: 1,
                   value: 2,
                   displayValue: '2.0.0',
