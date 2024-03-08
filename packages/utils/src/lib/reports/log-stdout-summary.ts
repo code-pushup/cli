@@ -42,18 +42,21 @@ function logPlugins(report: ScoredReport): void {
     log(chalk.magentaBright.bold(`${title} audits`));
     log();
     audits.forEach((audit: AuditReport) => {
-      const padding = [0, 0, 0, 0];
       ui().row([
         {
-          text: `${applyScoreColor({ score: audit.score, text: '●' })} ${
-            audit.title
-          }`,
-          padding,
+          text: applyScoreColor({ score: audit.score, text: '●' }),
+          width: 2,
+          padding: [0, 1, 0, 0],
+        },
+        {
+          text: audit.title,
+          // eslint-disable-next-line no-magic-numbers
+          padding: [0, 3, 0, 0],
         },
         {
           text: chalk.cyanBright(audit.displayValue || `${audit.value}`),
           width: 10,
-          padding,
+          padding: [0, 0, 0, 0],
         },
       ]);
     });
