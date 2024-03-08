@@ -310,7 +310,7 @@ describe('countWeightedRefs', () => {
 
 describe('compareIssueSeverity', () => {
   it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
-    const severityArr = ['error', 'info', 'warning'] satisfies IssueSeverity[];
+    const severityArr: IssueSeverity[] = ['error', 'info', 'warning'];
     expect([...severityArr].sort(compareIssueSeverity)).toEqual<
       IssueSeverity[]
     >(['info', 'warning', 'error']);
