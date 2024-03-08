@@ -79,4 +79,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
-export { link, ui, Column } from './lib/logging';
+export { link, ui, CliUi, Column } from './lib/logging';

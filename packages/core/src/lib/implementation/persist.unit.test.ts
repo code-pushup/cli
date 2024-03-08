@@ -15,7 +15,6 @@ import { logPersistedResults, persistReport } from './persist';
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
-    ui().logger.flushLogs();
   });
 
   it('should print a summary to stdout when no format is specified`', async () => {
@@ -103,10 +102,6 @@ describe('persistReport', () => {
 });
 
 describe('logPersistedResults', () => {
-  beforeEach(() => {
-    ui().logger.flushLogs();
-  });
-
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
     const logs = getLogMessages(ui().logger);
