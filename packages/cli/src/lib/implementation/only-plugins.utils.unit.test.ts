@@ -6,6 +6,7 @@ import {
   filterPluginsBySlug,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
+import {getLogMessages} from "@code-pushup/test-utils";
 
 describe('filterPluginsBySlug', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {
@@ -90,10 +91,7 @@ describe('filterCategoryByPluginSlug', () => {
         verbose: true,
       },
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toEqual(
       expect.stringContaining('Category "category1" is ignored'),
     );
@@ -121,10 +119,7 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toEqual(
       expect.stringContaining(
         'The --onlyPlugin argument references plugins with "plugin3", "plugin4" slugs',
@@ -140,6 +135,6 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    expect(ui().logger.getRenderer().getLogs()).toHaveLength(0);
+    expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 });

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ui } from './logging';
 import { verboseUtils } from './verbose-utils';
+import {getLogMessages} from "@code-pushup/test-utils";
 
 describe('verbose-utils', () => {
   beforeEach(() => {
@@ -26,16 +27,16 @@ describe('verbose-utils', () => {
 
   it('logs should be off by default', () => {
     verboseUtils(false).log('42');
-    expect(ui().logger.getRenderer().getLogs()).toHaveLength(0);
+    expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 
   it('log should work no-verbose', () => {
     verboseUtils(false).log('42');
-    expect(ui().logger.getRenderer().getLogs()).toHaveLength(0);
+    expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 
   it('log should work verbose', () => {
     verboseUtils(true).log('42');
-    expect(ui().logger.getRenderer().getLogs()[0]?.message).toContain('42');
+    expect(getLogMessages(ui().logger)[0]).toContain('42');
   });
 });

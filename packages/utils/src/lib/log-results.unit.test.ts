@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FileResult } from './file-system';
 import { logMultipleResults, logPromiseResults } from './log-results';
 import { ui } from './logging';
+import {getLogMessages} from "@code-pushup/test-utils";
 
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
@@ -71,10 +72,7 @@ describe('logPromiseResults', () => {
       'Uploaded reports successfully:',
       (result): string => result.value.toString(),
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ green(success) ] Uploaded reports successfully:');
     expect(logs[1]).toBe('[ green(success) ] out.json');
   });
@@ -85,10 +83,7 @@ describe('logPromiseResults', () => {
       'Generated reports failed:',
       (result: { reason: string }) => result.reason,
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed:');
     expect(logs[1]).toBe('[ yellow(warn) ] fail');
   });

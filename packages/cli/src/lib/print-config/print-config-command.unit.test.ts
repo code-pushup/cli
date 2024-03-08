@@ -3,6 +3,7 @@ import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsConfigCommandObject } from './print-config-command';
+import {getLogMessages} from "@code-pushup/test-utils";
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -26,30 +27,11 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    const log = ui().logger.getLogs()[0];
+    const log = getLogMessages(ui().logger)[0];
+    expect(log).toEqual(expect.not.stringContaining('"$0":'));
+    expect(log).toEqual(expect.not.stringContaining('"_":'));
 
-    expect(log).toEqual(
-      expect.objectContaining({
-        message: expect.not.stringContaining('"$0":'),
-      }),
-    );
-
-    expect(log).toEqual(
-      expect.objectContaining({
-        message: expect.not.stringContaining('"_":'),
-      }),
-    );
-
-    expect(log).toEqual(
-      expect.objectContaining({
-        message: expect.stringContaining('"outputDir": "destinationDir"'),
-      }),
-    );
-
-    expect(log).toEqual(
-      expect.objectContaining({
-        message: expect.not.stringContaining('"output-dir":'),
-      }),
-    );
+    expect(log).toEqual(expect.stringContaining('"outputDir": "destinationDir"'));
+    expect(log).toEqual(expect.not.stringContaining('"output-dir":'));
   });
 });

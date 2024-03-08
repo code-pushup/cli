@@ -1,5 +1,5 @@
 import { beforeEach, describe } from 'vitest';
-import { reportMock } from '@code-pushup/test-utils';
+import {getLogMessages, reportMock} from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
 import { scoreReport } from './scoring';
@@ -12,10 +12,7 @@ describe('logStdoutSummary', () => {
 
   it('should contain all sections when using the fixture report', () => {
     logStdoutSummary(sortReport(scoreReport(reportMock())));
-    const output = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message)
+    const output = getLogMessages(ui().logger)
       .join('\n');
 
     expect(output).toContain('Categories');
@@ -28,10 +25,7 @@ describe('logStdoutSummary', () => {
     logStdoutSummary(
       sortReport(scoreReport({ ...reportMock(), categories: [] })),
     );
-    const output = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message)
+    const output = getLogMessages(ui().logger)
       .join('\n');
 
     expect(output).not.toContain('Categories');

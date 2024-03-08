@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
+  getLogMessages,
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
 } from '@code-pushup/test-utils';
@@ -147,10 +148,7 @@ describe('executePlugins', () => {
     ).rejects.toThrow(
       'Plugins failed: 2 errors: Audit metadata not found for slug node-version, plugin 3 error',
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
     expect(logs[1]).toBe(
       '[ yellow(warn) ] Audit metadata not found for slug node-version',

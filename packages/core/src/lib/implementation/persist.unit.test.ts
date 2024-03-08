@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
+  getLogMessages,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
@@ -23,10 +24,7 @@ describe('persistReport', () => {
       filename: 'report',
       format: [],
     });
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
@@ -38,10 +36,7 @@ describe('persistReport', () => {
       filename: 'report',
       format: ['md', 'json'],
     });
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs.at(-1)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
@@ -114,10 +109,7 @@ describe('logPersistedResults', () => {
 
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
     expect(logs[1]).toEqual(expect.stringContaining('9.77 kB'));
     expect(logs[1]).toEqual(expect.stringContaining('out.json'));
@@ -125,10 +117,7 @@ describe('logPersistedResults', () => {
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
     expect(logs[1]).toEqual(expect.stringContaining('fail'));
   });
@@ -138,10 +127,7 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
+    const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
     expect(logs[1]).toEqual(expect.stringContaining('out.json'));
     expect(logs[1]).toEqual(expect.stringContaining('9.77 kB'));
