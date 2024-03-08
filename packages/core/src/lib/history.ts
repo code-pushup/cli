@@ -68,7 +68,9 @@ export async function getHashes(
 
   // validate that if to is given also from needs to be given
   if (to && !from) {
-    throw new Error('git log command needs the "from" option defined to accept the "to" option.');
+    throw new Error(
+      'git log command needs the "from" option defined to accept the "to" option.',
+    );
   }
 
   const logs = await git.log(options);
