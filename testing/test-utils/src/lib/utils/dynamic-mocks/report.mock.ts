@@ -1,6 +1,6 @@
 import { Report, reportSchema } from '@code-pushup/models';
+import { COMMIT_MOCK } from '../commit.mock';
 import { categoryConfigsMock } from './categories.mock';
-import { COMMIT_MOCK } from './commit.mock';
 import { eslintPluginReportMock } from './eslint-plugin.mock';
 import { lighthousePluginReportMock } from './lighthouse-plugin.mock';
 
