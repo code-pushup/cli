@@ -1,25 +1,26 @@
 import {
-  type Budget,
-  type Config,
   type CliFlags as LighthouseFlags,
   type RunnerResult,
 } from 'lighthouse';
-import log from 'lighthouse-logger';
 import { runLighthouse } from 'lighthouse/cli/run.js';
-import path from 'node:path';
 import {
   AuditOutputs,
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { importEsmModule, readJsonFile } from '@code-pushup/utils';
 import {
   AUDITS,
   DEFAULT_CLI_FLAGS,
   GROUPS,
   LIGHTHOUSE_PLUGIN_SLUG,
 } from './constants';
-import { filterAuditsAndGroupsByOnlyOptions, toAuditOutputs } from './utils';
+import {
+  filterAuditsAndGroupsByOnlyOptions,
+  getBudgets,
+  getConfig,
+  setLogLevel,
+  toAuditOutputs,
+} from './utils';
 
 export type Flags = Partial<Omit<LighthouseFlags, 'enableErrorReporting'>>;
 
@@ -50,57 +51,6 @@ export function lighthousePlugin(url: string, flags: Flags): PluginConfig {
     groups,
     runner: getRunner(url, flags),
   };
-}
-
-async function getConfig(
-  flags: Pick<Flags, 'configPath' | 'preset'>,
-): Promise<Config | undefined> {
-  const { configPath: filepath, preset } = flags;
-
-  if (filepath != null) {
-    // Resolve the config file path relative to where cli was called.
-    if (filepath.endsWith('.json')) {
-      return readJsonFile<Config>(filepath);
-    } else if (filepath.endsWith('.ts|.js|.mjs')) {
-      return importEsmModule<Config>({ filepath });
-    }
-  } else if (preset) {
-    return importEsmModule<Config>({
-      filepath: `node_modules/lighthouse/core/config/${preset}-config.js`,
-    });
-  }
-  return undefined;
-}
-
-export async function getBudgets(
-  budgetPath?: string | null,
-): Promise<Budget[] | null> {
-  if (budgetPath) {
-    /** @type {Array<LH.Budget>} */
-    const parsedBudget = await readJsonFile<Budget>(
-      path.resolve(process.cwd(), budgetPath),
-    );
-
-    return [parsedBudget];
-  }
-  return null;
-}
-
-export function setLogLevel({
-  verbose,
-  quiet,
-}: {
-  verbose?: boolean;
-  quiet?: boolean;
-}) {
-  // set logging preferences
-  if (verbose) {
-    log.setLevel('verbose');
-  } else if (quiet) {
-    log.setLevel('silent');
-  } else {
-    log.setLevel('info');
-  }
 }
 
 export function getRunner(

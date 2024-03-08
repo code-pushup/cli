@@ -1,3 +1,5 @@
+import { type CliFlags, type Config } from 'lighthouse';
+import { runLighthouse } from 'lighthouse/cli/run.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
 import {
@@ -7,29 +9,46 @@ import {
 } from '@code-pushup/models';
 import { AUDITS, GROUPS } from './constants';
 import { getRunner, lighthousePlugin } from './lighthouse-plugin';
+import { getBudgets, getConfig, setLogLevel } from './utils';
+
+vi.mock('./utils', async () => {
+  // Import the actual 'lighthouse' module
+  const actual = await vi.importActual('./utils');
+
+  // Return the mocked module, merging the actual module with overridden parts
+  return {
+    ...actual,
+    setLogLevel: vi.fn(),
+    getBudgets: vi.fn().mockImplementation((path: string) => [{ path }]),
+    getConfig: vi.fn(),
+  };
+});
 
 vi.mock('lighthouse/cli/run.js', async () => {
   // Import the actual 'lighthouse' module
   const actual = await import('lighthouse/cli/run.js').then(m => m);
   // Define the mock implementation
-  const mockRunLighthouse = vi.fn((url: string) =>
-    url.includes('fail')
-      ? undefined
-      : {
-          lhr: {
-            audits: {
-              ['cumulative-layout-shift']: {
-                id: 'cumulative-layout-shift',
-                title: 'title',
-                description: 'description',
-                scoreDisplayMode: 'numeric',
-                numericValue: 1200,
-                displayValue: '1.2 s',
-                score: 0.9,
-              } satisfies Result,
+  const mockRunLighthouse = vi.fn(
+    (url: string, flags: CliFlags, config: Config) =>
+      url.includes('fail')
+        ? undefined
+        : {
+            flags,
+            config,
+            lhr: {
+              audits: {
+                ['cumulative-layout-shift']: {
+                  id: 'cumulative-layout-shift',
+                  title: 'title',
+                  description: 'description',
+                  scoreDisplayMode: 'numeric',
+                  numericValue: 1200,
+                  displayValue: '1.2 s',
+                  score: 0.9,
+                } satisfies Result,
+              },
             },
           },
-        },
   );
 
   // Return the mocked module, merging the actual module with overridden parts
@@ -51,6 +70,54 @@ describe('getRunner', () => {
           score: 0.9,
         },
       ]),
+    );
+
+    expect(setLogLevel).toHaveBeenCalledWith(
+      expect.objectContaining({ verbose: false, quiet: false }),
+    );
+    expect(getBudgets).not.toHaveBeenCalled();
+    expect(getConfig).toHaveBeenCalledWith(expect.objectContaining({}));
+  });
+
+  it('should return consider verbose and quiet flags for logging', async () => {
+    await getRunner('https://localhost:8080', { verbose: true, quiet: true })(
+      () => void 0,
+    );
+    expect(setLogLevel).toHaveBeenCalledWith(
+      expect.objectContaining({ verbose: true, quiet: true }),
+    );
+  });
+
+  it('should return consider configPath', async () => {
+    await getRunner('https://localhost:8080', { configPath: 'lh-config.js' })(
+      () => void 0,
+    );
+    expect(getConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ configPath: 'lh-config.js' }),
+    );
+  });
+
+  it('should return consider budgets', async () => {
+    await getRunner('https://localhost:8080', {
+      budgets: [{ path: '*/xyz/' }],
+    })(() => void 0);
+    expect(getBudgets).not.toHaveBeenCalled();
+    expect(runLighthouse).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ budgets: [{ path: '*/xyz/' }] }),
+      undefined,
+    );
+  });
+
+  it('should return consider budgetPath', async () => {
+    await getRunner('https://localhost:8080', { budgetPath: 'lh-budgets.js' })(
+      () => void 0,
+    );
+    expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
+    expect(runLighthouse).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ budgets: [{ path: 'lh-budgets.js' }] }),
+      undefined,
     );
   });
 

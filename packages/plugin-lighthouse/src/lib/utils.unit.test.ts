@@ -1,42 +1,54 @@
+import debug from 'debug';
+import { type Budget } from 'lighthouse';
+import log from 'lighthouse-logger';
 import Details from 'lighthouse/types/lhr/audit-details';
-import { describe, expect, it } from 'vitest';
+import { vol } from 'memfs';
+import { join } from 'node:path';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   Audit,
+  CoreConfig,
   Group,
   PluginConfig,
   auditOutputsSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
   filterAuditsAndGroupsByOnlyOptions,
-  getLighthouseCliArguments,
+  getBudgets,
+  getConfig,
+  setLogLevel,
   toAuditOutputs,
   validateOnlyAudits,
   validateOnlyCategories,
 } from './utils';
 
-describe('getLighthouseCliArguments', () => {
-  it('should parse valid options', () => {
-    expect(
-      getLighthouseCliArguments({
-        url: ['https://code-pushup-portal.com'],
-      }),
-    ).toEqual(expect.arrayContaining(['https://code-pushup-portal.com']));
-  });
+// mock bundleRequire inside importEsmModule used for fetching config
+vi.mock('bundle-require', async () => {
+  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
+    await vi.importActual('@code-pushup/test-utils');
 
-  it('should parse chrome-flags options correctly', () => {
-    const args = getLighthouseCliArguments({
-      url: ['https://code-pushup-portal.com'],
-      chromeFlags: { headless: 'new', 'user-data-dir': 'test' },
-    });
-    expect(args).toEqual(
-      expect.arrayContaining([
-        '--chromeFlags="--headless=new --user-data-dir=test"',
-      ]),
-    );
-  });
+  return {
+    bundleRequire: vi
+      .fn()
+      .mockImplementation((options: { filepath: string }) => {
+        const project = options.filepath.split('.').at(-2);
+        return {
+          mod: {
+            default: {
+              ...CORE_CONFIG_MOCK,
+              upload: {
+                ...CORE_CONFIG_MOCK?.upload,
+                project, // returns loaded file extension to check in test
+              },
+            },
+          },
+        };
+      }),
+  };
 });
 
 describe('validateOnlyAudits', () => {
@@ -598,5 +610,156 @@ describe('toAuditOutputs', () => {
     ]);
 
     expect(outputs[0]?.details).toBeUndefined();
+  });
+});
+
+describe('getConfig', () => {
+  it('should return undefined if no path is specified', async () => {
+    await expect(getConfig()).resolves.toBeUndefined();
+  });
+
+  it('should load config from lighthouse preset if preset is specified', async () => {
+    await expect(getConfig({ preset: 'desktop' })).resolves.toEqual(
+      expect.objectContaining({
+        settings: expect.objectContaining({
+          formFactor: 'desktop',
+        }),
+      }),
+    );
+    await expect(getConfig({ preset: 'perf' })).resolves.toEqual(
+      expect.objectContaining({
+        settings: expect.objectContaining({
+          onlyCategories: ['performance'],
+        }),
+      }),
+    );
+    await expect(getConfig({ preset: 'experimental' })).resolves.toEqual(
+      expect.objectContaining({ audits: ['autocomplete'] }),
+    );
+  });
+
+  it('should undefined if preset is specified wrong', async () => {
+    await expect(getConfig({ preset: 'wrong' })).resolves.toBeUndefined(
+      undefined,
+    );
+  });
+
+  it('should load config from json file if configPath is specified', async () => {
+    vol.fromJSON(
+      {
+        'lh-config.json': JSON.stringify(
+          { extends: 'lighthouse:default' },
+          null,
+          2,
+        ),
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(getConfig({ configPath: 'lh-config.json' })).resolves.toEqual({
+      extends: 'lighthouse:default',
+    });
+  });
+
+  it('should load config from lh-config.js file if configPath is specified', async () => {
+    await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual(
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: expect.stringContaining('lh-config'),
+        }),
+      }),
+    );
+  });
+
+  it('should return undefined if configPath is specified wrong', async () => {
+    await expect(
+      getConfig({ configPath: join('wrong.xyz') }),
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe('getBudgets', () => {
+  it('should return and empty array if no path is specified', async () => {
+    await expect(getBudgets()).resolves.toStrictEqual([]);
+  });
+
+  it('should load budgets from path is specified', async () => {
+    const budgets: Budget[] = [
+      {
+        path: '*',
+        resourceCounts: [
+          {
+            budget: 3,
+            resourceType: 'media',
+          },
+        ],
+      },
+    ];
+    vol.fromJSON(
+      {
+        'lh-budgets.json': JSON.stringify(budgets, null, 2),
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(getBudgets('lh-budgets.json')).resolves.toEqual(budgets);
+  });
+
+  it('should throw if path is specified wrong', async () => {
+    await expect(getBudgets('wrong.xyz')).rejects.toThrow(
+      'ENOENT: no such file or directory',
+    );
+  });
+});
+
+describe('setLogLevel', () => {
+  const debugLib = debug as { enabled: (flag: string) => boolean };
+  beforeEach(() => {
+    log.setLevel('info');
+  });
+
+  /**
+   *
+   *  case 'silent':
+   *    debug.enable('-LH:*');
+   *    break;
+   *  case 'verbose':
+   *    debug.enable('LH:*');
+   *    break;
+   *  case 'warn':
+   *    debug.enable('-LH:*, LH:*:warn, LH:*:error');
+   *    break;
+   *  case 'error':
+   *    debug.enable('-LH:*, LH:*:error');
+   *    break;
+   *  default: // 'info'
+   *    debug.enable('LH:*, -LH:*:verbose');
+   */
+
+  it('should set log level to info if no options are given', () => {
+    setLogLevel();
+    expect(log.isVerbose()).toBe(false);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to verbose', () => {
+    setLogLevel({ verbose: true });
+    expect(log.isVerbose()).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to quiet', () => {
+    setLogLevel({ quiet: true });
+    expect(log.isVerbose()).toBe(false);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('-LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to verbose if verbose and quiet are given', () => {
+    setLogLevel({ verbose: true, quiet: true });
+    expect(log.isVerbose()).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 });

@@ -1,8 +1,20 @@
-import { type CliFlags } from 'lighthouse';
+import { type Budget, type CliFlags, type Config } from 'lighthouse';
+import log from 'lighthouse-logger';
+import desktopConfig from 'lighthouse/core/config/desktop-config.js';
+import experimentalConfig from 'lighthouse/core/config/experimental-config';
+import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
+import path from 'node:path';
 import { Audit, AuditOutput, AuditOutputs, Group } from '@code-pushup/models';
-import { filterItemRefsBy, objectToCliArgs, toArray } from '@code-pushup/utils';
+import {
+  filterItemRefsBy,
+  importEsmModule,
+  objectToCliArgs,
+  readJsonFile,
+  toArray,
+} from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
+import { type Flags } from './lighthouse-plugin';
 
 type RefinedLighthouseOption = {
   url: CliFlags['_'];
@@ -162,4 +174,61 @@ export function filterAuditsAndGroupsByOnlyOptions(
     audits,
     groups,
   };
+}
+
+export async function getConfig(
+  flags: Pick<Flags, 'configPath' | 'preset'> = {},
+): Promise<Config | undefined> {
+  const { configPath: filepath, preset } = flags;
+
+  if (filepath != null) {
+    // Resolve the config file path relative to where cli was called.
+
+    if (filepath.endsWith('.json')) {
+      return readJsonFile<Config>(filepath);
+    } else if (/\.(ts|js|mjs)$/.test(filepath)) {
+      return importEsmModule<Config>({ filepath });
+    }
+  } else if (preset) {
+    switch (preset as string) {
+      case 'desktop':
+        return desktopConfig;
+      case 'perf':
+        return perfConfig as Config;
+      case 'experimental':
+        return experimentalConfig as Config;
+      default:
+        // @TODO use ui().logger.info
+        // eslint-disable-next-line no-console
+        console.log(`Preset ${preset} is not supported`);
+    }
+  }
+  return undefined;
+}
+
+export async function getBudgets(
+  budgetPath?: string | null,
+): Promise<Budget[]> {
+  if (budgetPath) {
+    /** @type {Array<LH.Budget>} */
+    return await readJsonFile<Budget>(path.resolve(process.cwd(), budgetPath));
+  }
+  return [];
+}
+
+export function setLogLevel({
+  verbose,
+  quiet,
+}: {
+  verbose?: boolean;
+  quiet?: boolean;
+} = {}) {
+  // set logging preferences
+  if (verbose) {
+    log.setLevel('verbose');
+  } else if (quiet) {
+    log.setLevel('silent');
+  } else {
+    log.setLevel('info');
+  }
 }

@@ -81,7 +81,9 @@ export class NoExportError extends Error {
   }
 }
 
-export async function importEsmModule<T = unknown>(options: Options): Promise<T> {
+export async function importEsmModule<T = unknown>(
+  options: Options,
+): Promise<T> {
   const { mod } = await bundleRequire<object>({
     format: 'esm',
     ...options,

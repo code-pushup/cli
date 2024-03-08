@@ -15,7 +15,7 @@ export default {
   },
   plugins: [
     await lighthousePlugin('https://example.com', {
-   //   chromeFlags: ['--headless']
+      //   chromeFlags: ['--headless']
     }),
     await coveragePlugin({
       reports: ['../../coverage/react-todos-app/lcov.info'],

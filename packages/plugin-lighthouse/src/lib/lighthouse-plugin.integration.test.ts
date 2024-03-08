@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
-import { lighthousePlugin } from './lighthouse-plugin';
+import { getRunner, lighthousePlugin } from './lighthouse-plugin';
 
 describe('lighthousePlugin', () => {
   it('should create valid plugin config', () => {
@@ -10,3 +10,15 @@ describe('lighthousePlugin', () => {
     expect(pluginConfig.groups).toHaveLength(5);
   });
 });
+
+describe('getRunner', () => {
+  it('should create and execute runner correctly', async () => {
+    // onlyAudits is used to reduce test time
+    const runner = getRunner('https://example.com', {
+      onlyAudits: ['is-on-https'],
+    });
+    await expect(runner(() => void 0)).resolves.toEqual([
+      expect.objectContaining({ slug: 'is-on-https' }),
+    ]);
+  });
+}, 10_000);
