@@ -70,7 +70,7 @@ export async function getHashes(
 
   // validate from & to
   if (to && !from) {
-    throw new Error('from has to be defined if to is defined');
+    throw new Error('git log command needs the "from" option defined to accept the "to" option.');
   }
 
   const logs = await git.log(options);
