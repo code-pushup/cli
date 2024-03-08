@@ -8,13 +8,15 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import lighthousePlugin, {LIGHTHOUSE_REPORT_NAME} from './dist/packages/plugin-lighthouse';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
+import lighthousePlugin, {
+  LIGHTHOUSE_REPORT_NAME,
+} from './dist/packages/plugin-lighthouse';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment

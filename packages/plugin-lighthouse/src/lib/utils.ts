@@ -82,7 +82,7 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 1, // score can be null
-        value,
+        value: Number.parseInt(value.toString(), 10),
         displayValue,
       };
 
@@ -93,7 +93,8 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       // @TODO implement switch case for detail parsing. Related to #90
       const unsupportedType = details.type;
       // @TODO use cliui.logger.info Resolve TODO after PR #487 is merged.
-      console.info(
+      // eslint-disable-next-line no-console
+      console.log(
         `Parsing details from type ${unsupportedType} is not implemented.`,
       );
 

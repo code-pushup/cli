@@ -4,6 +4,7 @@ import {
   Audit,
   Group,
   PluginConfig,
+  auditOutputsSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
 import {
@@ -364,6 +365,26 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
 
 describe('toAuditOutputs', () => {
   it('should parse valid lhr details', () => {
+    expect(() =>
+      auditOutputsSchema.parse(
+        toAuditOutputs([
+          {
+            id: 'first-contentful-paint',
+            title: 'First Contentful Paint',
+            description:
+              'First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).',
+            score: 0.55,
+            scoreDisplayMode: 'numeric',
+            numericValue: 2838.974,
+            numericUnit: 'millisecond',
+            displayValue: '2.8 s',
+          },
+        ]),
+      ),
+    ).not.toThrow();
+  });
+
+  it('should parse valid lhr float value to integer', () => {
     expect(
       toAuditOutputs([
         {
@@ -378,14 +399,7 @@ describe('toAuditOutputs', () => {
           displayValue: '2.8 s',
         },
       ]),
-    ).toStrictEqual([
-      {
-        displayValue: '2.8 s',
-        score: 0.55,
-        slug: 'first-contentful-paint',
-        value: 2838.974,
-      },
-    ]);
+    ).toStrictEqual([expect.objectContaining({ value: 2838 })]);
   });
 
   it('should convert null score to 1', () => {

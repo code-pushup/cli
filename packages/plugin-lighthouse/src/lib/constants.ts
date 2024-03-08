@@ -1,8 +1,9 @@
 import {
+  type CliFlags,
   type Config,
   type IcuMessage,
   Audit as LHAudit,
-  defaultConfig, CliFlags,
+  defaultConfig,
 } from 'lighthouse';
 import { Audit, Group } from '@code-pushup/models';
 
@@ -70,13 +71,13 @@ export const DEFAULT_CLI_FLAGS: Partial<CliFlags> = {
   verbose: false,
   quiet: false,
   saveAssets: false,
-  chromeFlags: "",
+  chromeFlags: '',
   port: 0,
-  hostname: "127.0.0.1",
+  hostname: '127.0.0.1',
   view: false,
-  channel: "cli",
+  channel: 'cli',
   chromeIgnoreDefaultFlags: false,
   // custom overwrites in favour of the plugin
-  output: ["json"],
+  output: ['json'],
   outputPath: LIGHTHOUSE_REPORT_NAME,
-}
+};

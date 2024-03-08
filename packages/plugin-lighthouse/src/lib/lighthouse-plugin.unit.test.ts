@@ -1,67 +1,75 @@
-import {expect, vi} from 'vitest';
+import { Result } from 'lighthouse/types/lhr/audit-result';
+import { expect, vi } from 'vitest';
 import {
   auditSchema,
   groupSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import {AUDITS, GROUPS} from './constants';
-import {getRunner, lighthousePlugin} from './lighthouse-plugin';
-import {Result} from "lighthouse/types/lhr/audit-result";
+import { AUDITS, GROUPS } from './constants';
+import { getRunner, lighthousePlugin } from './lighthouse-plugin';
 
-vi.mock('lighthouse', async () => {
+vi.mock('lighthouse/cli/run.js', async () => {
   // Import the actual 'lighthouse' module
-  const actual = await import('lighthouse').then(m => m);
+  const actual = await import('lighthouse/cli/run.js').then(m => m);
   // Define the mock implementation
-  const mockLighthouse = vi.fn((url: string) => {
-    return url.includes('fail') ? undefined : {
-      lhr: {
-        audits: {
-            ['cumulative-layout-shift']: {
-              id: 'cumulative-layout-shift',
-              title: 'title',
-              description: 'description',
-              scoreDisplayMode: 'numeric',
-              numericValue: 1200,
-              displayValue: '1.2 s',
-              score: 0.9,
-            } satisfies Result
-          }
-      },
-    };
-  });
+  const mockRunLighthouse = vi.fn((url: string) =>
+    url.includes('fail')
+      ? undefined
+      : {
+          lhr: {
+            audits: {
+              ['cumulative-layout-shift']: {
+                id: 'cumulative-layout-shift',
+                title: 'title',
+                description: 'description',
+                scoreDisplayMode: 'numeric',
+                numericValue: 1200,
+                displayValue: '1.2 s',
+                score: 0.9,
+              } satisfies Result,
+            },
+          },
+        },
+  );
 
   // Return the mocked module, merging the actual module with overridden parts
   return {
     ...actual,
-    default: mockLighthouse, // Mock the default export if 'lighthouse' is imported as default
+    runLighthouse: mockRunLighthouse, // Mock the default export if 'lighthouse' is imported as default
   };
 });
 
 describe('getRunner', () => {
-  it('should return AuditOutputs if executed correctly', () => {
-      const runner = getRunner('https://localhost:8080');
-      expect(runner(() => void 0)).resolves.toEqual(expect.arrayContaining([{
-        slug: 'cumulative-layout-shift',
-        value: 1200,
-        displayValue: '1.2 s',
-        score: 0.9,
-      }]));
-    },
-  );
+  it('should return AuditOutputs if executed correctly', async () => {
+    const runner = getRunner('https://localhost:8080');
+    await expect(runner(() => void 0)).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          slug: 'cumulative-layout-shift',
+          value: 1200,
+          displayValue: '1.2 s',
+          score: 0.9,
+        },
+      ]),
+    );
+  });
 
-  it('should throw if lighthouse returns an empty result', () => {
-      const runner = getRunner('fail');
-      expect(runner(() => void 0)).rejects.toThrow('Lighthouse did not produce a result.');
-    },
-  );
+  it('should throw if lighthouse returns an empty result', async () => {
+    const runner = getRunner('fail');
+    await expect(runner(() => void 0)).rejects.toThrow(
+      'Lighthouse did not produce a result.',
+    );
+  });
 });
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {
     const pluginConfig = lighthousePlugin('https://code-pushup-portal.com');
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.audits.length).toBeGreaterThan(0);
-    expect(pluginConfig.groups?.length).toBeGreaterThan(0);
+
+    const { audits, groups } = pluginConfig;
+    expect(audits.length).toBeGreaterThan(0);
+    expect(groups?.length).toBeGreaterThan(0);
   });
 
   it('should filter audits by onlyAudits string "first-contentful-paint"', () => {

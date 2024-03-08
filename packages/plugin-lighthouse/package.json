@@ -5,6 +5,7 @@
   "dependencies": {
     "@code-pushup/models": "*",
     "lighthouse": "^11.0.0",
-    "@code-pushup/utils": "*"
+    "@code-pushup/utils": "*",
+    "lighthouse-logger": "2.0.1"
   }
 }

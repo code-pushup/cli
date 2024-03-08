@@ -1,18 +1,25 @@
 import {
   type Budget,
-  type CliFlags as LighthouseFlags,
   type Config,
-  type PrecomputedLanternData,
+  type CliFlags as LighthouseFlags,
   type RunnerResult,
-  defaultConfig
 } from 'lighthouse';
-import {AuditOutputs, PluginConfig, RunnerFunction} from '@code-pushup/models';
-import {AUDITS, DEFAULT_CLI_FLAGS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG, LIGHTHOUSE_REPORT_NAME} from './constants';
-import {filterAuditsAndGroupsByOnlyOptions, toAuditOutputs} from './utils';
-import {runLighthouse} from 'lighthouse/cli/run.js';
-import path from "path";
-import log from "lighthouse-logger";
-import {importEsmModule, readJsonFile} from "@code-pushup/utils";
+import log from 'lighthouse-logger';
+import { runLighthouse } from 'lighthouse/cli/run.js';
+import path from 'node:path';
+import {
+  AuditOutputs,
+  PluginConfig,
+  RunnerFunction,
+} from '@code-pushup/models';
+import { importEsmModule, readJsonFile } from '@code-pushup/utils';
+import {
+  AUDITS,
+  DEFAULT_CLI_FLAGS,
+  GROUPS,
+  LIGHTHOUSE_PLUGIN_SLUG,
+} from './constants';
+import { filterAuditsAndGroupsByOnlyOptions, toAuditOutputs } from './utils';
 
 export type Flags = Partial<Omit<LighthouseFlags, 'enableErrorReporting'>>;
 
@@ -29,11 +36,8 @@ if (cliFlags.enableErrorReporting) {
     },
   });
  */
-export function lighthousePlugin(
-  url: string,
-  flags: Flags
-): PluginConfig {
-  const {audits, groups} = filterAuditsAndGroupsByOnlyOptions(
+export function lighthousePlugin(url: string, flags: Flags): PluginConfig {
+  const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
     AUDITS,
     GROUPS,
     flags,
@@ -48,33 +52,47 @@ export function lighthousePlugin(
   };
 }
 
-async function getConfig(flags: Pick<Flags, 'configPath' | 'preset'>): Promise<Config> {
-  const {configPath} = flags;
+async function getConfig(
+  flags: Pick<Flags, 'configPath' | 'preset'>,
+): Promise<Config | undefined> {
+  const { configPath: filepath, preset } = flags;
 
-  if (configPath != null) {
+  if (filepath != null) {
     // Resolve the config file path relative to where cli was called.
-    if (configPath.endsWith('.json')) {
-      return readJsonFile<Config>(configPath);
-    } else if (configPath.endsWith('.ts|.js|.mjs')) {
-      return importEsmModule<Config>({filepath: configPath});
+    if (filepath.endsWith('.json')) {
+      return readJsonFile<Config>(filepath);
+    } else if (filepath.endsWith('.ts|.js|.mjs')) {
+      return importEsmModule<Config>({ filepath });
     }
-  } else if (flags.preset) {
-    return importEsmModule<Config>({filepath: `node_modules/lighthouse/core/config/${flags.preset}-config.js`});
+  } else if (preset) {
+    return importEsmModule<Config>({
+      filepath: `node_modules/lighthouse/core/config/${preset}-config.js`,
+    });
   }
-  return {extends: 'default'};
+  return undefined;
 }
 
-export async function getBudgets(budgetPath?: string | null): Promise<Budget[] | null> {
+export async function getBudgets(
+  budgetPath?: string | null,
+): Promise<Budget[] | null> {
   if (budgetPath) {
     /** @type {Array<LH.Budget>} */
-    const parsedBudget = await readJsonFile<Budget>(path.resolve(process.cwd(), budgetPath));
-    // eslint-disable-next-line functional/immutable-data,no-param-reassign
+    const parsedBudget = await readJsonFile<Budget>(
+      path.resolve(process.cwd(), budgetPath),
+    );
+
     return [parsedBudget];
   }
   return null;
 }
 
-export function setLogLevel({verbose, quiet}: { verbose?: boolean, quiet?: boolean }) {
+export function setLogLevel({
+  verbose,
+  quiet,
+}: {
+  verbose?: boolean;
+  quiet?: boolean;
+}) {
   // set logging preferences
   if (verbose) {
     log.setLevel('verbose');
@@ -85,8 +103,10 @@ export function setLogLevel({verbose, quiet}: { verbose?: boolean, quiet?: boole
   }
 }
 
-export function getRunner(urlUnderTest: string,
-                          flags: Flags): RunnerFunction {
+export function getRunner(
+  urlUnderTest: string,
+  flags: Flags = {},
+): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     const {
       precomputedLanternDataPath,
@@ -95,30 +115,37 @@ export function getRunner(urlUnderTest: string,
       ...parsedFlags
     } = {
       ...DEFAULT_CLI_FLAGS,
-      flags
+      ...flags,
     };
 
     setLogLevel(parsedFlags);
 
-    const config = getConfig(parsedFlags);
+    const config = await getConfig(parsedFlags);
 
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
 
     const flagsWithDefaults = {
       ...parsedFlags,
-      budgets: budgetsJson
+      budgets: budgetsJson,
     };
 
-    if(precomputedLanternDataPath) {
-      console.info(`The parsing precomputedLanternDataPath ${precomputedLanternDataPath} is skipped as not implemented.`);
+    if (precomputedLanternDataPath) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `The parsing precomputedLanternDataPath ${precomputedLanternDataPath} is skipped as not implemented.`,
+      );
     }
 
-    const runnerResult: unknown = await runLighthouse(urlUnderTest, flagsWithDefaults, config);
+    const runnerResult: unknown = await runLighthouse(
+      urlUnderTest,
+      flagsWithDefaults,
+      config,
+    );
 
     if (runnerResult == null) {
       throw new Error('Lighthouse did not produce a result.');
     }
-    const {lhr} = runnerResult as RunnerResult;
+    const { lhr } = runnerResult as RunnerResult;
     return toAuditOutputs(Object.values(lhr.audits));
-  }
+  };
 }
