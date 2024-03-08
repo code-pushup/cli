@@ -4,26 +4,26 @@ import { ui } from './logging';
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
   messagePrefix: string,
-  succeededCallback?: (result: PromiseFulfilledResult<T>) => string,
-  failedCallback?: (result: PromiseRejectedResult) => string,
+  succeededTransform?: (result: PromiseFulfilledResult<T>) => string,
+  failedTransform?: (result: PromiseRejectedResult) => string,
 ) {
-  if (succeededCallback) {
+  if (succeededTransform) {
     const succeededResults = results.filter(isPromiseFulfilledResult);
 
     logPromiseResults(
       succeededResults,
       `${messagePrefix} successfully: `,
-      succeededCallback,
+      succeededTransform,
     );
   }
 
-  if (failedCallback) {
+  if (failedTransform) {
     const failedResults = results.filter(isPromiseRejectedResult);
 
     logPromiseResults(
       failedResults,
       `${messagePrefix} failed: `,
-      failedCallback,
+      failedTransform,
     );
   }
 }

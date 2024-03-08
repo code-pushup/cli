@@ -59,19 +59,19 @@ export function logMultipleFileResults(
   fileResults: MultipleFileResults,
   messagePrefix: string,
 ): void {
-  const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
+  const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
     const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
     return `- ${chalk.bold(fileName)}${formattedSize}`;
   };
-  const failedCallback = (result: PromiseRejectedResult) =>
+  const failedTransform = (result: PromiseRejectedResult) =>
     `- ${chalk.bold(result.reason)}`;
 
   logMultipleResults<FileResult>(
     fileResults,
     messagePrefix,
-    succeededCallback,
-    failedCallback,
+    succeededTransform,
+    failedTransform,
   );
 }
 
