@@ -2,6 +2,7 @@ export {
   CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from './lib/collect-and-persist';
+export { compareReportFiles, compareReports } from './lib/compare';
 export { CollectOptions, collect } from './lib/implementation/collect';
 export {
   PluginOutputMissingAuditError,
