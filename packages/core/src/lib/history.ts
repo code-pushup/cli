@@ -69,7 +69,7 @@ export async function getHashes(
   const { from, to } = options;
 
   // validate from & to
-  if (to && (from === '' || from == null)) {
+  if (to && !from) {
     throw new Error('from has to be defined if to is defined');
   }
 
