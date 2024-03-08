@@ -92,7 +92,7 @@ export async function executePlugin(
     ...(description && { description }),
     ...(docsUrl && { docsUrl }),
     ...(groups && { groups }),
-  } satisfies PluginReport;
+  };
 }
 
 /**

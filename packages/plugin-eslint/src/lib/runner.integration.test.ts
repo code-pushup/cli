@@ -72,22 +72,22 @@ describe('executeRunner', () => {
     const json = await readJsonFile<AuditOutput[]>(RUNNER_OUTPUT_PATH);
     // expect warnings from unicorn/filename-case rule from default config
     expect(json).toContainEqual(
-      expect.objectContaining({
+      expect.objectContaining<Partial<AuditOutput>>({
         slug: 'unicorn-filename-case',
         displayValue: '5 warnings',
         details: {
-          issues: expect.arrayContaining([
+          issues: expect.arrayContaining<Issue>([
             {
               severity: 'warning',
               message:
                 'Filename is not in kebab case. Rename it to `use-todos.js`.',
-              source: expect.objectContaining({
+              source: expect.objectContaining<Issue['source']>({
                 file: join(appDir, 'src', 'hooks', 'useTodos.js'),
-              } satisfies Partial<Issue['source']>),
-            } satisfies Issue,
+              }),
+            },
           ]),
         },
-      } satisfies Partial<AuditOutput>),
+      }),
     );
   }, 7000);
 });
