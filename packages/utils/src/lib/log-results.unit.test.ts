@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { FileResult } from './file-system';
 import { logMultipleResults, logPromiseResults } from './log-results';
@@ -57,10 +57,6 @@ describe('logMultipleResults', () => {
 });
 
 describe('logPromiseResults', () => {
-  beforeEach(() => {
-    ui().logger.flushLogs();
-  });
-
   it('should log on success', () => {
     logPromiseResults(
       [

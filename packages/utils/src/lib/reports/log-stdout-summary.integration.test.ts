@@ -1,4 +1,4 @@
-import { beforeEach, describe } from 'vitest';
+import { describe } from 'vitest';
 import { getLogMessages, reportMock } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
@@ -6,10 +6,6 @@ import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
 describe('logStdoutSummary', () => {
-  beforeEach(() => {
-    ui().logger.flushLogs();
-  });
-
   it('should contain all sections when using the fixture report', () => {
     logStdoutSummary(sortReport(scoreReport(reportMock())));
     const output = getLogMessages(ui().logger).join('\n');

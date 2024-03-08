@@ -1,12 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from './logging';
 import { verboseUtils } from './verbose-utils';
 
 describe('verbose-utils', () => {
-  beforeEach(() => {
-    ui().logger.flushLogs();
-  });
   it('exec should be off by default', () => {
     const spy = vi.fn();
     verboseUtils().exec(spy);
