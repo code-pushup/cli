@@ -71,6 +71,7 @@ export const DEFAULT_CLI_FLAGS: Partial<CliFlags> = {
   verbose: false,
   quiet: false,
   saveAssets: false,
+  // needed to pass CI on linux and windows (locally it works without headless too)
   chromeFlags: '--headless=new',
   port: 0,
   hostname: '127.0.0.1',
