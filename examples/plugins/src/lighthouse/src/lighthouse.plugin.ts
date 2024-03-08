@@ -102,7 +102,7 @@ export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
     outputFile: outputPath,
     outputTransform: (lighthouseOutput: unknown) =>
       lhrToAuditOutputs(lighthouseOutput as Result),
-  } satisfies RunnerConfig;
+  };
 }
 
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
