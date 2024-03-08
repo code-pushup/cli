@@ -27,7 +27,7 @@ describe('verbose-utils', () => {
     expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 
-  it('log should work no-verbose', () => {
+  it('should not print any logs when verbose is off', () => {
     verboseUtils(false).log('42');
     expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
