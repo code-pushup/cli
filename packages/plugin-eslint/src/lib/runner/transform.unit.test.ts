@@ -1,5 +1,5 @@
 import type { ESLint } from 'eslint';
-import type { AuditOutput } from '@code-pushup/models';
+import { AuditOutput } from '@code-pushup/models';
 import { lintResultsToAudits } from './transform';
 
 describe('lintResultsToAudits', () => {
@@ -109,7 +109,7 @@ describe('lintResultsToAudits', () => {
           },
         },
       }),
-    ).toEqual([
+    ).toEqual<AuditOutput[]>([
       {
         slug: expect.stringContaining('max-lines'),
         score: 0,
@@ -221,6 +221,6 @@ describe('lintResultsToAudits', () => {
           ],
         },
       },
-    ] satisfies AuditOutput[]);
+    ]);
   });
 });

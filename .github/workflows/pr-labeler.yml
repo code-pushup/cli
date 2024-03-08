@@ -6,6 +6,7 @@ on:
 
 jobs:
   label:
+    name: Add PR labels
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

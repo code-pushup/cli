@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import { uploadToPortal } from '@code-pushup/portal-client';
 import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
 import { MEMFS_VOLUME, MINIMAL_REPORT_MOCK } from '@code-pushup/test-utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
@@ -58,7 +58,9 @@ describe('autorun-command', () => {
     );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
-    expect(uploadToPortal).toHaveBeenCalledWith({
+    expect(uploadToPortal).toHaveBeenCalledWith<
+      Parameters<typeof uploadToPortal>
+    >({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
@@ -72,6 +74,6 @@ describe('autorun-command', () => {
         project: 'cli',
         commit: expect.any(String),
       },
-    } satisfies PortalUploadArgs);
+    });
   });
 });

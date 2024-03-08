@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   Audit,
+  AuditOutput,
   CoreConfig,
   Group,
   PluginConfig,
@@ -165,10 +166,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'speed-index', title: 'Speed Index' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'performance',
         title: 'Performance',
@@ -208,10 +209,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         ],
         { onlyAudits: ['speed-index'] },
       );
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'speed-index', title: 'Speed Index' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'performance',
         title: 'Performance',
@@ -258,10 +259,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyCategories: ['coverage'] },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'coverage',
         title: 'Code coverage',
@@ -311,10 +312,10 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         },
       );
 
-    expect(filteredAudits).toStrictEqual([
+    expect(filteredAudits).toStrictEqual<Audit[]>([
       { slug: 'function-coverage', title: 'Function Coverage' },
     ]);
-    expect(filteredGroups).toStrictEqual([
+    expect(filteredGroups).toStrictEqual<Group[]>([
       {
         slug: 'coverage',
         title: 'Code coverage',

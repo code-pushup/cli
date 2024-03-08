@@ -11,7 +11,7 @@ const eslintAuditRef = (slug, weight) => ({
 
 export default {
   persist: {
-    outputDir: '../../tmp/react-todos-app',
+    outputDir: '../../tmp/e2e/react-todos-app',
   },
   plugins: [
     await lighthousePlugin('https://example.com', {

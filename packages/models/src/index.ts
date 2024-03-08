@@ -13,6 +13,7 @@ export {
   categoryConfigSchema,
   categoryRefSchema,
 } from './lib/category-config';
+export { Commit, commitSchema } from './lib/commit';
 export { CoreConfig, coreConfigSchema } from './lib/core-config';
 export { Group, GroupRef, groupRefSchema, groupSchema } from './lib/group';
 export {

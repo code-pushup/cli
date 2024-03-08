@@ -8,7 +8,7 @@ export function baseAuditOutput(slug: string): AuditOutput {
     score: 1,
     value: 0,
     displayValue: pluralizePackage(),
-  } satisfies AuditOutput;
+  };
 }
 
 export function filterSeverityError(issue: Issue): boolean {
