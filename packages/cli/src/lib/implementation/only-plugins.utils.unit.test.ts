@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect } from 'vitest';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
+import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
   filterCategoryByPluginSlug,
   filterPluginsBySlug,
   validateOnlyPluginsOption,
 } from './only-plugins.utils';
-import {getLogMessages} from "@code-pushup/test-utils";
 
 describe('filterPluginsBySlug', () => {
   it('should return all plugins if no onlyPlugins option is provided', () => {

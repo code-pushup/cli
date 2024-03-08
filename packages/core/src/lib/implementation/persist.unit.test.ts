@@ -4,10 +4,10 @@ import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Report } from '@code-pushup/models';
 import {
-  getLogMessages,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
+  getLogMessages,
 } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';

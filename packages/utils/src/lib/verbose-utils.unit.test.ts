@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from './logging';
 import { verboseUtils } from './verbose-utils';
-import {getLogMessages} from "@code-pushup/test-utils";
 
 describe('verbose-utils', () => {
   beforeEach(() => {

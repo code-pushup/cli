@@ -2,9 +2,9 @@ import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
-  getLogMessages,
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
+  getLogMessages,
 } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
