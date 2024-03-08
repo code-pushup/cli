@@ -36,7 +36,6 @@
             "cli",
             "plugin-eslint",
             "plugin-coverage",
-            "plugin-lighthouse",
             "examples-plugins",
             "react-todos-app"
           ],
