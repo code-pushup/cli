@@ -1,7 +1,7 @@
 import { type Budget, type CliFlags, type Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
-import experimentalConfig from 'lighthouse/core/config/experimental-config';
+import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
