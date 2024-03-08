@@ -143,7 +143,7 @@ export async function executePlugins(
   progressBar?.endProgress('Done running plugins');
 
   const errorsTransform = ({ reason }: PromiseRejectedResult) =>
-    reason as string;
+    String(reason);
   const results = await Promise.allSettled(pluginsResult);
 
   logMultipleResults(results, 'Plugins', undefined, errorsTransform);
