@@ -140,10 +140,6 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    const logs = ui()
-      .logger.getRenderer()
-      .getLogs()
-      .map(({ message }) => message);
-    expect(logs).toHaveLength(0);
+    expect(ui().logger.getRenderer().getLogs()).toHaveLength(0);
   });
 });
