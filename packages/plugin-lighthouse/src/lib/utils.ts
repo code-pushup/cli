@@ -211,7 +211,9 @@ export async function getBudgets(
 ): Promise<Budget[]> {
   if (budgetPath) {
     /** @type {Array<LH.Budget>} */
-    return await readJsonFile<Budget>(path.resolve(process.cwd(), budgetPath));
+    return await readJsonFile<Budget[]>(
+      path.resolve(process.cwd(), budgetPath),
+    );
   }
   return [];
 }
