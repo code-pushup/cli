@@ -93,7 +93,9 @@ describe('getHashes', () => {
     it('getHashes should throw if "from" is undefined but "to" is defined', async () => {
       await expect(
         getHashes({ from: undefined, to: 'a' }, gitMock),
-      ).rejects.toThrow('from has to be defined if to is defined');
+      ).rejects.toThrow(
+        'git log command needs the "from" option defined to accept the "to" option.',
+      );
     });
   });
 });
