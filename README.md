@@ -30,5 +30,6 @@ This monorepo contains code for open-source Code PushUp NPM packages:
 - plugins:
   - [📦 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
   - [📦 @code-pushup/coverage-plugin](./packages/plugin-coverage#readme) - code coverage analysis
+  - [📦 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
 
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).

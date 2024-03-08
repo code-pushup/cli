@@ -26,6 +26,10 @@
   - changed-files:
       - any-glob-to-any-file: 'packages/plugin-coverage/src/**'
 
+🧩 js-packages-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-js-packages/src/**'
+
 🧩 utils:
   - changed-files:
       - any-glob-to-any-file: 'packages/utils/src/**'
