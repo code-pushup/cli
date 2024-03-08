@@ -83,7 +83,7 @@ describe('logPromiseResults', () => {
     logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed:',
-      (result: { reason: string }) => result.reason.toString(),
+      (result: { reason: string }) => result.reason,
     );
     const logs = ui()
       .logger.getRenderer()
