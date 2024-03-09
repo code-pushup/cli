@@ -118,7 +118,7 @@ export async function executePlugin(
  */
 export async function executePlugins(
   plugins: PluginConfig[],
-  options?: { progress: boolean },
+  options?: { progress?: boolean },
 ): Promise<PluginReport[]> {
   const { progress = false } = options ?? {};
 

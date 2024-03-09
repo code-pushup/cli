@@ -9,7 +9,7 @@ import { GlobalOptions } from './types';
 
 export type UploadOptions = { upload?: UploadConfig } & {
   persist: Required<PersistConfig>;
-} & GlobalOptions;
+} & Partial<GlobalOptions>;
 
 /**
  * Uploads collected audits to the portal

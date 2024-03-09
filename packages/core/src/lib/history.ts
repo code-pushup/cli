@@ -16,7 +16,7 @@ export type HistoryOptions = Required<
   persist: Required<PersistConfig>;
   upload?: Required<UploadConfig>;
 } & HistoryOnlyOptions &
-  GlobalOptions;
+  Partial<GlobalOptions>;
 
 export async function history(
   config: HistoryOptions,
@@ -68,9 +68,11 @@ export async function getHashes(
 ): Promise<string[]> {
   const { from, to } = options;
 
-  // validate from & to
-  if (to && (from === '' || from == null)) {
-    throw new Error('from has to be defined if to is defined');
+  // validate that if to is given also from needs to be given
+  if (to && !from) {
+    throw new Error(
+      'git log command needs the "from" option defined to accept the "to" option.',
+    );
   }
 
   const logs = await git.log(options);
