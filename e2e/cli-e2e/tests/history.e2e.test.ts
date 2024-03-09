@@ -23,13 +23,11 @@ describe('CLI history', () => {
     await cleanTestFolder('tmp/e2e');
   });
 
-  it('should run ESLint plugin and create report.json for the last 2 commits', async () => {
-    const outputDir = join('.code-pushup', 'history');
-    const { code, stderr, stdout } = await executeProcess({
+  it('should run ESLint plugin and create report.json for the last 5 commits', async () => {
+    const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: [
         'history',
-        `--persist.outputDir=${outputDir}`,
         '--no-progress',
         '--onlyPlugins=eslint',
         '--forceCleanStatus',
@@ -40,15 +38,15 @@ describe('CLI history', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-  //  const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app', outputDir);
-   // const reportPaths = await readdir(outputDirFromRoot);
-  /*  const results = await Promise.all(
+   const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app');
+    const reportPaths = await readdir(outputDirFromRoot);
+    const results = await Promise.all(
       reportPaths.map(path => readJsonFile(join(outputDirFromRoot, path))),
     );
 
-    expect(results).toHaveLength(2);
+    expect(results).toHaveLength(1);
     results.forEach(report => {
       expect(() => reportSchema.parse(report)).not.toThrow();
-    });*/
+    });
   });
 });
