@@ -40,6 +40,9 @@ vi.mock('simple-git', async () => {
       log: ({ maxCount }: { maxCount: number } = { maxCount: 1 }) =>
         Promise.resolve({
           all: [
+            { hash: 'commit-6' },
+            { hash: 'commit-5' },
+            { hash: 'commit-4' },
             { hash: 'commit-3' },
             { hash: 'commit-2' },
             { hash: 'commit-1' },
@@ -63,8 +66,8 @@ describe('history-command', () => {
       expect.objectContaining({
         onlyPlugins: [],
         targetBranch: 'main',
-        maxCount: 1,
-        skipUploads: true,
+        maxCount: 5,
+        skipUploads: false,
       }),
     );
 
@@ -77,7 +80,7 @@ describe('history-command', () => {
       expect.objectContaining({
         targetBranch: 'main',
       }),
-      ['commit-1'],
+      ['commit-1', 'commit-2', 'commit-3', 'commit-4', 'commit-5'],
     );
 
     expect(safeCheckout).toHaveBeenCalledTimes(1);
@@ -96,7 +99,7 @@ describe('history-command', () => {
       expect.objectContaining({
         targetBranch: 'main',
         maxCount: 2,
-        skipUploads: true,
+        skipUploads: false,
       }),
     );
 
