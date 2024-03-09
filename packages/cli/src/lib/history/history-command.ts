@@ -1,9 +1,11 @@
 import chalk from 'chalk';
+import * as process from 'process';
 import { simpleGit } from 'simple-git';
 import { CommandModule, Options } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
+import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
 import { yargsHistoryOptionsDefinition } from './history.options';
 
@@ -13,6 +15,7 @@ export function yargsHistoryCommandObject() {
     command,
     describe: 'Create history of commits',
     builder: {
+      ...yargsOnlyPluginsOptionsDefinition(),
       ...yargsHistoryOptionsDefinition(),
     } satisfies Record<keyof HistoryCliOptions, Options>,
     handler: async args => {
@@ -25,13 +28,15 @@ export function yargsHistoryCommandObject() {
       const {
         targetBranch = currentBranch,
         forceCleanStatus,
-        ...logOptions
+        maxCount,
+        from,
+        to,
+        ...restOptions
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
       // determine history to walk
       const git = simpleGit();
-
-      const log = await git.log(logOptions);
+      const log = await git.log({ maxCount, from, to });
       const commitsToAudit = log.all
         .map(({ hash }) => hash)
         // crawl from oldest to newest
@@ -40,13 +45,14 @@ export function yargsHistoryCommandObject() {
       // run history logic
       const reports: unknown[] = await history(
         {
-          ...logOptions,
+          ...restOptions,
           targetBranch,
           forceCleanStatus,
         },
         commitsToAudit,
       );
 
+      // go back to initial branch
       await safeCheckout(currentBranch);
 
       // eslint-disable-next-line no-console
