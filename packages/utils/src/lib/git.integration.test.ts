@@ -31,7 +31,7 @@ describe('git utils in a git repo', () => {
   describe('without a branch and commits', () => {
     it('getCurrentBranchOrTag should throw if no branch or tag is given', async () => {
       await expect(getCurrentBranchOrTag(emptyGit)).rejects.toThrow(
-        'Could not get current tag or branch.',
+        'No names found, cannot describe anything',
       );
     });
   });
