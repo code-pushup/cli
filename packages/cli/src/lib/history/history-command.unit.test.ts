@@ -82,7 +82,7 @@ describe('history-command', () => {
     expect(safeCheckout).toHaveBeenCalledTimes(1);
   });
 
-  it('should have 2 commits to crawl if maxCount is set to 2', async () => {
+  it('should have 2 commits to crawl in history if maxCount is set to 2', async () => {
     const result = await yargsCli(
       ['history', '--config=/test/code-pushup.config.ts', '--maxCount=2'],
       {
