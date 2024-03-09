@@ -40,11 +40,11 @@ describe('coveragePluginConfigSchema', () => {
     expect(() => coveragePluginConfigSchema.parse(config)).not.toThrow();
 
     const { coverageTypes } = coveragePluginConfigSchema.parse(config);
-    expect(coverageTypes).toEqual([
+    expect(coverageTypes).toEqual<CoverageType[]>([
       'function',
       'branch',
       'line',
-    ] satisfies CoverageType[]);
+    ]);
   });
 
   it('throws for empty coverage type array', () => {

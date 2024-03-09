@@ -1,6 +1,6 @@
 import { LCOVRecord } from 'parse-lcov';
 import { describe, it } from 'vitest';
-import { AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput, Issue } from '@code-pushup/models';
 import {
   lcovCoverageToAuditOutput,
   lcovReportToBranchStat,
@@ -28,7 +28,7 @@ describe('lcovReportToFunctionStat', () => {
           details: [{ line: 12, name: 'yargsCli', hit: 6 }],
         },
       }),
-    ).toEqual({ totalHit: 1, totalFound: 1, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({ totalHit: 1, totalFound: 1, issues: [] });
   });
 
   it('should transform an empty LCOV function report to LCOV stat', () => {
@@ -37,7 +37,11 @@ describe('lcovReportToFunctionStat', () => {
         ...lcovRecordMock,
         functions: { hit: 0, found: 0, details: [] },
       }),
-    ).toEqual({ totalHit: 0, totalFound: 0, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({
+      totalHit: 0,
+      totalFound: 0,
+      issues: [],
+    });
   });
 
   it('should transform details from function report to issues', () => {
@@ -101,7 +105,11 @@ describe('lcovReportToLineStat', () => {
           details: [{ line: 1, hit: 6 }],
         },
       }),
-    ).toEqual({ totalHit: 1, totalFound: 1, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({
+      totalHit: 1,
+      totalFound: 1,
+      issues: [],
+    });
   });
 
   it('should transform an empty LCOV line report to LCOV stat', () => {
@@ -110,7 +118,11 @@ describe('lcovReportToLineStat', () => {
         ...lcovRecordMock,
         lines: { hit: 0, found: 0, details: [] },
       }),
-    ).toEqual({ totalHit: 0, totalFound: 0, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({
+      totalHit: 0,
+      totalFound: 0,
+      issues: [],
+    });
   });
 
   it('should transform details from line report to issues', () => {
@@ -210,7 +222,11 @@ describe('lcovReportToBranchStat', () => {
           details: [{ line: 12, taken: 6, branch: 0, block: 0 }],
         },
       }),
-    ).toEqual({ totalHit: 1, totalFound: 1, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({
+      totalHit: 1,
+      totalFound: 1,
+      issues: [],
+    });
   });
 
   it('should transform an empty LCOV branch report to LCOV stat', () => {
@@ -219,7 +235,11 @@ describe('lcovReportToBranchStat', () => {
         ...lcovRecordMock,
         branches: { hit: 0, found: 0, details: [] },
       }),
-    ).toEqual({ totalHit: 0, totalFound: 0, issues: [] } satisfies LCOVStat);
+    ).toEqual<LCOVStat>({
+      totalHit: 0,
+      totalFound: 0,
+      issues: [],
+    });
   });
 
   it('should transform details from branch report to issues', () => {
@@ -279,12 +299,12 @@ describe('lcovCoverageToAudit', () => {
         { totalHit: 56, totalFound: 56, issues: [] },
         'branch',
       ),
-    ).toEqual({
+    ).toEqual<AuditOutput>({
       slug: 'branch-coverage',
       score: 1,
       value: 100,
       displayValue: '100 %',
-    } satisfies AuditOutput);
+    });
   });
 
   it('should transform an empty function coverage to audit output', () => {
@@ -293,12 +313,12 @@ describe('lcovCoverageToAudit', () => {
         { totalHit: 0, totalFound: 0, issues: [] },
         'function',
       ),
-    ).toEqual({
+    ).toEqual<AuditOutput>({
       slug: 'function-coverage',
       score: 1,
       value: 100,
       displayValue: '100 %',
-    } satisfies AuditOutput);
+    });
   });
 
   it('should transform a partial line coverage to audit output', () => {
@@ -317,7 +337,7 @@ describe('lcovCoverageToAudit', () => {
         },
         'line',
       ),
-    ).toEqual({
+    ).toEqual<AuditOutput>({
       slug: 'line-coverage',
       score: 0.9,
       value: 90,
@@ -331,6 +351,6 @@ describe('lcovCoverageToAudit', () => {
           },
         ],
       },
-    } satisfies AuditOutput);
+    });
   });
 });

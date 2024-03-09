@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import { uploadToPortal } from '@code-pushup/portal-client';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
@@ -37,7 +37,9 @@ describe('upload', () => {
 
     expect(result).toEqual({ url: expect.stringContaining('code-pushup/cli') });
 
-    expect(uploadToPortal).toHaveBeenCalledWith({
+    expect(uploadToPortal).toHaveBeenCalledWith<
+      Parameters<typeof uploadToPortal>
+    >({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
@@ -51,7 +53,7 @@ describe('upload', () => {
         project: 'cli',
         commit: expect.any(String),
       },
-    } satisfies PortalUploadArgs);
+    });
   });
 
   it('should throw for missing upload configuration', async () => {

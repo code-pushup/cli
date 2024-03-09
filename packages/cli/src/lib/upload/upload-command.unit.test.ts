@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { PortalUploadArgs, uploadToPortal } from '@code-pushup/portal-client';
+import { uploadToPortal } from '@code-pushup/portal-client';
 import { readRcByPath } from '@code-pushup/core';
 import {
   ISO_STRING_REGEXP,
@@ -52,7 +52,9 @@ describe('upload-command-object', () => {
     );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
-    expect(uploadToPortal).toHaveBeenCalledWith({
+    expect(uploadToPortal).toHaveBeenCalledWith<
+      Parameters<typeof uploadToPortal>
+    >({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',
       data: {
@@ -66,6 +68,6 @@ describe('upload-command-object', () => {
         project: 'cli',
         commit: expect.any(String),
       },
-    } satisfies PortalUploadArgs);
+    });
   });
 });
