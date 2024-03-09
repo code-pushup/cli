@@ -44,7 +44,7 @@ describe('CLI history', () => {
       reportPaths.map(path => readJsonFile(join(outputDirFromRoot, path))),
     );
 
-    expect(results).toHaveLength(1);
+    expect(results).toHaveLength(5);
     results.forEach(report => {
       expect(() => reportSchema.parse(report)).not.toThrow();
     });
