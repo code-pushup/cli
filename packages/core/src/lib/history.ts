@@ -44,12 +44,12 @@ export async function history(
     await collectAndPersistReports(currentConfig);
 
     if (skipUploads) {
-      console.warn('Upload is skipped because skipUploads is set to true.');
+      console.info('Upload is skipped because skipUploads is set to true.');
     } else {
       if (currentConfig.upload) {
         await upload(currentConfig);
       } else {
-        console.warn('Upload is skipped because upload config is undefined.');
+        console.info('Upload is skipped because upload config is undefined.');
       }
     }
 

@@ -25,7 +25,7 @@ describe('CLI history', () => {
 
   it('should run ESLint plugin and create report.json for the last 2 commits', async () => {
     const outputDir = join('.code-pushup', 'history');
-    const { code, stderr } = await executeProcess({
+    const { code, stderr, stdout } = await executeProcess({
       command: 'code-pushup',
       args: [
         'history',

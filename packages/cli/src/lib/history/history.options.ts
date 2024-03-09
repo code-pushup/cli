@@ -18,7 +18,7 @@ export function yargsHistoryOptionsDefinition(): Record<
     skipUploads: {
       describe: 'Upload created reports',
       type: 'boolean',
-      default: true,
+      default: false,
     },
     maxCount: {
       // https://git-scm.com/docs/git-log#Documentation/git-log.txt---max-countltnumbergt
