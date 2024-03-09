@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import * as process from 'process';
 import { simpleGit } from 'simple-git';
 import { CommandModule, Options } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
