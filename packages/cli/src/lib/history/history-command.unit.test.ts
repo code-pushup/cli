@@ -1,7 +1,5 @@
-import { simpleGit } from 'simple-git';
 import { describe, expect, vi } from 'vitest';
 import { type HistoryOptions, history, readRcByPath } from '@code-pushup/core';
-import { MINIMAL_HISTORY_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { safeCheckout } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -18,9 +16,9 @@ vi.mock('@code-pushup/core', async () => {
     ...core,
     history: vi
       .fn()
-      .mockImplementation((options: HistoryOptions, commits: string[]) => {
-        return commits.map(commit => `${commit}-report.json`);
-      }),
+      .mockImplementation((options: HistoryOptions, commits: string[]) =>
+        commits.map(commit => `${commit}-report.json`),
+      ),
     readRcByPath: vi.fn().mockResolvedValue(MINIMAL_HISTORY_CONFIG_MOCK),
   };
 });
