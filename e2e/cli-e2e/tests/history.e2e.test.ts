@@ -28,6 +28,7 @@ describe('CLI history', () => {
       command: 'code-pushup',
       args: [
         'history',
+        '--persist.outputDir=../../tmp/e2e/react-todos-app/history',
         '--no-progress',
         '--onlyPlugins=eslint',
         '--forceCleanStatus',
@@ -38,7 +39,7 @@ describe('CLI history', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-   const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app');
+   const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app', 'history');
     const reportPaths = await readdir(outputDirFromRoot);
     const results = await Promise.all(
       reportPaths.map(path => readJsonFile(join(outputDirFromRoot, path))),
