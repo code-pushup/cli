@@ -29,12 +29,12 @@ export function yargsHistoryOptionsDefinition(): Record<
     from: {
       // https://git-scm.com/docs/git-log#_description
       describe: 'hash to start in history',
-      type: 'string'
+      type: 'string',
     },
     to: {
       // https://git-scm.com/docs/git-log#_description
       describe: 'hash to start in history',
-      type: 'string'
-    }
+      type: 'string',
+    },
   };
 }

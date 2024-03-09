@@ -50,21 +50,16 @@ export async function guardAgainstLocalChanges(
 export async function getCurrentBranchOrTag(
   git = simpleGit(),
 ): Promise<string> {
-  try {
-    const branch = await git.branch().then(r => r.current);
-    // eslint-disable-next-line unicorn/prefer-ternary
-    if (branch) {
-      return branch;
-    } else {
-      // If no current branch, try to get the tag
-      // @TODO use simple git
-      return await git
-        .raw(['describe', '--tags', '--exact-match'])
-        .then(out => out.trim());
-    }
-  } catch {
-    // Return a custom error message when something goes wrong
-    throw new Error('Could not get current tag or branch.');
+  const branch = await git.branch().then(r => r.current);
+  // eslint-disable-next-line unicorn/prefer-ternary
+  if (branch) {
+    return branch;
+  } else {
+    // If no current branch, try to get the tag
+    // @TODO use simple git
+    return await git
+      .raw(['describe', '--tags', '--exact-match'])
+      .then(out => out.trim());
   }
 }
 

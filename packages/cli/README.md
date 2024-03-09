@@ -240,7 +240,6 @@ Run plugins, collect results and upload the report to the Code PushUp portal.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
-
 #### `history` command
 
 Usage:
@@ -251,16 +250,15 @@ Run plugins, collect results and upload the report to the Code PushUp portal for
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
-| Option                     | Type       | Default  | Description                                                      |
-|----------------------------|------------|----------|------------------------------------------------------------------|
-| **`--targetBranch`**       | `string`   | n/a      | Branch to crawl history from.                                    |
-| **`--forceCleanStatus`**   | `boolean`  | `report` | If we reset the status to a clean git history forcefully or not. |
-| **`--numSteps`**           | `number`   | 3        | Number of steps in history.                                      |
-| **`--uploadReports`**      | `boolean`  | true     | Upload created reports                                           |
+| Option                   | Type      | Default  | Description                                                      |
+| ------------------------ | --------- | -------- | ---------------------------------------------------------------- |
+| **`--targetBranch`**     | `string`  | n/a      | Branch to crawl history from.                                    |
+| **`--forceCleanStatus`** | `boolean` | `report` | If we reset the status to a clean git history forcefully or not. |
+| **`--numSteps`**         | `number`  | 3        | Number of steps in history.                                      |
+| **`--uploadReports`**    | `boolean` | true     | Upload created reports                                           |
 
 > [!NOTE]  
 > If no target branch is set the current branch is used as target branch
-
 
 #### `print-config` command
 
