@@ -32,7 +32,7 @@ describe('verbose-utils', () => {
     expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 
-  it('log should work verbose', () => {
+  it('should log when verbose is on', () => {
     verboseUtils(true).log('42');
     expect(getLogMessages(ui().logger)[0]).toContain('42');
   });
