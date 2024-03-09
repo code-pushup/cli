@@ -179,9 +179,3 @@ jobs:
         with:
           name: code-pushup-report
           path: .code-pushup/
-    lh-test:
-      name: Lighthouse CLI tests
-      runs-on: windows-latest
-      steps:
-        - name: Run Lighthouse
-          run: npx lighthouse https://example.com
