@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { type Budget, type CliFlags, type Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
@@ -233,4 +234,27 @@ export function setLogLevel({
   } else {
     log.setLevel('info');
   }
+}
+
+const excludedFlags = new Set([
+  // lighthouse CLI specific debug logs
+  'list-all-audits', // Prints a list of all available audits and exits.
+  'list-locales', // Prints a list of all supported locales and exits.
+  'list-trace-categories', // Prints a list of all required trace categories and exits.
+]);
+
+export function validateFlags(flags: Flags = {}): Flags {
+  const unsupportedFlagsInUse = Object.keys(flags).filter(flag =>
+    excludedFlags.has(flag),
+  );
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `The following used flags are not supported: ${chalk.bold(
+      unsupportedFlagsInUse.join(', '),
+    )}`,
+  );
+  return Object.fromEntries(
+    Object.entries(flags).filter(([flagName]) => !excludedFlags.has(flagName)),
+  );
 }

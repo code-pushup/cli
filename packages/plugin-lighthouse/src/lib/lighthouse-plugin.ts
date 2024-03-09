@@ -20,6 +20,7 @@ import {
   getConfig,
   setLogLevel,
   toAuditOutputs,
+  validateFlags,
 } from './utils';
 
 export type Flags = Partial<Omit<LighthouseFlags, 'enableErrorReporting'>>;
@@ -63,10 +64,10 @@ export function getRunner(
       budgetPath,
       budgets = [],
       ...parsedFlags
-    } = {
+    } = validateFlags({
       ...DEFAULT_CLI_FLAGS,
       ...flags,
-    };
+    });
 
     setLogLevel(parsedFlags);
 

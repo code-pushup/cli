@@ -14,6 +14,7 @@ import {
   pluginConfigSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { Flags } from './lighthouse-plugin';
 import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
@@ -22,6 +23,7 @@ import {
   getConfig,
   setLogLevel,
   toAuditOutputs,
+  validateFlags,
   validateOnlyAudits,
   validateOnlyCategories,
 } from './utils';
@@ -761,5 +763,22 @@ describe('setLogLevel', () => {
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+});
+
+describe('validateFlags', () => {
+  it('should work with empty flags', () => {
+    expect(validateFlags()).toStrictEqual({});
+  });
+
+  it('should forward supported entries', () => {
+    expect(validateFlags({ verbose: true })).toStrictEqual({ verbose: true });
+  });
+
+  it('should remove unsupported entries and log', () => {
+    // @TODO add test for logs when cliui is implemented #487
+    expect(
+      validateFlags({ 'list-all-audits': true, verbose: true } as Flags),
+    ).toStrictEqual({ verbose: true });
   });
 });
