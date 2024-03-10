@@ -1,7 +1,15 @@
 import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
 import { formatDate, formatDuration, slugify } from '../formatting';
-import { CommitData } from '../git';
-import { NEW_LINE } from './constants';
+import {
+  FOOTER_PREFIX,
+  NEW_LINE,
+  README_LINK,
+  detailsTableHeaders,
+  pluginMetaTableHeaders,
+  reportHeadlineText,
+  reportMetaTableHeaders,
+  reportOverviewTableHeaders,
+} from './constants';
 import {
   details,
   h2,
@@ -13,34 +21,19 @@ import {
   tableHtml,
   tableMd,
 } from './md';
+import { ScoredGroup, ScoredReport } from './types';
 import {
-  EnrichedAuditReport,
-  EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
-import {
-  FOOTER_PREFIX,
-  README_LINK,
   countCategoryAudits,
-  detailsTableHeaders,
   formatReportScore,
-  getAuditByRef,
-  getGroupWithAudits,
   getPluginNameFromSlug,
   getRoundScoreMarker,
   getSeverityIcon,
+  getSortableAuditByRef,
+  getSortableGroupByRef,
   getSquaredScoreMarker,
-  pluginMetaTableHeaders,
-  reportHeadlineText,
-  reportMetaTableHeaders,
-  reportOverviewTableHeaders,
 } from './utils';
 
-export function generateMdReport(
-  report: ScoredReport,
-  commitData: CommitData | null,
-): string {
+export function generateMdReport(report: ScoredReport): string {
   const printCategories = report.categories.length > 0;
 
   return (
@@ -61,7 +54,7 @@ export function generateMdReport(
     NEW_LINE +
     NEW_LINE +
     // about section
-    reportToAboutSection(report, commitData) +
+    reportToAboutSection(report) +
     NEW_LINE +
     NEW_LINE +
     // footer section
@@ -98,12 +91,24 @@ function reportToCategoriesSection(report: ScoredReport): string {
     const categoryDocs = getDocsAndDescription(category);
     const categoryMDItems = category.refs.reduce((refAcc, ref) => {
       if (ref.type === 'group') {
-        const group = getGroupWithAudits(ref.slug, ref.plugin, plugins);
-        const mdGroupItem = groupItemToCategorySection(group, plugins);
+        const group = getSortableGroupByRef(ref, plugins);
+        const groupAudits = group.refs.map(groupRef =>
+          getSortableAuditByRef(
+            { ...groupRef, plugin: group.plugin, type: 'audit' },
+            plugins,
+          ),
+        );
+        const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+        const mdGroupItem = groupItemToCategorySection(
+          group,
+          groupAudits,
+          pluginTitle,
+        );
         return refAcc + mdGroupItem + NEW_LINE;
       } else {
-        const audit = getAuditByRef(ref, plugins);
-        const mdAuditItem = auditItemToCategorySection(audit, plugins);
+        const audit = getSortableAuditByRef(ref, plugins);
+        const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+        const mdAuditItem = auditItemToCategorySection(audit, pluginTitle);
         return refAcc + mdAuditItem + NEW_LINE;
       }
     }, '');
@@ -125,10 +130,9 @@ function reportToCategoriesSection(report: ScoredReport): string {
 }
 
 function auditItemToCategorySection(
-  audit: WeighedAuditReport,
-  plugins: ScoredReport['plugins'],
+  audit: AuditReport,
+  pluginTitle: string,
 ): string {
-  const pluginTitle = getPluginNameFromSlug(audit.plugin, plugins);
   const auditTitle = link(
     `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
     audit.title,
@@ -141,15 +145,15 @@ function auditItemToCategorySection(
 }
 
 function groupItemToCategorySection(
-  group: EnrichedScoredGroupWithAudits,
-  plugins: ScoredReport['plugins'],
+  group: ScoredGroup,
+  groupAudits: AuditReport[],
+  pluginTitle: string,
 ): string {
-  const pluginTitle = getPluginNameFromSlug(group.plugin, plugins);
-  const groupScore = Number(formatReportScore(group?.score || 0));
+  const groupScore = Number(formatReportScore(group.score || 0));
   const groupTitle = li(
     `${getRoundScoreMarker(groupScore)} ${group.title} (_${pluginTitle}_)`,
   );
-  const groupAudits = group.audits.reduce((acc, audit) => {
+  const auditTitles = groupAudits.reduce((acc, audit) => {
     const auditTitle = link(
       `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
       audit.title,
@@ -161,14 +165,14 @@ function groupItemToCategorySection(
     )}${NEW_LINE}`;
   }, '');
 
-  return groupTitle + NEW_LINE + groupAudits;
+  return groupTitle + NEW_LINE + auditTitles;
 }
 
 function reportToAuditsSection(report: ScoredReport): string {
   const auditsSection = report.plugins.reduce((pluginAcc, plugin) => {
     const auditsData = plugin.audits.reduce((auditAcc, audit) => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
-        audit.plugin,
+        plugin.slug,
         report.plugins,
       )})`;
 
@@ -189,7 +193,7 @@ function reportToAuditsSection(report: ScoredReport): string {
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsSection;
 }
 
-function reportToDetailsSection(audit: EnrichedAuditReport) {
+function reportToDetailsSection(audit: AuditReport) {
   const detailsTitle = `${getSquaredScoreMarker(audit.score)} ${getAuditResult(
     audit,
     true,
@@ -227,15 +231,12 @@ function reportToDetailsSection(audit: EnrichedAuditReport) {
   return details(detailsTitle, detailsTable);
 }
 
-function reportToAboutSection(
-  report: ScoredReport,
-  commitData: CommitData | null,
-): string {
+function reportToAboutSection(report: ScoredReport): string {
   const date = formatDate(new Date());
 
-  const { duration, version, plugins, categories } = report;
-  const commitInfo = commitData
-    ? `${commitData.message} (${commitData.hash.slice(0, 7)})`
+  const { duration, version, commit, plugins, categories } = report;
+  const commitInfo = commit
+    ? `${commit.message} (${commit.hash.slice(0, 7)})`
     : 'N/A';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,

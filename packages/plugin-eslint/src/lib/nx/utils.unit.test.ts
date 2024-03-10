@@ -1,10 +1,10 @@
 import { vol } from 'memfs';
-import type { SpyInstance } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { findCodePushupEslintrc } from './utils';
 
 describe('find code-pushup.eslintrc.* file', () => {
-  let cwdSpy: SpyInstance;
+  let cwdSpy: MockInstance<[], string>;
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);

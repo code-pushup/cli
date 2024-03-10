@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig } from '@code-pushup/models';
+import { CoreConfig, Format } from '@code-pushup/models';
 import {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
@@ -47,7 +47,7 @@ describe('yargsCli', () => {
       ['--persist.format=md', '--persist.format=json'],
       { options },
     ).parseAsync();
-    expect(parsedArgv.persist?.format).toEqual(['md', 'json']);
+    expect(parsedArgv.persist?.format).toEqual<Format[]>(['md', 'json']);
   });
 
   it('should throw for an invalid persist format', () => {

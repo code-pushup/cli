@@ -1,8 +1,8 @@
-import { SpyInstance, afterEach, beforeEach, vi } from 'vitest';
+import { MockInstance, afterEach, beforeEach, vi } from 'vitest';
 
-let consoleInfoSpy: SpyInstance | undefined;
-let consoleWarnSpy: SpyInstance | undefined;
-let consoleErrorSpy: SpyInstance | undefined;
+let consoleInfoSpy: MockInstance<any[], void> | undefined;
+let consoleWarnSpy: MockInstance<any[], void> | undefined;
+let consoleErrorSpy: MockInstance<any[], void> | undefined;
 
 beforeEach(() => {
   // In multi-progress-bars, console methods are overriden

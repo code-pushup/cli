@@ -1,21 +1,21 @@
 import { isAbsolute, join, relative } from 'node:path';
 import { simpleGit } from 'simple-git';
+import { Commit, commitSchema } from '@code-pushup/models';
 import { toUnixPath } from './transform';
 
-export type CommitData = {
-  hash: string;
-  message: string;
-  author: string;
-  date: string;
-};
-
-export async function getLatestCommit(git = simpleGit()) {
-  // git log -1 --pretty=format:"%H %s %an %ad" // logs hash, message, author, date
+export async function getLatestCommit(
+  git = simpleGit(),
+): Promise<Commit | null> {
+  // git log -1 --pretty=format:"%H %s %an %aI"
+  // https://git-scm.com/docs/pretty-formats
   const log = await git.log({
     maxCount: 1,
-    format: { hash: '%H', message: '%s', author: '%an', date: '%ad' },
+    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
   });
-  return log.latest satisfies CommitData | null;
+  if (!log.latest) {
+    return null;
+  }
+  return commitSchema.parse(log.latest);
 }
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
@@ -36,19 +36,52 @@ export async function toGitPath(
   return formatGitPath(path, gitRoot);
 }
 
-export function validateCommitData(
-  commitData: CommitData | null,
-  options: { throwError?: boolean } = {},
-): commitData is CommitData {
-  const { throwError = false } = options;
-  if (!commitData) {
-    const msg = 'no commit data available';
-    if (throwError) {
-      throw new Error(msg);
-    } else {
-      console.warn(msg);
-      return false;
-    }
+export async function guardAgainstLocalChanges(
+  git = simpleGit(),
+): Promise<void> {
+  const isClean = await git.status(['-s']).then(r => r.files.length === 0);
+  if (!isClean) {
+    throw new Error(
+      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+    );
   }
-  return true;
+}
+
+export async function getCurrentBranchOrTag(
+  git = simpleGit(),
+): Promise<string> {
+  try {
+    const branch = await git.branch().then(r => r.current);
+    // eslint-disable-next-line unicorn/prefer-ternary
+    if (branch) {
+      return branch;
+    } else {
+      // If no current branch, try to get the tag
+      // @TODO use simple git
+      return await git
+        .raw(['describe', '--tags', '--exact-match'])
+        .then(out => out.trim());
+    }
+  } catch {
+    // Return a custom error message when something goes wrong
+    throw new Error('Could not get current tag or branch.');
+  }
+}
+
+export async function safeCheckout(
+  branchOrHash: string,
+  options: {
+    forceCleanStatus?: true;
+  } = {},
+  git = simpleGit(),
+): Promise<void> {
+  // git requires a clean history to check out a branch
+  if (options.forceCleanStatus) {
+    await git.raw(['reset', '--hard']);
+    await git.clean(['f', 'd']);
+    // @TODO replace with ui().logger.info
+    console.info(`git status cleaned`);
+  }
+  await guardAgainstLocalChanges(git);
+  await git.checkout(branchOrHash);
 }

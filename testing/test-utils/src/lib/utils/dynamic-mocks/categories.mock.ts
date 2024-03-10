@@ -10,6 +10,12 @@ const CATEGORIES_MAP = {
     refs: [
       {
         type: 'group',
+        plugin: 'eslint',
+        slug: 'max-line-limitation',
+        weight: 0,
+      },
+      {
+        type: 'group',
         plugin: 'lighthouse',
         slug: 'performance',
         weight: 1,

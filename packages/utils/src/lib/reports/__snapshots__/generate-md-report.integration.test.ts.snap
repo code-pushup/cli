@@ -5,7 +5,7 @@ exports[`generateMdReport > should contain all sections when using the fixture r
 
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Performance](#performance)|🟢 **92**|6|
+|[Performance](#performance)|🟢 **92**|8|
 |[Bug prevention](#bug-prevention)|🟡 **68**|16|
 |[Code style](#code-style)|🟡 **54**|13|
 
@@ -24,6 +24,10 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 
 - 🟥 [Disallow missing \`key\` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
+- 🟢 Maximum lines limitation (_ESLint_)
+  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
+  - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+
 
 ### Bug prevention
 
@@ -59,7 +63,7 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Enforce camelcase naming convention](#enforce-camelcase-naming-convention-eslint) (_ESLint_) - **passed**
 - 🟩 [Enforce consistent brace style for all control statements](#enforce-consistent-brace-style-for-all-control-statements-eslint) (_ESLint_) - **passed**
 - 🟩 [Require \`let\` or \`const\` instead of \`var\`](#require-let-or-const-instead-of-var-eslint) (_ESLint_) - **passed**
-- 🟩 [Require or disallow \\"Yoda\\" conditions](#require-or-disallow-yoda-conditions-eslint) (_ESLint_) - **passed**
+- 🟩 [Require or disallow "Yoda" conditions](#require-or-disallow-yoda-conditions-eslint) (_ESLint_) - **passed**
 - 🟩 [Require using arrow functions for callbacks](#require-using-arrow-functions-for-callbacks-eslint) (_ESLint_) - **passed**
 
 
@@ -109,7 +113,7 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing \\"key\\" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
+<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
 </details>
 
 
@@ -165,7 +169,7 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 
-### Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\` (ESLint)
+### Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
 
@@ -375,7 +379,7 @@ ESLint rule **no-var**. [📖 Docs](https://eslint.org/docs/latest/rules/no-var)
 
 ESLint rule **use-isnan**. [📖 Docs](https://eslint.org/docs/latest/rules/use-isnan)
 
-### Require or disallow \\"Yoda\\" conditions (ESLint)
+### Require or disallow "Yoda" conditions (ESLint)
 
 🟩 <b>passed</b> (score: 100)
 
@@ -425,7 +429,7 @@ Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cl
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--|:--:|:--:|:--:|:--:|:--:|
-|refactor(cli): fix exec target (41682a2)|\`0.0.1\`|1.65 s|2|3|52|
+|Minor fixes (abcdef0)|\`0.0.1\`|1.65 s|2|3|52|
 
 The following plugins were run:
 
@@ -486,7 +490,7 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing \\"key\\" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
+<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
 </details>
 
 
@@ -542,7 +546,7 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 
-### Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\` (ESLint)
+### Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
 
@@ -752,7 +756,7 @@ ESLint rule **no-var**. [📖 Docs](https://eslint.org/docs/latest/rules/no-var)
 
 ESLint rule **use-isnan**. [📖 Docs](https://eslint.org/docs/latest/rules/use-isnan)
 
-### Require or disallow \\"Yoda\\" conditions (ESLint)
+### Require or disallow "Yoda" conditions (ESLint)
 
 🟩 <b>passed</b> (score: 100)
 
@@ -802,7 +806,7 @@ Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cl
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--|:--:|:--:|:--:|:--:|:--:|
-|refactor(cli): fix exec target (41682a2)|\`0.0.1\`|1.65 s|2|0|52|
+|Minor fixes (abcdef0)|\`0.0.1\`|1.65 s|2|0|52|
 
 The following plugins were run:
 

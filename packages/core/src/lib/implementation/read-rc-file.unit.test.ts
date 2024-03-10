@@ -13,8 +13,7 @@ vi.mock('bundle-require', async () => {
     bundleRequire: vi
       .fn()
       .mockImplementation((options: { filepath: string }) => {
-        const extension =
-          options.filepath?.split('.').at(-1) || 'no-extension-found';
+        const extension = options.filepath.split('.').at(-1);
         return {
           mod: {
             default: {

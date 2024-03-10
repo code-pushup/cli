@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import {
+  AuditReport,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
   Format,
@@ -15,48 +16,7 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
-import {
-  EnrichedAuditReport,
-  EnrichedScoredGroupWithAudits,
-  ScoredReport,
-  WeighedAuditReport,
-} from './scoring';
-
-export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
-export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
-export const README_LINK =
-  'https://github.com/flowup/quality-metrics-cli#readme';
-export const reportHeadlineText = 'Code PushUp Report';
-export const reportOverviewTableHeaders = [
-  '🏷 Category',
-  '⭐ Score',
-  '🛡 Audits',
-];
-export const reportRawOverviewTableHeaders = ['Category', 'Score', 'Audits'];
-export const reportMetaTableHeaders: string[] = [
-  'Commit',
-  'Version',
-  'Duration',
-  'Plugins',
-  'Categories',
-  'Audits',
-];
-
-export const pluginMetaTableHeaders: string[] = [
-  'Plugin',
-  'Audits',
-  'Version',
-  'Duration',
-];
-
-// details headers
-
-export const detailsTableHeaders: string[] = [
-  'Severity',
-  'Message',
-  'Source file',
-  'Line(s)',
-];
+import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
@@ -111,7 +71,7 @@ export function countCategoryAudits(
   // Create lookup object for groups within each plugin
   const groupLookup = plugins.reduce<Record<string, Record<string, Group>>>(
     (lookup, plugin) => {
-      if (plugin.groups.length === 0) {
+      if (plugin.groups == null || plugin.groups.length === 0) {
         return lookup;
       }
 
@@ -135,10 +95,10 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getAuditByRef(
+export function getSortableAuditByRef(
   { slug, weight, plugin }: CategoryRef,
   plugins: ScoredReport['plugins'],
-): WeighedAuditReport {
+): SortableAuditReport {
   const auditPlugin = plugins.find(p => p.slug === plugin);
   if (!auditPlugin) {
     throwIsNotPresentError(`Plugin ${plugin}`, 'report');
@@ -156,41 +116,60 @@ export function getAuditByRef(
   };
 }
 
-export function getGroupWithAudits(
-  refSlug: string,
-  refPlugin: string,
+export function getSortableGroupByRef(
+  { plugin, slug, weight }: CategoryRef,
   plugins: ScoredReport['plugins'],
-): EnrichedScoredGroupWithAudits {
-  const plugin = plugins.find(({ slug }) => slug === refPlugin);
-  if (!plugin) {
-    throwIsNotPresentError(`Plugin ${refPlugin}`, 'report');
+): SortableGroup {
+  const groupPlugin = plugins.find(p => p.slug === plugin);
+  if (!groupPlugin) {
+    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
   }
-  const groupWithAudits = plugin.groups?.find(({ slug }) => slug === refSlug);
 
-  if (!groupWithAudits) {
-    throwIsNotPresentError(`Group ${refSlug}`, plugin.slug);
-  }
-  const groupAudits = groupWithAudits.refs.reduce<WeighedAuditReport[]>(
-    (acc: WeighedAuditReport[], ref) => {
-      const audit = getAuditByRef(
-        { ...ref, plugin: refPlugin, type: 'audit' },
-        plugins,
-      );
-      return [...acc, audit];
-    },
-    [],
+  const group = groupPlugin.groups?.find(
+    ({ slug: groupSlug }) => groupSlug === slug,
   );
-  const audits = [...groupAudits].sort(compareCategoryAudits);
+  if (!group) {
+    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
+  }
+
+  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
+  const sortedAuditRefs = [...group.refs].sort((a, b) => {
+    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
+    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
+    return aIndex - bIndex;
+  });
 
   return {
-    ...groupWithAudits,
-    audits,
+    ...group,
+    refs: sortedAuditRefs,
+    plugin,
+    weight,
   };
 }
 
-export function compareCategoryAudits(
-  a: WeighedAuditReport,
-  b: WeighedAuditReport,
+export function getSortedGroupAudits(
+  group: Group,
+  plugin: string,
+  plugins: ScoredReport['plugins'],
+): SortableAuditReport[] {
+  return group.refs
+    .map(ref =>
+      getSortableAuditByRef(
+        {
+          plugin,
+          slug: ref.slug,
+          weight: ref.weight,
+          type: 'audit',
+        },
+        plugins,
+      ),
+    )
+    .sort(compareCategoryAuditsAndGroups);
+}
+
+export function compareCategoryAuditsAndGroups(
+  a: SortableAuditReport | SortableGroup,
+  b: SortableAuditReport | SortableGroup,
 ): number {
   if (a.weight !== b.weight) {
     return b.weight - a.weight;
@@ -200,17 +179,14 @@ export function compareCategoryAudits(
     return a.score - b.score;
   }
 
-  if (a.value !== b.value) {
+  if ('value' in a && 'value' in b && a.value !== b.value) {
     return b.value - a.value;
   }
 
   return a.title.localeCompare(b.title);
 }
 
-export function compareAudits(
-  a: EnrichedAuditReport,
-  b: EnrichedAuditReport,
-): number {
+export function compareAudits(a: AuditReport, b: AuditReport): number {
   if (a.score !== b.score) {
     return a.score - b.score;
   }

@@ -14,14 +14,13 @@ describe('CLI collect', () => {
     duration,
     version,
     ...report
-  }: Report | PluginReport) => report;
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-
-  const omitVariableReportData = (report: Report) =>
+  }: Omit<Report, 'commit'> | PluginReport) => report;
+  const omitVariableReportData = ({ commit, ...report }: Report) =>
     omitVariableData({
       ...report,
       plugins: report.plugins.map(omitVariableData) as PluginReport[],
     });
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e');
@@ -37,7 +36,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile('tmp/react-todos-app/report.json');
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
@@ -90,7 +89,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile('tmp/react-todos-app/report.json');
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
@@ -106,7 +105,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile('tmp/react-todos-app/report.md');
+    const md = await readTextFile('tmp/e2e/react-todos-app/report.md');
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(exampleCategoryTitle);

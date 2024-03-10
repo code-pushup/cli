@@ -2,6 +2,66 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.26.1](https://github.com/code-pushup/cli/compare/v0.26.0...v0.26.1) (2024-03-07)
+
+# [0.26.0](https://github.com/code-pushup/cli/compare/v0.25.7...v0.26.0) (2024-03-06)
+
+### Features
+
+- **cli:** include commit info in report.json ([5965900](https://github.com/code-pushup/cli/commit/596590082c76b0b7915b2b339fa27baee9eaa678))
+
+## [0.25.7](https://github.com/code-pushup/cli/compare/v0.25.6...v0.25.7) (2024-03-06)
+
+## [0.25.6](https://github.com/code-pushup/cli/compare/v0.25.5...v0.25.6) (2024-03-05)
+
+### Bug Fixes
+
+- **plugin-eslint:** pass arguments via config file instead of argv ([dca0266](https://github.com/code-pushup/cli/commit/dca026617c6f7e33e25bab06922dec417dfbc63e))
+
+## [0.25.5](https://github.com/code-pushup/cli/compare/v0.25.4...v0.25.5) (2024-03-05)
+
+## [0.25.4](https://github.com/code-pushup/cli/compare/v0.25.3...v0.25.4) (2024-03-05)
+
+## [0.25.3](https://github.com/code-pushup/cli/compare/v0.25.2...v0.25.3) (2024-03-05)
+
+## [0.25.2](https://github.com/code-pushup/cli/compare/v0.25.1...v0.25.2) (2024-03-05)
+
+## [0.25.1](https://github.com/code-pushup/cli/compare/v0.25.0...v0.25.1) (2024-02-29)
+
+# [0.25.0](https://github.com/code-pushup/cli/compare/v0.24.0...v0.25.0) (2024-02-29)
+
+### Features
+
+- **plugin-lighthouse:** implement basic audit parsing ([#523](https://github.com/code-pushup/cli/issues/523)) ([cbd044e](https://github.com/code-pushup/cli/commit/cbd044e0267304d48066cca27bfae12ee7d708d7))
+
+# [0.24.0](https://github.com/code-pushup/cli/compare/v0.23.4...v0.24.0) (2024-02-29)
+
+### Features
+
+- **plugin-lighthouse:** add only filters logic for categories ([#515](https://github.com/code-pushup/cli/issues/515)) ([3cb8fa4](https://github.com/code-pushup/cli/commit/3cb8fa47ac57ac9ae8c74e9c166e638f8180a1cd))
+
+## [0.23.4](https://github.com/code-pushup/cli/compare/v0.23.3...v0.23.4) (2024-02-29)
+
+### Bug Fixes
+
+- **utils:** sort groups and category refs correctly in report ([76a7636](https://github.com/code-pushup/cli/commit/76a7636dae231520b386c634e4ed945c267e89c5))
+
+## [0.23.3](https://github.com/code-pushup/cli/compare/v0.23.2...v0.23.3) (2024-02-29)
+
+### Bug Fixes
+
+- stop CLI when a plugin fails ([263537c](https://github.com/code-pushup/cli/commit/263537c0a85ba290287cc5a29af1ac125c4191b3))
+
+## [0.23.2](https://github.com/code-pushup/cli/compare/v0.23.1...v0.23.2) (2024-02-28)
+
+## [0.23.1](https://github.com/code-pushup/cli/compare/v0.23.0...v0.23.1) (2024-02-27)
+
+# [0.23.0](https://github.com/code-pushup/cli/compare/v0.22.8...v0.23.0) (2024-02-26)
+
+### Features
+
+- **utils:** add git helper ([#469](https://github.com/code-pushup/cli/issues/469)) ([d927a61](https://github.com/code-pushup/cli/commit/d927a6153554a4bc7eecabde7386bbbd3c9b2de1))
+
 ## [0.22.8](https://github.com/code-pushup/cli/compare/v0.22.7...v0.22.8) (2024-02-23)
 
 ### Bug Fixes

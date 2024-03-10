@@ -8,7 +8,6 @@ import {
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
-  filterBy,
   filterItemRefsBy,
   toArray,
 } from '@code-pushup/utils';
@@ -74,7 +73,7 @@ export async function create(options: PluginOptions) {
       onlyCategories: ['performance'],
       headless,
     }),
-    audits: filterBy(audits, ({ slug }) => onlyAudits.includes(slug)),
+    audits: audits.filter(({ slug }) => onlyAudits.includes(slug)),
     groups: filterItemRefsBy([categoryCorePerfGroup], ({ slug }) =>
       onlyAudits.includes(slug),
     ),
@@ -103,7 +102,7 @@ export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
     outputFile: outputPath,
     outputTransform: (lighthouseOutput: unknown) =>
       lhrToAuditOutputs(lighthouseOutput as Result),
-  } satisfies RunnerConfig;
+  };
 }
 
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {

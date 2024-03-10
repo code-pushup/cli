@@ -6,7 +6,7 @@ describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
   const failedCallbackMock = vi.fn();
 
-  it('should call logPromiseResults with successfully plugin result', () => {
+  it('should call logPromiseResults with successful plugin result', () => {
     logMultipleResults(
       [
         {

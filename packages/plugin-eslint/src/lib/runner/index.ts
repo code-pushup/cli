@@ -1,28 +1,28 @@
-import { mkdir, writeFile } from 'node:fs/promises';
-import { platform } from 'node:os';
+import { writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
-import { pluginWorkDir, readJsonFile, toArray } from '@code-pushup/utils';
+import {
+  ensureDirectoryExists,
+  pluginWorkDir,
+  readJsonFile,
+  toArray,
+} from '@code-pushup/utils';
+import { ESLintPluginRunnerConfig } from '../config';
 import { lint } from './lint';
 import { lintResultsToAudits } from './transform';
 
 export const WORKDIR = pluginWorkDir('eslint');
 export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
 export const ESLINTRC_PATH = join(process.cwd(), WORKDIR, '.eslintrc.json');
+export const PLUGIN_CONFIG_PATH = join(
+  process.cwd(),
+  WORKDIR,
+  'plugin-config.json',
+);
 
-const AUDIT_SLUGS_SEP = ',';
-
-export async function executeRunner(argv = process.argv): Promise<void> {
-  const [slugs, eslintrc, ...patterns] = argv.slice(2);
-  if (!slugs) {
-    throw new Error('Invalid runner args - missing slugs argument');
-  }
-  if (!eslintrc) {
-    throw new Error('Invalid runner args - missing eslintrc argument');
-  }
-  if (patterns.length === 0) {
-    throw new Error('Invalid runner args - missing patterns argument');
-  }
+export async function executeRunner(): Promise<void> {
+  const { slugs, eslintrc, patterns } =
+    await readJsonFile<ESLintPluginRunnerConfig>(PLUGIN_CONFIG_PATH);
 
   const lintResults = await lint({
     // if file created from inline object, provide inline to preserve relative links
@@ -32,7 +32,7 @@ export async function executeRunner(argv = process.argv): Promise<void> {
   });
   const failedAudits = lintResultsToAudits(lintResults);
 
-  const audits = slugs.split(AUDIT_SLUGS_SEP).map(
+  const audits = slugs.map(
     (slug): AuditOutput =>
       failedAudits.find(audit => audit.slug === slug) ?? {
         slug,
@@ -43,26 +43,27 @@ export async function executeRunner(argv = process.argv): Promise<void> {
       },
   );
 
-  await mkdir(dirname(RUNNER_OUTPUT_PATH), { recursive: true });
+  await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(audits));
 }
 
-export function createRunnerConfig(
+export async function createRunnerConfig(
   scriptPath: string,
   audits: Audit[],
   eslintrc: string,
   patterns: string | string[],
-): RunnerConfig {
+): Promise<RunnerConfig> {
+  const config: ESLintPluginRunnerConfig = {
+    eslintrc,
+    slugs: audits.map(audit => audit.slug),
+    patterns: toArray(patterns),
+  };
+  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
+  await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+
   return {
     command: 'node',
-    args: [
-      scriptPath,
-      audits.map(audit => audit.slug).join(AUDIT_SLUGS_SEP),
-      eslintrc,
-      ...toArray(patterns).map(pattern =>
-        platform() === 'win32' ? pattern : `'${pattern}'`,
-      ),
-    ],
+    args: [scriptPath],
     outputFile: RUNNER_OUTPUT_PATH,
   };
 }
