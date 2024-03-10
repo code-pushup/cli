@@ -6,14 +6,14 @@ export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
   processArgs: T,
 ): T {
   if (processArgs.onlyPlugins && processArgs.onlyPlugins.length > 0) {
-    const { plugins, categories = [], ...rest } = processArgs;
+    const { plugins, categories = [], onlyPlugins } = processArgs;
 
     validateOnlyPluginsOption(plugins, processArgs);
 
-    const onlyPluginsSet = new Set(toArray(processArgs.onlyPlugins));
+    const onlyPluginsSet = new Set(toArray(onlyPlugins));
 
     return {
-      ...rest,
+      ...processArgs,
       plugins: plugins.filter(({ slug }) => onlyPluginsSet.has(slug)),
       categories: filterItemRefsBy(categories, ({ plugin }) =>
         onlyPluginsSet.has(plugin),
