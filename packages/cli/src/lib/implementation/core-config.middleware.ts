@@ -44,15 +44,15 @@ export async function coreConfigMiddleware<
 
   return {
     ...(config != null && { config }),
-    ...(upload != null && { upload }),
-    ...remainingRcConfig,
-    ...remainingCliOptions,
     persist: {
       outputDir:
         cliPersist?.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
       format: cliPersist?.format ?? rcPersist?.format ?? PERSIST_FORMAT,
       filename: cliPersist?.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
     },
+    ...(upload != null && { upload }),
     categories: rcCategories ?? [],
+    ...remainingRcConfig,
+    ...remainingCliOptions,
   };
 }

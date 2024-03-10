@@ -1,6 +1,6 @@
-import {describe, expect} from 'vitest';
-import {PluginConfig} from '@code-pushup/models';
-import {validateOnlyPluginsOption} from './only-plugins.utils';
+import { describe, expect } from 'vitest';
+import { PluginConfig } from '@code-pushup/models';
+import { validateOnlyPluginsOption } from './only-plugins.utils';
 
 describe('validateOnlyPluginsOption', () => {
   it('should warn if onlyPlugins option contains non-existing plugin', () => {
@@ -67,4 +67,3 @@ describe('validateOnlyPluginsOption', () => {
     expect(console.warn).not.toHaveBeenCalled();
   });
 });
-

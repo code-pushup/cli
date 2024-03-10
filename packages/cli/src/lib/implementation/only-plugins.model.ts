@@ -5,5 +5,5 @@ export type OnlyPluginsCliOptions = {
   onlyPlugins?: string[];
 };
 export type OnlyPluginsOptions = Partial<GlobalOptions> &
-  Required<Pick<CoreConfig, 'categories' | 'plugins'>> &
+  Pick<CoreConfig, 'categories' | 'plugins'> &
   OnlyPluginsCliOptions;
