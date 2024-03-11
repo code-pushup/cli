@@ -7,7 +7,7 @@ import { executePlugins } from './execute-plugin';
 export type CollectOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'>
 > &
-  GlobalOptions;
+  Partial<GlobalOptions>;
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object

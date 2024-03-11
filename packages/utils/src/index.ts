@@ -40,6 +40,8 @@ export {
   getGitRoot,
   getLatestCommit,
   toGitPath,
+  getCurrentBranchOrTag,
+  safeCheckout,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
