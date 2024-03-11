@@ -1,14 +1,32 @@
-import { describe } from 'vitest';
-import { getLogMessages, reportMock } from '@code-pushup/test-utils';
+import {beforeAll, describe, expect, vi} from 'vitest';
+import { reportMock } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
+
 describe('logStdoutSummary', () => {
+  // eslint-disable-next-line vitest/require-hook
+  let logs: string[] = [];
+  beforeAll(() => {
+    vi.spyOn(console, 'log').mockImplementation(msg => {
+      logs = [...logs, msg];
+    });
+    // we want to see table and sticker logs in the final style ("raw" don't show borders etc so we use `console.log` here)
+    ui().switchMode('normal');
+  });
+  afterEach(() => {
+    logs = [];
+  });
+  afterAll(() => {
+    ui().switchMode('raw');
+  });
+
   it('should contain all sections when using the fixture report', () => {
     logStdoutSummary(sortReport(scoreReport(reportMock())));
-    const output = getLogMessages(ui().logger).join('\n');
+
+    const output = logs.join('\n');
 
     expect(output).toContain('Categories');
     // removes all color codes from the output for snapshot readability
@@ -20,7 +38,7 @@ describe('logStdoutSummary', () => {
     logStdoutSummary(
       sortReport(scoreReport({ ...reportMock(), categories: [] })),
     );
-    const output = getLogMessages(ui().logger).join('\n');
+    const output = logs.join('\n');
 
     expect(output).not.toContain('Categories');
     // removes all color codes from the output for snapshot readability
