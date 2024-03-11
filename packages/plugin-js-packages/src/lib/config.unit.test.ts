@@ -13,8 +13,8 @@ describe('jsPackagesPluginConfigSchema', () => {
     expect(() =>
       jsPackagesPluginConfigSchema.parse({
         auditLevelMapping: { moderate: 'error' },
-        features: ['audit'],
-        packageManager: 'yarn',
+        checks: ['audit'],
+        packageManager: 'yarn-classic',
       } satisfies JSPackagesPluginConfig),
     ).not.toThrow();
   });
@@ -26,7 +26,7 @@ describe('jsPackagesPluginConfigSchema', () => {
   it('should fill in default values', () => {
     const config = jsPackagesPluginConfigSchema.parse({});
     expect(config).toEqual<FinalJSPackagesPluginConfig>({
-      features: ['audit', 'outdated'],
+      checks: ['audit', 'outdated'],
       packageManager: 'npm',
       auditLevelMapping: {
         critical: 'error',
@@ -38,8 +38,8 @@ describe('jsPackagesPluginConfigSchema', () => {
     });
   });
 
-  it('should throw for no features', () => {
-    expect(() => jsPackagesPluginConfigSchema.parse({ features: [] })).toThrow(
+  it('should throw for no passed commands', () => {
+    expect(() => jsPackagesPluginConfigSchema.parse({ checks: [] })).toThrow(
       'too_small',
     );
   });
