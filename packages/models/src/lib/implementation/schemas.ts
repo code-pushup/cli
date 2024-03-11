@@ -56,6 +56,14 @@ export const titleSchema = z
   .string({ description: 'Descriptive name' })
   .max(MAX_TITLE_LENGTH);
 
+/** Schema for score of audit, category or group */
+export const scoreSchema = z
+  .number({
+    description: 'Value between 0 and 1',
+  })
+  .min(0)
+  .max(1);
+
 /**
  * Used for categories, plugins and audits
  * @param options

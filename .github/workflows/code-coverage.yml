@@ -12,7 +12,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lib: [cli, core, models, utils, plugin-eslint, plugin-coverage]
+        lib:
+          - cli
+          - core
+          - models
+          - utils
+          - plugin-eslint
+          - plugin-coverage
+          - plugin-js-packages
         scope: [unit, integration]
     name: Update code coverage
     runs-on: ubuntu-latest

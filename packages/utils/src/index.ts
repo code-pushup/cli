@@ -1,4 +1,5 @@
 export { exists } from '@code-pushup/models';
+export { Diff, matchArrayItemsByKey, comparePairs } from './lib/diff';
 export {
   ProcessConfig,
   ProcessError,
@@ -57,11 +58,19 @@ export {
   README_LINK,
   TERMINAL_WIDTH,
 } from './lib/reports/constants';
+export {
+  listAuditsFromAllPlugins,
+  listGroupsFromAllPlugins,
+} from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
 export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
-export { ScoredReport } from './lib/reports/types';
+export {
+  ScoredCategoryConfig,
+  ScoredGroup,
+  ScoredReport,
+} from './lib/reports/types';
 export {
   calcDuration,
   compareIssueSeverity,
