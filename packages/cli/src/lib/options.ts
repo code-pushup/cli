@@ -4,14 +4,18 @@ import {
   yargsUploadConfigOptionsDefinition,
 } from './implementation/core-config.options';
 import { yargsGlobalOptionsDefinition } from './implementation/global.options';
+import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
 
 export const options = {
   ...yargsGlobalOptionsDefinition(),
   ...yargsCoreConfigOptionsDefinition(),
+  ...yargsOnlyPluginsOptionsDefinition(),
 };
 
 export const groups = {
-  'Global Options:': Object.keys(yargsGlobalOptionsDefinition()),
+  'Global Options:': Object.keys(yargsGlobalOptionsDefinition()).concat(
+    Object.keys(yargsOnlyPluginsOptionsDefinition()),
+  ),
   'Persist Options:': Object.keys(yargsPersistConfigOptionsDefinition()),
   'Upload Options:': Object.keys(yargsUploadConfigOptionsDefinition()),
 };

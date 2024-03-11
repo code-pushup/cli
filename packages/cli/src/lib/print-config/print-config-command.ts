@@ -8,14 +8,6 @@ export function yargsConfigCommandObject() {
   return {
     command,
     describe: 'Print config',
-    builder: yargs => {
-      yargs.options(yargsOnlyPluginsOptionsDefinition());
-      yargs.group(
-        Object.keys(yargsOnlyPluginsOptionsDefinition()),
-        'Print Config Options:',
-      );
-      return yargs;
-    },
     handler: yargsArgs => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _, $0, ...args } = yargsArgs;
