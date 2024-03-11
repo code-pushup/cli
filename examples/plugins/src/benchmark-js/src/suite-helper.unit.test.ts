@@ -11,16 +11,17 @@ vi.mock('@code-pushup/utils', async () => {
 
   return {
     ...actual,
-    importEsmModule: vi.fn().mockImplementation(({ filepath = '' }) => {
-      return {
-        suiteName: filepath.replace('.ts', ''),
-        targetImplementation: 'current-implementation',
-        cases: [
-          ['current-implementation', vi.fn()],
-          ['slower-implementation', vi.fn()],
-        ],
-      } satisfies SuiteConfig;
-    }),
+    importEsmModule: vi.fn().mockImplementation(
+      ({ filepath = '' }: { filepath: string }) =>
+        ({
+          suiteName: filepath.replace('.ts', ''),
+          targetImplementation: 'current-implementation',
+          cases: [
+            ['current-implementation', vi.fn()],
+            ['slower-implementation', vi.fn()],
+          ],
+        } satisfies SuiteConfig),
+    ),
   };
 });
 
@@ -48,12 +49,14 @@ describe('benchToBenchmarkResult', () => {
       samples: [5.6, 5.6],
     };
     const bench = {
-      getTask: (name: string) => ({
-        result:
+      getTask: (name: string) => {
+        // eslint-disable-next-line vitest/no-conditional-tests
+        const result =
           name === 'current-implementation'
             ? currentImplementation
-            : slowerImplementation,
-      }),
+            : slowerImplementation;
+        return { result };
+      },
       results: [currentImplementation, slowerImplementation],
     };
     expect(

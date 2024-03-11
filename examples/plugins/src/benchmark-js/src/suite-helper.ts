@@ -1,4 +1,4 @@
-import { Bench, TaskResult } from 'tinybench';
+import { Bench } from 'tinybench';
 import { importEsmModule } from '@code-pushup/utils';
 
 export type SuiteConfig = {
@@ -43,8 +43,6 @@ export async function runSuite({
   targetImplementation,
   time = 1000,
 }: SuiteConfig): Promise<BenchmarkResult[]> {
-  // This is not working with named imports
-  // eslint-disable-next-line import/no-named-as-default-member
   const suite = new Bench({ time });
 
   // register test cases
@@ -65,17 +63,22 @@ export function benchToBenchmarkResult(
   bench: Bench,
   suite: SuiteConfig,
 ): BenchmarkResult[] {
-  const caseNames = suite.cases.map(([name]) => name);
+  const { suiteName, cases, targetImplementation } = suite;
+  const caseNames = cases.map(([name]) => name);
   const results = caseNames
     .map(caseName => {
-      const result = bench.getTask(caseName)?.result ?? ({} as TaskResult);
+      const result = bench.getTask(caseName)?.result ?? {
+        hz: 0,
+        rme: 0,
+        samples: [],
+      };
       return {
-        suiteName: suite.suiteName,
+        suiteName,
         name: caseName,
         hz: result.hz,
         rme: result.rme,
         samples: result.samples.length,
-        isTarget: suite.targetImplementation === caseName,
+        isTarget: targetImplementation === caseName,
         isFastest: false, // preliminary result
       } satisfies BenchmarkResult;
     })
