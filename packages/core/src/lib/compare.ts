@@ -14,6 +14,24 @@ import {
   compareGroups,
 } from './implementation/compare-scorables';
 
+export async function compareReportFiles(
+  inputPaths: Diff<string>,
+  outputPath: string,
+): Promise<void> {
+  const [reportBefore, reportAfter] = await Promise.all([
+    readJsonFile(inputPaths.before),
+    readJsonFile(inputPaths.after),
+  ]);
+  const reports: Diff<Report> = {
+    before: reportSchema.parse(reportBefore),
+    after: reportSchema.parse(reportAfter),
+  };
+
+  const reportsDiff = compareReports(reports);
+
+  await writeFile(outputPath, JSON.stringify(reportsDiff, null, 2));
+}
+
 export function compareReports(reports: Diff<Report>): ReportsDiff {
   const start = performance.now();
   const date = new Date().toISOString();
@@ -44,22 +62,4 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
     date,
     duration,
   };
-}
-
-export async function compareReportFiles(
-  inputPaths: Diff<string>,
-  outputPath: string,
-): Promise<void> {
-  const [reportBefore, reportAfter] = await Promise.all([
-    readJsonFile(inputPaths.before),
-    readJsonFile(inputPaths.after),
-  ]);
-  const reports: Diff<Report> = {
-    before: reportSchema.parse(reportBefore),
-    after: reportSchema.parse(reportAfter),
-  };
-
-  const reportsDiff = compareReports(reports);
-
-  await writeFile(outputPath, JSON.stringify(reportsDiff, null, 2));
 }
