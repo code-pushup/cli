@@ -12,12 +12,24 @@ export const cli = (args: string[]) =>
     groups,
     examples: [
       [
-        'code-pushup collect --config tsconfig.test.json',
-        'Use the config from `tsconfig.test.json` and only collect audits',
+        'code-pushup',
+        'Run collect followed by upload based on configuration from code-pushup.config.* file.',
       ],
       [
-        'code-pushup print-config --onlyPlugins',
-        'print the config object but from the plugins only list given slugs',
+        'code-pushup collect --tsconfig=tsconfig.base.json',
+        'Run collect using custom tsconfig to parse code-pushup.config.ts file.',
+      ],
+      [
+        'code-pushup collect --onlyPlugins=coverage',
+        'Run collect with only coverage plugin, other plugins from config file will be skipped.',
+      ],
+      [
+        'code-pushup upload --persist.outputDir=dist --persist.filename=cp-report --upload.apiKey=$CP_API_KEY',
+        'Upload dist/cp-report.json to portal using API key from environment variable',
+      ],
+      [
+        'code-pushup print-config --config code-pushup.config.test.js',
+        'Print resolved config object parsed from custom config location',
       ],
     ],
     middlewares,
