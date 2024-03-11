@@ -5,35 +5,39 @@ import { name, version } from '../../package.json';
 import {
   JSPackagesPluginConfig,
   PackageCommand,
+  PackageDependencyType,
+  PackageManager,
   jsPackagesPluginConfigSchema,
 } from './config';
-import { createRunnerConfig } from './runner';
 import {
   auditDocs,
+  dependencyDocs,
   outdatedDocs,
   pkgManagerDocs,
   pkgManagerIcons,
   pkgManagerNames,
-} from './utils';
+} from './constants';
+import { createRunnerConfig } from './runner';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
  *
  * @example
- * import coveragePlugin from '@code-pushup/js-packages-plugin'
+ * import jsPackagesPlugin from '@code-pushup/js-packages-plugin'
  *
  * export default {
  *   // ... core config ...
  *   plugins: [
  *     // ... other plugins ...
- *     await jsPackagesPlugin()
+ *     await jsPackagesPlugin({ packageManager: 'npm' })
  *   ]
  * }
  *
  * @returns Plugin configuration.
  */
+
 export async function jsPackagesPlugin(
-  config: JSPackagesPluginConfig = {},
+  config: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
   const pkgManager = jsPackagesPluginConfig.packageManager;
@@ -44,32 +48,6 @@ export async function jsPackagesPlugin(
     'bin.js',
   );
 
-  const audits: Record<PackageCommand, Audit> = {
-    audit: {
-      slug: `${pkgManager}-audit`,
-      title: `${pkgManagerNames[pkgManager]} audit`,
-      description: `Lists ${pkgManagerNames[pkgManager]} audit vulnerabilities.`,
-      docsUrl: auditDocs[pkgManager],
-    },
-    outdated: {
-      slug: `${pkgManager}-outdated`,
-      title: `${pkgManagerNames[pkgManager]} outdated dependencies`,
-      description: `Lists ${pkgManagerNames[pkgManager]} outdated dependencies.`,
-      docsUrl: outdatedDocs[pkgManager],
-    },
-  };
-
-  const group: Group = {
-    slug: `${pkgManager}-package-manager`,
-    title: `${pkgManagerNames[pkgManager]} package manager`,
-    description: `Group containing both audit and dependencies command audits for the ${pkgManagerNames[pkgManager]} package manager.`,
-    docsUrl: pkgManagerDocs[pkgManager],
-    refs: checks.map(check => ({
-      slug: `${pkgManager}-${check}`,
-      weight: 1,
-    })),
-  };
-
   return {
     slug: 'js-packages',
     title: 'Plugin for JS packages',
@@ -79,8 +57,87 @@ export async function jsPackagesPlugin(
     docsUrl: pkgManagerDocs[pkgManager],
     packageName: name,
     version,
-    audits: checks.map(check => audits[check]),
-    groups: [group],
+    audits: createAudits(pkgManager, checks),
+    groups: createGroups(pkgManager, checks),
     runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
   };
+}
+
+function createGroups(
+  pkgManager: PackageManager,
+  checks: PackageCommand[],
+): Group[] {
+  const groups: Record<PackageCommand, Group> = {
+    audit: {
+      slug: `${pkgManager}-audit`,
+      title: `${pkgManagerNames[pkgManager]} audit`,
+      description: `Group containing ${pkgManagerNames[pkgManager]} vulnerabilities.`,
+      docsUrl: auditDocs[pkgManager],
+      refs: [
+        // eslint-disable-next-line no-magic-numbers
+        { slug: `${pkgManager}-audit-prod`, weight: 8 },
+        { slug: `${pkgManager}-audit-dev`, weight: 1 },
+        { slug: `${pkgManager}-audit-optional`, weight: 1 },
+      ],
+    },
+    outdated: {
+      slug: `${pkgManager}-outdated`,
+      title: `${pkgManagerNames[pkgManager]} outdated dependencies`,
+      description: `Group containing outdated ${pkgManagerNames[pkgManager]} dependencies.`,
+      docsUrl: outdatedDocs[pkgManager],
+      refs: [
+        // eslint-disable-next-line no-magic-numbers
+        { slug: `${pkgManager}-outdated-prod`, weight: 8 },
+        { slug: `${pkgManager}-outdated-dev`, weight: 1 },
+        { slug: `${pkgManager}-outdated-optional`, weight: 1 },
+      ],
+    },
+  };
+
+  return checks.map(check => groups[check]);
+}
+
+function createAudits(
+  pkgManager: PackageManager,
+  checks: PackageCommand[],
+): Audit[] {
+  return checks.flatMap(check => [
+    {
+      slug: `${pkgManager}-${check}-prod`,
+      title: getAuditTitle(pkgManager, check, 'prod'),
+      description: getAuditDescription(check, 'prod'),
+      docsUrl: dependencyDocs.prod,
+    },
+    {
+      slug: `${pkgManager}-${check}-dev`,
+      title: getAuditTitle(pkgManager, check, 'dev'),
+      description: getAuditDescription(check, 'dev'),
+      docsUrl: dependencyDocs.dev,
+    },
+    {
+      slug: `${pkgManager}-${check}-optional`,
+      title: getAuditTitle(pkgManager, check, 'optional'),
+      description: getAuditDescription(check, 'optional'),
+      docsUrl: dependencyDocs.optional,
+    },
+  ]);
+}
+
+function getAuditTitle(
+  pkgManager: PackageManager,
+  check: PackageCommand,
+  dependencyType: PackageDependencyType,
+) {
+  return check === 'audit'
+    ? `Vulnerabilities for ${pkgManagerNames[pkgManager]} ${dependencyType} dependencies.`
+    : `Outdated ${pkgManagerNames[pkgManager]} ${dependencyType} dependencies.`;
+}
+
+function getAuditDescription(
+  check: PackageCommand,
+  dependencyType: PackageDependencyType,
+) {
+  return check === 'audit'
+    ? `Runs security audit on ${dependencyType} dependencies.`
+    : `Checks for outdated ${dependencyType} dependencies`;
 }

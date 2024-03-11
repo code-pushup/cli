@@ -24,35 +24,54 @@ describe('jsPackagesPlugin', () => {
     );
   });
 
-  it('should set package manager and commands based on configuration', async () => {
+  it('should create a group for both audit and outdated when no check configuration is provided', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'yarn-classic', checks: ['audit'] }),
+      jsPackagesPlugin({ packageManager: 'npm' }),
     ).resolves.toStrictEqual(
-      expect.objectContaining({
-        audits: [expect.objectContaining({ slug: 'yarn-classic-audit' })],
+      expect.objectContaining<Partial<PluginConfig>>({
         groups: [
           expect.objectContaining<Partial<Group>>({
-            slug: 'yarn-classic-package-manager',
-            refs: [{ slug: 'yarn-classic-audit', weight: 1 }],
+            slug: 'npm-audit',
+          }),
+          expect.objectContaining<Partial<Group>>({
+            slug: 'npm-outdated',
           }),
         ],
       }),
     );
   });
 
-  it('should use npm with both audit and outdated commands when no configuration is provided', async () => {
-    await expect(jsPackagesPlugin()).resolves.toStrictEqual(
-      expect.objectContaining<Partial<PluginConfig>>({
+  it('should configure a group based on package manager and chosen check', async () => {
+    await expect(
+      jsPackagesPlugin({ packageManager: 'yarn-modern', checks: ['outdated'] }),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        groups: [
+          expect.objectContaining<Partial<Group>>({
+            slug: 'yarn-modern-outdated',
+          }),
+        ],
+      }),
+    );
+  });
+
+  it('should create an audit for each dependency group', async () => {
+    await expect(
+      jsPackagesPlugin({ packageManager: 'yarn-classic', checks: ['audit'] }),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
         audits: [
-          expect.objectContaining({ slug: 'npm-audit' }),
-          expect.objectContaining({ slug: 'npm-outdated' }),
+          expect.objectContaining({ slug: 'yarn-classic-audit-prod' }),
+          expect.objectContaining({ slug: 'yarn-classic-audit-dev' }),
+          expect.objectContaining({ slug: 'yarn-classic-audit-optional' }),
         ],
         groups: [
           expect.objectContaining<Partial<Group>>({
-            slug: 'npm-package-manager',
+            slug: 'yarn-classic-audit',
             refs: [
-              { slug: 'npm-audit', weight: 1 },
-              { slug: 'npm-outdated', weight: 1 },
+              { slug: 'yarn-classic-audit-prod', weight: 8 },
+              { slug: 'yarn-classic-audit-dev', weight: 1 },
+              { slug: 'yarn-classic-audit-optional', weight: 1 },
             ],
           }),
         ],
