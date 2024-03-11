@@ -1,10 +1,9 @@
 import chalk from 'chalk';
 import { simpleGit } from 'simple-git';
-import { CommandModule, Options } from 'yargs';
+import { CommandModule } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
 import { yargsHistoryOptionsDefinition } from './history.options';
 
@@ -13,10 +12,14 @@ export function yargsHistoryCommandObject() {
   return {
     command,
     describe: 'Create history of commits',
-    builder: {
-      ...yargsOnlyPluginsOptionsDefinition(),
-      ...yargsHistoryOptionsDefinition(),
-    } satisfies Record<keyof HistoryCliOptions, Options>,
+    builder: yargs => {
+      yargs.options(yargsHistoryOptionsDefinition());
+      yargs.group(
+        Object.keys(yargsHistoryOptionsDefinition()),
+        'History Options:',
+      );
+      return yargs;
+    },
     handler: async args => {
       // eslint-disable-next-line no-console
       console.log(chalk.bold(CLI_NAME));

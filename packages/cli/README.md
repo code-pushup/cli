@@ -252,10 +252,12 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 
 | Option                   | Type      | Default  | Description                                                      |
 | ------------------------ | --------- | -------- | ---------------------------------------------------------------- |
-| **`--targetBranch`**     | `string`  | n/a      | Branch to crawl history from.                                    |
+| **`--targetBranch`**     | `string`  | 'main'   | Branch to crawl history.                                         |
 | **`--forceCleanStatus`** | `boolean` | `report` | If we reset the status to a clean git history forcefully or not. |
-| **`--numSteps`**         | `number`  | 3        | Number of steps in history.                                      |
-| **`--uploadReports`**    | `boolean` | true     | Upload created reports                                           |
+| **`--maxCount`**         | `number`  | 5        | Number of steps in history.                                      |
+| **`--skipUploads`**      | `boolean` | `false`  | Upload created reports                                           |
+| **`--from`**             | `string`  | n/a      | Hash to start in history                                         |
+| **`--to`**               | `string`  | n/a      | Hash to end in history                                           |
 
 > [!NOTE]  
 > If no target branch is set the current branch is used as target branch

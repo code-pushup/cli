@@ -7,12 +7,13 @@ export function yargsHistoryOptionsDefinition(): Record<
 > {
   return {
     targetBranch: {
-      describe: 'Branch to crawl history of',
+      describe: 'Branch to crawl history',
       type: 'string',
       default: 'main',
     },
     forceCleanStatus: {
-      describe: 'Folder to restore using "git restore [folder]"',
+      describe:
+        'If we reset the status to a clean git history forcefully or not.',
       type: 'boolean',
     },
     skipUploads: {
