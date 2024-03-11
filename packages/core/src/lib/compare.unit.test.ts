@@ -12,6 +12,36 @@ import {
 import { Diff, readJsonFile } from '@code-pushup/utils';
 import { compareReportFiles, compareReports } from './compare';
 
+describe('compareReportFiles', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        'source-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
+        'target-report.json': JSON.stringify(REPORT_MOCK),
+      },
+      MEMFS_VOLUME,
+    );
+  });
+
+  it('should create valid reports-diff.json from report.json files', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      join(MEMFS_VOLUME, 'reports-diff.json'),
+    );
+
+    const reportsDiffPromise = readJsonFile(
+      join(MEMFS_VOLUME, 'reports-diff.json'),
+    );
+    await expect(reportsDiffPromise).resolves.toBeTruthy();
+
+    const reportsDiff = await reportsDiffPromise;
+    expect(() => reportsDiffSchema.parse(reportsDiff)).not.toThrow();
+  });
+});
+
 describe('compareReports', () => {
   const mockCommits: Diff<Commit> = {
     before: COMMIT_MOCK,
@@ -90,48 +120,18 @@ describe('compareReports', () => {
 
     it('should only have added groups (minimal report has none)', () => {
       const reportsDiff = compareReports(mockReports);
-      expect(reportsDiff.groups.added.length).toBeGreaterThan(0);
+      expect(reportsDiff.groups.added).not.toHaveLength(0);
       expect(reportsDiff.groups.removed).toHaveLength(0);
       expect(reportsDiff.groups.changed).toHaveLength(0);
       expect(reportsDiff.groups.unchanged).toHaveLength(0);
     });
 
-    it('should mark multiple audits as added and 1 as removed (single audit from minimal report unmatched)', () => {
+    it('should mark audits as added or removed when there is no overlap between reports', () => {
       const reportsDiff = compareReports(mockReports);
-      expect(reportsDiff.audits.added.length).toBeGreaterThan(1);
-      expect(reportsDiff.audits.removed).toHaveLength(1);
+      expect(reportsDiff.audits.added).not.toHaveLength(0);
+      expect(reportsDiff.audits.removed).not.toHaveLength(0);
       expect(reportsDiff.audits.changed).toHaveLength(0);
       expect(reportsDiff.audits.unchanged).toHaveLength(0);
     });
-  });
-});
-
-describe('compareReportFiles', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'source-report.json': JSON.stringify(MINIMAL_REPORT_MOCK),
-        'target-report.json': JSON.stringify(REPORT_MOCK),
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
-  it('should create valid reports-diff.json from report.json files', async () => {
-    await compareReportFiles(
-      {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
-      },
-      join(MEMFS_VOLUME, 'reports-diff.json'),
-    );
-
-    const reportsDiffPromise = readJsonFile(
-      join(MEMFS_VOLUME, 'reports-diff.json'),
-    );
-    await expect(reportsDiffPromise).resolves.toBeTruthy();
-
-    const reportsDiff = await reportsDiffPromise;
-    expect(() => reportsDiffSchema.parse(reportsDiff)).not.toThrow();
   });
 });

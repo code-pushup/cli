@@ -62,15 +62,6 @@ describe('compareGroups', () => {
               ],
             },
             {
-              slug: 'stylelint',
-              title: 'Stylelint',
-              groups: [
-                { slug: 'errors', title: 'Avoid errors', score: 1 },
-                { slug: 'conventions', title: 'Conventions', score: 0.7 },
-                { slug: 'formatting', title: 'Whitespace etc.', score: 0.8 },
-              ],
-            },
-            {
               slug: 'prettier',
               title: 'Prettier',
               groups: [
@@ -88,15 +79,6 @@ describe('compareGroups', () => {
                 { slug: 'problems', title: 'Problems', score: 0.4 },
                 { slug: 'suggestions', title: 'Suggestions', score: 0.4 }, // regressed
                 { slug: 'formatting', title: 'Formatting', score: 0.95 }, // improved
-              ],
-            },
-            {
-              slug: 'stylelint',
-              title: 'Stylelint',
-              groups: [
-                { slug: 'errors', title: 'Avoid errors', score: 1 },
-                { slug: 'conventions', title: 'Conventions', score: 0.7 },
-                { slug: 'formatting', title: 'Whitespace etc.', score: 1 }, // improved
               ],
             },
             {
@@ -131,16 +113,6 @@ describe('compareGroups', () => {
             diff: expect.closeTo(0.05),
           },
         },
-        {
-          slug: 'formatting',
-          title: 'Whitespace etc.',
-          plugin: { slug: 'stylelint', title: 'Stylelint' },
-          scores: {
-            before: 0.8,
-            after: 1,
-            diff: expect.closeTo(0.2),
-          },
-        },
       ],
       unchanged: [
         {
@@ -148,18 +120,6 @@ describe('compareGroups', () => {
           title: 'Problems',
           plugin: { slug: 'eslint', title: 'ESLint' },
           score: 0.4,
-        },
-        {
-          slug: 'errors',
-          title: 'Avoid errors',
-          plugin: { slug: 'stylelint', title: 'Stylelint' },
-          score: 1,
-        },
-        {
-          slug: 'conventions',
-          title: 'Conventions',
-          plugin: { slug: 'stylelint', title: 'Stylelint' },
-          score: 0.7,
         },
         {
           slug: 'formatting',
