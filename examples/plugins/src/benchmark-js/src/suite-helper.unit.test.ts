@@ -50,8 +50,8 @@ describe('benchToBenchmarkResult', () => {
     };
     const bench = {
       getTask: (name: string) => {
-        // eslint-disable-next-line vitest/no-conditional-tests
         const result =
+          // eslint-disable-next-line vitest/no-conditional-tests
           name === 'current-implementation'
             ? currentImplementation
             : slowerImplementation;
