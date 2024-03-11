@@ -15,12 +15,12 @@ describe('createRunnerConfig', () => {
       coverageTypes: ['branch'],
       perfectScoreThreshold: 85,
     });
-    expect(runnerConfig).toStrictEqual({
+    expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
       args: ['executeRunner.ts'],
       outputTransform: expect.any(Function),
       outputFile: expect.stringContaining('runner-output.json'),
-    } satisfies RunnerConfig);
+    });
   });
 
   it('should provide plugin config to runner in JSON file', async () => {

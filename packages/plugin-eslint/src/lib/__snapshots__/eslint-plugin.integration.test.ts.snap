@@ -145,7 +145,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "ESLint rule **yoda**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
       "slug": "yoda",
-      "title": "Require or disallow \\"Yoda\\" conditions",
+      "title": "Require or disallow "Yoda" conditions",
     },
     {
       "description": "ESLint rule **jsx-key**, from _react_ plugin.",
@@ -199,7 +199,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "ESLint rule **jsx-no-target-blank**, from _react_ plugin.",
       "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
       "slug": "react-jsx-no-target-blank",
-      "title": "Disallow \`target=\\"_blank\\"\` attribute without \`rel=\\"noreferrer\\"\`",
+      "title": "Disallow \`target="_blank"\` attribute without \`rel="noreferrer"\`",
     },
     {
       "description": "ESLint rule **jsx-no-undef**, from _react_ plugin.",
@@ -509,10 +509,6 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
   "runner": {
     "args": [
       "<dirname>/bin.js",
-      "no-cond-assign,no-const-assign,no-debugger,no-invalid-regexp,no-undef,no-unreachable-loop,no-unsafe-negation,no-unsafe-optional-chaining,no-unused-vars,use-isnan,valid-typeof,arrow-body-style,camelcase,curly,eqeqeq,max-lines-per-function,max-lines,no-shadow,no-var,object-shorthand,prefer-arrow-callback,prefer-const,prefer-object-spread,yoda,react-jsx-key,react-prop-types,react-react-in-jsx-scope,react-hooks-rules-of-hooks,react-hooks-exhaustive-deps,react-display-name,react-jsx-no-comment-textnodes,react-jsx-no-duplicate-props,react-jsx-no-target-blank,react-jsx-no-undef,react-jsx-uses-react,react-jsx-uses-vars,react-no-children-prop,react-no-danger-with-children,react-no-deprecated,react-no-direct-mutation-state,react-no-find-dom-node,react-no-is-mounted,react-no-render-return-value,react-no-string-refs,react-no-unescaped-entities,react-no-unknown-property,react-require-render-return",
-      ".eslintrc.js",
-      "'src/**/*.js'",
-      "'src/**/*.jsx'",
     ],
     "command": "node",
     "outputFile": "node_modules/.code-pushup/eslint/runner-output.json",

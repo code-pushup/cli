@@ -18,3 +18,9 @@ export const eslintPluginConfigSchema = z.object({
 });
 
 export type ESLintPluginConfig = z.infer<typeof eslintPluginConfigSchema>;
+
+export type ESLintPluginRunnerConfig = {
+  eslintrc: string;
+  slugs: string[];
+  patterns: string[];
+};

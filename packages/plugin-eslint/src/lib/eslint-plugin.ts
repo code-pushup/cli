@@ -61,7 +61,7 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: createRunnerConfig(
+    runner: await createRunnerConfig(
       runnerScriptPath,
       audits,
       eslintrcPath,

@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { UploadOptions, upload } from '@code-pushup/core';
-import { getLatestCommit, validateCommitData } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
   renderIntegratePortalHint,
@@ -24,11 +23,7 @@ export function yargsUploadCommandObject() {
         throw new Error('Upload configuration not set');
       }
       const { url } = await upload(options);
-
-      const commitData = await getLatestCommit();
-      if (validateCommitData(commitData, { throwError: true })) {
-        uploadSuccessfulLog(url);
-      }
+      uploadSuccessfulLog(url);
     },
   } satisfies CommandModule;
 }

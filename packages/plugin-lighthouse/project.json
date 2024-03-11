@@ -27,18 +27,18 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/plugin-lighthouse/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/packages/plugin-lighthouse/unit-tests"
+        "reportsDirectory": "../../coverage/plugin-lighthouse/unit-tests"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/packages/plugin-lighthouse"],
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
         "config": "packages/plugin-lighthouse/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/packages/plugin-lighthouse/integration-tests"
+        "reportsDirectory": "../../coverage/plugin-lighthouse/integration-tests"
       }
     },
     "deploy": {

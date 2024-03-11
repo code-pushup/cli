@@ -1,4 +1,3 @@
-import { join } from 'node:path';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 
@@ -11,11 +10,11 @@ const eslintAuditRef = (slug, weight) => ({
 
 export default {
   persist: {
-    outputDir: '../../tmp/react-todos-app',
+    outputDir: '../../tmp/e2e/react-todos-app',
   },
   plugins: [
     await coveragePlugin({
-      reports: [join('coverage', 'lcov.info')],
+      reports: ['../../coverage/react-todos-app/lcov.info'],
       coverageToolCommand: {
         command: 'npx',
         args: ['vitest', 'run', '--coverage'],

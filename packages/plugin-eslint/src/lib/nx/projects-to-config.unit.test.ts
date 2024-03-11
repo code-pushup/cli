@@ -5,7 +5,7 @@ import type {
 } from '@nx/devkit';
 import type { ESLint } from 'eslint';
 import { vol } from 'memfs';
-import type { SpyInstance } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ESLintPluginConfig } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
@@ -47,7 +47,7 @@ describe('nxProjectsToConfig', () => {
     ),
   });
 
-  let cwdSpy: SpyInstance;
+  let cwdSpy: MockInstance<[], string>;
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);
