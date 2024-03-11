@@ -115,6 +115,35 @@ describe('scoredAuditOutput', () => {
     );
   });
 
+  it('should score a maximum of 1', () => {
+    expect(
+      suiteResultToAuditOutput([
+        {
+          suiteName: 'glob',
+          hz: 0.1,
+          rme: 2.5,
+          name: 'target',
+          isFastest: false,
+          isTarget: true,
+          samples: 4,
+        },
+        {
+          suiteName: 'glob',
+          hz: 1,
+          rme: 2.5,
+          name: 'other',
+          isFastest: true,
+          isTarget: false,
+          samples: 4,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        score: 0.1,
+      }),
+    );
+  });
+
   it('should format value to 2 floating positions', () => {
     expect(
       suiteResultToAuditOutput([

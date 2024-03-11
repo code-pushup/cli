@@ -26,7 +26,7 @@ export function suiteResultToAuditOutput(
   return {
     slug: toAuditSlug(suiteName),
     displayValue: `${targetHz.toFixed(2)} ops/sec`,
-    score: targetHz / maxHz,
+    score: targetHz <= maxHz ? targetHz / maxHz : 1,
     value: Number.parseInt(targetHz.toString(), 10),
     details: {
       issues: results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
