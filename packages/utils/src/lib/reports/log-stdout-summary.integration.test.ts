@@ -1,10 +1,9 @@
-import {beforeAll, describe, expect, vi} from 'vitest';
+import { beforeAll, describe, expect, vi } from 'vitest';
 import { reportMock } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
-
 
 describe('logStdoutSummary', () => {
   // eslint-disable-next-line vitest/require-hook
