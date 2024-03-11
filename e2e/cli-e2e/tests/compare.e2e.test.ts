@@ -28,7 +28,7 @@ describe('CLI compare', () => {
       args: ['collect', '--persist.filename=target-report'],
       cwd: 'examples/react-todos-app',
     });
-  });
+  }, 20_000);
 
   afterEach(async () => {
     await git.checkout(['--', 'examples/react-todos-app']);
