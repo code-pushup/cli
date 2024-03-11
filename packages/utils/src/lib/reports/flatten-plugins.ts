@@ -1,11 +1,11 @@
 import { Report } from '@code-pushup/models';
 
-// generic type params infers ScoredGroup if ScoredReport provided
+// generic type param infers ScoredGroup if ScoredReport provided
 export function listGroupsFromAllPlugins<T extends Report>(
   report: T,
 ): {
-  plugin: T['plugins'][0];
-  group: NonNullable<T['plugins'][0]['groups']>[0];
+  plugin: T['plugins'][number];
+  group: NonNullable<T['plugins'][number]['groups']>[number];
 }[] {
   return report.plugins.flatMap(
     plugin => plugin.groups?.map(group => ({ plugin, group })) ?? [],
@@ -15,8 +15,8 @@ export function listGroupsFromAllPlugins<T extends Report>(
 export function listAuditsFromAllPlugins<T extends Report>(
   report: T,
 ): {
-  plugin: T['plugins'][0];
-  audit: T['plugins'][0]['audits'][0];
+  plugin: T['plugins'][number];
+  audit: T['plugins'][number]['audits'][number];
 }[] {
   return report.plugins.flatMap(plugin =>
     plugin.audits.map(audit => ({ plugin, audit })),
