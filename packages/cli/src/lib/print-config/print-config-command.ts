@@ -1,15 +1,20 @@
 import { CommandModule } from 'yargs';
 import { filterKebabCaseKeys } from '../implementation/global.utils';
 import { ui } from '../implementation/logging';
-import { onlyPluginsOption } from '../implementation/only-plugins.options';
+import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 export function yargsConfigCommandObject() {
   const command = 'print-config';
   return {
     command,
     describe: 'Print config',
-    builder: {
-      onlyPlugins: onlyPluginsOption,
+    builder: yargs => {
+      yargs.options(yargsOnlyPluginsOptionsDefinition());
+      yargs.group(
+        Object.keys(yargsOnlyPluginsOptionsDefinition()),
+        'Print Config Options:',
+      );
+      return yargs;
     },
     handler: yargsArgs => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

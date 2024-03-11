@@ -18,7 +18,14 @@ export function yargsCollectCommandObject(): CommandModule {
   return {
     command,
     describe: 'Run Plugins and collect results',
-    builder: yargsOnlyPluginsOptionsDefinition(),
+    builder: yargs => {
+      yargs.options(yargsOnlyPluginsOptionsDefinition());
+      yargs.group(
+        Object.keys(yargsOnlyPluginsOptionsDefinition()),
+        'Collect Options:',
+      );
+      return yargs;
+    },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
       ui().logger.log(chalk.bold(CLI_NAME));

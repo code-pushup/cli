@@ -23,7 +23,14 @@ export function yargsAutorunCommandObject() {
   return {
     command,
     describe: 'Shortcut for running collect followed by upload',
-    builder: yargsOnlyPluginsOptionsDefinition(),
+    builder: yargs => {
+      yargs.options(yargsOnlyPluginsOptionsDefinition());
+      yargs.group(
+        Object.keys(yargsOnlyPluginsOptionsDefinition()),
+        'Autorun Options:',
+      );
+      return yargs;
+    },
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       ui().logger.log(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}...`));
