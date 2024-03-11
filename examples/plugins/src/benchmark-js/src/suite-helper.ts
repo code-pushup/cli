@@ -1,93 +1,67 @@
-import { Bench } from 'tinybench';
-import { importEsmModule } from '@code-pushup/utils';
+import Benchmark, { type Event, type Target } from 'benchmark';
 
 export type SuiteConfig = {
   suiteName: string;
   targetImplementation: string;
   cases: [string, (...args: unknown[]) => Promise<unknown>][];
-  time?: number;
 };
 export type BenchmarkResult = {
-  hz: number;
-  rme: number;
-  samples: number;
   suiteName: string;
   name: string;
+  hz: number; // operations per second
+  rme: number; // relative margin of error
+  samples: number;
   isFastest: boolean;
   isTarget: boolean;
 };
 
-export type LoadOptions = {
-  tsconfig?: string;
-};
+export async function runSuite(
+  { suiteName, cases, targetImplementation }: SuiteConfig,
+  options: {
+    verbose?: boolean;
+  } = { verbose: false },
+): Promise<BenchmarkResult[]> {
+  const { verbose } = options;
 
-export function loadSuites(
-  targets: string[],
-  options: LoadOptions = {},
-): Promise<SuiteConfig[]> {
-  const { tsconfig } = options;
-  return Promise.all(
-    targets.map(
-      (filepath: string) =>
-        importEsmModule({
-          tsconfig,
-          filepath,
-        }) as Promise<SuiteConfig>,
-    ),
-  );
-}
+  return new Promise((resolve, reject) => {
+    // This is not working with named imports
+    // eslint-disable-next-line import/no-named-as-default-member
+    const suite = new Benchmark.Suite(suiteName);
 
-export async function runSuite({
-  suiteName,
-  cases,
-  targetImplementation,
-  time = 3000,
-}: SuiteConfig): Promise<BenchmarkResult[]> {
-  const suite = new Bench({ time });
+    // Add Listener
+    Object.entries({
+      error: (e: { target?: { error?: unknown } }) => {
+        reject(e.target?.error ?? e);
+      },
+      cycle: function (event: Event) {
+        if (verbose) {
+          // @TODO use cliui.logger.info(String(event.target))
+          // eslint-disable-next-line no-console
+          console.log(String(event.target));
+        }
+      },
+      complete: (event: Event) => {
+        const fastest = String(suite.filter('fastest').map('name')[0]);
+        const json = (event.currentTarget as unknown as Target[]).map(
+          bench =>
+            ({
+              suiteName,
+              name: bench.name || '',
+              hz: bench.hz ?? 0, // operations per second
+              rme: bench.stats?.rme ?? 0, // relative margin of error
+              samples: bench.stats?.sample.length ?? 0, // number of samples
+              isFastest: fastest === bench.name,
+              isTarget: targetImplementation === bench.name,
+            } satisfies BenchmarkResult),
+        );
 
-  // register test cases
-  cases.forEach(tuple => suite.add(...tuple));
+        resolve(json);
+      },
+    }).forEach(([name, fn]) => suite.on(name, fn));
 
-  await suite.warmup(); // make results more reliable, ref: https://github.com/tinylibs/tinybench/pull/50
-  await suite.run();
+    // register test cases
+    cases.forEach(tuple => suite.add(...tuple));
 
-  return benchToBenchmarkResult(suite, {
-    suiteName,
-    cases,
-    targetImplementation,
-    time,
+    suite.run({ async: true });
   });
-}
-
-export function benchToBenchmarkResult(
-  bench: Bench,
-  suite: SuiteConfig,
-): BenchmarkResult[] {
-  const { suiteName, cases, targetImplementation } = suite;
-  const caseNames = cases.map(([name]) => name);
-  const results = caseNames
-    .map(caseName => {
-      const result = bench.getTask(caseName)?.result ?? {
-        hz: 0,
-        rme: 0,
-        samples: [],
-      };
-      return {
-        suiteName,
-        name: caseName,
-        hz: result.hz,
-        rme: result.rme,
-        samples: result.samples.length,
-        isTarget: targetImplementation === caseName,
-        isFastest: false, // preliminary result
-      } satisfies BenchmarkResult;
-    })
-    // sort by hz to get fastest at the top
-    .sort(({ hz: hzA }, { hz: hzB }) => hzA - hzB);
-
-  return results.map(result =>
-    results.at(1)?.name === result.name
-      ? { ...result, isFastest: true }
-      : result,
-  );
 }

@@ -9,8 +9,7 @@ const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
     string: true,
-    //default: [join(process.cwd(), 'node_modules/**/*.md')],
-    default: [join(process.cwd(), 'packages/utils/**/*.md')],
+    default: [join(process.cwd(), 'node_modules/**/*.md')],
   },
   outputDir: {
     type: 'string',
@@ -22,7 +21,7 @@ const cli = yargs(process.argv).options({
 });
 
 // eslint-disable-next-line n/no-sync
-const { pattern, outputDir, logs } = cli.parseSync();
+const { pattern, logs } = cli.parseSync();
 
 if (logs) {
   // eslint-disable-next-line no-console
@@ -39,7 +38,6 @@ const globbyName = 'globby';
 
 // ==================
 const suiteConfig = {
-  outputDir,
   suiteName: 'glob-matching',
   targetImplementation: 'fast-glob',
   cases: [
@@ -48,6 +46,7 @@ const suiteConfig = {
     [globName, callAndValidate(glob, pattern, globName)],
     [globbyName, callAndValidate(globby, pattern, globbyName)],
   ],
+  time: 20000
 };
 export default suiteConfig;
 
