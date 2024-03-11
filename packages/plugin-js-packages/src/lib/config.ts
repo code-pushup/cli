@@ -4,7 +4,12 @@ import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
 const packageCommandSchema = z.enum(['audit', 'outdated']);
 export type PackageCommand = z.infer<typeof packageCommandSchema>;
 
-const packageManagerSchema = z.enum(['npm', 'yarn', 'yarn-berry', 'pnpm']);
+const packageManagerSchema = z.enum([
+  'npm',
+  'yarn-classic',
+  'yarn-modern',
+  'pnpm',
+]);
 export type PackageManager = z.infer<typeof packageManagerSchema>;
 
 const packageAuditLevelSchema = z.enum([
@@ -36,26 +41,8 @@ export function fillAuditLevelMapping(
   };
 }
 
-// TODO how?
-// export function objectKeys<T extends object>(obj: T): (keyof T)[] {
-//   return Object.keys(obj) as (keyof T)[];
-// }
-
-// function newFillAuditLevelMapping(
-//   mapping: Partial<Record<PackageAuditLevel, IssueSeverity>>,
-// ): Record<PackageAuditLevel, IssueSeverity> {
-//   return Object.fromEntries(
-//     objectKeys(defaultAuditLevelMapping).map<
-//       [PackageAuditLevel, IssueSeverity]
-//     >(auditLevel => [
-//       auditLevel,
-//       mapping[auditLevel] ?? defaultAuditLevelMapping[auditLevel],
-//     ]),
-//   );
-// }
-
 export const jsPackagesPluginConfigSchema = z.object({
-  features: z
+  checks: z
     .array(packageCommandSchema, {
       description:
         'Package manager commands to be run. Defaults to both audit and outdated.',

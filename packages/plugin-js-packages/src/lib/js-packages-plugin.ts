@@ -8,7 +8,13 @@ import {
   jsPackagesPluginConfigSchema,
 } from './config';
 import { createRunnerConfig } from './runner';
-import { auditDocs, outdatedDocs, pkgManagerDocs } from './utils';
+import {
+  auditDocs,
+  outdatedDocs,
+  pkgManagerDocs,
+  pkgManagerIcons,
+  pkgManagerNames,
+} from './utils';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -31,7 +37,7 @@ export async function jsPackagesPlugin(
 ): Promise<PluginConfig> {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
   const pkgManager = jsPackagesPluginConfig.packageManager;
-  const features = [...new Set(jsPackagesPluginConfig.features)];
+  const checks = [...new Set(jsPackagesPluginConfig.checks)];
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -41,25 +47,25 @@ export async function jsPackagesPlugin(
   const audits: Record<PackageCommand, Audit> = {
     audit: {
       slug: `${pkgManager}-audit`,
-      title: `${pkgManager} audit`,
-      description: `Lists ${pkgManager} audit vulnerabilities.`,
+      title: `${pkgManagerNames[pkgManager]} audit`,
+      description: `Lists ${pkgManagerNames[pkgManager]} audit vulnerabilities.`,
       docsUrl: auditDocs[pkgManager],
     },
     outdated: {
       slug: `${pkgManager}-outdated`,
-      title: `${pkgManager} outdated dependencies`,
-      description: `Lists ${pkgManager} outdated dependencies.`,
+      title: `${pkgManagerNames[pkgManager]} outdated dependencies`,
+      description: `Lists ${pkgManagerNames[pkgManager]} outdated dependencies.`,
       docsUrl: outdatedDocs[pkgManager],
     },
   };
 
   const group: Group = {
     slug: `${pkgManager}-package-manager`,
-    title: `${pkgManager} package manager`,
-    description: `Group containing both audit and dependencies command audits for the ${pkgManager} package manager.`,
+    title: `${pkgManagerNames[pkgManager]} package manager`,
+    description: `Group containing both audit and dependencies command audits for the ${pkgManagerNames[pkgManager]} package manager.`,
     docsUrl: pkgManagerDocs[pkgManager],
-    refs: features.map(feature => ({
-      slug: `${pkgManager}-${feature}`,
+    refs: checks.map(check => ({
+      slug: `${pkgManager}-${check}`,
       weight: 1,
     })),
   };
@@ -67,14 +73,13 @@ export async function jsPackagesPlugin(
   return {
     slug: 'js-packages',
     title: 'Plugin for JS packages',
-    icon:
-      pkgManager === 'npm' ? 'npm' : pkgManager === 'pnpm' ? 'pnpm' : 'yarn',
+    icon: pkgManagerIcons[pkgManager],
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic and berry, pnpm package managers.',
     docsUrl: pkgManagerDocs[pkgManager],
     packageName: name,
     version,
-    audits: features.map(feature => audits[feature]),
+    audits: checks.map(check => audits[check]),
     groups: [group],
     runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
   };

@@ -7,13 +7,17 @@
 📦 **Code PushUp plugin for JavaScript packages.** 🛡️
 
 This plugin allows you to list outdated dependencies and run audit for known vulnerabilities.
-It supports the following package managers: npm, yarn, yarn berry, pnpm.
+It supports the following package managers:
+
+- [NPM](https://docs.npmjs.com/)
+- [Yarn v1](https://classic.yarnpkg.com/docs/) & [Yarn v2+](https://yarnpkg.com/getting-started)
+- [PNPM](https://pnpm.io/pnpm-cli)
 
 ## Getting started
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Insert plugin configuration. By default, npm audit and npm outdated commands will be run.
+2. Insert plugin configuration. By default, `audit` and `outdated` commands will be run.
 
    Default configuration will look as follows:
 
@@ -40,7 +44,7 @@ It supports the following package managers: npm, yarn, yarn berry, pnpm.
      // ...
      plugins: [
        // ...
-       await jsPackagesPlugin({ packageManager: ['yarn'], features: ['audit'] }),
+       await jsPackagesPlugin({ packageManager: ['yarn'], checks: ['audit'] }),
      ],
    };
    ```
@@ -78,8 +82,8 @@ It supports the following package managers: npm, yarn, yarn berry, pnpm.
 
 The plugin accepts the following parameters:
 
-- (optional) `packageManager`: The package manager you are using. Supported values: `npm`, `yarn` (v1), `yarn-berry` (v2+), `pnpm`. Default is `npm`.
-- (optional) `features`: Array of commands to be run. Supported commands: `audit`, `outdated`. Both are configured by default.
+- (optional) `packageManager`: The package manager you are using. Supported values: `npm`, `yarn-classic` (v1), `yarn-modern` (v2+), `pnpm`. Default is `npm`.
+- (optional) `checks`: Array of checks to be run. Supported commands: `audit`, `outdated`. Both are configured by default.
 - (optional) `auditLevelMapping`: If you wish to set a custom level of issue severity based on audit vulnerability level, you may do so here. Any omitted values will be filled in by defaults. Audit levels are: `critical`, `high`, `moderate`, `low` and `info`. Issue severities are: `error`, `warn` and `info`. By default the mapping is as follows: `critical` and `high` → `error`; `moderate` and `low` → `warning`; `info` → `info`.
 
 > [!NOTE]

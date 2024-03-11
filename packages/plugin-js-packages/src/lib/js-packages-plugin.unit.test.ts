@@ -12,7 +12,7 @@ vi.mock('./runner/index.ts', () => ({
 describe('jsPackagesPlugin', () => {
   it('should initialise a JS packages plugin', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'npm', features: ['outdated'] }),
+      jsPackagesPlugin({ packageManager: 'npm', checks: ['outdated'] }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
@@ -26,14 +26,14 @@ describe('jsPackagesPlugin', () => {
 
   it('should set package manager and commands based on configuration', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'yarn', features: ['audit'] }),
+      jsPackagesPlugin({ packageManager: 'yarn-classic', checks: ['audit'] }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
-        audits: [expect.objectContaining({ slug: 'yarn-audit' })],
+        audits: [expect.objectContaining({ slug: 'yarn-classic-audit' })],
         groups: [
           expect.objectContaining<Partial<Group>>({
-            slug: 'yarn-package-manager',
-            refs: [{ slug: 'yarn-audit', weight: 1 }],
+            slug: 'yarn-classic-package-manager',
+            refs: [{ slug: 'yarn-classic-audit', weight: 1 }],
           }),
         ],
       }),
