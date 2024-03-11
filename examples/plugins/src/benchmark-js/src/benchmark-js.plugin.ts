@@ -3,7 +3,13 @@ import {
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { LoadOptions, SuiteConfig, loadSuites, runSuite } from './suite-helper';
+import {
+  BenchmarkResult,
+  LoadOptions,
+  SuiteConfig,
+  loadSuites,
+  runSuite,
+} from './suite-helper';
 import { suiteResultToAuditOutput, toAuditMetadata } from './utils';
 
 export type PluginOptions = {
@@ -27,18 +33,16 @@ export async function create(options: PluginOptions): Promise<PluginConfig> {
 
 export function runnerFunction(suites: SuiteConfig[]): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const allSuiteResults = [];
+    const allSuiteResults: BenchmarkResult[][] = [];
     // Execute each suite sequentially
     // eslint-disable-next-line functional/no-loop-statements
     for (const suite of suites) {
-      const result = await runSuite(suite);
+      const result: BenchmarkResult[] = await runSuite(suite);
       // eslint-disable-next-line functional/immutable-data
       allSuiteResults.push(result);
     }
 
     // create audit output
-    return allSuiteResults.flatMap(results =>
-      suiteResultToAuditOutput(results),
-    );
+    return allSuiteResults.map(results => suiteResultToAuditOutput(results));
   };
 }

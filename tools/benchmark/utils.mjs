@@ -1,5 +1,5 @@
-import Benchmark from 'benchmark';
 import { bundleRequire } from 'bundle-require';
+import { Bench } from 'tinybench';
 
 export class NoExportError extends Error {
   constructor(filepath) {
@@ -35,40 +35,61 @@ export function loadSuits(targets, options) {
   );
 }
 
-export function runSuite(
-  { suiteName, cases, targetImplementation, tsconfig },
-  options = { verbose: false },
-) {
-  const { verbose, maxTime } = options;
+export async function runSuite({
+  suiteName,
+  cases,
+  targetImplementation,
+  time = 1000,
+}) {
+  // This is not working with named imports
+  // eslint-disable-next-line import/no-named-as-default-member
+  const suite = new Bench({ time });
 
-  return new Promise((resolve, reject) => {
-    const suite = new Benchmark.Suite(suiteName);
+  // register test cases
+  cases.forEach(tuple => suite.add(...tuple));
 
-    // Add Listener
-    Object.entries({
-      error: e => reject(e?.target?.error ?? e),
-      cycle: function (event) {
-        verbose && console.log(String(event.target));
-      },
-      complete: event => {
-        const fastest = String(suite.filter('fastest').map('name')[0]);
-        const json = event.currentTarget.map(bench => ({
-          suiteName,
-          name: bench.name || '',
-          hz: bench.hz ?? 0, // operations per second
-          rme: bench.stats?.rme ?? 0, // relative margin of error
-          samples: bench.stats?.sample.length ?? 0, // number of samples
-          isFastest: fastest === bench.name,
-          isTarget: targetImplementation === bench.name,
-        }));
+  await suite.warmup(); // make results more reliable, ref: https://github.com/tinylibs/tinybench/pull/50
+  await suite.run();
 
-        resolve(json);
-      },
-    }).forEach(([name, fn]) => suite.on(name, fn));
-
-    // register test cases
-    cases.forEach(tuple => suite.add(...tuple));
-
-    suite.run({ async: true });
+  return benchToBenchmarkResult(suite, {
+    suiteName,
+    cases,
+    targetImplementation,
   });
+}
+
+export function benchToBenchmarkResult(bench, suite) {
+  const caseNames = suite.cases.map(([name]) => name);
+  const results = caseNames.map(caseName => {
+    const result = bench.getTask(caseName)?.result ?? {};
+    return {
+      suiteName: suite.suiteName,
+      name: caseName,
+      hz: result.hz,
+      rme: result.rme,
+      samples: result.samples.length,
+      isTarget: suite.targetImplementation === caseName,
+      isFastest: false, // preliminary result
+    };
+  });
+
+  const fastestName =
+    caseNames.reduce(
+      (fastest, name) => {
+        const { hz } = bench.getTask(name)?.result ?? {};
+        if (fastest.name === undefined) {
+          return { hz, name };
+        }
+        if (hz && fastest.hz && hz > fastest.hz) {
+          return { hz, name };
+        }
+        return fastest;
+      },
+      { hz: 0, name: undefined },
+    ).name ?? '';
+
+  return results.map(result => ({
+    ...result,
+    isFastest: fastestName === result.name,
+  }));
 }
