@@ -97,6 +97,7 @@ describe('history-command', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
+        onlyPlugins: [],
         targetBranch: 'main',
         maxCount: 2,
         skipUploads: false,

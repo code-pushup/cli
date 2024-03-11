@@ -4,6 +4,7 @@ import { CommandModule } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
+import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
 import { yargsHistoryOptionsDefinition } from './history.options';
 
@@ -13,7 +14,10 @@ export function yargsHistoryCommandObject() {
     command,
     describe: 'Create history of commits',
     builder: yargs => {
-      yargs.options(yargsHistoryOptionsDefinition());
+      yargs.options({
+        ...yargsHistoryOptionsDefinition(),
+        ...yargsOnlyPluginsOptionsDefinition(),
+      });
       yargs.group(
         Object.keys(yargsHistoryOptionsDefinition()),
         'History Options:',
