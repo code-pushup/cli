@@ -11,7 +11,6 @@ import {
   renderConfigureCategoriesHint,
   ui,
 } from '../implementation/logging';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 export function yargsCollectCommandObject(): CommandModule {
   const command = 'collect';

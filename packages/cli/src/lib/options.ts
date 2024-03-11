@@ -13,9 +13,10 @@ export const options = {
 };
 
 export const groups = {
-  'Global Options:': Object.keys(yargsGlobalOptionsDefinition()).concat(
-    Object.keys(yargsOnlyPluginsOptionsDefinition()),
-  ),
+  'Global Options:': [
+    ...Object.keys(yargsGlobalOptionsDefinition()),
+    ...Object.keys(yargsOnlyPluginsOptionsDefinition()),
+  ],
   'Persist Options:': Object.keys(yargsPersistConfigOptionsDefinition()),
   'Upload Options:': Object.keys(yargsUploadConfigOptionsDefinition()),
 };

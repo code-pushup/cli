@@ -14,7 +14,6 @@ import {
   ui,
   uploadSuccessfulLog,
 } from '../implementation/logging';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 
