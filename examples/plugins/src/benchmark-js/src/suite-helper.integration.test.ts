@@ -5,6 +5,7 @@ describe('runSuite', () => {
   it('should execute valid suite', async () => {
     await expect(
       runSuite({
+        time: 200,
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
@@ -14,7 +15,7 @@ describe('runSuite', () => {
           ],
           [
             'slower-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 50)),
+            () => new Promise(resolve => setTimeout(resolve, 30)),
           ],
         ],
       }),

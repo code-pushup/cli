@@ -41,7 +41,7 @@ export async function runSuite({
   suiteName,
   cases,
   targetImplementation,
-  time = 1000,
+  time = 3000,
 }: SuiteConfig): Promise<BenchmarkResult[]> {
   const suite = new Bench({ time });
 

@@ -5,7 +5,7 @@
 ---
 
 The plugin analyzes a given suit name and creates benchmark audits.  
-It uses [benchmark](https://www.npmjs.com/package/benchmark) under the hood.
+It uses [tinybench](https://github.com/tinylibs/tinybench) under the hood.
 
 You can configure the plugin with the following options:
 
