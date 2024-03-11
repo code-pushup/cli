@@ -166,7 +166,7 @@ describe('executePlugins', () => {
           {
             slug: 'node-version',
             score: 1,
-            value: 1,
+            value: 18,
           },
         ]),
       },
