@@ -17,9 +17,24 @@ import { pluginMetaSchema } from './plugin-config';
 function makeComparisonSchema<T extends ZodTypeAny>(schema: T) {
   const sharedDescription = schema.description || 'Result';
   return z.object({
-    before: schema.describe(`${sharedDescription} (previous commit)`),
-    after: schema.describe(`${sharedDescription} (current commit)`),
+    before: schema.describe(`${sharedDescription} (source commit)`),
+    after: schema.describe(`${sharedDescription} (target commit)`),
   });
+}
+
+function makeArraysComparisonSchema<
+  TDiff extends typeof scorableDiffSchema,
+  TResult extends ZodTypeAny,
+>(diffSchema: TDiff, resultSchema: TResult, description: string) {
+  return z.object(
+    {
+      changed: z.array(diffSchema),
+      unchanged: z.array(resultSchema),
+      added: z.array(resultSchema),
+      removed: z.array(resultSchema),
+    },
+    { description },
+  );
 }
 
 const scorableMetaSchema = z.object({ slug: slugSchema, title: titleSchema });
@@ -92,34 +107,25 @@ export const reportsDiffSchema = z
     commits: makeComparisonSchema(commitSchema)
       .nullable()
       .describe('Commits identifying compared reports'),
-    categories: z
-      .object({
-        changed: z.array(categoryDiffSchema),
-        unchanged: z.array(categoryResultSchema),
-        added: z.array(categoryResultSchema),
-        removed: z.array(categoryResultSchema),
-      })
-      .describe('Changes affecting categories'),
-    groups: z
-      .object({
-        changed: z.array(groupDiffSchema),
-        unchanged: z.array(groupResultSchema),
-        added: z.array(groupResultSchema),
-        removed: z.array(groupResultSchema),
-      })
-      .describe('Changes affecting groups'),
-    audits: z
-      .object({
-        changed: z.array(auditDiffSchema),
-        unchanged: z.array(auditResultSchema),
-        added: z.array(auditResultSchema),
-        removed: z.array(auditResultSchema),
-      })
-      .describe('Changes affecting audits'),
+    categories: makeArraysComparisonSchema(
+      categoryDiffSchema,
+      categoryResultSchema,
+      'Changes affecting categories',
+    ),
+    groups: makeArraysComparisonSchema(
+      groupDiffSchema,
+      groupResultSchema,
+      'Changes affecting groups',
+    ),
+    audits: makeArraysComparisonSchema(
+      auditDiffSchema,
+      auditResultSchema,
+      'Changes affecting audits',
+    ),
   })
   .merge(
     packageVersionSchema({
-      versionDescription: 'NPM version of the CLI',
+      versionDescription: 'NPM version of the CLI (when `compare` was run)',
       required: true,
     }),
   )
