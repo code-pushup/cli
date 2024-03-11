@@ -6,7 +6,7 @@
 
 📦 **Code PushUp plugin for JavaScript packages.** 🛡️
 
-This plugin allows you to list outdated dependencies and run audit for known vulnerabilities.
+This plugin checks for known vulnerabilities and outdated dependencies.
 It supports the following package managers:
 
 - [NPM](https://docs.npmjs.com/)
@@ -17,9 +17,7 @@ It supports the following package managers:
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Insert plugin configuration. By default, `audit` and `outdated` commands will be run.
-
-   Default configuration will look as follows:
+2. Insert plugin configuration with your package manager. By default, both `audit` and `outdated` checks will be run. The result should look as follows:
 
    ```js
    import jsPackagesPlugin from '@code-pushup/js-packages-plugin';
@@ -28,14 +26,12 @@ It supports the following package managers:
      // ...
      plugins: [
        // ...
-       await jsPackagesPlugin(),
+       await jsPackagesPlugin({ packageManager: 'npm' }), // replace with your package manager
      ],
    };
    ```
 
-   You may run this plugin with a custom configuration for any supported package manager or command.
-
-   A custom configuration will look similarly to the following:
+   You may run this plugin with a custom configuration for any supported package manager or command. A custom configuration will look similarly to the following:
 
    ```js
    import jsPackagesPlugin from '@code-pushup/js-packages-plugin';
@@ -49,7 +45,7 @@ It supports the following package managers:
    };
    ```
 
-3. (Optional) Reference individual audits or the provided plugin group which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+3. (Optional) Reference individual audits or the provided plugin groups which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    💡 Assign weights based on what influence each command should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
@@ -58,15 +54,28 @@ It supports the following package managers:
      // ...
      categories: [
        {
-         slug: 'dependencies',
-         title: 'Package dependencies',
+         slug: 'security',
+         title: 'Security',
          refs: [
            {
              type: 'group',
-             plugin: 'npm-package-manager', // replace prefix with your package manager
+             plugin: 'npm-audit', // replace prefix with your package manager
              slug: 'js-packages',
              weight: 1,
            },
+         ],
+       },
+       {
+         slug: 'up-to-date',
+         title: 'Up-to-date tools',
+         refs: [
+           {
+             type: 'group',
+             plugin: 'npm-outdated', // replace prefix with your package manager
+             slug: 'js-packages',
+             weight: 1,
+           },
+           // ...
          ],
        },
        // ...
@@ -82,16 +91,13 @@ It supports the following package managers:
 
 The plugin accepts the following parameters:
 
-- (optional) `packageManager`: The package manager you are using. Supported values: `npm`, `yarn-classic` (v1), `yarn-modern` (v2+), `pnpm`. Default is `npm`.
+- `packageManager`: The package manager you are using. Supported values: `npm`, `yarn-classic` (v1), `yarn-modern` (v2+), `pnpm`.
 - (optional) `checks`: Array of checks to be run. Supported commands: `audit`, `outdated`. Both are configured by default.
 - (optional) `auditLevelMapping`: If you wish to set a custom level of issue severity based on audit vulnerability level, you may do so here. Any omitted values will be filled in by defaults. Audit levels are: `critical`, `high`, `moderate`, `low` and `info`. Issue severities are: `error`, `warn` and `info`. By default the mapping is as follows: `critical` and `high` → `error`; `moderate` and `low` → `warning`; `info` → `info`.
 
-> [!NOTE]
-> All parameters are optional so the plugin can be called with no arguments in the default setting.
-
 ### Audits and group
 
-This plugin provides a group for convenient declaration in your config. When defined this way, all measured coverage type audits have the same weight.
+This plugin provides a group per check for a convenient declaration in your config.
 
 ```ts
      // ...
@@ -103,7 +109,13 @@ This plugin provides a group for convenient declaration in your config. When def
            {
              type: 'group',
              plugin: 'js-packages',
-             slug: 'npm-package-manager', // replace prefix with your package manager
+             slug: 'npm-audit', // replace prefix with your package manager
+             weight: 1,
+           },
+           {
+             type: 'group',
+             plugin: 'js-packages',
+             slug: 'npm-outdated', // replace prefix with your package manager
              weight: 1,
            },
            // ...
@@ -113,7 +125,7 @@ This plugin provides a group for convenient declaration in your config. When def
      ],
 ```
 
-Each package manager command still has its own audit. So when you want to include a subset of commands or assign different weights to them, you can do so in the following way:
+Each dependency group has its own audit. If you want to check only a subset of dependencies (e.g. run audit and outdated for production dependencies) or assign different weights to them, you can do so in the following way:
 
 ```ts
      // ...
@@ -125,14 +137,20 @@ Each package manager command still has its own audit. So when you want to includ
            {
              type: 'audit',
              plugin: 'js-packages',
-             slug: 'npm-audit', // replace prefix with your package manager
+             slug: 'npm-audit-prod', // replace prefix with your package manager
              weight: 2,
+           },
+                      {
+             type: 'audit',
+             plugin: 'js-packages',
+             slug: 'npm-audit-dev', // replace prefix with your package manager
+             weight: 1,
            },
            {
              type: 'audit',
              plugin: 'js-packages',
-             slug: 'npm-outdated', // replace prefix with your package manager
-             weight: 1,
+             slug: 'npm-outdated-prod', // replace prefix with your package manager
+             weight: 2,
            },
            // ...
          ],

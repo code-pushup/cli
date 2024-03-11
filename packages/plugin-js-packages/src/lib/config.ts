@@ -49,9 +49,7 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .min(1)
     .default(['audit', 'outdated']),
-  packageManager: packageManagerSchema
-    .describe('Package manager to be used. Defaults to npm')
-    .default('npm'),
+  packageManager: packageManagerSchema.describe('Package manager to be used.'),
   auditLevelMapping: z
     .record(packageAuditLevelSchema, issueSeveritySchema, {
       description:
@@ -68,3 +66,5 @@ export type JSPackagesPluginConfig = z.input<
 export type FinalJSPackagesPluginConfig = z.infer<
   typeof jsPackagesPluginConfigSchema
 >;
+
+export type PackageDependencyType = 'prod' | 'dev' | 'optional';

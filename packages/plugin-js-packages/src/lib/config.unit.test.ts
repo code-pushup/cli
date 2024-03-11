@@ -20,11 +20,17 @@ describe('jsPackagesPluginConfigSchema', () => {
   });
 
   it('should accept a minimal JS package configuration', () => {
-    expect(() => jsPackagesPluginConfigSchema.parse({})).not.toThrow();
+    expect(() =>
+      jsPackagesPluginConfigSchema.parse({
+        packageManager: 'pnpm',
+      } satisfies JSPackagesPluginConfig),
+    ).not.toThrow();
   });
 
   it('should fill in default values', () => {
-    const config = jsPackagesPluginConfigSchema.parse({});
+    const config = jsPackagesPluginConfigSchema.parse({
+      packageManager: 'npm',
+    });
     expect(config).toEqual<FinalJSPackagesPluginConfig>({
       checks: ['audit', 'outdated'],
       packageManager: 'npm',
@@ -39,9 +45,12 @@ describe('jsPackagesPluginConfigSchema', () => {
   });
 
   it('should throw for no passed commands', () => {
-    expect(() => jsPackagesPluginConfigSchema.parse({ checks: [] })).toThrow(
-      'too_small',
-    );
+    expect(() =>
+      jsPackagesPluginConfigSchema.parse({
+        packageManager: 'yarn-classic',
+        checks: [],
+      }),
+    ).toThrow('too_small');
   });
 });
 
