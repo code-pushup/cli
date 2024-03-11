@@ -54,9 +54,6 @@ export function getSeverityIcon(
   return 'ℹ️';
 }
 
-export function getStartDuration(): number {
-  return performance.now();
-}
 export function calcDuration(start: number, stop?: number): number {
   return Math.floor((stop ?? performance.now()) - start);
 }
