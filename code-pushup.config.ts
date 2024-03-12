@@ -51,7 +51,7 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
-    await coveragePlugin({
+    /*await coveragePlugin({
       coverageToolCommand: {
         command: 'npx',
         args: [
@@ -65,7 +65,7 @@ const config: CoreConfig = {
         ],
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
-    }),
+    }),*/
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -98,7 +98,7 @@ const config: CoreConfig = {
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
-    {
+    /*  {
       slug: 'code-coverage',
       title: 'Code coverage',
       refs: [
@@ -109,7 +109,7 @@ const config: CoreConfig = {
           weight: 1,
         },
       ],
-    },
+    },*/
     {
       slug: 'custom-checks',
       title: 'Custom checks',

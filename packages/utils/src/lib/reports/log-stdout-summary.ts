@@ -73,7 +73,7 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   ]);
   const table = ui().table();
   // eslint-disable-next-line no-magic-numbers
-  table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 5, 9, 10]);
+  table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
   table.head(
     reportRawOverviewTableHeaders.map((heading, idx) => ({
       content: chalk.cyan(heading),
@@ -92,6 +92,7 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   log(chalk.magentaBright.bold('Categories'));
   log();
   table.render();
+  log();
 }
 
 function applyScoreColor({ score, text }: { score: number; text?: string }) {
