@@ -89,11 +89,8 @@ describe('filterCategoryByPluginSlug', () => {
       },
     );
     const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toEqual(
-      expect.stringContaining('Category "category1" is ignored'),
-    );
-    expect(logs[0]).toEqual(
-      expect.stringContaining('skipped plugin "plugin2"'),
+    expect(logs[0]).toMatch(
+      /Category "category1" is ignored .* skipped plugin "plugin2"/,
     );
   });
 
