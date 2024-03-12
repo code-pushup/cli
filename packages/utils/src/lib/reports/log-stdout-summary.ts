@@ -73,7 +73,7 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   ]);
   const table = ui().table();
   // eslint-disable-next-line no-magic-numbers
-  table.columnWidths([TERMINAL_WIDTH - 7 - 8 - 8, 9, 10]);
+  table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 5, 9, 10]);
   table.head(
     reportRawOverviewTableHeaders.map((heading, idx) => ({
       content: chalk.cyan(heading),
