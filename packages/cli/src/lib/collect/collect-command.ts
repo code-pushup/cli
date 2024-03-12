@@ -10,14 +10,12 @@ import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
 } from '../implementation/logging';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 export function yargsCollectCommandObject(): CommandModule {
   const command = 'collect';
   return {
     command,
     describe: 'Run Plugins and collect results',
-    builder: yargsOnlyPluginsOptionsDefinition(),
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
       ui().logger.log(chalk.bold(CLI_NAME));
