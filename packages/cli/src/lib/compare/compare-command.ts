@@ -8,7 +8,6 @@ import { CLI_NAME } from '../constants';
 import type { CompareOptions } from '../implementation/compare.model';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options';
 
-
 export function yargsCompareCommandObject() {
   const command = 'compare';
   return {
