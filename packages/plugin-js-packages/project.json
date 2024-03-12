@@ -1,0 +1,56 @@
+{
+  "name": "plugin-js-packages",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-js-packages/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-js-packages",
+        "main": "packages/plugin-js-packages/src/index.ts",
+        "tsConfig": "packages/plugin-js-packages/tsconfig.lib.json",
+        "additionalEntryPoints": ["packages/plugin-js-packages/src/bin.ts"],
+        "assets": ["packages/plugin-js-packages/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-js-packages/**/*.ts",
+          "packages/plugin-js-packages/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "config": "packages/plugin-js-packages/vite.config.unit.ts",
+        "reportsDirectory": "../../coverage/plugin-js-packages/unit-tests"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "config": "packages/plugin-js-packages/vite.config.integration.ts",
+        "reportsDirectory": "../../coverage/plugin-js-packages/integration-tests"
+      }
+    },
+    "deploy": {
+      "options": {
+        "distFolderPath": "dist/packages/plugin-js-packages"
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs plugin-js-packages {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["scope:plugin", "type:feature"]
+}

@@ -1,4 +1,5 @@
 export { exists } from '@code-pushup/models';
+export { Diff, matchArrayItemsByKey, comparePairs } from './lib/diff';
 export {
   ProcessConfig,
   ProcessError,
@@ -39,6 +40,8 @@ export {
   getGitRoot,
   getLatestCommit,
   toGitPath,
+  getCurrentBranchOrTag,
+  safeCheckout,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -46,19 +49,26 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { link } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
+export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   README_LINK,
   TERMINAL_WIDTH,
 } from './lib/reports/constants';
+export {
+  listAuditsFromAllPlugins,
+  listGroupsFromAllPlugins,
+} from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
-export { generateStdoutSummary } from './lib/reports/generate-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
-export { ScoredReport } from './lib/reports/types';
+export {
+  ScoredCategoryConfig,
+  ScoredGroup,
+  ScoredReport,
+} from './lib/reports/types';
 export {
   calcDuration,
   compareIssueSeverity,
@@ -80,3 +90,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { link, ui, CliUi, Column } from './lib/logging';

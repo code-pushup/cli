@@ -8,6 +8,6 @@
     "@isaacs/cliui": "^8.0.2",
     "simple-git": "^3.20.0",
     "multi-progress-bars": "^5.0.3",
-    "cli-table3": "^0.6.3"
+    "@poppinss/cliui": "^6.4.0"
   }
 }

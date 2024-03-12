@@ -1,17 +1,5 @@
-import { cliui } from '@poppinss/cliui';
 import chalk from 'chalk';
-import { link } from '@code-pushup/utils';
-
-export type CliUi = ReturnType<typeof cliui>;
-
-// eslint-disable-next-line import/no-mutable-exports,functional/no-let
-export let singletonUiInstance: CliUi | undefined;
-export function ui(): CliUi {
-  if (singletonUiInstance === undefined) {
-    singletonUiInstance = cliui();
-  }
-  return singletonUiInstance;
-}
+import { link, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   ui().logger.info(
@@ -26,6 +14,7 @@ export function uploadSuccessfulLog(url: string): void {
   ui().logger.success('Upload successful!');
   ui().logger.success(link(url));
 }
+
 export function collectSuccessfulLog(): void {
   ui().logger.success('Collecting report successful!');
 }

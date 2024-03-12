@@ -7,6 +7,7 @@ import {
   ensureDirectoryExists,
   executeProcess,
   readJsonFile,
+  ui,
 } from '@code-pushup/utils';
 import { FinalCoveragePluginConfig } from '../config';
 import { applyMaxScoreAboveThreshold } from '../utils';
@@ -24,10 +25,14 @@ export async function executeRunner(): Promise<void> {
       await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
-        console.error(chalk.bold('stdout from failed coverage tool process:'));
-        console.error(error.stdout);
-        console.error(chalk.bold('stderr from failed coverage tool process:'));
-        console.error(error.stderr);
+        ui().logger.error(
+          chalk.bold('stdout from failed coverage tool process:'),
+        );
+        ui().logger.error(error.stdout);
+        ui().logger.error(
+          chalk.bold('stderr from failed coverage tool process:'),
+        );
+        ui().logger.error(error.stderr);
       }
 
       throw new Error(
