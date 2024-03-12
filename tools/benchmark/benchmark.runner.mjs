@@ -2,10 +2,10 @@ import Benchmark from 'benchmark';
 
 export default {
   run: async (
-    {suiteName, cases, targetImplementation, tsconfig},
-    options = {verbose: false},
+    { suiteName, cases, targetImplementation, tsconfig },
+    options = { verbose: false },
   ) => {
-    const {verbose, maxTime} = options;
+    const { verbose, maxTime } = options;
 
     return new Promise((resolve, reject) => {
       const suite = new Benchmark.Suite(suiteName);
@@ -35,7 +35,7 @@ export default {
       // register test cases
       cases.forEach(tuple => suite.add(...tuple));
 
-      suite.run({async: true});
+      suite.run({ async: true });
     });
-  }
-}
+  },
+};

@@ -1,10 +1,10 @@
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { create } from './benchmark-js.plugin';
-import { BenchmarkResult } from './suite-helper';
+import { BenchmarkResult } from './utils';
 
-vi.mock('./suite-helper', async () => {
-  const all: object = await vi.importActual('./suite-helper');
+vi.mock('./utils', async () => {
+  const all: object = await vi.importActual('./utils');
   return {
     ...all,
     loadSuites: vi.fn().mockImplementation((suiteNames: string[]) =>

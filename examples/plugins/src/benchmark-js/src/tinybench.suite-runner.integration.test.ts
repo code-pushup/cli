@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BenchmarkResult, runSuite } from './suite-helper';
+import { runner } from './tinybench.suite-runner';
+import { BenchmarkResult } from './utils';
 
-describe('runSuite', () => {
+describe('tinybench runner', () => {
   it('should execute valid suite', async () => {
     await expect(
-      runSuite({
+      runner.run({
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [

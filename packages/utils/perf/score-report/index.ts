@@ -56,7 +56,7 @@ const suiteConfig = {
     ['scoreReportv2', () => scoreReportOptimized2(minimalReport(options))],
     ['scoreReportv3', () => scoreReportOptimized3(minimalReport(options))],
   ],
-  time: 2000
+  time: 2000,
 };
 
 export default suiteConfig;

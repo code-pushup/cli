@@ -4,7 +4,7 @@ import {
   type CategoryRef,
   Issue,
 } from '@code-pushup/models';
-import {importEsmModule, slugify} from '@code-pushup/utils';
+import { importEsmModule, slugify } from '@code-pushup/utils';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -90,7 +90,10 @@ export type BenchmarkResult = {
 };
 
 export type BenchmarkRunner = {
- run: (config: SuiteConfig, options: { verbose: false }) => Promise<BenchmarkResult[]>
+  run: (
+    config: SuiteConfig,
+    options: { verbose: false },
+  ) => Promise<BenchmarkResult[]>;
 };
 
 export type LoadOptions = {

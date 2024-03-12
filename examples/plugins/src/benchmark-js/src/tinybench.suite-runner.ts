@@ -1,14 +1,14 @@
-import {Bench} from 'tinybench';
-import {BenchmarkResult, BenchmarkRunner, SuiteConfig} from "./utils";
+import { Bench } from 'tinybench';
+import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './utils';
 
-export default {
+export const runner = {
   run: async ({
-                suiteName,
-                cases,
-                targetImplementation,
-                time = 3000,
-              }: SuiteConfig): Promise<BenchmarkResult[]> => {
-    const suite = new Bench({time});
+    suiteName,
+    cases,
+    targetImplementation,
+    time = 3000,
+  }: SuiteConfig): Promise<BenchmarkResult[]> => {
+    const suite = new Bench({ time });
 
     // register test cases
     cases.forEach(tuple => suite.add(...tuple));
@@ -22,14 +22,14 @@ export default {
       targetImplementation,
       time,
     });
-  }
+  },
 } satisfies BenchmarkRunner;
 
 export function benchToBenchmarkResult(
   bench: Bench,
   suite: SuiteConfig,
 ): BenchmarkResult[] {
-  const {suiteName, cases, targetImplementation} = suite;
+  const { suiteName, cases, targetImplementation } = suite;
   const caseNames = cases.map(([name]) => name);
   const results = caseNames
     .map(caseName => {
@@ -49,11 +49,13 @@ export function benchToBenchmarkResult(
       } satisfies BenchmarkResult;
     })
     // sort by hz to get fastest at the top
-    .sort(({hz: hzA}, {hz: hzB}) => hzA - hzB);
+    .sort(({ hz: hzA }, { hz: hzB }) => hzA - hzB);
 
   return results.map(result =>
     results.at(1)?.name === result.name
-      ? {...result, isFastest: true}
+      ? { ...result, isFastest: true }
       : result,
   );
 }
+
+export default runner;

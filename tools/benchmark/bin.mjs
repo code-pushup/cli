@@ -1,9 +1,9 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import yargs from 'yargs';
-import { loadSuits } from './utils.mjs';
 import benchmark from './benchmark.runner.mjs';
 import tinybench from './tinybench.runner.mjs';
-import {writeFile} from "node:fs/promises";
-import {join} from "node:path";
+import { loadSuits } from './utils.mjs';
 
 const cli = yargs(process.argv).options({
   targets: {
@@ -15,11 +15,11 @@ const cli = yargs(process.argv).options({
   },
   runner: {
     type: 'string',
-    default: 'tinybench'
+    default: 'tinybench',
   },
   outputDir: {
     type: 'string',
-    default: 'tmp'
+    default: 'tmp',
   },
   verbose: {
     type: 'boolean',
@@ -28,9 +28,15 @@ const cli = yargs(process.argv).options({
 });
 
 (async () => {
-  let { targets = [], verbose, tsconfig, outputDir, runner } = await cli.parseAsync();
+  let {
+    targets = [],
+    verbose,
+    tsconfig,
+    outputDir,
+    runner,
+  } = await cli.parseAsync();
 
-  if(runner !== 'tinybench' && runner !== 'benchmark') {
+  if (runner !== 'tinybench' && runner !== 'benchmark') {
     runner = 'tinybench';
   }
 
@@ -52,11 +58,13 @@ const cli = yargs(process.argv).options({
   const allSuiteResults = [];
   // Execute each suite sequentially
   for (const suite of allSuits) {
-    const result = await (runner === 'tinybench' ? tinybench : benchmark).run(suite);
+    const result = await (runner === 'tinybench' ? tinybench : benchmark).run(
+      suite,
+    );
     allSuiteResults.push(result);
   }
 
-  allSuiteResults.forEach(async (results) => {
+  allSuiteResults.forEach(async results => {
     const {
       suiteName,
       name,
@@ -66,8 +74,20 @@ const cli = yargs(process.argv).options({
     console.log(
       `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
     );
-    if(outputDir) {
-      await writeFile(join(outputDir, `${suiteName}-${runner}-${Date.now()}.json`), JSON.stringify(results.map(({name, hz, rme, samples}) => ({name, hz, rme, samples})), null, 2));
+    if (outputDir) {
+      await writeFile(
+        join(outputDir, `${suiteName}-${runner}-${Date.now()}.json`),
+        JSON.stringify(
+          results.map(({ name, hz, rme, samples }) => ({
+            name,
+            hz,
+            rme,
+            samples,
+          })),
+          null,
+          2,
+        ),
+      );
     }
     console.table(
       results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { auditOutputSchema } from '@code-pushup/models';
 import {
+  SuiteConfig,
+  loadSuites,
   suiteNameToCategoryRef,
   suiteResultToAuditOutput,
   toAuditMetadata,
   toAuditSlug,
   toAuditTitle,
 } from './utils';
-import {loadSuites, SuiteConfig} from "./tinybench.suite-runner";
-
 
 vi.mock('@code-pushup/utils', async () => {
   const actual = await vi.importActual('@code-pushup/utils');
@@ -28,7 +28,6 @@ vi.mock('@code-pushup/utils', async () => {
     ),
   };
 });
-
 
 describe('toAuditSlug', () => {
   it('should create slug string', () => {

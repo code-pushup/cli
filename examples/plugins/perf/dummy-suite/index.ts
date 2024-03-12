@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { SuiteConfig } from '../../src/benchmark-js/src/suite-helper';
+import { SuiteConfig } from '../../src/benchmark-js/src/utils';
 
 const cli = yargs(process.argv).options({
   numCases: {

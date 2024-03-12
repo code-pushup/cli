@@ -1,15 +1,10 @@
-import {Bench} from 'tinybench';
+import { Bench } from 'tinybench';
 
 export default {
-  run: async ({
-                suiteName,
-                cases,
-                targetImplementation,
-                time = 1000,
-              }) => {
+  run: async ({ suiteName, cases, targetImplementation, time = 1000 }) => {
     // This is not working with named imports
     // eslint-disable-next-line import/no-named-as-default-member
-    const suite = new Bench({time});
+    const suite = new Bench({ time });
 
     // register test cases
     cases.forEach(tuple => suite.add(...tuple));
@@ -22,8 +17,8 @@ export default {
       cases,
       targetImplementation,
     });
-  }
-}
+  },
+};
 
 export function benchToBenchmarkResult(bench, suite) {
   const caseNames = suite.cases.map(([name]) => name);
@@ -43,16 +38,16 @@ export function benchToBenchmarkResult(bench, suite) {
   const fastestName =
     caseNames.reduce(
       (fastest, name) => {
-        const {hz} = bench.getTask(name)?.result ?? {};
+        const { hz } = bench.getTask(name)?.result ?? {};
         if (fastest.name === undefined) {
-          return {hz, name};
+          return { hz, name };
         }
         if (hz && fastest.hz && hz > fastest.hz) {
-          return {hz, name};
+          return { hz, name };
         }
         return fastest;
       },
-      {hz: 0, name: undefined},
+      { hz: 0, name: undefined },
     ).name ?? '';
 
   return results.map(result => ({

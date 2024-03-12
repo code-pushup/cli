@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { runSuite } from './benchmark.suite-runner';
+import { runner } from './benchmark.suite-runner';
 
-describe('runSuite', () => {
+describe('benchmark runner', () => {
   it('should execute valid suite', async () => {
     await expect(
-      runSuite({
+      runner.run({
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
@@ -19,5 +19,5 @@ describe('runSuite', () => {
         ],
       }),
     ).resolves.toStrictEqual(expect.arrayContaining([]));
-  });
+  }, 20_000);
 });

@@ -9,7 +9,9 @@ const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
     string: true,
-    default: [join(process.cwd(), '(packages|e2e|examples|testing|tools)/**/*.md')],
+    default: [
+      join(process.cwd(), '(packages|e2e|examples|testing|tools)/**/*.md'),
+    ],
   },
   outputDir: {
     type: 'string',
@@ -46,7 +48,7 @@ const suiteConfig = {
     [globName, callAndValidate(glob, pattern, globName)],
     [globbyName, callAndValidate(globby, pattern, globbyName)],
   ],
-  time: 20000
+  time: 20_000,
 };
 export default suiteConfig;
 

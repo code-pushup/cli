@@ -1,6 +1,6 @@
 import { Bench } from 'tinybench';
 import { describe, expect, it } from 'vitest';
-import {benchToBenchmarkResult} from './tinybench.suite-runner';
+import { benchToBenchmarkResult } from './tinybench.suite-runner';
 
 describe('benchToBenchmarkResult', () => {
   it('should transform a tinybench Bench to a enriched BenchmarkResult', () => {

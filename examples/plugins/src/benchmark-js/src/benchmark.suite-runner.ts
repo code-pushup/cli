@@ -1,14 +1,14 @@
-import Benchmark, { Event, type Target, type Suite} from 'benchmark';
-import {BenchmarkResult, BenchmarkRunner, SuiteConfig} from "./utils";
+import Benchmark, { Event, type Suite, type Target } from 'benchmark';
+import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './utils';
 
-export default {
+export const runner = {
   run: async (
-    {suiteName, cases, targetImplementation}: SuiteConfig,
+    { suiteName, cases, targetImplementation }: SuiteConfig,
     options: {
       verbose?: boolean;
-    } = {verbose: false},
+    } = { verbose: false },
   ): Promise<BenchmarkResult[]> => {
-    const {verbose} = options;
+    const { verbose } = options;
 
     return new Promise((resolve, reject) => {
       // This is not working with named imports
@@ -27,26 +27,33 @@ export default {
             console.log(String(event.target));
           }
         },
-        complete: (event: Event) => {
-          resolve(benchToBenchmarkResult(event.currentTarget as unknown as Target[], {suiteName, cases, targetImplementation}));
+        complete: () => {
+          resolve(
+            benchToBenchmarkResult(suite, {
+              suiteName,
+              cases,
+              targetImplementation,
+            }),
+          );
         },
       }).forEach(([name, fn]) => suite.on(name, fn));
 
       // register test cases
       cases.forEach(tuple => suite.add(...tuple));
 
-      suite.run({async: true});
+      suite.run({ async: true });
     });
-  }
+  },
 } satisfies BenchmarkRunner;
-
 
 export function benchToBenchmarkResult(
   suite: Suite,
-  {targetImplementation, suiteName}: SuiteConfig,
+  { targetImplementation, suiteName }: SuiteConfig,
 ): BenchmarkResult[] {
   const fastest = String(suite.filter('fastest').map('name')[0]);
-  return suite.map((bench: Target) => ({
+  return suite.map(
+    (bench: Target) =>
+      ({
         suiteName,
         name: bench.name || '',
         hz: bench.hz ?? 0, // operations per second
@@ -54,6 +61,8 @@ export function benchToBenchmarkResult(
         samples: bench.stats?.sample.length ?? 0, // number of samples
         isFastest: fastest === bench.name,
         isTarget: targetImplementation === bench.name,
-      } satisfies BenchmarkResult)) as BenchmarkResult[] // suite.map has a broken typing
-
+      } satisfies BenchmarkResult),
+  ) as BenchmarkResult[]; // suite.map has a broken typing
 }
+
+export default runner;
