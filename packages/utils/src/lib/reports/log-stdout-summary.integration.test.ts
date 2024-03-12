@@ -6,9 +6,9 @@ import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
 describe('logStdoutSummary', () => {
-  // eslint-disable-next-line vitest/require-hook
-  let logs: string[] = [];
+  let logs: string[];
   beforeAll(() => {
+    logs = [];
     vi.spyOn(console, 'log').mockImplementation(msg => {
       logs = [...logs, msg];
     });
