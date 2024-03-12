@@ -1,5 +1,4 @@
-import { beforeEach, vi } from 'vitest';
-import type { CliUi } from '@code-pushup/utils';
+import { beforeAll, beforeEach, vi } from 'vitest';
 
 beforeAll(async () => {
   const utils: typeof import('@code-pushup/utils') = await vi.importActual(
