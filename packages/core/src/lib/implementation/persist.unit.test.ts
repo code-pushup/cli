@@ -24,7 +24,7 @@ describe('persistReport', () => {
       format: [],
     });
     const logs = getLogMessages(ui().logger);
-    expect(logs.at(-1)).toEqual(
+    expect(logs.at(-2)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });
@@ -36,7 +36,7 @@ describe('persistReport', () => {
       format: ['md', 'json'],
     });
     const logs = getLogMessages(ui().logger);
-    expect(logs.at(-1)).toEqual(
+    expect(logs.at(-2)).toEqual(
       expect.stringContaining('Made with ❤ by code-pushup.dev'),
     );
   });

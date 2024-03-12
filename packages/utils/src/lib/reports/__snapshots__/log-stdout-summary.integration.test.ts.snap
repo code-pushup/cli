@@ -84,7 +84,8 @@ Categories
 │  Code style                                             │     54  │      13  │
 └─────────────────────────────────────────────────────────┴─────────┴──────────┘
 
-Made with ❤ by code-pushup.dev"
+Made with ❤ by code-pushup.dev
+"
 `;
 
 exports[`logStdoutSummary > should not contain category section when categories are empty 1`] = `
@@ -159,5 +160,6 @@ Lighthouse audits
 ● Cumulative Layout Shift                                             0
 ● Total Blocking Time                                                 0 ms
 
-Made with ❤ by code-pushup.dev"
+Made with ❤ by code-pushup.dev
+"
 `;

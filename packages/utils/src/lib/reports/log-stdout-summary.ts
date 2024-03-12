@@ -26,6 +26,7 @@ export function logStdoutSummary(report: ScoredReport): void {
     logCategories(report);
   }
   log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+  log();
 }
 
 function reportToHeaderSection(report: ScoredReport): string {
