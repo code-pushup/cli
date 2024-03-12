@@ -1,6 +1,9 @@
 import chalk from 'chalk';
-import type { CategoryConfig, CoreConfig } from '@code-pushup/models';
-import type { PluginConfig } from '@code-pushup/models';
+import type {
+  CategoryConfig,
+  CoreConfig,
+  PluginConfig,
+} from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 
 export function filterPluginsBySlug(
