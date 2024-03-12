@@ -1,5 +1,7 @@
 import { describe, expect } from 'vitest';
 import { CategoryConfig, CoreConfig } from '@code-pushup/models';
+import { getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import {
   filterCategoryByPluginSlug,
   filterPluginsBySlug,
@@ -86,11 +88,9 @@ describe('filterCategoryByPluginSlug', () => {
         verbose: true,
       },
     );
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('"category1" is ignored'),
-    );
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('skipped plugin "plugin2"'),
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toMatch(
+      /Category "category1" is ignored .* skipped plugin "plugin2"/,
     );
   });
 
@@ -110,10 +110,9 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'plugins with "plugin3", "plugin4" slugs, but no such plugins are present',
-      ),
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toContain(
+      'The --onlyPlugin argument references plugins with "plugin3", "plugin4" slugs',
     );
   });
 
@@ -125,6 +124,6 @@ describe('validateOnlyPluginsOption', () => {
         verbose: true,
       },
     );
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
 });

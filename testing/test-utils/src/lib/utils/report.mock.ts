@@ -1,5 +1,5 @@
 import type { PluginConfig, PluginReport, Report } from '@code-pushup/models';
-import { COMMIT_MOCK } from './dynamic-mocks/commit.mock';
+import { COMMIT_MOCK } from './commit.mock';
 import {
   auditReportMock,
   pluginConfigMock,

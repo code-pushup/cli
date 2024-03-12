@@ -4,6 +4,8 @@ import {
   PERSIST_FILENAME,
   PERSIST_FORMAT,
   PERSIST_OUTPUT_DIR,
+  PersistConfig,
+  UploadConfig,
 } from '@code-pushup/models';
 import { CORE_CONFIG_MOCK, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { yargsCli } from '../yargs-cli';
@@ -58,7 +60,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(persist).toEqual({
+    expect(persist).toEqual<PersistConfig>({
       filename: PERSIST_FILENAME,
       format: PERSIST_FORMAT,
       outputDir: PERSIST_OUTPUT_DIR,
@@ -79,7 +81,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(persist).toEqual({
+    expect(persist).toEqual<PersistConfig>({
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
@@ -95,7 +97,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(persist).toEqual({
+    expect(persist).toEqual<PersistConfig>({
       filename: 'rc-filename',
       format: ['json', 'md'],
       outputDir: 'rc-outputDir',
@@ -116,7 +118,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(persist).toEqual({
+    expect(persist).toEqual<PersistConfig>({
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
@@ -135,7 +137,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(persist).toEqual({
+    expect(persist).toEqual<PersistConfig>({
       filename: 'rc-filename',
       format: PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
@@ -163,7 +165,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(upload).toStrictEqual({
+    expect(upload).toStrictEqual<UploadConfig>({
       organization: 'code-pushup',
       project: 'portal',
       apiKey: 'dummy-api-key',

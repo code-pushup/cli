@@ -10,7 +10,7 @@ import { GlobalOptions } from './types';
 
 export type CollectAndPersistReportsOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'>
-> & { persist: Required<PersistConfig> } & GlobalOptions;
+> & { persist: Required<PersistConfig> } & Partial<GlobalOptions>;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
