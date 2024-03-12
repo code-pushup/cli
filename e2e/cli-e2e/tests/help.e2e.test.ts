@@ -18,7 +18,7 @@ describe('CLI help', () => {
     });
     const helpCommandResult = await executeProcess({
       command: 'code-pushup',
-      args: ['help'],
+      args: ['--help'],
     });
     expect(helpArgResult.code).toBe(0);
     expect(helpCommandResult.code).toBe(0);
