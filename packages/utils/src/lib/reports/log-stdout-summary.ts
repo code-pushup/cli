@@ -92,7 +92,7 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   log(chalk.magentaBright.bold('Categories'));
   log();
   table.render();
-  log();
+  log(' ');
 }
 
 function applyScoreColor({ score, text }: { score: number; text?: string }) {
