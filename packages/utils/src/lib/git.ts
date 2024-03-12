@@ -1,6 +1,7 @@
 import { isAbsolute, join, relative } from 'node:path';
 import { simpleGit } from 'simple-git';
 import { Commit, commitSchema } from '@code-pushup/models';
+import { ui } from './logging';
 import { toUnixPath } from './transform';
 
 export async function getLatestCommit(
@@ -72,8 +73,7 @@ export async function safeCheckout(
   if (forceCleanStatus) {
     await git.raw(['reset', '--hard']);
     await git.clean(['f', 'd']);
-    // @TODO replace with ui().logger.info
-    console.info(`git status cleaned`);
+    ui().logger.info(`git status cleaned`);
   }
   await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);

@@ -1,5 +1,5 @@
 import type { ESLint, Linter, Rule } from 'eslint';
-import { distinct, toArray } from '@code-pushup/utils';
+import { distinct, toArray, ui } from '@code-pushup/utils';
 import { jsonHash } from './hash';
 
 export type RuleData = {
@@ -38,7 +38,7 @@ export async function listRules(
       (acc, [ruleId, ruleEntry]) => {
         const meta = rulesMeta[ruleId];
         if (!meta) {
-          console.warn(`Metadata not found for ESLint rule ${ruleId}`);
+          ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
           return acc;
         }
         const options = toArray(ruleEntry).slice(1);

@@ -1,6 +1,6 @@
 import { LogOptions, LogResult, simpleGit } from 'simple-git';
 import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
-import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
+import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
 import { GlobalOptions } from './types';
 import { upload } from './upload';
@@ -29,7 +29,7 @@ export async function history(
   const reports: string[] = [];
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    console.info(`Collect ${commit}`);
+    ui().logger.info(`Collect ${commit}`);
     await safeCheckout(commit, forceCleanStatus);
 
     const currentConfig: HistoryOptions = {
@@ -44,12 +44,14 @@ export async function history(
     await collectAndPersistReports(currentConfig);
 
     if (skipUploads) {
-      console.info('Upload is skipped because skipUploads is set to true.');
+      ui().logger.info('Upload is skipped because skipUploads is set to true.');
     } else {
       if (currentConfig.upload) {
         await upload(currentConfig);
       } else {
-        console.info('Upload is skipped because upload config is undefined.');
+        ui().logger.info(
+          'Upload is skipped because upload config is undefined.',
+        );
       }
     }
 

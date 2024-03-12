@@ -262,6 +262,21 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 > [!NOTE]  
 > If no target branch is set the current branch is used as target branch
 
+### `compare` command
+
+Usage:
+`code-pushup compare --before SOURCE_PATH --after TARGET_PATH [options]`
+
+Description:
+Compare 2 reports and produce a report diff file.
+
+In addition to the [Common Command Options](#common-command-options), the following options are required:
+
+| Option         | Type     | Description                   |
+| -------------- | -------- | ----------------------------- |
+| **`--before`** | `string` | Path to source `report.json`. |
+| **`--after`**  | `string` | Path to target `report.json`. |
+
 #### `print-config` command
 
 Usage:
