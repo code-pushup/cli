@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
+import { defaultAuditLevelMapping } from './constants';
+
+export const packageDependencies = ['prod', 'dev', 'optional'] as const;
+export type PackageDependency = (typeof packageDependencies)[number];
 
 const packageCommandSchema = z.enum(['audit', 'outdated']);
 export type PackageCommand = z.infer<typeof packageCommandSchema>;
@@ -12,22 +16,15 @@ const packageManagerSchema = z.enum([
 ]);
 export type PackageManager = z.infer<typeof packageManagerSchema>;
 
-const packageAuditLevelSchema = z.enum([
-  'info',
-  'low',
-  'moderate',
-  'high',
+export const packageAuditLevels = [
   'critical',
-]);
+  'high',
+  'moderate',
+  'low',
+  'info',
+] as const;
+const packageAuditLevelSchema = z.enum(packageAuditLevels);
 export type PackageAuditLevel = z.infer<typeof packageAuditLevelSchema>;
-
-const defaultAuditLevelMapping: Record<PackageAuditLevel, IssueSeverity> = {
-  critical: 'error',
-  high: 'error',
-  moderate: 'warning',
-  low: 'warning',
-  info: 'info',
-};
 
 export function fillAuditLevelMapping(
   mapping: Partial<Record<PackageAuditLevel, IssueSeverity>>,
@@ -66,5 +63,3 @@ export type JSPackagesPluginConfig = z.input<
 export type FinalJSPackagesPluginConfig = z.infer<
   typeof jsPackagesPluginConfigSchema
 >;
-
-export type PackageDependencyType = 'prod' | 'dev' | 'optional';

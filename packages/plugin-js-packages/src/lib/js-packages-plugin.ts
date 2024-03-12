@@ -1,11 +1,11 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Audit, Group, PluginConfig } from '@code-pushup/models';
+import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
 import {
   JSPackagesPluginConfig,
   PackageCommand,
-  PackageDependencyType,
+  PackageDependency,
   PackageManager,
   jsPackagesPluginConfigSchema,
 } from './config';
@@ -126,7 +126,7 @@ function createAudits(
 function getAuditTitle(
   pkgManager: PackageManager,
   check: PackageCommand,
-  dependencyType: PackageDependencyType,
+  dependencyType: PackageDependency,
 ) {
   return check === 'audit'
     ? `Vulnerabilities for ${pkgManagerNames[pkgManager]} ${dependencyType} dependencies.`
@@ -135,7 +135,7 @@ function getAuditTitle(
 
 function getAuditDescription(
   check: PackageCommand,
-  dependencyType: PackageDependencyType,
+  dependencyType: PackageDependency,
 ) {
   return check === 'audit'
     ? `Runs security audit on ${dependencyType} dependencies.`
