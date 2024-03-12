@@ -395,31 +395,31 @@ ESLint rule **prefer-arrow-callback**. [📖 Docs](https://eslint.org/docs/lates
 
 🟨 <b>1.2 s</b> (score: 76)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
+First Contentful Paint marks the time at which the first text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
 
 ### Largest Contentful Paint (Lighthouse)
 
 🟨 <b>1.5 s</b> (score: 81)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
+Largest Contentful Paint marks the time at which the largest text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
 
 ### Speed Index (Lighthouse)
 
 🟩 <b>1.2 s</b> (score: 93)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
+Speed Index shows how quickly the contents of a page are visibly populated. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
 
 ### Cumulative Layout Shift (Lighthouse)
 
 🟩 <b>0</b> (score: 100)
 
-[📖 Docs](https://web.dev/cls/)
+Cumulative Layout Shift measures the movement of visible elements within the viewport. [📖 Docs](https://web.dev/cls/)
 
 ### Total Blocking Time (Lighthouse)
 
 🟩 <b>0 ms</b> (score: 100)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
+Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
 
 
 
@@ -772,31 +772,31 @@ ESLint rule **prefer-arrow-callback**. [📖 Docs](https://eslint.org/docs/lates
 
 🟨 <b>1.2 s</b> (score: 76)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
+First Contentful Paint marks the time at which the first text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
 
 ### Largest Contentful Paint (Lighthouse)
 
 🟨 <b>1.5 s</b> (score: 81)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
+Largest Contentful Paint marks the time at which the largest text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
 
 ### Speed Index (Lighthouse)
 
 🟩 <b>1.2 s</b> (score: 93)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
+Speed Index shows how quickly the contents of a page are visibly populated. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
 
 ### Cumulative Layout Shift (Lighthouse)
 
 🟩 <b>0</b> (score: 100)
 
-[📖 Docs](https://web.dev/cls/)
+Cumulative Layout Shift measures the movement of visible elements within the viewport. [📖 Docs](https://web.dev/cls/)
 
 ### Total Blocking Time (Lighthouse)
 
 🟩 <b>0 ms</b> (score: 100)
 
-[📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
+Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
 
 
 
