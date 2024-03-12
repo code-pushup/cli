@@ -14,4 +14,3 @@ beforeEach(async () => {
   );
   ui().logger.flushLogs();
 });
-
