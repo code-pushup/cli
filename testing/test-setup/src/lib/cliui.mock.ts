@@ -1,18 +1,17 @@
 import { beforeEach, vi } from 'vitest';
 import type { CliUi } from '@code-pushup/utils';
 
-vi.mock('@code-pushup/utils', async () => {
-  const module = await vi.importActual<{ ui: () => CliUi }>(
+beforeAll(async () => {
+  const utils: typeof import('@code-pushup/utils') = await vi.importActual(
     '@code-pushup/utils',
   );
-
-  module.ui().switchMode('raw');
-  return module;
+  utils.ui().switchMode('raw');
 });
 
 beforeEach(async () => {
-  const { ui } = await vi.importActual<{ ui: () => CliUi }>(
+  const { ui }: typeof import('@code-pushup/utils') = await vi.importActual(
     '@code-pushup/utils',
   );
   ui().logger.flushLogs();
 });
+
