@@ -6,12 +6,12 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
+import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
   renderIntegratePortalHint,
-  ui,
   uploadSuccessfulLog,
 } from '../implementation/logging';
 

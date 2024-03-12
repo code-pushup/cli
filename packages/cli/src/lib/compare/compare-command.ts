@@ -3,10 +3,10 @@ import { join } from 'node:path';
 import { CommandModule } from 'yargs';
 import { compareReportFiles } from '@code-pushup/core';
 import { PersistConfig } from '@code-pushup/models';
+import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import type { CompareOptions } from '../implementation/compare.model';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options';
-import { ui } from '../implementation/logging';
 
 export function yargsCompareCommandObject() {
   const command = 'compare';

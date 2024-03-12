@@ -1,10 +1,12 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
+  getLogMessages,
 } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import {
   PluginOutputMissingAuditError,
   executePlugin,
@@ -126,7 +128,9 @@ describe('executePlugins', () => {
   it('should print invalid plugin errors and throw', async () => {
     const pluginConfig = {
       ...MINIMAL_PLUGIN_CONFIG_MOCK,
-      runner: vi.fn().mockRejectedValue('plugin 1 error'),
+      runner: vi
+        .fn()
+        .mockRejectedValue('Audit metadata not found for slug node-version'),
     };
     const pluginConfig2 = {
       ...MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -142,10 +146,14 @@ describe('executePlugins', () => {
         progress: false,
       }),
     ).rejects.toThrow(
-      'Plugins failed: 2 errors: plugin 1 error, plugin 3 error',
+      'Plugins failed: 2 errors: Audit metadata not found for slug node-version, plugin 3 error',
     );
-    expect(console.error).toHaveBeenCalledWith('plugin 1 error');
-    expect(console.error).toHaveBeenCalledWith('plugin 3 error');
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
+    expect(logs[1]).toBe(
+      '[ yellow(warn) ] Audit metadata not found for slug node-version',
+    );
+
     expect(pluginConfig.runner).toHaveBeenCalled();
     expect(pluginConfig2.runner).toHaveBeenCalled();
     expect(pluginConfig3.runner).toHaveBeenCalled();
