@@ -14,7 +14,6 @@ import {
   ui,
   uploadSuccessfulLog,
 } from '../implementation/logging';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 
@@ -23,7 +22,6 @@ export function yargsAutorunCommandObject() {
   return {
     command,
     describe: 'Shortcut for running collect followed by upload',
-    builder: yargsOnlyPluginsOptionsDefinition(),
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       ui().logger.log(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}...`));
