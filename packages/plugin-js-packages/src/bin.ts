@@ -1,3 +1,3 @@
 import { executeRunner } from './lib/runner';
 
-executeRunner();
+await executeRunner();
