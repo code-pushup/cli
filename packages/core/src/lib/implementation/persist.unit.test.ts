@@ -7,7 +7,9 @@ import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
+  getLogMessages,
 } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
@@ -21,9 +23,8 @@ describe('persistReport', () => {
       filename: 'report',
       format: [],
     });
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('Made with ❤ by code-pushup.dev'),
-    );
+    const logs = getLogMessages(ui().logger);
+    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
   });
 
   it('should print a summary to stdout when all formats are specified`', async () => {
@@ -32,9 +33,8 @@ describe('persistReport', () => {
       filename: 'report',
       format: ['md', 'json'],
     });
-    expect(console.info).toHaveBeenCalledWith(
-      expect.stringContaining('Made with ❤ by code-pushup.dev'),
-    );
+    const logs = getLogMessages(ui().logger);
+    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
   });
 
   it('should create a report in json format', async () => {
@@ -100,31 +100,17 @@ describe('persistReport', () => {
 describe('logPersistedResults', () => {
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports successfully: ',
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
+    expect(logs[1]).toContain('9.77 kB');
+    expect(logs[1]).toContain('out.json');
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-
-    expect(console.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed: ',
-    );
-    expect(console.warn).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('fail'),
-    );
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
+    expect(logs[1]).toContain('fail');
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -132,27 +118,12 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
+    expect(logs[1]).toContain('out.json');
+    expect(logs[1]).toContain('9.77 kB');
 
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports successfully: ',
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
-    expect(console.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-
-    expect(console.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed: ',
-    );
-    expect(console.warn).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('fail'),
-    );
+    expect(logs[2]).toContain('Generated reports failed: ');
+    expect(logs[2]).toContain('fail');
   });
 });

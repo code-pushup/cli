@@ -26,6 +26,8 @@ export function yargsCli<T = unknown>(
     scriptName?: string;
     commands?: CommandModule[];
     options?: { [key: string]: Options };
+    groups?: { [key: string]: string[] };
+    examples?: [string, string][];
     middlewares?: {
       middlewareFunction: unknown;
       applyBeforeValidation?: boolean;
@@ -37,6 +39,8 @@ export function yargsCli<T = unknown>(
   const commands = cfg.commands ?? [];
   const middlewares = cfg.middlewares ?? [];
   const options = cfg.options ?? {};
+  const groups = cfg.groups ?? {};
+  const examples = cfg.examples ?? [];
   const cli = yargs(argv);
 
   // setup yargs
@@ -67,6 +71,16 @@ export function yargsCli<T = unknown>(
   if (scriptName) {
     cli.scriptName(scriptName);
   }
+
+  // add examples
+  examples.forEach(([exampleName, description]) =>
+    cli.example(exampleName, description),
+  );
+
+  // add groups
+  Object.entries(groups).forEach(([groupName, optionNames]) =>
+    cli.group(optionNames, groupName),
+  );
 
   // add middlewares
   middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) => {

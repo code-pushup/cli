@@ -13,6 +13,7 @@ import {
   objectToCliArgs,
   readJsonFile,
   toArray,
+  ui,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
 import { type Flags } from './lighthouse-plugin';
@@ -105,9 +106,7 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
 
       // @TODO implement switch case for detail parsing. Related to #90
       const unsupportedType = details.type;
-      // @TODO use cliui.logger.info Resolve TODO after PR #487 is merged.
-      // eslint-disable-next-line no-console
-      console.log(
+      ui().logger.info(
         `Parsing details from type ${unsupportedType} is not implemented.`,
       );
 
