@@ -28,8 +28,8 @@ describe('print-config-command', () => {
     ).parseAsync();
 
     const log = getLogMessages(ui().logger)[0];
-    expect(log).toEqual(expect.not.stringContaining('"$0":'));
-    expect(log).toEqual(expect.not.stringContaining('"_":'));
+    expect(log).not.toContain('"$0":');
+    expect(log).not.toContain('"_":');
 
     expect(log).toEqual(
       expect.stringContaining('"outputDir": "destinationDir"'),
