@@ -17,6 +17,7 @@ export * from './lib/utils/dynamic-mocks/lighthouse-audits.mock';
 export * from './lib/utils/dynamic-mocks/lighthouse-plugin.mock';
 export * from './lib/utils/dynamic-mocks/persist-config.mock';
 export * from './lib/utils/dynamic-mocks/plugin-config.mock';
+export * from './lib/utils/dynamic-mocks/report-diff.mock';
 export * from './lib/utils/dynamic-mocks/report.mock';
 export * from './lib/utils/dynamic-mocks/runner-config.mock';
 export * from './lib/utils/dynamic-mocks/upload-config.mock';
