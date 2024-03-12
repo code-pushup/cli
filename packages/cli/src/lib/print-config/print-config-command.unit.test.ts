@@ -31,9 +31,7 @@ describe('print-config-command', () => {
     expect(log).not.toContain('"$0":');
     expect(log).not.toContain('"_":');
 
-    expect(log).toEqual(
-      expect.stringContaining('"outputDir": "destinationDir"'),
-    );
-    expect(log).toEqual(expect.not.stringContaining('"output-dir":'));
+    expect(log).toContain('"outputDir": "destinationDir"');
+    expect(log).not.toContain('"output-dir":');
   });
 });

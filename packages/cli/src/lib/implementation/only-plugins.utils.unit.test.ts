@@ -111,10 +111,8 @@ describe('validateOnlyPluginsOption', () => {
       },
     );
     const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toEqual(
-      expect.stringContaining(
-        'The --onlyPlugin argument references plugins with "plugin3", "plugin4" slugs',
-      ),
+    expect(logs[0]).toContain(
+      'The --onlyPlugin argument references plugins with "plugin3", "plugin4" slugs',
     );
   });
 
