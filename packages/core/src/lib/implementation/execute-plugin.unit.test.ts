@@ -26,7 +26,7 @@ describe('executePlugin', () => {
           {
             slug: 'node-version',
             score: 1,
-            value: 1,
+            value: 16,
           },
         ]),
       },
@@ -51,7 +51,7 @@ describe('executePlugin', () => {
         {
           slug: 'node-version',
           score: 0,
-          value: 1,
+          value: 16,
         },
       ],
     });
@@ -60,7 +60,7 @@ describe('executePlugin', () => {
         slug: 'node-version',
         title: 'Node version',
         score: 0,
-        value: 1,
+        value: 16,
       }),
     ]);
   });
@@ -186,7 +186,7 @@ describe('executePlugins', () => {
                 {
                   slug: (outputs as AuditOutputs)[0]!.slug,
                   score: 1,
-                  value: 1,
+                  value: 16,
                   displayValue: '2.0.0',
                 },
               ]),
