@@ -30,7 +30,7 @@
       }
     },
     "perf": {
-      "command": "node tools/benchmark/bin.mjs --targets ./packages/utils/perf/score-report/index.ts --targets ./packages/utils/perf/glob-matching/index.ts"
+      "command": "node tools/benchmark/bin.mjs --targets ./packages/utils/perf/glob-matching/index.ts"
     },
     "unit-test": {
       "executor": "@nx/vite:test",

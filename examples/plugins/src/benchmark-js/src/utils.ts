@@ -4,8 +4,7 @@ import {
   type CategoryRef,
   Issue,
 } from '@code-pushup/models';
-import { slugify } from '@code-pushup/utils';
-import { BenchmarkResult } from './suite-helper';
+import {importEsmModule, slugify} from '@code-pushup/utils';
 
 /**
  * scoring of js computation time can be used in 2 ways:
@@ -71,4 +70,45 @@ export function suiteNameToCategoryRef(suiteName: string): CategoryRef {
     slug: toAuditSlug(suiteName),
     weight: 1,
   } satisfies CategoryRef;
+}
+
+export type SuiteConfig = {
+  suiteName: string;
+  targetImplementation: string;
+  cases: [string, (...args: unknown[]) => Promise<unknown>][];
+  time?: number;
+};
+
+export type BenchmarkResult = {
+  hz: number;
+  rme: number;
+  samples: number;
+  suiteName: string;
+  name: string;
+  isFastest: boolean;
+  isTarget: boolean;
+};
+
+export type BenchmarkRunner = {
+ run: (config: SuiteConfig, options: { verbose: false }) => Promise<BenchmarkResult[]>
+};
+
+export type LoadOptions = {
+  tsconfig?: string;
+};
+
+export function loadSuites(
+  targets: string[],
+  options: LoadOptions = {},
+): Promise<SuiteConfig[]> {
+  const { tsconfig } = options;
+  return Promise.all(
+    targets.map(
+      (filepath: string) =>
+        importEsmModule({
+          tsconfig,
+          filepath,
+        }) as Promise<SuiteConfig>,
+    ),
+  );
 }

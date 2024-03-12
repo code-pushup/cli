@@ -1,5 +1,9 @@
 import yargs from 'yargs';
-import { loadSuits, runSuite } from './utils.mjs';
+import { loadSuits } from './utils.mjs';
+import benchmark from './benchmark.runner.mjs';
+import tinybench from './tinybench.runner.mjs';
+import {writeFile} from "node:fs/promises";
+import {join} from "node:path";
 
 const cli = yargs(process.argv).options({
   targets: {
@@ -9,6 +13,14 @@ const cli = yargs(process.argv).options({
   tsconfig: {
     type: 'string',
   },
+  runner: {
+    type: 'string',
+    default: 'tinybench'
+  },
+  outputDir: {
+    type: 'string',
+    default: 'tmp'
+  },
   verbose: {
     type: 'boolean',
     default: true,
@@ -16,7 +28,11 @@ const cli = yargs(process.argv).options({
 });
 
 (async () => {
-  const { targets = [], verbose, tsconfig } = await cli.parseAsync();
+  let { targets = [], verbose, tsconfig, outputDir, runner } = await cli.parseAsync();
+
+  if(runner !== 'tinybench' && runner !== 'benchmark') {
+    runner = 'tinybench';
+  }
 
   if (targets.length === 0) {
     throw Error('No targets given. Use `--targets=suite1.ts` to set targets.');
@@ -31,15 +47,16 @@ const cli = yargs(process.argv).options({
         .join(', ')}`,
     );
   }
+  console.log(`Use ${runner} for benchmarking`);
   // create audit output
   const allSuiteResults = [];
   // Execute each suite sequentially
   for (const suite of allSuits) {
-    const result = await runSuite(suite);
+    const result = await (runner === 'tinybench' ? tinybench : benchmark).run(suite);
     allSuiteResults.push(result);
   }
 
-  allSuiteResults.forEach(results => {
+  allSuiteResults.forEach(async (results) => {
     const {
       suiteName,
       name,
@@ -49,6 +66,9 @@ const cli = yargs(process.argv).options({
     console.log(
       `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
     );
+    if(outputDir) {
+      await writeFile(join(outputDir, `${suiteName}-${runner}-${Date.now()}.json`), JSON.stringify(results.map(({name, hz, rme, samples}) => ({name, hz, rme, samples})), null, 2));
+    }
     console.table(
       results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
         const targetIcon = isTarget ? '🎯' : '';

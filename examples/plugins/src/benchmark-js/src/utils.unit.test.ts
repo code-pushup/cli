@@ -7,6 +7,28 @@ import {
   toAuditSlug,
   toAuditTitle,
 } from './utils';
+import {loadSuites, SuiteConfig} from "./tinybench.suite-runner";
+
+
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+
+  return {
+    ...actual,
+    importEsmModule: vi.fn().mockImplementation(
+      ({ filepath = '' }: { filepath: string }) =>
+        ({
+          suiteName: filepath.replace('.ts', ''),
+          targetImplementation: 'current-implementation',
+          cases: [
+            ['current-implementation', vi.fn()],
+            ['slower-implementation', vi.fn()],
+          ],
+        } satisfies SuiteConfig),
+    ),
+  };
+});
+
 
 describe('toAuditSlug', () => {
   it('should create slug string', () => {
@@ -297,6 +319,17 @@ describe('scoredAuditOutput', () => {
           ]),
         },
       }),
+    );
+  });
+});
+
+describe('loadSuites', () => {
+  it('should load given suites', async () => {
+    await expect(loadSuites(['suite-1.ts', 'suite-2.ts'])).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ suiteName: 'suite-1' }),
+        expect.objectContaining({ suiteName: 'suite-2' }),
+      ]),
     );
   });
 });

@@ -9,7 +9,7 @@ const cli = yargs(process.argv).options({
   pattern: {
     type: 'array',
     string: true,
-    default: [join(process.cwd(), 'node_modules/**/*.md')],
+    default: [join(process.cwd(), '(packages|e2e|examples|testing|tools)/**/*.md')],
   },
   outputDir: {
     type: 'string',
