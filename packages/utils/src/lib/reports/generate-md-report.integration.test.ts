@@ -14,17 +14,19 @@ describe('generateMdReport', () => {
     vi.useRealTimers();
   });
 
-  it('should contain all sections when using the fixture report', () => {
+  it('should contain all sections when using the fixture report', async () => {
     const mdReport = generateMdReport(sortReport(scoreReport(reportMock())));
     expect(mdReport).toContain('🏷 Category');
-    expect(mdReport).toMatchSnapshot();
+    await expect(mdReport).toMatchFileSnapshot('__snapshots__/report.md');
   });
 
-  it('should not contain category sections when categories are empty', () => {
+  it('should not contain category sections when categories are empty', async () => {
     const mdReport = generateMdReport(
       sortReport(scoreReport({ ...reportMock(), categories: [] })),
     );
     expect(mdReport).not.toContain('🏷 Category');
-    expect(mdReport).toMatchSnapshot();
+    await expect(mdReport).toMatchFileSnapshot(
+      '__snapshots__/report-no-categories.md',
+    );
   });
 });
