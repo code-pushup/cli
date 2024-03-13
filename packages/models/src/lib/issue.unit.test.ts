@@ -65,6 +65,6 @@ describe('issueSchema', () => {
           position: { startLine: -1, endLine: 3 },
         },
       } satisfies Issue),
-    ).toThrow('Number must be greater or equal 0');
+    ).toThrow('Number must be greater than or equal to 0');
   });
 });
