@@ -154,13 +154,39 @@ describe('git utils in a git repo', () => {
 
     it('safeCheckout should throw if history is dirty', async () => {
       await expect(safeCheckout('master', undefined, emptyGit)).rejects.toThrow(
-        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+        `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+          {
+            not_added: ['new-file.md'],
+            files: [
+              {
+                path: 'new-file.md',
+                index: '?',
+                working_dir: '?',
+              },
+            ],
+          },
+          null,
+          2,
+        )}`,
       );
     });
 
     it('guardAgainstLocalChanges should throw if history is dirty', async () => {
       await expect(guardAgainstLocalChanges(emptyGit)).rejects.toThrow(
-        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+        `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+          {
+            not_added: ['new-file.md'],
+            files: [
+              {
+                path: 'new-file.md',
+                index: '?',
+                working_dir: '?',
+              },
+            ],
+          },
+          null,
+          2,
+        )}`,
       );
     });
   });

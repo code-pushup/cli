@@ -40,10 +40,34 @@ export async function toGitPath(
 export async function guardAgainstLocalChanges(
   git = simpleGit(),
 ): Promise<void> {
-  const isClean = await git.status(['-s']).then(r => r.files.length === 0);
-  if (!isClean) {
+  const status = await git.status(['-s']); //.then(r => r.files.length === 0);
+  if (status.files.length > 0) {
+    const ignoredProps = new Set(['current', 'tracking']);
+    const reducedStatus = Object.fromEntries(
+      Object.entries(status)
+        .filter(([key]) => !ignoredProps.has(key))
+        .filter(
+        (entry: [string, number | string | boolean | null | undefined | unknown[]]) => {
+          const value = entry[1];
+          if (value == null) {
+            return false;
+          }
+          if (Array.isArray(value) && value.length === 0) {
+            return false;
+          }
+          if (typeof value === 'number' && value === 0) {
+            return false;
+          }
+          return !(typeof value === 'boolean' && !value);
+        },
+      ),
+    );
     throw new Error(
-      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+      `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+        reducedStatus,
+        null,
+        2,
+      )}`,
     );
   }
 }
