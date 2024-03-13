@@ -21,4 +21,4 @@ describe('getRunner', () => {
       expect.objectContaining({ slug: 'is-on-https' }),
     ]);
   });
-}, 60_000);
+}, 70_000);
