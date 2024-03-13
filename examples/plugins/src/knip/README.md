@@ -7,7 +7,6 @@
 The plugin crawls the file base depending on your configuration and reports about their state.
 It maintains a set of audits
 
-
 You can configure the plugin with the following options:
 
 - ???
@@ -65,29 +64,28 @@ You can configure the plugin with the following options:
 Detailed information about the audits can be found in the docs folder of the plugin.
 Audits are derived form knips [issue types](https://knip.dev/reference/issue-types).
 
-
 **Legend**
-- Description
-  - 🔧	Auto-fixable issue types
-  - 🟠	Not included by default (include with filters)
 
+- Description
+  - 🔧 Auto-fixable issue types
+  - 🟠 Not included by default (include with filters)
 
 **Table of Audits**
 
-| Title                                                                                        | Description                                                                     | Icon | Key            |
-|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------|----------------|
-| [Unused files](./docs/unused-files.audit.md)                                                 | Unable to find a reference to this file                                         |      | files          |
-| [Unused dependencies](./docs/unused-dependencies.audit.md)                                   | Unable to find a reference to this dependency                                   | 🔧   | dependencies   |
-| [Unused devDependencies](./docs/unused-devDependencies.audit.md)                             | Unable to find a reference to this devDependency                                | 🔧   | dependencies   |
-| [Referenced optional peerDependencies](./docs/referenced-optional-peerDependencies.audit.md) | Optional peer dependency is referenced                                          |      | dependencies   |
-| [Unlisted dependencies](./docs/unlisted-dependencies.audit.md)                               | Used dependencies not listed in package.json                                    |      | unlisted       |
-| [Unlisted binaries](./docs/unlisted-binaries.audit.md)                                       | Binaries from dependencies not listed in package.json                           |      | binaries       |
-| [Unresolved imports](./docs/unresolved-imports.audit.md)                                     | Unable to resolve this (import) specifier                                       |      | unresolved     |
-| [Unused exports](./docs/unused-exports.audit.md)                                             | Unable to find a reference to this export                                       | 🔧   | exports        |
-| [Unused exported types](./docs/unused-exported-types.audit.md)                               | Unable to find a reference to this exported type                                | 🔧   | types          |
-| [Exports in used namespace](./docs/exports-in-used-namespace.audit.md)                       | Namespace with export is referenced, but not export itself                      | 🟠   | nsExports      |
-| [Exported types in used namespace](./docs/exported-types-in-used-namespace.audit.md)         | Namespace with type is referenced, but not type itself                          | 🟠   | nsTypes        |
-| [Unused exported enum members](./docs/unused-exported-enum-members.audit.md)                 | Unable to find a reference to this enum member                                  |      | enumMembers    |
-| [Unused exported class members](./docs/unused-exported-class-members.audit.md)               | Unable to find a reference to this class member                                 | 🟠   | classMembers   |
-| [Duplicate exports](./docs/duplicate-exports.audit.md)                                       | This is exported more than once                                                 |      | duplicates     |
+| Title                                                                                        | Description                                                | Icon | Key          |
+|----------------------------------------------------------------------------------------------|------------------------------------------------------------|------|--------------|
+| [Unused files](./docs/unused-files.audit.md)                                                 | Unable to find a reference to this file                    |      | files        |
+| [Unused dependencies](./docs/unused-dependencies.audit.md)                                   | Unable to find a reference to this dependency              | 🔧   | dependencies |
+| [Unused devDependencies](./docs/unused-devDependencies.audit.md)                             | Unable to find a reference to this devDependency           | 🔧   | dependencies |
+| [Referenced optional peerDependencies](./docs/referenced-optional-peerDependencies.audit.md) | Optional peer dependency is referenced                     |      | dependencies |
+| [Unlisted dependencies](./docs/unlisted-dependencies.audit.md)                               | Used dependencies not listed in package.json               |      | unlisted     |
+| [Unlisted binaries](./docs/unlisted-binaries.audit.md)                                       | Binaries from dependencies not listed in package.json      |      | binaries     |
+| [Unresolved imports](./docs/unresolved-imports.audit.md)                                     | Unable to resolve this (import) specifier                  |      | unresolved   |
+| [Unused exports](./docs/unused-exports.audit.md)                                             | Unable to find a reference to this export                  | 🔧   | exports      |
+| [Unused exported types](./docs/unused-exported-types.audit.md)                               | Unable to find a reference to this exported type           | 🔧   | types        |
+| [Exports in used namespace](./docs/exports-in-used-namespace.audit.md)                       | Namespace with export is referenced, but not export itself | 🟠   | nsExports    |
+| [Exported types in used namespace](./docs/exported-types-in-used-namespace.audit.md)         | Namespace with type is referenced, but not type itself     | 🟠   | nsTypes      |
+| [Unused exported enum members](./docs/unused-exported-enum-members.audit.md)                 | Unable to find a reference to this enum member             |      | enumMembers  |
+| [Unused exported class members](./docs/unused-exported-class-members.audit.md)               | Unable to find a reference to this class member            | 🟠   | classMembers |
+| [Duplicate exports](./docs/duplicate-exports.audit.md)                                       | This is exported more than once                            |      | duplicates   |
 
