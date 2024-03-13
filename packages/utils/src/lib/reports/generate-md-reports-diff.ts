@@ -198,8 +198,9 @@ function summarizeUnchanged(
   { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
 ): string {
   return [
-    changed.length > 0 ? 'Other' : 'All',
-    pluralizeToken(token, unchanged.length),
+    changed.length > 0
+      ? pluralizeToken(`other ${token}`, unchanged.length)
+      : `All of ${pluralizeToken(token, unchanged.length)}`,
     unchanged.length > 1 ? 'are' : 'is',
     'unchanged.',
   ].join(' ');
