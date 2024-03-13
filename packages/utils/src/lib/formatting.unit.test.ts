@@ -31,6 +31,14 @@ describe('pluralize', () => {
   ])('should pluralize "%s" as "%s"', (singular, plural) => {
     expect(pluralize(singular)).toBe(plural);
   });
+
+  it('should not pluralize if 1 passed in as amount', () => {
+    expect(pluralize('audit', 1)).toBe('audit');
+  });
+
+  it('should pluralize if amount is other than 1/-1', () => {
+    expect(pluralize('audit', 2)).toBe('audits');
+  });
 });
 
 describe('formatBytes', () => {
@@ -53,7 +61,6 @@ describe('formatBytes', () => {
 
 describe('pluralizeToken', () => {
   it.each([
-    [undefined, '0 files'],
     [-2, '-2 files'],
     [-1, '-1 file'],
     [0, '0 files'],
