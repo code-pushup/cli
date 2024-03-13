@@ -1,5 +1,5 @@
 import { isAbsolute, join, relative } from 'node:path';
-import { simpleGit } from 'simple-git';
+import { StatusResult, simpleGit } from 'simple-git';
 import { Commit, commitSchema } from '@code-pushup/models';
 import { ui } from './logging';
 import { toUnixPath } from './transform';
@@ -37,15 +37,13 @@ export async function toGitPath(
   return formatGitPath(path, gitRoot);
 }
 
-export async function guardAgainstLocalChanges(
-  git = simpleGit(),
-): Promise<void> {
-  const status = await git.status(['-s']); //.then(r => r.files.length === 0);
-  if (status.files.length > 0) {
-    const ignoredProps = new Set(['current', 'tracking']);
-    const reducedStatus = Object.fromEntries(
+export class GitStatueError extends Error {
+  static ignoredProps = new Set(['current', 'tracking']);
+
+  static getReducedStatus(status: StatusResult) {
+    return Object.fromEntries(
       Object.entries(status)
-        .filter(([key]) => !ignoredProps.has(key))
+        .filter(([key]) => !this.ignoredProps.has(key))
         .filter(
           (
             entry: [
@@ -67,13 +65,24 @@ export async function guardAgainstLocalChanges(
           },
         ),
     );
-    throw new Error(
+  }
+  constructor(status: StatusResult) {
+    super(
       `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
-        reducedStatus,
+        GitStatueError.getReducedStatus(status),
         null,
         2,
       )}`,
     );
+  }
+}
+
+export async function guardAgainstLocalChanges(
+  git = simpleGit(),
+): Promise<void> {
+  const status = await git.status(['-s']); //.then(r => r.files.length === 0);
+  if (status.files.length > 0) {
+    throw new GitStatueError(status);
   }
 }
 
