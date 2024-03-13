@@ -15,7 +15,7 @@ export const withIgnoreMockInLibs = () =>
     mapperFn: ({ rootFolder }) => {
       return {
         ignore: [rootFolder + '/mocks/**', rootFolder + '/perf/**'],
-        entry: [rootFolder + '/src/bin.ts'],
+        entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
       };
     },
   });

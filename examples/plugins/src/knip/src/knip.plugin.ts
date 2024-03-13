@@ -1,24 +1,18 @@
-import { stat } from 'node:fs/promises';
-import { basename } from 'node:path';
-import {
-  AuditOutput,
-  AuditOutputs,
-  CategoryRef,
-  Issue,
-  PluginConfig,
-} from '@code-pushup/models';
-import {
-  crawlFileSystem,
-  factorOf,
-  formatBytes,
-  pluralizeToken,
-} from '@code-pushup/utils';
-
-
-import {main} from "knip";
+import {AuditOutput, AuditOutputs, CategoryRef, Issue, PluginConfig,} from '@code-pushup/models';
+import {pluralizeToken,} from '@code-pushup/utils';
+import {KnipConfig, main} from "knip";
 import {CommandLineOptions} from "knip/dist/types/cli";
+import {Issues as _Issues, IssueSet} from "knip/dist/types/issues";
 
-export type PluginOptions = { } & ;
+type Issues = Omit<_Issues, 'files'> & {file: string};
+
+type ResolvedReturnType<T> = T extends (...args: any[]) => Promise<infer R> ? R : T;
+
+// Using it with main
+type KinpReport = ResolvedReturnType<typeof main>;
+
+
+export type PluginOptions = KnipConfig;
 
 type RunnerOptions = CommandLineOptions;
 
@@ -36,7 +30,7 @@ export const auditsMap = {
 export const audits = Object.values(auditsMap);
 
 export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
-  ({ slug }) => ({
+  ({slug}) => ({
     type: 'audit',
     plugin: pluginSlug,
     slug,
@@ -90,101 +84,119 @@ export async function runnerFunction(
   options: RunnerOptions,
 ): Promise<AuditOutputs> {
 
-  const knipResult = await main(options);
+  const kinpReport = await main(options);
 
-  const fileSizeAuditOutput: AuditOutput = {
-    slug: fileSizeAuditSlug,
-    score: 1,
-    value: 0,
-    displayValue: displayValue(0),
-  };
-
-  const issues = await fileSizeIssues(options);
-  // early exit if no issues
-  if (issues.length === 0) {
-    return [fileSizeAuditOutput];
-  }
-
-  const errorCount = issues.filter(filterSeverityError).length;
-  return [
-    {
-      ...fileSizeAuditOutput,
-      score: factorOf(issues, filterSeverityError),
-      value: errorCount,
-      displayValue: displayValue(errorCount),
-      details: {
-        issues,
-      },
-    },
-  ];
+  return knipIssuesToAuditOutputs(kinpReport.issues)
 }
 
-function filterSeverityError(issue: Issue): issue is Issue {
-  return issue.severity === 'error';
+export function knipIssuesToAuditOutputs(issues: KinpReport['issues']): AuditOutputs {
+  /*
+  Transform a dict of audit issues from knip into AuditOutputs
+
+  dependencies: IssueRecords;
+    devDependencies: IssueRecords;
+    optionalPeerDependencies: IssueRecords;
+    unlisted: IssueRecords;
+    binaries: IssueRecords;
+    unresolved: IssueRecords;
+    exports: IssueRecords;
+    types: IssueRecords;
+    nsExports: IssueRecords;
+    nsTypes: IssueRecords;
+    duplicates: IssueRecords;
+    enumMembers: IssueRecords;
+    classMembers: IssueRecords;
+   */
+
+
+  return Object.entries(issues).reduce(([auditKey, issues]) => {
+
+    return ({
+      slug: `knip-${auditKey}`,
+      score: 0,
+      value: 0,
+      displayValue: '0',
+      details: {
+        issues: Array.from(_).map((u) => ({}))
+      }
+    })
+  }, {});
+}
+
+function isKey<T extends object>(
+  x: T,
+  k: PropertyKey
+): k is keyof T {
+  return k in x;
+}
+/*
+function isIssueSet<T = IssueSet | IssueRecords>(
+  set: T,
+): set is IssueSet {
+  return set instanceof Set
+}
+
+function isIssueRecords<T = IssueSet | IssueRecords>(
+  set: T,
+): set is IssueRecords {
+  return set instanceof object
+}
+*/
+export function toAuditOutputs({files, issues}: { files: IssueSet, issues: Issues[] }): AuditOutputs {
+  // eslint-disable-next-line functional/no-let
+  let auditMap: Record<string, AuditOutput> = {};
+
+  if (files.size > 0) {
+    auditMap = {
+      ...auditMap,
+      files: {
+        slug: 'unused-files',
+        score: files.size === 0 ? 1 : 0,
+        displayValue: `${files.size} unused files`,
+        value: files.size,
+        details: {
+          issues: [...files].map(file => ({
+            message: `File ${file} unused`,
+            severity: 'warning',
+            source: {
+              file
+            }
+          }))
+        }
+      }
+    }
+  }
+
+  issues.map(({file, ...auditMap}) => {
+    return Object.entries(auditMap).map(([key, s]) => {
+
+    })
+  })
+
+  /*for (const [reportType, isReportType] of Object.entries(files)) {
+    if (isReportType && isKey(issues, reportType)) {
+      let issuesForType: string[];
+
+      const z = issues[reportType];
+      if(isIssueSet(z)) {
+        issuesForType = Array.from(z);
+      } else if (isIssueRecords(z)) {
+        issuesForType = Object.values(z).flatMap((d) => Object.values(d).pop().type);
+      } else {
+        issuesForType = [];
+      }
+
+      if (issuesForType.length > 0) {
+        auditMap[reportType] = issuesForType;
+      }
+    }
+  }*/
+
+  return Object.values(auditMap);
 }
 
 export function displayValue(numberOfFiles: number): string {
   return `${pluralizeToken('file', numberOfFiles)} oversize`;
-}
-
-export function fileSizeIssues(options: {
-  directory: string;
-  pattern?: string | RegExp;
-  budget?: number;
-}): Promise<Issue[]> {
-  const { directory, pattern, budget } = options;
-
-  return crawlFileSystem({
-    directory,
-    pattern,
-    fileTransform: async (file: string) => {
-      // get size of file
-      // const filePath = join(directory, file);
-      const stats = await stat(file);
-
-      return assertFileSize(file, stats.size, budget);
-    },
-  });
-}
-
-export function infoMessage(filePath: string, size: number) {
-  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)})`;
-}
-
-export function errorMessage(filePath: string, size: number, budget: number) {
-  const sizeDifference = formatBytes(size - budget);
-  const byteSize = formatBytes(size);
-  const byteBudget = formatBytes(budget);
-  return `File ${basename(
-    filePath,
-  )} has ${byteSize}, this is ${sizeDifference} too big. (budget: ${byteBudget})`;
-}
-
-export function assertFileSize(
-  file: string,
-  size: number,
-  budget?: number,
-): Issue {
-  // ensure size positive numbers
-  const formattedSize = Math.max(size, 0);
-
-  if (budget !== undefined) {
-    // ensure budget is positive numbers
-    const formattedBudget = Math.max(budget, 0);
-    // return error Issue
-    if (budget < formattedSize) {
-      return {
-        severity: 'error',
-        message: errorMessage(file, formattedSize, formattedBudget),
-      };
-    }
-  }
-
-  // return informative Issue
-  return {
-    severity: 'info',
-    message: infoMessage(file, formattedSize),
-  };
 }
 
 export default create;
