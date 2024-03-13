@@ -8,7 +8,7 @@ import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
 import {
   CATEGORIES_MAP,
   CATEGORY_SLUGS,
-  type CategorySlug,
+  CategorySlug,
 } from './categories.mock';
 import {
   ESLINT_AUDITS_FIXED_SLUGS,
@@ -18,6 +18,7 @@ import {
 import {
   ESLINT_PLUGIN_GROUP_MAX_LINES,
   ESLINT_PLUGIN_META,
+  ESLintAuditSlug,
 } from './eslint-plugin.mock';
 import {
   LIGHTHOUSE_AUDITS_CHANGES,
@@ -152,6 +153,97 @@ export function reportsDiffMock(): ReportsDiff {
     duration: 105,
     packageName: '@code-pushup/core',
     version: '1.0.0',
+  };
+}
+
+export function reportsDiffAltMock(): ReportsDiff {
+  const originalDiff = reportsDiffMock();
+  return {
+    ...originalDiff,
+    categories: {
+      changed: [
+        {
+          slug: 'performance' satisfies CategorySlug,
+          title: CATEGORIES_MAP['performance'].title,
+          scores: { before: 0.92, after: 0.94, diff: 0.02 },
+        },
+        {
+          slug: 'bug-prevention' satisfies CategorySlug,
+          title: CATEGORIES_MAP['bug-prevention'].title,
+          scores: { before: 0.68, after: 0.63, diff: -0.05 },
+        },
+      ],
+      unchanged: [
+        {
+          slug: 'code-style' satisfies CategorySlug,
+          title: CATEGORIES_MAP['code-style'].title,
+          score: 0.54,
+        },
+      ],
+      added: [],
+      removed: [],
+    },
+    groups: {
+      changed: [
+        {
+          slug: LH_PLUGIN_GROUP_PERFORMANCE.slug,
+          title: LH_PLUGIN_GROUP_PERFORMANCE.title,
+          plugin: { slug: LH_PLUGIN_META.slug, title: LH_PLUGIN_META.title },
+          scores: { before: 0.92, after: 0.94, diff: 0.02 },
+        },
+      ],
+      unchanged: [
+        {
+          slug: ESLINT_PLUGIN_GROUP_MAX_LINES.slug,
+          title: ESLINT_PLUGIN_GROUP_MAX_LINES.title,
+          plugin: {
+            slug: ESLINT_PLUGIN_META.slug,
+            title: ESLINT_PLUGIN_META.title,
+          },
+          score: 0.5,
+        },
+      ],
+      added: [],
+      removed: [],
+    },
+    audits: {
+      changed: [
+        {
+          slug: 'no-unused-vars' satisfies ESLintAuditSlug,
+          title: ESLINT_AUDITS_MAP['no-unused-vars'].title,
+          plugin: {
+            slug: ESLINT_PLUGIN_META.slug,
+            title: ESLINT_PLUGIN_META.title,
+          },
+          scores: { before: 1, after: 0, diff: -1 },
+          values: { before: 0, after: 1, diff: 1 },
+          displayValues: { before: 'passed', after: '1 error' },
+        },
+        ...originalDiff.audits.changed.filter(
+          ({ plugin }) => plugin.slug === 'lighthouse',
+        ),
+      ],
+      unchanged: [
+        ...ESLINT_AUDIT_SLUGS.filter(slug => slug !== 'no-unused-vars').map(
+          (slug): AuditResult => ({
+            slug,
+            title: ESLINT_AUDITS_MAP[slug].title,
+            plugin: {
+              slug: ESLINT_PLUGIN_META.slug,
+              title: ESLINT_PLUGIN_META.title,
+            },
+            score: ESLINT_AUDITS_MAP[slug].score,
+            value: ESLINT_AUDITS_MAP[slug].value,
+            displayValue: ESLINT_AUDITS_MAP[slug].displayValue,
+          }),
+        ),
+        ...originalDiff.audits.unchanged.filter(
+          ({ plugin }) => plugin.slug === 'lighthouse',
+        ),
+      ],
+      added: [],
+      removed: [],
+    },
   };
 }
 

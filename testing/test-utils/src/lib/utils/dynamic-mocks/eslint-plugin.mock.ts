@@ -87,7 +87,7 @@ export function eslintPluginReportAltMock(): PluginReport {
   };
 }
 
-type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
+export type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
 
 export function eslintAuditRefMock(
   slug: ESLintAuditSlug,
