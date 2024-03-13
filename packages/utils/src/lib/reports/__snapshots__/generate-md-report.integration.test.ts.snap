@@ -73,7 +73,9 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 <details>
 <summary>🟥 <b>6 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'onCreate' is missing in props validation</td><td><code>src/components/CreateTodo.jsx</code></td><td>15</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setQuery' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>10</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setHideComplete' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>18</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos.map' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'onEdit' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>13</td></tr></table>
+
 </details>
 
 
@@ -83,7 +85,9 @@ ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/
 
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>11</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>29</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+
 </details>
 
 
@@ -93,7 +97,9 @@ ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-s
 
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>19</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>32</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>33</td></tr></table>
+
 </details>
 
 
@@ -103,7 +109,9 @@ ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 <details>
 <summary>🟥 <b>2 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>17</td></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>40</td></tr></table>
+
 </details>
 
 
@@ -113,7 +121,9 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
+
 </details>
 
 
@@ -123,7 +133,9 @@ ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'loading' is assigned a value but never used.</td><td><code>src/App.jsx</code></td><td>8</td></tr></table>
+
 </details>
 
 
@@ -133,7 +145,9 @@ ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Arrow function has too many lines (71). Maximum allowed is 50.</td><td><code>src/hooks/useTodos.js</code></td><td>3-73</td></tr></table>
+
 </details>
 
 
@@ -143,7 +157,9 @@ ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/late
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'root' is never reassigned. Use 'const' instead.</td><td><code>src/index.jsx</code></td><td>5</td></tr></table>
+
 </details>
 
 
@@ -153,7 +169,9 @@ ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/p
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.</td><td><code>src/components/TodoFilter.jsx</code></td><td>3-25</td></tr></table>
+
 </details>
 
 
@@ -163,7 +181,9 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected '===' and instead saw '=='.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+
 </details>
 
 
@@ -450,7 +470,9 @@ exports[`generateMdReport > should not contain category sections when categories
 
 <details>
 <summary>🟥 <b>6 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'onCreate' is missing in props validation</td><td><code>src/components/CreateTodo.jsx</code></td><td>15</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setQuery' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>10</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setHideComplete' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>18</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos.map' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'onEdit' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>13</td></tr></table>
+
 </details>
 
 
@@ -460,7 +482,9 @@ ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/
 
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>11</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>29</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+
 </details>
 
 
@@ -470,7 +494,9 @@ ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-s
 
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>19</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>32</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>33</td></tr></table>
+
 </details>
 
 
@@ -480,7 +506,9 @@ ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 <details>
 <summary>🟥 <b>2 warnings</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>17</td></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>40</td></tr></table>
+
 </details>
 
 
@@ -490,7 +518,9 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
+
 </details>
 
 
@@ -500,7 +530,9 @@ ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'loading' is assigned a value but never used.</td><td><code>src/App.jsx</code></td><td>8</td></tr></table>
+
 </details>
 
 
@@ -510,7 +542,9 @@ ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Arrow function has too many lines (71). Maximum allowed is 50.</td><td><code>src/hooks/useTodos.js</code></td><td>3-73</td></tr></table>
+
 </details>
 
 
@@ -520,7 +554,9 @@ ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/late
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'root' is never reassigned. Use 'const' instead.</td><td><code>src/index.jsx</code></td><td>5</td></tr></table>
+
 </details>
 
 
@@ -530,7 +566,9 @@ ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/p
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Unexpected block statement surrounding arrow body; move the returned value immediately after the \`=>\`.</td><td><code>src/components/TodoFilter.jsx</code></td><td>3-25</td></tr></table>
+
 </details>
 
 
@@ -540,7 +578,9 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
+
 <h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected '===' and instead saw '=='.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+
 </details>
 
 
