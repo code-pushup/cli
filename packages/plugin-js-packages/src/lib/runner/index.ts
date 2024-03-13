@@ -8,12 +8,15 @@ import {
 } from '@code-pushup/utils';
 import {
   FinalJSPackagesPluginConfig,
+  PackageCommand,
   PackageDependency,
   packageDependencies,
 } from '../config';
 import { auditResultToAuditOutput } from './audit/transform';
 import { NpmAuditResultJson } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
+import { outdatedResultToAuditOutput } from './outdated/transform';
+import { NpmOutdatedResultJson } from './outdated/types';
 
 export async function executeRunner(): Promise<void> {
   const outputPath = join(
@@ -29,22 +32,28 @@ export async function executeRunner(): Promise<void> {
   const results = await Promise.allSettled(
     checks.flatMap(check =>
       packageDependencies.map<Promise<AuditOutput>>(async dep => {
+        const outputFilename = `${packageManager}-${check}-${dep}.json`;
+
         await executeProcess({
           command: 'npm',
           args: [
             check,
-            ...createAuditFlags(dep),
-            '--json',
-            '--audit-level=none',
-            '>',
-            join(outputPath, `${packageManager}-${check}-${dep}.json`),
+            ...getCommandArgs(check, dep, join(outputPath, outputFilename)),
           ],
+          alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
         });
 
-        const auditResult = await readJsonFile<NpmAuditResultJson>(
-          join(outputPath, `${packageManager}-${check}-${dep}.json`),
-        );
-        return auditResultToAuditOutput(auditResult, dep, auditLevelMapping);
+        if (check === 'audit') {
+          const auditResult = await readJsonFile<NpmAuditResultJson>(
+            join(outputPath, outputFilename),
+          );
+          return auditResultToAuditOutput(auditResult, dep, auditLevelMapping);
+        } else {
+          const outdatedResult = await readJsonFile<NpmOutdatedResultJson>(
+            join(outputPath, outputFilename),
+          );
+          return outdatedResultToAuditOutput(outdatedResult, dep);
+        }
       }),
     ),
   );
@@ -72,13 +81,25 @@ export async function createRunnerConfig(
   };
 }
 
-function createAuditFlags(currentDep: PackageDependency) {
-  if (currentDep === 'optional') {
-    return packageDependencies.map(dep => `--include=${dep}`);
-  }
+function getCommandArgs(
+  check: PackageCommand,
+  dep: PackageDependency,
+  outputPath: string,
+) {
+  return check === 'audit'
+    ? [
+        ...createAuditFlags(dep),
+        '--json',
+        '--audit-level=none',
+        '>',
+        outputPath,
+      ]
+    : ['--json', '--long', '>', outputPath];
+}
 
+function createAuditFlags(currentDep: PackageDependency) {
   return [
-    `--include${currentDep}`,
+    `--include=${currentDep}`,
     ...packageDependencies
       .filter(dep => dep !== currentDep)
       .map(dep => `--omit=${dep}`),
