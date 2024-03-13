@@ -47,20 +47,25 @@ export async function guardAgainstLocalChanges(
       Object.entries(status)
         .filter(([key]) => !ignoredProps.has(key))
         .filter(
-        (entry: [string, number | string | boolean | null | undefined | unknown[]]) => {
-          const value = entry[1];
-          if (value == null) {
-            return false;
-          }
-          if (Array.isArray(value) && value.length === 0) {
-            return false;
-          }
-          if (typeof value === 'number' && value === 0) {
-            return false;
-          }
-          return !(typeof value === 'boolean' && !value);
-        },
-      ),
+          (
+            entry: [
+              string,
+              number | string | boolean | null | undefined | unknown[],
+            ],
+          ) => {
+            const value = entry[1];
+            if (value == null) {
+              return false;
+            }
+            if (Array.isArray(value) && value.length === 0) {
+              return false;
+            }
+            if (typeof value === 'number' && value === 0) {
+              return false;
+            }
+            return !(typeof value === 'boolean' && !value);
+          },
+        ),
     );
     throw new Error(
       `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
