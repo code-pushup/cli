@@ -16,10 +16,21 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
+import { htmlColor, style } from './md';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
+}
+
+export function formatScoreWithColor(
+  score: number,
+  options?: { skipBold?: boolean },
+): string {
+  const styledNumber = options?.skipBold
+    ? formatReportScore(score)
+    : style(formatReportScore(score));
+  return `${getRoundScoreMarker(score)} ${styledNumber}`;
 }
 
 export function getRoundScoreMarker(score: number): string {
@@ -40,6 +51,27 @@ export function getSquaredScoreMarker(score: number): string {
     return '🟨';
   }
   return '🟥';
+}
+
+export function getDiffMarker(diff: number): string {
+  if (diff > 0) {
+    return '▲';
+  }
+  if (diff < 0) {
+    return '▼';
+  }
+  return '';
+}
+
+export function colorByScoreDiff(text: string, diff: number): string {
+  return htmlColor(text, diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray');
+}
+
+export function formatDiffNumber(diff: number): string {
+  if (diff > 0) {
+    return `+${diff}`;
+  }
+  return `${diff}`;
 }
 
 export function getSeverityIcon(
