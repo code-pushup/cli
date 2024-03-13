@@ -68,6 +68,12 @@ export function colorByScoreDiff(text: string, diff: number): string {
 }
 
 export function formatDiffNumber(diff: number): string {
+  if (diff === Number.POSITIVE_INFINITY) {
+    return '+∞';
+  }
+  if (diff === Number.NEGATIVE_INFINITY) {
+    return '-∞';
+  }
   if (diff > 0) {
     return `+${diff}`;
   }
