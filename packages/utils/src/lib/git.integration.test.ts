@@ -172,8 +172,17 @@ describe('git utils in a git repo', () => {
     });
 
     it('guardAgainstLocalChanges should throw if history is dirty', async () => {
-      await expect(guardAgainstLocalChanges(emptyGit)).rejects.toThrow(
-        `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+      let errorMsg;
+      try {
+        await guardAgainstLocalChanges(emptyGit);
+      } catch (error) {
+        errorMsg = (error as Error).message;
+      }
+      expect(errorMsg).toMatch(
+        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them:',
+      );
+      expect(errorMsg).toMatch(
+        JSON.stringify(
           {
             not_added: ['new-file.md'],
             files: [
@@ -186,7 +195,7 @@ describe('git utils in a git repo', () => {
           },
           null,
           2,
-        )}`,
+        ),
       );
     });
   });
