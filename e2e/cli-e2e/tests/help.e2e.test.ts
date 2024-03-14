@@ -11,7 +11,7 @@ describe('CLI help', () => {
     expect(stdout).toMatchSnapshot();
   });
 
-  it('should produce the same output toooo stdout for both help argument and help command', async () => {
+  it('should produce the same output to stdout for both help argument and help command', async () => {
     const helpArgResult = await executeProcess({
       command: 'code-pushup',
       args: ['help'],
