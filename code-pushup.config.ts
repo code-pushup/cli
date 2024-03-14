@@ -17,6 +17,7 @@ import coveragePlugin, {
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
+import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
@@ -51,6 +52,7 @@ const config: CoreConfig = {
 
   plugins: [
     await eslintPlugin(await eslintConfigFromNxProjects()),
+
     await coveragePlugin({
       coverageToolCommand: {
         command: 'npx',
@@ -66,6 +68,9 @@ const config: CoreConfig = {
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
+
+    await jsPackagesPlugin({ packageManager: 'npm' }),
+
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -106,6 +111,30 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'coverage',
           slug: 'coverage',
+          weight: 1,
+        },
+      ],
+    },
+    {
+      slug: 'security',
+      title: 'Security',
+      refs: [
+        {
+          type: 'group',
+          plugin: 'js-packages',
+          slug: 'npm-audit',
+          weight: 1,
+        },
+      ],
+    },
+    {
+      slug: 'dependencies',
+      title: 'Dependencies',
+      refs: [
+        {
+          type: 'group',
+          plugin: 'js-packages',
+          slug: 'npm-outdated',
           weight: 1,
         },
       ],
