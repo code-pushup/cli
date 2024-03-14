@@ -49,3 +49,12 @@ export const MINIMAL_PLUGIN_CONFIG_MOCK: PluginConfig = {
 export const MINIMAL_CONFIG_MOCK: CoreConfig = {
   plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
 };
+
+export const MINIMAL_HISTORY_CONFIG_MOCK: CoreConfig = {
+  persist: {
+    outputDir: '.code-pushup',
+    filename: 'history-report',
+    format: ['json'],
+  },
+  plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
+};

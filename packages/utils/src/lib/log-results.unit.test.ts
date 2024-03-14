@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { getLogMessages } from '@code-pushup/test-utils';
 import { FileResult } from './file-system';
 import { logMultipleResults, logPromiseResults } from './log-results';
+import { ui } from './logging';
 
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
@@ -64,31 +66,21 @@ describe('logPromiseResults', () => {
         } as PromiseFulfilledResult<FileResult>,
       ],
       'Uploaded reports successfully:',
-      result => {
-        console.info(result.value);
-      },
+      (result): string => result.value.toString(),
     );
-
-    expect(console.info).toHaveBeenNthCalledWith(
-      1,
-      'Uploaded reports successfully:',
-    );
-    expect(console.info).toHaveBeenNthCalledWith(2, ['out.json']);
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ green(success) ] Uploaded reports successfully:');
+    expect(logs[1]).toBe('[ green(success) ] out.json');
   });
 
   it('should log on fail', () => {
     logPromiseResults(
       [{ status: 'rejected', reason: 'fail' } as PromiseRejectedResult],
       'Generated reports failed:',
-      result => {
-        console.warn(result.reason);
-      },
+      (result: { reason: string }) => result.reason,
     );
-
-    expect(console.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed:',
-    );
-    expect(console.warn).toHaveBeenNthCalledWith(2, 'fail');
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed:');
+    expect(logs[1]).toBe('[ yellow(warn) ] fail');
   });
 });

@@ -23,6 +23,7 @@
     "plugin-eslint",
     "plugin-lighthouse",
     "plugin-coverage",
+    "plugin-js-packages",
     "react-todos-app"
   ],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]

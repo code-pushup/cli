@@ -1,42 +1,49 @@
 import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
+import { ui } from './logging';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
   messagePrefix: string,
-  succeededCallback?: (result: PromiseFulfilledResult<T>) => void,
-  failedCallback?: (result: PromiseRejectedResult) => void,
+  succeededTransform?: (result: PromiseFulfilledResult<T>) => string,
+  failedTransform?: (result: PromiseRejectedResult) => string,
 ) {
-  if (succeededCallback) {
+  if (succeededTransform) {
     const succeededResults = results.filter(isPromiseFulfilledResult);
 
     logPromiseResults(
       succeededResults,
       `${messagePrefix} successfully: `,
-      succeededCallback,
+      succeededTransform,
     );
   }
 
-  if (failedCallback) {
+  if (failedTransform) {
     const failedResults = results.filter(isPromiseRejectedResult);
 
     logPromiseResults(
       failedResults,
       `${messagePrefix} failed: `,
-      failedCallback,
+      failedTransform,
     );
   }
 }
 
 export function logPromiseResults<
   T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
->(results: T[], logMessage: string, callback: (result: T) => void): void {
+>(results: T[], logMessage: string, getMsg: (result: T) => string): void {
   if (results.length > 0) {
-    if (results[0]?.status === 'fulfilled') {
-      console.info(logMessage);
-    } else {
-      console.warn(logMessage);
-    }
+    const log =
+      results[0]?.status === 'fulfilled'
+        ? (m: string) => {
+            ui().logger.success(m);
+          }
+        : (m: string) => {
+            ui().logger.warning(m);
+          };
 
-    results.forEach(callback);
+    log(logMessage);
+    results.forEach(result => {
+      log(getMsg(result));
+    });
   }
 }
