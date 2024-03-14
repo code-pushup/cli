@@ -76,7 +76,7 @@ const config: CoreConfig = {
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
-      budget: 174_080 * 4, // 170*4 kB
+      budget: 307_200, // 300 kB
     }),
 
     packageJsonPlugin({

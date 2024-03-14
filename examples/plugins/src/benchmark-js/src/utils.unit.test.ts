@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { auditOutputSchema } from '@code-pushup/models';
+import {describe, expect, it} from 'vitest';
+import {auditOutputSchema} from '@code-pushup/models';
 import {
-  SuiteConfig,
+  BenchmarkResult,
   loadSuites,
+  SuiteConfig,
   suiteNameToCategoryRef,
   suiteResultToAuditOutput,
   toAuditMetadata,
@@ -87,24 +88,9 @@ describe('scoredAuditOutput', () => {
     expect(() => auditOutputSchema.parse(auditOutput)).not.toThrow();
   });
 
-  it('should have integer value', () => {
-    expect(
-      suiteResultToAuditOutput([
-        {
-          suiteName: 'glob',
-          hz: 100.1111,
-          rme: 2.5,
-          name: 'globby',
-          isFastest: true,
-          isTarget: true,
-          samples: 4,
-        },
-      ]),
-    ).toEqual(
-      expect.objectContaining({
-        value: 100,
-      }),
-    );
+  it('should have hz as value and converted to integer', () => {
+    expect(suiteResultToAuditOutput([{hz: 100.1111,  isFastest: true, isTarget: true, suiteName: 'sort', rme: 1 } as BenchmarkResult]))
+      .toEqual(expect.objectContaining({value: 100}),);
   });
 
   it('should score based on maxHz', () => {

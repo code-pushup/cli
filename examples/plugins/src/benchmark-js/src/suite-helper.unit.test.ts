@@ -1,38 +1,31 @@
-import { Bench } from 'tinybench';
-import { describe, expect, it } from 'vitest';
-import { benchToBenchmarkResult } from './tinybench.suite-runner';
+import {Bench} from 'tinybench';
+import {describe, expect, it} from 'vitest';
+import {benchToBenchmarkResult} from './tinybench.suite-runner';
 
 describe('benchToBenchmarkResult', () => {
   it('should transform a tinybench Bench to a enriched BenchmarkResult', () => {
-    const currentImplementation = {
-      hz: 175.3,
-      rme: 0.4,
-      samples: [5.6, 5.6],
-    };
-    const slowerImplementation = {
-      hz: 75.3,
-      rme: 0.4,
-      samples: [5.6, 5.6],
-    };
-    const bench = {
-      getTask: (name: string) => {
-        const result =
-          // eslint-disable-next-line vitest/no-conditional-tests
-          name === 'current-implementation'
-            ? currentImplementation
-            : slowerImplementation;
-        return { result };
+    const resultMap = {
+      'current-implementation': {
+        hz: 175.333_33,
+        rme: 0.444_44,
+        samples: [5.6, 5.6],
       },
-      results: [currentImplementation, slowerImplementation],
+      'slower-implementation': {
+        hz: 75.333_33,
+        rme: 0.444_44,
+        samples: [5.6666, 5.6666],
+      }
     };
+    const suitNames = Object.keys(resultMap);
+
     expect(
-      benchToBenchmarkResult(bench as unknown as Bench, {
+      benchToBenchmarkResult({
+        getTask: (name: keyof typeof resultMap) => ({result: resultMap[name]}),
+        results: Object.values(resultMap),
+      } as Bench, {
         suiteName: 'suite-1',
-        cases: [
-          ['current-implementation', vi.fn()],
-          ['slower-implementation', vi.fn()],
-        ],
-        targetImplementation: 'current-implementation',
+        cases: suitNames.map(name => ([name, vi.fn()])),
+        targetImplementation: suitNames.at(0) as string,
       }),
     ).toStrictEqual(
       expect.arrayContaining([
@@ -40,18 +33,18 @@ describe('benchToBenchmarkResult', () => {
           suiteName: 'suite-1',
           name: 'current-implementation',
           isTarget: true,
-          hz: 175.3,
+          hz: 175.333_33,
           isFastest: true,
-          rme: 0.4,
+          rme: 0.444_44,
           samples: 2,
         }),
         expect.objectContaining({
           suiteName: 'suite-1',
           name: 'slower-implementation',
           isTarget: false,
-          hz: 75.3,
+          hz: 75.333_33,
           isFastest: false,
-          rme: 0.4,
+          rme: 0.444_44,
           samples: 2,
         }),
       ]),
