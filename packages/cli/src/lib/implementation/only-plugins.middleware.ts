@@ -10,7 +10,7 @@ export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
 
     validateOnlyPluginsOption(plugins, processArgs);
 
-    const onlyPluginsSet = new Set(toArray(onlyPlugins));
+    const onlyPluginsSet = new Set(onlyPlugins);
 
     return {
       ...processArgs,
