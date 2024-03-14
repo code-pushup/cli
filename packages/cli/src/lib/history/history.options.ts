@@ -29,13 +29,13 @@ export function yargsHistoryOptionsDefinition(): Record<
       default: 5,
     },
     from: {
-      // https://git-scm.com/docs/git-log#_description
-      describe: 'hash to start in history',
+      // https://git-scm.com/docs/git-log#Documentation/git-log.txt-ltrevision-rangegt
+      describe: 'hash to first commit in history',
       type: 'string',
     },
     to: {
-      // https://git-scm.com/docs/git-log#_description
-      describe: 'hash to start in history',
+      // https://git-scm.com/docs/git-log#Documentation/git-log.txt-ltrevision-rangegt
+      describe: 'hash to last commit in history',
       type: 'string',
     },
   };
