@@ -21,7 +21,7 @@ export function validateOnlyPluginsOption(
   );
 
   if (missingPlugins.length > 0 && verbose) {
-    ui().logger.warning(
+    ui().logger.info(
       `${chalk.yellow(
         '⚠',
       )} The --onlyPlugin argument references plugins with "${missingPlugins.join(
@@ -33,10 +33,17 @@ export function validateOnlyPluginsOption(
   }
 
   if (categories.length > 0) {
-    const removedCategories = filterItemRefsBy(
+    const removedCategorieSlugs = filterItemRefsBy(
       categories,
       ({ plugin }) => !onlyPluginsSet.has(plugin),
+    ).map(({ slug }) => slug);
+    ui().logger.info(
+      `${chalk.yellow(
+        '⚠',
+      )} The --onlyPlugin argument removed categories with "${removedCategorieSlugs.join(
+        '", "',
+      )}" slugs.
+    `,
     );
-    ui().logger.info(JSON.stringify(removedCategories, null, 2));
   }
 }

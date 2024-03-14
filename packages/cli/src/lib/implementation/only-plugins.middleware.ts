@@ -5,12 +5,10 @@ import { validateOnlyPluginsOption } from './only-plugins.utils';
 export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
   originalProcessArgs: T,
 ): T {
-  const { categories = [], onlyPlugins: originalOnlyPlugins } = originalProcessArgs;
+  const { categories = [], onlyPlugins: originalOnlyPlugins } =
+    originalProcessArgs;
 
-  if (
-    originalOnlyPlugins &&
-    originalOnlyPlugins.length > 0
-  ) {
+  if (originalOnlyPlugins && originalOnlyPlugins.length > 0) {
     const { verbose, plugins, onlyPlugins } = originalProcessArgs;
 
     validateOnlyPluginsOption(

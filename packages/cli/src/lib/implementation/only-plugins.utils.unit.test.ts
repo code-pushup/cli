@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { PluginConfig } from '@code-pushup/models';
+import { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { validateOnlyPluginsOption } from './only-plugins.utils';
@@ -48,13 +48,20 @@ describe('validateOnlyPluginsOption', () => {
           { slug: 'plugin1', audits: [{ slug: 'a1-p1' }] },
           { slug: 'plugin2', audits: [{ slug: 'a1-p2' }] },
         ] as PluginConfig[],
-        categories: [],
+        categories: [
+          { slug: 'c1', refs: [{ plugin: 'plugin2' }] } as CategoryConfig,
+          { slug: 'c2', refs: [{ plugin: 'plugin1' }] } as CategoryConfig,
+          { slug: 'c3', refs: [{ plugin: 'plugin2' }] } as CategoryConfig,
+        ],
       },
       {
         onlyPlugins: ['plugin1'],
         verbose: true,
       },
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(getLogMessages(ui().logger)[0]).toContain(
+      'The --onlyPlugin argument removed categories with "c1", "c3" slugs',
+    );
   });
 });
