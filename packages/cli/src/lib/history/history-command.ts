@@ -42,7 +42,7 @@ export function yargsHistoryCommandObject() {
       const git = simpleGit();
 
       // run history logic
-      const reports: unknown[] = await history(
+      const reports = await history(
         {
           ...restOptions,
           targetBranch,
