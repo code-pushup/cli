@@ -8,14 +8,7 @@
 |:--|:--:|:--:|:--:|
 |Bug prevention|🟡 **63**|🟡 68|<span style="color: red">▼ **-5**</span>|
 |Performance|🟢 **94**|🟢 92|<span style="color: green">▲ **+2**</span>|
-
-<details>
-<summary>1 other category is unchanged.</summary>
-
-- Code style: 🟡 **54**
-
-</details>
-
+|Code style|🟡 **54**|🟡 54|–|
 
 ## 🎗️ Groups
 

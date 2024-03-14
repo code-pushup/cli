@@ -4,15 +4,11 @@
 
 ## 🏷️ Categories
 
-<details>
-<summary>All of 3 categories are unchanged.</summary>
-
-- Performance: 🟢 **92**
-- Bug prevention: 🟡 **68**
-- Code style: 🟡 **54**
-
-</details>
-
+|🏷️ Category|⭐ Score|
+|:--|:--:|
+|Performance|🟢 **92**|
+|Bug prevention|🟡 **68**|
+|Code style|🟡 **54**|
 
 ## 🎗️ Groups
 
