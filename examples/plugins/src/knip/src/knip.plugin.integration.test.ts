@@ -1,72 +1,31 @@
-import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { executePlugin } from '@code-pushup/core';
-import {
-  auditSchema,
-  categoryRefSchema,
-  pluginConfigSchema,
-} from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import {
-  PluginOptions,
-  audits,
-  create,
-  recommendedRefs,
-  pluginSlug as slug,
-} from './file-size.plugin';
+import {describe, expect, it} from 'vitest';
+import {executePlugin} from '@code-pushup/core';
+import {auditSchema, pluginConfigSchema,} from '@code-pushup/models';
+import knipPlugin from "./knip.plugin";
+import {AUDITS} from "./constants";
 
-const projectJson = JSON.stringify(
-  {
-    test: 42,
-    arr: [1, 2, 3],
-    obj: {
-      test: 42,
-    },
-  },
-  null,
-  2,
-);
-const testJs = `
-    const str = 'Hello World'
-    const num = 42;
-    const obj = ${projectJson};
-  `;
-
-describe('create', () => {
-  const baseOptions: PluginOptions = {
-    directory: '/',
-  };
-
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'project.json': projectJson,
-        'src/test.js': testJs,
-      },
-      MEMFS_VOLUME,
-    );
-  });
+describe('knip-create', () => {
 
   it('should return valid PluginConfig', () => {
-    const pluginConfig = create(baseOptions);
+    const pluginConfig = knipPlugin({});
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual({
-      audits,
+      audits: AUDITS,
       description:
         'A plugin to measure and assert size of files in a directory.',
       icon: 'folder-javascript',
       runner: expect.any(Function),
-      slug,
+      slug: 'knip',
       title: 'File Size',
     });
   });
 
   it('should return PluginConfig that executes correctly', async () => {
-    const pluginConfig = create(baseOptions);
+    const pluginConfig = knipPlugin({});
     await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
       description:
         'A plugin to measure and assert size of files in a directory.',
-      slug,
+      slug: 'knip',
       title: 'File Size',
       duration: expect.any(Number),
       date: expect.any(String),
@@ -74,42 +33,11 @@ describe('create', () => {
     });
   });
 
-  it('should use pattern', async () => {
-    const pluginConfig = create({
-      ...baseOptions,
-      pattern: /\.js$/,
-    });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
-
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.score).toBe(1);
-    expect(auditOutputs[0]?.details?.issues).toHaveLength(1);
-  });
-
-  it('should use budget', async () => {
-    const pluginConfig = create({
-      ...baseOptions,
-      budget: 0,
-    });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
-
-    expect(auditOutputs).toHaveLength(1);
-    expect(auditOutputs[0]?.score).toBe(0);
-    expect(auditOutputs[0]?.details?.issues).toHaveLength(2);
-  });
 });
 
-describe('audits', () => {
-  it.each(audits)('should be a valid audit meta info', audit => {
+describe('AUDITS', () => {
+  it.each(AUDITS.map(audit => ([audit.slug, audit])))('should be a valid %s audit meta info', (_, audit) => {
     expect(() => auditSchema.parse(audit)).not.toThrow();
   });
 });
 
-describe('recommendedRefs', () => {
-  it.each(recommendedRefs)(
-    'should be a valid category reference',
-    categoryRef => {
-      expect(() => categoryRefSchema.parse(categoryRef)).not.toThrow();
-    },
-  );
-});

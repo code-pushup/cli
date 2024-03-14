@@ -1,31 +1,8 @@
-import type { ReporterOptions, Issue, IssueRecords } from 'knip/dist/types/issues';
-import type { Entries } from 'type-fest';
-import {slugify} from "./dist/packages/utils";
+import type {Issue, IssueRecords, ReporterOptions} from 'knip/dist/types/issues';
+import type {Entries} from 'type-fest';
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
-
-const processIssue = (issue: Issue) => ({
-  message: `${issue.type} ${issue.symbol || 'File unused'}`,
-  severity: 'warning',
-  ...(issue.filePath || issue.line || issue.col ? {
-    source: {
-      ...(issue.filePath ? { file: issue.filePath } : { file: '???' }),
-      ...(issue.line && issue.col ? { position: {
-          startLine: issue.line,
-          startColumn: issue.col,
-        }} : {}),
-    },
-  } : {}),
-});
-
-const createAuditOutput = (type: string, issues: Issue[]) => ({
-  slug: slugify(type),
-  value: issues.length,
-  displayValue: `${issues.length} ${type}`,
-  score: issues.length > 0 ? 0 : 1,
-  details: { issues: issues.map(processIssue) },
-});
-
+import {createAuditOutputFromKnipIssues} from "./dist/examples/plugins";
 
 /**
  * @example
@@ -33,18 +10,19 @@ const createAuditOutput = (type: string, issues: Issue[]) => ({
  * npx knip --reporter ./code-pushup.reporter.ts --reporter-options '{"outputDir":"tmp"}'
  *
  */
-export default ({ report, issues, options }: ReporterOptions ) => {
-  const {outputDir} = options ? JSON.parse(options) : {outputDir: '.code-pushup'};
-  const result = (Object.entries(report) as Entries<ReporterOptions['report']>)
+export default async ({ report, issues, options }: ReporterOptions ) => {
+
+  const {outputFile = join('.code-pushup', `knip-report.json`)} = options ? JSON.parse(options) : {};
+  const result = (Object.entries(issues) as Entries<ReporterOptions['issues']>)
     .filter(([_, isReported]) => isReported)
     .map(([type]) => {
       const issueRecords: IssueRecords = issues[type] as IssueRecords;
       const issueArray: Issue[] = Object.values(issueRecords).flat().map(issue => ({ ...issue, type } as Issue));
-      return createAuditOutput(type, issueArray);
+      return createAuditOutputFromKnipIssues(type, issueArray);
     });
-  const path = join(outputDir, `knip-report-${Date.now()}.json`);
-  writeFile(path, JSON.stringify(result, null, 2));
-  console.log(`Created report: ${path}`);
+
+  await writeFile(outputFile, JSON.stringify(result, null, 2));
+ // console.log(`Created report: ${outputFile} \n ${JSON.stringify(result)}`);
 };
 
 

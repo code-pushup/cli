@@ -10,6 +10,7 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
+ // knipPlugin
 } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -18,6 +19,7 @@ import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
+
 
 // load upload configuration from environment
 const envSchema = z
@@ -83,6 +85,8 @@ const config: CoreConfig = {
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
     }),
+
+   // await knipPlugin({}),
   ],
 
   categories: [
