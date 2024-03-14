@@ -1,4 +1,5 @@
 import {
+  reportsDiffAddedPluginMock,
   reportsDiffAltMock,
   reportsDiffMock,
   reportsDiffUnchangedMock,
@@ -50,5 +51,11 @@ describe('generateMdReportsDiff', () => {
     await expect(
       generateMdReportsDiff(reportsDiffUnchangedMock()),
     ).toMatchFileSnapshot('__snapshots__/report-diff-unchanged.md');
+  });
+
+  it('should format Markdown comment for reports diff with added plugin', async () => {
+    await expect(
+      generateMdReportsDiff(reportsDiffAddedPluginMock()),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-added.md');
   });
 });
