@@ -247,6 +247,74 @@ export function reportsDiffAltMock(): ReportsDiff {
   };
 }
 
+export function reportsDiffUnchangedMock(): ReportsDiff {
+  return {
+    ...reportsDiffMock(),
+    categories: {
+      changed: [],
+      unchanged: CATEGORY_SLUGS.map(slug => ({
+        slug,
+        title: CATEGORIES_MAP[slug].title,
+        score: categoryScores(slug).before,
+      })),
+      added: [],
+      removed: [],
+    },
+    groups: {
+      changed: [],
+      unchanged: [
+        {
+          slug: ESLINT_PLUGIN_GROUP_MAX_LINES.slug,
+          title: ESLINT_PLUGIN_GROUP_MAX_LINES.title,
+          plugin: {
+            slug: ESLINT_PLUGIN_META.slug,
+            title: ESLINT_PLUGIN_META.title,
+          },
+          score: 0.5,
+        },
+        {
+          slug: LH_PLUGIN_GROUP_PERFORMANCE.slug,
+          title: LH_PLUGIN_GROUP_PERFORMANCE.title,
+          plugin: { slug: LH_PLUGIN_META.slug, title: LH_PLUGIN_META.title },
+          score: 0.92,
+        },
+      ],
+      added: [],
+      removed: [],
+    },
+    audits: {
+      changed: [],
+      unchanged: [
+        ...ESLINT_AUDIT_SLUGS.map(
+          (slug): AuditResult => ({
+            slug,
+            title: ESLINT_AUDITS_MAP[slug].title,
+            plugin: {
+              slug: ESLINT_PLUGIN_META.slug,
+              title: ESLINT_PLUGIN_META.title,
+            },
+            score: ESLINT_AUDITS_MAP[slug].score,
+            value: ESLINT_AUDITS_MAP[slug].value,
+            displayValue: ESLINT_AUDITS_MAP[slug].displayValue,
+          }),
+        ),
+        ...LIGHTHOUSE_AUDIT_SLUGS.map(
+          (slug): AuditResult => ({
+            slug,
+            title: LIGHTHOUSE_AUDITS_MAP[slug].title,
+            plugin: { slug: LH_PLUGIN_META.slug, title: LH_PLUGIN_META.title },
+            score: LIGHTHOUSE_AUDITS_MAP[slug].score,
+            value: LIGHTHOUSE_AUDITS_MAP[slug].value,
+            displayValue: LIGHTHOUSE_AUDITS_MAP[slug].displayValue,
+          }),
+        ),
+      ],
+      added: [],
+      removed: [],
+    },
+  };
+}
+
 function categoryScores(slug: CategorySlug): CategoryDiff['scores'] {
   switch (slug) {
     case 'performance':

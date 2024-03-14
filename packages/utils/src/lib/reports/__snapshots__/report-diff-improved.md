@@ -1,6 +1,6 @@
 # Code PushUp
 
-🙌 Code PushUp report has **improved** – compared target commit `0123456` with source commit `abcdef0`.
+🥳 Code PushUp report has **improved** – compared target commit `0123456` with source commit `abcdef0`.
 
 ## 🏷️ Categories
 

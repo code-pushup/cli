@@ -34,10 +34,12 @@ export function generateMdReportsDiff(diff: ReportsDiff): string {
 
 function formatDiffHeaderSection(diff: ReportsDiff): string {
   const outcomeTexts: Record<DiffOutcome, string> = {
-    positive: `🙌 Code PushUp report has ${style('improved')}`,
+    positive: `🥳 Code PushUp report has ${style('improved')}`,
     negative: `😟 Code PushUp report has ${style('regressed')}`,
-    neutral: `Code PushUp report is ${style('unchanged')}`,
-    mixed: `😐 Code PushUp report has both ${style('improved and regressed')}`,
+    neutral: `😐 Code PushUp report is ${style('unchanged')}`,
+    mixed: `🤨 Code PushUp report has both ${style(
+      'improvements and regressions',
+    )}`,
   };
   const outcome = mergeDiffOutcomes(
     changesToDiffOutcomes([
@@ -64,25 +66,29 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
 
 function formatDiffCategoriesSection(diff: ReportsDiff): string {
   const { changed, unchanged } = diff.categories;
+  if (changed.length + unchanged.length === 0) {
+    return '';
+  }
   return paragraphs(
     h2('🏷️ Categories'),
-    tableMd(
-      [
+    changed.length > 0 &&
+      tableMd(
         [
-          '🏷️ Category',
-          '⭐ Current score',
-          '⭐ Previous score',
-          '🗠 Score change',
+          [
+            '🏷️ Category',
+            '⭐ Current score',
+            '⭐ Previous score',
+            '🗠 Score change',
+          ],
+          ...changed.map(category => [
+            category.title,
+            formatScoreWithColor(category.scores.after),
+            formatScoreWithColor(category.scores.before, { skipBold: true }),
+            formatScoreChange(category.scores.diff),
+          ]),
         ],
-        ...changed.map(category => [
-          category.title,
-          formatScoreWithColor(category.scores.after),
-          formatScoreWithColor(category.scores.before, { skipBold: true }),
-          formatScoreChange(category.scores.diff),
-        ]),
-      ],
-      ['l', 'c', 'c', 'c'],
-    ),
+        ['l', 'c', 'c', 'c'],
+      ),
     unchanged.length > 0 &&
       details(
         summarizeUnchanged('category', { changed, unchanged }),
@@ -96,6 +102,9 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
 }
 
 function formatDiffGroupsSection(diff: ReportsDiff): string {
+  if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
+    return '';
+  }
   return paragraphs(
     h2('🎗️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
@@ -201,7 +210,7 @@ function summarizeUnchanged(
     changed.length > 0
       ? pluralizeToken(`other ${token}`, unchanged.length)
       : `All of ${pluralizeToken(token, unchanged.length)}`,
-    unchanged.length > 1 ? 'are' : 'is',
+    unchanged.length === 1 ? 'is' : 'are',
     'unchanged.',
   ].join(' ');
 }
@@ -247,6 +256,9 @@ function changesToDiffOutcomes(
 }
 
 function mergeDiffOutcomes(outcomes: DiffOutcome[]): DiffOutcome {
+  if (outcomes.length === 0) {
+    return 'neutral';
+  }
   if (
     outcomes.every(outcome => outcome === 'positive' || outcome === 'neutral')
   ) {
