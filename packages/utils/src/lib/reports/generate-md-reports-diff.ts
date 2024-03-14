@@ -80,7 +80,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
             '⭐ Previous score',
             '🗠 Score change',
           ],
-          ...changed.map(category => [
+          ...sortChanges(changed).map(category => [
             category.title,
             formatScoreWithColor(category.scores.after),
             formatScoreWithColor(category.scores.before, { skipBold: true }),
@@ -115,7 +115,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
         '⭐ Previous score',
         '🗠 Score change',
       ],
-      rows: diff.groups.changed.map(group => [
+      rows: sortChanges(diff.groups.changed).map(group => [
         group.plugin.title,
         group.title,
         formatScoreWithColor(group.scores.after),
@@ -138,7 +138,7 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
         '📏 Previous value',
         '🗠 Value change',
       ],
-      rows: diff.audits.changed.map(audit => [
+      rows: sortChanges(diff.audits.changed).map(audit => [
         audit.plugin.title,
         audit.title,
         `${getSquaredScoreMarker(audit.scores.after)} ${style(
@@ -238,9 +238,20 @@ function summarizeDiffOutcomes(outcomes: DiffOutcome[], token: string): string {
     .join(', ');
 }
 
-function changesToDiffOutcomes(
-  changes: { scores: { diff: number }; values?: { diff: number } }[],
-): DiffOutcome[] {
+type Change = {
+  scores: { diff: number };
+  values?: { diff: number };
+};
+
+function sortChanges<T extends Change>(changes: T[]): T[] {
+  return [...changes].sort(
+    (a, b) =>
+      Math.abs(b.scores.diff) - Math.abs(a.scores.diff) ||
+      Math.abs(b.values?.diff ?? 0) - Math.abs(a.values?.diff ?? 0),
+  );
+}
+
+function changesToDiffOutcomes(changes: Change[]): DiffOutcome[] {
   return changes.map((change): DiffOutcome => {
     if (change.scores.diff > 0) {
       return 'positive';

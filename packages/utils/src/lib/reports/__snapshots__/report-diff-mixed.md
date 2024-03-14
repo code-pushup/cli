@@ -6,8 +6,8 @@
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🗠 Score change|
 |:--|:--:|:--:|:--:|
-|Performance|🟢 **94**|🟢 92|<span style="color: green">▲ **+2**</span>|
 |Bug prevention|🟡 **63**|🟡 68|<span style="color: red">▼ **-5**</span>|
+|Performance|🟢 **94**|🟢 92|<span style="color: green">▲ **+2**</span>|
 
 <details>
 <summary>1 other category is unchanged.</summary>
@@ -39,8 +39,8 @@
 |🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🗠 Value change|
 |:--|:--|:--:|:--:|:--:|
 |ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|<span style="color: red">▲ **+∞%**</span>|
-|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|<span style="color: green">▼ **-4%**</span>|
 |Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|<span style="color: green">▼ **-8%**</span>|
+|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|<span style="color: green">▼ **-4%**</span>|
 |Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|<span style="color: green">▼ **-4%**</span>|
 
 48 other audits are unchanged.
