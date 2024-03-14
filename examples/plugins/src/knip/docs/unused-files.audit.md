@@ -2,8 +2,7 @@ Issues is Array of IssueSet | IssueRecords
 
 - For each IssueRecords
   - get filepath
-  - For each IssueRecords[string] === IssueType
-    -
+  - ## For each IssueRecords[string] === IssueType
 
 ```ts
 expect().toBe({
