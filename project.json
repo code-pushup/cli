@@ -84,6 +84,7 @@
             "cli",
             "plugin-eslint",
             "plugin-coverage",
+            "plugin-js-packages",
             "examples-plugins",
             "react-todos-app"
           ],

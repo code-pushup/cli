@@ -60,7 +60,7 @@ export function yargsHistoryCommandObject() {
       await safeCheckout(currentBranch);
 
       // eslint-disable-next-line no-console
-      console.log('Reports:', reports.length);
+      ui().logger.log(`Reports: ', ${reports.length}`);
     },
   } satisfies CommandModule;
 }
