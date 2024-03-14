@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { simpleGit } from 'simple-git';
 import { CommandModule } from 'yargs';
-import { HistoryOptions, history } from '@code-pushup/core';
+import { HistoryOptions, getHashes, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
@@ -40,11 +40,6 @@ export function yargsHistoryCommandObject() {
 
       // determine history to walk
       const git = simpleGit();
-      const log = await git.log({ maxCount, from, to });
-      const commitsToAudit = log.all
-        .map(({ hash }) => hash)
-        // crawl from oldest to newest
-        .reverse();
 
       // run history logic
       const reports: unknown[] = await history(
@@ -53,7 +48,7 @@ export function yargsHistoryCommandObject() {
           targetBranch,
           forceCleanStatus,
         },
-        commitsToAudit,
+        await getHashes({ maxCount, from, to }, git),
       );
 
       // go back to initial branch

@@ -254,7 +254,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 | ------------------------ | --------- | -------- | ---------------------------------------------------------------- |
 | **`--targetBranch`**     | `string`  | 'main'   | Branch to crawl history.                                         |
 | **`--forceCleanStatus`** | `boolean` | `report` | If we reset the status to a clean git history forcefully or not. |
-| **`--maxCount`**         | `number`  | 5        | Number of commits.                                      |
+| **`--maxCount`**         | `number`  | 5        | Number of commits.                                               |
 | **`--skipUploads`**      | `boolean` | `false`  | Upload created reports                                           |
 | **`--from`**             | `string`  | n/a      | Hash to start in history                                         |
 | **`--to`**               | `string`  | n/a      | Hash to end in history                                           |

@@ -68,7 +68,6 @@ describe('history-command', () => {
         targetBranch: 'main',
         maxCount: 5,
         skipUploads: false,
-        to: 'HEAD',
       }),
     );
 
@@ -102,7 +101,6 @@ describe('history-command', () => {
         targetBranch: 'main',
         maxCount: 2,
         skipUploads: false,
-        to: 'HEAD',
       }),
     );
 
