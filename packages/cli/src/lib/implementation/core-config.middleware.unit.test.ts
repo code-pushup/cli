@@ -1,6 +1,6 @@
-import {describe, expect, vi} from 'vitest';
-import {autoloadRc, readRcByPath} from '@code-pushup/core';
-import {coreConfigMiddleware} from './core-config.middleware';
+import { describe, expect, vi } from 'vitest';
+import { autoloadRc, readRcByPath } from '@code-pushup/core';
+import { coreConfigMiddleware } from './core-config.middleware';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
