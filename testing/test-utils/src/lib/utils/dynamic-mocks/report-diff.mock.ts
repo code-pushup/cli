@@ -315,6 +315,56 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
   };
 }
 
+export function reportsDiffAddedPluginMock(): ReportsDiff {
+  const originalDiff = reportsDiffAltMock();
+  return {
+    ...originalDiff,
+    categories: {
+      ...originalDiff.categories,
+      changed: originalDiff.categories.changed.filter(
+        ({ slug }) => slug !== ('performance' satisfies CategorySlug),
+      ),
+      added: [
+        {
+          slug: 'performance' satisfies CategorySlug,
+          title: CATEGORIES_MAP['performance'].title,
+          score: categoryScores('performance').after,
+        },
+      ],
+    },
+    groups: {
+      ...originalDiff.groups,
+      changed: originalDiff.groups.changed.filter(
+        ({ plugin }) => plugin.slug !== 'lighthouse',
+      ),
+      added: originalDiff.groups.changed
+        .filter(({ plugin }) => plugin.slug === 'lighthouse')
+        .map(group => ({
+          slug: group.slug,
+          title: group.title,
+          plugin: group.plugin,
+          score: group.scores.after,
+        })),
+    },
+    audits: {
+      ...originalDiff.audits,
+      changed: originalDiff.audits.changed.filter(
+        ({ plugin }) => plugin.slug !== 'lighthouse',
+      ),
+      added: originalDiff.audits.changed
+        .filter(({ plugin }) => plugin.slug === 'lighthouse')
+        .map(audit => ({
+          slug: audit.slug,
+          title: audit.title,
+          plugin: audit.plugin,
+          score: audit.scores.after,
+          value: audit.values.after,
+          displayValue: audit.displayValues.after,
+        })),
+    },
+  };
+}
+
 function categoryScores(slug: CategorySlug): CategoryDiff['scores'] {
   switch (slug) {
     case 'performance':
