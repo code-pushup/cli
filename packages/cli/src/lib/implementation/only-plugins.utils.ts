@@ -38,9 +38,7 @@ export function validateOnlyPluginsOption(
       ({ plugin }) => !onlyPluginsSet.has(plugin),
     ).map(({ slug }) => slug);
     ui().logger.info(
-      `${chalk.yellow(
-        '⚠',
-      )} The --onlyPlugin argument removed categories with "${removedCategorieSlugs.join(
+      `The --onlyPlugin argument removed categories with "${removedCategorieSlugs.join(
         '", "',
       )}" slugs.
     `,
