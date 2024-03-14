@@ -1,16 +1,7 @@
 import { AuditDiff, Commit, ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import {
-  Alignment,
-  details,
-  h1,
-  h2,
-  li,
-  paragraphs,
-  style,
-  tableMd,
-} from './md';
+import { Alignment, details, h1, h2, paragraphs, style, tableMd } from './md';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -65,18 +56,23 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
 }
 
 function formatDiffCategoriesSection(diff: ReportsDiff): string {
-  const { changed, unchanged } = diff.categories;
-  if (changed.length + unchanged.length === 0) {
+  const { changed, unchanged, added } = diff.categories;
+
+  const categoriesCount = changed.length + unchanged.length + added.length;
+  const hasChanges = unchanged.length < categoriesCount;
+
+  if (categoriesCount === 0) {
     return '';
   }
+
   return paragraphs(
     h2('🏷️ Categories'),
-    changed.length > 0 &&
+    categoriesCount > 0 &&
       tableMd(
         [
           [
             '🏷️ Category',
-            '⭐ Current score',
+            hasChanges ? '⭐ Current score' : '⭐ Score',
             '⭐ Previous score',
             '🗠 Score change',
           ],
@@ -86,17 +82,20 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
             formatScoreWithColor(category.scores.before, { skipBold: true }),
             formatScoreChange(category.scores.diff),
           ]),
-        ],
-        ['l', 'c', 'c', 'c'],
-      ),
-    unchanged.length > 0 &&
-      details(
-        summarizeUnchanged('category', { changed, unchanged }),
-        unchanged
-          .map(category =>
-            li(`${category.title}: ${formatScoreWithColor(category.score)}`),
-          )
-          .join('\n'),
+          ...added.map(category => [
+            category.title,
+            formatScoreWithColor(category.score),
+            'n/a',
+            'n/a',
+          ]),
+          ...unchanged.map(category => [
+            category.title,
+            formatScoreWithColor(category.score),
+            formatScoreWithColor(category.score, { skipBold: true }),
+            '–',
+          ]),
+        ].map(row => (hasChanges ? row : row.slice(0, 2))),
+        hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
       ),
   );
 }
