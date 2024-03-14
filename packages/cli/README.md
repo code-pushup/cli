@@ -246,7 +246,7 @@ Usage:
 `code-pushup history`
 
 Description:
-Run plugins, collect results and upload the report to the Code PushUp portal for a specified amount of the repository history.
+Run plugins, collect results and upload the report to the Code PushUp portal for a specified number of commits.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
