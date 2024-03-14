@@ -4,4 +4,4 @@ import { HistoryOnlyOptions } from '@code-pushup/core';
 export type HistoryCliOptions = {
   targetBranch?: string;
 } & Pick<LogOptions, 'maxCount' | 'from' | 'to'> &
-  Required<HistoryOnlyOptions>;
+  HistoryOnlyOptions;

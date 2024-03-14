@@ -41,13 +41,19 @@ describe('CLI history', () => {
 
     const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app', 'history');
     const reportPaths = await readdir(outputDirFromRoot);
-    const results = await Promise.all(
-      reportPaths.map(path => readJsonFile(join(outputDirFromRoot, path))),
-    );
+    const results = await Promise.all([
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(0) as string)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(1) as string)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(2) as string)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(3) as string)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(4) as string)),
+    ]);
 
     expect(results).toHaveLength(5);
-    results.forEach(report => {
-      expect(() => reportSchema.parse(report)).not.toThrow();
-    });
+    expect(() => reportSchema.parse(results.at(0))).not.toThrow();
+    expect(() => reportSchema.parse(results.at(1))).not.toThrow();
+    expect(() => reportSchema.parse(results.at(2))).not.toThrow();
+    expect(() => reportSchema.parse(results.at(3))).not.toThrow();
+    expect(() => reportSchema.parse(results.at(4))).not.toThrow();
   });
 });

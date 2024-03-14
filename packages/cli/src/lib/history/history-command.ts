@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { simpleGit } from 'simple-git';
 import { CommandModule } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
-import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
+import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
@@ -25,10 +25,8 @@ export function yargsHistoryCommandObject() {
       return yargs;
     },
     handler: async args => {
-      // eslint-disable-next-line no-console
-      console.log(chalk.bold(CLI_NAME));
-      // eslint-disable-next-line no-console
-      console.log(chalk.gray(`Run ${command}`));
+      ui().logger.info(chalk.bold(CLI_NAME));
+      ui().logger.info(chalk.gray(`Run ${command}`));
 
       const currentBranch = await getCurrentBranchOrTag();
       const {
