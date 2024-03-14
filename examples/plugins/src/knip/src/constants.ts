@@ -1,4 +1,4 @@
-import {Audit} from "@code-pushup/models";
+import { Audit } from '@code-pushup/models';
 
 export const DEFAULT_KNIP_CONFIG = {
   isDebug: false,
@@ -9,88 +9,91 @@ export const DEFAULT_KNIP_CONFIG = {
   noExitCode: false,
   gitIgnore: false,
   isShowProgress: false,
-  isIncludeEntryExports : false,
-  isIsolateWorkspaces : false,
-  isObservePerf : false,
-   isProduction : false,
+  isIncludeEntryExports: false,
+  isIsolateWorkspaces: false,
+  isObservePerf: false,
+  isProduction: false,
   reporterOptions: '',
   preprocessorOptions: '',
   isStrict: false,
-  isFix : false,
+  isFix: false,
   fixTypes: [],
   tsConfig: '',
   isVersion: true,
-  tags: []
+  tags: [],
 };
 export const AUDITS: Audit[] = [
   {
-    slug: 'unused-files',
+    slug: 'files',
     title: 'Unused Files',
-    description: "Unable to find a reference to this file",
+    description: 'Unable to find a reference to this file',
   },
   {
-    slug: 'unused-dependencies',
+    slug: 'dependencies',
     title: 'Unused Dependencies',
-    description: "Unable to find a reference to this dependency",
+    description: 'Unable to find a reference to this dependency',
   },
   {
-    slug: 'unused-dev-dependencies',
+    slug: 'devdependencies',
     title: 'Unused Development Dependencies',
-    description: "Unable to find a reference to this devDependency",
+    description: 'Unable to find a reference to this devDependency',
   },
   {
-    slug: 'referenced-optional-peer-dependencies',
+    slug: 'optionalpeerdependencies',
     title: 'Referenced optional peerDependencies',
-    description: "Optional peer dependency is referenced",
+    description: 'Optional peer dependency is referenced',
   },
   {
-    slug: 'unlisted-dependencies',
+    slug: 'unlisted',
     title: 'Unlisted dependencies',
-    description: "Used dependencies not listed in package.json",
+    description: 'Used dependencies not listed in package.json',
   },
   {
-    slug: 'unlisted-binaries',
+    slug: 'binaries',
     title: 'Unlisted binaries',
-    description: "Binaries from dependencies not listed in package.json",
+    description: 'Binaries from dependencies not listed in package.json',
   },
   {
-    slug: 'unresolved-imports',
+    slug: 'unresolved',
     title: 'Unresolved imports',
-    description: "Unable to resolve this (import) specifier",
+    description: 'Unable to resolve this (import) specifier',
   },
   {
-    slug: 'unused-exports',
+    slug: 'exports',
     title: 'Unused exports',
-    description: "Unable to find a reference to this export",
+    description: 'Unable to find a reference to this export',
   },
   {
-    slug: 'unused-exported-types',
+    slug: 'types',
     title: 'Unused exported types',
-    description: "Unable to find a reference to this exported type",
+    description: 'Unable to find a reference to this exported type',
   },
   {
-    slug: 'exports-in-used-namespace',
+    slug: 'nsexports',
     title: 'Exports in used namespace',
-    description: "Namespace with export is referenced, but not export itself",
+    description: 'Namespace with export is referenced, but not export itself',
   },
   {
-    slug: 'exported-types-in-used-namespace',
+    slug: 'nstypes',
     title: 'Exported types in used namespace',
-    description: "Namespace with type is referenced, but not type itself",
+    description: 'Namespace with type is referenced, but not type itself',
   },
   {
-    slug: 'unused-exported-enum-members',
+    slug: 'enummembers',
     title: 'Unused exported enum members',
-    description: "Unable to find a reference to this enum member",
+    description: 'Unable to find a reference to this enum member',
   },
   {
-    slug: 'unused-exported-class-members',
+    slug: 'classmembers',
     title: 'Unused exported class members',
-    description: "Unable to find a reference to this class member",
+    description: 'Unable to find a reference to this class member',
   },
   {
-    slug: 'duplicate-exports',
+    slug: 'duplicates',
     title: 'Duplicate exports',
-    description: "This is exported more than once",
-  }
-].map((audit) => ({...audit, docsUrl: "https://knip.dev/reference/issue-types"}))
+    description: 'This is exported more than once',
+  },
+].map(audit => ({
+  ...audit,
+  docsUrl: 'https://knip.dev/reference/issue-types',
+}));

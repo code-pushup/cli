@@ -1,8 +1,8 @@
-import {AuditOutputs, PluginConfig, RunnerConfig,} from '@code-pushup/models';
-import type {CommandLineOptions} from "knip/dist/types/cli";
-import type {Issues as _Issues} from "knip/dist/types/issues";
-import {AUDITS} from "./constants";
-import {join} from "node:path";
+import type { CommandLineOptions } from 'knip/dist/types/cli';
+import type { Issues as _Issues } from 'knip/dist/types/issues';
+import { join } from 'node:path';
+import { PluginConfig, RunnerConfig } from '@code-pushup/models';
+import { AUDITS } from './constants';
 
 type Issues = Omit<_Issues, 'files'> & { file: string };
 
@@ -13,25 +13,30 @@ type Issues = Omit<_Issues, 'files'> & { file: string };
 export type PluginOptions = RunnerOptions;
 
 type RunnerOptions = Partial<CommandLineOptions> & {
-  tsConfig?: string,
-  cwd?: string,
+  tsConfig?: string;
+  cwd?: string;
 } & {
-  maxIssues?: number, noConfigHints?: boolean, noExitCode?: boolean, isNoGitIgnore?: boolean, isNoProgress?: boolean
+  maxIssues?: number;
+  noConfigHints?: boolean;
+  noExitCode?: boolean;
+  isNoGitIgnore?: boolean;
+  isNoProgress?: boolean;
 };
 
 export const pluginSlug = 'knip';
 
-export function create(options: PluginOptions = {} as PluginOptions): PluginConfig {
+export function create(
+  options: PluginOptions = {} as PluginOptions,
+): PluginConfig {
   return {
     slug: pluginSlug,
-    title: 'File Size',
+    title: 'Knip',
     icon: 'folder-javascript',
-    description: 'A plugin to measure and assert size of files in a directory.',
+    description: 'A plugin to trac dependencies and duplicates',
     runner: runnerConfig(options),
     audits: AUDITS,
   };
 }
-
 
 export function runnerConfig(
   options: RunnerOptions = {} as RunnerOptions,
@@ -39,12 +44,14 @@ export function runnerConfig(
   const outputFile = join('.code-pushup', `knip-report-${Date.now()}.json`);
   return {
     command: 'npx',
-    args: ['knip', '--reporter=./code-pushup.reporter.ts', `--reporter.options="${JSON.stringify({outputFile})}"`],
+    args: [
+      'knip',
+      '--no-exit-code',
+      '--reporter=./code-pushup.reporter.ts',
+      `--reporter-options='${JSON.stringify({ outputFile })}'`,
+    ],
     outputFile,
-    outputTransform: (t) => {
-      return [{slug: 'unused-files', value: 0, score: 1, displayValue: 'sdsd'}]
-    }
-  }
+  };
 }
 /*
 export async function runnerFunction(

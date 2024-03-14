@@ -1,11 +1,10 @@
-import {describe, expect, it} from 'vitest';
-import {executePlugin} from '@code-pushup/core';
-import {auditSchema, pluginConfigSchema,} from '@code-pushup/models';
-import knipPlugin from "./knip.plugin";
-import {AUDITS} from "./constants";
+import { describe, expect, it } from 'vitest';
+import { executePlugin } from '@code-pushup/core';
+import { auditSchema, pluginConfigSchema } from '@code-pushup/models';
+import { AUDITS } from './constants';
+import knipPlugin from './knip.plugin';
 
 describe('knip-create', () => {
-
   it('should return valid PluginConfig', () => {
     const pluginConfig = knipPlugin({});
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -32,12 +31,13 @@ describe('knip-create', () => {
       audits: expect.any(Array),
     });
   });
-
 });
 
 describe('AUDITS', () => {
-  it.each(AUDITS.map(audit => ([audit.slug, audit])))('should be a valid %s audit meta info', (_, audit) => {
-    expect(() => auditSchema.parse(audit)).not.toThrow();
-  });
+  it.each(AUDITS.map(audit => [audit.slug, audit]))(
+    'should be a valid %s audit meta info',
+    (_, audit) => {
+      expect(() => auditSchema.parse(audit)).not.toThrow();
+    },
+  );
 });
-

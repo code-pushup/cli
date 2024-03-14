@@ -51,7 +51,7 @@ export function yargsAutorunCommandObject() {
         const { url } = await upload(options);
         uploadSuccessfulLog(url);
       } else {
-        ui().logger.warning('Upload skipped because configuration is not set.');
+        ui().logger.info('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();
       }
     },

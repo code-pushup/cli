@@ -73,7 +73,7 @@ Audits are derived form knips [issue types](https://knip.dev/reference/issue-typ
 **Table of Audits**
 
 | Title                                                                                        | Description                                                | Icon | Key          |
-|----------------------------------------------------------------------------------------------|------------------------------------------------------------|------|--------------|
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---- | ------------ |
 | [Unused files](./docs/unused-files.audit.md)                                                 | Unable to find a reference to this file                    |      | files        |
 | [Unused dependencies](./docs/unused-dependencies.audit.md)                                   | Unable to find a reference to this dependency              | 🔧   | dependencies |
 | [Unused devDependencies](./docs/unused-devDependencies.audit.md)                             | Unable to find a reference to this devDependency           | 🔧   | dependencies |
@@ -88,4 +88,3 @@ Audits are derived form knips [issue types](https://knip.dev/reference/issue-typ
 | [Unused exported enum members](./docs/unused-exported-enum-members.audit.md)                 | Unable to find a reference to this enum member             |      | enumMembers  |
 | [Unused exported class members](./docs/unused-exported-class-members.audit.md)               | Unable to find a reference to this class member            | 🟠   | classMembers |
 | [Duplicate exports](./docs/duplicate-exports.audit.md)                                       | This is exported more than once                            |      | duplicates   |
-

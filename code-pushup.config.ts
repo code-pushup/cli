@@ -5,12 +5,12 @@ import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  knipPlugin,
   lighthouseCorePerfGroupRefs,
   lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
- // knipPlugin
 } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -19,7 +19,6 @@ import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import type { CoreConfig } from './packages/models/src';
-
 
 // load upload configuration from environment
 const envSchema = z
@@ -86,7 +85,7 @@ const config: CoreConfig = {
       headless: true,
     }),
 
-   // await knipPlugin({}),
+    await knipPlugin({}),
   ],
 
   categories: [
