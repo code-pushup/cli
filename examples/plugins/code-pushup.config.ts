@@ -1,8 +1,10 @@
 import { join } from 'node:path';
 import {
+  KNIP_CATEGORY_REFS,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  knipPlugin,
   lighthouseCorePerfGroupRefs,
   lighthousePlugin,
   packageJsonDocumentationGroupRef,
@@ -42,6 +44,7 @@ const config = {
       headless: false,
       verbose: true,
     }),
+    await knipPlugin(),
   ],
   categories: [
     {
@@ -62,6 +65,11 @@ const config = {
       slug: 'documentation',
       title: 'Documentation',
       refs: [packageJsonDocumentationGroupRef],
+    },
+    {
+      slug: 'bundlesize',
+      title: 'Bundlesize',
+      refs: KNIP_CATEGORY_REFS,
     },
   ],
 };

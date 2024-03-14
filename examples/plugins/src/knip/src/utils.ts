@@ -1,29 +1,20 @@
 import type {
-  IssueSet,
-  IssueType,
   Issue as KnipIssue,
   IssueSeverity as KnipSeverity,
   ReporterOptions,
-  SymbolType,
 } from 'knip/dist/types/issues';
 import {
   AuditOutput,
   Issue as CodePushupIssue,
   IssueSeverity as CondPushupIssueSeverity,
 } from '@code-pushup/models';
-import {
-  findLineNumberInText,
-  readJsonFile,
-  slugify,
-} from '@code-pushup/utils';
+import { slugify } from '@code-pushup/utils';
 
 export function getSource({
   filePath: file,
   col,
   line,
   symbols,
-  type,
-  symbol,
 }: KnipIssue): CodePushupIssue['source'] {
   if (!file) {
     return undefined;
@@ -50,19 +41,17 @@ export function getSource({
   return { file };
 }
 
-const processIssue = (issue: KnipIssue) => {
-  return {
-    message: `${capital(singularType(issue.type))} ${issue.symbol} unused`,
-    severity: severityMap[issue.severity as KnipSeverity] || 'info',
-    ...(issue.filePath ? { source: getSource(issue) } : {}),
-  };
-};
+const processIssue = (issue: KnipIssue) => ({
+  message: `${capital(singularType(issue.type))} ${issue.symbol} unused`,
+  severity: severityMap[issue.severity as KnipSeverity],
+  ...(issue.filePath ? { source: getSource(issue) } : {}),
+});
 
 const severityMap: Record<KnipSeverity, CondPushupIssueSeverity> = {
   off: 'info',
   error: 'error',
   warn: 'warning',
-};
+} as const;
 
 export function capital(str: string): string {
   return str.at(0)?.toUpperCase() + str.slice(1);
@@ -70,6 +59,7 @@ export function capital(str: string): string {
 
 export function singularType(typeInPlural: string): string {
   if (typeInPlural.endsWith('ies')) {
+    // eslint-disable-next-line no-magic-numbers
     return `${typeInPlural.slice(0, -3)}y`;
   }
   if (typeInPlural.endsWith('s')) {
@@ -83,7 +73,6 @@ export function createAuditOutputFromKnipIssues(
   knipIssues: KnipIssue[],
 ): AuditOutput {
   const issues = knipIssues.map(processIssue);
-  // const type = knipIssues.at(0)?.type ?? '';
   return {
     slug: slugify(type),
     value: knipIssues.length,
@@ -102,7 +91,7 @@ export function createAuditOutputFromKnipFiles(
     file =>
       ({
         message: `${capital(singularType('files'))} ${file} unused`,
-        severity: severityMap.error,
+        severity: severityMap['error'],
         source: {
           file,
         },
@@ -125,13 +114,13 @@ export function knipToCpReport({ issues }: Pick<ReporterOptions, 'issues'>) {
 
   //  issues = devDependencies.<file>.<symbol>.{type: IssueType}
   return [
-    createAuditOutputFromKnipFiles(Array.from(files)),
+    createAuditOutputFromKnipFiles(Object.values(files) as string[]),
 
     // { devDependencies: { <file> : { <symbol> : { type: IssueType } } } }
     ...Object.entries(issueRecords)
       .filter(([key]) => key !== 'files')
       .map(([type, fileIssueRecords]) => {
-        // { <file> : { <symbol> : { type: IssueType } } }
+        // { <file> { <symbol> : { type: IssueType } } }
         const symbolIssueRecords = Object.values(fileIssueRecords);
         // { <symbol> : { type: IssueType } }
         const issueArray = Object.values(symbolIssueRecords)

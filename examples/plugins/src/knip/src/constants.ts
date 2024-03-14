@@ -1,27 +1,5 @@
-import { Audit } from '@code-pushup/models';
+import { Audit, CategoryRef } from '@code-pushup/models';
 
-export const DEFAULT_KNIP_CONFIG = {
-  isDebug: false,
-  isTrace: false,
-  isHelp: false,
-  maxIssues: '0',
-  noConfigHints: false,
-  noExitCode: false,
-  gitIgnore: false,
-  isShowProgress: false,
-  isIncludeEntryExports: false,
-  isIsolateWorkspaces: false,
-  isObservePerf: false,
-  isProduction: false,
-  reporterOptions: '',
-  preprocessorOptions: '',
-  isStrict: false,
-  isFix: false,
-  fixTypes: [],
-  tsConfig: '',
-  isVersion: true,
-  tags: [],
-};
 export const AUDITS: Audit[] = [
   {
     slug: 'files',
@@ -96,4 +74,11 @@ export const AUDITS: Audit[] = [
 ].map(audit => ({
   ...audit,
   docsUrl: 'https://knip.dev/reference/issue-types',
+}));
+
+export const CATEGORY_REFS: CategoryRef[] = AUDITS.map(({ slug }) => ({
+  plugin: 'knip',
+  slug,
+  type: 'audit',
+  weight: 1,
 }));

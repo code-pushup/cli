@@ -11,6 +11,7 @@ export {
   performanceGroupRef as packageJsonPerformanceGroupRef,
 } from './package-json/src/scoring';
 export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
+export { CATEGORY_REFS as KNIP_CATEGORY_REFS } from './knip/src/constants';
 export { create as knipPlugin } from './knip/src/knip.plugin';
 export {
   createAuditOutputFromKnipIssues,

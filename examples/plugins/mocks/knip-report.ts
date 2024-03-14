@@ -43,7 +43,7 @@ export const input = {
 }
 
 
-const output = [
+export const output = [
   {
     slug: 'unused-files',
     value: 1,

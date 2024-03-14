@@ -18,9 +18,7 @@ type RunnerOptions = Partial<CommandLineOptions> & {
 
 export const pluginSlug = 'knip';
 
-export function create(
-  options: PluginOptions = {} as PluginOptions,
-): PluginConfig {
+export function create(options: PluginOptions = {}): PluginConfig {
   return {
     slug: pluginSlug,
     title: 'Knip',
@@ -31,16 +29,16 @@ export function create(
   };
 }
 
-export function runnerConfig(
-  options: RunnerOptions = {} as RunnerOptions,
-): RunnerConfig {
+export function runnerConfig(options: RunnerOptions = {}): RunnerConfig {
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  options;
   const outputFile = join('.code-pushup', `knip-report-${Date.now()}.json`);
   return {
     command: 'npx',
     args: [
       'knip',
       '--no-exit-code',
-      '--reporter=./code-pushup.reporter.ts',
+      '--reporter=./dist/examples/plugins/knip/src/code-pushup.reporter.js',
       `--reporter-options='${JSON.stringify({ outputFile })}'`,
     ],
     outputFile,
