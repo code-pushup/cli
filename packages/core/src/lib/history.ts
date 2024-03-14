@@ -11,7 +11,7 @@ export type HistoryOnlyOptions = {
   forceCleanStatus?: boolean;
 };
 export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'>
+  Pick<CoreConfig, 'plugins'> & Required<Pick<CoreConfig, 'categories'>>
 > & {
   persist: Required<PersistConfig>;
   upload?: Required<UploadConfig>;

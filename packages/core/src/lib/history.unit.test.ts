@@ -24,7 +24,10 @@ vi.mock('./upload', () => ({
 
 describe('history', () => {
   it('should check out all passed commits and reset to initial branch or tag', async () => {
-    await history(MINIMAL_HISTORY_CONFIG_MOCK, ['abc', 'def']);
+    await history(MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions, [
+      'abc',
+      'def',
+    ]);
 
     expect(getCurrentBranchOrTag).toHaveBeenCalledTimes(1);
 
@@ -37,7 +40,7 @@ describe('history', () => {
   });
 
   it('should return correct number of results', async () => {
-    const historyOptions: HistoryOptions = MINIMAL_HISTORY_CONFIG_MOCK;
+    const historyOptions = MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions;
 
     const results = await history(historyOptions, ['abc', 'def']);
 
@@ -45,7 +48,7 @@ describe('history', () => {
   });
 
   it('should call collect with correct filename and format', async () => {
-    const historyOptions: HistoryOptions = MINIMAL_HISTORY_CONFIG_MOCK;
+    const historyOptions = MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions;
 
     await history(historyOptions, ['abc']);
     expect(collectAndPersistReports).toHaveBeenCalledTimes(1);
@@ -61,8 +64,8 @@ describe('history', () => {
   });
 
   it('should call upload by default', async () => {
-    const historyOptions: HistoryOptions = {
-      ...MINIMAL_HISTORY_CONFIG_MOCK,
+    const historyOptions = {
+      ...(MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions),
       upload: {
         server: 'https://server.com/api',
         project: 'cli',
@@ -82,8 +85,8 @@ describe('history', () => {
   });
 
   it('should not call upload if skipUploads is set to false', async () => {
-    const historyOptions: HistoryOptions = {
-      ...MINIMAL_HISTORY_CONFIG_MOCK,
+    const historyOptions = {
+      ...(MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions),
       upload: {
         server: 'https://server.com/api',
         project: 'cli',
@@ -99,7 +102,7 @@ describe('history', () => {
   });
 
   it('should not call upload if upload config is not given', async () => {
-    await history(MINIMAL_HISTORY_CONFIG_MOCK, ['abc']);
+    await history(MINIMAL_HISTORY_CONFIG_MOCK as HistoryOptions, ['abc']);
 
     expect(upload).not.toHaveBeenCalled();
   });
