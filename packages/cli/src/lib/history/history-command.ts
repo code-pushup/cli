@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { simpleGit } from 'simple-git';
-import { CommandModule } from 'yargs';
+import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { HistoryOptions, getHashes, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
@@ -24,7 +24,7 @@ export function yargsHistoryCommandObject() {
       );
       return yargs;
     },
-    handler: async args => {
+    handler: async <T>(args: ArgumentsCamelCase<T>) => {
       ui().logger.info(chalk.bold(CLI_NAME));
       ui().logger.info(chalk.gray(`Run ${command}`));
 
@@ -41,20 +41,23 @@ export function yargsHistoryCommandObject() {
       // determine history to walk
       const git = simpleGit();
 
-      // run history logic
-      const reports = await history(
-        {
-          ...restOptions,
-          targetBranch,
-          forceCleanStatus,
-        },
-        await getHashes({ maxCount, from, to }, git),
-      );
+      const commits: string[] = await getHashes({ maxCount, from, to }, git);
+      try {
+        // run history logic
+        const reports = await history(
+          {
+            ...restOptions,
+            targetBranch,
+            forceCleanStatus,
+          },
+          commits,
+        );
 
-      // go back to initial branch
-      await safeCheckout(currentBranch);
-
-      ui().logger.log(`Reports: ', ${reports.length}`);
+        ui().logger.log(`Reports: ', ${reports.length}`);
+      } finally {
+        // go back to initial branch
+        await safeCheckout(currentBranch);
+      }
     },
   } satisfies CommandModule;
 }
