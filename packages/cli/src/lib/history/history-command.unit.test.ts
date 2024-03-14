@@ -64,7 +64,6 @@ describe('history-command', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        onlyPlugins: [],
         targetBranch: 'main',
         maxCount: 5,
         skipUploads: false,
@@ -97,7 +96,6 @@ describe('history-command', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        onlyPlugins: [],
         targetBranch: 'main',
         maxCount: 2,
         skipUploads: false,

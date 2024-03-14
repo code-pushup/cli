@@ -37,7 +37,7 @@ export async function toGitPath(
   return formatGitPath(path, gitRoot);
 }
 
-export class GitStatueError extends Error {
+export class GitStatusError extends Error {
   static ignoredProps = new Set(['current', 'tracking']);
 
   static getReducedStatus(status: StatusResult) {
@@ -69,7 +69,7 @@ export class GitStatueError extends Error {
   constructor(status: StatusResult) {
     super(
       `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
-        GitStatueError.getReducedStatus(status),
+        GitStatusError.getReducedStatus(status),
         null,
         2,
       )}`,
@@ -82,7 +82,7 @@ export async function guardAgainstLocalChanges(
 ): Promise<void> {
   const status = await git.status(['-s']); //.then(r => r.files.length === 0);
   if (status.files.length > 0) {
-    throw new GitStatueError(status);
+    throw new GitStatusError(status);
   }
 }
 

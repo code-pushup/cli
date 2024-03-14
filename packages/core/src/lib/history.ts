@@ -110,8 +110,12 @@ export async function getHashes(
   const { from, to } = options;
 
   if (to && !from) {
+    // throw more user-friendly error instead of:
+    // fatal: ambiguous argument '...a': unknown revision or path not in the working tree.
+    // Use '--' to separate paths from revisions, like this:
+    // 'git <command> [<revision>...] -- [<file>...]'
     throw new Error(
-      'git log command needs the "from" option defined to accept the "to" option.',
+      `git log command needs the "from" option defined to accept the "to" option.\n`,
     );
   }
 
@@ -120,6 +124,7 @@ export async function getHashes(
     from,
     to,
   });
+
   return prepareHashes(logs);
 }
 
