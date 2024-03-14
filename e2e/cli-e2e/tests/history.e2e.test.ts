@@ -31,7 +31,7 @@ describe('CLI history', () => {
         '--persist.outputDir=../../tmp/e2e/react-todos-app/history',
         '--no-progress',
         '--onlyPlugins=eslint',
-        '--forceCleanStatus=eslint',
+        '--forceCleanStatus',
       ],
       cwd: 'examples/react-todos-app',
     });
