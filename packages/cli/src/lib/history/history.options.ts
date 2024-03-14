@@ -37,6 +37,7 @@ export function yargsHistoryOptionsDefinition(): Record<
       // https://git-scm.com/docs/git-log#Documentation/git-log.txt-ltrevision-rangegt
       describe: 'hash to last commit in history',
       type: 'string',
+      default: 'HEAD',
     },
   };
 }

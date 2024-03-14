@@ -59,7 +59,6 @@ export function yargsHistoryCommandObject() {
       // go back to initial branch
       await safeCheckout(currentBranch);
 
-      // eslint-disable-next-line no-console
       ui().logger.log(`Reports: ', ${reports.length}`);
     },
   } satisfies CommandModule;
