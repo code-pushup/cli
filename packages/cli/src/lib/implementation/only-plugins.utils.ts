@@ -1,14 +1,21 @@
 import chalk from 'chalk';
-import type { PluginConfig } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
 export function validateOnlyPluginsOption(
-  plugins: PluginConfig[] = [],
+  {
+    plugins,
+    categories,
+  }: {
+    plugins: PluginConfig[];
+    categories: CategoryConfig[];
+  },
   {
     onlyPlugins = [],
     verbose = false,
   }: { onlyPlugins?: string[]; verbose?: boolean } = {},
 ): void {
+  const onlyPluginsSet = new Set(onlyPlugins);
   const missingPlugins = onlyPlugins.filter(
     plugin => !plugins.some(({ slug }) => slug === plugin),
   );
@@ -23,5 +30,13 @@ export function validateOnlyPluginsOption(
         .map(({ slug }) => slug)
         .join('", "')}".`,
     );
+  }
+
+  if (categories.length > 0) {
+    const removedCategories = filterItemRefsBy(
+      categories,
+      ({ plugin }) => !onlyPluginsSet.has(plugin),
+    );
+    ui().logger.info(JSON.stringify(removedCategories, null, 2));
   }
 }

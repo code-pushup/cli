@@ -1,19 +1,27 @@
-import { filterItemRefsBy, toArray } from '@code-pushup/utils';
+import { filterItemRefsBy } from '@code-pushup/utils';
 import { OnlyPluginsOptions } from './only-plugins.model';
 import { validateOnlyPluginsOption } from './only-plugins.utils';
 
 export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
-  processArgs: T,
+  originalProcessArgs: T,
 ): T {
-  if (processArgs.onlyPlugins && processArgs.onlyPlugins.length > 0) {
-    const { plugins, categories = [], onlyPlugins } = processArgs;
+  const { categories = [], onlyPlugins: originalOnlyPlugins } = originalProcessArgs;
 
-    validateOnlyPluginsOption(plugins, processArgs);
+  if (
+    originalOnlyPlugins &&
+    originalOnlyPlugins.length > 0
+  ) {
+    const { verbose, plugins, onlyPlugins } = originalProcessArgs;
+
+    validateOnlyPluginsOption(
+      { plugins, categories },
+      { onlyPlugins, verbose },
+    );
 
     const onlyPluginsSet = new Set(onlyPlugins);
 
     return {
-      ...processArgs,
+      ...originalProcessArgs,
       plugins: plugins.filter(({ slug }) => onlyPluginsSet.has(slug)),
       categories: filterItemRefsBy(categories, ({ plugin }) =>
         onlyPluginsSet.has(plugin),
@@ -21,5 +29,9 @@ export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
     };
   }
 
-  return processArgs;
+  return {
+    ...originalProcessArgs,
+    // if undefined fill categories with empty array
+    categories,
+  };
 }

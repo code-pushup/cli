@@ -14,6 +14,17 @@ vi.mock('@code-pushup/core', async () => {
 });
 
 describe('onlyPluginsMiddleware', () => {
+  it('should fill undefined categories with empty array', () => {
+    expect(
+      onlyPluginsMiddleware({
+        plugins: [{ slug: 'p1' } as PluginConfig],
+      }),
+    ).toStrictEqual({
+      plugins: [{ slug: 'p1' }],
+      categories: [],
+    });
+  });
+
   it('should forward equal values if not set', () => {
     expect(
       onlyPluginsMiddleware({
