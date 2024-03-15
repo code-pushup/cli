@@ -182,7 +182,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
 
 function formatScoreChange(diff: number): string {
   const marker = getDiffMarker(diff);
-  const text = style(formatDiffNumber(Math.round(diff * 100)));
+  const text = formatDiffNumber(Math.round(diff * 100));
   return colorByScoreDiff(`${marker} ${text}`, diff);
 }
 
@@ -197,7 +197,7 @@ function formatValueChange({
         ? Number.POSITIVE_INFINITY
         : Number.NEGATIVE_INFINITY
       : Math.round((100 * values.diff) / values.before);
-  const text = style(`${formatDiffNumber(percentage)}%`);
+  const text = `${formatDiffNumber(percentage)}%`;
   return colorByScoreDiff(`${marker} ${text}`, scores.diff);
 }
 
