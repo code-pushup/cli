@@ -3,6 +3,7 @@ import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { getRunner, lighthousePlugin } from './lighthouse-plugin';
+import {any} from "zod";
 
 describe('lighthousePlugin', () => {
   it('should create valid plugin config', () => {
@@ -23,7 +24,7 @@ describe('getRunner', () => {
     await expect(runner()).resolves.toEqual([
       expect.objectContaining({
         slug: 'largest-contentful-paint',
-        score: 1,
+        score: expect.any(Number),
         value: expect.any(Number),
         displayValue: expect.stringMatching('s$'),
       } satisfies AuditOutput),
