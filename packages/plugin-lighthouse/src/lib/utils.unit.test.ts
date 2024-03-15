@@ -642,7 +642,9 @@ describe('getConfig', () => {
   });
 
   it('should return undefined if preset is specified wrong', async () => {
-    await expect(getConfig({ preset: 'wrong' as 'desktop'})).resolves.toBeUndefined();
+    await expect(
+      getConfig({ preset: 'wrong' as 'desktop' }),
+    ).resolves.toBeUndefined();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
       'Preset "wrong" is not supported',
     );
@@ -781,10 +783,7 @@ describe('validateFlags', () => {
     expect(
       validateFlags({ 'list-all-audits': true, verbose: true } as Flags),
     ).toStrictEqual({ verbose: true });
-    expect(
-      getLogMessages(ui().logger)
-        .at(0)
-    ).toBe(
+    expect(getLogMessages(ui().logger).at(0)).toBe(
       '[ blue(info) ] ⚠ The following used flags are not supported: list-all-audits',
     );
   });
