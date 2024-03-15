@@ -4,7 +4,7 @@
 [![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Flighthouse-plugin)](https://npmtrends.com/@code-pushup/lighthouse-plugin)
 [![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/lighthouse-plugin)](https://www.npmjs.com/package/@code-pushup/lighthouse-plugin?activeTab=dependencies)
 
-🕵️ **Code PushUp plugin for running lighthouse performance tests.** 🔥
+🕵️ **Code PushUp plugin for measuring web performance and quality with Lighthouse.** 🔥
 
 ---
 
