@@ -1,7 +1,7 @@
 import type { CommandLineOptions } from 'knip/dist/types/cli';
 import { join } from 'node:path';
 import { PluginConfig, RunnerConfig } from '@code-pushup/models';
-import { AUDITS } from './constants';
+import { AUDITS, GROUP_ALL, GROUP_DEPENDENCIES } from './constants';
 
 export type PluginOptions = RunnerOptions;
 
@@ -26,6 +26,7 @@ export function create(options: PluginOptions = {}): PluginConfig {
     description: 'A plugin to trac dependencies and duplicates',
     runner: runnerConfig(options),
     audits: AUDITS,
+    groups: [GROUP_ALL, GROUP_DEPENDENCIES],
   };
 }
 

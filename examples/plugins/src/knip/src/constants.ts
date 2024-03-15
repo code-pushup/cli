@@ -1,4 +1,4 @@
-import { Audit, CategoryRef } from '@code-pushup/models';
+import { Audit, CategoryRef, Group } from '@code-pushup/models';
 
 export const AUDITS: Audit[] = [
   {
@@ -75,6 +75,39 @@ export const AUDITS: Audit[] = [
   ...audit,
   docsUrl: 'https://knip.dev/reference/issue-types',
 }));
+
+export const GROUP_DEPENDENCIES: Group = {
+  slug: 'all-dependencies',
+  title: 'All dependency audits',
+  description: 'Groups all dependency related knip audits',
+  refs: [
+    { slug: 'dependencies', weight: 2 },
+    { slug: 'devdependencies', weight: 2 },
+    { slug: 'optionalpeerdependencies', weight: 3 },
+  ],
+};
+
+export const GROUP_ALL: Group = {
+  slug: 'all-audits',
+  title: 'All knip audits',
+  description: 'Groups all knip audits into a group for easy use',
+  refs: [
+    { slug: 'files', weight: 2 },
+    { slug: 'dependencies', weight: 2 },
+    { slug: 'devdependencies', weight: 2 },
+    { slug: 'optionalpeerdependencies', weight: 3 },
+    { slug: 'unlisted', weight: 1 },
+    { slug: 'binaries', weight: 1 },
+    { slug: 'unresolved', weight: 3 },
+    { slug: 'exports', weight: 2 },
+    { slug: 'types', weight: 1 },
+    { slug: 'nsexports', weight: 1 },
+    { slug: 'nstypes', weight: 1 },
+    { slug: 'enummembers', weight: 2 },
+    { slug: 'classmembers', weight: 2 },
+    { slug: 'duplicates', weight: 1 },
+  ],
+};
 
 export const CATEGORY_REFS: CategoryRef[] = AUDITS.map(({ slug }) => ({
   plugin: 'knip',

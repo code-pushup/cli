@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import {
   KNIP_CATEGORY_REFS,
+  KNIP_GROUP_ALL,
+  KNIP_GROUP_DEPENDENCIES,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -122,7 +124,18 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...KNIP_CATEGORY_REFS,
+        {
+          plugin: 'knip',
+          slug: KNIP_GROUP_DEPENDENCIES.slug,
+          type: 'group',
+          weight: 1,
+        },
+        {
+          plugin: 'knip',
+          slug: KNIP_GROUP_ALL.slug,
+          type: 'group',
+          weight: 1,
+        },
       ],
     },
   ],

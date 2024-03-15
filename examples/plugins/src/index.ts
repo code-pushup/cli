@@ -16,4 +16,10 @@ export {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   recommendedRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';
-export { KNIP_AUDITS, knipPlugin, KNIP_CATEGORY_REFS } from './knip/src/index';
+export {
+  KNIP_AUDITS,
+  knipPlugin,
+  KNIP_CATEGORY_REFS,
+  KNIP_GROUP_ALL,
+  KNIP_GROUP_DEPENDENCIES,
+} from './knip/src/index';
