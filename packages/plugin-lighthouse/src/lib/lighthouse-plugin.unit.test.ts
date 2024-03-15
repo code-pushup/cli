@@ -26,7 +26,7 @@ vi.mock('./utils', async () => {
 
 vi.mock('lighthouse/cli/run.js', async () => {
   // Import the actual 'lighthouse' module
-  const actual = await import('lighthouse/cli/run.js').then(m => m);
+  const actual = await import('lighthouse/cli/run.js');
   // Define the mock implementation
   const mockRunLighthouse = vi.fn(
     (url: string, flags: CliFlags, config: Config) =>
