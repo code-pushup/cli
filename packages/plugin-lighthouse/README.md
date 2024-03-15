@@ -114,5 +114,5 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 >       'interactive',
 >      ],
 >  }
-> });
+> })
 > ```
