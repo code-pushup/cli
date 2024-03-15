@@ -41,7 +41,7 @@ const config = {
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: false,
       verbose: true,
-    })
+    }),
   ],
   categories: [
     {
@@ -62,7 +62,7 @@ const config = {
       slug: 'documentation',
       title: 'Documentation',
       refs: [packageJsonDocumentationGroupRef],
-    }
+    },
   ],
 };
 

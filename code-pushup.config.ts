@@ -117,7 +117,7 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
-        ...lighthouseCorePerfGroupRefs
+        ...lighthouseCorePerfGroupRefs,
       ],
     },
   ],
