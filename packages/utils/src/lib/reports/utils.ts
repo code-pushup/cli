@@ -16,7 +16,7 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
-import { htmlColor, style } from './md';
+import { image, style } from './md';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
@@ -55,29 +55,31 @@ export function getSquaredScoreMarker(score: number): string {
 
 export function getDiffMarker(diff: number): string {
   if (diff > 0) {
-    return '▲';
+    return '🠉';
   }
   if (diff < 0) {
-    return '▼';
+    return '🠋';
   }
   return '';
 }
 
 export function colorByScoreDiff(text: string, diff: number): string {
-  return htmlColor(text, diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray');
+  const color = diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray';
+  return shieldsBadge(text, color);
+}
+
+export function shieldsBadge(text: string, color: string): string {
+  return image(
+    `https://img.shields.io/badge/${encodeURIComponent(text)}-${color}`,
+    text,
+  );
 }
 
 export function formatDiffNumber(diff: number): string {
-  if (diff === Number.POSITIVE_INFINITY) {
-    return '+∞';
-  }
-  if (diff === Number.NEGATIVE_INFINITY) {
-    return '-∞';
-  }
-  if (diff > 0) {
-    return `+${diff}`;
-  }
-  return `${diff}`;
+  const number =
+    Math.abs(diff) === Number.POSITIVE_INFINITY ? '∞' : `${Math.abs(diff)}`;
+  const sign = diff < 0 ? '−' : '+';
+  return `${sign}${number}`;
 }
 
 export function getSeverityIcon(

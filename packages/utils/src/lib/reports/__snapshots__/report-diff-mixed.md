@@ -6,8 +6,8 @@
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🗠 Score change|
 |:--|:--:|:--:|:--:|
-|Bug prevention|🟡 **63**|🟡 68|<span style="color: red">▼ **-5**</span>|
-|Performance|🟢 **94**|🟢 92|<span style="color: green">▲ **+2**</span>|
+|Bug prevention|🟡 **63**|🟡 68|![🠋 −5](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%925-red)|
+|Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|
 |Code style|🟡 **54**|🟡 54|–|
 
 ## 🎗️ Groups
@@ -17,7 +17,7 @@
 
 |🔌 Plugin|🎗️ Group|⭐ Current score|⭐ Previous score|🗠 Score change|
 |:--|:--|:--:|:--:|:--:|
-|Lighthouse|Performance|🟢 **94**|🟢 92|<span style="color: green">▲ **+2**</span>|
+|Lighthouse|Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|
 
 1 other group is unchanged.
 
@@ -31,10 +31,10 @@
 
 |🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🗠 Value change|
 |:--|:--|:--:|:--:|:--:|
-|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|<span style="color: red">▲ **+∞%**</span>|
-|Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|<span style="color: green">▼ **-8%**</span>|
-|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|<span style="color: green">▼ **-4%**</span>|
-|Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|<span style="color: green">▼ **-4%**</span>|
+|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|![🠉 +∞%](https://img.shields.io/badge/%F0%9F%A0%89%20%2B%E2%88%9E%25-red)|
+|Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|![🠋 −8%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%928%25-green)|
+|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|![🠋 −4%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%25-green)|
+|Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|![🠋 −4%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%25-green)|
 
 48 other audits are unchanged.
 
