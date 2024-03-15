@@ -17,7 +17,7 @@ describe('getRunner', () => {
     const runner = getRunner('https://example.com', {
       onlyAudits: ['is-on-https'],
     });
-    await expect(runner(() => void 0)).resolves.toEqual([
+    await expect(runner()).resolves.toEqual([
       expect.objectContaining({ slug: 'is-on-https' }),
     ]);
   });
