@@ -20,7 +20,7 @@ export function getSource({
     return undefined;
   }
 
-  if (col && line) {
+  if (col !== undefined && line !== undefined) {
     return {
       file,
       position: {
@@ -28,7 +28,10 @@ export function getSource({
         startColumn: col,
       },
     };
-  } else if (symbols?.[0]?.col && symbols[0]?.line) {
+  } else if (
+    symbols?.[0]?.col !== undefined &&
+    symbols[0]?.line !== undefined
+  ) {
     return {
       file,
       position: {
@@ -40,18 +43,6 @@ export function getSource({
 
   return { file };
 }
-
-const processIssue = (issue: KnipIssue) => ({
-  message: `${capital(singularType(issue.type))} ${issue.symbol} unused`,
-  severity: severityMap[issue.severity as KnipSeverity],
-  ...(issue.filePath ? { source: getSource(issue) } : {}),
-});
-
-const severityMap: Record<KnipSeverity, CondPushupIssueSeverity> = {
-  off: 'info',
-  error: 'error',
-  warn: 'warning',
-} as const;
 
 export function capital(str: string): string {
   return str.at(0)?.toUpperCase() + str.slice(1);
@@ -66,6 +57,21 @@ export function singularType(typeInPlural: string): string {
     return typeInPlural.slice(0, -1);
   }
   return typeInPlural;
+}
+
+const severityMap: Record<KnipSeverity, CondPushupIssueSeverity> = {
+  off: 'info',
+  error: 'error',
+  warn: 'warning',
+} as const;
+
+export function processIssue(issue: KnipIssue) {
+  const { type, filePath, symbol, severity = 'off' } = issue;
+  return {
+    message: `${capital(singularType(type))} ${symbol}`,
+    severity: severityMap[severity],
+    ...(filePath ? { source: getSource(issue) } : {}),
+  };
 }
 
 export function createAuditOutputFromKnipIssues(
@@ -90,7 +96,7 @@ export function createAuditOutputFromKnipFiles(
   const issues = knipIssues.map(
     file =>
       ({
-        message: `${capital(singularType('files'))} ${file} unused`,
+        message: `${capital(singularType('files'))} ${file}`,
         severity: severityMap['error'],
         source: {
           file,
