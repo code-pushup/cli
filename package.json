@@ -53,6 +53,7 @@
     "bundle-require": "^4.0.1",
     "chalk": "^5.3.0",
     "cli-table3": "^0.6.3",
+    "knip": "^5.1.1",
     "multi-progress-bars": "^5.0.3",
     "parse-lcov": "^1.0.4",
     "simple-git": "^3.20.0",
