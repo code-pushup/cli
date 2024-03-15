@@ -64,7 +64,7 @@ Within the flags object a couple of other external configuration files can be re
 
 For a complete list the [official documentation of CLI flags](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options)
 
-> [!Notice]
+> [!NOTE]  
 > If you are used to work with the Lighthouse CLI you would pass flags like this:
 > `lighthouse https://example.com --output=json --chromeFlags='--headless=shell'`
 >
@@ -84,7 +84,7 @@ The plugin accepts a third optional argument, `config`.
 
 For a complete guide on Lighthouse configuration read the [official documentation on configuring](https://github.com/GoogleChrome/lighthouse/blob/main/docs/configuration.md)
 
-> [!Notice]
+> [!NOTE]  
 > If you are used to work with the Lighthouse CLI you would pass flags like this:
 > `lighthouse --config-path=path/to/custom-config.js https://example.com`
 >
@@ -113,5 +113,6 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 >       'speed-index',
 >       'interactive',
 >      ],
->  });
+>  }
+> });
 > ```
