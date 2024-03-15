@@ -38,7 +38,7 @@ export function runnerConfig(options: RunnerOptions = {}): RunnerConfig {
     args: [
       'knip',
       '--no-exit-code',
-      '--reporter=@code-pushup/examples/plugins/knip/src/code-pushup.reporter.js',
+      '--reporter=./dist/examples/plugins/knip/src/knip.code-pushup.reporter.js',
       `--reporter-options='${JSON.stringify({ outputFile })}'`,
     ],
     outputFile,

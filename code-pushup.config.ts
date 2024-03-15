@@ -2,9 +2,11 @@ import 'dotenv/config';
 import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  KNIP_CATEGORY_REFS,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  knipPlugin,
   lighthouseCorePerfGroupRefs,
   lighthousePlugin,
   packageJsonDocumentationGroupRef,
@@ -83,6 +85,8 @@ const config: CoreConfig = {
       outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: true,
     }),
+
+    await knipPlugin({}),
   ],
 
   categories: [
@@ -118,6 +122,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         ...lighthouseCorePerfGroupRefs,
+        ...KNIP_CATEGORY_REFS,
       ],
     },
   ],

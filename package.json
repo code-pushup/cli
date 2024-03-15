@@ -46,6 +46,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
+    "@beaussan/nx-knip": "^0.0.5-15",
     "@code-pushup/portal-client": "^0.6.1",
     "@isaacs/cliui": "^8.0.2",
     "@poppinss/cliui": "^6.4.0",
