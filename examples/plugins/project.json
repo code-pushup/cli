@@ -12,9 +12,6 @@
         "main": "examples/plugins/src/index.ts",
         "tsConfig": "examples/plugins/tsconfig.lib.json",
         "assets": ["examples/plugins/*.md"],
-        "additionalEntryPoints": [
-          "examples/plugins/src/knip/src/code-pushup.reporter.ts"
-        ],
         "esbuildConfig": "esbuild.config.js"
       }
     },
