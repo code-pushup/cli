@@ -13,7 +13,8 @@ import {
   auditOutputsSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import { Flags } from './lighthouse-plugin';
 import {
   AuditsNotImplementedError,
@@ -640,9 +641,10 @@ describe('getConfig', () => {
     );
   });
 
-  it('should undefined if preset is specified wrong', async () => {
-    await expect(getConfig({ preset: 'wrong' })).resolves.toBeUndefined(
-      undefined,
+  it('should return undefined if preset is specified wrong', async () => {
+    await expect(getConfig({ preset: 'wrong' })).resolves.toBeUndefined();
+    expect(getLogMessages(ui().logger).at(0)).toMatch(
+      'Preset "wrong" is not supported',
     );
   });
 
@@ -776,9 +778,15 @@ describe('validateFlags', () => {
   });
 
   it('should remove unsupported entries and log', () => {
-    // @TODO add test for logs when cliui is implemented #487
     expect(
       validateFlags({ 'list-all-audits': true, verbose: true } as Flags),
     ).toStrictEqual({ verbose: true });
+    expect(
+      getLogMessages(ui().logger)
+        .at(0)
+        ?.replace(/\u001B\[\d+m/g, ''),
+    ).toBe(
+      '[ blue(info) ] ⚠ The following used flags are not supported: list-all-audits',
+    );
   });
 });

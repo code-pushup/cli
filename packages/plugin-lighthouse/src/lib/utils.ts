@@ -198,9 +198,7 @@ export async function getConfig(
       case 'experimental':
         return experimentalConfig as Config;
       default:
-        // @TODO use ui().logger.info
-        // eslint-disable-next-line no-console
-        console.log(`Preset ${preset} is not supported`);
+        ui().logger.info(`Preset "${preset}" is not supported`);
     }
   }
   return undefined;
@@ -247,12 +245,15 @@ export function validateFlags(flags: Flags = {}): Flags {
     excludedFlags.has(flag),
   );
 
-  // eslint-disable-next-line no-console
-  console.log(
-    `The following used flags are not supported: ${chalk.bold(
-      unsupportedFlagsInUse.join(', '),
-    )}`,
-  );
+  if (unsupportedFlagsInUse.length > 0) {
+    ui().logger.info(
+      `${chalk.yellow(
+        '⚠',
+      )} The following used flags are not supported: ${chalk.bold(
+        unsupportedFlagsInUse.join(', '),
+      )}`,
+    );
+  }
   return Object.fromEntries(
     Object.entries(flags).filter(([flagName]) => !excludedFlags.has(flagName)),
   );

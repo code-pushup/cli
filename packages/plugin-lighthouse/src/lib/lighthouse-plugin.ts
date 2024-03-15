@@ -3,11 +3,13 @@ import {
   type RunnerResult,
 } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
+import { dirname } from 'node:path';
 import {
   AuditOutputs,
   PluginConfig,
   RunnerFunction,
 } from '@code-pushup/models';
+import { ensureDirectoryExists, ui } from '@code-pushup/utils';
 import {
   AUDITS,
   DEFAULT_CLI_FLAGS,
@@ -63,6 +65,7 @@ export function getRunner(
       precomputedLanternDataPath,
       budgetPath,
       budgets = [],
+      outputPath,
       ...parsedFlags
     } = validateFlags({
       ...DEFAULT_CLI_FLAGS,
@@ -75,15 +78,19 @@ export function getRunner(
 
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
 
+    if (outputPath) {
+      await ensureDirectoryExists(dirname(outputPath));
+    }
+
     const flagsWithDefaults = {
       ...parsedFlags,
       budgets: budgetsJson,
+      outputPath,
     };
 
     if (precomputedLanternDataPath) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `The parsing precomputedLanternDataPath ${precomputedLanternDataPath} is skipped as not implemented.`,
+      ui().logger.info(
+        `The parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
       );
     }
 

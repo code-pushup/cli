@@ -1,4 +1,4 @@
-import { type CliFlags, type Config } from 'lighthouse';
+import { type Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
@@ -8,7 +8,7 @@ import {
   pluginConfigSchema,
 } from '@code-pushup/models';
 import { AUDITS, GROUPS } from './constants';
-import { getRunner, lighthousePlugin } from './lighthouse-plugin';
+import { Flags, getRunner, lighthousePlugin } from './lighthouse-plugin';
 import { getBudgets, getConfig, setLogLevel } from './utils';
 
 vi.mock('./utils', async () => {
@@ -28,27 +28,27 @@ vi.mock('lighthouse/cli/run.js', async () => {
   // Import the actual 'lighthouse' module
   const actual = await import('lighthouse/cli/run.js');
   // Define the mock implementation
-  const mockRunLighthouse = vi.fn(
-    (url: string, flags: CliFlags, config: Config) =>
-      url.includes('fail')
-        ? undefined
-        : {
-            flags,
-            config,
-            lhr: {
-              audits: {
-                ['cumulative-layout-shift']: {
-                  id: 'cumulative-layout-shift',
-                  title: 'title',
-                  description: 'description',
-                  scoreDisplayMode: 'numeric',
-                  numericValue: 1200,
-                  displayValue: '1.2 s',
-                  score: 0.9,
-                } satisfies Result,
-              },
+  const mockRunLighthouse = vi.fn((url: string, flags: Flags, config: Config) =>
+    url.includes('fail')
+      ? undefined
+      : {
+          flags,
+          config,
+          lhr: {
+            audits: {
+              ['cumulative-layout-shift']: {
+                id: 'cumulative-layout-shift',
+                title: 'Cumulative Layout Shift',
+                description:
+                  'Cumulative Layout Shift measures the movement of visible elements within the viewport.',
+                scoreDisplayMode: 'numeric',
+                numericValue: 1200,
+                displayValue: '1.2 s',
+                score: 0.9,
+              } satisfies Result,
             },
           },
+        },
   );
 
   // Return the mocked module, merging the actual module with overridden parts
@@ -61,7 +61,7 @@ vi.mock('lighthouse/cli/run.js', async () => {
 describe('getRunner', () => {
   it('should return AuditOutputs if executed correctly', async () => {
     const runner = getRunner('https://localhost:8080');
-    await expect(runner(() => void 0)).resolves.toEqual(
+    await expect(runner()).resolves.toEqual(
       expect.arrayContaining([
         {
           slug: 'cumulative-layout-shift',
@@ -79,28 +79,24 @@ describe('getRunner', () => {
     expect(getConfig).toHaveBeenCalledWith(expect.objectContaining({}));
   });
 
-  it('should return consider verbose and quiet flags for logging', async () => {
-    await getRunner('https://localhost:8080', { verbose: true, quiet: true })(
-      () => void 0,
-    );
+  it('should return verbose and quiet flags for logging', async () => {
+    await getRunner('https://localhost:8080', { verbose: true, quiet: true })();
     expect(setLogLevel).toHaveBeenCalledWith(
       expect.objectContaining({ verbose: true, quiet: true }),
     );
   });
 
-  it('should return consider configPath', async () => {
-    await getRunner('https://localhost:8080', { configPath: 'lh-config.js' })(
-      () => void 0,
-    );
+  it('should return configPath', async () => {
+    await getRunner('https://localhost:8080', { configPath: 'lh-config.js' })();
     expect(getConfig).toHaveBeenCalledWith(
       expect.objectContaining({ configPath: 'lh-config.js' }),
     );
   });
 
-  it('should return consider budgets', async () => {
+  it('should return budgets', async () => {
     await getRunner('https://localhost:8080', {
       budgets: [{ path: '*/xyz/' }],
-    })(() => void 0);
+    })();
     expect(getBudgets).not.toHaveBeenCalled();
     expect(runLighthouse).toHaveBeenCalledWith(
       expect.any(String),
@@ -109,10 +105,10 @@ describe('getRunner', () => {
     );
   });
 
-  it('should return consider budgetPath', async () => {
-    await getRunner('https://localhost:8080', { budgetPath: 'lh-budgets.js' })(
-      () => void 0,
-    );
+  it('should return budgetPath', async () => {
+    await getRunner('https://localhost:8080', {
+      budgetPath: 'lh-budgets.js',
+    } as Flags)();
     expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
     expect(runLighthouse).toHaveBeenCalledWith(
       expect.any(String),
@@ -123,7 +119,7 @@ describe('getRunner', () => {
 
   it('should throw if lighthouse returns an empty result', async () => {
     const runner = getRunner('fail');
-    await expect(runner(() => void 0)).rejects.toThrow(
+    await expect(runner()).rejects.toThrow(
       'Lighthouse did not produce a result.',
     );
   });
