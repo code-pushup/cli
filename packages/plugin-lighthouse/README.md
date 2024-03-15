@@ -60,7 +60,7 @@ The plugin accepts a second optional argument, `flags`.
 
 `flags` is the lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80) as a JS object.
 
-Within the flags object a couple of other external configuration files can be referenced. e.g. `configPath` , `preset` or `budgetPath` reference external `json` or JavaScript files.
+Within the flags object a couple of other external configuration files can be referenced. E.g. `configPath` , `preset` or `budgetPath` reference external `json` or JavaScript files.
 
 | Category      | Argument                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                      | Type      | Default     |
 | ------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
