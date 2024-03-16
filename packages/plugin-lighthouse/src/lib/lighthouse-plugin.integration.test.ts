@@ -3,7 +3,6 @@ import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { getRunner, lighthousePlugin } from './lighthouse-plugin';
-import {any} from "zod";
 
 describe('lighthousePlugin', () => {
   it('should create valid plugin config', () => {
