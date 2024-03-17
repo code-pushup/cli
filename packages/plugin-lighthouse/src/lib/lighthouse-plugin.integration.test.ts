@@ -15,9 +15,9 @@ describe('lighthousePlugin', () => {
 
 describe('getRunner', () => {
   it('should create and execute runner correctly', async () => {
-    // onlyAudits is used to reduce test time
     const runner = getRunner('https://www.google.com/', {
-      // onlyAudits: ['is-on-https'],
+      // onlyAudits is used to reduce test time
+      onlyAudits: ['is-on-https'],
       outputPath:
         'tmp/plugin-lighthouse/get-runner/should-create/lh-report.json',
       chromeFlags: ['--headless=shell'],
@@ -35,7 +35,8 @@ describe('getRunner', () => {
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
     const runner = getRunner('https://www.google.com/', {
       precomputedLanternDataPath: '/path/to/latern-data',
-      // onlyAudits: ['is-on-https'],
+      // onlyAudits is used to reduce test time
+      onlyAudits: ['is-on-https'],
       outputPath:
         'tmp/plugin-lighthouse/get-runner/no-latern-data/lh-report.json',
       chromeFlags: ['--headless=shell'],
