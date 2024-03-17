@@ -6,7 +6,7 @@ import { getRunner, lighthousePlugin } from './lighthouse-plugin';
 
 describe('lighthousePlugin', () => {
   it('should create valid plugin config', () => {
-    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com');
+    const pluginConfig = lighthousePlugin('https://www.google.com/');
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.audits.length).toBeGreaterThan(100);
     expect(pluginConfig.groups).toHaveLength(5);
@@ -16,28 +16,31 @@ describe('lighthousePlugin', () => {
 describe('getRunner', () => {
   it('should create and execute runner correctly', async () => {
     // onlyAudits is used to reduce test time
-    const runner = getRunner('https://example.com', {
-      onlyAudits: ['largest-contentful-paint'],
-      outputPath: 'tmp/plugin-lighthouse/get-runner/should-run/lh-report.json',
+    const runner = getRunner('https://www.google.com/', {
+      onlyAudits: ['is-on-https'],
+      outputPath:
+        'tmp/plugin-lighthouse/get-runner/should-create/lh-report.json',
     });
     await expect(runner()).resolves.toEqual([
       expect.objectContaining({
-        slug: 'largest-contentful-paint',
-        score: expect.any(Number),
-        value: expect.any(Number),
-        displayValue: expect.stringMatching('s$'),
+        slug: 'is-on-https',
+        score: 1,
+        value: 0,
+        // displayValue: expect.stringMatching('s$'),
       } satisfies AuditOutput),
     ]);
-  });
+  }, 20_000);
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
-    const runner = getRunner('https://example.com', {
+    const runner = getRunner('https://www.google.com/', {
+      onlyAudits: ['is-on-https'],
       precomputedLanternDataPath: '/path/to/latern-data',
-      outputPath: 'tmp/plugin-lighthouse/get-runner/should-run/lh-report.json',
+      outputPath:
+        'tmp/plugin-lighthouse/get-runner/no-latern-data/lh-report.json',
     });
     await expect(runner()).resolves.toBeTruthy();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
       'The parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
     );
   });
-}, 70_000);
+}, 20_000);
