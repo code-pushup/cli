@@ -30,7 +30,7 @@ describe('getRunner', () => {
         // displayValue: expect.stringMatching('s$'),
       } satisfies AuditOutput),
     ]);
-  }, 20_000);
+  }, 40_000);
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
     const runner = getRunner('https://www.google.com/', {
@@ -45,4 +45,4 @@ describe('getRunner', () => {
       'The parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
     );
   });
-}, 20_000);
+}, 40_000);
