@@ -42,19 +42,6 @@ describe('issueSchema', () => {
     ).toThrow('Invalid enum value');
   });
 
-  it('should not throw for startLine 0 as file position', () => {
-    expect(() =>
-      issueSchema.parse({
-        message: 'Use const instead of let.',
-        severity: 'warning',
-        source: {
-          file: 'src/utils.ts',
-          position: { startLine: 0, endLine: 0 },
-        },
-      } satisfies Issue),
-    ).not.toThrow();
-  });
-
   it('should throw for invalid file position', () => {
     expect(() =>
       issueSchema.parse({
@@ -62,9 +49,9 @@ describe('issueSchema', () => {
         severity: 'warning',
         source: {
           file: 'src/utils.ts',
-          position: { startLine: -1, endLine: 3 },
+          position: { startLine: 0, endLine: 3 },
         },
       } satisfies Issue),
-    ).toThrow('Number must be greater than or equal to 0');
+    ).toThrow('Number must be greater than 0');
   });
 });

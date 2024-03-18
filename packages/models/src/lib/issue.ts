@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits';
-import {
-  filePathSchema,
-  nonnegativeIntSchema,
-  positiveIntSchema,
-} from './implementation/schemas';
+import { filePathSchema, positiveIntSchema } from './implementation/schemas';
 
 const sourceFileLocationSchema = z.object(
   {
@@ -12,9 +8,9 @@ const sourceFileLocationSchema = z.object(
     position: z
       .object(
         {
-          startLine: nonnegativeIntSchema.describe('Start line'),
+          startLine: positiveIntSchema.describe('Start line').optional(),
           startColumn: positiveIntSchema.describe('Start column').optional(),
-          endLine: nonnegativeIntSchema.describe('End line').optional(),
+          endLine: positiveIntSchema.describe('End line').optional(),
           endColumn: positiveIntSchema.describe('End column').optional(),
         },
         { description: 'Location in file' },
