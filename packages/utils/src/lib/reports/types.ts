@@ -29,4 +29,4 @@ export type SortableAuditReport = AuditReport & {
   plugin: string;
 };
 
-export type DiffOutcome = 'positive' | 'negative' | 'neutral' | 'mixed';
+export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
