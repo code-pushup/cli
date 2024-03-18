@@ -90,7 +90,7 @@ export function getRunner(
 
     if (precomputedLanternDataPath) {
       ui().logger.info(
-        `The parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
+        `Parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
       );
     }
 
