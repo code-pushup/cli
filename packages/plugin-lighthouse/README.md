@@ -64,8 +64,8 @@ Within the flags object a couple of other external configuration files can be re
 
 For a complete list the [official documentation of CLI flags](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options)
 
-> [!NOTE]  
-> If you are used to work with the Lighthouse CLI you would pass flags like this:
+> [!TIP]  
+> If you are not used to work with the Lighthouse CLI you would pass flags like this:
 > `lighthouse https://example.com --output=json --chromeFlags='--headless=shell'`
 >
 > Now with the plugin it would look like this:
