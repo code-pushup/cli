@@ -251,7 +251,6 @@ describe('lintResultsToAudits', () => {
               severity: 'warning',
               source: {
                 file: 'src/app/test/strictNullChecks.ts',
-                position: { startColumn: 1 },
               },
             },
           ],

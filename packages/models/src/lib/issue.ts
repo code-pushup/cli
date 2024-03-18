@@ -8,7 +8,7 @@ const sourceFileLocationSchema = z.object(
     position: z
       .object(
         {
-          startLine: positiveIntSchema.describe('Start line').optional(),
+          startLine: positiveIntSchema.describe('Start line'),
           startColumn: positiveIntSchema.describe('Start column').optional(),
           endLine: positiveIntSchema.describe('End line').optional(),
           endColumn: positiveIntSchema.describe('End column').optional(),
