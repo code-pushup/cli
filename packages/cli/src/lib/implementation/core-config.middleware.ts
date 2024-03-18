@@ -1,9 +1,9 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   CoreConfig,
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
   uploadConfigSchema,
 } from '@code-pushup/models';
 import { CoreConfigCliOptions } from './core-config.model';
@@ -46,9 +46,12 @@ export async function coreConfigMiddleware<
     ...(config != null && { config }),
     persist: {
       outputDir:
-        cliPersist?.outputDir ?? rcPersist?.outputDir ?? PERSIST_OUTPUT_DIR,
-      format: cliPersist?.format ?? rcPersist?.format ?? PERSIST_FORMAT,
-      filename: cliPersist?.filename ?? rcPersist?.filename ?? PERSIST_FILENAME,
+        cliPersist?.outputDir ??
+        rcPersist?.outputDir ??
+        DEFAULT_PERSIST_OUTPUT_DIR,
+      filename:
+        cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
+      format: cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
     },
     ...(upload != null && { upload }),
     categories: rcCategories ?? [],

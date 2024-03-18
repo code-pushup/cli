@@ -1,9 +1,9 @@
 import { describe, expect, vi } from 'vitest';
 import {
   CoreConfig,
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
   PersistConfig,
   UploadConfig,
 } from '@code-pushup/models';
@@ -61,9 +61,9 @@ describe('parsing values from CLI and middleware', () => {
     ).parseAsync();
 
     expect(persist).toEqual<PersistConfig>({
-      filename: PERSIST_FILENAME,
-      format: PERSIST_FORMAT,
-      outputDir: PERSIST_OUTPUT_DIR,
+      filename: DEFAULT_PERSIST_FILENAME,
+      format: DEFAULT_PERSIST_FORMAT,
+      outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
     });
   });
 
@@ -139,7 +139,7 @@ describe('parsing values from CLI and middleware', () => {
 
     expect(persist).toEqual<PersistConfig>({
       filename: 'rc-filename',
-      format: PERSIST_FORMAT,
+      format: DEFAULT_PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
     });
   });

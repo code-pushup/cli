@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
+import {
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  PersistConfig,
+} from '@code-pushup/models';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCollectCommandObject } from './collect-command';
@@ -31,10 +37,10 @@ describe('collect-command', () => {
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
         config: '/test/code-pushup.config.ts',
-        persist: expect.objectContaining({
-          filename: 'report',
-          outputDir: '.code-pushup',
-          format: ['json'],
+        persist: expect.objectContaining<Required<PersistConfig>>({
+          filename: DEFAULT_PERSIST_FILENAME,
+          outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+          format: DEFAULT_PERSIST_FORMAT,
         }),
       }),
     );
