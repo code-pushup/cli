@@ -688,7 +688,7 @@ describe('getBudgets', () => {
     await expect(getBudgets()).resolves.toStrictEqual([]);
   });
 
-  it('should load budgets from path is specified', async () => {
+  it('should load budgets from specified path', async () => {
     const budgets: Budget[] = [
       {
         path: '*',
