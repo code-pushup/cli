@@ -1,6 +1,9 @@
 import { join } from 'node:path';
 import { compareReportFiles } from '@code-pushup/core';
-import { PERSIST_FILENAME, PERSIST_OUTPUT_DIR } from '@code-pushup/models';
+import {
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+} from '@code-pushup/models';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCompareCommandObject } from './compare-command';
@@ -27,7 +30,7 @@ describe('compare-command', () => {
       Parameters<typeof compareReportFiles>
     >(
       { before: 'source-report.json', after: 'target-report.json' },
-      join(PERSIST_OUTPUT_DIR, `${PERSIST_FILENAME}-diff.json`),
+      join(DEFAULT_PERSIST_OUTPUT_DIR, `${DEFAULT_PERSIST_FILENAME}-diff.json`),
     );
   });
 });
