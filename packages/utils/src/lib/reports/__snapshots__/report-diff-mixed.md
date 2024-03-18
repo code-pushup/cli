@@ -4,7 +4,7 @@
 
 ## 🏷️ Categories
 
-|🏷️ Category|⭐ Current score|⭐ Previous score|🗠 Score change|
+|🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--:|:--:|:--:|
 |Bug prevention|🟡 **63**|🟡 68|![🠋 −5](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%925-red)|
 |Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|
@@ -15,7 +15,7 @@
 <details>
 <summary>👍 <strong>1</strong> group improved</summary>
 
-|🔌 Plugin|🎗️ Group|⭐ Current score|⭐ Previous score|🗠 Score change|
+|🔌 Plugin|🎗️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--|:--:|:--:|:--:|
 |Lighthouse|Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|
 
@@ -29,12 +29,12 @@
 <details>
 <summary>👍 <strong>3</strong> audits improved, 👎 <strong>1</strong> audit regressed</summary>
 
-|🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🗠 Value change|
+|🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🔄 Value change|
 |:--|:--|:--:|:--:|:--:|
-|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|![🠉 +∞%](https://img.shields.io/badge/%F0%9F%A0%89%20%2B%E2%88%9E%25-red)|
-|Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|![🠋 −8%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%928%25-green)|
-|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|![🠋 −4%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%25-green)|
-|Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|![🠋 −4%](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%25-green)|
+|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|![🠉 +∞ %](https://img.shields.io/badge/%F0%9F%A0%89%20%2B%E2%88%9E%E2%80%89%25-red)|
+|Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|![🠋 −8 %](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%928%E2%80%89%25-green)|
+|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|![🠋 −4 %](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%E2%80%89%25-green)|
+|Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|![🠋 −4 %](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%924%E2%80%89%25-green)|
 
 48 other audits are unchanged.
 
