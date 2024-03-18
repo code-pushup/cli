@@ -189,8 +189,8 @@ export async function getConfig(
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
       return importEsmModule<Config>({ filepath });
     }
-  } else if (preset) {
-    switch (preset as string) {
+  } else if (typeof preset === 'string') {
+    switch (preset) {
       case 'desktop':
         return desktopConfig;
       case 'perf':
