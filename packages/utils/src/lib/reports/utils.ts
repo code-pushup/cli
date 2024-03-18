@@ -95,7 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  return Math.floor((stop ?? performance.now()) - start);
+  return Math.round((stop ?? performance.now()) - start);
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {
