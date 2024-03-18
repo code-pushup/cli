@@ -1,9 +1,15 @@
 import type { PackageAuditLevel } from '../../config';
 
-// NPM audit JSON types
+// Subset of NPM audit JSON type
 type Advisory = {
   title: string;
   url: string;
+};
+
+type FixInformation = {
+  name: string;
+  version: string;
+  isSemVerMajor: boolean;
 };
 
 export type Vulnerability = {
@@ -11,7 +17,7 @@ export type Vulnerability = {
   severity: PackageAuditLevel;
   via: Advisory[] | string[];
   range: string;
-  fixAvailable: boolean;
+  fixAvailable: boolean | FixInformation;
 };
 
 export type Vulnerabilities = {

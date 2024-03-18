@@ -1,15 +1,16 @@
 import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
 import { objectToEntries } from '@code-pushup/utils';
 import {
+  DependencyGroup,
   PackageAuditLevel,
-  PackageDependency,
   packageAuditLevels,
 } from '../../config';
+import { auditScoreModifiers } from './constants';
 import { NpmAuditResultJson, Vulnerabilities } from './types';
 
 export function auditResultToAuditOutput(
   result: NpmAuditResultJson,
-  dependenciesType: PackageDependency,
+  dependenciesType: DependencyGroup,
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ): AuditOutput {
   const issues = vulnerabilitiesToIssues(
@@ -18,7 +19,7 @@ export function auditResultToAuditOutput(
   );
   return {
     slug: `npm-audit-${dependenciesType}`,
-    score: result.metadata.vulnerabilities.total === 0 ? 1 : 0,
+    score: calculateAuditScore(result.metadata.vulnerabilities),
     value: result.metadata.vulnerabilities.total,
     displayValue: vulnerabilitiesToDisplayValue(
       result.metadata.vulnerabilities,
@@ -27,22 +28,42 @@ export function auditResultToAuditOutput(
   };
 }
 
+export function calculateAuditScore(
+  stats: Record<PackageAuditLevel | 'total', number>,
+) {
+  if (stats.total === 0) {
+    return 1;
+  }
+
+  return objectToEntries(stats).reduce<number>(
+    (score, [level, vulnerabilities]) => {
+      if (level === 'total') {
+        return score;
+      }
+
+      const reducedScore = score - auditScoreModifiers[level] * vulnerabilities;
+      return Math.max(reducedScore, 0);
+    },
+    1,
+  );
+}
+
 export function vulnerabilitiesToDisplayValue(
   vulnerabilities: Record<PackageAuditLevel | 'total', number>,
 ): string {
   if (vulnerabilities.total === 0) {
-    return 'passed';
+    return '0 vulnerabilities';
   }
 
-  const displayValue = packageAuditLevels
+  const vulnerabilityStats = packageAuditLevels
     .map(level =>
       vulnerabilities[level] > 0 ? `${vulnerabilities[level]} ${level}` : '',
     )
     .filter(text => text !== '')
     .join(', ');
-  return `${displayValue} ${
+  return `${vulnerabilities.total} ${
     vulnerabilities.total === 1 ? 'vulnerability' : 'vulnerabilities'
-  }`;
+  } (${vulnerabilityStats})`;
 }
 
 export function vulnerabilitiesToIssues(
@@ -53,7 +74,21 @@ export function vulnerabilitiesToIssues(
     return [];
   }
 
-  return objectToEntries(vulnerabilities).map<Issue>(([, detail]) => {
+  return Object.values(vulnerabilities).map<Issue>(detail => {
+    const versionRange =
+      detail.range === '*'
+        ? '**all** versions'
+        : `versions **${detail.range}**`;
+    const vulnerabilitySummary = `\`${detail.name}\` dependency has a **${detail.severity}** vulnerability in ${versionRange}.`;
+    const fixInformation =
+      typeof detail.fixAvailable === 'boolean'
+        ? `Fix is ${detail.fixAvailable ? '' : 'not '}available.`
+        : `Fix available: Update \`${detail.fixAvailable.name}\` to version **${
+            detail.fixAvailable.version
+          }**${
+            detail.fixAvailable.isSemVerMajor ? ' (breaking change).' : '.'
+          }`;
+
     // Advisory details via can refer to another vulnerability
     // For now, only direct context is supported
     if (
@@ -62,19 +97,13 @@ export function vulnerabilitiesToIssues(
       typeof detail.via[0] === 'object'
     ) {
       return {
-        message: `${detail.name} dependency has a vulnerability "${
-          detail.via[0].title
-        }" for versions ${detail.range}. Fix is ${
-          detail.fixAvailable ? '' : 'not '
-        }available. More information [here](${detail.via[0].url})`,
+        message: `${vulnerabilitySummary} ${fixInformation} More information: [${detail.via[0].title}](${detail.via[0].url})`,
         severity: auditLevelMapping[detail.severity],
       };
     }
 
     return {
-      message: `${detail.name} dependency has a vulnerability for versions ${
-        detail.range
-      }. Fix is ${detail.fixAvailable ? '' : 'not '}available.`,
+      message: `${vulnerabilitySummary} ${fixInformation}`,
       severity: auditLevelMapping[detail.severity],
     };
   });

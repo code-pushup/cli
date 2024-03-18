@@ -1,4 +1,4 @@
-// NPM outdated JSON types
+// Subset of NPM outdated JSON type
 
 export type VersionType = 'major' | 'minor' | 'patch';
 export type PackageVersion = Record<VersionType, number>;

@@ -1,7 +1,7 @@
 import { IssueSeverity, MaterialIcon } from '@code-pushup/models';
 import type {
+  DependencyGroup,
   PackageAuditLevel,
-  PackageDependency,
   PackageManager,
 } from './config';
 
@@ -50,7 +50,7 @@ export const outdatedDocs: Record<PackageManager, string> = {
   pnpm: 'https://pnpm.io/cli/outdated',
 };
 
-export const dependencyDocs: Record<PackageDependency, string> = {
+export const dependencyDocs: Record<DependencyGroup, string> = {
   prod: 'https://classic.yarnpkg.com/docs/dependency-types#toc-dependencies',
   dev: 'https://classic.yarnpkg.com/docs/dependency-types#toc-devdependencies',
   optional:

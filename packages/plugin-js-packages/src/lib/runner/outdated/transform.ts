@@ -1,6 +1,6 @@
 import { Issue } from '@code-pushup/models';
-import { objectToEntries, pluralize } from '@code-pushup/utils';
-import { PackageDependency } from '../../config';
+import { objectToEntries } from '@code-pushup/utils';
+import { DependencyGroup } from '../../config';
 import { outdatedSeverity } from './constants';
 import {
   NormalizedOutdatedEntries,
@@ -12,7 +12,7 @@ import {
 
 export function outdatedResultToAuditOutput(
   result: NpmOutdatedResultJson,
-  dependenciesType: PackageDependency,
+  dependenciesType: DependencyGroup,
 ) {
   // current might be missing in some cases
   // https://stackoverflow.com/questions/42267101/npm-outdated-command-shows-missing-in-current-version
@@ -24,11 +24,16 @@ export function outdatedResultToAuditOutput(
     .filter(([, detail]) =>
       dependenciesType === 'prod'
         ? detail.type === 'dependencies'
-        : detail.type.startsWith(dependenciesType),
+        : detail.type === `${dependenciesType}Dependencies`,
     );
   const outdatedDependencies = validDependencies.filter(
     ([, versions]) => versions.current !== versions.wanted,
   );
+
+  const majorOutdatedAmount = outdatedDependencies.filter(
+    ([, versions]) =>
+      getOutdatedLevel(versions.current, versions.wanted) === 'major',
+  ).length;
 
   const issues =
     outdatedDependencies.length === 0
@@ -37,18 +42,36 @@ export function outdatedResultToAuditOutput(
 
   return {
     slug: `npm-outdated-${dependenciesType}`,
-    score: outdatedDependencies.length === 0 ? 1 : 0,
+    score: calculateOutdatedScore(
+      majorOutdatedAmount,
+      validDependencies.length,
+    ),
     value: outdatedDependencies.length,
-    displayValue: outdatedToDisplayValue(outdatedDependencies.length),
+    displayValue: outdatedToDisplayValue(
+      majorOutdatedAmount,
+      outdatedDependencies.length,
+    ),
     ...(issues.length > 0 && { details: { issues } }),
   };
 }
 
-function outdatedToDisplayValue(outdatedDeps: number) {
-  return outdatedDeps === 0
-    ? 'passed'
-    : `${outdatedDeps} outdated ${
-        outdatedDeps === 1 ? 'dependency' : pluralize('dependency')
+export function calculateOutdatedScore(
+  majorOutdated: number,
+  totalDeps: number,
+) {
+  return totalDeps > 0 ? (totalDeps - majorOutdated) / totalDeps : 1;
+}
+
+export function outdatedToDisplayValue(
+  majorOutdated: number,
+  totalOutdated: number,
+) {
+  return totalOutdated === 0
+    ? 'all dependencies are up to date'
+    : majorOutdated > 0
+    ? `${majorOutdated} out of ${totalOutdated} outdated dependencies require major update`
+    : `${totalOutdated} outdated ${
+        totalOutdated === 1 ? 'dependency' : 'dependencies'
       }`;
 }
 
@@ -57,13 +80,13 @@ export function outdatedToIssues(
 ): Issue[] {
   return dependencies.map<Issue>(([name, versions]) => {
     const outdatedLevel = getOutdatedLevel(versions.current, versions.wanted);
-    const packageDocumentation =
+    const packageReference =
       versions.homepage == null
-        ? ''
-        : ` Package documentation [here](${versions.homepage})`;
+        ? `\`${name}\``
+        : `[\`${name}\`](${versions.homepage})`;
 
     return {
-      message: `Package ${name} requires a ${outdatedLevel} update from **${versions.current}** to **${versions.wanted}**.${packageDocumentation}`,
+      message: `Package ${packageReference} requires a **${outdatedLevel}** update from **${versions.current}** to **${versions.wanted}**.`,
       severity: outdatedSeverity[outdatedLevel],
     };
   });
