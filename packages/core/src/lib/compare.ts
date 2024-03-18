@@ -1,8 +1,16 @@
 import { writeFile } from 'node:fs/promises';
-import { Report, ReportsDiff, reportSchema } from '@code-pushup/models';
+import { join } from 'node:path';
+import {
+  type Format,
+  type PersistConfig,
+  Report,
+  ReportsDiff,
+  reportSchema,
+} from '@code-pushup/models';
 import {
   Diff,
   calcDuration,
+  generateMdReportsDiff,
   readJsonFile,
   scoreReport,
 } from '@code-pushup/utils';
@@ -16,8 +24,10 @@ import {
 
 export async function compareReportFiles(
   inputPaths: Diff<string>,
-  outputPath: string,
-): Promise<void> {
+  persistConfig: Required<PersistConfig>,
+): Promise<string[]> {
+  const { outputDir, filename, format } = persistConfig;
+
   const [reportBefore, reportAfter] = await Promise.all([
     readJsonFile(inputPaths.before),
     readJsonFile(inputPaths.after),
@@ -29,7 +39,14 @@ export async function compareReportFiles(
 
   const reportsDiff = compareReports(reports);
 
-  await writeFile(outputPath, JSON.stringify(reportsDiff, null, 2));
+  return Promise.all(
+    format.map(async fmt => {
+      const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
+      const content = reportsDiffToFileContent(reportsDiff, fmt);
+      await writeFile(outputPath, content);
+      return outputPath;
+    }),
+  );
 }
 
 export function compareReports(reports: Diff<Report>): ReportsDiff {
@@ -62,4 +79,16 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
     date,
     duration,
   };
+}
+
+function reportsDiffToFileContent(
+  reportsDiff: ReportsDiff,
+  format: Format,
+): string {
+  switch (format) {
+    case 'json':
+      return JSON.stringify(reportsDiff, null, 2);
+    case 'md':
+      return generateMdReportsDiff(reportsDiff);
+  }
 }
