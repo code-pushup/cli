@@ -56,7 +56,6 @@ export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
   const categoriesMap = rules.reduce<Record<string, Record<string, string[]>>>(
     (acc, { meta: { docs }, ruleId, options }) => {
       // meta.docs.category still used by some popular plugins (e.g. import, react, functional)
-      // eslint-disable-next-line deprecation/deprecation
       const category = docs?.category;
       if (!category) {
         return acc;
