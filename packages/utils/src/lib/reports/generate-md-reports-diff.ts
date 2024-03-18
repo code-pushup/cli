@@ -85,8 +85,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           ...added.map(category => [
             category.title,
             formatScoreWithColor(category.score),
-            style('n/a (*)', ['i']),
-            style('n/a (*)', ['i']),
+            style('n/a (\\*)', ['i']),
+            style('n/a (\\*)', ['i']),
           ]),
           ...unchanged.map(category => [
             category.title,
@@ -97,7 +97,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
         ].map(row => (hasChanges ? row : row.slice(0, 2))),
         hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
       ),
-    added.length > 0 && style('(*) New category.', ['i']),
+    added.length > 0 && style('(\\*) New category.', ['i']),
   );
 }
 

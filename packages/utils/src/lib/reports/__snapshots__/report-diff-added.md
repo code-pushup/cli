@@ -7,10 +7,10 @@
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--:|:--:|:--:|
 |Bug prevention|🟡 **63**|🟡 68|![🠋 −5](https://img.shields.io/badge/%F0%9F%A0%8B%20%E2%88%925-red)|
-|Performance|🟢 **94**|_n/a (*)_|_n/a (*)_|
+|Performance|🟢 **94**|_n/a (\*)_|_n/a (\*)_|
 |Code style|🟡 **54**|🟡 54|–|
 
-_(*) New category._
+_(\*) New category._
 
 ## 🎗️ Groups
 
