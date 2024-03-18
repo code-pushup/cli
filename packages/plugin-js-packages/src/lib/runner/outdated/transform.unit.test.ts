@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput, Issue } from '@code-pushup/models';
 import {
+  calculateOutdatedScore,
   getOutdatedLevel,
   outdatedResultToAuditOutput,
+  outdatedToDisplayValue,
   outdatedToIssues,
   splitPackageVersion,
 } from './transform';
@@ -19,14 +21,14 @@ describe('outdatedResultToAuditOutput', () => {
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
-      score: 0,
+      score: 1,
       value: 1,
       displayValue: '1 outdated dependency',
       details: {
         issues: [
           {
-            message: expect.stringMatching(
-              /Package moment requires a patch update/,
+            message: expect.stringContaining(
+              'Package `moment` requires a **patch** update',
             ),
             severity: 'info',
           },
@@ -46,14 +48,14 @@ describe('outdatedResultToAuditOutput', () => {
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
-      score: 0,
+      score: 0.5,
       value: 1,
-      displayValue: '1 outdated dependency',
+      displayValue: '1 out of 1 outdated dependencies require major update',
       details: {
         issues: [
           expect.objectContaining({
             message: expect.stringContaining(
-              'Package prettier requires a major update',
+              'Package `prettier` requires a **major** update',
             ),
           }),
         ],
@@ -66,6 +68,11 @@ describe('outdatedResultToAuditOutput', () => {
       outdatedResultToAuditOutput(
         {
           nx: { current: '15.8.1', wanted: '17.0.0', type: 'dependencies' },
+          typescript: {
+            current: '5.3.0',
+            wanted: '5.3.3',
+            type: 'dependencies',
+          },
           jsdom: { current: '22.1.0', wanted: '22.1.2', type: 'dependencies' },
           prettier: {
             current: '3.0.0',
@@ -77,26 +84,32 @@ describe('outdatedResultToAuditOutput', () => {
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
-      score: 0,
-      value: 3,
-      displayValue: '3 outdated dependencies',
+      score: 0.75,
+      value: 4,
+      displayValue: '1 out of 4 outdated dependencies require major update',
       details: {
         issues: [
           {
             message: expect.stringContaining(
-              'Package nx requires a major update',
+              'Package `nx` requires a **major** update',
             ),
             severity: 'error',
           },
           {
             message: expect.stringContaining(
-              'Package jsdom requires a patch update',
+              'Package `typescript` requires a **patch** update',
             ),
             severity: 'info',
           },
           {
             message: expect.stringContaining(
-              'Package prettier requires a minor update',
+              'Package `jsdom` requires a **patch** update',
+            ),
+            severity: 'info',
+          },
+          {
+            message: expect.stringContaining(
+              'Package `prettier` requires a **minor** update',
             ),
             severity: 'warning',
           },
@@ -121,7 +134,7 @@ describe('outdatedResultToAuditOutput', () => {
       slug: 'npm-outdated-optional',
       score: 1,
       value: 0,
-      displayValue: 'passed',
+      displayValue: 'all dependencies are up to date',
     });
   });
 
@@ -137,8 +150,36 @@ describe('outdatedResultToAuditOutput', () => {
       slug: 'npm-outdated-prod',
       score: 1,
       value: 0,
-      displayValue: 'passed',
+      displayValue: 'all dependencies are up to date',
     });
+  });
+});
+
+describe('calculateOutdatedScore', () => {
+  it('should calculate perfect score for no dependencies with outdated major version', () => {
+    expect(calculateOutdatedScore(0, 5)).toBe(1);
+  });
+
+  it('should calculate proportionate score for major outdated dependencies', () => {
+    expect(calculateOutdatedScore(1, 5)).toBe(0.8);
+  });
+});
+
+describe('outdatedToDisplayValue', () => {
+  it('should display perfect value e for no outdated dependencies', () => {
+    expect(outdatedToDisplayValue(0, 0)).toBe(
+      'all dependencies are up to date',
+    );
+  });
+
+  it('should explicitly state outdated major dependencies', () => {
+    expect(outdatedToDisplayValue(2, 3)).toBe(
+      '2 out of 3 outdated dependencies require major update',
+    );
+  });
+
+  it('should summarise outdated dependencies if only minor or patch versions are outdated', () => {
+    expect(outdatedToDisplayValue(0, 3)).toBe('3 outdated dependencies');
   });
 });
 
@@ -153,9 +194,8 @@ describe('outdatedToIssues', () => {
       ]),
     ).toEqual<Issue[]>([
       {
-        message: expect.stringMatching(
-          /Package moment requires a minor update from.*2.29.0.*to.*2.30.0/,
-        ),
+        message:
+          'Package `moment` requires a **minor** update from **2.29.0** to **2.30.0**.',
         severity: 'warning',
       },
     ]);
@@ -176,8 +216,8 @@ describe('outdatedToIssues', () => {
       ]),
     ).toEqual<Issue[]>([
       expect.objectContaining({
-        message: expect.stringMatching(
-          /Package nx requires a major update .* Package documentation.*https:\/\/nx\.dev/,
+        message: expect.stringContaining(
+          'Package [`nx`](https://nx.dev) requires',
         ),
       }),
     ]);

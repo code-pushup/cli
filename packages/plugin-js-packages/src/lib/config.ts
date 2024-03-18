@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
 import { defaultAuditLevelMapping } from './constants';
 
-export const packageDependencies = ['prod', 'dev', 'optional'] as const;
-export type PackageDependency = (typeof packageDependencies)[number];
+export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
+export type DependencyGroup = (typeof dependencyGroups)[number];
 
 const packageCommandSchema = z.enum(['audit', 'outdated']);
 export type PackageCommand = z.infer<typeof packageCommandSchema>;

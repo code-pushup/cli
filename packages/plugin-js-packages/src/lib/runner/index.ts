@@ -8,14 +8,16 @@ import type {
 import {
   ensureDirectoryExists,
   executeProcess,
+  isPromiseFulfilledResult,
+  isPromiseRejectedResult,
   readJsonFile,
 } from '@code-pushup/utils';
 import {
+  DependencyGroup,
   FinalJSPackagesPluginConfig,
   PackageAuditLevel,
-  PackageDependency,
   PackageManager,
-  packageDependencies,
+  dependencyGroups,
 } from '../config';
 import { auditResultToAuditOutput } from './audit/transform';
 import { NpmAuditResultJson } from './audit/types';
@@ -62,7 +64,7 @@ async function processOutdated(packageManager: PackageManager) {
   });
 
   const outdatedResult = JSON.parse(stdout) as NpmOutdatedResultJson;
-  return packageDependencies.map(dep =>
+  return dependencyGroups.map(dep =>
     outdatedResultToAuditOutput(outdatedResult, dep),
   );
 }
@@ -72,7 +74,7 @@ async function processAudit(
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ) {
   const auditResults = await Promise.allSettled(
-    packageDependencies.map<Promise<AuditOutput>>(async dep => {
+    dependencyGroups.map<Promise<AuditOutput>>(async dep => {
       const { stdout } = await executeProcess({
         command: packageManager,
         args: ['audit', ...getNpmAuditOptions(dep)],
@@ -82,17 +84,22 @@ async function processAudit(
       return auditResultToAuditOutput(auditResult, dep, auditLevelMapping);
     }),
   );
-  return auditResults
-    .filter(
-      (x): x is PromiseFulfilledResult<AuditOutput> => x.status === 'fulfilled',
-    )
-    .map(x => x.value);
+  const rejected = auditResults.filter(isPromiseRejectedResult);
+  if (rejected.length > 0) {
+    rejected.map(result => {
+      console.error(result.reason);
+    });
+
+    throw new Error(`JS Packages plugin: Running npm audit failed.`);
+  }
+
+  return auditResults.filter(isPromiseFulfilledResult).map(x => x.value);
 }
 
-function getNpmAuditOptions(currentDep: PackageDependency) {
+function getNpmAuditOptions(currentDep: DependencyGroup) {
   const flags = [
     `--include=${currentDep}`,
-    ...packageDependencies
+    ...dependencyGroups
       .filter(dep => dep !== currentDep)
       .map(dep => `--omit=${dep}`),
   ];

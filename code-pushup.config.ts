@@ -128,8 +128,8 @@ const config: CoreConfig = {
       ],
     },
     {
-      slug: 'dependencies',
-      title: 'Dependencies',
+      slug: 'updates',
+      title: 'Updates',
       refs: [
         {
           type: 'group',
