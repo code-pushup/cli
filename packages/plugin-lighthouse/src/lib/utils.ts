@@ -16,7 +16,7 @@ import {
   ui,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_REPORT_NAME } from './constants';
-import { type Flags } from './lighthouse-plugin';
+import { type LighthouseCliFlags } from './lighthouse-plugin';
 
 type RefinedLighthouseOption = {
   url: CliFlags['_'];
@@ -177,7 +177,7 @@ export function filterAuditsAndGroupsByOnlyOptions(
 }
 
 export async function getConfig(
-  flags: Pick<Flags, 'configPath' | 'preset'> = {},
+  flags: Pick<LighthouseCliFlags, 'configPath' | 'preset'> = {},
 ): Promise<Config | undefined> {
   const { configPath: filepath, preset } = flags;
 
@@ -240,7 +240,9 @@ const excludedFlags = new Set([
   'list-trace-categories', // Prints a list of all required trace categories and exits.
 ]);
 
-export function validateFlags(flags: Flags = {}): Flags {
+export function validateFlags(
+  flags: LighthouseCliFlags = {},
+): LighthouseCliFlags {
   const unsupportedFlagsInUse = Object.keys(flags).filter(flag =>
     excludedFlags.has(flag),
   );

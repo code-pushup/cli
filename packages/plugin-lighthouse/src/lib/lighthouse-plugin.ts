@@ -1,7 +1,4 @@
-import {
-  type CliFlags as LighthouseFlags,
-  type RunnerResult,
-} from 'lighthouse';
+import { type CliFlags, type RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import { dirname } from 'node:path';
 import {
@@ -11,9 +8,9 @@ import {
 } from '@code-pushup/models';
 import { ensureDirectoryExists, ui } from '@code-pushup/utils';
 import {
-  AUDITS,
   DEFAULT_CLI_FLAGS,
-  GROUPS,
+  LIGHTHOUSE_AUDITS,
+  LIGHTHOUSE_GROUPS,
   LIGHTHOUSE_PLUGIN_SLUG,
 } from './constants';
 import {
@@ -25,7 +22,9 @@ import {
   validateFlags,
 } from './utils';
 
-export type Flags = Partial<Omit<LighthouseFlags, 'enableErrorReporting'>>;
+export type LighthouseCliFlags = Partial<
+  Omit<CliFlags, 'enableErrorReporting'>
+>;
 
 // No error reporting implemented as in the source Sentry was involved
 /*
@@ -40,10 +39,13 @@ if (cliFlags.enableErrorReporting) {
     },
   });
  */
-export function lighthousePlugin(url: string, flags?: Flags): PluginConfig {
+export function lighthousePlugin(
+  url: string,
+  flags?: LighthouseCliFlags,
+): PluginConfig {
   const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
-    AUDITS,
-    GROUPS,
+    LIGHTHOUSE_AUDITS,
+    LIGHTHOUSE_GROUPS,
     flags,
   );
   return {
@@ -58,7 +60,7 @@ export function lighthousePlugin(url: string, flags?: Flags): PluginConfig {
 
 export function getRunner(
   urlUnderTest: string,
-  flags: Flags = {},
+  flags: LighthouseCliFlags = {},
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     const {

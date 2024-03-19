@@ -29,7 +29,7 @@ describe('getRunner', () => {
         value: 0,
       } satisfies AuditOutput),
     ]);
-  }, 30_000);
+  });
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
     const runner = getRunner('https://www.google.com/', {

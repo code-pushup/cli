@@ -1,9 +1,11 @@
 import { lighthousePlugin } from './lib/lighthouse-plugin';
 
-export default lighthousePlugin;
+export { lighthousePlugin, LighthouseCliFlags } from './lib/lighthouse-plugin';
 export {
   LIGHTHOUSE_REPORT_NAME,
   LIGHTHOUSE_PLUGIN_SLUG,
-  AUDITS,
-  GROUPS,
+  LIGHTHOUSE_AUDITS,
+  LIGHTHOUSE_GROUPS,
 } from './lib/constants';
+
+export default lighthousePlugin;

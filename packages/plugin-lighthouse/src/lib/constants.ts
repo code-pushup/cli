@@ -12,7 +12,7 @@ export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
 
 const { audits, categories } = defaultConfig;
 
-export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
+export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
   ([id, category]) => ({
     slug: id,
     title: getMetaString(category.title),
@@ -23,7 +23,7 @@ export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
   }),
 );
 
-export const AUDITS: Audit[] = await Promise.all(
+export const LIGHTHOUSE_AUDITS: Audit[] = await Promise.all(
   (audits ?? []).map(async value => {
     const audit = await loadLighthouseAudit(value);
     return {

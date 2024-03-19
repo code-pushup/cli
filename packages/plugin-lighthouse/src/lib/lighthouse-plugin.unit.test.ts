@@ -7,8 +7,12 @@ import {
   groupSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { AUDITS, GROUPS } from './constants';
-import { Flags, getRunner, lighthousePlugin } from './lighthouse-plugin';
+import { LIGHTHOUSE_AUDITS, LIGHTHOUSE_GROUPS } from './constants';
+import {
+  LighthouseCliFlags,
+  getRunner,
+  lighthousePlugin,
+} from './lighthouse-plugin';
 import { getBudgets, getConfig, setLogLevel } from './utils';
 
 vi.mock('./utils', async () => {
@@ -28,27 +32,28 @@ vi.mock('lighthouse/cli/run.js', async () => {
   // Import the actual 'lighthouse' module
   const actual = await import('lighthouse/cli/run.js');
   // Define the mock implementation
-  const mockRunLighthouse = vi.fn((url: string, flags: Flags, config: Config) =>
-    url.includes('fail')
-      ? undefined
-      : {
-          flags,
-          config,
-          lhr: {
-            audits: {
-              ['cumulative-layout-shift']: {
-                id: 'cumulative-layout-shift',
-                title: 'Cumulative Layout Shift',
-                description:
-                  'Cumulative Layout Shift measures the movement of visible elements within the viewport.',
-                scoreDisplayMode: 'numeric',
-                numericValue: 1200,
-                displayValue: '1.2 s',
-                score: 0.9,
-              } satisfies Result,
+  const mockRunLighthouse = vi.fn(
+    (url: string, flags: LighthouseCliFlags, config: Config) =>
+      url.includes('fail')
+        ? undefined
+        : {
+            flags,
+            config,
+            lhr: {
+              audits: {
+                ['cumulative-layout-shift']: {
+                  id: 'cumulative-layout-shift',
+                  title: 'Cumulative Layout Shift',
+                  description:
+                    'Cumulative Layout Shift measures the movement of visible elements within the viewport.',
+                  scoreDisplayMode: 'numeric',
+                  numericValue: 1200,
+                  displayValue: '1.2 s',
+                  score: 0.9,
+                } satisfies Result,
+              },
             },
           },
-        },
   );
 
   // Return the mocked module, merging the actual module with overridden parts
@@ -93,7 +98,7 @@ describe('getRunner', () => {
     );
   });
 
-  it('should return budgets', async () => {
+  it('should return budgets from the budgets object directly', async () => {
     await getRunner('https://localhost:8080', {
       budgets: [{ path: '*/xyz/' }],
     })();
@@ -105,10 +110,10 @@ describe('getRunner', () => {
     );
   });
 
-  it('should return budgetPath', async () => {
+  it('should return budgets maintained in the file specified over budgetPath', async () => {
     await getRunner('https://localhost:8080', {
       budgetPath: 'lh-budgets.js',
-    } as Flags)();
+    } as LighthouseCliFlags)();
     expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
     expect(runLighthouse).toHaveBeenCalledWith(
       expect.any(String),
@@ -171,7 +176,7 @@ describe('lighthousePlugin-config-object', () => {
 });
 
 describe('constants', () => {
-  it.each(AUDITS.map(a => [a.slug, a]))(
+  it.each(LIGHTHOUSE_AUDITS.map(a => [a.slug, a]))(
     'should parse audit "%s" correctly',
     (slug, audit) => {
       expect(() => auditSchema.parse(audit)).not.toThrow();
@@ -179,7 +184,7 @@ describe('constants', () => {
     },
   );
 
-  it.each(GROUPS.map(g => [g.slug, g]))(
+  it.each(LIGHTHOUSE_GROUPS.map(g => [g.slug, g]))(
     'should parse group "%s" correctly',
     (slug, group) => {
       expect(() => groupSchema.parse(group)).not.toThrow();

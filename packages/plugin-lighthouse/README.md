@@ -11,6 +11,7 @@
 The plugin parses your Lighthouse configuration and lints all audits of the official [Lighthouse](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#lighthouse-------) CLI.
 
 Detected Lighthouse audits are mapped to Code PushUp audits. Audit reports are calculated based on the [original implementation](https://googlechrome.github.io/lighthouse/scorecalc/).
+Additionally, Lighthouse categories are mapped to Code PushUp groups which can make it easier to assemble the categories.
 
 For more infos visit the [official docs](https://developer.chrome.com/docs/lighthouse/overview).
 
@@ -34,7 +35,7 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
-   Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
+   Pass in the URL you want to measure, along with optional [flags](#flags) and [config](#config) data.
 
    ```ts
    import lighthousePlugin from '@code-pushup/lighthouse-plugin';
@@ -48,7 +49,7 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
    };
    ```
 
-4. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
 ### Optionally set up categories
 

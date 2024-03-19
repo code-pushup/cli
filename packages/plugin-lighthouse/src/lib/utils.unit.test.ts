@@ -15,7 +15,7 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { Flags } from './lighthouse-plugin';
+import { LighthouseCliFlags } from './lighthouse-plugin';
 import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
@@ -621,25 +621,20 @@ describe('getConfig', () => {
     await expect(getConfig()).resolves.toBeUndefined();
   });
 
-  it('should load config from lighthouse preset if preset is specified', async () => {
-    await expect(getConfig({ preset: 'desktop' })).resolves.toEqual(
-      expect.objectContaining({
-        settings: expect.objectContaining({
-          formFactor: 'desktop',
+  it.each([
+    ['desktop', { formFactor: 'desktop' }],
+    ['perf', { onlyCategories: ['performance'] }],
+    ['experimental', { audits: ['autocomplete'] }],
+  ] satisfies readonly ['desktop' | 'perf' | 'experimental', object][])(
+    'should load config from lighthouse preset if %s preset is specified',
+    async (preset, settings) => {
+      await expect(getConfig({ preset })).resolves.toEqual(
+        expect.objectContaining({
+          settings: expect.objectContaining(settings),
         }),
-      }),
-    );
-    await expect(getConfig({ preset: 'perf' })).resolves.toEqual(
-      expect.objectContaining({
-        settings: expect.objectContaining({
-          onlyCategories: ['performance'],
-        }),
-      }),
-    );
-    await expect(getConfig({ preset: 'experimental' })).resolves.toEqual(
-      expect.objectContaining({ audits: ['autocomplete'] }),
-    );
-  });
+      );
+    },
+  );
 
   it('should return undefined if preset is specified wrong', async () => {
     await expect(
@@ -781,7 +776,10 @@ describe('validateFlags', () => {
 
   it('should remove unsupported entries and log', () => {
     expect(
-      validateFlags({ 'list-all-audits': true, verbose: true } as Flags),
+      validateFlags({
+        'list-all-audits': true,
+        verbose: true,
+      } as LighthouseCliFlags),
     ).toStrictEqual({ verbose: true });
     expect(getLogMessages(ui().logger).at(0)).toBe(
       '[ blue(info) ] ⚠ The following used flags are not supported: list-all-audits',
