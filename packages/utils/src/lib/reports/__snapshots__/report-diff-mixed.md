@@ -15,7 +15,7 @@
 <details>
 <summary>👍 <strong>1</strong> group improved</summary>
 
-|🔌 Plugin|🎗️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
+|🔌 Plugin|🗃️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--|:--:|:--:|:--:|
 |Lighthouse|Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|
 
