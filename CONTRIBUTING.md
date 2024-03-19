@@ -38,7 +38,7 @@ npx nx build cli
 npx nx affected:lint
 
 # run Code PushUp command on this repository
-npx nx run-collect
+npx nx code-pushup -- collect
 ```
 
 ## Git

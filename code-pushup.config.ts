@@ -31,12 +31,6 @@ const envSchema = z
 const env = await envSchema.parseAsync(process.env);
 
 const config: CoreConfig = {
-  persist: {
-    outputDir: '.code-pushup',
-    filename: 'report',
-    format: ['json', 'md'],
-  },
-
   ...(env.CP_SERVER &&
     env.CP_API_KEY &&
     env.CP_ORGANIZATION &&

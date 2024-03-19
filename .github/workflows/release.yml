@@ -91,7 +91,7 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
           npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin
       - name: Collect and upload Code PushUp report
-        run: npx nx run-autorun
+        run: npx nx code-pushup -- autorun
         env:
           CP_SERVER: ${{ secrets.CP_SERVER }}
           CP_API_KEY: ${{ secrets.CP_API_KEY }}
