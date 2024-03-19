@@ -2,6 +2,17 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.28.0](https://github.com/code-pushup/cli/compare/v0.27.1...v0.28.0) (2024-03-19)
+
+### Bug Fixes
+
+- **core:** ensure output directory exists in compareReportFiles ([cf309bc](https://github.com/code-pushup/cli/commit/cf309bc80e7a1a9a0ef0320948a155104b538719))
+
+### Features
+
+- **cli:** include md format by default ([65a08ea](https://github.com/code-pushup/cli/commit/65a08ea88f3605f3e4955d9f704312e5499e381c))
+- **core:** create report-diff.md file if specified by persist.format ([8c4e1e4](https://github.com/code-pushup/cli/commit/8c4e1e4958b88e67be60ffba5033b542961803e9))
+
 ## [0.27.1](https://github.com/code-pushup/cli/compare/v0.27.0...v0.27.1) (2024-03-19)
 
 # [0.27.0](https://github.com/code-pushup/cli/compare/v0.26.1...v0.27.0) (2024-03-19)
