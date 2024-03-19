@@ -1,7 +1,7 @@
 import {
-  PERSIST_FILENAME,
-  PERSIST_FORMAT,
-  PERSIST_OUTPUT_DIR,
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
   PersistConfig,
   persistConfigSchema,
 } from '@code-pushup/models';
@@ -10,9 +10,9 @@ export function persistConfigMock(
   opt?: Partial<PersistConfig>,
 ): Required<PersistConfig> {
   return persistConfigSchema.parse({
-    outputDir: PERSIST_OUTPUT_DIR,
-    filename: PERSIST_FILENAME,
-    format: PERSIST_FORMAT,
+    outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+    filename: DEFAULT_PERSIST_FILENAME,
+    format: DEFAULT_PERSIST_FORMAT,
     ...opt,
   }) as Required<PersistConfig>;
 }

@@ -14,6 +14,10 @@ export function h(text: string, hierarchy: Hierarchy = 1): string {
   return headline(text, hierarchy);
 }
 
+export function h1(text: string): string {
+  return headline(text, 1);
+}
+
 export function h2(text: string): string {
   return headline(text, 2);
 }

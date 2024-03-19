@@ -1,0 +1,81 @@
+name: Code PushUp
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NX_NON_NATIVE_HASHER: true
+
+jobs:
+  code-pushup:
+    runs-on: ubuntu-latest
+    name: Code PushUp
+    env:
+      CP_SERVER: ${{ secrets.CP_SERVER }}
+      CP_API_KEY: ${{ secrets.CP_API_KEY }}
+      CP_ORGANIZATION: code-pushup
+      CP_PROJECT: cli
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Collect Code PushUp report
+        run: npx nx code-pushup -- collect
+      - name: Upload Code PushUp report to portal
+        run: npx nx code-pushup -- upload
+      - name: Save report files as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-pushup-report
+          path: .code-pushup/
+
+  code-pushup-comment:
+    runs-on: ubuntu-latest
+    name: Code PushUp comment
+    needs: [code-pushup]
+    if: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout repository at base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+      - name: Download report workflow artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: code-pushup-report
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Collect Code PushUp report for base branch
+        run: npx nx code-pushup -- collect --persist.outputDir=. --persist.filename=base-report --persist.format=json
+      - name: Compare Code PushUp reports
+        run: npx nx code-pushup -- compare --before=base-report.json --after=report.json
+      - name: Find previous comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Code PushUp
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body-path: .code-pushup/report-diff.md

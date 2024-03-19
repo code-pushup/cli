@@ -73,6 +73,19 @@ describe('lintResultsToAudits', () => {
             ],
           },
           {
+            filePath: 'src/app/test/strictNullChecks.ts',
+            messages: [
+              {
+                ruleId: '@typescript-eslint/prefer-nullish-coalescing',
+                message:
+                  'This rule requires the strictNullChecks compiler option to be turned on to function correctly',
+                severity: 1,
+                line: 0,
+                column: 1,
+              },
+            ],
+          },
+          {
             filePath: 'src/app/pages/settings.component.ts',
             messages: [
               {
@@ -90,21 +103,25 @@ describe('lintResultsToAudits', () => {
           'src/app/app.component.ts': {
             'max-lines': [500],
             '@typescript-eslint/no-explicit-any': [],
+            '@typescript-eslint/prefer-nullish-coalescing': [],
             'unicorn/no-abusive-eslint-disable': [],
           },
           'src/app/pages/settings.component.ts': {
             'max-lines': [500],
             '@typescript-eslint/no-explicit-any': [],
+            '@typescript-eslint/prefer-nullish-coalescing': [],
             'unicorn/no-abusive-eslint-disable': [],
           },
           'src/app/graphql/generated.ts': {
             'max-lines': [500],
             '@typescript-eslint/no-explicit-any': [],
+            '@typescript-eslint/prefer-nullish-coalescing': [],
             'unicorn/no-abusive-eslint-disable': [],
           },
           'src/app/app.component.spec.ts': {
             'max-lines': [800],
             '@typescript-eslint/no-explicit-any': [],
+            '@typescript-eslint/prefer-nullish-coalescing': [],
             'unicorn/no-abusive-eslint-disable': [],
           },
         },
@@ -216,6 +233,24 @@ describe('lintResultsToAudits', () => {
               source: {
                 file: 'src/app/graphql/generated.ts',
                 position: { startLine: 1 },
+              },
+            },
+          ],
+        },
+      },
+      {
+        slug: 'typescript-eslint-prefer-nullish-coalescing',
+        score: 0,
+        value: 1,
+        displayValue: '1 warning',
+        details: {
+          issues: [
+            {
+              message:
+                'This rule requires the strictNullChecks compiler option to be turned on to function correctly',
+              severity: 'warning',
+              source: {
+                file: 'src/app/test/strictNullChecks.ts',
               },
             },
           ],

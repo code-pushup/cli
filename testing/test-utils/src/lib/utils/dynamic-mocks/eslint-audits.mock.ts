@@ -1,5 +1,17 @@
 import type { AuditReport } from '@code-pushup/models';
 
+export const ESLINT_AUDITS_FIXED_SLUGS: (keyof typeof ESLINT_AUDITS_MAP)[] = [
+  'no-unused-vars',
+  'arrow-body-style',
+  'eqeqeq',
+  'max-lines-per-function',
+  'no-shadow',
+  'object-shorthand',
+  'prefer-const',
+  'react-jsx-key',
+  'react-hooks-exhaustive-deps',
+];
+
 export const ESLINT_AUDITS_MAP = {
   'no-cond-assign': {
     slug: 'no-cond-assign',
@@ -802,3 +814,7 @@ export const ESLINT_AUDITS_MAP = {
       'https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md',
   },
 } satisfies Record<string, AuditReport>;
+
+export const ESLINT_AUDIT_SLUGS = Object.keys(
+  ESLINT_AUDITS_MAP,
+) as (keyof typeof ESLINT_AUDITS_MAP)[];

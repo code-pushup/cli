@@ -1,6 +1,12 @@
-import { join } from 'node:path';
+import chalk from 'chalk';
 import { compareReportFiles } from '@code-pushup/core';
-import { PERSIST_FILENAME, PERSIST_OUTPUT_DIR } from '@code-pushup/models';
+import {
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+} from '@code-pushup/models';
+import { getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
 import { yargsCompareCommandObject } from './compare-command';
@@ -12,7 +18,12 @@ vi.mock('@code-pushup/core', async () => {
   return {
     ...core,
     autoloadRc: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
-    compareReportFiles: vi.fn(),
+    compareReportFiles: vi
+      .fn()
+      .mockResolvedValue([
+        '.code-pushup/report-diff.json',
+        '.code-pushup/report-diff.md',
+      ]),
   };
 });
 
@@ -27,7 +38,24 @@ describe('compare-command', () => {
       Parameters<typeof compareReportFiles>
     >(
       { before: 'source-report.json', after: 'target-report.json' },
-      join(PERSIST_OUTPUT_DIR, `${PERSIST_FILENAME}-diff.json`),
+      {
+        outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+        filename: DEFAULT_PERSIST_FILENAME,
+        format: DEFAULT_PERSIST_FORMAT,
+      },
+    );
+  });
+
+  it('should log output paths to stdout', async () => {
+    await yargsCli(
+      ['compare', '--before=source-report.json', '--after=target-report.json'],
+      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
+    ).parseAsync();
+
+    expect(getLogMessages(ui().logger).at(-1)).toContain(
+      `Reports diff written to ${chalk.bold(
+        '.code-pushup/report-diff.json',
+      )} and ${chalk.bold('.code-pushup/report-diff.md')}`,
     );
   });
 });
