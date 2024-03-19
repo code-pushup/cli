@@ -15,7 +15,7 @@
 <details>
 <summary>👍 <strong>2</strong> groups improved</summary>
 
-|🔌 Plugin|🎗️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
+|🔌 Plugin|🗃️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--|:--:|:--:|:--:|
 |ESLint|Maximum lines limitation|🟢 **100**|🟡 50|![🠉 +50](https://img.shields.io/badge/%F0%9F%A0%89%20%2B50-green)|
 |Lighthouse|Performance|🟢 **94**|🟢 92|![🠉 +2](https://img.shields.io/badge/%F0%9F%A0%89%20%2B2-green)|

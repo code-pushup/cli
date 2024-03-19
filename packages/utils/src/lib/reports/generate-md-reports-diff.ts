@@ -110,7 +110,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
         '🔌 Plugin',
-        '🎗️ Group',
+        '🗃️ Group',
         '⭐ Current score',
         '⭐ Previous score',
         '🔄 Score change',
