@@ -634,6 +634,6 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     ],
   },
   "packageName": "@code-pushup/core",
-  "version": "0.26.1",
+  "version": Any<String>,
 }
 `;

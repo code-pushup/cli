@@ -61,6 +61,7 @@ describe('CLI compare', () => {
       commits: expect.any(Object),
       date: expect.any(String),
       duration: expect.any(Number),
+      version: expect.any(String),
     });
 
     const reportsDiffMd = await readTextFile(
