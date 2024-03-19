@@ -268,21 +268,14 @@ function changesToDiffOutcomes(changes: Change[]): DiffOutcome[] {
 }
 
 function mergeDiffOutcomes(outcomes: DiffOutcome[]): DiffOutcome {
-  if (outcomes.length === 0) {
-    return 'unchanged';
-  }
-  if (
-    outcomes.every(outcome => outcome === 'positive' || outcome === 'unchanged')
-  ) {
-    return 'positive';
-  }
-  if (
-    outcomes.every(outcome => outcome === 'negative' || outcome === 'unchanged')
-  ) {
-    return 'negative';
-  }
   if (outcomes.every(outcome => outcome === 'unchanged')) {
     return 'unchanged';
+  }
+  if (outcomes.includes('positive') && !outcomes.includes('negative')) {
+    return 'positive';
+  }
+  if (outcomes.includes('negative') && !outcomes.includes('positive')) {
+    return 'negative';
   }
   return 'mixed';
 }
