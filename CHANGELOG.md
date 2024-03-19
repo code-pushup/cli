@@ -32,6 +32,36 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 - **utils:** include unchanged and added categories in markdown table ([4e53077](https://github.com/code-pushup/cli/commit/4e530777cbd0fe78e0b6b65ed9cb385241fe14ce))
 - **utils:** sort changed categories/groups/audits by most affected ([74cb57e](https://github.com/code-pushup/cli/commit/74cb57e0ea4a8f4a50eda0b8ef7563f1a8c9cd82))
 
+# [0.27.0](https://github.com/code-pushup/cli/compare/v0.26.1...v0.27.0) (2024-03-19)
+
+### Bug Fixes
+
+- package json lock ([#562](https://github.com/code-pushup/cli/issues/562)) ([c73f3ac](https://github.com/code-pushup/cli/commit/c73f3ace524a5a331b5efbbcb7e1be2a8e74d4d0))
+- **plugin-eslint:** eslint startline can be zero ([#563](https://github.com/code-pushup/cli/issues/563)) ([4eefb35](https://github.com/code-pushup/cli/commit/4eefb35eae6a90064caae498bbfe0eb2f3656fd3))
+- **utils:** literal asterisk in Markdown doc should be escaped ([6348ba3](https://github.com/code-pushup/cli/commit/6348ba314cfed4f3e789556f8295019a1ccfdfa1))
+- **utils:** use shields.io for colorizing changed values ([d0eb475](https://github.com/code-pushup/cli/commit/d0eb475db520c8dcad9d023c09cbe2e5bb583782))
+
+### Features
+
+- **cli:** implement compare command ([314e7ba](https://github.com/code-pushup/cli/commit/314e7ba5a496005fe10407dbe2780f81f3f1b869))
+- **core:** add history logic ([#541](https://github.com/code-pushup/cli/issues/541)) ([10df94c](https://github.com/code-pushup/cli/commit/10df94ccb54f6479367213a42f7e3578c6815c7b))
+- **core:** implement categories, groups and audits comparisons ([72d6c14](https://github.com/code-pushup/cli/commit/72d6c14386eee5d63ed3c59dd4eb8d5be1a1ded0))
+- **core:** implement compare reports functions ([5493cc4](https://github.com/code-pushup/cli/commit/5493cc4bccb36969b6d3e70ea323b3bee7510ca8))
+- **models:** create reportsDiff schema ([75dc8aa](https://github.com/code-pushup/cli/commit/75dc8aa63df9db476c8ea6dfcb8e3ac3783f2b7e))
+- **plugin-js-packages:** add runner config integration test, restructure runner ([cae4ca8](https://github.com/code-pushup/cli/commit/cae4ca892a95716a3025efd072db0692b346611c))
+- **plugin-js-packages:** implement plugin schema and configuration flow ([e2ce3f6](https://github.com/code-pushup/cli/commit/e2ce3f67f0ccd9628e6f2039988d0cde46e29265))
+- **plugin-js-packages:** implement runner for npm audit ([6aa55a2](https://github.com/code-pushup/cli/commit/6aa55a2d912773243b6955517b4096d70c2da289))
+- **plugin-js-packages:** implement runner for npm outdated ([7cb623b](https://github.com/code-pushup/cli/commit/7cb623b88ea6c0a2dfe202b2354c7111dbc8cb37))
+- **plugin-js-packages:** improve output, scoring, error handling ([b9f1432](https://github.com/code-pushup/cli/commit/b9f14326827f07eaa3a7489d3c6f2cf2ef1ba485))
+- **plugin-js-packages:** use group per check, audit per dependency group ([1405e7d](https://github.com/code-pushup/cli/commit/1405e7d7bbb734e0b80ddd4bb9538cf49c9400ed))
+- **utils:** add helper functions for diffing ([4e87cd5](https://github.com/code-pushup/cli/commit/4e87cd551918257f6155dbdfdd11ca0e2d5b62ec))
+- **utils:** handle unchanged reports diff ([0cdcb9e](https://github.com/code-pushup/cli/commit/0cdcb9e81a038e9f36a56859b908a6de565faa9d))
+- **utils:** implement markdown diff formatting ([5f453ef](https://github.com/code-pushup/cli/commit/5f453ef7adfd9973ec6b6ca2716c8e026a58c610))
+- **utils:** improve diff md formatting - change icon, n/a cells, percentage space ([27290f2](https://github.com/code-pushup/cli/commit/27290f2110062404b51c069745a8533dc53947db))
+- **utils:** improve reports diff formatting ([2bee85e](https://github.com/code-pushup/cli/commit/2bee85e47b523a878c2ac042dee8b8b76465b89f))
+- **utils:** include unchanged and added categories in markdown table ([4e53077](https://github.com/code-pushup/cli/commit/4e530777cbd0fe78e0b6b65ed9cb385241fe14ce))
+- **utils:** sort changed categories/groups/audits by most affected ([74cb57e](https://github.com/code-pushup/cli/commit/74cb57e0ea4a8f4a50eda0b8ef7563f1a8c9cd82))
+
 ## [0.26.1](https://github.com/code-pushup/cli/compare/v0.26.0...v0.26.1) (2024-03-07)
 
 # [0.26.0](https://github.com/code-pushup/cli/compare/v0.25.7...v0.26.0) (2024-03-06)
