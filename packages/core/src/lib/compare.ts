@@ -10,6 +10,7 @@ import {
 import {
   Diff,
   calcDuration,
+  ensureDirectoryExists,
   generateMdReportsDiff,
   readJsonFile,
   scoreReport,
@@ -43,6 +44,7 @@ export async function compareReportFiles(
     format.map(async fmt => {
       const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
       const content = reportsDiffToFileContent(reportsDiff, fmt);
+      await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
       return outputPath;
     }),
