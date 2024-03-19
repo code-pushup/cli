@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`executeRunner > should successfully execute runner for npm audit 1`] = `
+[
+  {
+    "displayValue": "0 vulnerabilities",
+    "score": 1,
+    "slug": "npm-audit-prod",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "\`verdaccio\`'s dependency \`jsonwebtoken\` has a **moderate** vulnerability in versions **<=8.5.1**. Fix available: Update \`verdaccio\` to version **5.29.2**. More information: [jsonwebtoken unrestricted key type could lead to legacy keys usage ](https://github.com/advisories/GHSA-8cf7-32gw-wr33)",
+          "severity": "warning",
+        },
+        {
+          "message": "\`verdaccio\`'s dependency \`request\` has a **moderate** vulnerability in **all** versions. Fix available: Update \`verdaccio\` to version **5.29.2**. More information: [Server-Side Request Forgery in Request](https://github.com/advisories/GHSA-p8p7-x288-28g6)",
+          "severity": "warning",
+        },
+        {
+          "message": "\`verdaccio\`'s dependency \`semver\` has a **moderate** vulnerability in versions **7.0.0 - 7.5.1**. Fix available: Update \`verdaccio\` to version **5.29.2**. More information: [semver vulnerable to Regular Expression Denial of Service](https://github.com/advisories/GHSA-c2qf-rxjj-qqgw)",
+          "severity": "warning",
+        },
+        {
+          "message": "\`request\`'s dependency \`tough-cookie\` has a **moderate** vulnerability in versions **<4.1.3**. Fix available: Update \`verdaccio\` to version **5.29.2**. More information: [tough-cookie Prototype Pollution vulnerability](https://github.com/advisories/GHSA-72xf-g2v4-qvf3)",
+          "severity": "warning",
+        },
+        {
+          "message": "\`verdaccio\` dependency has a **moderate** vulnerability in versions **<=5.28.0**. Fix available: Update \`verdaccio\` to version **5.29.2**. More information: [semver vulnerable to Regular Expression Denial of Service](https://github.com/advisories/GHSA-c2qf-rxjj-qqgw)",
+          "severity": "warning",
+        },
+      ],
+    },
+    "displayValue": "5 vulnerabilities (5 moderate)",
+    "score": 0.75,
+    "slug": "npm-audit-dev",
+    "value": 5,
+  },
+  {
+    "displayValue": "0 vulnerabilities",
+    "score": 1,
+    "slug": "npm-audit-optional",
+    "value": 0,
+  },
+]
+`;
+
+exports[`executeRunner > should successfully execute runnerfor npm outdated 1`] = `
+[
+  {
+    "displayValue": "all dependencies are up to date",
+    "score": 1,
+    "slug": "npm-outdated-prod",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Package [\`memfs\`](https://github.com/streamich/memfs) requires a **minor** update from **4.6.1** to **4.8.0**.",
+          "severity": "warning",
+        },
+        {
+          "message": "Package [\`prettier\`](https://prettier.io) requires a **major** update from **2.8.8** to **3.2.5**.",
+          "severity": "error",
+        },
+        {
+          "message": "Package [\`vite\`](https://vitejs.dev) requires a **major** update from **4.5.2** to **5.1.6**.",
+          "severity": "error",
+        },
+        {
+          "message": "Package [\`vitest\`](https://github.com/vitest-dev/vitest#readme) requires a **patch** update from **1.3.0** to **1.3.1**.",
+          "severity": "info",
+        },
+      ],
+    },
+    "displayValue": "2 out of 4 outdated dependencies require major update",
+    "score": 0.6666666666666666,
+    "slug": "npm-outdated-dev",
+    "value": 4,
+  },
+  {
+    "displayValue": "all dependencies are up to date",
+    "score": 1,
+    "slug": "npm-outdated-optional",
+    "value": 0,
+  },
+]
+`;

@@ -60,6 +60,7 @@ async function processOutdated(packageManager: PackageManager) {
   const { stdout } = await executeProcess({
     command: packageManager,
     args: ['outdated', '--json', '--long'],
+    cwd: process.cwd(),
     alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
 
@@ -78,6 +79,7 @@ async function processAudit(
       const { stdout } = await executeProcess({
         command: packageManager,
         args: ['audit', ...getNpmAuditOptions(dep)],
+        cwd: process.cwd(),
       });
 
       const auditResult = JSON.parse(stdout) as NpmAuditResultJson;
