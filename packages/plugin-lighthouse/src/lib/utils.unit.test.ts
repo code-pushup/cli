@@ -28,6 +28,7 @@ import {
   validateOnlyAudits,
   validateOnlyCategories,
 } from './utils';
+import chalk from "chalk";
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -782,7 +783,7 @@ describe('validateFlags', () => {
       } as LighthouseCliFlags),
     ).toStrictEqual({ verbose: true });
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      '[ blue(info) ] ⚠ The following used flags are not supported: list-all-audits',
+      `[ blue(info) ] ${chalk.yellow('⚠')} The following used flags are not supported: ${chalk.bold('list-all-audits')}`
     );
   });
 });
