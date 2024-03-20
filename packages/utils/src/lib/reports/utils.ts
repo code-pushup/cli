@@ -55,10 +55,10 @@ export function getSquaredScoreMarker(score: number): string {
 
 export function getDiffMarker(diff: number): string {
   if (diff > 0) {
-    return '🠉';
+    return '↑';
   }
   if (diff < 0) {
-    return '🠋';
+    return '↓';
   }
   return '';
 }
