@@ -59,24 +59,24 @@ exports[`executeRunner > should successfully execute runnerfor npm outdated 1`] 
     "details": {
       "issues": [
         {
-          "message": "Package [\`memfs\`](https://github.com/streamich/memfs) requires a **minor** update from **4.6.1** to **4.8.0**.",
+          "message": "react-todos-app's dependency [\`memfs\`](https://github.com/streamich/memfs) requires a **minor** update from **4.6.1** to **4.8.0**.",
           "severity": "warning",
         },
         {
-          "message": "Package [\`prettier\`](https://prettier.io) requires a **major** update from **2.8.8** to **3.2.5**.",
+          "message": "react-todos-app's dependency [\`prettier\`](https://prettier.io) requires a **major** update from **2.8.8** to **3.2.5**.",
           "severity": "error",
         },
         {
-          "message": "Package [\`vite\`](https://vitejs.dev) requires a **major** update from **4.5.2** to **5.1.6**.",
+          "message": "react-todos-app's dependency [\`vite\`](https://vitejs.dev) requires a **major** update from **4.5.2** to **5.2.2**.",
           "severity": "error",
         },
         {
-          "message": "Package [\`vitest\`](https://github.com/vitest-dev/vitest#readme) requires a **patch** update from **1.3.0** to **1.3.1**.",
+          "message": "react-todos-app's dependency [\`vitest\`](https://github.com/vitest-dev/vitest#readme) requires a **patch** update from **1.3.0** to **1.3.1**.",
           "severity": "info",
         },
       ],
     },
-    "displayValue": "2 out of 4 outdated dependencies require major update",
+    "displayValue": "4 outdated package versions (2 major, 1 minor, 1 patch)",
     "score": 0.6666666666666666,
     "slug": "npm-outdated-dev",
     "value": 4,

@@ -1,39 +1,36 @@
 import { Issue } from '@code-pushup/models';
-import { objectToEntries } from '@code-pushup/utils';
+import { pluralize } from '@code-pushup/utils';
 import { DependencyGroup } from '../../config';
 import { outdatedSeverity } from './constants';
 import {
-  NormalizedOutdatedEntries,
-  NormalizedVersionOverview,
-  NpmOutdatedResultJson,
+  OutdatedResult,
   PackageVersion,
   VersionType,
+  versionType,
 } from './types';
 
 export function outdatedResultToAuditOutput(
-  result: NpmOutdatedResultJson,
-  dependenciesType: DependencyGroup,
+  result: OutdatedResult,
+  dependencyGroup: DependencyGroup,
 ) {
   // current might be missing in some cases
   // https://stackoverflow.com/questions/42267101/npm-outdated-command-shows-missing-in-current-version
-  const validDependencies: NormalizedOutdatedEntries = objectToEntries(result)
-    .filter(
-      (entry): entry is [string, NormalizedVersionOverview] =>
-        entry[1].current != null,
-    )
-    .filter(([, detail]) =>
-      dependenciesType === 'prod'
-        ? detail.type === 'dependencies'
-        : detail.type === `${dependenciesType}Dependencies`,
-    );
-  const outdatedDependencies = validDependencies.filter(
-    ([, versions]) => versions.current !== versions.wanted,
+  const relevantDependencies: OutdatedResult = result.filter(dep =>
+    dependencyGroup === 'prod'
+      ? dep.type === 'dependencies'
+      : dep.type === `${dependencyGroup}Dependencies`,
+  );
+  const outdatedDependencies = relevantDependencies.filter(
+    dep => dep.current !== dep.wanted,
   );
 
-  const majorOutdatedAmount = outdatedDependencies.filter(
-    ([, versions]) =>
-      getOutdatedLevel(versions.current, versions.wanted) === 'major',
-  ).length;
+  const outdatedStats = outdatedDependencies.reduce(
+    (acc, dep) => {
+      const outdatedLevel = getOutdatedLevel(dep.current, dep.wanted);
+      return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
+    },
+    { major: 0, minor: 0, patch: 0 },
+  );
 
   const issues =
     outdatedDependencies.length === 0
@@ -41,16 +38,13 @@ export function outdatedResultToAuditOutput(
       : outdatedToIssues(outdatedDependencies);
 
   return {
-    slug: `npm-outdated-${dependenciesType}`,
+    slug: `npm-outdated-${dependencyGroup}`,
     score: calculateOutdatedScore(
-      majorOutdatedAmount,
-      validDependencies.length,
+      outdatedStats.major,
+      relevantDependencies.length,
     ),
     value: outdatedDependencies.length,
-    displayValue: outdatedToDisplayValue(
-      majorOutdatedAmount,
-      outdatedDependencies.length,
-    ),
+    displayValue: outdatedToDisplayValue(outdatedStats),
     ...(issues.length > 0 && { details: { issues } }),
   };
 }
@@ -62,31 +56,38 @@ export function calculateOutdatedScore(
   return totalDeps > 0 ? (totalDeps - majorOutdated) / totalDeps : 1;
 }
 
-export function outdatedToDisplayValue(
-  majorOutdated: number,
-  totalOutdated: number,
-) {
-  return totalOutdated === 0
-    ? 'all dependencies are up to date'
-    : majorOutdated > 0
-    ? `${majorOutdated} out of ${totalOutdated} outdated dependencies require major update`
-    : `${totalOutdated} outdated ${
-        totalOutdated === 1 ? 'dependency' : 'dependencies'
-      }`;
+export function outdatedToDisplayValue(stats: Record<VersionType, number>) {
+  const total = stats.major + stats.minor + stats.patch;
+
+  const versionBreakdown = versionType
+    .map(version => (stats[version] > 0 ? `${stats[version]} ${version}` : ''))
+    .filter(text => text !== '');
+
+  if (versionBreakdown.length === 0) {
+    return 'all dependencies are up to date';
+  }
+
+  if (versionBreakdown.length > 1) {
+    return `${total} outdated package versions (${versionBreakdown.join(
+      ', ',
+    )})`;
+  }
+
+  return `${versionBreakdown[0]} outdated package ${pluralize(
+    'version',
+    total,
+  )}`;
 }
 
-export function outdatedToIssues(
-  dependencies: NormalizedOutdatedEntries,
-): Issue[] {
-  return dependencies.map<Issue>(([name, versions]) => {
-    const outdatedLevel = getOutdatedLevel(versions.current, versions.wanted);
+export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
+  return dependencies.map<Issue>(dep => {
+    const { name, current, wanted, url, project } = dep;
+    const outdatedLevel = getOutdatedLevel(current, wanted);
     const packageReference =
-      versions.homepage == null
-        ? `\`${name}\``
-        : `[\`${name}\`](${versions.homepage})`;
+      url == null ? `\`${name}\`` : `[\`${name}\`](${url})`;
 
     return {
-      message: `Package ${packageReference} requires a **${outdatedLevel}** update from **${versions.current}** to **${versions.wanted}**.`,
+      message: `${project}'s dependency ${packageReference} requires a **${outdatedLevel}** update from **${current}** to **${wanted}**.`,
       severity: outdatedSeverity[outdatedLevel],
     };
   });
