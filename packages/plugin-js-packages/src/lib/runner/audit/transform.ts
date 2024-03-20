@@ -6,10 +6,10 @@ import {
   packageAuditLevels,
 } from '../../config';
 import { auditScoreModifiers } from './constants';
-import { NpmAuditResultJson, Vulnerabilities } from './types';
+import { AuditResult } from './types';
 
 export function auditResultToAuditOutput(
-  result: NpmAuditResultJson,
+  result: AuditResult,
   dependenciesType: DependencyGroup,
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ): AuditOutput {
@@ -17,13 +17,12 @@ export function auditResultToAuditOutput(
     result.vulnerabilities,
     auditLevelMapping,
   );
+
   return {
     slug: `npm-audit-${dependenciesType}`,
-    score: calculateAuditScore(result.metadata.vulnerabilities),
-    value: result.metadata.vulnerabilities.total,
-    displayValue: vulnerabilitiesToDisplayValue(
-      result.metadata.vulnerabilities,
-    ),
+    score: calculateAuditScore(result.summary),
+    value: result.summary.total,
+    displayValue: vulnerabilitiesToDisplayValue(result.summary),
     ...(issues.length > 0 && { details: { issues } }),
   };
 }
@@ -67,43 +66,34 @@ export function vulnerabilitiesToDisplayValue(
 }
 
 export function vulnerabilitiesToIssues(
-  vulnerabilities: Vulnerabilities,
+  vulnerabilities: AuditResult['vulnerabilities'],
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ): Issue[] {
-  if (Object.keys(vulnerabilities).length === 0) {
+  if (vulnerabilities.length === 0) {
     return [];
   }
 
   return Object.values(vulnerabilities).map<Issue>(detail => {
     const versionRange =
-      detail.range === '*'
+      detail.versionRange === '*'
         ? '**all** versions'
-        : `versions **${detail.range}**`;
-    const vulnerabilitySummary = `\`${detail.name}\` dependency has a **${detail.severity}** vulnerability in ${versionRange}.`;
-    const fixInformation =
-      typeof detail.fixAvailable === 'boolean'
-        ? `Fix is ${detail.fixAvailable ? '' : 'not '}available.`
-        : `Fix available: Update \`${detail.fixAvailable.name}\` to version **${
-            detail.fixAvailable.version
-          }**${
-            detail.fixAvailable.isSemVerMajor ? ' (breaking change).' : '.'
-          }`;
+        : `versions **${detail.versionRange}**`;
+    const depHierarchy =
+      typeof detail.directDependency === 'string'
+        ? `\`${detail.directDependency}\`'${
+            detail.directDependency.endsWith('s') ? '' : 's'
+          } dependency \`${detail.name}\``
+        : `\`${detail.name}\` dependency`;
 
-    // Advisory details via can refer to another vulnerability
-    // For now, only direct context is supported
-    if (
-      Array.isArray(detail.via) &&
-      detail.via.length > 0 &&
-      typeof detail.via[0] === 'object'
-    ) {
-      return {
-        message: `${vulnerabilitySummary} ${fixInformation} More information: [${detail.via[0].title}](${detail.via[0].url})`,
-        severity: auditLevelMapping[detail.severity],
-      };
-    }
+    const vulnerabilitySummary = `has a **${detail.severity}** vulnerability in ${versionRange}.`;
+    const fixInfo = detail.fixInformation ? ` ${detail.fixInformation}` : '';
+    const additionalInfo =
+      detail.title != null && detail.url != null
+        ? ` More information: [${detail.title}](${detail.url})`
+        : '';
 
     return {
-      message: `${vulnerabilitySummary} ${fixInformation}`,
+      message: `${depHierarchy} ${vulnerabilitySummary}${fixInfo}${additionalInfo}`,
       severity: auditLevelMapping[detail.severity],
     };
   });

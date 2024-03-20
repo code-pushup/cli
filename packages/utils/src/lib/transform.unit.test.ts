@@ -5,6 +5,7 @@ import {
   deepClone,
   distinct,
   factorOf,
+  objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
@@ -33,6 +34,30 @@ describe('objectToKeys', () => {
   it('should transform empty object into empty array', () => {
     const keys: never[] = objectToKeys({});
     expect(keys).toEqual([]);
+  });
+});
+
+describe('objectFromEntries', () => {
+  it('should transform key-value pairs to an object', () => {
+    expect(
+      objectFromEntries([
+        ['jan', 'January'],
+        ['feb', 'February'],
+      ]),
+    ).toEqual({ jan: 'January', feb: 'February' });
+  });
+
+  it('should transform key-value pairs with numeric keys to an object', () => {
+    expect(
+      objectFromEntries([
+        [1, 'January'],
+        [2, 'February'],
+      ]),
+    ).toEqual({ 1: 'January', 2: 'February' });
+  });
+
+  it('should transform empty entries to empty object', () => {
+    expect(objectFromEntries([])).toEqual({});
   });
 });
 

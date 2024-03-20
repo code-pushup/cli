@@ -12,6 +12,10 @@ export function objectToEntries<T extends object>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
+export function objectFromEntries<K extends PropertyKey, V>(entries: [K, V][]) {
+  return Object.fromEntries(entries) as Record<K, V>;
+}
+
 export function countOccurrences<T extends PropertyKey>(
   values: T[],
 ): Partial<Record<T, number>> {

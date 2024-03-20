@@ -82,6 +82,7 @@ export {
   countOccurrences,
   distinct,
   factorOf,
+  objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
