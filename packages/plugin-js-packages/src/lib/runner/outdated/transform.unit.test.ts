@@ -14,21 +14,27 @@ describe('outdatedResultToAuditOutput', () => {
   it('should create an audit output', () => {
     expect(
       outdatedResultToAuditOutput(
-        {
-          moment: { current: '4.5.0', wanted: '4.5.2', type: 'dependencies' },
-        },
+        [
+          {
+            name: 'moment',
+            current: '4.5.0',
+            latest: '4.5.2',
+            type: 'dependencies',
+            project: 'cli',
+          },
+        ],
         'prod',
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
       score: 1,
       value: 1,
-      displayValue: '1 outdated dependency',
+      displayValue: '1 patch outdated package version',
       details: {
         issues: [
           {
             message: expect.stringContaining(
-              'Package `moment` requires a **patch** update',
+              "cli's dependency `moment` requires a **patch** update",
             ),
             severity: 'info',
           },
@@ -40,22 +46,34 @@ describe('outdatedResultToAuditOutput', () => {
   it('should distinguish up-to-date from outdated dependencies', () => {
     expect(
       outdatedResultToAuditOutput(
-        {
-          nx: { current: '17.0.0', wanted: '17.0.0', type: 'dependencies' },
-          prettier: { current: '2.8.8', wanted: '3.2.0', type: 'dependencies' },
-        },
+        [
+          {
+            name: 'nx',
+            current: '17.0.0',
+            latest: '17.0.0',
+            type: 'dependencies',
+            project: 'cli',
+          },
+          {
+            name: 'prettier',
+            current: '2.8.8',
+            latest: '3.2.0',
+            type: 'dependencies',
+            project: 'core',
+          },
+        ],
         'prod',
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
       score: 0.5,
       value: 1,
-      displayValue: '1 out of 1 outdated dependencies require major update',
+      displayValue: '1 major outdated package version',
       details: {
         issues: [
           expect.objectContaining({
             message: expect.stringContaining(
-              'Package `prettier` requires a **major** update',
+              "core's dependency `prettier` requires a **major** update",
             ),
           }),
         ],
@@ -66,50 +84,66 @@ describe('outdatedResultToAuditOutput', () => {
   it('should combine multiple outdated dependencies', () => {
     expect(
       outdatedResultToAuditOutput(
-        {
-          nx: { current: '15.8.1', wanted: '17.0.0', type: 'dependencies' },
-          typescript: {
+        [
+          {
+            name: 'nx',
+            current: '15.8.1',
+            latest: '17.0.0',
+            type: 'dependencies',
+            project: 'cli',
+          },
+          {
+            name: 'typescript',
             current: '5.3.0',
-            wanted: '5.3.3',
+            latest: '5.3.3',
             type: 'dependencies',
+            project: 'cli',
           },
-          jsdom: { current: '22.1.0', wanted: '22.1.2', type: 'dependencies' },
-          prettier: {
+          {
+            name: 'jsdom',
+            current: '22.1.0',
+            latest: '22.1.2',
+            type: 'dependencies',
+            project: 'core',
+          },
+          {
+            name: 'prettier',
             current: '3.0.0',
-            wanted: '3.2.0',
+            latest: '3.2.0',
             type: 'dependencies',
+            project: 'core',
           },
-        },
+        ],
         'prod',
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
       score: 0.75,
       value: 4,
-      displayValue: '1 out of 4 outdated dependencies require major update',
+      displayValue: '4 outdated package versions (1 major, 1 minor, 2 patch)',
       details: {
         issues: [
           {
             message: expect.stringContaining(
-              'Package `nx` requires a **major** update',
+              'dependency `nx` requires a **major** update',
             ),
             severity: 'error',
           },
           {
             message: expect.stringContaining(
-              'Package `typescript` requires a **patch** update',
+              'dependency `typescript` requires a **patch** update',
             ),
             severity: 'info',
           },
           {
             message: expect.stringContaining(
-              'Package `jsdom` requires a **patch** update',
+              'dependency `jsdom` requires a **patch** update',
             ),
             severity: 'info',
           },
           {
             message: expect.stringContaining(
-              'Package `prettier` requires a **minor** update',
+              'dependency `prettier` requires a **minor** update',
             ),
             severity: 'warning',
           },
@@ -121,33 +155,19 @@ describe('outdatedResultToAuditOutput', () => {
   it('should omit irrelevant dependency types', () => {
     expect(
       outdatedResultToAuditOutput(
-        {
-          memfs: {
+        [
+          {
+            name: 'memfs',
             current: '5.2.1',
-            wanted: '5.3.0',
+            latest: '5.3.0',
             type: 'devDependencies',
+            project: 'utils',
           },
-        },
+        ],
         'optional',
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-optional',
-      score: 1,
-      value: 0,
-      displayValue: 'all dependencies are up to date',
-    });
-  });
-
-  it('should filter out invalid dependencies (missing current)', () => {
-    expect(
-      outdatedResultToAuditOutput(
-        {
-          nx: { wanted: '17.0.0', type: 'dependencies' },
-        },
-        'prod',
-      ),
-    ).toEqual<AuditOutput>({
-      slug: 'npm-outdated-prod',
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
@@ -167,19 +187,27 @@ describe('calculateOutdatedScore', () => {
 
 describe('outdatedToDisplayValue', () => {
   it('should display perfect value e for no outdated dependencies', () => {
-    expect(outdatedToDisplayValue(0, 0)).toBe(
+    expect(outdatedToDisplayValue({ major: 0, minor: 0, patch: 0 })).toBe(
       'all dependencies are up to date',
     );
   });
 
-  it('should explicitly state outdated major dependencies', () => {
-    expect(outdatedToDisplayValue(2, 3)).toBe(
-      '2 out of 3 outdated dependencies require major update',
+  it('should explicitly state outdated dependencies', () => {
+    expect(outdatedToDisplayValue({ major: 5, minor: 2, patch: 1 })).toBe(
+      '8 outdated package versions (5 major, 2 minor, 1 patch)',
     );
   });
 
-  it('should summarise outdated dependencies if only minor or patch versions are outdated', () => {
-    expect(outdatedToDisplayValue(0, 3)).toBe('3 outdated dependencies');
+  it('should only list version types that have outdated dependencies', () => {
+    expect(outdatedToDisplayValue({ major: 2, minor: 0, patch: 3 })).toBe(
+      '5 outdated package versions (2 major, 3 patch)',
+    );
+  });
+
+  it('should skip breakdown if only one version type is outdated', () => {
+    expect(outdatedToDisplayValue({ major: 0, minor: 4, patch: 0 })).toBe(
+      '4 minor outdated package versions',
+    );
   });
 });
 
@@ -187,15 +215,18 @@ describe('outdatedToIssues', () => {
   it('should create an issue for an outdated dependency', () => {
     expect(
       outdatedToIssues([
-        [
-          'moment',
-          { current: '2.29.0', wanted: '2.30.0', type: 'dependencies' },
-        ],
+        {
+          name: 'moment',
+          current: '2.29.0',
+          latest: '2.30.0',
+          type: 'dependencies',
+          project: 'cli',
+        },
       ]),
     ).toEqual<Issue[]>([
       {
         message:
-          'Package `moment` requires a **minor** update from **2.29.0** to **2.30.0**.',
+          "cli's dependency `moment` requires a **minor** update from **2.29.0** to **2.30.0**.",
         severity: 'warning',
       },
     ]);
@@ -204,20 +235,19 @@ describe('outdatedToIssues', () => {
   it('should include package URL when provided', () => {
     expect(
       outdatedToIssues([
-        [
-          'nx',
-          {
-            current: '16.8.2',
-            wanted: '17.0.0',
-            type: 'dependencies',
-            homepage: 'https://nx.dev',
-          },
-        ],
+        {
+          name: 'nx',
+          current: '16.8.2',
+          latest: '17.0.0',
+          type: 'dependencies',
+          url: 'https://nx.dev',
+          project: 'cli',
+        },
       ]),
     ).toEqual<Issue[]>([
       expect.objectContaining({
         message: expect.stringContaining(
-          'Package [`nx`](https://nx.dev) requires',
+          'dependency [`nx`](https://nx.dev) requires',
         ),
       }),
     ]);
@@ -226,14 +256,13 @@ describe('outdatedToIssues', () => {
   it('should include outdated patch version as info', () => {
     expect(
       outdatedToIssues([
-        [
-          'memfs',
-          {
-            current: '4.5.0',
-            wanted: '4.5.1',
-            type: 'devDependencies',
-          },
-        ],
+        {
+          name: 'memfs',
+          current: '4.5.0',
+          latest: '4.5.1',
+          type: 'devDependencies',
+          project: 'cli',
+        },
       ]),
     ).toEqual<Issue[]>([
       expect.objectContaining({

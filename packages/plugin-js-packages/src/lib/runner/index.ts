@@ -22,8 +22,8 @@ import {
 import { auditResultToAuditOutput } from './audit/transform';
 import { NpmAuditResultJson } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
+import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
-import { NpmOutdatedResultJson } from './outdated/types';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -59,13 +59,14 @@ export async function executeRunner(): Promise<void> {
 async function processOutdated(packageManager: PackageManager) {
   const { stdout } = await executeProcess({
     command: packageManager,
-    args: ['outdated', '--json', '--long'],
+    args: outdatedArgs[packageManager],
+    cwd: process.cwd(),
     alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
 
-  const outdatedResult = JSON.parse(stdout) as NpmOutdatedResultJson;
+  const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
   return dependencyGroups.map(dep =>
-    outdatedResultToAuditOutput(outdatedResult, dep),
+    outdatedResultToAuditOutput(normalizedResult, dep),
   );
 }
 
