@@ -198,6 +198,8 @@ export async function getConfig(
       case 'experimental':
         return experimentalConfig as Config;
       default:
+        // as preset is a string literal the default case here is normally caught by TS and not possible to happen. Now in reality it can happen and preset could be a string not included in the literal.
+        // Therefor we have to use `as string` is used. Otherwise, it will consider preset as type never
         ui().logger.info(`Preset "${preset as string}" is not supported`);
     }
   }
