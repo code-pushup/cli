@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import debug from 'debug';
 import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
@@ -28,7 +29,6 @@ import {
   validateOnlyAudits,
   validateOnlyCategories,
 } from './utils';
-import chalk from "chalk";
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -623,17 +623,28 @@ describe('getConfig', () => {
   });
 
   it.each([
-    ['desktop', { formFactor: 'desktop' }],
-    ['perf', { onlyCategories: ['performance'] }],
-    ['experimental', { audits: ['autocomplete'] }],
+    [
+      'desktop',
+      expect.objectContaining({
+        settings: expect.objectContaining({ formFactor: 'desktop' }),
+      }),
+    ],
+    [
+      'perf',
+      expect.objectContaining({
+        settings: expect.objectContaining({ onlyCategories: ['performance'] }),
+      }),
+    ],
+    [
+      'experimental',
+      expect.objectContaining({
+        audits: expect.arrayContaining(['autocomplete']),
+      }),
+    ],
   ] satisfies readonly ['desktop' | 'perf' | 'experimental', object][])(
     'should load config from lighthouse preset if %s preset is specified',
-    async (preset, settings) => {
-      await expect(getConfig({ preset })).resolves.toEqual(
-        expect.objectContaining({
-          settings: expect.objectContaining(settings),
-        }),
-      );
+    async (preset, config) => {
+      await expect(getConfig({ preset })).resolves.toEqual(config);
     },
   );
 
@@ -783,7 +794,11 @@ describe('validateFlags', () => {
       } as LighthouseCliFlags),
     ).toStrictEqual({ verbose: true });
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] ${chalk.yellow('⚠')} The following used flags are not supported: ${chalk.bold('list-all-audits')}`
+      `[ blue(info) ] ${chalk.yellow(
+        '⚠',
+      )} The following used flags are not supported: ${chalk.bold(
+        'list-all-audits',
+      )}`,
     );
   });
 });

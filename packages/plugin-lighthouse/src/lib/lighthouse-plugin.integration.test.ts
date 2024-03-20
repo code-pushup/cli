@@ -42,7 +42,7 @@ describe('getRunner', () => {
     });
     await expect(runner()).resolves.toBeTruthy();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'The parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
+      'Parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
     );
   });
 }, 30_000);

@@ -197,9 +197,10 @@ export async function getConfig(
         return perfConfig as Config;
       case 'experimental':
         return experimentalConfig as Config;
+      default:
+        ui().logger.info(`Preset "${preset as string}" is not supported`);
     }
   }
-  ui().logger.info(`Preset "${preset}" is not supported`);
   return undefined;
 }
 
