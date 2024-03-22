@@ -13,14 +13,15 @@ import {
   readJsonFile,
 } from '@code-pushup/utils';
 import {
-  DependencyGroup,
   FinalJSPackagesPluginConfig,
   PackageAuditLevel,
   PackageManager,
   dependencyGroups,
 } from '../config';
+import { pkgManagerCommands } from '../constants';
+import { normalizeAuditMapper } from './audit/constants';
 import { auditResultToAuditOutput } from './audit/transform';
-import { NpmAuditResultJson } from './audit/types';
+import { auditArgs } from './audit/utils';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
@@ -58,8 +59,8 @@ export async function executeRunner(): Promise<void> {
 
 async function processOutdated(packageManager: PackageManager) {
   const { stdout } = await executeProcess({
-    command: packageManager,
-    args: outdatedArgs[packageManager],
+    command: pkgManagerCommands[packageManager],
+    args: ['outdated', ...outdatedArgs[packageManager]],
     cwd: process.cwd(),
     alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
@@ -77,13 +78,13 @@ async function processAudit(
   const auditResults = await Promise.allSettled(
     dependencyGroups.map<Promise<AuditOutput>>(async dep => {
       const { stdout } = await executeProcess({
-        command: packageManager,
-        args: ['audit', ...getNpmAuditOptions(dep)],
+        command: pkgManagerCommands[packageManager],
+        args: ['audit', ...auditArgs(dep)[packageManager]],
         cwd: process.cwd(),
       });
 
-      const auditResult = JSON.parse(stdout) as NpmAuditResultJson;
-      return auditResultToAuditOutput(auditResult, dep, auditLevelMapping);
+      const normalizedResult = normalizeAuditMapper[packageManager](stdout);
+      return auditResultToAuditOutput(normalizedResult, dep, auditLevelMapping);
     }),
   );
   const rejected = auditResults.filter(isPromiseRejectedResult);
@@ -92,18 +93,10 @@ async function processAudit(
       console.error(result.reason);
     });
 
-    throw new Error(`JS Packages plugin: Running npm audit failed.`);
+    throw new Error(
+      `JS Packages plugin: Running ${pkgManagerCommands[packageManager]} audit failed.`,
+    );
   }
 
   return auditResults.filter(isPromiseFulfilledResult).map(x => x.value);
-}
-
-function getNpmAuditOptions(currentDep: DependencyGroup) {
-  const flags = [
-    `--include=${currentDep}`,
-    ...dependencyGroups
-      .filter(dep => dep !== currentDep)
-      .map(dep => `--omit=${dep}`),
-  ];
-  return [...flags, '--json', '--audit-level=none'];
 }

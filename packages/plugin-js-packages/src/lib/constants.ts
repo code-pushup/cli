@@ -4,6 +4,7 @@ import type {
   PackageAuditLevel,
   PackageManager,
 } from './config';
+import { DependencyGroupLong } from './runner/outdated/types';
 
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,
@@ -14,6 +15,22 @@ export const defaultAuditLevelMapping: Record<
   moderate: 'warning',
   low: 'warning',
   info: 'info',
+};
+
+export const dependencyGroupToLong: Record<
+  DependencyGroup,
+  DependencyGroupLong
+> = {
+  prod: 'dependencies',
+  dev: 'devDependencies',
+  optional: 'optionalDependencies',
+};
+
+export const pkgManagerCommands: Record<PackageManager, string> = {
+  npm: 'npm',
+  'yarn-classic': 'yarn',
+  'yarn-modern': 'yarn',
+  pnpm: 'pnpm',
 };
 
 export const pkgManagerNames: Record<PackageManager, string> = {

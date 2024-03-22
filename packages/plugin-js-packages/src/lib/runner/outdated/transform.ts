@@ -1,6 +1,7 @@
 import { Issue } from '@code-pushup/models';
 import { pluralize } from '@code-pushup/utils';
 import { DependencyGroup } from '../../config';
+import { dependencyGroupToLong } from '../../constants';
 import { outdatedSeverity } from './constants';
 import {
   OutdatedResult,
@@ -13,12 +14,8 @@ export function outdatedResultToAuditOutput(
   result: OutdatedResult,
   dependencyGroup: DependencyGroup,
 ) {
-  // current might be missing in some cases
-  // https://stackoverflow.com/questions/42267101/npm-outdated-command-shows-missing-in-current-version
-  const relevantDependencies: OutdatedResult = result.filter(dep =>
-    dependencyGroup === 'prod'
-      ? dep.type === 'dependencies'
-      : dep.type === `${dependencyGroup}Dependencies`,
+  const relevantDependencies: OutdatedResult = result.filter(
+    dep => dep.type === dependencyGroupToLong[dependencyGroup],
   );
   const outdatedDependencies = relevantDependencies.filter(
     dep => dep.current !== dep.wanted,

@@ -8,6 +8,8 @@ import {
 
 export function npmToOutdatedResult(output: string): OutdatedResult {
   const npmOutdated = JSON.parse(output) as NpmOutdatedResultJson;
+  // current might be missing in some cases
+  // https://stackoverflow.com/questions/42267101/npm-outdated-command-shows-missing-in-current-version
   return objectToEntries(npmOutdated)
     .filter(
       (entry): entry is [string, NormalizedVersionOverview] =>
