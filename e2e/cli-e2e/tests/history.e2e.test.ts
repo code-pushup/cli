@@ -42,11 +42,11 @@ describe('CLI history', () => {
     const outputDirFromRoot = join('tmp', 'e2e', 'react-todos-app', 'history');
     const reportPaths = await readdir(outputDirFromRoot);
     const results = await Promise.all([
-      readJsonFile(join(outputDirFromRoot, reportPaths.at(0) as string)),
-      readJsonFile(join(outputDirFromRoot, reportPaths.at(1) as string)),
-      readJsonFile(join(outputDirFromRoot, reportPaths.at(2) as string)),
-      readJsonFile(join(outputDirFromRoot, reportPaths.at(3) as string)),
-      readJsonFile(join(outputDirFromRoot, reportPaths.at(4) as string)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(0)!)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(1)!)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(2)!)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(3)!)),
+      readJsonFile(join(outputDirFromRoot, reportPaths.at(4)!)),
     ]);
 
     expect(results).toHaveLength(5);
