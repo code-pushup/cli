@@ -68,10 +68,7 @@ describe('CLI compare', () => {
       'tmp/e2e/react-todos-app/report-diff.md',
     );
     // commits are variable, replace SHAs with placeholders
-    const sanitizedMd = reportsDiffMd.replace(
-      /(?<=commit )`[\da-f]{7}`/g,
-      '`<commit-sha>`',
-    );
+    const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');
     await expect(sanitizedMd).toMatchFileSnapshot(
       '__snapshots__/compare.report-diff.md',
     );

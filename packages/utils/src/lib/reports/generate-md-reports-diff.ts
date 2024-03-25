@@ -1,4 +1,4 @@
-import { AuditDiff, Commit, ReportsDiff } from '@code-pushup/models';
+import { AuditDiff, ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
 import { Alignment, details, h1, h2, paragraphs, style, tableMd } from './md';
@@ -40,12 +40,8 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
     ]),
   );
 
-  const styleCommit = (commit: Commit) => style(commit.hash.slice(0, 7), ['c']);
-  const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) => {
-    const src = styleCommit(commits.before);
-    const tgt = styleCommit(commits.after);
-    return `compared target commit ${tgt} with source commit ${src}`;
-  };
+  const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) =>
+    `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
 
   return paragraphs(
     h1('Code PushUp'),

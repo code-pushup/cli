@@ -382,7 +382,7 @@ Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cl
 
 |Commit|Version|Duration|Plugins|Categories|Audits|
 |:--|:--:|:--:|:--:|:--:|:--:|
-|Minor fixes (abcdef0)|`0.0.1`|1.65 s|2|0|52|
+|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|0|52|
 
 The following plugins were run:
 

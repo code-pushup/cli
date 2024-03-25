@@ -1,6 +1,6 @@
 # Code PushUp
 
-😟 Code PushUp report has **regressed** – compared target commit `0123456` with source commit `abcdef0`.
+😟 Code PushUp report has **regressed** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
 
 ## 🏷️ Categories
 
