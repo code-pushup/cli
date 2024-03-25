@@ -16,6 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/plugin-coverage/integration-tests',
+      exclude: ['mocks/**'],
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
