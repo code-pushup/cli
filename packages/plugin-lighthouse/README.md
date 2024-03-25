@@ -85,8 +85,8 @@ The plugin accepts a third optional argument, `config`.
 
 For a complete guide on Lighthouse configuration read the [official documentation on configuring](https://github.com/GoogleChrome/lighthouse/blob/main/docs/configuration.md)
 
-> [!NOTE]  
-> If you are used to work with the Lighthouse CLI you would pass flags like this:
+> [!TIP]  
+> If you are not used to work with the Lighthouse CLI you would pass a config like this:
 > `lighthouse --config-path=path/to/custom-config.js https://example.com`
 >
 > And in a separate file you would place the following object:
@@ -96,7 +96,11 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 > export default {
 >   extends: 'lighthouse:default',
 >   settings: {
->     onlyAudits: ['first-meaningful-paint', 'speed-index', 'interactive'],
+>     onlyAudits: [
+>       'first-meaningful-paint', 
+>       'speed-index', 
+>       'interactive'
+>     ],
 >   },
 > };
 > ```
