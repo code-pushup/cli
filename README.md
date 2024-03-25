@@ -23,13 +23,13 @@
 
 This monorepo contains code for open-source Code PushUp NPM packages:
 
-- [🧩 @code-pushup/cli](./packages/cli#readme) - **CLI** for **collecting** audit results and **uploading** report to portal
-- [🧩 @code-pushup/core](./packages/core#readme) - implementation of **core business logic** (useful for custom integrations)
-- [🧩 @code-pushup/models](./packages/models#readme) - **schemas and types** for data models (useful for custom plugins or other integrations)
-- [🧩 @code-pushup/utils](./packages/utils#readme) - various **utilities** (useful for custom plugins or other integrations)
+- [📦 @code-pushup/cli](./packages/cli#readme) - **CLI** for **collecting** audit results and **uploading** report to portal
+- [📦 @code-pushup/core](./packages/core#readme) - implementation of **core business logic** (useful for custom integrations)
+- [📦 @code-pushup/models](./packages/models#readme) - **schemas and types** for data models (useful for custom plugins or other integrations)
+- [📦 @code-pushup/utils](./packages/utils#readme) - various **utilities** (useful for custom plugins or other integrations)
 - plugins:
-  - [📦 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
-  - [📦 @code-pushup/coverage-plugin](./packages/plugin-coverage#readme) - code coverage analysis
-  - [📦 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
+  - [🧩 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
+  - [🧩 @code-pushup/coverage-plugin](./packages/plugin-coverage#readme) - code coverage analysis
+  - [🧩 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
 
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).

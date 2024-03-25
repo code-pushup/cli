@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@example/custom-plugin": ["./custom-plugin.ts"]
+    }
+  }
+}

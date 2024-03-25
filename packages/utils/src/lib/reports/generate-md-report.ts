@@ -235,9 +235,7 @@ function reportToAboutSection(report: ScoredReport): string {
   const date = formatDate(new Date());
 
   const { duration, version, commit, plugins, categories } = report;
-  const commitInfo = commit
-    ? `${commit.message} (${commit.hash.slice(0, 7)})`
-    : 'N/A';
+  const commitInfo = commit ? `${commit.message} (${commit.hash})` : 'N/A';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,
     [
