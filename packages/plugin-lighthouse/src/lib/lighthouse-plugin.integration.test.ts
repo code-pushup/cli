@@ -19,14 +19,15 @@ describe('getRunner', () => {
   const getRunnerTestFolder = join('tmp', 'plugin-lighthouse', 'get-runner');
 
   afterEach(async () => {
-    await rm('tmp/plugin-lighthouse', { recursive: true, force: true });
+    await rm(getRunnerTestFolder, { recursive: true, force: true });
   });
 
   it('should create and execute runner correctly', async () => {
     const runner = getRunner('https://www.google.com/', {
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath: join(getRunnerTestFolder, 'should-create', 'lh-report.json'),
+      outputPath:
+        'tmp/plugin-lighthouse/get-runner/should-create/lh-report.json',
       chromeFlags: ['--headless=shell'],
     });
     await expect(runner(undefined)).resolves.toEqual([
@@ -41,10 +42,11 @@ describe('getRunner', () => {
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
     const precomputedLanternDataPath = join('path', 'to', 'latern-data-folder');
     const runner = getRunner('https://www.google.com/', {
-      precomputedLanternDataPath,
+      precomputedLanternDataPath: '/path/to/latern-data-folder',
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath: join(getRunnerTestFolder, 'no-latern-data', 'lh-report.json'),
+      outputPath:
+        'tmp/plugin-lighthouse/get-runner/no-latern-data/lh-report.json',
       chromeFlags: ['--headless=shell'],
     });
     await expect(runner(undefined)).resolves.toBeTruthy();
