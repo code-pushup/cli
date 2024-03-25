@@ -1,4 +1,9 @@
-import { PackageAuditLevel, PackageManager } from '../../config';
+import {
+  DependencyGroup,
+  PackageAuditLevel,
+  PackageManager,
+} from '../../config';
+import { dependencyGroupToLong } from '../../constants';
 import { AuditResult } from './types';
 import { npmToAuditResult, yarnv1ToAuditResult } from './unify-type';
 
@@ -24,3 +29,18 @@ export const normalizeAuditMapper: Record<
   pnpm: _ => ({} as AuditResult),
 };
 /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
+const npmDependencyOptions: Record<DependencyGroup, string[]> = {
+  prod: ['--omit=dev', '--omit=optional'],
+  dev: ['--include=dev', '--omit=optional'],
+  optional: ['--include=optional', '--omit=dev'],
+};
+
+export const auditArgs = (
+  groupDep: DependencyGroup,
+): Record<PackageManager, string[]> => ({
+  npm: [...npmDependencyOptions[groupDep], '--json', '--audit-level=none'],
+  'yarn-classic': ['--json', `--groups ${dependencyGroupToLong[groupDep]}`],
+  'yarn-modern': [],
+  pnpm: [],
+});

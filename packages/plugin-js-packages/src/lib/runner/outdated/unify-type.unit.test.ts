@@ -61,25 +61,27 @@ describe('npmOutdatedToOutdatedResult', () => {
 });
 
 describe('yarnv1OutdatedToOutdatedResult', () => {
+  const yarnInfo = { type: 'info', data: 'Colours' };
   it('should transform Yarn v1 outdated to unified outdated result', () => {
+    const table = {
+      type: 'table',
+      data: {
+        body: [
+          [
+            'nx',
+            '16.8.1',
+            '',
+            '17.0.0',
+            'cli',
+            'dependencies',
+            'https://nx.dev/',
+          ],
+        ],
+      },
+    };
+
     expect(
-      yarnv1ToOutdatedResult(
-        JSON.stringify({
-          data: {
-            body: [
-              [
-                'nx',
-                '16.8.1',
-                '17.0.0',
-                '',
-                'cli',
-                'dependencies',
-                'https://nx.dev/',
-              ],
-            ],
-          },
-        }),
-      ),
+      yarnv1ToOutdatedResult(JSON.stringify([yarnInfo, table])),
     ).toEqual<OutdatedResult>([
       {
         name: 'nx',
@@ -93,8 +95,10 @@ describe('yarnv1OutdatedToOutdatedResult', () => {
   });
 
   it('should transform no dependencies to empty array', () => {
-    expect(
-      yarnv1ToOutdatedResult(JSON.stringify({ data: { body: [] } })),
-    ).toEqual([]);
+    const table = { type: 'table', data: { body: [] } };
+
+    expect(yarnv1ToOutdatedResult(JSON.stringify([yarnInfo, table]))).toEqual(
+      [],
+    );
   });
 });

@@ -3,6 +3,7 @@ import { objectToEntries } from '@code-pushup/utils';
 import {
   DependencyGroup,
   PackageAuditLevel,
+  PackageManager,
   packageAuditLevels,
 } from '../../config';
 import { auditScoreModifiers } from './constants';
@@ -10,6 +11,7 @@ import { AuditResult } from './types';
 
 export function auditResultToAuditOutput(
   result: AuditResult,
+  packageManager: PackageManager,
   dependenciesType: DependencyGroup,
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ): AuditOutput {
@@ -19,7 +21,7 @@ export function auditResultToAuditOutput(
   );
 
   return {
-    slug: `npm-audit-${dependenciesType}`,
+    slug: `${packageManager}-audit-${dependenciesType}`,
     score: calculateAuditScore(result.summary),
     value: result.summary.total,
     displayValue: vulnerabilitiesToDisplayValue(result.summary),

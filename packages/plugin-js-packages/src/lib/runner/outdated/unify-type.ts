@@ -27,7 +27,8 @@ export function npmToOutdatedResult(output: string): OutdatedResult {
 
 export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
   const yarnv1Outdated = JSON.parse(output) as Yarnv1OutdatedResultJson;
-  const dependencies = yarnv1Outdated.data.body;
+  const dependencies = yarnv1Outdated[1].data.body;
+
   return dependencies.map(([name, current, _, latest, project, type, url]) => ({
     name,
     current,

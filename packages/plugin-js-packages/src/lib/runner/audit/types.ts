@@ -38,6 +38,7 @@ export type Yarnv1AuditAdvisory = {
   type: 'auditAdvisory';
   data: {
     resolution: {
+      id: number;
       path: string;
     };
     advisory: {
@@ -68,6 +69,7 @@ export type Yarnv1AuditResultJson = [
 export type AuditResult = {
   vulnerabilities: {
     name: string;
+    id?: number;
     title?: string;
     url?: string;
     severity: PackageAuditLevel;

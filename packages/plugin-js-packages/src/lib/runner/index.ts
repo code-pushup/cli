@@ -1,30 +1,29 @@
 import { writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type {
-  AuditOutput,
-  IssueSeverity,
-  RunnerConfig,
-} from '@code-pushup/models';
+import type { IssueSeverity, RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   executeProcess,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  objectFromEntries,
   readJsonFile,
 } from '@code-pushup/utils';
 import {
+  DependencyGroup,
   FinalJSPackagesPluginConfig,
   PackageAuditLevel,
   PackageManager,
   dependencyGroups,
 } from '../config';
 import { pkgManagerCommands } from '../constants';
-import { normalizeAuditMapper } from './audit/constants';
+import { auditArgs, normalizeAuditMapper } from './audit/constants';
 import { auditResultToAuditOutput } from './audit/transform';
-import { auditArgs } from './audit/utils';
+import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
+import { filterAuditResult } from './utils';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -67,7 +66,7 @@ async function processOutdated(packageManager: PackageManager) {
 
   const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
   return dependencyGroups.map(dep =>
-    outdatedResultToAuditOutput(normalizedResult, dep),
+    outdatedResultToAuditOutput(normalizedResult, packageManager, dep),
   );
 }
 
@@ -76,17 +75,17 @@ async function processAudit(
   auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
 ) {
   const auditResults = await Promise.allSettled(
-    dependencyGroups.map<Promise<AuditOutput>>(async dep => {
+    dependencyGroups.map<Promise<[DependencyGroup, AuditResult]>>(async dep => {
       const { stdout } = await executeProcess({
         command: pkgManagerCommands[packageManager],
         args: ['audit', ...auditArgs(dep)[packageManager]],
         cwd: process.cwd(),
+        alwaysResolve: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
       });
-
-      const normalizedResult = normalizeAuditMapper[packageManager](stdout);
-      return auditResultToAuditOutput(normalizedResult, dep, auditLevelMapping);
+      return [dep, normalizeAuditMapper[packageManager](stdout)];
     }),
   );
+
   const rejected = auditResults.filter(isPromiseRejectedResult);
   if (rejected.length > 0) {
     rejected.map(result => {
@@ -98,5 +97,30 @@ async function processAudit(
     );
   }
 
-  return auditResults.filter(isPromiseFulfilledResult).map(x => x.value);
+  const fulfilled = objectFromEntries(
+    auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
+  );
+
+  // For npm, one needs to filter out prod dependencies as there is no way to omit them
+  const uniqueResults =
+    packageManager === 'npm'
+      ? {
+          prod: fulfilled.prod,
+          dev: filterAuditResult(fulfilled.dev, 'name', fulfilled.prod),
+          optional: filterAuditResult(
+            fulfilled.optional,
+            'name',
+            fulfilled.prod,
+          ),
+        }
+      : fulfilled;
+
+  return dependencyGroups.map(group =>
+    auditResultToAuditOutput(
+      uniqueResults[group],
+      packageManager,
+      group,
+      auditLevelMapping,
+    ),
+  );
 }
