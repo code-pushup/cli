@@ -2,6 +2,17 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.29.0](https://github.com/code-pushup/cli/compare/v0.28.0...v0.29.0) (2024-03-25)
+
+### Bug Fixes
+
+- **cli:** fix missing executable permissions for index.js ([0fd2eb4](https://github.com/code-pushup/cli/commit/0fd2eb41219114852577bdaafdc0cd705d1951b3))
+- **plugin-eslint:** allow minor updates to eslint dependency ([efbe028](https://github.com/code-pushup/cli/commit/efbe0289e87ecda8c87a4353d7ff6466874afd9c))
+
+### Features
+
+- **utils:** use auto-link commit format (GitHub/GitLab) in markdown ([2f26c6c](https://github.com/code-pushup/cli/commit/2f26c6c241dc1900fbf131cc9ae83618e7f4ffb3))
+
 # [0.28.0](https://github.com/code-pushup/cli/compare/v0.27.1...v0.28.0) (2024-03-22)
 
 ### Bug Fixes
