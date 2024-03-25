@@ -26,7 +26,7 @@ describe('getRunner', () => {
     const runner = getRunner('https://www.google.com/', {
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath: join(getRunnerTestFolder, 'should-create','lh-report.json'),
+      outputPath: join(getRunnerTestFolder, 'should-create', 'lh-report.json'),
       chromeFlags: ['--headless=shell'],
     });
     await expect(runner(undefined)).resolves.toEqual([
@@ -44,7 +44,7 @@ describe('getRunner', () => {
       precomputedLanternDataPath,
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath: join(getRunnerTestFolder, 'no-latern-data','lh-report.json'),
+      outputPath: join(getRunnerTestFolder, 'no-latern-data', 'lh-report.json'),
       chromeFlags: ['--headless=shell'],
     });
     await expect(runner(undefined)).resolves.toBeTruthy();
