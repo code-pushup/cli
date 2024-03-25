@@ -39,8 +39,9 @@ describe('getRunner', () => {
   });
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
+    const precomputedLanternDataPath = join('path','to','latern-data-folder');
     const runner = getRunner('https://www.google.com/', {
-      precomputedLanternDataPath: '/path/to/latern-data',
+      precomputedLanternDataPath,
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
       outputPath: join(getRunnerTestFolder, 'no-latern-data/lh-report.json'),
@@ -48,7 +49,7 @@ describe('getRunner', () => {
     });
     await expect(runner(undefined)).resolves.toBeTruthy();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'Parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
+      `Parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
     );
   });
 }, 30_000);
