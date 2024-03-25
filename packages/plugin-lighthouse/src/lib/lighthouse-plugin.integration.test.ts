@@ -1,4 +1,6 @@
-import { expect } from 'vitest';
+import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { afterEach, expect } from 'vitest';
 import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
@@ -14,15 +16,20 @@ describe('lighthousePlugin', () => {
 });
 
 describe('getRunner', () => {
+  const getRunnerTestFolder = join('tmp', 'plugin-lighthouse', 'get-runner');
+
+  afterEach(async () => {
+    await rm('tmp/plugin-lighthouse', { recursive: true, force: true });
+  });
+
   it('should create and execute runner correctly', async () => {
     const runner = getRunner('https://www.google.com/', {
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath:
-        'tmp/plugin-lighthouse/get-runner/should-create/lh-report.json',
+      outputPath: join(getRunnerTestFolder, 'should-create/lh-report.json'),
       chromeFlags: ['--headless=shell'],
     });
-    await expect(runner()).resolves.toEqual([
+    await expect(runner(undefined)).resolves.toEqual([
       expect.objectContaining({
         slug: 'is-on-https',
         score: 1,
@@ -36,11 +43,10 @@ describe('getRunner', () => {
       precomputedLanternDataPath: '/path/to/latern-data',
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
-      outputPath:
-        'tmp/plugin-lighthouse/get-runner/no-latern-data/lh-report.json',
+      outputPath: join(getRunnerTestFolder, 'no-latern-data/lh-report.json'),
       chromeFlags: ['--headless=shell'],
     });
-    await expect(runner()).resolves.toBeTruthy();
+    await expect(runner(undefined)).resolves.toBeTruthy();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
       'Parsing precomputedLanternDataPath "/path/to/latern-data" is skipped as not implemented.',
     );
