@@ -39,7 +39,7 @@ describe('getRunner', () => {
   });
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
-    const precomputedLanternDataPath = join('path','to','latern-data-folder');
+    const precomputedLanternDataPath = join('path', 'to', 'latern-data-folder');
     const runner = getRunner('https://www.google.com/', {
       precomputedLanternDataPath,
       // onlyAudits is used to reduce test time
