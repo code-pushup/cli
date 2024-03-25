@@ -23,6 +23,7 @@ describe('outdatedResultToAuditOutput', () => {
             project: 'cli',
           },
         ],
+        'npm',
         'prod',
       ),
     ).toEqual<AuditOutput>({
@@ -62,6 +63,7 @@ describe('outdatedResultToAuditOutput', () => {
             project: 'core',
           },
         ],
+        'npm',
         'prod',
       ),
     ).toEqual<AuditOutput>({
@@ -114,6 +116,7 @@ describe('outdatedResultToAuditOutput', () => {
             project: 'core',
           },
         ],
+        'npm',
         'prod',
       ),
     ).toEqual<AuditOutput>({
@@ -164,6 +167,7 @@ describe('outdatedResultToAuditOutput', () => {
             project: 'utils',
           },
         ],
+        'npm',
         'optional',
       ),
     ).toEqual<AuditOutput>({

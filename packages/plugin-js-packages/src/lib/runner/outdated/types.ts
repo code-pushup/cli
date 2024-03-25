@@ -32,11 +32,15 @@ export type Yarnv1VersionOverview = [
   string, // URL
 ];
 
-export type Yarnv1OutdatedResultJson = {
+type Yarnv1Info = { type: 'info' };
+type Yarnv1Table = {
+  type: 'table';
   data: {
     body: Yarnv1VersionOverview[];
   };
 };
+
+export type Yarnv1OutdatedResultJson = [Yarnv1Info, Yarnv1Table];
 
 // Unified Outdated result type
 export type OutdatedResult = {

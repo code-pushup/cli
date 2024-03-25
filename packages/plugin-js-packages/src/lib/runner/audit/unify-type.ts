@@ -1,4 +1,5 @@
-import { objectToEntries } from '@code-pushup/utils';
+import { objectToEntries, toUnixNewlines } from '@code-pushup/utils';
+import { filterAuditResult } from '../utils';
 import {
   AuditResult,
   NpmAdvisory,
@@ -103,7 +104,8 @@ export function npmToAdvisory(
 }
 
 export function yarnv1ToAuditResult(output: string): AuditResult {
-  const yarnv1Result = JSON.parse(output) as Yarnv1AuditResultJson;
+  const yarnv1Json = jsonLinesToJson(output);
+  const yarnv1Result = JSON.parse(yarnv1Json) as Yarnv1AuditResultJson;
 
   const [yarnv1Advisory, yarnv1Summary] = validateYarnv1Result(yarnv1Result);
 
@@ -117,6 +119,7 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
       return {
         name: advisory.module_name,
         title: advisory.title,
+        id: resolution.id,
         url: advisory.url,
         severity: advisory.severity,
         versionRange: advisory.vulnerable_versions,
@@ -135,10 +138,15 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
     ),
   };
 
-  return {
-    vulnerabilities,
-    summary,
-  };
+  // duplicates are filtered out based on their ID
+  return filterAuditResult({ vulnerabilities, summary }, 'id');
+}
+
+function jsonLinesToJson(text: string) {
+  const unifiedNewLines = toUnixNewlines(text).trim();
+  return unifiedNewLines === ''
+    ? '[]'
+    : `[${unifiedNewLines.split('\n').join(',')}]`;
 }
 
 function validateYarnv1Result(
