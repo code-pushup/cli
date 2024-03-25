@@ -96,11 +96,7 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 > export default {
 >   extends: 'lighthouse:default',
 >   settings: {
->     onlyAudits: [
->       'first-meaningful-paint', 
->       'speed-index', 
->       'interactive'
->     ],
+>     onlyAudits: ['first-meaningful-paint', 'speed-index', 'interactive'],
 >   },
 > };
 > ```
