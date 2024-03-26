@@ -117,3 +117,5 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 >  }
 > })
 > ```
+
+If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
