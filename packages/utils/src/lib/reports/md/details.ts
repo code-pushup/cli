@@ -11,7 +11,9 @@ export function details(
 ): string {
   return `<details${cfg.open ? ' open' : ''}>
 <summary>${title}</summary>
+
 ${content}
+
 </details>
 `;
 }

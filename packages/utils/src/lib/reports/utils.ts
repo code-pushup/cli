@@ -16,10 +16,21 @@ import {
   readTextFile,
 } from '../file-system';
 import { SCORE_COLOR_RANGE } from './constants';
+import { image, style } from './md';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
+}
+
+export function formatScoreWithColor(
+  score: number,
+  options?: { skipBold?: boolean },
+): string {
+  const styledNumber = options?.skipBold
+    ? formatReportScore(score)
+    : style(formatReportScore(score));
+  return `${getRoundScoreMarker(score)} ${styledNumber}`;
 }
 
 export function getRoundScoreMarker(score: number): string {
@@ -42,6 +53,35 @@ export function getSquaredScoreMarker(score: number): string {
   return '🟥';
 }
 
+export function getDiffMarker(diff: number): string {
+  if (diff > 0) {
+    return '↑';
+  }
+  if (diff < 0) {
+    return '↓';
+  }
+  return '';
+}
+
+export function colorByScoreDiff(text: string, diff: number): string {
+  const color = diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray';
+  return shieldsBadge(text, color);
+}
+
+export function shieldsBadge(text: string, color: string): string {
+  return image(
+    `https://img.shields.io/badge/${encodeURIComponent(text)}-${color}`,
+    text,
+  );
+}
+
+export function formatDiffNumber(diff: number): string {
+  const number =
+    Math.abs(diff) === Number.POSITIVE_INFINITY ? '∞' : `${Math.abs(diff)}`;
+  const sign = diff < 0 ? '−' : '+';
+  return `${sign}${number}`;
+}
+
 export function getSeverityIcon(
   severity: 'info' | 'warning' | 'error',
 ): string {
@@ -55,7 +95,7 @@ export function getSeverityIcon(
 }
 
 export function calcDuration(start: number, stop?: number): number {
-  return Math.floor((stop ?? performance.now()) - start);
+  return Math.round((stop ?? performance.now()) - start);
 }
 
 export function countWeightedRefs(refs: CategoryRef[]) {

@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { join } from 'node:path';
 import { CommandModule } from 'yargs';
 import { compareReportFiles } from '@code-pushup/core';
 import { PersistConfig } from '@code-pushup/models';
@@ -23,14 +22,14 @@ export function yargsCompareCommandObject() {
       };
 
       const { before, after, persist } = options;
-      const outputPath = join(
-        persist.outputDir,
-        `${persist.filename}-diff.json`,
+
+      const outputPaths = await compareReportFiles({ before, after }, persist);
+
+      ui().logger.info(
+        `Reports diff written to ${outputPaths
+          .map(path => chalk.bold(path))
+          .join(' and ')}`,
       );
-
-      await compareReportFiles({ before, after }, outputPath);
-
-      ui().logger.info(`Reports diff written to ${chalk.bold(outputPath)}`);
     },
   } satisfies CommandModule;
 }

@@ -12,7 +12,11 @@ export function slugify(text: string): string {
     .replace(/[^a-z\d-]/g, '');
 }
 
-export function pluralize(text: string): string {
+export function pluralize(text: string, amount?: number): string {
+  if (amount != null && Math.abs(amount) === 1) {
+    return text;
+  }
+
   if (text.endsWith('y')) {
     return `${text.slice(0, -1)}ies`;
   }
@@ -41,7 +45,7 @@ export function formatBytes(bytes: number, decimals = 2) {
   }`;
 }
 
-export function pluralizeToken(token: string, times = 0): string {
+export function pluralizeToken(token: string, times: number): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 

@@ -1,7 +1,7 @@
 import { simpleGit } from 'simple-git';
 import { ReportsDiff } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const git = simpleGit();
@@ -15,7 +15,11 @@ describe('CLI compare', () => {
     await cleanTestFolder('tmp/e2e');
     await executeProcess({
       command: 'code-pushup',
-      args: ['collect', '--persist.filename=source-report'],
+      args: [
+        'collect',
+        '--persist.filename=source-report',
+        '--onlyPlugins=eslint',
+      ],
       cwd: 'examples/react-todos-app',
     });
     await executeProcess({
@@ -25,7 +29,11 @@ describe('CLI compare', () => {
     });
     await executeProcess({
       command: 'code-pushup',
-      args: ['collect', '--persist.filename=target-report'],
+      args: [
+        'collect',
+        '--persist.filename=target-report',
+        '--onlyPlugins=eslint',
+      ],
       cwd: 'examples/react-todos-app',
     });
   }, 20_000);
@@ -35,7 +43,7 @@ describe('CLI compare', () => {
     await cleanTestFolder('tmp/e2e');
   });
 
-  it('should compare report.json files and create report-diff.json', async () => {
+  it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
       command: 'code-pushup',
       args: [
@@ -53,6 +61,16 @@ describe('CLI compare', () => {
       commits: expect.any(Object),
       date: expect.any(String),
       duration: expect.any(Number),
+      version: expect.any(String),
     });
+
+    const reportsDiffMd = await readTextFile(
+      'tmp/e2e/react-todos-app/report-diff.md',
+    );
+    // commits are variable, replace SHAs with placeholders
+    const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');
+    await expect(sanitizedMd).toMatchFileSnapshot(
+      '__snapshots__/compare.report-diff.md',
+    );
   });
 });
