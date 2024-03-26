@@ -11,7 +11,7 @@ export const outdatedSeverity: Record<VersionType, IssueSeverity> = {
 
 export const outdatedArgs: Record<PackageManager, string[]> = {
   npm: ['--json', '--long'],
-  'yarn-classic': ['--json', '|', 'jq', '-s'],
+  'yarn-classic': ['--json'],
   'yarn-modern': [],
   pnpm: [],
 };

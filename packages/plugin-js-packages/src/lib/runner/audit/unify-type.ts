@@ -1,4 +1,4 @@
-import { objectToEntries, toUnixNewlines } from '@code-pushup/utils';
+import { fromJsonLines, objectToEntries } from '@code-pushup/utils';
 import { filterAuditResult } from '../utils';
 import {
   AuditResult,
@@ -86,15 +86,13 @@ export function npmToAdvisory(
     while (newReferences.length > 0 && !advisoryInfoFound) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ref = newReferences.pop()!;
+      prevNodes.add(ref);
       const result = npmToAdvisory(ref, vulnerabilities, prevNodes);
 
-      if (result == null) {
-        prevNodes.add(ref);
-        continue;
+      if (result != null) {
+        advisoryInfo = { title: result.title, url: result.url };
+        advisoryInfoFound = true;
       }
-
-      advisoryInfo = { title: result.title, url: result.url };
-      advisoryInfoFound = true;
     }
     /* eslint-enable functional/immutable-data, functional/no-loop-statements */
 
@@ -105,9 +103,7 @@ export function npmToAdvisory(
 }
 
 export function yarnv1ToAuditResult(output: string): AuditResult {
-  const yarnv1Json = jsonLinesToJson(output);
-  const yarnv1Result = JSON.parse(yarnv1Json) as Yarnv1AuditResultJson;
-
+  const yarnv1Result = fromJsonLines<Yarnv1AuditResultJson>(output);
   const [yarnv1Advisory, yarnv1Summary] = validateYarnv1Result(yarnv1Result);
 
   const vulnerabilities = yarnv1Advisory.map(
@@ -141,11 +137,6 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
 
   // duplicates are filtered out based on their ID
   return filterAuditResult({ vulnerabilities, summary }, 'id');
-}
-
-function jsonLinesToJson(text: string) {
-  const unifiedNewLines = toUnixNewlines(text).trim();
-  return `[${unifiedNewLines.split('\n').join(',')}]`;
 }
 
 function validateYarnv1Result(

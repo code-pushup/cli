@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { toJsonLines } from '@code-pushup/utils';
 import {
   AuditResult,
   NpmAdvisory,
@@ -249,11 +250,9 @@ describe('yarnv1ToAuditResult', () => {
       },
     } satisfies Yarnv1AuditSummary;
 
-    const jsonLines = [advisory, summary]
-      .map(item => JSON.stringify(item))
-      .join('\n');
-
-    expect(yarnv1ToAuditResult(jsonLines)).toEqual<AuditResult>({
+    expect(
+      yarnv1ToAuditResult(toJsonLines([advisory, summary])),
+    ).toEqual<AuditResult>({
       vulnerabilities: [
         {
           name: 'semver',
@@ -278,13 +277,12 @@ describe('yarnv1ToAuditResult', () => {
   });
 
   it('should throw for no audit summary', () => {
-    expect(() =>
-      yarnv1ToAuditResult(
-        JSON.stringify({
-          data: {},
-          type: 'auditAdvisory',
-        } as Yarnv1AuditAdvisory),
-      ),
-    ).toThrow('no summary found');
+    const advisory = {
+      data: {},
+      type: 'auditAdvisory',
+    };
+    expect(() => yarnv1ToAuditResult(toJsonLines([advisory]))).toThrow(
+      'no summary found',
+    );
   });
 });

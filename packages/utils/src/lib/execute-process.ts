@@ -82,7 +82,7 @@ export type ProcessConfig = {
   args?: string[];
   cwd?: string;
   observer?: ProcessObserver;
-  alwaysResolve?: boolean;
+  ignoreExitCode?: boolean;
 };
 
 /**
@@ -133,7 +133,7 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, alwaysResolve = false } = cfg;
+  const { observer, cwd, command, args, ignoreExitCode = false } = cfg;
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
@@ -161,7 +161,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
 
     process.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
-      if (code === 0 || alwaysResolve) {
+      if (code === 0 || ignoreExitCode) {
         onComplete?.();
         resolve({ code, stdout, stderr, ...timings });
       } else {

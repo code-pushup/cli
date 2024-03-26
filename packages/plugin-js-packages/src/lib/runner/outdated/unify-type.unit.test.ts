@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { toJsonLines } from '@code-pushup/utils';
 import { OutdatedResult } from './types';
 import { npmToOutdatedResult, yarnv1ToOutdatedResult } from './unify-type';
 
@@ -27,7 +28,6 @@ describe('npmOutdatedToOutdatedResult', () => {
         name: 'nx',
         current: '16.8.1',
         latest: '17.0.0',
-        project: 'cli',
         type: 'dependencies',
         url: 'https://nx.dev/',
       },
@@ -35,7 +35,6 @@ describe('npmOutdatedToOutdatedResult', () => {
         name: '@nx/devkit',
         current: '16.9.0',
         latest: '17.0.1',
-        project: 'plugin-js-packages',
         type: 'devDependencies',
       },
     ]);
@@ -67,27 +66,18 @@ describe('yarnv1OutdatedToOutdatedResult', () => {
       type: 'table',
       data: {
         body: [
-          [
-            'nx',
-            '16.8.1',
-            '',
-            '17.0.0',
-            'cli',
-            'dependencies',
-            'https://nx.dev/',
-          ],
+          ['nx', '16.8.1', '', '17.0.0', '', 'dependencies', 'https://nx.dev/'],
         ],
       },
     };
 
     expect(
-      yarnv1ToOutdatedResult(JSON.stringify([yarnInfo, table])),
+      yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table])),
     ).toEqual<OutdatedResult>([
       {
         name: 'nx',
         current: '16.8.1',
         latest: '17.0.0',
-        project: 'cli',
         type: 'dependencies',
         url: 'https://nx.dev/',
       },
@@ -97,8 +87,6 @@ describe('yarnv1OutdatedToOutdatedResult', () => {
   it('should transform no dependencies to empty array', () => {
     const table = { type: 'table', data: { body: [] } };
 
-    expect(yarnv1ToOutdatedResult(JSON.stringify([yarnInfo, table]))).toEqual(
-      [],
-    );
+    expect(yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table]))).toEqual([]);
   });
 });

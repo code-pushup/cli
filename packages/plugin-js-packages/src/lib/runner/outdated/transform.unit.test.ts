@@ -20,7 +20,6 @@ describe('outdatedResultToAuditOutput', () => {
             current: '4.5.0',
             latest: '4.5.2',
             type: 'dependencies',
-            project: 'cli',
           },
         ],
         'npm',
@@ -35,7 +34,7 @@ describe('outdatedResultToAuditOutput', () => {
         issues: [
           {
             message: expect.stringContaining(
-              "cli's dependency `moment` requires a **patch** update",
+              'Package `moment` requires a **patch** update',
             ),
             severity: 'info',
           },
@@ -53,14 +52,12 @@ describe('outdatedResultToAuditOutput', () => {
             current: '17.0.0',
             latest: '17.0.0',
             type: 'dependencies',
-            project: 'cli',
           },
           {
             name: 'prettier',
             current: '2.8.8',
             latest: '3.2.0',
             type: 'dependencies',
-            project: 'core',
           },
         ],
         'npm',
@@ -75,7 +72,7 @@ describe('outdatedResultToAuditOutput', () => {
         issues: [
           expect.objectContaining({
             message: expect.stringContaining(
-              "core's dependency `prettier` requires a **major** update",
+              '`prettier` requires a **major** update',
             ),
           }),
         ],
@@ -92,28 +89,24 @@ describe('outdatedResultToAuditOutput', () => {
             current: '15.8.1',
             latest: '17.0.0',
             type: 'dependencies',
-            project: 'cli',
           },
           {
             name: 'typescript',
             current: '5.3.0',
             latest: '5.3.3',
             type: 'dependencies',
-            project: 'cli',
           },
           {
             name: 'jsdom',
             current: '22.1.0',
             latest: '22.1.2',
             type: 'dependencies',
-            project: 'core',
           },
           {
             name: 'prettier',
             current: '3.0.0',
             latest: '3.2.0',
             type: 'dependencies',
-            project: 'core',
           },
         ],
         'npm',
@@ -128,25 +121,25 @@ describe('outdatedResultToAuditOutput', () => {
         issues: [
           {
             message: expect.stringContaining(
-              'dependency `nx` requires a **major** update',
+              '`nx` requires a **major** update',
             ),
             severity: 'error',
           },
           {
             message: expect.stringContaining(
-              'dependency `typescript` requires a **patch** update',
+              '`typescript` requires a **patch** update',
             ),
             severity: 'info',
           },
           {
             message: expect.stringContaining(
-              'dependency `jsdom` requires a **patch** update',
+              '`jsdom` requires a **patch** update',
             ),
             severity: 'info',
           },
           {
             message: expect.stringContaining(
-              'dependency `prettier` requires a **minor** update',
+              '`prettier` requires a **minor** update',
             ),
             severity: 'warning',
           },
@@ -164,7 +157,6 @@ describe('outdatedResultToAuditOutput', () => {
             current: '5.2.1',
             latest: '5.3.0',
             type: 'devDependencies',
-            project: 'utils',
           },
         ],
         'npm',
@@ -224,13 +216,12 @@ describe('outdatedToIssues', () => {
           current: '2.29.0',
           latest: '2.30.0',
           type: 'dependencies',
-          project: 'cli',
         },
       ]),
     ).toEqual<Issue[]>([
       {
         message:
-          "cli's dependency `moment` requires a **minor** update from **2.29.0** to **2.30.0**.",
+          'Package `moment` requires a **minor** update from **2.29.0** to **2.30.0**.',
         severity: 'warning',
       },
     ]);
@@ -245,14 +236,11 @@ describe('outdatedToIssues', () => {
           latest: '17.0.0',
           type: 'dependencies',
           url: 'https://nx.dev',
-          project: 'cli',
         },
       ]),
     ).toEqual<Issue[]>([
       expect.objectContaining({
-        message: expect.stringContaining(
-          'dependency [`nx`](https://nx.dev) requires',
-        ),
+        message: expect.stringContaining('[`nx`](https://nx.dev) requires'),
       }),
     ]);
   });
@@ -265,7 +253,6 @@ describe('outdatedToIssues', () => {
           current: '4.5.0',
           latest: '4.5.1',
           type: 'devDependencies',
-          project: 'cli',
         },
       ]),
     ).toEqual<Issue[]>([

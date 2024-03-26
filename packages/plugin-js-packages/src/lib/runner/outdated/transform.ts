@@ -79,13 +79,13 @@ export function outdatedToDisplayValue(stats: Record<VersionType, number>) {
 
 export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
   return dependencies.map<Issue>(dep => {
-    const { name, current, latest, url, project } = dep;
+    const { name, current, latest, url } = dep;
     const outdatedLevel = getOutdatedLevel(current, latest);
     const packageReference =
       url == null ? `\`${name}\`` : `[\`${name}\`](${url})`;
 
     return {
-      message: `${project}'s dependency ${packageReference} requires a **${outdatedLevel}** update from **${current}** to **${latest}**.`,
+      message: `Package ${packageReference} requires a **${outdatedLevel}** update from **${current}** to **${latest}**.`,
       severity: outdatedSeverity[outdatedLevel],
     };
   });

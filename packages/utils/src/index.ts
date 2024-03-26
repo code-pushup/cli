@@ -78,15 +78,18 @@ export {
 } from './lib/reports/utils';
 export {
   CliArgsObject,
+  apostrophize,
   capitalize,
   countOccurrences,
   distinct,
   factorOf,
+  fromJsonLines,
   objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
+  toJsonLines,
   toNumberPrecision,
   toOrdinal,
   toUnixNewlines,

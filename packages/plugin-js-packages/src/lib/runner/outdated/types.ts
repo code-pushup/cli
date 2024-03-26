@@ -11,7 +11,6 @@ export type VersionOverview = {
   current?: string;
   latest: string;
   type: DependencyGroupLong;
-  dependent: string;
   homepage?: string;
 };
 
@@ -48,6 +47,5 @@ export type OutdatedResult = {
   current: string;
   latest: string;
   type: DependencyGroupLong;
-  project: string;
   url?: string;
 }[];
