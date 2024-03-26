@@ -42,7 +42,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute release
+      - name: Version, release and publish packages
         run: npx nx release --dry-run
   release:
     if: |
@@ -77,7 +77,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute version target on all affected packages, release then publish them
+      - name: Version, release and publish packages
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}

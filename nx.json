@@ -106,8 +106,7 @@
       "push": true,
       "pushRemote": "origin",
       "tag": true,
-      "commitMessage": "release: {version} [skip ci]",
-      "commitArgs": "--no-verify"
+      "commitMessage": "release: {version} [skip ci]"
     },
     "version": {
       "conventionalCommits": true,
