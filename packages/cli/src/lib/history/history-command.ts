@@ -51,7 +51,7 @@ export function yargsHistoryCommandObject() {
           commits,
         );
 
-        ui().logger.log(`Reports: ', ${reports.length}`);
+        ui().logger.log(`Reports: ${reports.length}`);
       } finally {
         // go back to initial branch
         await safeCheckout(currentBranch);
