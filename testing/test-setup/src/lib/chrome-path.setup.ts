@@ -7,6 +7,7 @@ beforeEach(() => {
   const customChromePath = (
     process.env as { CUSTOM_CHROME_PATH: string | undefined }
   ).CUSTOM_CHROME_PATH;
+  throw new Error(customChromePath)
   if (customChromePath) {
     vi.stubEnv('CHROME_PATH', customChromePath);
   } else {
