@@ -1,8 +1,8 @@
-import { AuditResult } from './audit/types';
+import { AuditResult, Vulnerability } from './audit/types';
 
 export function filterAuditResult(
   result: AuditResult,
-  key: keyof AuditResult['vulnerabilities'][number],
+  key: keyof Vulnerability,
   referenceResult?: AuditResult,
 ): AuditResult {
   if (result.vulnerabilities.length === 0) {

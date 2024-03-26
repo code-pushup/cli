@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type { IssueSeverity, RunnerConfig } from '@code-pushup/models';
+import type { RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   executeProcess,
@@ -10,9 +10,9 @@ import {
   readJsonFile,
 } from '@code-pushup/utils';
 import {
+  AuditSeverity,
   DependencyGroup,
   FinalJSPackagesPluginConfig,
-  PackageAuditLevel,
   PackageManager,
   dependencyGroups,
 } from '../config';
@@ -61,7 +61,7 @@ async function processOutdated(packageManager: PackageManager) {
     command: pkgManagerCommands[packageManager],
     args: ['outdated', ...outdatedArgs[packageManager]],
     cwd: process.cwd(),
-    alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
+    ignoreExitCode: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
 
   const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
@@ -72,18 +72,20 @@ async function processOutdated(packageManager: PackageManager) {
 
 async function processAudit(
   packageManager: PackageManager,
-  auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
+  auditLevelMapping: AuditSeverity,
 ) {
   const auditResults = await Promise.allSettled(
-    dependencyGroups.map<Promise<[DependencyGroup, AuditResult]>>(async dep => {
-      const { stdout } = await executeProcess({
-        command: pkgManagerCommands[packageManager],
-        args: ['audit', ...auditArgs(dep)[packageManager]],
-        cwd: process.cwd(),
-        alwaysResolve: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
-      });
-      return [dep, normalizeAuditMapper[packageManager](stdout)];
-    }),
+    dependencyGroups.map(
+      async (dep): Promise<[DependencyGroup, AuditResult]> => {
+        const { stdout } = await executeProcess({
+          command: pkgManagerCommands[packageManager],
+          args: ['audit', ...auditArgs(dep)[packageManager]],
+          cwd: process.cwd(),
+          ignoreExitCode: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
+        });
+        return [dep, normalizeAuditMapper[packageManager](stdout)];
+      },
+    ),
   );
 
   const rejected = auditResults.filter(isPromiseRejectedResult);
