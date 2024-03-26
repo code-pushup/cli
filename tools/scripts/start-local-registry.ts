@@ -16,6 +16,7 @@ export default async () => {
     verbose: true,
   });
 
+  // is is also possible to use nx release to publish the packages to the local registry
   execFileSync(
     'npx',
     [
