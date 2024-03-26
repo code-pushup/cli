@@ -88,7 +88,11 @@
     }
   },
   "release": {
-    "projects": ["packages/*"],
+    "projects": [
+      "packages/*",
+      "!packages/plugin-lighthouse",
+      "!packages/nx-plugin"
+    ],
     "projectsRelationship": "fixed",
     "changelog": {
       "automaticFromRef": true,
