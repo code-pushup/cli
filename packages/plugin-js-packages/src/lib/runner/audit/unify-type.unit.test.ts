@@ -3,7 +3,7 @@ import {
   AuditResult,
   NpmAdvisory,
   NpmAuditResultJson,
-  NpmVulnerabilities,
+  NpmVulnerability,
   Yarnv1AuditAdvisory,
   Yarnv1AuditSummary,
 } from './types';
@@ -173,8 +173,8 @@ describe('npmToAdvisory', () => {
         cypress: {
           name: 'cypress',
           via: [{ title: 'SSR forgery', url: 'https://github.com/advisories' }],
-        },
-      } as unknown as NpmVulnerabilities),
+        } as NpmVulnerability,
+      }),
     ).toEqual<NpmAdvisory>({
       title: 'SSR forgery',
       url: 'https://github.com/advisories',
@@ -192,16 +192,16 @@ describe('npmToAdvisory', () => {
               url: 'https://github.com/advisories',
             },
           ],
-        },
+        } as NpmVulnerability,
         '@nrwl/nx-cloud': {
           name: '@nrwl/nx-cloud',
           via: ['nx-cloud'],
-        },
+        } as NpmVulnerability,
         'nx-cloud': {
           name: 'nx-cloud',
           via: ['@nrwl/nx-cloud', 'axios'],
-        },
-      } as unknown as NpmVulnerabilities),
+        } as NpmVulnerability,
+      }),
     ).toEqual<NpmAdvisory>({
       title: 'Axios Cross-Site Forgery',
       url: 'https://github.com/advisories',
@@ -213,9 +213,9 @@ describe('npmToAdvisory', () => {
       npmToAdvisory('tough-cookie', {
         cypress: {
           name: 'tough-cookie',
-          via: [],
-        },
-      } as unknown as NpmVulnerabilities),
+          via: [] as string[],
+        } as NpmVulnerability,
+      }),
     ).toBeNull();
   });
 });
@@ -286,9 +286,5 @@ describe('yarnv1ToAuditResult', () => {
         } as Yarnv1AuditAdvisory),
       ),
     ).toThrow('no summary found');
-  });
-
-  it('should throw for empty input', () => {
-    expect(() => yarnv1ToAuditResult('')).toThrow('no properties found');
   });
 });

@@ -18,7 +18,7 @@ export const outdatedArgs: Record<PackageManager, string[]> = {
 
 export const normalizeOutdatedMapper: Record<
   PackageManager,
-  (_: string) => OutdatedResult
+  (output: string) => OutdatedResult
 > = {
   npm: npmToOutdatedResult,
   'yarn-classic': yarnv1ToOutdatedResult,

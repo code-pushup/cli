@@ -6,6 +6,7 @@ import {
   NpmAuditResultJson,
   NpmFixInformation,
   NpmVulnerabilities,
+  Vulnerability,
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
   Yarnv1AuditSummary,
@@ -14,22 +15,22 @@ import {
 export function npmToAuditResult(output: string): AuditResult {
   const npmAudit = JSON.parse(output) as NpmAuditResultJson;
 
-  const vulnerabilities = objectToEntries(npmAudit.vulnerabilities).map<
-    AuditResult['vulnerabilities'][number]
-  >(([name, detail]) => {
-    const advisory = npmToAdvisory(name, npmAudit.vulnerabilities);
-    return {
-      name: name.toString(),
-      severity: detail.severity,
-      versionRange: detail.range,
-      directDependency: detail.isDirect ? true : detail.effects[0] ?? '',
-      fixInformation: npmToFixInformation(detail.fixAvailable),
-      ...(advisory != null && {
-        title: advisory.title,
-        url: advisory.url,
-      }),
-    };
-  });
+  const vulnerabilities = objectToEntries(npmAudit.vulnerabilities).map(
+    ([name, detail]): Vulnerability => {
+      const advisory = npmToAdvisory(name, npmAudit.vulnerabilities);
+      return {
+        name: name.toString(),
+        severity: detail.severity,
+        versionRange: detail.range,
+        directDependency: detail.isDirect ? true : detail.effects[0] ?? '',
+        fixInformation: npmToFixInformation(detail.fixAvailable),
+        ...(advisory != null && {
+          title: advisory.title,
+          url: advisory.url,
+        }),
+      };
+    },
+  );
 
   return {
     vulnerabilities,
@@ -68,7 +69,7 @@ export function npmToAdvisory(
   if (
     Array.isArray(advisory) &&
     advisory.length > 0 &&
-    typeof advisory[0] === 'string'
+    advisory.every((value): value is string => typeof value === 'string')
   ) {
     /* eslint-disable functional/no-let, functional/immutable-data, functional/no-loop-statements, prefer-const */
     let advisoryInfo: NpmAdvisory | null = null;
@@ -76,7 +77,7 @@ export function npmToAdvisory(
     let advisoryInfoFound = false;
     /* eslint-enable functional/no-let, prefer-const */
 
-    for (const via of advisory as string[]) {
+    for (const via of advisory) {
       if (!prevNodes.has(via)) {
         newReferences.push(via);
       }
@@ -109,8 +110,8 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
 
   const [yarnv1Advisory, yarnv1Summary] = validateYarnv1Result(yarnv1Result);
 
-  const vulnerabilities = yarnv1Advisory.map<AuditResult['vulnerabilities'][0]>(
-    ({ data: { resolution, advisory } }) => {
+  const vulnerabilities = yarnv1Advisory.map(
+    ({ data: { resolution, advisory } }): Vulnerability => {
       const directDependency = resolution.path.slice(
         0,
         resolution.path.indexOf('>'),
@@ -144,33 +145,20 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
 
 function jsonLinesToJson(text: string) {
   const unifiedNewLines = toUnixNewlines(text).trim();
-  return unifiedNewLines === ''
-    ? '[]'
-    : `[${unifiedNewLines.split('\n').join(',')}]`;
+  return `[${unifiedNewLines.split('\n').join(',')}]`;
 }
 
 function validateYarnv1Result(
   result: Yarnv1AuditResultJson,
 ): [Yarnv1AuditAdvisory[], Yarnv1AuditSummary] {
-  if (result.length === 0) {
-    throw new Error('Invalid Yarn v1 audit result - no properties found.');
-  }
-
-  if (result.length === 1) {
-    if (result[0].type !== 'auditSummary') {
-      throw new Error('Invalid Yarn v1 audit result - no summary found.');
-    }
-
-    return [[], result[0]];
+  const summary = result.at(-1);
+  if (summary?.type !== 'auditSummary') {
+    throw new Error('Invalid Yarn v1 audit result - no summary found.');
   }
 
   const vulnerabilities = result.filter(
-    item => item.type === 'auditAdvisory',
-  ) as Yarnv1AuditAdvisory[];
-
-  const summary = result.find(
-    item => item.type === 'auditSummary',
-  ) as Yarnv1AuditSummary;
+    (item): item is Yarnv1AuditAdvisory => item.type === 'auditAdvisory',
+  );
 
   return [vulnerabilities, summary];
 }

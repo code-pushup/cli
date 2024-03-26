@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AuditResult } from './audit/types';
+import { AuditResult, Vulnerability } from './audit/types';
 import { filterAuditResult } from './utils';
 
 describe('filterAuditResult', () => {
@@ -100,7 +100,7 @@ describe('filterAuditResult', () => {
               { id: 1, severity: 'high' },
               { id: 2, severity: 'moderate' },
               { id: 1, severity: 'high' },
-            ] as AuditResult['vulnerabilities'],
+            ] as Vulnerability[],
             summary: {
               critical: 0,
               high: 2,
