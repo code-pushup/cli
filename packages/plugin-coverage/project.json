@@ -42,7 +42,6 @@
         "reportsDirectory": "../../coverage/plugin-coverage/integration-tests"
       }
     },
-
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-coverage {args.ver} {args.tag}",
       "dependsOn": ["build"]
