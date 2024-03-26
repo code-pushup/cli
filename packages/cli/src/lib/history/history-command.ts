@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { simpleGit } from 'simple-git';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { HistoryOptions, getHashes, history } from '@code-pushup/core';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
