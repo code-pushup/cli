@@ -38,13 +38,6 @@
         "watch": false
       }
     },
-    "deploy": {
-      "dependsOn": ["build"],
-      "executor": "ngx-deploy-npm:deploy",
-      "options": {
-        "access": "public"
-      }
-    },
     "nx-release-publish": {
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
