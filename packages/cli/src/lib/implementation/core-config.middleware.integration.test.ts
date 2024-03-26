@@ -47,7 +47,7 @@ describe('coreConfigMiddleware', () => {
     await expect(
       coreConfigMiddleware({
         config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
-        tsconfig: 'tsconfig.base.json',
+        tsconfig: join(configDirPath, 'tsconfig.json'),
         ...CLI_DEFAULTS,
       }),
     ).resolves.toBeTruthy();
@@ -59,6 +59,6 @@ describe('coreConfigMiddleware', () => {
         config: join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
         ...CLI_DEFAULTS,
       }),
-    ).rejects.toThrow("Cannot find package '@code-pushup/models'");
+    ).rejects.toThrow("Cannot find package '@example/custom-plugin'");
   });
 });

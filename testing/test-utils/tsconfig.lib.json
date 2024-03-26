@@ -6,5 +6,9 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["vite.config.unit.ts", "src/**/*.unit.test.ts"]
+  "exclude": [
+    "vite.config.unit.ts",
+    "src/**/*.unit.test.ts",
+    "src/lib/fixtures/configs"
+  ]
 }

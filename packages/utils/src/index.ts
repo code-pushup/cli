@@ -1,5 +1,5 @@
 export { exists } from '@code-pushup/models';
-export { Diff, matchArrayItemsByKey, comparePairs } from './lib/diff';
+export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
 export {
   ProcessConfig,
   ProcessError,
@@ -37,11 +37,11 @@ export {
 } from './lib/formatting';
 export {
   formatGitPath,
+  getCurrentBranchOrTag,
   getGitRoot,
   getLatestCommit,
-  toGitPath,
-  getCurrentBranchOrTag,
   safeCheckout,
+  toGitPath,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -49,8 +49,8 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
+export { CliUi, Column, link, ui } from './lib/logging';
 export { ProgressBar, getProgressBar } from './lib/progress';
-export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -62,6 +62,8 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
+export { generateMdReportsDiff } from './lib/reports/generate-md-reports-diff';
+export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
 export {
@@ -76,18 +78,21 @@ export {
 } from './lib/reports/utils';
 export {
   CliArgsObject,
+  apostrophize,
   capitalize,
   countOccurrences,
   distinct,
   factorOf,
+  fromJsonLines,
+  objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
+  toJsonLines,
   toNumberPrecision,
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
-export { link, ui, CliUi, Column } from './lib/logging';
