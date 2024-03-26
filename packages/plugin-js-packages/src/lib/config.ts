@@ -26,9 +26,11 @@ export const packageAuditLevels = [
 const packageAuditLevelSchema = z.enum(packageAuditLevels);
 export type PackageAuditLevel = z.infer<typeof packageAuditLevelSchema>;
 
+export type AuditSeverity = Record<PackageAuditLevel, IssueSeverity>;
+
 export function fillAuditLevelMapping(
-  mapping: Partial<Record<PackageAuditLevel, IssueSeverity>>,
-): Record<PackageAuditLevel, IssueSeverity> {
+  mapping: Partial<AuditSeverity>,
+): AuditSeverity {
   return {
     critical: mapping.critical ?? defaultAuditLevelMapping.critical,
     high: mapping.high ?? defaultAuditLevelMapping.high,

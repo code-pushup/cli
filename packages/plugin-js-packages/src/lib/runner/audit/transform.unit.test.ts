@@ -4,7 +4,7 @@ import { defaultAuditLevelMapping } from '../../constants';
 import {
   auditResultToAuditOutput,
   calculateAuditScore,
-  vulnerabilitiesToDisplayValue,
+  summaryToDisplayValue,
   vulnerabilitiesToIssues,
 } from './transform';
 import { Vulnerability } from './types';
@@ -14,18 +14,17 @@ describe('auditResultToAuditOutput', () => {
     expect(
       auditResultToAuditOutput(
         {
-          vulnerabilities: {},
-          metadata: {
-            vulnerabilities: {
-              critical: 0,
-              high: 0,
-              moderate: 0,
-              low: 0,
-              info: 0,
-              total: 0,
-            },
+          vulnerabilities: [],
+          summary: {
+            critical: 0,
+            high: 0,
+            moderate: 0,
+            low: 0,
+            info: 0,
+            total: 0,
           },
         },
+        'npm',
         'prod',
         defaultAuditLevelMapping,
       ),
@@ -41,28 +40,27 @@ describe('auditResultToAuditOutput', () => {
     expect(
       auditResultToAuditOutput(
         {
-          vulnerabilities: {
-            request: {
+          vulnerabilities: [
+            {
               name: 'request',
               severity: 'critical',
-              range: '2.0.0 - 3.0.0',
-              via: [
-                { title: 'SSR forgery', url: 'https://github.com/advisories/' },
-              ],
-              fixAvailable: false,
+              versionRange: '2.0.0 - 3.0.0',
+              title: 'SSR forgery',
+              url: 'https://github.com/advisories/',
+              fixInformation: '',
+              directDependency: true,
             },
-          },
-          metadata: {
-            vulnerabilities: {
-              critical: 1,
-              high: 0,
-              moderate: 0,
-              low: 0,
-              info: 0,
-              total: 1,
-            },
+          ],
+          summary: {
+            critical: 1,
+            high: 0,
+            moderate: 0,
+            low: 0,
+            info: 0,
+            total: 1,
           },
         },
+        'npm',
         'prod',
         defaultAuditLevelMapping,
       ),
@@ -88,47 +86,45 @@ describe('auditResultToAuditOutput', () => {
     expect(
       auditResultToAuditOutput(
         {
-          vulnerabilities: {
-            request: {
+          vulnerabilities: [
+            {
               name: 'request',
               severity: 'critical',
-              range: '2.0.0 - 3.0.0',
-              via: [
-                { title: 'SSR forgery', url: 'https://github.com/advisories/' },
-              ],
-              fixAvailable: false,
+              versionRange: '2.0.0 - 3.0.0',
+              title: 'SSR forgery',
+              url: 'https://github.com/advisories/',
+              fixInformation: '',
+              directDependency: true,
             },
-            '@babel/traverse': {
+            {
               name: '@babel/traverse',
               severity: 'high',
-              range: '<7.23.2',
-              via: [
-                {
-                  title: 'Malicious code execution',
-                  url: 'https://github.com/advisories/',
-                },
-              ],
-              fixAvailable: true,
+              versionRange: '<7.23.2',
+              title: 'Malicious code execution',
+              url: 'https://github.com/advisories/',
+              directDependency: 'nx',
+              fixInformation: 'Fix is available.',
             },
-            verdaccio: {
+            {
               name: 'verdaccio',
               severity: 'critical',
-              range: '*',
-              via: ['request'],
-              fixAvailable: true,
+              versionRange: '*',
+              title: 'SSR forgery',
+              url: 'https://github.com/advisories/',
+              directDependency: true,
+              fixInformation: 'Fix is available.',
             },
-          },
-          metadata: {
-            vulnerabilities: {
-              critical: 0,
-              high: 2,
-              moderate: 1,
-              low: 0,
-              info: 0,
-              total: 3,
-            },
+          ],
+          summary: {
+            critical: 0,
+            high: 2,
+            moderate: 1,
+            low: 0,
+            info: 0,
+            total: 3,
           },
         },
+        'npm',
         'dev',
         defaultAuditLevelMapping,
       ),
@@ -198,7 +194,7 @@ describe('calculateAuditScore', () => {
 describe('vulnerabilitiesToDisplayValue', () => {
   it('should return passed for no vulnerabilities', () => {
     expect(
-      vulnerabilitiesToDisplayValue({
+      summaryToDisplayValue({
         critical: 0,
         high: 0,
         moderate: 0,
@@ -211,7 +207,7 @@ describe('vulnerabilitiesToDisplayValue', () => {
 
   it('should return a summary of vulnerabilities', () => {
     expect(
-      vulnerabilitiesToDisplayValue({
+      summaryToDisplayValue({
         critical: 1,
         high: 0,
         moderate: 2,
@@ -227,51 +223,23 @@ describe('vulnerabilitiesToIssues', () => {
   it('should provide a vulnerability summary', () => {
     expect(
       vulnerabilitiesToIssues(
-        {
-          verdaccio: {
+        [
+          {
             name: 'verdaccio',
             severity: 'high',
-            fixAvailable: true,
-            range: '<=5.28.0',
-            via: ['request'],
+            versionRange: '<=5.28.0',
+            fixInformation: false,
+            directDependency: true,
           },
-        },
+        ],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
       {
         message:
-          '`verdaccio` dependency has a **high** vulnerability in versions **<=5.28.0**. Fix is available.',
+          '`verdaccio` dependency has a **high** vulnerability in versions **<=5.28.0**.',
 
         severity: 'error',
-      },
-    ]);
-  });
-
-  it('should provide detailed fix information when available', () => {
-    expect(
-      vulnerabilitiesToIssues(
-        {
-          '@cypress/request': {
-            name: '@cypress/request',
-            severity: 'moderate',
-            fixAvailable: {
-              name: 'cypress',
-              version: '13.7.0',
-              isSemVerMajor: true,
-            },
-            range: '<=2.88.12',
-            via: ['cypress'],
-          },
-        },
-        defaultAuditLevelMapping,
-      ),
-    ).toEqual<Issue[]>([
-      {
-        message: expect.stringContaining(
-          'Fix available: Update `cypress` to version **13.7.0** (breaking change).',
-        ),
-        severity: 'warning',
       },
     ]);
   });
@@ -279,47 +247,59 @@ describe('vulnerabilitiesToIssues', () => {
   it('should include vulnerability title and URL when provided', () => {
     expect(
       vulnerabilitiesToIssues(
-        {
-          'tough-cookie': {
+        [
+          {
             name: 'tough-cookie',
-            severity: 'moderate',
-            fixAvailable: true,
-            range: '<4.1.3',
-            via: [
-              {
-                title: 'tough-cookie Prototype Pollution vulnerability',
-                url: 'https://github.com/advisories/GHSA-72xf-g2v4-qvf3',
-              },
-            ],
+            title: 'tough-cookie Prototype Pollution vulnerability',
+            url: 'https://github.com/advisories/GHSA-72xf-g2v4-qvf3',
           },
-        },
+        ] as Vulnerability[],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
-      {
+      expect.objectContaining({
         message: expect.stringContaining(
           'More information: [tough-cookie Prototype Pollution vulnerability](https://github.com/advisories/GHSA-72xf-g2v4-qvf3)',
         ),
-        severity: 'warning',
-      },
+      }),
+    ]);
+  });
+
+  it('should include direct dependency', () => {
+    expect(
+      vulnerabilitiesToIssues(
+        [
+          {
+            name: '@cypress/request',
+            directDependency: 'cypress',
+          },
+        ] as Vulnerability[],
+        defaultAuditLevelMapping,
+      ),
+    ).toEqual<Issue[]>([
+      expect.objectContaining({
+        message: expect.stringContaining(
+          "`cypress`' dependency `@cypress/request`",
+        ),
+      }),
     ]);
   });
 
   it('should correctly map vulnerability level to issue severity', () => {
     expect(
       vulnerabilitiesToIssues(
-        {
-          verdaccio: {
+        [
+          {
             name: 'verdaccio',
             severity: 'high',
-            fixAvailable: true,
-          } as Vulnerability,
-        },
+            directDependency: true,
+          },
+        ] as Vulnerability[],
         { ...defaultAuditLevelMapping, high: 'info' },
       ),
     ).toEqual<Issue[]>([
       {
-        message: expect.any(String),
+        message: expect.stringContaining('verdaccio'),
         severity: 'info',
       },
     ]);
@@ -328,26 +308,23 @@ describe('vulnerabilitiesToIssues', () => {
   it('should translate any version range to human-friendly summary', () => {
     expect(
       vulnerabilitiesToIssues(
-        {
-          verdaccio: {
-            name: 'verdaccio',
-            severity: 'high',
-            fixAvailable: false,
-            range: '*',
-            via: ['request'],
+        [
+          {
+            name: 'request',
+            versionRange: '*',
+            directDependency: true,
           },
-        },
+        ] as Vulnerability[],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
-      {
+      expect.objectContaining({
         message: expect.stringContaining('vulnerability in **all** versions'),
-        severity: 'error',
-      },
+      }),
     ]);
   });
 
   it('should return empty array for no vulnerabilities', () => {
-    expect(vulnerabilitiesToIssues({}, defaultAuditLevelMapping)).toEqual([]);
+    expect(vulnerabilitiesToIssues([], defaultAuditLevelMapping)).toEqual([]);
   });
 });

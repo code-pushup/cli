@@ -1,36 +1,35 @@
-import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
-import { objectToEntries } from '@code-pushup/utils';
+import type { AuditOutput, Issue } from '@code-pushup/models';
+import { apostrophize, objectToEntries } from '@code-pushup/utils';
 import {
+  AuditSeverity,
   DependencyGroup,
-  PackageAuditLevel,
+  PackageManager,
   packageAuditLevels,
 } from '../../config';
 import { auditScoreModifiers } from './constants';
-import { NpmAuditResultJson, Vulnerabilities } from './types';
+import { AuditResult, AuditSummary, Vulnerability } from './types';
 
 export function auditResultToAuditOutput(
-  result: NpmAuditResultJson,
+  result: AuditResult,
+  packageManager: PackageManager,
   dependenciesType: DependencyGroup,
-  auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
+  auditLevelMapping: AuditSeverity,
 ): AuditOutput {
   const issues = vulnerabilitiesToIssues(
     result.vulnerabilities,
     auditLevelMapping,
   );
+
   return {
-    slug: `npm-audit-${dependenciesType}`,
-    score: calculateAuditScore(result.metadata.vulnerabilities),
-    value: result.metadata.vulnerabilities.total,
-    displayValue: vulnerabilitiesToDisplayValue(
-      result.metadata.vulnerabilities,
-    ),
+    slug: `${packageManager}-audit-${dependenciesType}`,
+    score: calculateAuditScore(result.summary),
+    value: result.summary.total,
+    displayValue: summaryToDisplayValue(result.summary),
     ...(issues.length > 0 && { details: { issues } }),
   };
 }
 
-export function calculateAuditScore(
-  stats: Record<PackageAuditLevel | 'total', number>,
-) {
+export function calculateAuditScore(stats: AuditSummary) {
   if (stats.total === 0) {
     return 1;
   }
@@ -48,62 +47,51 @@ export function calculateAuditScore(
   );
 }
 
-export function vulnerabilitiesToDisplayValue(
-  vulnerabilities: Record<PackageAuditLevel | 'total', number>,
-): string {
-  if (vulnerabilities.total === 0) {
+export function summaryToDisplayValue(summary: AuditSummary): string {
+  if (summary.total === 0) {
     return '0 vulnerabilities';
   }
 
   const vulnerabilityStats = packageAuditLevels
-    .map(level =>
-      vulnerabilities[level] > 0 ? `${vulnerabilities[level]} ${level}` : '',
-    )
+    .map(level => (summary[level] > 0 ? `${summary[level]} ${level}` : ''))
     .filter(text => text !== '')
     .join(', ');
-  return `${vulnerabilities.total} ${
-    vulnerabilities.total === 1 ? 'vulnerability' : 'vulnerabilities'
+  return `${summary.total} ${
+    summary.total === 1 ? 'vulnerability' : 'vulnerabilities'
   } (${vulnerabilityStats})`;
 }
 
 export function vulnerabilitiesToIssues(
-  vulnerabilities: Vulnerabilities,
-  auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
+  vulnerabilities: Vulnerability[],
+  auditLevelMapping: AuditSeverity,
 ): Issue[] {
-  if (Object.keys(vulnerabilities).length === 0) {
+  if (vulnerabilities.length === 0) {
     return [];
   }
 
-  return Object.values(vulnerabilities).map<Issue>(detail => {
+  return Object.values(vulnerabilities).map((detail): Issue => {
     const versionRange =
-      detail.range === '*'
+      detail.versionRange === '*'
         ? '**all** versions'
-        : `versions **${detail.range}**`;
-    const vulnerabilitySummary = `\`${detail.name}\` dependency has a **${detail.severity}** vulnerability in ${versionRange}.`;
-    const fixInformation =
-      typeof detail.fixAvailable === 'boolean'
-        ? `Fix is ${detail.fixAvailable ? '' : 'not '}available.`
-        : `Fix available: Update \`${detail.fixAvailable.name}\` to version **${
-            detail.fixAvailable.version
-          }**${
-            detail.fixAvailable.isSemVerMajor ? ' (breaking change).' : '.'
-          }`;
+        : `versions **${detail.versionRange}**`;
+    const directDependency =
+      typeof detail.directDependency === 'string'
+        ? `\`${detail.directDependency}\``
+        : '';
+    const depHierarchy =
+      directDependency === ''
+        ? `\`${detail.name}\` dependency`
+        : `${apostrophize(directDependency)} dependency \`${detail.name}\``;
 
-    // Advisory details via can refer to another vulnerability
-    // For now, only direct context is supported
-    if (
-      Array.isArray(detail.via) &&
-      detail.via.length > 0 &&
-      typeof detail.via[0] === 'object'
-    ) {
-      return {
-        message: `${vulnerabilitySummary} ${fixInformation} More information: [${detail.via[0].title}](${detail.via[0].url})`,
-        severity: auditLevelMapping[detail.severity],
-      };
-    }
+    const vulnerabilitySummary = `has a **${detail.severity}** vulnerability in ${versionRange}.`;
+    const fixInfo = detail.fixInformation ? ` ${detail.fixInformation}` : '';
+    const additionalInfo =
+      detail.title != null && detail.url != null
+        ? ` More information: [${detail.title}](${detail.url})`
+        : '';
 
     return {
-      message: `${vulnerabilitySummary} ${fixInformation}`,
+      message: `${depHierarchy} ${vulnerabilitySummary}${fixInfo}${additionalInfo}`,
       severity: auditLevelMapping[detail.severity],
     };
   });
