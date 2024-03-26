@@ -80,7 +80,7 @@ export class GitStatusError extends Error {
 export async function guardAgainstLocalChanges(
   git = simpleGit(),
 ): Promise<void> {
-  const status = await git.status(['-s']); //.then(r => r.files.length === 0);
+  const status = await git.status(['-s']);
   if (status.files.length > 0) {
     throw new GitStatusError(status);
   }
