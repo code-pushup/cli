@@ -70,7 +70,7 @@ describe('executeProcess', () => {
     expect(spyObserver.onComplete).not.toHaveBeenCalled();
   });
 
-  it('should successfully exit process after an error is thrown when alwaysResolves is set', async () => {
+  it('should successfully exit process after an error is thrown when ignoreExitCode is set', async () => {
     const processResult = await executeProcess({
       ...getAsyncProcessRunnerConfig({
         interval: 10,
@@ -78,7 +78,7 @@ describe('executeProcess', () => {
         throwError: true,
       }),
       observer: spyObserver,
-      alwaysResolve: true,
+      ignoreExitCode: true,
     }).catch(errorSpy);
 
     expect(errorSpy).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import { objectToEntries } from '@code-pushup/utils';
+import { fromJsonLines, objectToEntries } from '@code-pushup/utils';
 import {
   NormalizedVersionOverview,
   NpmOutdatedResultJson,
@@ -20,20 +20,18 @@ export function npmToOutdatedResult(output: string): OutdatedResult {
       current: overview.current,
       latest: overview.latest,
       type: overview.type,
-      project: overview.dependent,
       ...(overview.homepage != null && { url: overview.homepage }),
     }));
 }
 
 export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
-  const yarnv1Outdated = JSON.parse(output) as Yarnv1OutdatedResultJson;
+  const yarnv1Outdated = fromJsonLines<Yarnv1OutdatedResultJson>(output);
   const dependencies = yarnv1Outdated[1].data.body;
 
-  return dependencies.map(([name, current, _, latest, project, type, url]) => ({
+  return dependencies.map(([name, current, _, latest, __, type, url]) => ({
     name,
     current,
     latest,
-    project,
     type,
     url,
   }));

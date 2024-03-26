@@ -17,18 +17,20 @@ export const auditScoreModifiers: Record<PackageAuditLevel, number> = {
 };
 /* eslint-enable no-magic-numbers */
 
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 export const normalizeAuditMapper: Record<
   PackageManager,
-  (_: string) => AuditResult
+  (output: string) => AuditResult
 > = {
   npm: npmToAuditResult,
   'yarn-classic': yarnv1ToAuditResult,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  'yarn-modern': _ => ({} as AuditResult),
-  pnpm: _ => ({} as AuditResult),
+  'yarn-modern': () => {
+    throw new Error('Yarn v2+ audit is not supported yet.');
+  },
+  pnpm: () => {
+    throw new Error('PNPM audit is not supported yet.');
+  },
 };
-/* eslint-enable @typescript-eslint/consistent-type-assertions */
 
 const npmDependencyOptions: Record<DependencyGroup, string[]> = {
   prod: ['--omit=dev', '--omit=optional'],
@@ -41,6 +43,7 @@ export const auditArgs = (
 ): Record<PackageManager, string[]> => ({
   npm: [...npmDependencyOptions[groupDep], '--json', '--audit-level=none'],
   'yarn-classic': ['--json', `--groups ${dependencyGroupToLong[groupDep]}`],
+  // TODO: Add once the package managers are supported.
   'yarn-modern': [],
   pnpm: [],
 });

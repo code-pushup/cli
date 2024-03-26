@@ -4,10 +4,10 @@ import { defaultAuditLevelMapping } from '../../constants';
 import {
   auditResultToAuditOutput,
   calculateAuditScore,
-  vulnerabilitiesToDisplayValue,
+  summaryToDisplayValue,
   vulnerabilitiesToIssues,
 } from './transform';
-import { AuditResult } from './types';
+import { Vulnerability } from './types';
 
 describe('auditResultToAuditOutput', () => {
   it('should return audit output with no vulnerabilities', () => {
@@ -194,7 +194,7 @@ describe('calculateAuditScore', () => {
 describe('vulnerabilitiesToDisplayValue', () => {
   it('should return passed for no vulnerabilities', () => {
     expect(
-      vulnerabilitiesToDisplayValue({
+      summaryToDisplayValue({
         critical: 0,
         high: 0,
         moderate: 0,
@@ -207,7 +207,7 @@ describe('vulnerabilitiesToDisplayValue', () => {
 
   it('should return a summary of vulnerabilities', () => {
     expect(
-      vulnerabilitiesToDisplayValue({
+      summaryToDisplayValue({
         critical: 1,
         high: 0,
         moderate: 2,
@@ -253,7 +253,7 @@ describe('vulnerabilitiesToIssues', () => {
             title: 'tough-cookie Prototype Pollution vulnerability',
             url: 'https://github.com/advisories/GHSA-72xf-g2v4-qvf3',
           },
-        ] as AuditResult['vulnerabilities'],
+        ] as Vulnerability[],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
@@ -273,7 +273,7 @@ describe('vulnerabilitiesToIssues', () => {
             name: '@cypress/request',
             directDependency: 'cypress',
           },
-        ] as AuditResult['vulnerabilities'],
+        ] as Vulnerability[],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
@@ -294,7 +294,7 @@ describe('vulnerabilitiesToIssues', () => {
             severity: 'high',
             directDependency: true,
           },
-        ] as AuditResult['vulnerabilities'],
+        ] as Vulnerability[],
         { ...defaultAuditLevelMapping, high: 'info' },
       ),
     ).toEqual<Issue[]>([
@@ -314,7 +314,7 @@ describe('vulnerabilitiesToIssues', () => {
             versionRange: '*',
             directDependency: true,
           },
-        ] as AuditResult['vulnerabilities'],
+        ] as Vulnerability[],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
