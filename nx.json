@@ -44,6 +44,14 @@
       "options": {
         "access": "public"
       }
+    },
+    "nx-release-publish": {
+      "dependsOn": ["build"],
+      "executor": "@nx/js:release-publish",
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/"
+      }
     }
   },
   "namedInputs": {
@@ -85,5 +93,31 @@
         "linter": "eslint"
       }
     }
+  },
+  "release": {
+    "projects": ["packages/*"],
+    "projectsRelationship": "fixed",
+    "changelog": {
+      "automaticFromRef": true,
+      "projectChangelogs": false,
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
+    },
+    "git": {
+      "commit": true,
+      "push": true,
+      "pushRemote": "origin",
+      "tag": true,
+      "commitMessage": "release: {version} [skip ci]",
+      "commitArgs": "--no-verify"
+    },
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "skipLockFileUpdate": true
+      }
+    },
+    "releaseTagPattern": "v{version}"
   }
 }
