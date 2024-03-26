@@ -15,6 +15,7 @@ export function yargsHistoryOptionsDefinition(): Record<
       describe:
         'If we reset the status to a clean git history forcefully or not.',
       type: 'boolean',
+      default: false,
     },
     skipUploads: {
       describe: 'Upload created reports',
