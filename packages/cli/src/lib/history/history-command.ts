@@ -39,9 +39,7 @@ export function yargsHistoryCommandObject() {
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
       // determine history to walk
-      const git = simpleGit();
-
-      const commits: string[] = await getHashes({ maxCount, from, to }, git);
+      const commits: string[] = await getHashes({ maxCount, from, to });
       try {
         // run history logic
         const reports = await history(
