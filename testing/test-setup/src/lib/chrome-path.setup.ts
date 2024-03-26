@@ -1,11 +1,18 @@
-import { platform } from 'node:process';
+import { getChromePath } from 'chrome-launcher';
+import * as process from 'process';
 import { beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
-  if (platform === 'win32') {
-    vi.stubEnv(
-      'CHROME_PATH',
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    );
+  try {
+    vi.stubEnv('CHROME_PATH', getChromePath());
+  } catch (e) {
+    const customChromePath = (process.env as { CUSTOM_CHROME_PATH: string })
+      .CUSTOM_CHROME_PATH;
+    if (customChromePath == null || customChromePath === '') {
+      throw new Error(
+        'Chrome path not found. Please read the in the packages CONTRIBUTING.md/#chrome-path section.',
+      );
+    }
+    vi.stubEnv('CHROME_PATH', customChromePath);
   }
 });
