@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.30.0](https://github.com/code-pushup/cli/compare/v0.29.0...v0.30.0) (2024-03-26)
+
+### Features
+
+- **plugin-js-packages:** fix npm v10 behaviour, parse json-lines ([daa5c5d](https://github.com/code-pushup/cli/commit/daa5c5dae614c436a38de350f8b6934965d55119))
+- **plugin-js-packages:** introduce yarn v1 audit, unify type ([ee3209d](https://github.com/code-pushup/cli/commit/ee3209d397738acd4eefa18df0357d7c4b3de67e))
+- **plugin-js-packages:** introduce yarn v1 outdated, unify type ([ca7905a](https://github.com/code-pushup/cli/commit/ca7905a342e13cf5b2cd3ddd2fa444d0bccc0971))
+- **plugin-js-packages:** process audit and outdated for different package managers ([3218162](https://github.com/code-pushup/cli/commit/3218162bca16da7e1d30fe192990e1eb1c795406))
+
 # [0.29.0](https://github.com/code-pushup/cli/compare/v0.28.0...v0.29.0) (2024-03-25)
 
 ### Bug Fixes
