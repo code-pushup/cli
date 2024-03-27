@@ -109,6 +109,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" >> "$GITHUB_ENV"
+      - name: Print custom Chrome path
+        run: |
+          printf 'CUSTOM_CHROME_PATH: \n' "$CUSTOM_CHROME_PATH"
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
 
