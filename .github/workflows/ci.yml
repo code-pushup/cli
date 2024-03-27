@@ -111,7 +111,7 @@ jobs:
           echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         shell: pwsh
       - name: Log environment variables
-          if [ "${{ secrets.ACTIONS_STEP_DEBUG }}" == "true" ]; then
+          if [ "${{ secrets.ACTIONS_STEP_DEBUG }}" == "false" ]; then
           printenv
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
