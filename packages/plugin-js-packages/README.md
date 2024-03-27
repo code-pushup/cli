@@ -10,8 +10,11 @@ This plugin checks for known vulnerabilities and outdated dependencies.
 It supports the following package managers:
 
 - [NPM](https://docs.npmjs.com/)
-- [Yarn v1](https://classic.yarnpkg.com/docs/) & [Yarn v2+](https://yarnpkg.com/getting-started)
+- [Yarn v1](https://classic.yarnpkg.com/docs/)[Yarn v2+](https://yarnpkg.com/getting-started)
 - [PNPM](https://pnpm.io/pnpm-cli)
+
+> ![NOTE]
+> As of now, in order to check outdated dependencies for Yarn v2+, you need to install [`yarn-plugin-outdated`](https://github.com/mskelton/yarn-plugin-outdated).
 
 ## Getting started
 
