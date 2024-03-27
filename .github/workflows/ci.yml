@@ -111,6 +111,7 @@ jobs:
           echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" >> "$GITHUB_ENV"
       - name: Print custom Chrome path
         run: |
+          printf 'NX_BASE: \n' "$NX_BASE" |
           printf 'CUSTOM_CHROME_PATH: \n' "$CUSTOM_CHROME_PATH"
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
