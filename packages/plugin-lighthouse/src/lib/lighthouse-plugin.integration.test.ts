@@ -6,6 +6,8 @@ import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { getRunner, lighthousePlugin } from './lighthouse-plugin';
 
+const lighthousePluginTestFolder = join('tmp', 'plugin-lighthouse');
+
 describe('lighthousePlugin', () => {
   it('should create valid plugin config', () => {
     const pluginConfig = lighthousePlugin('https://www.google.com/');
@@ -16,10 +18,14 @@ describe('lighthousePlugin', () => {
 });
 
 describe('getRunner', () => {
-  const getRunnerTestFolder = join('tmp', 'plugin-lighthouse', 'get-runner');
+  const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
     await rm(getRunnerTestFolder, { recursive: true, force: true });
+  });
+
+  afterAll(async () => {
+    await rm(lighthousePluginTestFolder, { recursive: true, force: true });
   });
 
   it('should create and execute runner correctly', async () => {
