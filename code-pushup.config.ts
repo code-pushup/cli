@@ -1,14 +1,12 @@
 import 'dotenv/config';
-import { join } from 'node:path';
 import { z } from 'zod';
 import {
-  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   benchmarkJsPlugin,
   benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
-  fileSizeRecommendedRefs,
-  lighthouseCorePerfGroupRefs,
-  lighthousePlugin,
+  fileSizeRecommendedRefs, // lighthouseCorePerfGroupRefs,
+  // lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
@@ -72,7 +70,7 @@ const config: CoreConfig = {
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
-      budget: 307_200, // 300 kB
+      budget: 174_080, // 170 kB
     }),
 
     packageJsonPlugin({
@@ -81,11 +79,12 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin({
-      url: 'https://staging.code-pushup.dev/login',
-      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
-      headless: true,
-    }),
+    // see https://github.com/code-pushup/cli/issues/538
+    // await lighthousePlugin({
+    //   url: 'https://staging.code-pushup.dev/login',
+    //   outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+    //   headless: true,
+    // }),
 
     await benchmarkJsPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
@@ -151,8 +150,8 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
-        ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuiteNames.map(suiteNameToCategoryRef),
+        // ...lighthouseCorePerfGroupRefs,
+        ...benchmarkJsSuiteNames.map(benchmarkJsSuiteNameToCategoryRef),
       ],
     },
   ],
