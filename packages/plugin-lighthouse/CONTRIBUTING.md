@@ -11,7 +11,7 @@ npm install
 ### Chrome path
 
 In this plugin we provide Lighthouse functionality exposed over the `lighthousePlugin`.
-To e2e test lighthouse properly we work with a predefined testing setup.
+To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
