@@ -25,6 +25,18 @@ To prevent this from happening you have to provide the path manually in your `.e
 CUSTOM_CHROME_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 ```
 
+In the CI you can set the env variable like this:
+
+```yml
+# ...
+- name: Set custom Chrome path for Windows only
+  if: matrix.os == 'windows-latest'
+  run: |
+    echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+  shell: pwsh
+# ...
+```
+
 We added consider this path in our `beforeAll` hook.
 
 ```ts
