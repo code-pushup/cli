@@ -111,7 +111,7 @@ jobs:
           echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         shell: pwsh
       - name: Log environment variables
-        if: matrix.os == 'windows-latest'
+        if: secrets.ACTIONS_STEP_DEBUG == false
         run: |
             printenv
       - name: Integration test affected projects
