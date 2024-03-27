@@ -1,32 +1,83 @@
 import type { PackageAuditLevel } from '../../config';
 
+// Unified Audit result type
+export type Vulnerability = {
+  name: string;
+  id?: number;
+  title?: string;
+  url?: string;
+  severity: PackageAuditLevel;
+  versionRange: string;
+  directDependency: string | true; // either name of direct dependency this one affects or true
+  fixInformation: string | false; // either guide on how to fix the vulnerability or false
+};
+export type AuditSummary = Record<PackageAuditLevel | 'total', number>;
+export type AuditResult = {
+  vulnerabilities: Vulnerability[];
+  summary: AuditSummary;
+};
+
 // Subset of NPM audit JSON type
-type Advisory = {
+export type NpmAdvisory = {
   title: string;
   url: string;
 };
 
-type FixInformation = {
+export type NpmFixInformation = {
   name: string;
   version: string;
   isSemVerMajor: boolean;
 };
 
-export type Vulnerability = {
+export type NpmVulnerability = {
   name: string;
   severity: PackageAuditLevel;
-  via: Advisory[] | string[];
+  isDirect: boolean;
+  effects: string[];
+  via: NpmAdvisory[] | string[];
   range: string;
-  fixAvailable: boolean | FixInformation;
+  fixAvailable: boolean | NpmFixInformation;
 };
 
-export type Vulnerabilities = {
-  [key: string]: Vulnerability;
-};
+export type NpmVulnerabilities = Record<string, NpmVulnerability>;
 
 export type NpmAuditResultJson = {
-  vulnerabilities: Vulnerabilities;
+  vulnerabilities: NpmVulnerabilities;
   metadata: {
-    vulnerabilities: Record<PackageAuditLevel | 'total', number>;
+    vulnerabilities: AuditSummary;
   };
 };
+
+// Subset of Yarn v1 audit JSON type
+export type Yarnv1AuditAdvisory = {
+  type: 'auditAdvisory';
+  data: {
+    resolution: {
+      id: number;
+      path: string;
+    };
+    /* eslint-disable @typescript-eslint/naming-convention */
+    advisory: {
+      module_name: string;
+      severity: PackageAuditLevel;
+      vulnerable_versions: string;
+      recommendation: string;
+      title: string;
+      url: string;
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+  };
+};
+
+export type Yarnv1AuditSummary = {
+  type: 'auditSummary';
+  data: {
+    vulnerabilities: Record<PackageAuditLevel, number>;
+  };
+};
+
+// NOTE: When rest operator can be at the beginning, the process will be much simpler
+export type Yarnv1AuditResultJson = [
+  ...Yarnv1AuditAdvisory[],
+  Yarnv1AuditSummary,
+];

@@ -1,29 +1,29 @@
 import { writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type {
-  AuditOutput,
-  IssueSeverity,
-  RunnerConfig,
-} from '@code-pushup/models';
+import type { RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   executeProcess,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  objectFromEntries,
   readJsonFile,
 } from '@code-pushup/utils';
 import {
+  AuditSeverity,
   DependencyGroup,
   FinalJSPackagesPluginConfig,
-  PackageAuditLevel,
   PackageManager,
   dependencyGroups,
 } from '../config';
+import { pkgManagerCommands } from '../constants';
+import { auditArgs, normalizeAuditMapper } from './audit/constants';
 import { auditResultToAuditOutput } from './audit/transform';
-import { NpmAuditResultJson } from './audit/types';
+import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
+import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
-import { NpmOutdatedResultJson } from './outdated/types';
+import { filterAuditResult } from './utils';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -58,50 +58,71 @@ export async function executeRunner(): Promise<void> {
 
 async function processOutdated(packageManager: PackageManager) {
   const { stdout } = await executeProcess({
-    command: packageManager,
-    args: ['outdated', '--json', '--long'],
-    alwaysResolve: true, // npm outdated returns exit code 1 when outdated dependencies are found
+    command: pkgManagerCommands[packageManager],
+    args: ['outdated', ...outdatedArgs[packageManager]],
+    cwd: process.cwd(),
+    ignoreExitCode: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
 
-  const outdatedResult = JSON.parse(stdout) as NpmOutdatedResultJson;
+  const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
   return dependencyGroups.map(dep =>
-    outdatedResultToAuditOutput(outdatedResult, dep),
+    outdatedResultToAuditOutput(normalizedResult, packageManager, dep),
   );
 }
 
 async function processAudit(
   packageManager: PackageManager,
-  auditLevelMapping: Record<PackageAuditLevel, IssueSeverity>,
+  auditLevelMapping: AuditSeverity,
 ) {
   const auditResults = await Promise.allSettled(
-    dependencyGroups.map<Promise<AuditOutput>>(async dep => {
-      const { stdout } = await executeProcess({
-        command: packageManager,
-        args: ['audit', ...getNpmAuditOptions(dep)],
-      });
-
-      const auditResult = JSON.parse(stdout) as NpmAuditResultJson;
-      return auditResultToAuditOutput(auditResult, dep, auditLevelMapping);
-    }),
+    dependencyGroups.map(
+      async (dep): Promise<[DependencyGroup, AuditResult]> => {
+        const { stdout } = await executeProcess({
+          command: pkgManagerCommands[packageManager],
+          args: ['audit', ...auditArgs(dep)[packageManager]],
+          cwd: process.cwd(),
+          ignoreExitCode: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
+        });
+        return [dep, normalizeAuditMapper[packageManager](stdout)];
+      },
+    ),
   );
+
   const rejected = auditResults.filter(isPromiseRejectedResult);
   if (rejected.length > 0) {
     rejected.map(result => {
       console.error(result.reason);
     });
 
-    throw new Error(`JS Packages plugin: Running npm audit failed.`);
+    throw new Error(
+      `JS Packages plugin: Running ${pkgManagerCommands[packageManager]} audit failed.`,
+    );
   }
 
-  return auditResults.filter(isPromiseFulfilledResult).map(x => x.value);
-}
+  const fulfilled = objectFromEntries(
+    auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
+  );
 
-function getNpmAuditOptions(currentDep: DependencyGroup) {
-  const flags = [
-    `--include=${currentDep}`,
-    ...dependencyGroups
-      .filter(dep => dep !== currentDep)
-      .map(dep => `--omit=${dep}`),
-  ];
-  return [...flags, '--json', '--audit-level=none'];
+  // For npm, one needs to filter out prod dependencies as there is no way to omit them
+  const uniqueResults =
+    packageManager === 'npm'
+      ? {
+          prod: fulfilled.prod,
+          dev: filterAuditResult(fulfilled.dev, 'name', fulfilled.prod),
+          optional: filterAuditResult(
+            fulfilled.optional,
+            'name',
+            fulfilled.prod,
+          ),
+        }
+      : fulfilled;
+
+  return dependencyGroups.map(group =>
+    auditResultToAuditOutput(
+      uniqueResults[group],
+      packageManager,
+      group,
+      auditLevelMapping,
+    ),
+  );
 }

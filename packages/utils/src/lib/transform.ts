@@ -12,6 +12,10 @@ export function objectToEntries<T extends object>(obj: T) {
   return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
+export function objectFromEntries<K extends PropertyKey, V>(entries: [K, V][]) {
+  return Object.fromEntries(entries) as Record<K, V>;
+}
+
 export function countOccurrences<T extends PropertyKey>(
   values: T[],
 ): Partial<Record<T, number>> {
@@ -113,10 +117,28 @@ export function toUnixNewlines(text: string): string {
   return platform() === 'win32' ? text.replace(/\r\n/g, '\n') : text;
 }
 
+export function fromJsonLines<T = unknown>(jsonLines: string) {
+  const unifiedNewLines = toUnixNewlines(jsonLines).trim();
+  return JSON.parse(`[${unifiedNewLines.split('\n').join(',')}]`) as T;
+}
+
+export function toJsonLines<T>(json: T[]) {
+  return json.map(item => JSON.stringify(item)).join('\n');
+}
+
 export function capitalize<T extends string>(text: T): Capitalize<T> {
   return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
     1,
   )}` as Capitalize<T>;
+}
+
+export function apostrophize(text: string, upperCase?: boolean) {
+  const lastCharMatch = text.match(/(\w)\W*$/);
+  const lastChar = lastCharMatch?.[1] ?? '';
+
+  return `${text}'${
+    lastChar.toLocaleLowerCase() === 's' ? '' : upperCase ? 'S' : 's'
+  }`;
 }
 
 export function toNumberPrecision(
