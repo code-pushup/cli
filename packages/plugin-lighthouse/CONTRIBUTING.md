@@ -34,11 +34,12 @@ In the CI you can set the env variable like this:
   run: |
     echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
   shell: pwsh
-  
+
 # Optional debug log
 - name: Log all environment variables
   run: |
     printenv
+
 # ...
 ```
 
