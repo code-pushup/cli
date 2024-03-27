@@ -24,14 +24,14 @@ export type PluginOptions = {
 export async function create(options: PluginOptions): Promise<PluginConfig> {
   const { tsconfig, targets, outputDir } = options;
   // load the suites at before returning the plugin config to be able to return a more dynamic config
-  const suits = await loadSuites(targets, { tsconfig });
+  const suites = await loadSuites(targets, { tsconfig });
 
   return {
     slug: 'benchmark-js',
     title: 'Benchmark JS',
     icon: 'folder-benchmark',
-    audits: toAuditMetadata(suits.map(({ suiteName }) => suiteName)),
-    runner: runnerFunction(suits, { outputDir }),
+    audits: toAuditMetadata(suites.map(({ suiteName }) => suiteName)),
+    runner: runnerFunction(suites, { outputDir }),
   } satisfies PluginConfig;
 }
 

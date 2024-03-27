@@ -4,12 +4,12 @@
 
 ---
 
-The plugin analyzes a given suit name and creates benchmark audits.  
+The plugin analyzes a given suite name and creates benchmark audits.  
 It uses [tinybench](https://github.com/tinylibs/tinybench) under the hood.
 
 You can configure the plugin with the following options:
 
-- `targets` - files to load that export a suit
+- `targets` - files to load that export a suite
 - `tsconfig` - path to tsconfig file _(optional)_
 - `logs` - additional information _(optional)_
 
@@ -32,7 +32,7 @@ You can configure the plugin with the following options:
      plugins: [
        // ...
        await benchmarkJsPlugin({
-         targets: ['suits/score-report.ts'],
+         targets: ['suites/score-report.ts'],
        }),
      ],
    };
@@ -42,8 +42,8 @@ You can configure the plugin with the following options:
 
 ```ts
 // typescript
-const suitConfig = {
-  suitName: 'glob',
+const suiteConfig = {
+  suiteName: 'glob',
   targetImplementation: 'version-2',
   cases: [
     ['version-1', () => new Promise(resolve => setTimeout(resolve, 30))],
@@ -99,7 +99,7 @@ Each audit has the test cases listed as issue.
 
 ## Standalone helper
 
-The plugin also provides a helper function to execute a test suit.
+The plugin also provides a helper function to execute a test suite.
 
 ```ts
 import { SuiteConfig, runSuit } from './suite-helper.ts';

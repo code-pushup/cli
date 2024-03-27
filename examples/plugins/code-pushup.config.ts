@@ -23,7 +23,7 @@ import {
  */
 
 const projectRoot = join('examples', 'plugins');
-const benchmarkJsSuitNames = ['dummy-suite'];
+const benchmarkJsSuiteNames = ['dummy-suite'];
 
 const config = {
   plugins: [
@@ -48,7 +48,7 @@ const config = {
       verbose: true,
     }),
     await benchmarkJsPlugin({
-      targets: benchmarkJsSuitNames.map(folder =>
+      targets: benchmarkJsSuiteNames.map(folder =>
         join(projectRoot, 'perf', folder, 'index.ts'),
       ),
       tsconfig: join(projectRoot, 'tsconfig.perf.json'),
@@ -62,7 +62,7 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuitNames.map(suiteNameToCategoryRef),
+        ...benchmarkJsSuiteNames.map(suiteNameToCategoryRef),
       ],
     },
     {
