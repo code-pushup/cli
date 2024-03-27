@@ -21,7 +21,6 @@ jobs:
       CP_API_KEY: ${{ secrets.CP_API_KEY }}
       CP_ORGANIZATION: code-pushup
       CP_PROJECT: cli
-      CUSTOM_CHROME_PATH: C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

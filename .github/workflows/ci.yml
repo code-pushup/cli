@@ -90,8 +90,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     name: Integration tests
-    env:
-      CUSTOM_CHROME_PATH: C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -107,6 +105,9 @@ jobs:
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
+      - name: Set custom Chrome path for Windows
+        if: matrix.os == 'windows-latest'
+        run: echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" >> $GITHUB_ENV
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
 
