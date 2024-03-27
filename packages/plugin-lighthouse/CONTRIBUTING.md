@@ -32,7 +32,7 @@ beforeEach(() => {
   try {
     vi.stubEnv('CHROME_PATH', getChromePath());
   } catch (e) {
-    const customChromePath = (process.env as { CUSTOM_CHROME_PATH: string }).CUSTOM_CHROME_PATH;
+    const customChromePath = process.env['CUSTOM_CHROME_PATH'];
     if (customChromePath == null || customChromePath === '') {
       throw new Error('Chrome path not found. Please read the in the packages CONTRIBUTING.md/#trouble-shooting section.');
     }
