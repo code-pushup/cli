@@ -22,7 +22,7 @@ import {
  *
  */
 
-const projectRoot = join('quality-metrics-cli', 'examples', 'plugins');
+const projectRoot = join('examples', 'plugins');
 const benchmarkJsSuitNames = ['dummy-suite'];
 
 const config = {
