@@ -108,13 +108,8 @@ jobs:
       - name: Set custom Chrome path for Windows
         if: matrix.os == 'windows-latest'
         run: |
-          echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8 |
         shell: pwsh
-     #   run: |
-     #     echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" >> "$GITHUB_ENV"
-      - name: Print NX_BASE
-        run: |
-          printf "NX_BASE: $NX_BASE"
       - name: Print custom Chrome path
         run: |
           printf "CUSTOM_CHROME_PATH: $CUSTOM_CHROME_PATH"
