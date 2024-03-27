@@ -69,7 +69,7 @@ export function vulnerabilitiesToIssues(
     return [];
   }
 
-  return Object.values(vulnerabilities).map((detail): Issue => {
+  return vulnerabilities.map((detail): Issue => {
     const versionRange =
       detail.versionRange === '*'
         ? '**all** versions'

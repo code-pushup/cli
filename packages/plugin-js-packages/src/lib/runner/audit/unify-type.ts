@@ -10,6 +10,7 @@ import {
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
   Yarnv1AuditSummary,
+  Yarnv2AuditResultJson,
 } from './types';
 
 export function npmToAuditResult(output: string): AuditResult {
@@ -108,21 +109,27 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
 
   const vulnerabilities = yarnv1Advisory.map(
     ({ data: { resolution, advisory } }): Vulnerability => {
-      const directDependency = resolution.path.slice(
-        0,
-        resolution.path.indexOf('>'),
-      );
+      const { id, path } = resolution;
+      const directDependency = path.slice(0, path.indexOf('>'));
+
+      const {
+        module_name: name,
+        title,
+        url,
+        severity,
+        vulnerable_versions: versionRange,
+        recommendation: fixInformation,
+      } = advisory;
 
       return {
-        name: advisory.module_name,
-        title: advisory.title,
-        id: resolution.id,
-        url: advisory.url,
-        severity: advisory.severity,
-        versionRange: advisory.vulnerable_versions,
-        directDependency:
-          advisory.module_name === directDependency ? true : directDependency,
-        fixInformation: advisory.recommendation,
+        name,
+        title,
+        id,
+        url,
+        severity,
+        versionRange,
+        directDependency: name === directDependency ? true : directDependency,
+        fixInformation,
       };
     },
   );
@@ -152,4 +159,41 @@ function validateYarnv1Result(
   );
 
   return [vulnerabilities, summary];
+}
+
+export function yarnv2ToAuditResult(output: string): AuditResult {
+  const yarnv2Audit = JSON.parse(output) as Yarnv2AuditResultJson;
+
+  const vulnerabilities = Object.values(yarnv2Audit.advisories).map(
+    ({
+      module_name: name,
+      severity,
+      title,
+      url,
+      vulnerable_versions: versionRange,
+      recommendation: fixInformation,
+      findings,
+    }): Vulnerability => {
+      // TODO missing example of an indirect dependency to verify this
+      const directDep = findings[0]?.paths[0];
+      return {
+        name,
+        severity,
+        title,
+        url,
+        versionRange,
+        fixInformation,
+        directDependency:
+          directDep != null && directDep !== name ? directDep : true,
+      };
+    },
+  );
+
+  const total = Object.values(yarnv2Audit.metadata.vulnerabilities).reduce(
+    (acc, value) => acc + value,
+    0,
+  );
+  const summary = { ...yarnv2Audit.metadata.vulnerabilities, total };
+
+  return { vulnerabilities, summary };
 }

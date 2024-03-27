@@ -16,7 +16,7 @@ describe('jsPackagesPlugin', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
-        title: 'Plugin for JS packages',
+        title: 'JS Packages',
         audits: expect.any(Array),
         groups: expect.any(Array),
         runner: expect.any(Object),
@@ -69,7 +69,7 @@ describe('jsPackagesPlugin', () => {
           expect.objectContaining<Partial<Group>>({
             slug: 'yarn-classic-audit',
             refs: [
-              { slug: 'yarn-classic-audit-prod', weight: 8 },
+              { slug: 'yarn-classic-audit-prod', weight: 3 },
               { slug: 'yarn-classic-audit-dev', weight: 1 },
               { slug: 'yarn-classic-audit-optional', weight: 1 },
             ],
