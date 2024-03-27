@@ -1,5 +1,5 @@
 import { Format } from '../persist-config';
 
-export const PERSIST_OUTPUT_DIR = '.code-pushup';
-export const PERSIST_FORMAT: Format[] = ['json'];
-export const PERSIST_FILENAME = 'report';
+export const DEFAULT_PERSIST_OUTPUT_DIR = '.code-pushup';
+export const DEFAULT_PERSIST_FILENAME = 'report';
+export const DEFAULT_PERSIST_FORMAT: Format[] = ['json', 'md'];

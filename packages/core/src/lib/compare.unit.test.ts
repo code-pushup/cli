@@ -9,7 +9,7 @@ import {
   REPORT_MOCK,
   reportMock,
 } from '@code-pushup/test-utils';
-import { Diff, readJsonFile } from '@code-pushup/utils';
+import { Diff, fileExists, readJsonFile } from '@code-pushup/utils';
 import { compareReportFiles, compareReports } from './compare';
 
 describe('compareReportFiles', () => {
@@ -23,22 +23,39 @@ describe('compareReportFiles', () => {
     );
   });
 
-  it('should create valid reports-diff.json from report.json files', async () => {
+  it('should create valid report-diff.json from report.json files', async () => {
     await compareReportFiles(
       {
         before: join(MEMFS_VOLUME, 'source-report.json'),
         after: join(MEMFS_VOLUME, 'target-report.json'),
       },
-      join(MEMFS_VOLUME, 'reports-diff.json'),
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json'] },
     );
 
     const reportsDiffPromise = readJsonFile(
-      join(MEMFS_VOLUME, 'reports-diff.json'),
+      join(MEMFS_VOLUME, 'report-diff.json'),
     );
     await expect(reportsDiffPromise).resolves.toBeTruthy();
 
     const reportsDiff = await reportsDiffPromise;
     expect(() => reportsDiffSchema.parse(reportsDiff)).not.toThrow();
+  });
+
+  it('should create all diff files specified by persist.format', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+    );
+
+    await expect(
+      fileExists(join(MEMFS_VOLUME, 'report-diff.json')),
+    ).resolves.toBeTruthy();
+    await expect(
+      fileExists(join(MEMFS_VOLUME, 'report-diff.md')),
+    ).resolves.toBeTruthy();
   });
 });
 

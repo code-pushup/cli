@@ -1,32 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CLI compare > should compare report.json files and create report-diff.json 1`] = `
+exports[`CLI compare > should compare report.json files and create report-diff.json and report-diff.md 1`] = `
 {
   "audits": {
     "added": [],
     "changed": [
-      {
-        "displayValues": {
-          "after": "62 %",
-          "before": "62 %",
-        },
-        "plugin": {
-          "slug": "coverage",
-          "title": "Code coverage",
-        },
-        "scores": {
-          "after": 0.617,
-          "before": 0.6211,
-          "diff": -0.0040999999999999925,
-        },
-        "slug": "line-coverage",
-        "title": "Line coverage",
-        "values": {
-          "after": 62,
-          "before": 62,
-          "diff": 0,
-        },
-      },
       {
         "displayValues": {
           "after": "passed",
@@ -96,28 +74,6 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     ],
     "removed": [],
     "unchanged": [
-      {
-        "displayValue": "50 %",
-        "plugin": {
-          "slug": "coverage",
-          "title": "Code coverage",
-        },
-        "score": 0.5,
-        "slug": "function-coverage",
-        "title": "Function coverage",
-        "value": 50,
-      },
-      {
-        "displayValue": "88 %",
-        "plugin": {
-          "slug": "coverage",
-          "title": "Code coverage",
-        },
-        "score": 0.875,
-        "slug": "branch-coverage",
-        "title": "Branch coverage",
-        "value": 88,
-      },
       {
         "displayValue": "passed",
         "plugin": {
@@ -609,15 +565,6 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     "changed": [
       {
         "scores": {
-          "after": 0.6242,
-          "before": 0.62461,
-          "diff": -0.00041000000000002146,
-        },
-        "slug": "code-coverage",
-        "title": "Code coverage",
-      },
-      {
-        "scores": {
           "after": 0.7692307692307693,
           "before": 0.5384615384615384,
           "diff": 0.23076923076923084,
@@ -641,19 +588,6 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
   "groups": {
     "added": [],
     "changed": [
-      {
-        "plugin": {
-          "slug": "coverage",
-          "title": "Code coverage",
-        },
-        "scores": {
-          "after": 0.6242,
-          "before": 0.62461,
-          "diff": -0.00041000000000002146,
-        },
-        "slug": "coverage",
-        "title": "Code coverage metrics",
-      },
       {
         "plugin": {
           "slug": "eslint",
@@ -700,6 +634,6 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     ],
   },
   "packageName": "@code-pushup/core",
-  "version": "0.26.1",
+  "version": Any<String>,
 }
 `;

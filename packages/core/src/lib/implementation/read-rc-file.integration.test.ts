@@ -42,7 +42,7 @@ describe('readRcByPath', () => {
     await expect(
       readRcByPath(
         join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
-        'tsconfig.base.json',
+        join(configDirPath, 'tsconfig.json'),
       ),
     ).resolves.toEqual({
       plugins: [

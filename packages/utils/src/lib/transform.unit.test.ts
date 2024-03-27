@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import {
+  apostrophize,
   capitalize,
   countOccurrences,
   deepClone,
   distinct,
   factorOf,
+  fromJsonLines,
+  objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
   toArray,
+  toJsonLines,
   toNumberPrecision,
   toOrdinal,
   toUnixPath,
@@ -33,6 +37,30 @@ describe('objectToKeys', () => {
   it('should transform empty object into empty array', () => {
     const keys: never[] = objectToKeys({});
     expect(keys).toEqual([]);
+  });
+});
+
+describe('objectFromEntries', () => {
+  it('should transform key-value pairs to an object', () => {
+    expect(
+      objectFromEntries([
+        ['jan', 'January'],
+        ['feb', 'February'],
+      ]),
+    ).toEqual({ jan: 'January', feb: 'February' });
+  });
+
+  it('should transform key-value pairs with numeric keys to an object', () => {
+    expect(
+      objectFromEntries([
+        [1, 'January'],
+        [2, 'February'],
+      ]),
+    ).toEqual({ 1: 'January', 2: 'February' });
+  });
+
+  it('should transform empty entries to empty object', () => {
+    expect(objectFromEntries([])).toEqual({});
   });
 });
 
@@ -183,6 +211,33 @@ describe('toUnixPath', () => {
   });
 });
 
+describe('JSON lines format', () => {
+  const head = { label: 'head' };
+  const body = { label: 'body' };
+
+  describe('fromJsonLines', () => {
+    it('should transform JSON lines to JSON', () => {
+      const jsonLines = [head, body]
+        .map(label => JSON.stringify(label))
+        .join('\n');
+
+      expect(fromJsonLines(jsonLines)).toEqual([head, body]);
+    });
+  });
+
+  describe('toJsonLines', () => {
+    it('should transform JSON to JSON lines', () => {
+      expect(toJsonLines([head, body])).toBe(
+        '{"label":"head"}\n{"label":"body"}',
+      );
+    });
+  });
+
+  it('should transform to JSON lines and back', () => {
+    expect(fromJsonLines(toJsonLines([head, body]))).toEqual([head, body]);
+  });
+});
+
 describe('capitalize', () => {
   it('should transform the first string letter to upper case', () => {
     expect(capitalize('code PushUp')).toBe('Code PushUp');
@@ -194,6 +249,24 @@ describe('capitalize', () => {
 
   it('should accept empty string', () => {
     expect(capitalize('')).toBe('');
+  });
+});
+
+describe('apostrophize', () => {
+  it("should add apostrophe and 's'", () => {
+    expect(apostrophize('cli')).toBe("cli's");
+  });
+
+  it("should add apostrophe without 's' for words ending with 's'", () => {
+    expect(apostrophize('yargs')).toBe("yargs'");
+  });
+
+  it("should add capital 'S' when upper case is defined", () => {
+    expect(apostrophize('WORLD', true)).toBe("WORLD'S");
+  });
+
+  it('should leave formatting if provided', () => {
+    expect(apostrophize('`git`')).toBe("`git`'s");
   });
 });
 

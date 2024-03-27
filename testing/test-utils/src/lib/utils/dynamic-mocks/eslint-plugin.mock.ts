@@ -1,15 +1,20 @@
 import { join } from 'node:path';
 import type {
   Audit,
+  AuditReport,
   CategoryRef,
   Group,
   PluginConfig,
   PluginReport,
 } from '@code-pushup/models';
-import { ESLINT_AUDITS_MAP } from './eslint-audits.mock';
+import {
+  ESLINT_AUDITS_FIXED_SLUGS,
+  ESLINT_AUDITS_MAP,
+  ESLINT_AUDIT_SLUGS,
+} from './eslint-audits.mock';
 import { echoRunnerConfigMock } from './runner-config.mock';
 
-const ESLINT_PLUGIN_GROUP_MAX_LINES: Group = {
+export const ESLINT_PLUGIN_GROUP_MAX_LINES: Group = {
   slug: 'max-line-limitation',
   title: 'Maximum lines limitation',
   refs: [
@@ -24,7 +29,7 @@ const ESLINT_PLUGIN_GROUP_MAX_LINES: Group = {
   ],
 };
 
-const eslintMeta = {
+export const ESLINT_PLUGIN_META = {
   slug: 'eslint',
   title: 'ESLint',
   icon: 'eslint',
@@ -44,7 +49,7 @@ export function eslintPluginConfigMock(outputDir = 'tmp'): PluginConfig {
       } satisfies Audit),
   );
   return {
-    ...eslintMeta,
+    ...ESLINT_PLUGIN_META,
     runner: echoRunnerConfigMock(
       Object.values(ESLINT_AUDITS_MAP),
       join(outputDir, 'eslint-out.json'),
@@ -55,15 +60,34 @@ export function eslintPluginConfigMock(outputDir = 'tmp'): PluginConfig {
 
 export function eslintPluginReportMock(): PluginReport {
   return {
-    ...eslintMeta,
+    ...ESLINT_PLUGIN_META,
     date: '2023-10-18T07:49:45.531Z',
     duration: 368,
     audits: Object.values(ESLINT_AUDITS_MAP),
     groups: [ESLINT_PLUGIN_GROUP_MAX_LINES],
   };
 }
+export function eslintPluginReportAltMock(): PluginReport {
+  return {
+    ...eslintPluginReportMock(),
+    date: '2024-03-12T12:42:05.388Z',
+    duration: 316,
+    audits: ESLINT_AUDIT_SLUGS.map(
+      (slug): AuditReport =>
+        ESLINT_AUDITS_FIXED_SLUGS.includes(slug)
+          ? {
+              ...ESLINT_AUDITS_MAP[slug],
+              score: 1,
+              value: 0,
+              displayValue: 'passed',
+              details: { issues: [] },
+            }
+          : ESLINT_AUDITS_MAP[slug],
+    ),
+  };
+}
 
-type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
+export type ESLintAuditSlug = keyof typeof ESLINT_AUDITS_MAP;
 
 export function eslintAuditRefMock(
   slug: ESLintAuditSlug,

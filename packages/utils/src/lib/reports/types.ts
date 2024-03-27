@@ -28,3 +28,5 @@ export type SortableAuditReport = AuditReport & {
   weight: number;
   plugin: string;
 };
+
+export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';

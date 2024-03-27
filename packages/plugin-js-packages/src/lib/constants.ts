@@ -1,5 +1,37 @@
-import { MaterialIcon } from '@code-pushup/models';
-import { PackageDependencyType, PackageManager } from './config';
+import { IssueSeverity, MaterialIcon } from '@code-pushup/models';
+import type {
+  DependencyGroup,
+  PackageAuditLevel,
+  PackageManager,
+} from './config';
+import { DependencyGroupLong } from './runner/outdated/types';
+
+export const defaultAuditLevelMapping: Record<
+  PackageAuditLevel,
+  IssueSeverity
+> = {
+  critical: 'error',
+  high: 'error',
+  moderate: 'warning',
+  low: 'warning',
+  info: 'info',
+};
+
+export const dependencyGroupToLong: Record<
+  DependencyGroup,
+  DependencyGroupLong
+> = {
+  prod: 'dependencies',
+  dev: 'devDependencies',
+  optional: 'optionalDependencies',
+};
+
+export const pkgManagerCommands: Record<PackageManager, string> = {
+  npm: 'npm',
+  'yarn-classic': 'yarn',
+  'yarn-modern': 'yarn',
+  pnpm: 'pnpm',
+};
 
 export const pkgManagerNames: Record<PackageManager, string> = {
   npm: 'NPM',
@@ -35,7 +67,7 @@ export const outdatedDocs: Record<PackageManager, string> = {
   pnpm: 'https://pnpm.io/cli/outdated',
 };
 
-export const dependencyDocs: Record<PackageDependencyType, string> = {
+export const dependencyDocs: Record<DependencyGroup, string> = {
   prod: 'https://classic.yarnpkg.com/docs/dependency-types#toc-dependencies',
   dev: 'https://classic.yarnpkg.com/docs/dependency-types#toc-devdependencies',
   optional:
