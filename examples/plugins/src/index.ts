@@ -18,5 +18,5 @@ export {
 } from './lighthouse/src/index';
 export {
   create as benchmarkJsPlugin,
-  suiteNameToCategoryRef,
+  suiteNameToCategoryRef as benchmarkJsSuiteNameToCategoryRef,
 } from './benchmark-js/src/index';

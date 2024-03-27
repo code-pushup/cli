@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   benchmarkJsPlugin,
+  benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   lighthouseCorePerfGroupRefs,
@@ -11,7 +12,6 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-  suiteNameToCategoryRef,
 } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -33,9 +33,7 @@ const envSchema = z
   .partial();
 const env = await envSchema.parseAsync(process.env);
 
-const benchmarkJsSuiteNames = [
-  'score-report'
-];
+const benchmarkJsSuiteNames = ['score-report'];
 
 const config: CoreConfig = {
   ...(env.CP_SERVER &&

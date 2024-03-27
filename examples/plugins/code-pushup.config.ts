@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   benchmarkJsPlugin,
+  benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   lighthouseCorePerfGroupRefs,
@@ -10,7 +11,6 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-  suiteNameToCategoryRef,
 } from '../../dist/examples/plugins';
 
 /**
@@ -62,7 +62,7 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuiteNames.map(suiteNameToCategoryRef),
+        ...benchmarkJsSuiteNames.map(benchmarkJsSuiteNameToCategoryRef),
       ],
     },
     {

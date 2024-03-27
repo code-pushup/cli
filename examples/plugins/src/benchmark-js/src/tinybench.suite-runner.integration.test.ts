@@ -17,7 +17,7 @@ describe('tinybench runner', () => {
             'slower-implementation',
             () => new Promise(resolve => setTimeout(resolve, 500)),
           ],
-        ]
+        ],
       }),
     ).resolves.toEqual(
       expect.arrayContaining([
