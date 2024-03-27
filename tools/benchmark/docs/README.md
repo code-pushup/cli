@@ -2,7 +2,7 @@
 
 ## CLI
 
-Execute any benchmark by running `node ./benchmark/bin.js --targets <filepath>`
+Execute any benchmark by running `node tools/benchmark/bin.mjs --targets <filepath>`
 
 **Result:**  
 ![benchmark-terminal-result.png](benchmark-terminal-result.png)
