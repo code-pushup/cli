@@ -3,10 +3,7 @@ import * as process from 'node:process';
 import { beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
-  const customChromePath =
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    (process.env as { CUSTOM_CHROME_PATH: string | undefined })
-      .CUSTOM_CHROME_PATH;
+  const customChromePath = process.env['CUSTOM_CHROME_PATH'];
 
   if (customChromePath == null) {
     vi.stubEnv('CHROME_PATH', getChromePath());
