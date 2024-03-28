@@ -11,7 +11,7 @@ export function yargsHistoryCommandObject() {
   const command = 'history';
   return {
     command,
-    describe: 'Create history of commits',
+    describe: 'Collect reports for commit history',
     builder: yargs => {
       yargs.options({
         ...yargsHistoryOptionsDefinition(),
