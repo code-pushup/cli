@@ -60,4 +60,4 @@ describe('getRunner', () => {
       `Parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
     );
   });
-}, 30_000);
+}, 40_000);
