@@ -14,14 +14,22 @@ npm install
 
 ## Environment Variables
 
-All variables are explained in detail in the related sections.  
-This table serves as a quick overview of the setup.
+This table provides a quick overview of the environmental setup, with detailed explanations in the corresponding sections.
 
-| Feature              | Local Environment | CI Environment       | Description                                                                                                                          |
-| -------------------- | ----------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `INCLUDE_SLOW_TESTS` | `false`           | `undefined`          | Includes long-running tests (in CI defaults to `true`). Details see [Testing](#Testing)                                              |
-| `CUSTOM_CHROM_PATH`  | -                 | set for Windows only | Path to Chrome executable. Details see [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path) |
-| Quality Pipeline     | off               | on                   | Runs all plugins against the codebase                                                                                                |
+| Feature                          | Local Default | CI Default         | Description                                                                                                                   |
+| -------------------------------- | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
+| `env.CUSTOM_CHROM_PATH`          | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
+| Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                        |
+
+**❗️** Test Inclusion Logic
+
+- `INCLUDE_SLOW_TESTS='false'` skips long tests.
+- without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
+
+**❗️❗️** Windows specific path set only in CI
+
+- some setups also require this setting locally
 
 ## Development
 
