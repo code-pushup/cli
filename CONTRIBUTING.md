@@ -43,7 +43,7 @@ npx nx code-pushup -- collect
 
 ### Testing
 
-To skip long-running tests on your local environment set the following environment variable `SKIP_LONG_TESTS=true`.
+Long-running tests are skipped by default on your local environment. Set the following environment variable `SKIP_LONG_TESTS=true` to run them locally.
 
 ## Git
 

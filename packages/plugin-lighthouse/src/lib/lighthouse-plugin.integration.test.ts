@@ -2,7 +2,10 @@ import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
-import { getLogMessages } from '@code-pushup/test-utils';
+import {
+  getLogMessages,
+  shouldSkipLongRunningTests,
+} from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { createRunnerFunction, lighthousePlugin } from './lighthouse-plugin';
 
@@ -18,8 +21,6 @@ describe('lighthousePlugin', () => {
 });
 
 describe('createRunnerFunction', () => {
-  const skipLongTests = process.env['SKIP_LONG_TESTS'] === 'true';
-
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
@@ -30,7 +31,7 @@ describe('createRunnerFunction', () => {
     await rm(lighthousePluginTestFolder, { recursive: true, force: true });
   });
 
-  it.skipIf(skipLongTests)(
+  it.skipIf(shouldSkipLongRunningTests())(
     'should create and execute runner correctly',
     async () => {
       const runner = createRunnerFunction('https://www.google.com/', {
@@ -50,7 +51,7 @@ describe('createRunnerFunction', () => {
     },
   );
 
-  it.skipIf(skipLongTests)(
+  it.skipIf(shouldSkipLongRunningTests())(
     'should log about unsupported precomputedLanternDataPath flag',
     async () => {
       const precomputedLanternDataPath = join(
