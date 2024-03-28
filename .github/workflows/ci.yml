@@ -119,7 +119,7 @@ jobs:
       #  run: |
       #      printenv
       - name: Integration test affected projects
-        run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
+        run: npx nx affected -t integration-test --parallel=3 --coverage.enabled --skipNxCache
 
   e2e:
     strategy:
