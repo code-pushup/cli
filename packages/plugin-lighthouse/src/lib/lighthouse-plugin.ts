@@ -54,11 +54,11 @@ export function lighthousePlugin(
     icon: 'lighthouse',
     audits,
     groups,
-    runner: getRunner(url, flags),
+    runner: createRunnerFunction(url, flags),
   };
 }
 
-export function getRunner(
+export function createRunnerFunction(
   urlUnderTest: string,
   flags: LighthouseCliFlags = {},
 ): RunnerFunction {
