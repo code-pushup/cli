@@ -5,6 +5,7 @@ import {
   NpmAdvisory,
   NpmAuditResultJson,
   NpmVulnerability,
+  PnpmAuditResultJson,
   Yarnv1AuditAdvisory,
   Yarnv1AuditSummary,
 } from './types';
@@ -12,8 +13,14 @@ import {
   npmToAdvisory,
   npmToAuditResult,
   npmToFixInformation,
+  pnpmToAuditResult,
   yarnv1ToAuditResult,
 } from './unify-type';
+
+const EMPTY_AUDIT_RESULT = {
+  vulnerabilities: [],
+  summary: { critical: 0, high: 0, moderate: 0, low: 0, info: 0, total: 0 },
+};
 
 describe('npmToAuditResult', () => {
   it('should transform NPM audit to unified audit result', () => {
@@ -284,5 +291,124 @@ describe('yarnv1ToAuditResult', () => {
     expect(() => yarnv1ToAuditResult(toJsonLines([advisory]))).toThrow(
       'no summary found',
     );
+  });
+});
+
+describe('pnpmToAuditResult', () => {
+  it('should transform PNPM audit to unified audit result', () => {
+    expect(
+      pnpmToAuditResult(
+        JSON.stringify({
+          advisories: {
+            '123': {
+              module_name: '@cypress/request',
+              severity: 'high',
+              vulnerable_versions: '<2.88.12',
+              recommendation: 'Upgrade to version 2.88.12 or later',
+              title: 'SSR forgery',
+              url: 'https://github.com/advisories',
+              findings: [{ paths: ['. > @cypress/request@2.88.5'] }],
+            },
+          },
+          metadata: {
+            vulnerabilities: {
+              critical: 0,
+              high: 1,
+              moderate: 0,
+              low: 0,
+              info: 0,
+            },
+          },
+        } satisfies PnpmAuditResultJson),
+      ),
+    ).toEqual<AuditResult>({
+      vulnerabilities: [
+        {
+          name: '@cypress/request',
+          severity: 'high',
+          versionRange: '<2.88.12',
+          fixInformation: 'Upgrade to version 2.88.12 or later',
+          directDependency: true,
+          title: 'SSR forgery',
+          url: 'https://github.com/advisories',
+        },
+      ],
+      summary: {
+        critical: 0,
+        high: 1,
+        moderate: 0,
+        low: 0,
+        info: 0,
+        total: 1,
+      },
+    });
+  });
+
+  it.todo('should correctly define direct dependency', () => {
+    expect(
+      pnpmToAuditResult(
+        JSON.stringify({
+          advisories: {
+            '123': {
+              module_name: '@cypress/request',
+              severity: 'high',
+              vulnerable_versions: '<2.88.12',
+              recommendation: 'Upgrade to version 2.88.12 or later',
+              title: 'SSR forgery',
+              url: 'https://github.com/advisories',
+              findings: [{ paths: ['. > cypress > @cypress/request@2.88.5'] }], // TODO ???
+            },
+          },
+          metadata: {
+            vulnerabilities: {
+              critical: 0,
+              high: 1,
+              moderate: 0,
+              low: 0,
+              info: 0,
+            },
+          },
+        } satisfies PnpmAuditResultJson),
+      ),
+    ).toEqual<AuditResult>({
+      vulnerabilities: [
+        {
+          name: '@cypress/request',
+          severity: 'high',
+          versionRange: '<2.88.12',
+          fixInformation: 'Upgrade to version 2.88.12 or later',
+          directDependency: 'cypress',
+          title: 'SSR forgery',
+          url: 'https://github.com/advisories',
+        },
+      ],
+      summary: {
+        critical: 0,
+        high: 1,
+        moderate: 0,
+        low: 0,
+        info: 0,
+        total: 1,
+      },
+    });
+  });
+
+  it('should return empty result for no vulnerabilities', () => {
+    expect(
+      pnpmToAuditResult(
+        JSON.stringify({
+          advisories: {},
+          metadata: {
+            vulnerabilities: {
+              critical: 0,
+              high: 0,
+              moderate: 0,
+              low: 0,
+              info: 0,
+            },
+          },
+        } satisfies PnpmAuditResultJson),
+      ),
+    ).toStrictEqual(EMPTY_AUDIT_RESULT);
   });
 });

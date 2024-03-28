@@ -5,7 +5,11 @@ import {
 } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
 import { AuditResult } from './types';
-import { npmToAuditResult, yarnv1ToAuditResult } from './unify-type';
+import {
+  npmToAuditResult,
+  pnpmToAuditResult,
+  yarnv1ToAuditResult,
+} from './unify-type';
 
 /* eslint-disable no-magic-numbers */
 export const auditScoreModifiers: Record<PackageAuditLevel, number> = {
@@ -27,15 +31,19 @@ export const normalizeAuditMapper: Record<
   'yarn-modern': () => {
     throw new Error('Yarn v2+ audit is not supported yet.');
   },
-  pnpm: () => {
-    throw new Error('PNPM audit is not supported yet.');
-  },
+  pnpm: pnpmToAuditResult,
 };
 
 const npmDependencyOptions: Record<DependencyGroup, string[]> = {
   prod: ['--omit=dev', '--omit=optional'],
   dev: ['--include=dev', '--omit=optional'],
   optional: ['--include=optional', '--omit=dev'],
+};
+
+const pnpmDependencyOptions: Record<DependencyGroup, string[]> = {
+  prod: ['--prod', '--no-optional'],
+  dev: ['--dev', '--no-optional'],
+  optional: [],
 };
 
 export const auditArgs = (
@@ -45,5 +53,5 @@ export const auditArgs = (
   'yarn-classic': ['--json', `--groups ${dependencyGroupToLong[groupDep]}`],
   // TODO: Add once the package managers are supported.
   'yarn-modern': [],
-  pnpm: [],
+  pnpm: ['--json', ...pnpmDependencyOptions[groupDep]],
 });

@@ -1,4 +1,5 @@
 import { fromJsonLines, objectToEntries } from '@code-pushup/utils';
+import { PackageAuditLevel } from '../../config';
 import { filterAuditResult } from '../utils';
 import {
   AuditResult,
@@ -6,6 +7,7 @@ import {
   NpmAuditResultJson,
   NpmFixInformation,
   NpmVulnerabilities,
+  PnpmAuditResultJson,
   Vulnerability,
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
@@ -152,4 +154,58 @@ function validateYarnv1Result(
   );
 
   return [vulnerabilities, summary];
+}
+
+export function pnpmToAuditResult(output: string): AuditResult {
+  const pnpmResult = JSON.parse(output) as PnpmAuditResultJson;
+
+  const vulnerabilities = Object.values(pnpmResult.advisories).map(
+    ({
+      module_name: name,
+      title,
+      url,
+      severity,
+      vulnerable_versions: versionRange,
+      recommendation: fixInformation,
+      findings,
+    }): Vulnerability => {
+      const path = findings[0]?.paths[0];
+      const getdependencyName = (dep: string) => {
+        const match = dep.match(/(\w+)@/);
+        return match?.[1] ?? true;
+      };
+
+      // the format is "X > Y@<version>"
+      // TODO: debug once more data is available
+      const directDependency =
+        path == null || path.startsWith(`. > ${name}`)
+          ? true
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            getdependencyName(path.split(' ').at(-1)!);
+
+      return {
+        name,
+        title,
+        url,
+        severity,
+        versionRange,
+        directDependency: name === directDependency ? true : directDependency,
+        fixInformation,
+      };
+    },
+  );
+
+  return {
+    vulnerabilities,
+    summary: {
+      ...pnpmResult.metadata.vulnerabilities,
+      total: getVulnerabilitiesTotal(pnpmResult.metadata.vulnerabilities),
+    },
+  };
+}
+
+function getVulnerabilitiesTotal(
+  summary: Record<PackageAuditLevel, number>,
+): number {
+  return Object.values(summary).reduce((acc, value) => acc + value, 0);
 }
