@@ -97,16 +97,31 @@ _A helpful chromium setup is preconfigured with the following settings:_
 - A user profile is set up. This enables certain debugging related options as well as help to visually distinguish between test setups as the header bar is colored.
   <img width="1202" alt="chrome-settings-manage-profile" src="./docs/images/chrome-settings-manage-profile.png">
 
-## Troubleshooting
-
-- Show debug logs of Lighthouse.  
-  Set the following environment variable `DEBUG='*'`
-- Lighthouse Error - `Could Not Connect to Chrome`  
-  Your Chrome path is set incorrectly. Read further under [chrome-path](#chrome-path)
-- Lighthouse Error - `start lh:runner:gather" performance mark has not been set`  
-  If this error pops up you are able to launch Chrome but had problems to communicate over the ports.
-  When this error occurs randomly try to increase the timeout.
-
 #### Resources
 
 - https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
+
+## Troubleshooting
+
+1. Verify Chrome Installation  
+   Ensure Chrome is correctly installed and accessible to the Lighthouse process.
+   Run `npx chrome-debug` to test it. Read further under [chrome-path](#chrome-path)
+
+2. Increase Timeout  
+   In **many cases** it is just because of Lighthouse's flaky time of runs.
+   **Try increase the timeout** provide longer processing times.
+
+3. Turn on debug mode
+
+- Show debug logs of Lighthouse. Set the following environment variable: `DEBUG='*'`
+
+4. Understand error messages (⏳ could also be because of timeout problems :D )
+
+- Could not find `report.json` (⏳)
+  ![lighthouse-error-2.png](./docs/images/lighthouse-error-2.png)
+- Lighthouse Error - `Could Not Connect to Chrome` (⏳)
+  ![lighthouse-error-1.png](./docs/images/lighthouse-error-1.png)
+  Your Chrome path is set incorrectly. Read further under [chrome-path](#chrome-path)
+- Lighthouse Error - `start lh:<any>:<performancemark>" performance mark has not been set` (⏳)  
+  ![lighthouse-error-3.png](./docs/images/lighthouse-error-3.png)
+  If this error pops up you are able to launch Chrome but had problems to communicate over the ports.
