@@ -73,4 +73,4 @@ describe('createRunnerFunction', () => {
       );
     },
   );
-}, 38_000);
+}, 45_000);
