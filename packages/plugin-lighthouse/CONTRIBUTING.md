@@ -111,9 +111,8 @@ _A helpful chromium setup is preconfigured with the following settings:_
    In **many cases** it is just because of Lighthouse's flaky time of runs.
    **Try increase the timeout** provide longer processing times.
 
-3. Turn on debug mode
-
-- Show debug logs of Lighthouse. Set the following environment variable: `DEBUG='*'`
+3. Turn on debug mode  
+   Show debug logs of Lighthouse. Set the following environment variable: `DEBUG='*'`
 
 4. Understand error messages (⏳ could also be because of timeout problems :D )
 
