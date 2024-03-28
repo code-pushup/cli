@@ -85,18 +85,19 @@ describe('createRunnerFunction', () => {
   });
 
   it('should return verbose and quiet flags for logging', async () => {
-    await createRunnerFunction('https://localhost:8080', { verbose: true, quiet: true })(
-      undefined,
-    );
+    await createRunnerFunction('https://localhost:8080', {
+      verbose: true,
+      quiet: true,
+    })(undefined);
     expect(setLogLevel).toHaveBeenCalledWith(
       expect.objectContaining({ verbose: true, quiet: true }),
     );
   });
 
   it('should return configPath', async () => {
-    await createRunnerFunction('https://localhost:8080', { configPath: 'lh-config.js' })(
-      undefined,
-    );
+    await createRunnerFunction('https://localhost:8080', {
+      configPath: 'lh-config.js',
+    })(undefined);
     expect(getConfig).toHaveBeenCalledWith(
       expect.objectContaining({ configPath: 'lh-config.js' }),
     );

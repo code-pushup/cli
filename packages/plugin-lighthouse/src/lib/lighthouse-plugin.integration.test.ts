@@ -4,7 +4,7 @@ import { afterEach, expect } from 'vitest';
 import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import {createRunnerFunction, lighthousePlugin} from './lighthouse-plugin';
+import { createRunnerFunction, lighthousePlugin } from './lighthouse-plugin';
 
 const lighthousePluginTestFolder = join('tmp', 'plugin-lighthouse');
 
@@ -17,7 +17,7 @@ describe('lighthousePlugin', () => {
   });
 });
 
-describe('getRunner', () => {
+describe('createRunnerFunction', () => {
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
