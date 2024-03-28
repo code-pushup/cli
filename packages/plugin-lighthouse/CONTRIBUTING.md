@@ -97,6 +97,16 @@ _A helpful chromium setup is preconfigured with the following settings:_
 - A user profile is set up. This enables certain debugging related options as well as help to visually distinguish between test setups as the header bar is colored.
   <img width="1202" alt="chrome-settings-manage-profile" src="./docs/images/chrome-settings-manage-profile.png">
 
+## Troubleshooting
+
+- Show debug logs of Lighthouse.  
+  Set the following environment variable `DEBUG='*'`
+- Lighthouse Error - `Could Not Connect to Chrome`  
+  Your Chrome path is set incorrectly. Read further under [chrome-path](#chrome-path)
+- Lighthouse Error - `start lh:runner:gather" performance mark has not been set`  
+  If this error pops up you are able to launch Chrome but had problems to communicate over the ports.
+  When this error occurs randomly try to increase the timeout.
+
 #### Resources
 
 - https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
