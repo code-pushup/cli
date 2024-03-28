@@ -42,11 +42,6 @@
         "reportsDirectory": "../../coverage/plugin-js-packages/integration-tests"
       }
     },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/plugin-js-packages"
-      }
-    },
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-js-packages {args.ver} {args.tag}",
       "dependsOn": ["build"]

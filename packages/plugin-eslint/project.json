@@ -45,11 +45,6 @@
         "config": "packages/plugin-eslint/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
       }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/plugin-eslint"
-      }
     }
   },
   "tags": ["scope:plugin", "type:feature"]

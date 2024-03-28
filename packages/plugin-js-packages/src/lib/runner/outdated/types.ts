@@ -1,4 +1,3 @@
-// Subset of NPM outdated JSON type
 export const versionType = ['major', 'minor', 'patch'] as const;
 export type VersionType = (typeof versionType)[number];
 export type PackageVersion = Record<VersionType, number>;
@@ -7,18 +6,28 @@ export type DependencyGroupLong =
   | 'devDependencies'
   | 'optionalDependencies';
 
-export type VersionOverview = {
+// Unified Outdated result type
+export type OutdatedResult = {
+  name: string;
+  current: string;
+  latest: string;
+  type: DependencyGroupLong;
+  url?: string;
+}[];
+
+// Subset of NPM outdated JSON type
+export type NpmVersionOverview = {
   current?: string;
   latest: string;
   type: DependencyGroupLong;
   homepage?: string;
 };
 
-export type NormalizedVersionOverview = Omit<VersionOverview, 'current'> & {
+export type NpmNormalizedOverview = Omit<NpmVersionOverview, 'current'> & {
   current: string;
 };
-export type NormalizedOutdatedEntries = [string, NormalizedVersionOverview][];
-export type NpmOutdatedResultJson = Record<string, VersionOverview>;
+
+export type NpmOutdatedResultJson = Record<string, NpmVersionOverview>;
 
 // Subset of Yarn v1 outdated JSON type
 export type Yarnv1VersionOverview = [
@@ -41,11 +50,12 @@ type Yarnv1Table = {
 
 export type Yarnv1OutdatedResultJson = [Yarnv1Info, Yarnv1Table];
 
-// Unified Outdated result type
-export type OutdatedResult = {
-  name: string;
+// Subset of Yarn v2 outdated JSON type
+export type Yarnv2VersionOverview = {
   current: string;
   latest: string;
+  name: string;
   type: DependencyGroupLong;
-  url?: string;
-}[];
+};
+
+export type Yarnv2OutdatedResultJson = Yarnv2VersionOverview[];

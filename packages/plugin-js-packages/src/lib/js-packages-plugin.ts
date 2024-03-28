@@ -50,10 +50,10 @@ export async function jsPackagesPlugin(
 
   return {
     slug: 'js-packages',
-    title: 'Plugin for JS packages',
+    title: 'JS Packages',
     icon: pkgManagerIcons[pkgManager],
     description:
-      'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic and berry, pnpm package managers.',
+      'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
     docsUrl: pkgManagerDocs[pkgManager],
     packageName: name,
     version,
@@ -75,9 +75,17 @@ function createGroups(
       docsUrl: auditDocs[pkgManager],
       refs: [
         // eslint-disable-next-line no-magic-numbers
-        { slug: `${pkgManager}-audit-prod`, weight: 8 },
+        { slug: `${pkgManager}-audit-prod`, weight: 3 },
         { slug: `${pkgManager}-audit-dev`, weight: 1 },
-        { slug: `${pkgManager}-audit-optional`, weight: 1 },
+        // Yarn v2 does not support audit for optional dependencies
+        ...(pkgManager === 'yarn-modern'
+          ? []
+          : [
+              {
+                slug: `${pkgManager}-audit-optional`,
+                weight: 1,
+              },
+            ]),
       ],
     },
     outdated: {
@@ -87,7 +95,7 @@ function createGroups(
       docsUrl: outdatedDocs[pkgManager],
       refs: [
         // eslint-disable-next-line no-magic-numbers
-        { slug: `${pkgManager}-outdated-prod`, weight: 8 },
+        { slug: `${pkgManager}-outdated-prod`, weight: 3 },
         { slug: `${pkgManager}-outdated-dev`, weight: 1 },
         { slug: `${pkgManager}-outdated-optional`, weight: 1 },
       ],
@@ -114,12 +122,17 @@ function createAudits(
       description: getAuditDescription(check, 'dev'),
       docsUrl: dependencyDocs.dev,
     },
-    {
-      slug: `${pkgManager}-${check}-optional`,
-      title: getAuditTitle(pkgManager, check, 'optional'),
-      description: getAuditDescription(check, 'optional'),
-      docsUrl: dependencyDocs.optional,
-    },
+    // Yarn v2 does not support audit for optional dependencies
+    ...(pkgManager === 'yarn-modern' && check === 'audit'
+      ? []
+      : [
+          {
+            slug: `${pkgManager}-${check}-optional`,
+            title: getAuditTitle(pkgManager, check, 'optional'),
+            description: getAuditDescription(check, 'optional'),
+            docsUrl: dependencyDocs.optional,
+          },
+        ]),
   ]);
 }
 

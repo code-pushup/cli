@@ -74,12 +74,18 @@ async function processAudit(
   packageManager: PackageManager,
   auditLevelMapping: AuditSeverity,
 ) {
+  // Yarn v2 does not support audit for optional dependencies
+  const supportedDepGroups =
+    packageManager === 'yarn-modern'
+      ? dependencyGroups.filter(dep => dep !== 'optional')
+      : dependencyGroups;
+
   const auditResults = await Promise.allSettled(
-    dependencyGroups.map(
+    supportedDepGroups.map(
       async (dep): Promise<[DependencyGroup, AuditResult]> => {
         const { stdout } = await executeProcess({
           command: pkgManagerCommands[packageManager],
-          args: ['audit', ...auditArgs(dep)[packageManager]],
+          args: getAuditCommandArgs(packageManager, dep),
           cwd: process.cwd(),
           ignoreExitCode: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
         });
@@ -105,19 +111,9 @@ async function processAudit(
 
   // For npm, one needs to filter out prod dependencies as there is no way to omit them
   const uniqueResults =
-    packageManager === 'npm'
-      ? {
-          prod: fulfilled.prod,
-          dev: filterAuditResult(fulfilled.dev, 'name', fulfilled.prod),
-          optional: filterAuditResult(
-            fulfilled.optional,
-            'name',
-            fulfilled.prod,
-          ),
-        }
-      : fulfilled;
+    packageManager === 'npm' ? filterNpmAuditResults(fulfilled) : fulfilled;
 
-  return dependencyGroups.map(group =>
+  return supportedDepGroups.map(group =>
     auditResultToAuditOutput(
       uniqueResults[group],
       packageManager,
@@ -125,4 +121,25 @@ async function processAudit(
       auditLevelMapping,
     ),
   );
+}
+
+function getAuditCommandArgs(
+  packageManager: PackageManager,
+  group: DependencyGroup,
+) {
+  return [
+    ...(packageManager === 'yarn-modern' ? ['npm'] : []),
+    'audit',
+    ...auditArgs(group)[packageManager],
+  ];
+}
+
+function filterNpmAuditResults(
+  results: Record<DependencyGroup, AuditResult>,
+): Record<DependencyGroup, AuditResult> {
+  return {
+    prod: results.prod,
+    dev: filterAuditResult(results.dev, 'name', results.prod),
+    optional: filterAuditResult(results.optional, 'name', results.prod),
+  };
 }

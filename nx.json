@@ -38,11 +38,12 @@
         "watch": false
       }
     },
-    "deploy": {
+    "nx-release-publish": {
       "dependsOn": ["build"],
-      "executor": "ngx-deploy-npm:deploy",
+      "executor": "@nx/js:release-publish",
       "options": {
-        "access": "public"
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/"
       }
     }
   },
@@ -85,5 +86,34 @@
         "linter": "eslint"
       }
     }
+  },
+  "release": {
+    "projects": [
+      "packages/*",
+      "!packages/plugin-lighthouse",
+      "!packages/nx-plugin"
+    ],
+    "projectsRelationship": "fixed",
+    "changelog": {
+      "automaticFromRef": true,
+      "projectChangelogs": false,
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
+    },
+    "git": {
+      "commit": true,
+      "push": true,
+      "pushRemote": "origin",
+      "tag": true,
+      "commitMessage": "release: {version} [skip ci]"
+    },
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "skipLockFileUpdate": true
+      }
+    },
+    "releaseTagPattern": "v{version}"
   }
 }
