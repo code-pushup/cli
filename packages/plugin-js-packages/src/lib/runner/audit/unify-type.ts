@@ -156,6 +156,7 @@ function validateYarnv1Result(
   return [vulnerabilities, summary];
 }
 
+// TODO filter optional
 export function pnpmToAuditResult(output: string): AuditResult {
   const pnpmResult = JSON.parse(output) as PnpmAuditResultJson;
 

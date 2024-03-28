@@ -49,3 +49,11 @@ export type OutdatedResult = {
   type: DependencyGroupLong;
   url?: string;
 }[];
+
+// Subset of PNPM outdated JSON type
+export type PnpmVersionOverview = {
+  current: string;
+  latest: string;
+  dependencyType: DependencyGroupLong;
+};
+export type PnpmOutdatedResultJson = Record<string, PnpmVersionOverview>;

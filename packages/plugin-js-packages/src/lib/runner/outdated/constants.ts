@@ -1,7 +1,11 @@
 import { IssueSeverity } from '@code-pushup/models';
 import { PackageManager } from '../../config';
 import { OutdatedResult, VersionType } from './types';
-import { npmToOutdatedResult, yarnv1ToOutdatedResult } from './unify-type';
+import {
+  npmToOutdatedResult,
+  pnpmToOutdatedResult,
+  yarnv1ToOutdatedResult,
+} from './unify-type';
 
 export const outdatedSeverity: Record<VersionType, IssueSeverity> = {
   major: 'error',
@@ -13,7 +17,7 @@ export const outdatedArgs: Record<PackageManager, string[]> = {
   npm: ['--json', '--long'],
   'yarn-classic': ['--json'],
   'yarn-modern': [],
-  pnpm: [],
+  pnpm: ['--json'],
 };
 
 export const normalizeOutdatedMapper: Record<
@@ -24,5 +28,5 @@ export const normalizeOutdatedMapper: Record<
   'yarn-classic': yarnv1ToOutdatedResult,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   'yarn-modern': _ => [],
-  pnpm: _ => [],
+  pnpm: pnpmToOutdatedResult,
 };

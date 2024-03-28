@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
-import { OutdatedResult } from './types';
-import { npmToOutdatedResult, yarnv1ToOutdatedResult } from './unify-type';
+import { OutdatedResult, PnpmOutdatedResultJson } from './types';
+import {
+  npmToOutdatedResult,
+  pnpmToOutdatedResult,
+  yarnv1ToOutdatedResult,
+} from './unify-type';
 
 describe('npmOutdatedToOutdatedResult', () => {
   it('should transform NPM outdated to unified outdated result', () => {
@@ -88,5 +92,43 @@ describe('yarnv1OutdatedToOutdatedResult', () => {
     const table = { type: 'table', data: { body: [] } };
 
     expect(yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table]))).toEqual([]);
+  });
+});
+
+describe('pnpmToOutdatedResult', () => {
+  it('should transform PNPM outdated to unified outdated result', () => {
+    expect(
+      pnpmToOutdatedResult(
+        JSON.stringify({
+          cypress: {
+            current: '8.5.0',
+            latest: '13.6.0',
+            dependencyType: 'devDependencies',
+          },
+          '@cypress/request': {
+            current: '2.88.10',
+            latest: '3.0.0',
+            dependencyType: 'devDependencies',
+          },
+        } satisfies PnpmOutdatedResultJson),
+      ),
+    ).toEqual<OutdatedResult>([
+      {
+        name: 'cypress',
+        current: '8.5.0',
+        latest: '13.6.0',
+        type: 'devDependencies',
+      },
+      {
+        name: '@cypress/request',
+        current: '2.88.10',
+        latest: '3.0.0',
+        type: 'devDependencies',
+      },
+    ]);
+  });
+
+  it('should transform no dependencies to empty array', () => {
+    expect(pnpmToOutdatedResult('{}')).toEqual([]);
   });
 });
