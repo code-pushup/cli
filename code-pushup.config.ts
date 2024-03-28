@@ -2,6 +2,8 @@ import 'dotenv/config';
 import { z } from 'zod';
 import {
   // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  benchmarkJsPlugin,
+  benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs, // lighthouseCorePerfGroupRefs,
   // lighthousePlugin,
@@ -28,6 +30,8 @@ const envSchema = z
   })
   .partial();
 const env = await envSchema.parseAsync(process.env);
+
+const benchmarkJsSuiteNames = ['score-report'];
 
 const config: CoreConfig = {
   ...(env.CP_SERVER &&
@@ -81,6 +85,13 @@ const config: CoreConfig = {
     //   outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
     //   headless: true,
     // }),
+
+    await benchmarkJsPlugin({
+      tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
+      targets: benchmarkJsSuiteNames.map(suit =>
+        join('packages', 'utils', 'perf', suit, 'index.ts'),
+      ),
+    }),
   ],
 
   categories: [
@@ -140,6 +151,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         // ...lighthouseCorePerfGroupRefs,
+        ...benchmarkJsSuiteNames.map(benchmarkJsSuiteNameToCategoryRef),
       ],
     },
   ],

@@ -7,9 +7,9 @@
   },
   "dependencies": {
     "@code-pushup/models": "*",
+    "@code-pushup/utils": "*",
     "@code-pushup/core": "*",
-    "yargs": "^17.7.2",
     "chalk": "^5.3.0",
-    "@code-pushup/utils": "*"
+    "yargs": "^17.7.2"
   }
 }

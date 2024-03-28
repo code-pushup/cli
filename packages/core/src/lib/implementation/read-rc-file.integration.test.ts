@@ -1,4 +1,5 @@
 import { dirname, join } from 'node:path';
+import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { readRcByPath } from './read-rc-file';
@@ -64,6 +65,24 @@ describe('readRcByPath', () => {
     await expect(
       readRcByPath(join('non-existent', 'config.file.js')),
     ).rejects.toThrow(/Provided path .* is not valid./);
+  });
+
+  it('should throw the configuration using a tsconfig path that does not exist', async () => {
+    await expect(
+      readRcByPath(
+        join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+        'tsconfig.wrong.json',
+      ),
+    ).rejects.toThrow('tsconfig.wrong.json');
+  });
+
+  it('should throw the configuration using a tsconfig path is not a file', async () => {
+    await expect(
+      readRcByPath(
+        join(configDirPath, 'code-pushup.needs-tsconfig.config.ts'),
+        process.cwd(),
+      ),
+    ).rejects.toThrow(`The tsconfig path '${process.cwd()}' is not a file`);
   });
 
   it('should throw if the configuration is empty', async () => {

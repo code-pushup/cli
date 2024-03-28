@@ -1,103 +1,89 @@
-import * as Benchmark from 'benchmark';
+import chalk from 'chalk';
 import { join } from 'node:path';
-import {
-  CrawlFileSystemOptions,
-  crawlFileSystem,
-} from '../../src/lib/file-system';
+import yargs from 'yargs';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { type CrawlFileSystemOptions } from '../../../../dist/packages/utils';
 import { crawlFileSystemFsWalk } from './fs-walk';
 
-const PROCESS_ARGUMENT_TARGET_DIRECTORY =
-  process.argv
-    .find(arg => arg.startsWith('--directory'))
-    ?.split('=')
-    .at(-1) ?? '';
-const PROCESS_ARGUMENT_PATTERN =
-  process.argv
-    .find(arg => arg.startsWith('--pattern'))
-    ?.split('=')
-    .at(-1) ?? '';
-
-const suite = new Benchmark.Suite('report-scoring');
-
-const TARGET_DIRECTORY =
-  PROCESS_ARGUMENT_TARGET_DIRECTORY ||
-  join(process.cwd(), '..', '..', '..', 'node_modules');
-const PATTERN = PROCESS_ARGUMENT_PATTERN || /.json$/;
-
-// ==================
-
-const start = performance.now();
-
-// Add listener
-const listeners = {
-  cycle: function (event: Benchmark.Event) {
-    console.info(String(event.target));
+const cli = yargs(process.argv).options({
+  directory: {
+    type: 'string',
+    default: join('packages', 'utils'),
   },
-  complete: () => {
-    if (typeof suite.filter === 'function') {
-      console.info(' ');
-      console.info(
-        `Total Duration: ${((performance.now() - start) / 1000).toFixed(
-          2,
-        )} sec`,
-      );
-      console.info(`Fastest is ${String(suite.filter('fastest').map('name'))}`);
-    }
+  pattern: {
+    type: 'string',
+    default: '.md',
   },
-};
-
-// ==================
-
-// Add tests
-const options = {
-  directory: TARGET_DIRECTORY,
-  pattern: PATTERN,
-};
-suite.add('Base', wrapWithDefer(crawlFileSystem));
-suite.add('nodelib.fsWalk', wrapWithDefer(crawlFileSystemFsWalk));
-
-// ==================
-
-// Add Listener
-Object.entries(listeners).forEach(([name, fn]) => {
-  suite.on(name, fn);
+  logs: {
+    type: 'boolean',
+    default: false,
+  },
+  outputDir: {
+    type: 'string',
+    default: '.code-pushup',
+  },
 });
+const { directory, pattern, logs } = await cli.parseAsync();
 
-// ==================
+if (logs) {
+  console.info(
+    'You can adjust the test with the following arguments:' +
+      `directory      target directory of test      --directory=${directory}` +
+      `pattern        pattern to search             --pattern=${pattern}`,
+  );
+}
 
-console.info('You can adjust the test with the following arguments:');
-console.info(
-  `directory      target directory of test      --directory=${TARGET_DIRECTORY}`,
-);
-console.info(
-  `pattern        pattern to search             --pattern=${PATTERN}`,
-);
-console.info(' ');
-console.info('Start benchmark...');
-console.info(' ');
+const fsWalkName = 'nodelib.fsWalk';
 
-suite.run({
-  async: true,
-});
+const suiteConfig = {
+  suiteName: 'crawl-file-system',
+  targetImplementation: fsWalkName,
+  cases: [
+    // @TODO fix case execution
+    // FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+    /*[
+      '@code-pushup/utils#crawlFileSystem',
+      callAndValidate(
+        crawlFileSystem,
+        { directory, pattern },
+        '@code-pushup/utils#crawlFileSystem',
+      ),
+    ],*/
+    [
+      fsWalkName,
+      callAndValidate(
+        crawlFileSystemFsWalk,
+        { directory, pattern },
+        fsWalkName,
+      ),
+    ],
+  ],
+};
+export default suiteConfig;
 
 // ==============================================================
 
-function wrapWithDefer<T>(
-  asyncFn: (options: CrawlFileSystemOptions<T>) => Promise<unknown[]>,
+const logged: Record<string, boolean> = {};
+function callAndValidate<T = CrawlFileSystemOptions<string>>(
+  fn: (arg: T) => Promise<unknown[]>,
+  options: T,
+  fnName: string,
 ) {
-  return {
-    defer: true, // important for async functions
-    fn: function (deferred: { resolve: () => void }) {
-      return asyncFn(options)
-        .catch(() => [])
-        .then((result: unknown[]) => {
-          if (result.length === 0) {
-            throw new Error(`Result length is ${result.length}`);
-          } else {
-            deferred.resolve();
-          }
-          return void 0;
-        });
-    },
+  return async () => {
+    const result = await fn(options);
+    if (result.length === 0) {
+      throw new Error(`Result length is ${result.length}`);
+    } else {
+      if (!logged[fnName]) {
+        // eslint-disable-next-line functional/immutable-data
+        logged[fnName] = true;
+        // eslint-disable-next-line no-console
+        console.log(
+          `${chalk.bold(fnName)} found ${chalk.bold(
+            result.length,
+          )} files for pattern ${chalk.bold(options.pattern)}`,
+        );
+      }
+    }
   };
 }

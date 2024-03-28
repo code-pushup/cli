@@ -1,6 +1,8 @@
 import { join } from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  benchmarkJsPlugin,
+  benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   lighthouseCorePerfGroupRefs,
@@ -19,6 +21,9 @@ import {
  * - For better debugging use `--verbose --no-progress`
  *
  */
+
+const projectRoot = join('examples', 'plugins');
+const benchmarkJsSuiteNames = ['dummy-suite'];
 
 const config = {
   plugins: [
@@ -42,6 +47,12 @@ const config = {
       headless: false,
       verbose: true,
     }),
+    await benchmarkJsPlugin({
+      targets: benchmarkJsSuiteNames.map(folder =>
+        join(projectRoot, 'perf', folder, 'index.ts'),
+      ),
+      tsconfig: join(projectRoot, 'tsconfig.perf.json'),
+    }),
   ],
   categories: [
     {
@@ -51,6 +62,7 @@ const config = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         ...lighthouseCorePerfGroupRefs,
+        ...benchmarkJsSuiteNames.map(benchmarkJsSuiteNameToCategoryRef),
       ],
     },
     {

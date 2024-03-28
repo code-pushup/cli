@@ -30,16 +30,7 @@
       }
     },
     "perf": {
-      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
-    },
-    "perf:list": {
-      "command": "ls -l | grep \"^d\" | awk '{print $9}'",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
+      "command": "node tools/benchmark/bin.mjs"
     },
     "unit-test": {
       "executor": "@nx/vite:test",
