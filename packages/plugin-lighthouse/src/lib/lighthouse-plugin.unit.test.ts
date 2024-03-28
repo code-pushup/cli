@@ -10,7 +10,7 @@ import {
 import { LIGHTHOUSE_AUDITS, LIGHTHOUSE_GROUPS } from './constants';
 import {
   LighthouseCliFlags,
-  getRunner,
+  createRunnerFunction,
   lighthousePlugin,
 } from './lighthouse-plugin';
 import { getBudgets, getConfig, setLogLevel } from './utils';
@@ -63,9 +63,9 @@ vi.mock('lighthouse/cli/run.js', async () => {
   };
 });
 
-describe('getRunner', () => {
+describe('createRunnerFunction', () => {
   it('should return AuditOutputs if executed correctly', async () => {
-    const runner = getRunner('https://localhost:8080');
+    const runner = createRunnerFunction('https://localhost:8080');
     await expect(runner(undefined)).resolves.toEqual(
       expect.arrayContaining([
         {
@@ -85,7 +85,7 @@ describe('getRunner', () => {
   });
 
   it('should return verbose and quiet flags for logging', async () => {
-    await getRunner('https://localhost:8080', { verbose: true, quiet: true })(
+    await createRunnerFunction('https://localhost:8080', { verbose: true, quiet: true })(
       undefined,
     );
     expect(setLogLevel).toHaveBeenCalledWith(
@@ -94,7 +94,7 @@ describe('getRunner', () => {
   });
 
   it('should return configPath', async () => {
-    await getRunner('https://localhost:8080', { configPath: 'lh-config.js' })(
+    await createRunnerFunction('https://localhost:8080', { configPath: 'lh-config.js' })(
       undefined,
     );
     expect(getConfig).toHaveBeenCalledWith(
@@ -103,7 +103,7 @@ describe('getRunner', () => {
   });
 
   it('should return budgets from the budgets object directly', async () => {
-    await getRunner('https://localhost:8080', {
+    await createRunnerFunction('https://localhost:8080', {
       budgets: [{ path: '*/xyz/' }],
     })(undefined);
     expect(getBudgets).not.toHaveBeenCalled();
@@ -115,7 +115,7 @@ describe('getRunner', () => {
   });
 
   it('should return budgets maintained in the file specified over budgetPath', async () => {
-    await getRunner('https://localhost:8080', {
+    await createRunnerFunction('https://localhost:8080', {
       budgetPath: 'lh-budgets.js',
     } as LighthouseCliFlags)(undefined);
     expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
@@ -127,7 +127,7 @@ describe('getRunner', () => {
   });
 
   it('should throw if lighthouse returns an empty result', async () => {
-    const runner = getRunner('fail');
+    const runner = createRunnerFunction('fail');
     await expect(runner(undefined)).rejects.toThrow(
       'Lighthouse did not produce a result.',
     );

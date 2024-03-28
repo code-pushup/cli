@@ -4,7 +4,7 @@ import { afterEach, expect } from 'vitest';
 import { AuditOutput, pluginConfigSchema } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { getRunner, lighthousePlugin } from './lighthouse-plugin';
+import {createRunnerFunction, lighthousePlugin} from './lighthouse-plugin';
 
 const lighthousePluginTestFolder = join('tmp', 'plugin-lighthouse');
 
@@ -29,7 +29,7 @@ describe('getRunner', () => {
   });
 
   it('should create and execute runner correctly', async () => {
-    const runner = getRunner('https://www.google.com/', {
+    const runner = createRunnerFunction('https://www.google.com/', {
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
       outputPath:
@@ -47,7 +47,7 @@ describe('getRunner', () => {
 
   it('should log about unsupported precomputedLanternDataPath flag', async () => {
     const precomputedLanternDataPath = join('path', 'to', 'latern-data-folder');
-    const runner = getRunner('https://www.google.com/', {
+    const runner = createRunnerFunction('https://www.google.com/', {
       precomputedLanternDataPath,
       // onlyAudits is used to reduce test time
       onlyAudits: ['is-on-https'],
