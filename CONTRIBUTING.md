@@ -12,6 +12,17 @@ Make sure to install dependencies:
 npm install
 ```
 
+## Environment Variables
+
+All variables are explained in detail in the related sections.  
+This table serves as a quick overview of the setup.
+
+| Feature              | Local Environment | CI Environment       | Description                                                                                                                          |
+| -------------------- | ----------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `INCLUDE_SLOW_TESTS` | `false`           | `undefined`          | Includes long-running tests (in CI defaults to `true`). Details see [Testing](#Testing)                                              |
+| `CUSTOM_CHROM_PATH`  | -                 | set for Windows only | Path to Chrome executable. Details see [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path) |
+| Quality Pipeline     | off               | on                   | Runs all plugins against the codebase                                                                                                |
+
 ## Development
 
 Refer to docs on [how to run tasks in Nx](https://nx.dev/core-features/run-tasks).
@@ -46,14 +57,6 @@ npx nx code-pushup -- collect
 Long-running tests are treated based on the environment to achieve better DX.
 
 You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
-
-**Local environment:**
-
-- by default slow tests are skipped
-- `INCLUDE_SLOW_TESTS=true` will run the long tests
-  **CI environment:**
-- by default slow tests are run
-- `INCLUDE_SLOW_TESTS=false` will skip the long tests
 
 To change this setup got you your root folder and open your `.env` file.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
