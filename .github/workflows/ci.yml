@@ -111,6 +111,9 @@ jobs:
         run: |
           echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         shell: pwsh
+      - name: enable debugging for Lighthouse
+        run: |
+          echo "DEBUG='*'" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       #- name: Log all environment variables
       #  run: |
       #      printenv
