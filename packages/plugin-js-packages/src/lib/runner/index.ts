@@ -59,7 +59,7 @@ export async function executeRunner(): Promise<void> {
 async function processOutdated(packageManager: PackageManager) {
   const { stdout } = await executeProcess({
     command: pkgManagerCommands[packageManager],
-    args: ['outdated', ...outdatedArgs[packageManager]],
+    args: ['outdated', '--json', ...outdatedArgs[packageManager]],
     cwd: process.cwd(),
     ignoreExitCode: true, // npm outdated returns exit code 1 when outdated dependencies are found
   });
@@ -130,6 +130,7 @@ function getAuditCommandArgs(
   return [
     ...(packageManager === 'yarn-modern' ? ['npm'] : []),
     'audit',
+    '--json',
     ...auditArgs(group)[packageManager],
   ];
 }
