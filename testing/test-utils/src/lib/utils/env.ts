@@ -1,3 +1,6 @@
 export function shouldSkipLongRunningTests(): boolean {
-  return process.env['SKIP_LONG_TESTS'] === 'true' || !process.env['CI'];
+  if (process.env['INCLUDE_SLOW_TESTS']) {
+    return process.env['INCLUDE_SLOW_TESTS'] === 'false';
+  }
+  return !process.env['CI'];
 }
