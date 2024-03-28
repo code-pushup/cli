@@ -240,6 +240,25 @@ Run plugins, collect results and upload the report to the Code PushUp portal.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
 
+#### `history` command
+
+Usage:
+`code-pushup history`
+
+Description:
+Run plugins, collect results and upload the report to the Code PushUp portal for a specified number of commits.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+| Option                   | Type      | Default | Description                                                      |
+| ------------------------ | --------- | ------- | ---------------------------------------------------------------- |
+| **`--targetBranch`**     | `string`  | 'main'  | Branch to crawl history.                                         |
+| **`--forceCleanStatus`** | `boolean` | `false` | If we reset the status to a clean git history forcefully or not. |
+| **`--maxCount`**         | `number`  | 5       | Number of commits.                                               |
+| **`--skipUploads`**      | `boolean` | `false` | Upload created reports                                           |
+| **`--from`**             | `string`  | n/a     | Hash to start in history                                         |
+| **`--to`**               | `string`  | n/a     | Hash to end in history                                           |
+
 ### `compare` command
 
 Usage:

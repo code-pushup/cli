@@ -16,6 +16,12 @@ export {
   persistReport,
 } from './lib/implementation/persist';
 export {
+  history,
+  HistoryOptions,
+  HistoryOnlyOptions,
+  getHashes,
+} from './lib/history';
+export {
   ConfigPathError,
   autoloadRc,
   readRcByPath,
