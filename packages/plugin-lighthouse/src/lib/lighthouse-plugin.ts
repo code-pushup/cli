@@ -1,20 +1,51 @@
+import { type CliFlags, type RunnerResult } from 'lighthouse';
+import { runLighthouse } from 'lighthouse/cli/run.js';
+import { dirname } from 'node:path';
 import {
-  type Config as LighthouseConfig,
-  type CliFlags as LighthouseFlags,
-} from 'lighthouse';
-import { PluginConfig } from '@code-pushup/models';
-import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { filterAuditsAndGroupsByOnlyOptions } from './utils';
+  AuditOutputs,
+  PluginConfig,
+  RunnerFunction,
+} from '@code-pushup/models';
+import { ensureDirectoryExists, ui } from '@code-pushup/utils';
+import {
+  DEFAULT_CLI_FLAGS,
+  LIGHTHOUSE_AUDITS,
+  LIGHTHOUSE_GROUPS,
+  LIGHTHOUSE_PLUGIN_SLUG,
+} from './constants';
+import {
+  filterAuditsAndGroupsByOnlyOptions,
+  getBudgets,
+  getConfig,
+  setLogLevel,
+  toAuditOutputs,
+  validateFlags,
+} from './utils';
 
+export type LighthouseCliFlags = Partial<
+  Omit<CliFlags, 'enableErrorReporting'>
+>;
+
+// No error reporting implemented as in the source Sentry was involved
+/*
+if (cliFlags.enableErrorReporting) {
+  await Sentry.init({
+    url: urlUnderTest,
+    flags: cliFlags,
+    environmentData: {
+      serverName: 'redacted', // prevent sentry from using hostname
+      environment: isDev() ? 'development' : 'production',
+      release: pkg.version,
+    },
+  });
+ */
 export function lighthousePlugin(
   url: string,
-  flags?: Partial<LighthouseFlags>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  config?: Partial<LighthouseConfig>,
+  flags?: LighthouseCliFlags,
 ): PluginConfig {
   const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
-    AUDITS,
-    GROUPS,
+    LIGHTHOUSE_AUDITS,
+    LIGHTHOUSE_GROUPS,
     flags,
   );
   return {
@@ -23,6 +54,58 @@ export function lighthousePlugin(
     icon: 'lighthouse',
     audits,
     groups,
-    runner: () => audits.map(({ slug }) => ({ slug, value: 0, score: 0 })),
+    runner: createRunnerFunction(url, flags),
+  };
+}
+
+export function createRunnerFunction(
+  urlUnderTest: string,
+  flags: LighthouseCliFlags = {},
+): RunnerFunction {
+  return async (): Promise<AuditOutputs> => {
+    const {
+      precomputedLanternDataPath,
+      budgetPath,
+      budgets = [],
+      outputPath,
+      ...parsedFlags
+    } = validateFlags({
+      ...DEFAULT_CLI_FLAGS,
+      ...flags,
+    });
+
+    setLogLevel(parsedFlags);
+
+    const config = await getConfig(parsedFlags);
+
+    const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
+
+    if (outputPath) {
+      await ensureDirectoryExists(dirname(outputPath));
+    }
+
+    const flagsWithDefaults = {
+      ...parsedFlags,
+      budgets: budgetsJson,
+      outputPath,
+    };
+
+    if (precomputedLanternDataPath) {
+      ui().logger.info(
+        `Parsing precomputedLanternDataPath "${precomputedLanternDataPath}" is skipped as not implemented.`,
+      );
+    }
+
+    const runnerResult: unknown = await runLighthouse(
+      urlUnderTest,
+      flagsWithDefaults,
+      config,
+    );
+
+    if (runnerResult == null) {
+      throw new Error('Lighthouse did not produce a result.');
+    }
+    const { lhr } = runnerResult as RunnerResult;
+    return toAuditOutputs(Object.values(lhr.audits));
   };
 }
