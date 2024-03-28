@@ -41,6 +41,10 @@ npx nx affected:lint
 npx nx code-pushup -- collect
 ```
 
+### Testing
+
+To skip long-running tests on your local environment set the following environment variable `SKIP_LONG_TESTS=true`.
+
 ## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.
