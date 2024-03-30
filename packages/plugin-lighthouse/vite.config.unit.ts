@@ -22,6 +22,7 @@ export default defineConfig({
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['../../global-setup.ts'],
     setupFiles: [
+      '../../testing/test-setup/src/lib/cliui.mock.ts',
       '../../testing/test-setup/src/lib/fs.mock.ts',
       '../../testing/test-setup/src/lib/console.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
