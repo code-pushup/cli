@@ -27,9 +27,10 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
     entry: [
       // unknown why this is needed, it should be picked up by knip from the vitest setup files
       'testing/test-utils/src/index.ts',
-      'testing/test-utils/src/lib/fixtures/configs/*.ts',
+      'testing/test-utils/src/lib/fixtures/configs/*.{js,mjs,ts,cjs,mts,cts}',
       'testing/test-setup/src/index.ts',
       'testing/test-setup/src/lib/**/*.{js,mjs,ts,cjs,mts,cts}',
+      // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
       'global-setup.ts',
       'global-setup.e2e.ts',
       // missing knip plugin for now, so this is in the root entry
@@ -44,9 +45,6 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
-      // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
-      'global-setup.ts',
-      'global-setup.e2e.ts',
     ],
   };
 };
