@@ -1,9 +1,10 @@
 import { fromJsonLines, objectToEntries } from '@code-pushup/utils';
 import {
-  NormalizedVersionOverview,
+  NpmNormalizedOverview,
   NpmOutdatedResultJson,
   OutdatedResult,
   Yarnv1OutdatedResultJson,
+  Yarnv2OutdatedResultJson,
 } from './types';
 
 export function npmToOutdatedResult(output: string): OutdatedResult {
@@ -12,7 +13,7 @@ export function npmToOutdatedResult(output: string): OutdatedResult {
   // https://stackoverflow.com/questions/42267101/npm-outdated-command-shows-missing-in-current-version
   return objectToEntries(npmOutdated)
     .filter(
-      (entry): entry is [string, NormalizedVersionOverview] =>
+      (entry): entry is [string, NpmNormalizedOverview] =>
         entry[1].current != null,
     )
     .map(([name, overview]) => ({
@@ -34,5 +35,16 @@ export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
     latest,
     type,
     url,
+  }));
+}
+
+export function yarnv2ToOutdatedResult(output: string): OutdatedResult {
+  const npmOutdated = JSON.parse(output) as Yarnv2OutdatedResultJson;
+
+  return npmOutdated.map(({ name, current, latest, type }) => ({
+    name,
+    current,
+    latest,
+    type,
   }));
 }

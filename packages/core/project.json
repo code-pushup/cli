@@ -44,11 +44,6 @@
         "config": "packages/core/vite.config.integration.ts",
         "reportsDirectory": "../../coverage/core/integration-tests"
       }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/core"
-      }
     }
   },
   "tags": ["scope:core", "type:feature"]

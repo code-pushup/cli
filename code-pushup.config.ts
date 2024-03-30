@@ -1,17 +1,13 @@
 import 'dotenv/config';
-import { join } from 'node:path';
 import { z } from 'zod';
 import {
   KNIP_CATEGORY_REFS,
   KNIP_GROUP_ALL,
-  KNIP_GROUP_DEPENDENCIES,
-  LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  KNIP_GROUP_DEPENDENCIES, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   knipPlugin,
-  lighthouseCorePerfGroupRefs,
-  lighthousePlugin,
-  packageJsonDocumentationGroupRef,
+  packageJsonDocumentationGroupRef, // lighthousePlugin, lighthouseCorePerfGroupRefs,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
@@ -81,11 +77,12 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin({
-      url: 'https://staging.code-pushup.dev/login',
-      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
-      headless: true,
-    }),
+    // see https://github.com/code-pushup/cli/issues/538
+    // await lighthousePlugin({
+    //   url: 'https://staging.code-pushup.dev/login',
+    //   outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+    //   headless: true,
+    // }),
 
     await knipPlugin({}),
   ],
@@ -146,7 +143,7 @@ const config: CoreConfig = {
         ...fileSizeRecommendedRefs,
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
-        ...lighthouseCorePerfGroupRefs,
+        // ...lighthouseCorePerfGroupRefs,
         // knip
         { slug: 'files', weight: 1 },
         { slug: 'dependencies', weight: 1 },

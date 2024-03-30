@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
-import { OutdatedResult } from './types';
-import { npmToOutdatedResult, yarnv1ToOutdatedResult } from './unify-type';
+import { OutdatedResult, Yarnv2OutdatedResultJson } from './types';
+import {
+  npmToOutdatedResult,
+  yarnv1ToOutdatedResult,
+  yarnv2ToOutdatedResult,
+} from './unify-type';
 
-describe('npmOutdatedToOutdatedResult', () => {
+describe('npmToOutdatedResult', () => {
   it('should transform NPM outdated to unified outdated result', () => {
     expect(
       npmToOutdatedResult(
@@ -59,7 +63,7 @@ describe('npmOutdatedToOutdatedResult', () => {
   });
 });
 
-describe('yarnv1OutdatedToOutdatedResult', () => {
+describe('yarnv1ToOutdatedResult', () => {
   const yarnInfo = { type: 'info', data: 'Colours' };
   it('should transform Yarn v1 outdated to unified outdated result', () => {
     const table = {
@@ -88,5 +92,32 @@ describe('yarnv1OutdatedToOutdatedResult', () => {
     const table = { type: 'table', data: { body: [] } };
 
     expect(yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table]))).toEqual([]);
+  });
+});
+
+describe('yarnv2ToOutdatedResult', () => {
+  it('should transform Yarn v2 outdated to unified outdated result', () => {
+    const outdated = [
+      {
+        name: 'nx',
+        current: '16.8.1',
+        latest: '17.0.0',
+        type: 'dependencies',
+      },
+      {
+        name: 'vite',
+        current: '4.3.1',
+        latest: '5.1.4',
+        type: 'devDependencies',
+      },
+    ] satisfies Yarnv2OutdatedResultJson;
+
+    expect(yarnv2ToOutdatedResult(JSON.stringify(outdated))).toStrictEqual(
+      outdated,
+    );
+  });
+
+  it('should transform no dependencies to empty array', () => {
+    expect(yarnv2ToOutdatedResult('[]')).toEqual([]);
   });
 });
