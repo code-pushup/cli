@@ -14,7 +14,7 @@ export const withIgnoreMockInLibs = () =>
   withLibraryMapper({
     mapperFn: ({ rootFolder }) => {
       return {
-        ignore: [rootFolder + '/mocks/**', rootFolder + '/perf/**'],
+        ignore: [rootFolder + '/mocks/**'],
         entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
       };
     },
@@ -45,6 +45,7 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
+      '@example/custom-plugin'
     ],
   };
 };
