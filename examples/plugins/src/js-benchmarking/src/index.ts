@@ -5,5 +5,5 @@ export {
   JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
 } from './constants';
 export { JsBenchmarkingPluginConfig } from './config';
-export { jsBenchmarkingPlugin } from './benchmark-js.plugin';
+export { jsBenchmarkingPlugin } from './js-benchmarking.plugin';
 export { jsBenchmarkingSuiteNameToCategoryRef } from './utils';

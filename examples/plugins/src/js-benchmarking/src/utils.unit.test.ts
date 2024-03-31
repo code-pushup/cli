@@ -58,7 +58,7 @@ describe('suiteNameToCategoryRef', () => {
       slug: toAuditSlug('glob'),
       type: 'audit',
       weight: 1,
-      plugin: 'benchmark-js',
+      plugin: 'js-benchmarking',
     });
   });
 });

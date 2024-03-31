@@ -1,6 +1,7 @@
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
-import { jsBenchmarkingPlugin } from './benchmark-js.plugin';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from './constants';
+import { jsBenchmarkingPlugin } from './js-benchmarking.plugin';
 import { BenchmarkResult } from './runner/types';
 
 vi.mock('./utils', async () => {
@@ -35,16 +36,16 @@ describe('jsBenchmarkingPlugin-config', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual(
       expect.objectContaining({
-        slug: 'benchmark-js',
-        title: 'Benchmark JS',
+        slug: JS_BENCHMARKING_PLUGIN_SLUG,
+        title: 'JS Benchmarking',
         icon: 'folder-benchmark',
         audits: [
           {
-            slug: 'benchmark-js-suite-1',
+            slug: `${JS_BENCHMARKING_PLUGIN_SLUG}-suite-1`,
             title: 'suite-1',
           },
           {
-            slug: 'benchmark-js-suite-2',
+            slug: `${JS_BENCHMARKING_PLUGIN_SLUG}-suite-2`,
             title: 'suite-2',
           },
         ],
