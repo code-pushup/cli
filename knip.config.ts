@@ -20,12 +20,11 @@ export const withIgnoreMockInLibs = () =>
     },
   });
 
-export const withNxStandards = (): KnipConfigPlugin => () => {
+export const withCuNxStandards = (): KnipConfigPlugin => () => {
   return {
     project: ['**/*.{ts,js,tsx,jsx}'],
     ignore: ['tmp/**', 'node_modules/**', 'examples/**'],
     entry: [
-      // unknown why this is needed, it should be picked up by knip from the vitest setup files
       'testing/test-utils/src/index.ts',
       'testing/test-utils/src/lib/fixtures/configs/*.{js,mjs,ts,cjs,mts,cts}',
       'testing/test-setup/src/index.ts',
@@ -45,7 +44,7 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
-      '@example/custom-plugin'
+      '@example/custom-plugin',
     ],
   };
 };
@@ -58,5 +57,5 @@ export default combineNxKnipPlugins(
   withVitest(),
   withIgnoreMockInLibs(),
   withEslint(),
-  withNxStandards(),
+  withCuNxStandards(),
 );
