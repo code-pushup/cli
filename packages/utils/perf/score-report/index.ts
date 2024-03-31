@@ -1,6 +1,5 @@
 import yargs from 'yargs';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { scoreReport } from '../../../../dist/packages/utils';
+import { scoreReport } from '../../src/lib/reports/scoring';
 import { scoreReportOptimized0 } from './optimized0';
 import { scoreReportOptimized1 } from './optimized1';
 import { scoreReportOptimized2 } from './optimized2';
