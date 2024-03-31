@@ -1,7 +1,8 @@
 export {
-  GROUP_DEPENDENCIES as KNIP_GROUP_DEPENDENCIES,
-  GROUP_ALL as KNIP_GROUP_ALL,
-  AUDITS as KNIP_AUDITS,
-  CATEGORY_REFS as KNIP_CATEGORY_REFS,
+  KNIP_GROUP_DEPENDENCIES,
+  KNIP_GROUP_FILES,
+  KNIP_GROUP_ALL,
+  KNIP_AUDITS,
 } from './constants';
-export { create as knipPlugin } from './knip.plugin';
+export { knipPlugin } from './knip.plugin';
+export { knipCategoryAuditRef, knipCategoryGroupRef } from './utils';

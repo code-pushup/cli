@@ -28,6 +28,8 @@ export {
   formatBytes,
   formatDuration,
   pluralize,
+  singular,
+  capital,
   pluralizeToken,
   slugify,
   truncateDescription,

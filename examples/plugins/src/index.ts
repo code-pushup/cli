@@ -10,16 +10,14 @@ export {
   documentationGroupRef as packageJsonDocumentationGroupRef,
   performanceGroupRef as packageJsonPerformanceGroupRef,
 } from './package-json/src/scoring';
-export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
+export {create as packageJsonPlugin} from './package-json/src/package-json.plugin';
 export {
   create as lighthousePlugin,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   recommendedRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';
 export {
-  KNIP_AUDITS,
   knipPlugin,
-  KNIP_CATEGORY_REFS,
-  KNIP_GROUP_ALL,
-  KNIP_GROUP_DEPENDENCIES,
+  knipCategoryAuditRef,
+  knipCategoryGroupRef
 } from './knip/src/index';

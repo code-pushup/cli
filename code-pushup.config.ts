@@ -1,9 +1,7 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import {
-  KNIP_CATEGORY_REFS,
-  KNIP_GROUP_ALL,
-  KNIP_GROUP_DEPENDENCIES, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  knipCategoryGroupRef, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   knipPlugin,
@@ -19,6 +17,7 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
+
 
 // load upload configuration from environment
 const envSchema = z
@@ -57,7 +56,7 @@ const config: CoreConfig = {
           'unit-test',
           'integration-test',
           '--coverage.enabled',
-          '--skipNxCache',
+          '--skipNxCache'
         ],
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
@@ -144,21 +143,9 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         // ...lighthouseCorePerfGroupRefs,
-        // knip
-        { slug: 'files', weight: 1 },
-        { slug: 'dependencies', weight: 1 },
-        // {slug: 'devdependencies', weight: 1},
-        { slug: 'optionalpeerdependencies', weight: 1 },
-        // {slug: 'unlisted', weight: 1},
-        { slug: 'binaries', weight: 1 },
-        { slug: 'unresolved', weight: 1 },
-        { slug: 'exports', weight: 1 },
-        { slug: 'types', weight: 1 },
-        { slug: 'nsexports', weight: 1 },
-        { slug: 'nstypes', weight: 1 },
-        { slug: 'enummembers', weight: 1 },
-        { slug: 'classmembers', weight: 1 },
-        { slug: 'duplicates', weight: 1 },
+        knipCategoryGroupRef('files'),
+        knipCategoryGroupRef('dependencies'),
+        knipCategoryGroupRef('exports'),
       ],
     },
   ],

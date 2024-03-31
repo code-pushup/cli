@@ -1,49 +1,19 @@
-import type { CommandLineOptions } from 'knip/dist/types/cli';
-import { join } from 'node:path';
-import { PluginConfig, RunnerConfig } from '@code-pushup/models';
-import { AUDITS, GROUP_ALL, GROUP_DEPENDENCIES } from './constants';
+import {PluginConfig} from '@code-pushup/models';
+import {KNIP_AUDITS, KNIP_GROUPS, KNIP_PLUGIN_SLUG} from './constants';
+import {createRunnerConfig, RunnerOptions} from "./runner";
 
 export type PluginOptions = RunnerOptions;
 
-type RunnerOptions = Partial<CommandLineOptions> & {
-  tsConfig?: string;
-  cwd?: string;
-} & {
-  maxIssues?: number;
-  noConfigHints?: boolean;
-  noExitCode?: boolean;
-  isNoGitIgnore?: boolean;
-  isNoProgress?: boolean;
-};
-
-export const pluginSlug = 'knip';
-
-export function create(options: PluginOptions = {}): PluginConfig {
+export function knipPlugin(options: PluginOptions = {}): PluginConfig {
   return {
-    slug: pluginSlug,
+    slug: KNIP_PLUGIN_SLUG,
     title: 'Knip',
     icon: 'folder-javascript',
-    description: 'A plugin to trac dependencies and duplicates',
-    runner: runnerConfig(options),
-    audits: AUDITS,
-    groups: [GROUP_ALL, GROUP_DEPENDENCIES],
+    description: 'A plugin to track dependencies and duplicates',
+    runner: createRunnerConfig(options),
+    audits: KNIP_AUDITS,
+    groups: KNIP_GROUPS,
   };
 }
 
-export function runnerConfig(options: RunnerOptions = {}): RunnerConfig {
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  options;
-  const outputFile = join('.code-pushup', `knip-report-${Date.now()}.json`);
-  return {
-    command: 'npx',
-    args: [
-      'knip',
-      '--no-exit-code',
-      '--reporter=./dist/examples/plugins/knip/src/knip.code-pushup.reporter.js',
-      `--reporter-options='${JSON.stringify({ outputFile })}'`,
-    ],
-    outputFile,
-  };
-}
-
-export default create;
+export default knipPlugin;

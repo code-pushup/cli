@@ -26,6 +26,22 @@ export function pluralize(text: string, amount?: number): string {
   return `${text}s`;
 }
 
+export function capital(str: string): string {
+  return str.at(0)?.toUpperCase() + str.slice(1);
+}
+
+export function singular(typeInPlural: string): string {
+  if (typeInPlural.endsWith('ies')) {
+    // eslint-disable-next-line no-magic-numbers
+    return `${typeInPlural.slice(0, -3)}y`;
+  }
+  if (typeInPlural.endsWith('s')) {
+    return typeInPlural.slice(0, -1);
+  }
+  return typeInPlural;
+}
+
+
 export function formatBytes(bytes: number, decimals = 2) {
   const positiveBytes = Math.max(bytes, 0);
 

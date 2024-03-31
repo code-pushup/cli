@@ -13,7 +13,7 @@
         "tsConfig": "examples/plugins/tsconfig.lib.json",
         "assets": ["examples/plugins/*.md"],
         "additionalEntryPoints": [
-          "examples/plugins/src/knip/src/knip.code-pushup.reporter.ts"
+          "examples/plugins/src/knip/src/reporter/index.ts"
         ],
         "esbuildConfig": "esbuild.config.js"
       }

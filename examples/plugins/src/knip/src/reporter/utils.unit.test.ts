@@ -5,15 +5,13 @@ import {
 } from 'knip/dist/types/issues';
 import { describe, expect, it } from 'vitest';
 import { auditOutputsSchema } from '@code-pushup/models';
-import rawKnipReport from '../../../mocks/knip-raw';
+import rawKnipReport from '../../../../mocks/knip-raw';
 import {
-  capital,
   createAuditOutputFromKnipFiles,
   createAuditOutputFromKnipIssues,
   getSource,
   knipToCpReport,
-  processIssue,
-  singularType,
+  knipIssueToIssue,
 } from './utils';
 
 describe('getSource', () => {
@@ -72,29 +70,10 @@ describe('getSource', () => {
   });
 });
 
-describe('capital', () => {
-  it('should return the same string just with a capital first letter', () => {
-    expect(capital('abc')).toBe('Abc');
-  });
-});
-
-describe('singularType', () => {
-  it.each([
-    ['files', 'file'],
-    ['dependencies', 'dependency'],
-    ['unlisted', 'unlisted'],
-  ])(
-    'should return the singular of a passed plural issue knip type %s',
-    (type, singular) => {
-      expect(singularType(type)).toBe(singular);
-    },
-  );
-});
-
 describe('processIssue', () => {
   it('should return message and severity correctly from minimal', () => {
     expect(
-      processIssue({
+      knipIssueToIssue({
         type: 'types',
         symbol: 'file.ts',
         severity: 'warn',
@@ -107,7 +86,7 @@ describe('processIssue', () => {
 
   it('should return message and severity correctly from issue with filePath', () => {
     expect(
-      processIssue({
+      knipIssueToIssue({
         type: 'unlisted',
         symbol: 'file.ts',
         severity: 'warn',
@@ -118,7 +97,7 @@ describe('processIssue', () => {
 
   it('should return message and severity correctly from issue with filePath and positional information', () => {
     expect(
-      processIssue({
+      knipIssueToIssue({
         type: 'types',
         symbol: 'file.ts',
         severity: 'warn',

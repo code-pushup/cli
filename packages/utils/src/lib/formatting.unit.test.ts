@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  capital,
   formatBytes,
   formatDate,
   formatDuration,
   pluralize,
-  pluralizeToken,
+  pluralizeToken, singular,
   slugify,
   truncateText,
 } from './formatting';
@@ -39,6 +40,29 @@ describe('pluralize', () => {
   it('should pluralize if amount is other than 1/-1', () => {
     expect(pluralize('audit', 2)).toBe('audits');
   });
+});
+
+describe('capital', () => {
+  it('should return the same string just with a capital first letter', () => {
+    expect(capital('abc')).toBe('Abc');
+  });
+
+  it('should return the same string if already capital', () => {
+    expect(capital('Abc')).toBe('Abc');
+  });
+});
+
+describe('singular', () => {
+  it.each([
+    ['files', 'file'],
+    ['dependencies', 'dependency'],
+    ['unlisted', 'unlisted'],
+  ])(
+    'should return the singular of a passed plural %s',
+    (plural, singularText) => {
+      expect(singular(plural)).toBe(singularText);
+    },
+  );
 });
 
 describe('formatBytes', () => {
