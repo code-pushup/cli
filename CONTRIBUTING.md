@@ -12,25 +12,6 @@ Make sure to install dependencies:
 npm install
 ```
 
-## Environment Variables
-
-This table provides a quick overview of the environmental setup, with detailed explanations in the corresponding sections.
-
-| Feature                          | Local Default | CI Default         | Description                                                                                                                   |
-| -------------------------------- | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
-| `env.CUSTOM_CHROM_PATH`          | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
-| Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                        |
-
-**❗️** Test Inclusion Logic
-
-- `INCLUDE_SLOW_TESTS='false'` skips long tests.
-- without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
-
-**❗️❗️** Windows specific path set only in CI
-
-- some setups also require this setting locally
-
 ## Development
 
 Refer to docs on [how to run tasks in Nx](https://nx.dev/core-features/run-tasks).
