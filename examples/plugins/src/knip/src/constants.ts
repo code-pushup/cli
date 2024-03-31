@@ -1,6 +1,8 @@
 import { Audit, Group } from '@code-pushup/models';
 
 export const KNIP_PLUGIN_SLUG = 'knip';
+export const KNIP_RAW_REPORT_NAME = 'knip-raw-report.json';
+export const KNIP_REPORT_NAME = 'knip-code-pushup-report.json';
 
 const audits = [
   {
