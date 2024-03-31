@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { jsBenchmarkingPlugin } from './benchmark-js.plugin';
-import { BenchmarkResult } from './utils';
+import { BenchmarkResult } from './runner/types';
 
 vi.mock('./utils', async () => {
   const all: object = await vi.importActual('./utils');

@@ -1,7 +1,6 @@
 import { Bench } from 'tinybench';
 import type { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
 
-
 export const tinybenchRunner = {
   run: async ({
     suiteName,

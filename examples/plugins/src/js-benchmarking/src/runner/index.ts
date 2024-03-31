@@ -1,15 +1,15 @@
-import {AuditOutputs, RunnerFunction} from "@code-pushup/models";
-import {writeFile} from "node:fs/promises";
-import {join} from "node:path";
-import {importEsmModule} from "@code-pushup/utils";
-import {BenchmarkResult, BenchmarkRunner, SuiteConfig} from "./types";
-import {suiteResultToAuditOutput} from "./utils";
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
+import { importEsmModule } from '@code-pushup/utils';
+import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
+import { suiteResultToAuditOutput } from './utils';
 
 export function createRunnerFunction(
   suites: SuiteConfig[],
   options: {
-    runnerPath: string,
-    outputDir?: string
+    runnerPath: string;
+    outputDir?: string;
   },
 ): RunnerFunction {
   const { outputDir, runnerPath } = options;
@@ -18,7 +18,9 @@ export function createRunnerFunction(
     // Execute each suite sequentially
     // eslint-disable-next-line functional/no-loop-statements
     for (const suite of suites) {
-      const runner = await importEsmModule({filepath: runnerPath}) as BenchmarkRunner;
+      const runner = (await importEsmModule({
+        filepath: runnerPath,
+      })) as BenchmarkRunner;
       const result: BenchmarkResult[] = await runner.run(suite);
       if (outputDir && outputDir !== '') {
         await writeFile(

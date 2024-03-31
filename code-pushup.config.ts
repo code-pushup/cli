@@ -1,11 +1,11 @@
 import 'dotenv/config';
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
-  // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-  jsBenchmarkingPlugin,
-  jsBenchmarkingSuiteNameToCategoryRef,
   fileSizePlugin,
-  fileSizeRecommendedRefs, // lighthouseCorePerfGroupRefs,
+  fileSizeRecommendedRefs, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  jsBenchmarkingPlugin,
+  jsBenchmarkingSuiteNameToCategoryRef, // lighthouseCorePerfGroupRefs,
   // lighthousePlugin,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
@@ -19,7 +19,6 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
-import {join} from "node:path";
 
 // load upload configuration from environment
 const envSchema = z

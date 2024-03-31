@@ -1,7 +1,7 @@
-import {BenchmarkResult} from "./types";
-import {AuditOutput, Issue} from "@code-pushup/models";
-import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
-import {slugify} from "@code-pushup/utils";
+import { AuditOutput, Issue } from '@code-pushup/models';
+import { slugify } from '@code-pushup/utils';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from '../constants';
+import { BenchmarkResult } from './types';
 
 export function toAuditSlug(suiteName: string): string {
   return `${JS_BENCHMARKING_PLUGIN_SLUG}-${slugify(suiteName)}`;

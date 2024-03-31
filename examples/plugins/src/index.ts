@@ -19,4 +19,5 @@ export {
 export {
   jsBenchmarkingPlugin,
   jsBenchmarkingSuiteNameToCategoryRef,
+  JsBenchmarkingPluginConfig,
 } from './js-benchmarking/src/index';

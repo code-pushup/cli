@@ -1,14 +1,14 @@
-import {describe, expect, it} from 'vitest';
-import {auditOutputSchema} from '@code-pushup/models';
+import { describe, expect, it } from 'vitest';
+import { auditOutputSchema } from '@code-pushup/models';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from './constants';
+import { BenchmarkResult, SuiteConfig } from './runner/types';
+import { suiteResultToAuditOutput, toAuditSlug } from './runner/utils';
 import {
   jsBenchmarkingSuiteNameToCategoryRef,
   loadSuites,
   toAuditMetadata,
   toAuditTitle,
 } from './utils';
-import {JS_BENCHMARKING_PLUGIN_SLUG} from "./constants";
-import {suiteResultToAuditOutput, toAuditSlug} from "./runner/utils";
-import {BenchmarkResult, SuiteConfig} from "./runner/types";
 
 vi.mock('@code-pushup/utils', async () => {
   const actual = await vi.importActual('@code-pushup/utils');

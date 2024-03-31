@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { runner } from './benchmark.suite-runner';
+import { bencnmarkRunner } from './benchmark.suite-runner';
 
 describe('benchmark runner', () => {
   it('should execute valid suite', async () => {
     await expect(
-      runner.run({
+      bencnmarkRunner.run({
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
