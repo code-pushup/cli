@@ -2,7 +2,7 @@ import { Audit, Group } from '@code-pushup/models';
 
 export const KNIP_PLUGIN_SLUG = 'knip';
 
-const audits = ([
+const audits = [
   {
     slug: 'files',
     title: 'Unused Files',
@@ -69,19 +69,19 @@ const audits = ([
     description: 'Unable to find a reference to this class member',
   },
   {
-    slug: 'duplicates' ,
+    slug: 'duplicates',
     title: 'Duplicate exports',
     description: 'This is exported more than once',
   },
-] as const satisfies Audit[] ) // we use `as const satisfies` to get strict slug typing
+] as const satisfies Audit[]; // we use `as const satisfies` to get strict slug typing
 
-export type KnipAudits = typeof audits[number]['slug'];
+export type KnipAudits = (typeof audits)[number]['slug'];
 
 function docsLink(slug: KnipAudits): string {
   let anchor = '#';
   const base = 'https://knip.dev/guides/handling-issues';
 
-  switch(slug) {
+  switch (slug) {
     case 'files':
       anchor = '#unused-files';
       break;
@@ -119,7 +119,6 @@ function docsLink(slug: KnipAudits): string {
   return `${base}${anchor}`;
 }
 
-
 export const KNIP_AUDITS = audits.map(audit => ({
   ...audit,
   docsUrl: docsLink(audit.slug),
@@ -129,9 +128,7 @@ export const KNIP_GROUP_FILES = {
   slug: 'files',
   title: 'All file audits',
   description: 'Groups all file related audits',
-  refs: [
-    { slug: 'files', weight: 1 },
-  ],
+  refs: [{ slug: 'files', weight: 1 }],
 } as const satisfies Group;
 
 export const KNIP_GROUP_DEPENDENCIES = {
@@ -163,7 +160,7 @@ export const KNIP_GROUP_EXPORTS = {
     // eslint-disable-next-line no-magic-numbers
     { slug: 'duplicates', weight: 2 },
   ],
-}  as const satisfies Group;
+} as const satisfies Group;
 
 export const KNIP_GROUP_ALL = {
   slug: 'all',
@@ -176,11 +173,11 @@ export const KNIP_GROUP_ALL = {
   ],
 } as const satisfies Group;
 
-export const KNIP_GROUPS = ([
+export const KNIP_GROUPS = [
   KNIP_GROUP_FILES,
   KNIP_GROUP_EXPORTS,
   KNIP_GROUP_DEPENDENCIES,
-  KNIP_GROUP_ALL
-] as const satisfies Group[]) // we use `as const satisfies` to get strict slug typing;
+  KNIP_GROUP_ALL,
+] as const satisfies Group[]; // we use `as const satisfies` to get strict slug typing;
 
-export type KnipGroups = typeof KNIP_GROUPS[number]['slug'];
+export type KnipGroups = (typeof KNIP_GROUPS)[number]['slug'];

@@ -1,7 +1,7 @@
-import {join} from 'node:path';
-import {RunnerConfig} from '@code-pushup/models';
-import {type CustomReporterOptions} from "../reporter";
-import {type KnipAudits} from "../constants";
+import { join } from 'node:path';
+import { RunnerConfig } from '@code-pushup/models';
+import { type KnipAudits } from '../constants';
+import { type CustomReporterOptions } from '../reporter';
 
 /**
  * @description
@@ -38,13 +38,16 @@ export type KnipCliOptions = Partial<{
   // eslint-disable-next-line @typescript-eslint/naming-convention
   'experimental-tags': string[];
   tags: string[];
-}>
-export type RunnerOptions = KnipCliOptions & CustomReporterOptions
+}>;
+export type RunnerOptions = KnipCliOptions & CustomReporterOptions;
 
 export function createRunnerConfig(options: RunnerOptions = {}): RunnerConfig {
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   options;
-  const rawOutputFile = join('.code-pushup', `knip-raw-report-${Date.now()}.json`);
+  const rawOutputFile = join(
+    '.code-pushup',
+    `knip-raw-report-${Date.now()}.json`,
+  );
   const outputFile = join('.code-pushup', `knip-report-${Date.now()}.json`);
   return {
     command: 'npx',
@@ -57,7 +60,10 @@ export function createRunnerConfig(options: RunnerOptions = {}): RunnerConfig {
       // @TODO replace with correct path after release (@code-pushup/knip-plugin/src/reporter/index.js)
       '--reporter=./dist/examples/plugins/knip/src/reporter/index.js',
       // code-pushup reporter options are passed as string. See
-      `--reporter-options='${JSON.stringify({outputFile, rawOutputFile} satisfies CustomReporterOptions)}'`,
+      `--reporter-options='${JSON.stringify({
+        outputFile,
+        rawOutputFile,
+      } satisfies CustomReporterOptions)}'`,
     ],
     outputFile,
   };

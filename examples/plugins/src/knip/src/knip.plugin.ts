@@ -1,6 +1,6 @@
-import {PluginConfig} from '@code-pushup/models';
-import {KNIP_AUDITS, KNIP_GROUPS, KNIP_PLUGIN_SLUG} from './constants';
-import {createRunnerConfig, RunnerOptions} from "./runner";
+import { PluginConfig } from '@code-pushup/models';
+import { KNIP_AUDITS, KNIP_GROUPS, KNIP_PLUGIN_SLUG } from './constants';
+import { RunnerOptions, createRunnerConfig } from './runner';
 
 export type PluginOptions = RunnerOptions;
 

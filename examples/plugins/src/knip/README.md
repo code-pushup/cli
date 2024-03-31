@@ -33,7 +33,7 @@ See a detailed guide on how to configure knip on their [official docs](https://k
    Assign weights based on what influence each audit and group should have on the overall category score (assign weight 0 to only include it for extra info, without influencing the category score).
 
    ```js
-   import { knipCategoryGroupRef, knipCategoryAuditRef } from './knip/index.ts';
+   import { knipCategoryAuditRef, knipCategoryGroupRef } from './knip/index.ts';
 
    export default {
      // ...
@@ -146,22 +146,22 @@ Audits are derived form knip's [issue types](https://knip.dev/reference/issue-ty
 
 **Table of Audits**
 
-| Title                                                                                                      | Description                                                | Default On | Key          | Source | Position | Fixable |
-| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------ | ------ | -------- | ------- |
-| [Unused files](https://knip.dev/guides/handling-issues#unused-files)                                       | Unable to find a reference to this file                    |            | files        | 📄     |          |         |
-| [Unused dependencies](https://knip.dev/guides/handling-issues#unused-dependencies)                         | Unable to find a reference to this dependency              |            | dependencies |        |          | 🔧      |
-| [Unused devDependencies](https://knip.dev/guides/handling-issues#unused-dependencies)                      | Unable to find a reference to this devDependency           |            | dependencies |        |          | 🔧      |
-| [Unlisted dependencies](https://knip.dev/guides/handling-issues#unlisted-dependencies)                     | Used dependencies not listed in package.json               |            | unlisted     | 📄     | 📍       |         |
-| [Unlisted binaries](https://knip.dev/guides/handling-issues)                                       | Binaries from dependencies not listed in package.json      |            | binaries     | 📄     | 📍       |         |
+| Title                                                                                                                | Description                                                | Default On | Key          | Source | Position | Fixable |
+| -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------ | ------ | -------- | ------- |
+| [Unused files](https://knip.dev/guides/handling-issues#unused-files)                                                 | Unable to find a reference to this file                    |            | files        | 📄     |          |         |
+| [Unused dependencies](https://knip.dev/guides/handling-issues#unused-dependencies)                                   | Unable to find a reference to this dependency              |            | dependencies |        |          | 🔧      |
+| [Unused devDependencies](https://knip.dev/guides/handling-issues#unused-dependencies)                                | Unable to find a reference to this devDependency           |            | dependencies |        |          | 🔧      |
+| [Unlisted dependencies](https://knip.dev/guides/handling-issues#unlisted-dependencies)                               | Used dependencies not listed in package.json               |            | unlisted     | 📄     | 📍       |         |
+| [Unlisted binaries](https://knip.dev/guides/handling-issues)                                                         | Binaries from dependencies not listed in package.json      |            | binaries     | 📄     | 📍       |         |
 | [Referenced optional peerDependencies](https://knip.dev/guides/handling-issues#referenced-optional-peerDependencies) | Optional peer dependency is referenced                     |            | dependencies | 📄     | 📍       |         |
-| [Unresolved imports](https://knip.dev/guides/handling-issues#unresolved-imports)                           | Unable to resolve this (import) specifier                  |            | unresolved   | 📄     | 📍       |         |
-| [Unused exports](https://knip.dev/guides/handling-issues#unused-exports)                                   | Unable to find a reference to this export                  |            | exports      | 📄     | 📍       | 🔧      |
-| [Unused exported types](https://knip.dev/guides/handling-issues#unused-exports)                            | Unable to find a reference to this exported type           |            | types        | 📄     | 📍       | 🔧      |
-| [Exports in used namespace](https://knip.dev/guides/handling-issues#unused-exports)                        | Namespace with export is referenced, but not export itself | 🟠         | nsExports    | 📄     | 📍       |         |
-| [Exported types in used namespace](https://knip.dev/guides/handling-issues#unused-exports)                 | Namespace with type is referenced, but not type itself     | 🟠         | nsTypes      | 📄     | 📍       |         |
-| [Unused exported enum members](https://knip.dev/guides/handling-issues#enum-members)                       | Unable to find a reference to this enum member             |            | enumMembers  | 📄     | 📍       |         |
-| [Unused exported class members](https://knip.dev/guides/handling-issues#class-members)                     | Unable to find a reference to this class member            | 🟠         | classMembers | 📄     | 📍       |         |
-| [Duplicate exports](https://knip.dev/guides/handling-issues)                                               | This is exported more than once                            |            | duplicates   | 📄     | 📍       |         |
+| [Unresolved imports](https://knip.dev/guides/handling-issues#unresolved-imports)                                     | Unable to resolve this (import) specifier                  |            | unresolved   | 📄     | 📍       |         |
+| [Unused exports](https://knip.dev/guides/handling-issues#unused-exports)                                             | Unable to find a reference to this export                  |            | exports      | 📄     | 📍       | 🔧      |
+| [Unused exported types](https://knip.dev/guides/handling-issues#unused-exports)                                      | Unable to find a reference to this exported type           |            | types        | 📄     | 📍       | 🔧      |
+| [Exports in used namespace](https://knip.dev/guides/handling-issues#unused-exports)                                  | Namespace with export is referenced, but not export itself | 🟠         | nsExports    | 📄     | 📍       |         |
+| [Exported types in used namespace](https://knip.dev/guides/handling-issues#unused-exports)                           | Namespace with type is referenced, but not type itself     | 🟠         | nsTypes      | 📄     | 📍       |         |
+| [Unused exported enum members](https://knip.dev/guides/handling-issues#enum-members)                                 | Unable to find a reference to this enum member             |            | enumMembers  | 📄     | 📍       |         |
+| [Unused exported class members](https://knip.dev/guides/handling-issues#class-members)                               | Unable to find a reference to this class member            | 🟠         | classMembers | 📄     | 📍       |         |
+| [Duplicate exports](https://knip.dev/guides/handling-issues)                                                         | This is exported more than once                            |            | duplicates   | 📄     | 📍       |         |
 
 ## Troubleshooting
 

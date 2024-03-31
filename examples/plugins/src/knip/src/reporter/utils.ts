@@ -8,7 +8,7 @@ import {
   Issue as CodePushupIssue,
   IssueSeverity as CondPushupIssueSeverity,
 } from '@code-pushup/models';
-import {capital, singular, slugify} from '@code-pushup/utils';
+import { capital, singular, slugify } from '@code-pushup/utils';
 
 export function getSource({
   filePath: file,

@@ -10,7 +10,7 @@ export {
   documentationGroupRef as packageJsonDocumentationGroupRef,
   performanceGroupRef as packageJsonPerformanceGroupRef,
 } from './package-json/src/scoring';
-export {create as packageJsonPlugin} from './package-json/src/package-json.plugin';
+export { create as packageJsonPlugin } from './package-json/src/package-json.plugin';
 export {
   create as lighthousePlugin,
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
@@ -19,5 +19,5 @@ export {
 export {
   knipPlugin,
   knipCategoryAuditRef,
-  knipCategoryGroupRef
+  knipCategoryGroupRef,
 } from './knip/src/index';

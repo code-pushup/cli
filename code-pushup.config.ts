@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import {
-  knipCategoryGroupRef, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
+  // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  knipCategoryGroupRef,
   knipPlugin,
   packageJsonDocumentationGroupRef, // lighthousePlugin, lighthouseCorePerfGroupRefs,
   packageJsonPerformanceGroupRef,
@@ -17,7 +18,6 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
-
 
 // load upload configuration from environment
 const envSchema = z
@@ -56,7 +56,7 @@ const config: CoreConfig = {
           'unit-test',
           'integration-test',
           '--coverage.enabled',
-          '--skipNxCache'
+          '--skipNxCache',
         ],
       },
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),

@@ -5,7 +5,8 @@ import {
   formatDate,
   formatDuration,
   pluralize,
-  pluralizeToken, singular,
+  pluralizeToken,
+  singular,
   slugify,
   truncateText,
 } from './formatting';

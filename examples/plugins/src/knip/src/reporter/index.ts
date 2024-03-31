@@ -1,6 +1,6 @@
-import type {ReporterOptions} from 'knip/dist/types/issues';
-import {writeFile} from 'node:fs/promises';
-import {knipToCpReport} from './utils';
+import type { ReporterOptions } from 'knip/dist/types/issues';
+import { writeFile } from 'node:fs/promises';
+import { knipToCpReport } from './utils';
 
 /**
  * @example
@@ -9,12 +9,16 @@ import {knipToCpReport} from './utils';
  *
  */
 export type CustomReporterOptions = {
-  rawOutputFile?: string
-  outputFile?: string
+  rawOutputFile?: string;
+  outputFile?: string;
 };
 
-function parseCustomReporterOptions(optionsString?: string): Record<string, unknown> {
-  return typeof optionsString === 'string' && optionsString !== '' ? JSON.parse(optionsString) as Record<string, unknown> : {};
+function parseCustomReporterOptions(
+  optionsString?: string,
+): Record<string, unknown> {
+  return typeof optionsString === 'string' && optionsString !== ''
+    ? (JSON.parse(optionsString) as Record<string, unknown>)
+    : {};
 }
 
 export const knipReporter = async ({
@@ -22,14 +26,15 @@ export const knipReporter = async ({
   issues,
   options,
 }: ReporterOptions) => {
-  const reporterOptions = parseCustomReporterOptions(options) as CustomReporterOptions;
-  const { outputFile = `knip-report.json`, rawOutputFile } =
-    reporterOptions;
-  if(rawOutputFile) {
-    await writeFile(rawOutputFile,
+  const reporterOptions = parseCustomReporterOptions(
+    options,
+  ) as CustomReporterOptions;
+  const { outputFile = `knip-report.json`, rawOutputFile } = reporterOptions;
+  if (rawOutputFile) {
+    await writeFile(
+      rawOutputFile,
       JSON.stringify({ report, issues, options: reporterOptions }, null, 2),
     );
-
   }
   const result = knipToCpReport({ issues });
 

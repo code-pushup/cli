@@ -1,7 +1,7 @@
-import {describe, expect, it} from 'vitest';
-import {pluginConfigSchema} from '@code-pushup/models';
-import {knipPlugin} from './knip.plugin';
-import {KNIP_AUDITS, KNIP_GROUPS, KNIP_PLUGIN_SLUG} from "./constants";
+import { describe, expect, it } from 'vitest';
+import { pluginConfigSchema } from '@code-pushup/models';
+import { KNIP_AUDITS, KNIP_GROUPS, KNIP_PLUGIN_SLUG } from './constants';
+import { knipPlugin } from './knip.plugin';
 
 describe('knipPlugin-create-config-object', () => {
   it('should return valid PluginConfig', () => {
@@ -13,8 +13,8 @@ describe('knipPlugin-create-config-object', () => {
         title: 'Knip',
         icon: 'folder-javascript',
         description: 'A plugin to track dependencies and duplicates',
-         audits: KNIP_AUDITS,
-         groups: KNIP_GROUPS,
+        audits: KNIP_AUDITS,
+        groups: KNIP_GROUPS,
       }),
     );
   });

@@ -41,7 +41,6 @@ export function singular(typeInPlural: string): string {
   return typeInPlural;
 }
 
-
 export function formatBytes(bytes: number, decimals = 2) {
   const positiveBytes = Math.max(bytes, 0);
 

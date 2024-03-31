@@ -10,8 +10,8 @@ import {
   createAuditOutputFromKnipFiles,
   createAuditOutputFromKnipIssues,
   getSource,
-  knipToCpReport,
   knipIssueToIssue,
+  knipToCpReport,
 } from './utils';
 
 describe('getSource', () => {
