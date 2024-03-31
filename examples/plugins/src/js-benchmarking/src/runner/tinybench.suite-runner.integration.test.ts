@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { factorial } from '../../../../perf/dummy-suite/factorial';
 import { tinybenchRunner } from './tinybench.suite-runner';
 import type { BenchmarkResult } from './types';
 
@@ -9,14 +10,8 @@ describe('tinybench runner', () => {
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
-          [
-            'current-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 5)),
-          ],
-          [
-            'slower-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 500)),
-          ],
+          ['current-implementation', () => 1],
+          ['slower-implementation', () => factorial(1000)],
         ],
       }),
     ).resolves.toEqual(

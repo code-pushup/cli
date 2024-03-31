@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { factorial } from '../../../../perf/dummy-suite/factorial';
 import { bencnmarkRunner } from './benchmark.suite-runner';
 
 describe('benchmark runner', () => {
@@ -8,14 +9,8 @@ describe('benchmark runner', () => {
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
-          [
-            'current-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 5)),
-          ],
-          [
-            'slower-implementation',
-            () => new Promise(resolve => setTimeout(resolve, 30)),
-          ],
+          ['current-implementation', () => 1],
+          ['slower-implementation', () => factorial(1000)],
         ],
       }),
     ).resolves.toStrictEqual(expect.arrayContaining([]));

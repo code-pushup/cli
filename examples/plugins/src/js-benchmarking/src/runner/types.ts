@@ -1,7 +1,8 @@
 export type SuiteConfig = {
   suiteName: string;
   targetImplementation: string;
-  cases: [string, (...args: unknown[]) => Promise<unknown>][];
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  cases: [string, (...args: unknown[]) => Promise<unknown> | unknown][];
   time?: number;
 };
 
