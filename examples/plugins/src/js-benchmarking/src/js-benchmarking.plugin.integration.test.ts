@@ -19,6 +19,7 @@ const targetPath = join(
 
 describe('jsBenchmarkingPlugin-execution', () => {
   // @TODO move to e2e tests when plugin is released officially
+  // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should execute', async () => {
     const pluginConfig = await jsBenchmarkingPlugin({
       targets: [targetPath],

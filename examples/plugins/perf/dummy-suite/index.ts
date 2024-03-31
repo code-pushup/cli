@@ -29,14 +29,13 @@ const cli = yargs(process.argv).options({
   },
 });
 
-// eslint-disable-next-line n/no-sync
 const {
   numCases,
   executionTime,
   executionTimeDiff,
   syncIterations,
   syncIterationsDiff,
-  logs,
+  logs, // eslint-disable-next-line n/no-sync
 } = cli.parseSync();
 
 if (logs) {

@@ -4,6 +4,7 @@ import { benchmarkRunner } from './benchmark.suite-runner';
 
 describe('benchmark runner', () => {
   // @TODO move to e2e tests when plugin is released officially
+  // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should execute valid suite', async () => {
     await expect(
       benchmarkRunner.run({
