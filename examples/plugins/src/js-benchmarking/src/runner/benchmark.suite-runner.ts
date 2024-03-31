@@ -1,7 +1,7 @@
 import Benchmark, { Event, type Suite, type Target } from 'benchmark';
 import type { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
 
-export const bencnmarkRunner = {
+export const benchmarkRunner = {
   run: async (
     { suiteName, cases, targetImplementation }: SuiteConfig,
     options: {
@@ -65,4 +65,4 @@ export function benchToBenchmarkResult(
   ) as BenchmarkResult[]; // suite.map has a broken typing
 }
 
-export default bencnmarkRunner;
+export default benchmarkRunner;

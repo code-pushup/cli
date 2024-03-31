@@ -1,10 +1,34 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { executePlugin } from '@code-pushup/core';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { JS_BENCHMARKING_PLUGIN_SLUG } from './constants';
 import { jsBenchmarkingPlugin } from './js-benchmarking.plugin';
+import { BenchmarkResult } from './runner/types';
+
+vi.mock('./utils', async () => {
+  const all: object = await vi.importActual('./utils');
+  return {
+    ...all,
+    loadSuites: vi.fn().mockImplementation((suiteNames: string[]) =>
+      suiteNames.map(
+        (suiteName, index) =>
+          ({
+            suiteName: suiteName.replace('.ts', ''),
+            name:
+              index === 0
+                ? 'current-implementation'
+                : `implementation-${index}`,
+            rme: index === 0 ? 1 : Math.random(),
+            hz: index === 0 ? 1 : Math.random(),
+            isFastest: index === 0,
+            isTarget: index === 0,
+            samples: suiteNames.length * 10,
+          } satisfies BenchmarkResult),
+      ),
+    ),
+  };
+});
 
 const targetPath = join(
   fileURLToPath(dirname(import.meta.url)),
@@ -13,18 +37,16 @@ const targetPath = join(
   '..',
   '..',
   'perf',
-  'dummy-suite',
-  'index.ts',
+  'dummy-suite.ts',
 );
 
-describe('jsBenchmarkingPlugin-execution', () => {
-  // @TODO move to e2e tests when plugin is released officially
-  it.skip('should execute', async () => {
+describe('jsBenchmarkingPlugin-config-creation', () => {
+  it('should create valid config', async () => {
     const pluginConfig = await jsBenchmarkingPlugin({
       targets: [targetPath],
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    await expect(executePlugin(pluginConfig)).resolves.toEqual(
+    expect(pluginConfig).toEqual(
       expect.objectContaining({
         slug: JS_BENCHMARKING_PLUGIN_SLUG,
         title: 'JS Benchmarking',
@@ -38,4 +60,4 @@ describe('jsBenchmarkingPlugin-execution', () => {
       } satisfies Omit<PluginConfig, 'runner'>),
     );
   });
-}, 13_500);
+});

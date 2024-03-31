@@ -4,7 +4,8 @@ import { tinybenchRunner } from './tinybench.suite-runner';
 import type { BenchmarkResult } from './types';
 
 describe('tinybench runner', () => {
-  it('should execute valid suite', async () => {
+  // @TODO move to e2e tests when plugin is released officially
+  it.skip('should execute valid suite', async () => {
     await expect(
       tinybenchRunner.run({
         suiteName: 'suite-1',

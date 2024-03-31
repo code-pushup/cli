@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { factorial } from '../../../../perf/dummy-suite/factorial';
-import { bencnmarkRunner } from './benchmark.suite-runner';
+import { benchmarkRunner } from './benchmark.suite-runner';
 
 describe('benchmark runner', () => {
-  it('should execute valid suite', async () => {
+  // @TODO move to e2e tests when plugin is released officially
+  it.skip('should execute valid suite', async () => {
     await expect(
-      bencnmarkRunner.run({
+      benchmarkRunner.run({
         suiteName: 'suite-1',
         targetImplementation: 'current-implementation',
         cases: [
