@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import { join } from 'node:path';
 import yargs from 'yargs';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { type CrawlFileSystemOptions } from '../../../../dist/packages/utils';
+import type { CrawlFileSystemOptions } from '../../src/lib/file-system';
 import { crawlFileSystemFsWalk } from './fs-walk';
 
 const cli = yargs(process.argv).options({
