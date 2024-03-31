@@ -1,5 +1,4 @@
 import {
-  type CliFlags,
   type Config,
   type IcuMessage,
   Audit as LHAudit,
@@ -12,7 +11,7 @@ export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
 
 const { audits, categories } = defaultConfig;
 
-export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
+export const GROUPS: Group[] = Object.entries(categories ?? {}).map(
   ([id, category]) => ({
     slug: id,
     title: getMetaString(category.title),
@@ -23,7 +22,7 @@ export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
   }),
 );
 
-export const LIGHTHOUSE_AUDITS: Audit[] = await Promise.all(
+export const AUDITS: Audit[] = await Promise.all(
   (audits ?? []).map(async value => {
     const audit = await loadLighthouseAudit(value);
     return {
@@ -64,21 +63,3 @@ async function loadLighthouseAudit(
   };
   return module.default;
 }
-
-export const DEFAULT_CLI_FLAGS: Partial<CliFlags> = {
-  // default values extracted from
-  // https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80
-  verbose: false,
-  quiet: false,
-  saveAssets: false,
-  // needed to pass CI on linux and windows (locally it works without headless too)
-  chromeFlags: '--headless=shell',
-  port: 0,
-  hostname: '127.0.0.1',
-  view: false,
-  channel: 'cli',
-  chromeIgnoreDefaultFlags: false,
-  // custom overwrites in favour of the plugin
-  output: ['json'],
-  outputPath: LIGHTHOUSE_REPORT_NAME,
-};
