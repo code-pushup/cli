@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { runner } from './tinybench.suite-runner';
-import { BenchmarkResult } from './utils';
+import {describe, expect, it} from 'vitest';
+import {runner} from './tinybench.suite-runner';
+import type {BenchmarkResult} from '../utils';
 
 describe('tinybench runner', () => {
   it('should execute valid suite', async () => {

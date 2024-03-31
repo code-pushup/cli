@@ -1,15 +1,14 @@
-import { describe, expect, it } from 'vitest';
-import { auditOutputSchema } from '@code-pushup/models';
+import {describe, expect, it} from 'vitest';
+import {auditOutputSchema} from '@code-pushup/models';
 import {
-  BenchmarkResult,
-  SuiteConfig,
+  jsBenchmarkingSuiteNameToCategoryRef,
   loadSuites,
-  suiteNameToCategoryRef,
-  suiteResultToAuditOutput,
   toAuditMetadata,
-  toAuditSlug,
   toAuditTitle,
 } from './utils';
+import {JS_BENCHMARKING_PLUGIN_SLUG} from "./constants";
+import {suiteResultToAuditOutput, toAuditSlug} from "./runner/utils";
+import {BenchmarkResult, SuiteConfig} from "./runner/types";
 
 vi.mock('@code-pushup/utils', async () => {
   const actual = await vi.importActual('@code-pushup/utils');
@@ -32,7 +31,7 @@ vi.mock('@code-pushup/utils', async () => {
 
 describe('toAuditSlug', () => {
   it('should create slug string', () => {
-    expect(toAuditSlug('glob')).toBe('benchmark-js-glob');
+    expect(toAuditSlug('glob')).toBe(`${JS_BENCHMARKING_PLUGIN_SLUG}-glob`);
   });
 });
 
@@ -55,7 +54,7 @@ describe('toAuditMetadata', () => {
 
 describe('suiteNameToCategoryRef', () => {
   it('should create a valid CategoryRef form suiteName', () => {
-    expect(suiteNameToCategoryRef('glob')).toEqual({
+    expect(jsBenchmarkingSuiteNameToCategoryRef('glob')).toEqual({
       slug: toAuditSlug('glob'),
       type: 'audit',
       weight: 1,

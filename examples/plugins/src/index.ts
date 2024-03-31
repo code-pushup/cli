@@ -17,6 +17,6 @@ export {
   recommendedRefs as lighthouseCorePerfGroupRefs,
 } from './lighthouse/src/index';
 export {
-  create as benchmarkJsPlugin,
-  suiteNameToCategoryRef as benchmarkJsSuiteNameToCategoryRef,
-} from './benchmark-js/src/index';
+  jsBenchmarkingPlugin,
+  jsBenchmarkingSuiteNameToCategoryRef,
+} from './js-benchmarking/src/index';

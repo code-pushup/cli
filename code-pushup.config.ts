@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { z } from 'zod';
 import {
   // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-  benchmarkJsPlugin,
-  benchmarkJsSuiteNameToCategoryRef,
+  jsBenchmarkingPlugin,
+  jsBenchmarkingSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs, // lighthouseCorePerfGroupRefs,
   // lighthousePlugin,
@@ -19,6 +19,7 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
+import {join} from "node:path";
 
 // load upload configuration from environment
 const envSchema = z
@@ -86,7 +87,7 @@ const config: CoreConfig = {
     //   headless: true,
     // }),
 
-    await benchmarkJsPlugin({
+    await jsBenchmarkingPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
       targets: benchmarkJsSuiteNames.map(suit =>
         join('packages', 'utils', 'perf', suit, 'index.ts'),
@@ -151,7 +152,7 @@ const config: CoreConfig = {
         packageJsonPerformanceGroupRef,
         packageJsonDocumentationGroupRef,
         // ...lighthouseCorePerfGroupRefs,
-        ...benchmarkJsSuiteNames.map(benchmarkJsSuiteNameToCategoryRef),
+        ...benchmarkJsSuiteNames.map(jsBenchmarkingSuiteNameToCategoryRef),
       ],
     },
   ],

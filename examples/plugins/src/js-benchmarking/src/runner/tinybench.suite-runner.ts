@@ -1,7 +1,8 @@
 import { Bench } from 'tinybench';
-import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './utils';
+import type { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
 
-export const runner = {
+
+export const tinybenchRunner = {
   run: async ({
     suiteName,
     cases,
@@ -58,4 +59,4 @@ export function benchToBenchmarkResult(
   );
 }
 
-export default runner;
+export default tinybenchRunner;

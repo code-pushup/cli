@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
-import { create } from './benchmark-js.plugin';
+import { jsBenchmarkingPlugin } from './benchmark-js.plugin';
 import { BenchmarkResult } from './utils';
 
 vi.mock('./utils', async () => {
@@ -27,9 +27,9 @@ vi.mock('./utils', async () => {
   };
 });
 
-describe('benchmark-js-create-export-config', () => {
+describe('jsBenchmarkingPlugin-config', () => {
   it('should execute', async () => {
-    const pluginConfig = await create({
+    const pluginConfig = await jsBenchmarkingPlugin({
       targets: ['suite-1.ts', 'suite-2.ts'],
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();

@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-  benchmarkJsPlugin,
+  jsBenchmarkingPlugin,
   benchmarkJsSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -47,7 +47,7 @@ const config = {
       headless: false,
       verbose: true,
     }),
-    await benchmarkJsPlugin({
+    await jsBenchmarkingPlugin({
       targets: benchmarkJsSuiteNames.map(folder =>
         join(projectRoot, 'perf', folder, 'index.ts'),
       ),
