@@ -14,5 +14,5 @@ describe('benchmark runner', () => {
         ],
       }),
     ).resolves.toStrictEqual(expect.arrayContaining([]));
-  }, 15_000);
+  }, 13_500);
 });

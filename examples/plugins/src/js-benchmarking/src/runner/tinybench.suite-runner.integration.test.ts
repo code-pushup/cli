@@ -36,5 +36,5 @@ describe('tinybench runner', () => {
         } satisfies BenchmarkResult),
       ]),
     );
-  }, 15_000);
+  }, 13_500);
 });
