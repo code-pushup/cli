@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import type { ReporterOptions } from 'knip/dist/types/issues';
+import type { ReporterOptions } from 'knip';
 import { knipToCpReport } from './utils';
 import {ensureDirectoryExists} from "@code-pushup/utils";
 import {dirname} from "node:path";
