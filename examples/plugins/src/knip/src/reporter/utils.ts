@@ -29,14 +29,16 @@ export function getSource({
       },
     };
   } else if (
-    symbols?.[0]?.col !== undefined &&
-    symbols[0]?.line !== undefined
+    symbols &&
+    symbols.at(symbols.length-1) &&
+    symbols.at(symbols.length-1)?.line != null &&
+    symbols.at(symbols.length-1)?.col != null
   ) {
     return {
       file,
       position: {
-        startLine: symbols[0].line,
-        startColumn: symbols[0].col,
+        startLine: symbols.at(symbols.length-1)?.line ?? 1,
+        startColumn: symbols.at(symbols.length-1)?.col,
       },
     };
   }
