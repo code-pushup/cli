@@ -30,20 +30,10 @@ vi.mock('./utils', async () => {
   };
 });
 
-const targetPath = join(
-  fileURLToPath(dirname(import.meta.url)),
-  '..',
-  '..',
-  '..',
-  '..',
-  'perf',
-  'dummy-suite.ts',
-);
-
 describe('jsBenchmarkingPlugin-config-creation', () => {
   it('should create valid config', async () => {
     const pluginConfig = await jsBenchmarkingPlugin({
-      targets: [targetPath],
+      targets: ['dummy-suite.ts'],
     });
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig).toEqual(
@@ -53,7 +43,7 @@ describe('jsBenchmarkingPlugin-config-creation', () => {
         icon: 'folder-benchmark',
         audits: [
           {
-            slug: `${JS_BENCHMARKING_PLUGIN_SLUG}-suite-1`,
+            slug: `${JS_BENCHMARKING_PLUGIN_SLUG}-dummy-suite`,
             title: 'dummy-suite',
           },
         ],
