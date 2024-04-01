@@ -17,6 +17,7 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/test-utils/unit-tests',
     },
+    passWithNoTests: true,
     environment: 'node',
     include: ['src/**/*.unit.test.ts'],
   },

@@ -18,6 +18,7 @@ export default defineConfig({
       reportsDirectory: '../../coverage/nx-plugin/unit-tests',
       exclude: ['mocks/**'],
     },
+    passWithNoTests: true,
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: [
