@@ -84,6 +84,7 @@ describe('processIssue', () => {
     });
   });
 
+  // @TODO only list one issue per dependency
   it('should return message and severity correctly from issue with filePath', () => {
     expect(
       knipIssueToIssue({
@@ -575,8 +576,8 @@ describe('createAuditOutputFromKnipFiles', () => {
             source: {
               file: '/packages/nx-plugin/src/generators/configuration/generator.ts',
               position: {
-                startColumn: 56,
-                startLine: 10,
+                startLine: 52,
+                startColumn: 15,
               },
             },
           },
