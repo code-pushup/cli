@@ -5,7 +5,7 @@ import { factorial } from './factorial';
 const cli = yargs(process.argv).options({
   numCases: {
     type: 'number',
-    default: 5,
+    default: 2,
   },
   executionTime: {
     type: 'number',
@@ -65,6 +65,7 @@ const suiteConfig: SuiteConfig = {
         }, executionTime + executionTimeDiff * idx),
       ),
   ]),
+  time: executionTime + executionTimeDiff * 2,
 };
 
 export default suiteConfig;

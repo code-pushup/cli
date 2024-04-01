@@ -39,4 +39,4 @@ describe('jsBenchmarkingPlugin-execution', () => {
       } satisfies Omit<PluginConfig, 'runner'>),
     );
   });
-}, 13_500);
+});
