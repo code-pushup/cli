@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Version, release and publish packages
-        run: npx nx release --yes --dry-run
+        run: npx nx release --yes --dry-run -- --skip-nx-cache
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -83,7 +83,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          npx nx release --yes
+          npx nx release --yes -- --skip-nx-cache
       - name: Collect and upload Code PushUp report
         run: npx nx code-pushup -- autorun
         env:

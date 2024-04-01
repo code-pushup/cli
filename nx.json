@@ -39,8 +39,8 @@
       }
     },
     "nx-release-publish": {
-      "dependsOn": ["build"],
-      "executor": "@nx/js:release-publish",
+      "cache": false,
+      "dependsOn": [{ "target": "build", "params": "forward" }],
       "options": {
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/"
