@@ -80,6 +80,7 @@ const audits = [
 export type KnipAudits = (typeof audits)[number]['slug'];
 
 function docsLink(slug: KnipAudits): string {
+  // eslint-disable-next-line functional/no-let
   let anchor = '#';
   const base = 'https://knip.dev/guides/handling-issues';
 
@@ -112,8 +113,9 @@ function docsLink(slug: KnipAudits): string {
     case 'classmembers':
       anchor = '#class-members';
       break;
-    case 'binaries':
-    case 'duplicates':
+    // following cases also default:
+    // - case 'binaries':
+    // - case 'duplicates':
     default:
       return base;
   }
@@ -159,7 +161,6 @@ export const KNIP_GROUP_EXPORTS = {
     { slug: 'nstypes', weight: 10 },
     { slug: 'enummembers', weight: 10 },
     { slug: 'classmembers', weight: 10 },
-    // eslint-disable-next-line no-magic-numbers
     { slug: 'duplicates', weight: 2 },
   ],
 } as const satisfies Group;

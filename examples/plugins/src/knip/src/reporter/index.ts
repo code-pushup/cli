@@ -1,8 +1,8 @@
-import { writeFile } from 'node:fs/promises';
 import type { ReporterOptions } from 'knip';
+import { writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+import { ensureDirectoryExists } from '@code-pushup/utils';
 import { knipToCpReport } from './utils';
-import {ensureDirectoryExists} from "@code-pushup/utils";
-import {dirname} from "node:path";
 
 /**
  * @example
@@ -33,7 +33,7 @@ export const knipReporter = async ({
   ) as CustomReporterOptions;
   const { outputFile = `knip-report.json`, rawOutputFile } = reporterOptions;
   if (rawOutputFile) {
-    ensureDirectoryExists(dirname(rawOutputFile));
+    await ensureDirectoryExists(dirname(rawOutputFile));
     await writeFile(
       rawOutputFile,
       JSON.stringify({ report, issues, options: reporterOptions }, null, 2),
@@ -41,7 +41,7 @@ export const knipReporter = async ({
   }
   const result = knipToCpReport({ issues });
 
-  ensureDirectoryExists(dirname(outputFile));
+  await ensureDirectoryExists(dirname(outputFile));
   await writeFile(outputFile, JSON.stringify(result, null, 2));
 };
 

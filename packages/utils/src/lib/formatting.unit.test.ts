@@ -30,8 +30,8 @@ describe('pluralize', () => {
     ['error', 'errors'],
     ['category', 'categories'],
     ['status', 'statuses'],
-  ])('should pluralize "%s" as "%s"', (singular, plural) => {
-    expect(pluralize(singular)).toBe(plural);
+  ])('should pluralize "%s" as "%s"', (singularText, plural) => {
+    expect(pluralize(singularText)).toBe(plural);
   });
 
   it('should not pluralize if 1 passed in as amount', () => {

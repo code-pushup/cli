@@ -1,7 +1,11 @@
-import {join} from 'node:path';
-import {RunnerConfig} from '@code-pushup/models';
-import {KNIP_PLUGIN_SLUG, KNIP_REPORT_NAME, type KnipAudits} from '../constants';
-import {type CustomReporterOptions} from '../reporter';
+import { join } from 'node:path';
+import { RunnerConfig } from '@code-pushup/models';
+import {
+  KNIP_PLUGIN_SLUG,
+  KNIP_REPORT_NAME,
+  type KnipAudits,
+} from '../constants';
+import { type CustomReporterOptions } from '../reporter';
 
 /**
  * @description
@@ -42,7 +46,10 @@ export type KnipCliOptions = Partial<{
 export type RunnerOptions = KnipCliOptions & CustomReporterOptions;
 
 export function createRunnerConfig(options: RunnerOptions = {}): RunnerConfig {
-  const {outputFile = join(KNIP_PLUGIN_SLUG, KNIP_REPORT_NAME), rawOutputFile} = options;
+  const {
+    outputFile = join(KNIP_PLUGIN_SLUG, KNIP_REPORT_NAME),
+    rawOutputFile,
+  } = options;
   return {
     command: 'npx',
     args: [

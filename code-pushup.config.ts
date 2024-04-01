@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import {z} from 'zod';
+import { join } from 'node:path';
+import { z } from 'zod';
 import {
   // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
@@ -17,9 +18,12 @@ import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import type {CoreConfig} from './packages/models/src';
-import {join} from "node:path";
-import {KNIP_PLUGIN_SLUG, KNIP_RAW_REPORT_NAME, KNIP_REPORT_NAME} from "./examples/plugins/src/knip/src/constants";
+import {
+  KNIP_PLUGIN_SLUG,
+  KNIP_RAW_REPORT_NAME,
+  KNIP_REPORT_NAME,
+} from './examples/plugins/src/knip/src/constants';
+import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z
@@ -64,7 +68,7 @@ const config: CoreConfig = {
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
 
-    await jsPackagesPlugin({packageManager: 'npm'}),
+    await jsPackagesPlugin({ packageManager: 'npm' }),
 
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
@@ -87,10 +91,13 @@ const config: CoreConfig = {
 
     await knipPlugin({
       rawOutputFile: join(
-        '.code-pushup', KNIP_PLUGIN_SLUG,
+        '.code-pushup',
+        KNIP_PLUGIN_SLUG,
         `${KNIP_RAW_REPORT_NAME.split('.').shift()}-${Date.now()}.json`,
       ),
-      outputFile: join('.code-pushup', KNIP_PLUGIN_SLUG,
+      outputFile: join(
+        '.code-pushup',
+        KNIP_PLUGIN_SLUG,
         `${KNIP_REPORT_NAME.split('.').shift()}-${Date.now()}.json`,
       ),
     }),
@@ -100,13 +107,13 @@ const config: CoreConfig = {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
-      refs: [{type: 'group', plugin: 'eslint', slug: 'problems', weight: 1}],
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
       title: 'Code style',
       refs: [
-        {type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1},
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
     {

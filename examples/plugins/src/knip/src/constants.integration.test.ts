@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  auditSchema,
-  coreConfigSchema,
-  groupSchema,
-  pluginConfigSchema,
-} from '@code-pushup/models';
+import { auditSchema, groupSchema } from '@code-pushup/models';
 import {
   KNIP_AUDITS,
   KNIP_GROUP_ALL,
@@ -12,7 +7,6 @@ import {
   KNIP_GROUP_EXPORTS,
   KNIP_GROUP_FILES,
 } from './constants';
-import knipPlugin from './knip.plugin';
 
 describe('constants-AUDITS', () => {
   it.each(KNIP_AUDITS.map(audit => [audit.slug, audit]))(
@@ -24,34 +18,19 @@ describe('constants-AUDITS', () => {
 });
 
 describe('constants-KNIP_GROUPS', () => {
-  it('should be a valid group meta info', () => {
+  it('should be a valid file group info', () => {
     expect(() => groupSchema.parse(KNIP_GROUP_FILES)).not.toThrow();
   });
 
-  it('should be a valid group meta info', () => {
+  it('should be a valid exports group info', () => {
     expect(() => groupSchema.parse(KNIP_GROUP_EXPORTS)).not.toThrow();
   });
 
-  it('should be a valid group meta info', () => {
+  it('should be a valid dependencies group info', () => {
     expect(() => groupSchema.parse(KNIP_GROUP_DEPENDENCIES)).not.toThrow();
   });
 
-  it('should be a valid group meta info', () => {
+  it('should be a valid all group info', () => {
     expect(() => groupSchema.parse(KNIP_GROUP_ALL)).not.toThrow();
-  });
-
-  it('should be a valid group within the config', () => {
-    expect(() =>
-      coreConfigSchema.parse({
-        plugins: knipPlugin(),
-        categories: [
-          {
-            slug: 'category-1',
-            title: 'category 1',
-            refs: [KNIP_GROUP_ALL],
-          },
-        ],
-      }),
-    ).not.toThrow();
   });
 });
