@@ -30,15 +30,15 @@ export function getSource({
     };
   } else if (
     symbols &&
-    symbols.at(symbols.length - 1) &&
-    symbols.at(symbols.length - 1)?.line != null &&
-    symbols.at(symbols.length - 1)?.col != null
+    symbols.at(-1) &&
+    symbols.at(-1)?.line != null &&
+    symbols.at(-1)?.col != null
   ) {
     return {
       file,
       position: {
-        startLine: symbols.at(symbols.length - 1)?.line ?? 1,
-        startColumn: symbols.at(symbols.length - 1)?.col,
+        startLine: symbols.at(-1)?.line ?? 1,
+        startColumn: symbols.at(-1)?.col,
       },
     };
   }
