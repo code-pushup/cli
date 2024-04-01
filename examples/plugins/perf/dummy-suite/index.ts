@@ -21,7 +21,7 @@ const cli = yargs(process.argv).options({
   },
   syncIterationsDiff: {
     type: 'number',
-    default: 100,
+    default: 500,
   },
   logs: {
     type: 'boolean',

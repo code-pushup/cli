@@ -1,5 +1,3 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { PluginConfig, pluginConfigSchema } from '@code-pushup/models';
 import { JS_BENCHMARKING_PLUGIN_SLUG } from './constants';
