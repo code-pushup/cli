@@ -95,7 +95,6 @@
     ],
     "projectsRelationship": "fixed",
     "changelog": {
-      "automaticFromRef": true,
       "projectChangelogs": false,
       "workspaceChangelog": {
         "createRelease": "github"
@@ -103,8 +102,6 @@
     },
     "git": {
       "commit": true,
-      "push": true,
-      "pushRemote": "origin",
       "tag": true,
       "commitMessage": "release: {version} [skip ci]"
     },
