@@ -40,7 +40,12 @@
     },
     "nx-release-publish": {
       "cache": false,
-      "dependsOn": [{ "target": "build", "params": "forward" }],
+      "dependsOn": [
+        {
+          "target": "build",
+          "params": "forward"
+        }
+      ],
       "options": {
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/"
@@ -112,5 +117,6 @@
       }
     },
     "releaseTagPattern": "v{version}"
-  }
+  },
+  "useInferencePlugins": false
 }
