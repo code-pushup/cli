@@ -20,7 +20,7 @@ describe('lighthousePlugin', () => {
   });
 });
 
-describe('createRunnerFunction', () => {
+describe('runner creation and execution', () => {
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
