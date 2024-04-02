@@ -10,6 +10,10 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
+  JS_BENCHMARKING_BENNY_RUNNER_PATH,
+  JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
+  JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
+  JS_BENCHMARKING_PLUGIN_SLUG, JS_BENCHMARKING_TINYBENCH_RUNNER_PATH
 } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -19,6 +23,7 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
+
 
 // load upload configuration from environment
 const envSchema = z
@@ -88,6 +93,8 @@ const config: CoreConfig = {
 
     await jsBenchmarkingPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
+      runnerPath: JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
+      outputFolder: join('.code-pushup', JS_BENCHMARKING_PLUGIN_SLUG),
       targets: benchmarkJsSuiteNames.map(suit =>
         join('packages', 'utils', 'perf', suit, 'index.ts'),
       ),

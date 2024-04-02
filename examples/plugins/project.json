@@ -12,7 +12,12 @@
         "main": "examples/plugins/src/index.ts",
         "tsConfig": "examples/plugins/tsconfig.lib.json",
         "assets": ["examples/plugins/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "esbuildConfig": "esbuild.config.js",
+        "additionalEntryPoints": [
+          "examples/plugins/src/js-benchmarking.benchmark.runner.ts",
+          "examples/plugins/src/js-benchmarking.benny.runner.ts",
+          "examples/plugins/src/js-benchmarking.tinybench.runner.ts"
+        ]
       }
     },
     "lint": {

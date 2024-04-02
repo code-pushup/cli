@@ -1,10 +1,11 @@
-import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import {writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import yargs from 'yargs';
-import benchmark from './benchmark.runner.mjs';
-import tinybench from './tinybench.runner.mjs';
-import { loadSuits } from './utils.mjs';
-
+import benchmarkRunner from './benchmark.runner.mjs';
+import tinybenchRunner from './tinybench.runner.mjs';
+import bennyRunner from './benny.runner.mjs';
+import {loadSuits} from './utils.mjs';
+const supportedRunner = new Set(['tinybench', 'benchmark', 'benny']);
 const cli = yargs(process.argv).options({
   targets: {
     type: 'array',
@@ -36,7 +37,7 @@ const cli = yargs(process.argv).options({
     runner,
   } = await cli.parseAsync();
 
-  if (runner !== 'tinybench' && runner !== 'benchmark') {
+  if (!supportedRunner.has(runner)) {
     runner = 'tinybench';
   }
 
@@ -45,32 +46,44 @@ const cli = yargs(process.argv).options({
   }
 
   // execute benchmark
-  const allSuits = await loadSuits(targets, { tsconfig });
+  const allSuits = await loadSuits(targets, {tsconfig});
   if (verbose) {
     console.log(
       `Loaded targets: ${allSuits
-        .map(({ suiteName }) => suiteName)
+        .map(({suiteName}) => suiteName)
         .join(', ')}`,
     );
   }
-  console.log(`Use ${runner} for benchmarking`);
   // create audit output
   const allSuiteResults = [];
   // Execute each suite sequentially
   for (const suite of allSuits) {
-    const result = await (runner === 'tinybench' ? tinybench : benchmark).run(
-      suite,
-    );
+    let runnerFn;
+    switch (runner) {
+      case 'tinybench':
+        runnerFn = tinybenchRunner;
+        break;
+      case 'benchmark':
+        runnerFn = benchmarkRunner;
+        break;
+      case 'benny':
+        runnerFn = bennyRunner;
+        break;
+      default:
+        runnerFn = tinybenchRunner;
+    }
+    const result = await runnerFn.run(suite);
     allSuiteResults.push(result);
   }
+  console.log(`Use ${runner} for benchmarking`);
 
   allSuiteResults.forEach(async results => {
     const {
       suiteName,
       name,
       hz: maxHz,
-    } = results.find(({ isFastest }) => isFastest);
-    const target = results.find(({ isTarget }) => isTarget);
+    } = results.find(({isFastest}) => isFastest);
+    const target = results.find(({isTarget}) => isTarget);
     console.log(
       `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
     );
@@ -78,7 +91,7 @@ const cli = yargs(process.argv).options({
       await writeFile(
         join(outputDir, `${suiteName}-${runner}-${Date.now()}.json`),
         JSON.stringify(
-          results.map(({ name, hz, rme, samples }) => ({
+          results.map(({name, hz, rme, samples}) => ({
             name,
             hz,
             rme,
@@ -90,7 +103,7 @@ const cli = yargs(process.argv).options({
       );
     }
     console.table(
-      results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
+      results.map(({name, hz, rme, samples, isTarget, isFastest}) => {
         const targetIcon = isTarget ? '🎯' : '';
         const postfix = isFastest
           ? '(fastest 🔥)'

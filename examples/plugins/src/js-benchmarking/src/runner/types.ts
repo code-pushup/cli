@@ -9,16 +9,22 @@ export type SuiteConfig = {
 export type BenchmarkResult = {
   hz: number;
   rme: number;
-  samples: number;
   suiteName: string;
   name: string;
   isFastest: boolean;
   isTarget: boolean;
+  // not given in all benchmark implementations
+  samples?: number;
 };
 
+export type BenchmarkRunnerOptions = {
+  verbose?: boolean;
+  outputDir?: string;
+  outputFileName?: string;
+};
 export type BenchmarkRunner = {
   run: (
     config: SuiteConfig,
-    options?: { verbose: false },
+    options?: BenchmarkRunnerOptions,
   ) => Promise<BenchmarkResult[]>;
 };

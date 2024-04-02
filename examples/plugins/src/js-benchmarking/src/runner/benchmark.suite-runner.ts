@@ -1,14 +1,19 @@
 import Benchmark, { Event, type Suite, type Target } from 'benchmark';
-import type { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
+import type {BenchmarkResult, BenchmarkRunner, BenchmarkRunnerOptions, SuiteConfig} from './types';
+import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
+import {writeFile} from "node:fs/promises";
+import {join} from "node:path";
 
 export const benchmarkRunner = {
   run: async (
     { suiteName, cases, targetImplementation }: SuiteConfig,
-    options: {
-      verbose?: boolean;
-    } = { verbose: false },
+    options: BenchmarkRunnerOptions = {},
   ): Promise<BenchmarkResult[]> => {
-    const { verbose } = options;
+    const {
+      verbose = false,
+      outputFileName: fileName = 'benchmark-report',
+      outputDir: folder = JS_BENCHMARKING_PLUGIN_SLUG,
+    } = options;
 
     return new Promise((resolve, reject) => {
       // This is not working with named imports
@@ -28,13 +33,16 @@ export const benchmarkRunner = {
           }
         },
         complete: () => {
-          resolve(
-            benchToBenchmarkResult(suite, {
+          const result = benchToBenchmarkResult(suite, {
               suiteName,
               cases,
               targetImplementation,
-            }),
-          );
+            });
+          if(fileName || folder) {
+            void writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => resolve(result));
+          } else {
+            resolve(result);
+          }
         },
       }).forEach(([name, fn]) => suite.on(name, fn));
 

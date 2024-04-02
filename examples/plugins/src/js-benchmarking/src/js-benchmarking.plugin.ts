@@ -1,36 +1,38 @@
-import { PluginConfig } from '@code-pushup/models';
-import { jsBenchmarkingPluginConfigSchema } from './config';
+import type {PluginConfig} from '@code-pushup/models';
+import {jsBenchmarkingPluginOptionsSchema} from './config';
 import {
   JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
   JS_BENCHMARKING_PLUGIN_SLUG,
 } from './constants';
-import { createRunnerFunction } from './runner';
-import { LoadOptions, loadSuites, toAuditMetadata } from './utils';
+import {createRunnerFunction} from './runner';
+import  { type LoadOptions, loadSuites, toAuditMetadata} from './utils';
+import {ensureDirectoryExists} from "@code-pushup/utils";
+import type {BenchmarkRunnerOptions} from "./runner/types";
 
 export type PluginOptions = {
   targets: string[];
-  outputDir?: string;
-  verbose?: boolean;
   runnerPath?: string;
-} & LoadOptions;
+} & LoadOptions & BenchmarkRunnerOptions;
 
 export async function jsBenchmarkingPlugin(
-  options: unknown,
+  options: PluginOptions,
 ): Promise<PluginConfig> {
   const {
     tsconfig,
     targets,
-    outputDir,
+    outputDir = '.code-pushup',
     runnerPath = JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
-  } = jsBenchmarkingPluginConfigSchema.parse(options);
+  } = jsBenchmarkingPluginOptionsSchema.parse(options);
+
+  await ensureDirectoryExists(outputDir);
   // load the suites at before returning the plugin config to be able to return a more dynamic config
-  const suites = await loadSuites(targets, { tsconfig });
+  const suites = await loadSuites(targets, {tsconfig});
 
   return {
     slug: JS_BENCHMARKING_PLUGIN_SLUG,
     title: 'JS Benchmarking',
     icon: 'folder-benchmark',
-    audits: toAuditMetadata(suites.map(({ suiteName }) => suiteName)),
-    runner: createRunnerFunction(suites, { outputDir, runnerPath }),
+    audits: toAuditMetadata(suites.map(({suiteName}) => suiteName)),
+    runner: createRunnerFunction(suites, {outputDir, runnerPath}),
   } satisfies PluginConfig;
 }

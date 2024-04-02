@@ -1,5 +1,8 @@
 import { Bench } from 'tinybench';
-import type { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
+import type {BenchmarkResult, BenchmarkRunner, BenchmarkRunnerOptions, SuiteConfig} from './types';
+import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
+import {writeFile} from "node:fs/promises";
+import {join} from "node:path";
 
 export const tinybenchRunner = {
   run: async ({
@@ -7,7 +10,11 @@ export const tinybenchRunner = {
     cases,
     targetImplementation,
     time = 3000,
-  }: SuiteConfig): Promise<BenchmarkResult[]> => {
+  }: SuiteConfig, options: BenchmarkRunnerOptions = {}): Promise<BenchmarkResult[]> => {
+    const {
+      outputFileName: fileName = 'tinybench-report',
+      outputDir: folder = JS_BENCHMARKING_PLUGIN_SLUG,
+    } = options;
     const suite = new Bench({ time });
 
     // register test cases
@@ -16,12 +23,18 @@ export const tinybenchRunner = {
     await suite.warmup(); // make results more reliable, ref: https://github.com/tinylibs/tinybench/pull/50
     await suite.run();
 
-    return benchToBenchmarkResult(suite, {
+    const result = benchToBenchmarkResult(suite, {
       suiteName,
       cases,
       targetImplementation,
       time,
     });
+
+    if(fileName || folder) {
+      return writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => result);
+    }
+
+    return result;
   },
 } satisfies BenchmarkRunner;
 

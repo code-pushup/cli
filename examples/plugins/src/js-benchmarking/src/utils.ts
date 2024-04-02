@@ -1,8 +1,7 @@
 import { Audit, type CategoryRef } from '@code-pushup/models';
 import { importEsmModule } from '@code-pushup/utils';
 import { JS_BENCHMARKING_PLUGIN_SLUG } from './constants';
-import type { SuiteConfig } from './runner/types';
-import { toAuditSlug } from './runner/utils';
+import { type SuiteConfig, toAuditSlug } from './runner';
 
 export function toAuditTitle(suiteName: string): string {
   return `${suiteName}`;
