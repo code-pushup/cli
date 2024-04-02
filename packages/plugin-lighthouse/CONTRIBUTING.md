@@ -38,7 +38,6 @@ In the CI you can set the env variable like this:
 # Optional debug log
 - name: Log all environment variables
   run: printenv
-
 # ...
 ```
 

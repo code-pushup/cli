@@ -19,7 +19,7 @@ This table provides a quick overview of the environmental setup, with detailed e
 | Feature                          | Local Default | CI Default         | Description                                                                                                                   |
 | -------------------------------- | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
-| `env.CUSTOM_CHROME_PATH`          | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
+| `env.CUSTOM_CHROME_PATH`         | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
 | Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                        |
 
 **❗️** Test Inclusion Logic
