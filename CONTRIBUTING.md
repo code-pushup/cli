@@ -60,7 +60,7 @@ npx nx affected:lint
 npx nx code-pushup -- collect
 ```
 
-### Testing
+## Testing
 
 Long-running tests are treated based on the environment to achieve better DX.
 
