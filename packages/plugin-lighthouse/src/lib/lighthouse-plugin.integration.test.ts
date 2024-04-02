@@ -20,6 +20,7 @@ describe('lighthousePlugin', () => {
   });
 });
 
+// eslint-disable-next-line vitest/no-disabled-tests
 describe.skip('runner creation and execution', () => {
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
