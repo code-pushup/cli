@@ -19,8 +19,8 @@ describe('lighthousePlugin', () => {
     expect(pluginConfig.groups).toHaveLength(5);
   });
 });
-/*
-describe('runner creation and execution', () => {
+
+describe.skip('runner creation and execution', () => {
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
@@ -74,4 +74,3 @@ describe('runner creation and execution', () => {
     },
   );
 }, 45_000);
-*/
