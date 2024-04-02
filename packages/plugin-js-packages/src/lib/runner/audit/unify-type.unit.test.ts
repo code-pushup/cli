@@ -358,6 +358,7 @@ describe('pnpmToAuditResult', () => {
           advisories: {
             '123': {
               module_name: '@cypress/request',
+              id: 123,
               severity: 'high',
               vulnerable_versions: '<2.88.12',
               recommendation: 'Upgrade to version 2.88.12 or later',
@@ -381,6 +382,7 @@ describe('pnpmToAuditResult', () => {
       vulnerabilities: [
         {
           name: '@cypress/request',
+          id: 123,
           severity: 'high',
           versionRange: '<2.88.12',
           fixInformation: 'Upgrade to version 2.88.12 or later',

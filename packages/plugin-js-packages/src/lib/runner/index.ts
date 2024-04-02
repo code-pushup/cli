@@ -17,13 +17,16 @@ import {
   dependencyGroups,
 } from '../config';
 import { pkgManagerCommands } from '../constants';
-import { auditArgs, normalizeAuditMapper } from './audit/constants';
+import {
+  auditArgs,
+  normalizeAuditMapper,
+  postProcessingAuditMapper,
+} from './audit/constants';
 import { auditResultToAuditOutput } from './audit/transform';
 import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
-import { filterAuditResult } from './utils';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -61,7 +64,7 @@ async function processOutdated(packageManager: PackageManager) {
     command: pkgManagerCommands[packageManager],
     args: ['outdated', '--json', ...outdatedArgs[packageManager]],
     cwd: process.cwd(),
-    ignoreExitCode: true, // npm outdated returns exit code 1 when outdated dependencies are found
+    ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
   const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
@@ -87,7 +90,8 @@ async function processAudit(
           command: pkgManagerCommands[packageManager],
           args: getAuditCommandArgs(packageManager, dep),
           cwd: process.cwd(),
-          ignoreExitCode: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
+          ignoreExitCode:
+            packageManager === 'yarn-classic' || packageManager === 'pnpm', // yarn v1 and PNPM do not have exit code configuration
         });
         return [dep, normalizeAuditMapper[packageManager](stdout)];
       },
@@ -109,9 +113,8 @@ async function processAudit(
     auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
   );
 
-  // For npm, one needs to filter out prod dependencies as there is no way to omit them
   const uniqueResults =
-    packageManager === 'npm' ? filterNpmAuditResults(fulfilled) : fulfilled;
+    postProcessingAuditMapper[packageManager]?.(fulfilled) ?? fulfilled;
 
   return supportedDepGroups.map(group =>
     auditResultToAuditOutput(
@@ -133,14 +136,4 @@ function getAuditCommandArgs(
     '--json',
     ...auditArgs(group)[packageManager],
   ];
-}
-
-function filterNpmAuditResults(
-  results: Record<DependencyGroup, AuditResult>,
-): Record<DependencyGroup, AuditResult> {
-  return {
-    prod: results.prod,
-    dev: filterAuditResult(results.dev, 'name', results.prod),
-    optional: filterAuditResult(results.optional, 'name', results.prod),
-  };
 }

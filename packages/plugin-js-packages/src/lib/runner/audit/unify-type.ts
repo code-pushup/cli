@@ -206,6 +206,7 @@ export function pnpmToAuditResult(output: string): AuditResult {
   const vulnerabilities = Object.values(pnpmResult.advisories).map(
     ({
       module_name: name,
+      id,
       title,
       url,
       severity,
@@ -217,6 +218,7 @@ export function pnpmToAuditResult(output: string): AuditResult {
 
       return {
         name,
+        id,
         title,
         url,
         severity,

@@ -104,6 +104,7 @@ export type Yarnv2AuditResultJson = {
 /* eslint-disable @typescript-eslint/naming-convention */
 export type PnpmAuditAdvisory = {
   module_name: string;
+  id: number;
   severity: PackageAuditLevel;
   vulnerable_versions: string;
   recommendation: string;
