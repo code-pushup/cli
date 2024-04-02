@@ -39,7 +39,9 @@ export const benchmarkRunner = {
               targetImplementation,
             });
           if(fileName || folder) {
-            void writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => resolve(result));
+            void writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => {
+                resolve(result);
+            });
           } else {
             resolve(result);
           }

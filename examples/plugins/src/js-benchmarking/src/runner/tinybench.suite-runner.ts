@@ -3,6 +3,7 @@ import type {BenchmarkResult, BenchmarkRunner, BenchmarkRunnerOptions, SuiteConf
 import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
+import {ensureDirectoryExists} from "@code-pushup/utils";
 
 export const tinybenchRunner = {
   run: async ({
@@ -31,6 +32,7 @@ export const tinybenchRunner = {
     });
 
     if(fileName || folder) {
+      await ensureDirectoryExists(folder);
       return writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => result);
     }
 

@@ -44,13 +44,13 @@ export function benchToBenchmarkResult(
 ) {
   const {name: fastestName} = suite.fastest;
   return suite.results.map(
-    ({ops, name: caseName, margin, details}) =>
+    ({ops, name: caseName, details}) =>
       ({
         suiteName,
         name: caseName || '',
-        hz: ops ?? 0, // operations per second
-        rme: details.relativeMarginOfError ?? margin ?? 0, // relative margin of error
-        samples: details.sampleResults.length ?? 0, // samples recorded for this case
+        hz: ops, // operations per second
+        rme: details.relativeMarginOfError, // relative margin of error
+        samples: details.sampleResults.length, // samples recorded for this case
         isFastest: fastestName === caseName,
         isTarget: targetImplementation === caseName,
       })

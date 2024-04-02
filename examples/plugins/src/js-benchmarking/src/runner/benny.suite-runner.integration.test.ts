@@ -5,7 +5,7 @@ import { bennyRunner } from './benny.suite-runner';
 describe('bennyRunner-execution', () => {
   // @TODO move to e2e tests when plugin is released officially
   // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute valid suite', async () => {
+  it('should execute valid suite', async () => {
     await expect(bennyRunner.run(dummySuite)).resolves.toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
