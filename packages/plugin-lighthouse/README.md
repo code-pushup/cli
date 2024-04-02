@@ -56,11 +56,10 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
 Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config --onlyPlugins=lighthouse` to list audits and groups).
 
 Assign weights based on what influence each Lighthouse audit on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
-The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups. 
-
+The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups.
 
 ```ts
-import {lighthouseGroupRef} from "./utils";
+import { lighthouseGroupRef } from './utils';
 
 export default {
   // ...
@@ -68,47 +67,37 @@ export default {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [
-        lighthouseGroupRef('performance')
-      ],
+      refs: [lighthouseGroupRef('performance')],
     },
     {
       slug: 'a11y',
       title: 'Accessibility',
-      refs: [
-        lighthouseGroupRef('accessibility')
-      ],
+      refs: [lighthouseGroupRef('accessibility')],
     },
     {
       slug: 'best-practices',
       title: 'Best Practices',
-      refs: [
-        lighthouseGroupRef('best-practices')
-      ],
+      refs: [lighthouseGroupRef('best-practices')],
     },
     {
       slug: 'seo',
       title: 'SEO',
-      refs: [
-        lighthouseGroupRef('seo')
-      ],
+      refs: [lighthouseGroupRef('seo')],
     },
     {
       slug: 'pwa',
       title: 'PWA',
       isBinary: true,
-      refs: [
-        lighthouseGroupRef('pwa')
-      ],
-    }
-  ]
-}
+      refs: [lighthouseGroupRef('pwa')],
+    },
+  ],
+};
 ```
 
 Referencing individual audits for more granularity. Keep maintenance in mind.
 
 ```ts
-import {lighthouseAuditRef} from "./utils";
+import { lighthouseAuditRef } from './utils';
 
 export default {
   // ...
@@ -117,21 +106,10 @@ export default {
       slug: 'pwa',
       title: 'PWA',
       isBinary: true,
-      refs: [
-        lighthouseAuditRef("installable-manifest", 2),
-        lighthouseAuditRef("splash-screen", 1),
-        lighthouseAuditRef("themed-omnibox", 1),
-        lighthouseAuditRef("content-width", 1),
-        lighthouseAuditRef("themed-omnibox", 2),
-        lighthouseAuditRef("viewport", 2),
-        lighthouseAuditRef("maskable-icon", 1),
-        lighthouseAuditRef("pwa-cross-browser", 0),
-        lighthouseAuditRef("pwa-page-transitions", 0),
-        lighthouseAuditRef("pwa-each-page-has-url", 0)
-      ],
-    }
-  ]
-}
+      refs: [lighthouseAuditRef('installable-manifest', 2), lighthouseAuditRef('splash-screen', 1), lighthouseAuditRef('themed-omnibox', 1), lighthouseAuditRef('content-width', 1), lighthouseAuditRef('themed-omnibox', 2), lighthouseAuditRef('viewport', 2), lighthouseAuditRef('maskable-icon', 1), lighthouseAuditRef('pwa-cross-browser', 0), lighthouseAuditRef('pwa-page-transitions', 0), lighthouseAuditRef('pwa-each-page-has-url', 0)],
+    },
+  ],
+};
 ```
 
 ## Flags
