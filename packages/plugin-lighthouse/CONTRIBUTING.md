@@ -99,7 +99,7 @@ _A helpful chromium setup is preconfigured with the following settings:_
 
 #### Resources
 
-- https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
+- [chromium flags guide](https://www.chromium.org/developers/how-tos/run-chromium-with-flags/)
 
 ## Troubleshooting
 
