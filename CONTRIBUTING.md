@@ -62,7 +62,7 @@ npx nx code-pushup -- collect
 
 ## Testing
 
-Long-running tests are treated based on the environment to achieve better DX.
+Some of the plugins have a longer runtime. In order to ensure better DX, longer tests are excluded by default when executing tests locally.
 
 You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
 
