@@ -4,6 +4,7 @@ import {
   PackageManager,
 } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
+import { filterAuditResult } from '../utils';
 import { AuditResult } from './types';
 import {
   npmToAuditResult,
@@ -30,6 +31,38 @@ export const normalizeAuditMapper: Record<
   'yarn-classic': yarnv1ToAuditResult,
   'yarn-modern': yarnv2ToAuditResult,
   pnpm: pnpmToAuditResult,
+};
+
+const filterNpmAuditResults = (
+  results: Record<DependencyGroup, AuditResult>,
+) => ({
+  prod: results.prod,
+  dev: filterAuditResult(results.dev, 'name', results.prod),
+  optional: filterAuditResult(results.optional, 'name', results.prod),
+});
+
+const filterPnpmAuditResults = (
+  results: Record<DependencyGroup, AuditResult>,
+) => ({
+  prod: results.prod,
+  dev: results.dev,
+  optional: filterAuditResult(
+    filterAuditResult(results.optional, 'id', results.prod),
+    'id',
+    results.dev,
+  ),
+});
+
+export const postProcessingAuditMapper: Partial<
+  Record<
+    PackageManager,
+    (
+      result: Record<DependencyGroup, AuditResult>,
+    ) => Record<DependencyGroup, AuditResult>
+  >
+> = {
+  npm: filterNpmAuditResults, // prod dependencies need to be filtered out manually since v10
+  pnpm: filterPnpmAuditResults, // optional dependencies don't have an exclusive option so they need duplicates filtered out
 };
 
 const npmDependencyOptions: Record<DependencyGroup, string[]> = {
