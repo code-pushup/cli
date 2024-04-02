@@ -66,7 +66,7 @@ Some of the plugins have a longer runtime. In order to ensure better DX, longer 
 
 You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
 
-To change this setup got you your root folder and open your `.env` file.
+To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
 ## Git
