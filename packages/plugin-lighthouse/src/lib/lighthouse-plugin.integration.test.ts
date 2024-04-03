@@ -20,10 +20,8 @@ describe('lighthousePlugin', () => {
   });
 });
 
-/*
-// @TODO remove in https://github.com/code-pushup/cli/pull/593
 // eslint-disable-next-line vitest/no-disabled-tests
-describe('createRunnerFunction', () => {
+describe.skip('runner creation and execution', () => {
   const getRunnerTestFolder = join(lighthousePluginTestFolder, 'get-runner');
 
   afterEach(async () => {
@@ -77,4 +75,3 @@ describe('createRunnerFunction', () => {
     },
   );
 }, 45_000);
-*/

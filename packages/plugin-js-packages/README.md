@@ -10,8 +10,13 @@ This plugin checks for known vulnerabilities and outdated dependencies.
 It supports the following package managers:
 
 - [NPM](https://docs.npmjs.com/)
-- [Yarn v1](https://classic.yarnpkg.com/docs/) & [Yarn v2+](https://yarnpkg.com/getting-started)
+- [Yarn v1](https://classic.yarnpkg.com/docs/)
+- [Yarn v2+](https://yarnpkg.com/getting-started)
+  - In order to check outdated dependencies for Yarn v2+, you need to install [`yarn-plugin-outdated`](https://github.com/mskelton/yarn-plugin-outdated).
 - [PNPM](https://pnpm.io/pnpm-cli)
+
+> ![NOTE]
+> As of now, Yarn v2 does not support security audit of optional dependencies. Only production and dev dependencies audits will be included in the report.
 
 ## Getting started
 
@@ -97,7 +102,7 @@ The plugin accepts the following parameters:
 
 ### Audits and group
 
-This plugin provides a group per check for a convenient declaration in your config.
+This plugin provides a group per check for a convenient declaration in your config. Each group contains audits for all supported groups of dependencies (`prod`, `dev` and `optional`).
 
 ```ts
      // ...

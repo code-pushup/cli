@@ -16,11 +16,11 @@ npm install
 
 This table provides a quick overview of the environmental setup, with detailed explanations in the corresponding sections.
 
-| Feature                          | Local Default | CI Default         | Description                                                                                                                                               |
-| -------------------------------- | ------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                                              |
-| `env.CUSTOM_CHROM_PATH`          | N/A           | Windows **❗️❗️** | Needed for Lighthouse only. Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
-| Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                                                    |
+| Feature                          | Local Default | CI Default         | Description                                                                                                                   |
+| -------------------------------- | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
+| `env.CUSTOM_CHROME_PATH`         | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
+| Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                        |
 
 **❗️** Test Inclusion Logic
 
@@ -60,13 +60,13 @@ npx nx affected:lint
 npx nx code-pushup -- collect
 ```
 
-### Testing
+## Testing
 
-Long-running tests are treated based on the environment to achieve better DX.
+Some of the plugins have a longer runtime. In order to ensure better DX, longer tests are excluded by default when executing tests locally.
 
 You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
 
-To change this setup got you your root folder and open your `.env` file.
+To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
 ## Git

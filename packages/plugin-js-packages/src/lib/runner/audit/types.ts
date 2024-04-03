@@ -81,3 +81,21 @@ export type Yarnv1AuditResultJson = [
   ...Yarnv1AuditAdvisory[],
   Yarnv1AuditSummary,
 ];
+
+// Subset of Yarn v2+ audit JSON type
+/* eslint-disable @typescript-eslint/naming-convention */
+export type Yarnv2AuditAdvisory = {
+  module_name: string;
+  severity: PackageAuditLevel;
+  vulnerable_versions: string;
+  recommendation: string;
+  title: string;
+  url: string;
+  findings: { paths: string[] }[]; // TODO indirect?
+};
+/* eslint-enable @typescript-eslint/naming-convention */
+
+export type Yarnv2AuditResultJson = {
+  advisories: Record<string, Yarnv2AuditAdvisory>;
+  metadata: { vulnerabilities: Record<PackageAuditLevel, number> };
+};
