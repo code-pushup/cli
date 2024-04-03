@@ -13,14 +13,14 @@ import {
   AuditSeverity,
   DependencyGroup,
   FinalJSPackagesPluginConfig,
-  PackageManager,
+  PackageManagerId,
   dependencyGroups,
 } from '../config';
+import { packageManagers } from '../package-managers';
 import { auditResultToAuditOutput } from './audit/transform';
 import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
-import { adapters } from './package-managers';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -53,40 +53,38 @@ export async function executeRunner(): Promise<void> {
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(checkResults));
 }
 
-async function processOutdated(packageManager: PackageManager) {
-  const adapter = adapters[packageManager];
+async function processOutdated(id: PackageManagerId) {
+  const pm = packageManagers[id];
   const { stdout } = await executeProcess({
-    command: adapter.command,
-    args: ['outdated', '--json', ...adapter.outdated.commandArgs],
+    command: pm.command,
+    args: pm.outdated.commandArgs,
     cwd: process.cwd(),
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
-  const normalizedResult = adapter.outdated.unifyResult(stdout);
-  return dependencyGroups.map(dep =>
-    outdatedResultToAuditOutput(normalizedResult, packageManager, dep),
+  const normalizedResult = pm.outdated.unifyResult(stdout);
+  return dependencyGroups.map(depGroup =>
+    outdatedResultToAuditOutput(normalizedResult, id, depGroup),
   );
 }
 
 async function processAudit(
-  packageManager: PackageManager,
+  id: PackageManagerId,
   auditLevelMapping: AuditSeverity,
 ) {
-  const adapter = adapters[packageManager];
-
-  const supportedDepGroups =
-    adapter.audit.supportedDepGroups ?? dependencyGroups;
+  const pm = packageManagers[id];
+  const supportedDepGroups = pm.audit.supportedDepGroups ?? dependencyGroups;
 
   const auditResults = await Promise.allSettled(
     supportedDepGroups.map(
-      async (dep): Promise<[DependencyGroup, AuditResult]> => {
+      async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
         const { stdout } = await executeProcess({
-          command: adapter.command,
-          args: adapter.audit.getCommandArgs(dep),
+          command: pm.command,
+          args: pm.audit.getCommandArgs(depGroup),
           cwd: process.cwd(),
-          ignoreExitCode: adapter.audit.ignoreExitCode,
+          ignoreExitCode: pm.audit.ignoreExitCode,
         });
-        return [dep, adapter.audit.unifyResult(stdout)];
+        return [depGroup, pm.audit.unifyResult(stdout)];
       },
     ),
   );
@@ -97,23 +95,20 @@ async function processAudit(
       console.error(result.reason);
     });
 
-    throw new Error(
-      `JS Packages plugin: Running ${adapter.name} audit failed.`,
-    );
+    throw new Error(`JS Packages plugin: Running ${pm.name} audit failed.`);
   }
 
   const fulfilled = objectFromEntries(
     auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
   );
 
-  const uniqueResults =
-    adapter.audit.postProcessResult?.(fulfilled) ?? fulfilled;
+  const uniqueResults = pm.audit.postProcessResult?.(fulfilled) ?? fulfilled;
 
-  return supportedDepGroups.map(group =>
+  return supportedDepGroups.map(depGroup =>
     auditResultToAuditOutput(
-      uniqueResults[group],
-      packageManager,
-      group,
+      uniqueResults[depGroup],
+      id,
+      depGroup,
       auditLevelMapping,
     ),
   );
