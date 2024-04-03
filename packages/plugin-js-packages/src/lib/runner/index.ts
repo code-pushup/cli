@@ -16,17 +16,11 @@ import {
   PackageManager,
   dependencyGroups,
 } from '../config';
-import { pkgManagerCommands } from '../constants';
-import {
-  auditArgs,
-  normalizeAuditMapper,
-  postProcessingAuditMapper,
-} from './audit/constants';
 import { auditResultToAuditOutput } from './audit/transform';
 import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
-import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
+import { adapters } from './package-managers';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -60,14 +54,15 @@ export async function executeRunner(): Promise<void> {
 }
 
 async function processOutdated(packageManager: PackageManager) {
+  const adapter = adapters[packageManager];
   const { stdout } = await executeProcess({
-    command: pkgManagerCommands[packageManager],
-    args: ['outdated', '--json', ...outdatedArgs[packageManager]],
+    command: adapter.command,
+    args: ['outdated', '--json', ...adapter.outdated.commandArgs],
     cwd: process.cwd(),
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
-  const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
+  const normalizedResult = adapter.outdated.unifyResult(stdout);
   return dependencyGroups.map(dep =>
     outdatedResultToAuditOutput(normalizedResult, packageManager, dep),
   );
@@ -77,23 +72,21 @@ async function processAudit(
   packageManager: PackageManager,
   auditLevelMapping: AuditSeverity,
 ) {
-  // Yarn v2 does not support audit for optional dependencies
+  const adapter = adapters[packageManager];
+
   const supportedDepGroups =
-    packageManager === 'yarn-modern'
-      ? dependencyGroups.filter(dep => dep !== 'optional')
-      : dependencyGroups;
+    adapter.audit.supportedDepGroups ?? dependencyGroups;
 
   const auditResults = await Promise.allSettled(
     supportedDepGroups.map(
       async (dep): Promise<[DependencyGroup, AuditResult]> => {
         const { stdout } = await executeProcess({
-          command: pkgManagerCommands[packageManager],
-          args: getAuditCommandArgs(packageManager, dep),
+          command: adapter.command,
+          args: adapter.audit.getCommandArgs(dep),
           cwd: process.cwd(),
-          ignoreExitCode:
-            packageManager === 'yarn-classic' || packageManager === 'pnpm', // yarn v1 and PNPM do not have exit code configuration
+          ignoreExitCode: adapter.audit.ignoreExitCode,
         });
-        return [dep, normalizeAuditMapper[packageManager](stdout)];
+        return [dep, adapter.audit.unifyResult(stdout)];
       },
     ),
   );
@@ -105,7 +98,7 @@ async function processAudit(
     });
 
     throw new Error(
-      `JS Packages plugin: Running ${pkgManagerCommands[packageManager]} audit failed.`,
+      `JS Packages plugin: Running ${adapter.name} audit failed.`,
     );
   }
 
@@ -114,7 +107,7 @@ async function processAudit(
   );
 
   const uniqueResults =
-    postProcessingAuditMapper[packageManager]?.(fulfilled) ?? fulfilled;
+    adapter.audit.postProcessResult?.(fulfilled) ?? fulfilled;
 
   return supportedDepGroups.map(group =>
     auditResultToAuditOutput(
@@ -124,16 +117,4 @@ async function processAudit(
       auditLevelMapping,
     ),
   );
-}
-
-function getAuditCommandArgs(
-  packageManager: PackageManager,
-  group: DependencyGroup,
-) {
-  return [
-    ...(packageManager === 'yarn-modern' ? ['npm'] : []),
-    'audit',
-    '--json',
-    ...auditArgs(group)[packageManager],
-  ];
 }

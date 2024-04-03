@@ -7,17 +7,12 @@ import {
   JSPackagesPluginConfig,
   PackageCommand,
   PackageManager,
+  dependencyGroups,
   jsPackagesPluginConfigSchema,
 } from './config';
-import {
-  auditDocs,
-  dependencyDocs,
-  outdatedDocs,
-  pkgManagerDocs,
-  pkgManagerIcons,
-  pkgManagerNames,
-} from './constants';
+import { dependencyDocs, dependencyGroupWeights } from './constants';
 import { createRunnerConfig } from './runner';
+import { adapters } from './runner/package-managers';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -42,6 +37,7 @@ export async function jsPackagesPlugin(
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
   const pkgManager = jsPackagesPluginConfig.packageManager;
   const checks = [...new Set(jsPackagesPluginConfig.checks)];
+  const adapter = adapters[pkgManager];
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -51,10 +47,10 @@ export async function jsPackagesPlugin(
   return {
     slug: 'js-packages',
     title: 'JS Packages',
-    icon: pkgManagerIcons[pkgManager],
+    icon: adapter.icon,
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: pkgManagerDocs[pkgManager],
+    docsUrl: adapter.docs.homepage,
     packageName: name,
     version,
     audits: createAudits(pkgManager, checks),
@@ -67,38 +63,29 @@ function createGroups(
   pkgManager: PackageManager,
   checks: PackageCommand[],
 ): Group[] {
+  const adapter = adapters[pkgManager];
+  const supportedAuditDepGroups =
+    adapter.audit.supportedDepGroups ?? dependencyGroups;
   const groups: Record<PackageCommand, Group> = {
     audit: {
-      slug: `${pkgManager}-audit`,
-      title: `${pkgManagerNames[pkgManager]} audit`,
-      description: `Group containing ${pkgManagerNames[pkgManager]} vulnerabilities.`,
-      docsUrl: auditDocs[pkgManager],
-      refs: [
-        // eslint-disable-next-line no-magic-numbers
-        { slug: `${pkgManager}-audit-prod`, weight: 3 },
-        { slug: `${pkgManager}-audit-dev`, weight: 1 },
-        // Yarn v2 does not support audit for optional dependencies
-        ...(pkgManager === 'yarn-modern'
-          ? []
-          : [
-              {
-                slug: `${pkgManager}-audit-optional`,
-                weight: 1,
-              },
-            ]),
-      ],
+      slug: `${adapter.slug}-audit`,
+      title: `${adapter.name} audit`,
+      description: `Group containing ${adapter.name} vulnerabilities.`,
+      docsUrl: adapter.docs.audit,
+      refs: supportedAuditDepGroups.map(dep => ({
+        slug: `${adapter.slug}-audit-${dep}`,
+        weight: dependencyGroupWeights[dep],
+      })),
     },
     outdated: {
-      slug: `${pkgManager}-outdated`,
-      title: `${pkgManagerNames[pkgManager]} outdated dependencies`,
-      description: `Group containing outdated ${pkgManagerNames[pkgManager]} dependencies.`,
-      docsUrl: outdatedDocs[pkgManager],
-      refs: [
-        // eslint-disable-next-line no-magic-numbers
-        { slug: `${pkgManager}-outdated-prod`, weight: 3 },
-        { slug: `${pkgManager}-outdated-dev`, weight: 1 },
-        { slug: `${pkgManager}-outdated-optional`, weight: 1 },
-      ],
+      slug: `${adapter.slug}-outdated`,
+      title: `${adapter.name} outdated dependencies`,
+      description: `Group containing outdated ${adapter.name} dependencies.`,
+      docsUrl: adapter.docs.outdated,
+      refs: dependencyGroups.map(dep => ({
+        slug: `${adapter.slug}-outdated-${dep}`,
+        weight: dependencyGroupWeights[dep],
+      })),
     },
   };
 
@@ -109,31 +96,20 @@ function createAudits(
   pkgManager: PackageManager,
   checks: PackageCommand[],
 ): Audit[] {
-  return checks.flatMap(check => [
-    {
-      slug: `${pkgManager}-${check}-prod`,
-      title: getAuditTitle(pkgManager, check, 'prod'),
-      description: getAuditDescription(check, 'prod'),
-      docsUrl: dependencyDocs.prod,
-    },
-    {
-      slug: `${pkgManager}-${check}-dev`,
-      title: getAuditTitle(pkgManager, check, 'dev'),
-      description: getAuditDescription(check, 'dev'),
-      docsUrl: dependencyDocs.dev,
-    },
-    // Yarn v2 does not support audit for optional dependencies
-    ...(pkgManager === 'yarn-modern' && check === 'audit'
-      ? []
-      : [
-          {
-            slug: `${pkgManager}-${check}-optional`,
-            title: getAuditTitle(pkgManager, check, 'optional'),
-            description: getAuditDescription(check, 'optional'),
-            docsUrl: dependencyDocs.optional,
-          },
-        ]),
-  ]);
+  const { slug } = adapters[pkgManager];
+  return checks.flatMap(check => {
+    const supportedDepGroups =
+      check === 'audit'
+        ? adapters[pkgManager].audit.supportedDepGroups ?? dependencyGroups
+        : dependencyGroups;
+
+    return supportedDepGroups.map(deps => ({
+      slug: `${slug}-${check}-${deps}`,
+      title: getAuditTitle(slug, check, deps),
+      description: getAuditDescription(check, deps),
+      docsUrl: dependencyDocs[deps],
+    }));
+  });
 }
 
 function getAuditTitle(
@@ -141,9 +117,10 @@ function getAuditTitle(
   check: PackageCommand,
   dependencyType: DependencyGroup,
 ) {
+  const adapter = adapters[pkgManager];
   return check === 'audit'
-    ? `Vulnerabilities for ${pkgManagerNames[pkgManager]} ${dependencyType} dependencies.`
-    : `Outdated ${pkgManagerNames[pkgManager]} ${dependencyType} dependencies.`;
+    ? `Vulnerabilities for ${adapter.name} ${dependencyType} dependencies.`
+    : `Outdated ${adapter.name} ${dependencyType} dependencies.`;
 }
 
 function getAuditDescription(
