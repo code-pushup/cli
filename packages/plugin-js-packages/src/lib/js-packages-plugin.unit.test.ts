@@ -79,6 +79,29 @@ describe('jsPackagesPlugin', () => {
     );
   });
 
+  // Note: Yarn v2 does not support audit for optional dependencies
+  it('should omit unsupported dependency groups', async () => {
+    await expect(
+      jsPackagesPlugin({ packageManager: 'yarn-modern', checks: ['audit'] }),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        audits: [
+          expect.objectContaining({ slug: 'yarn-modern-audit-prod' }),
+          expect.objectContaining({ slug: 'yarn-modern-audit-dev' }),
+        ],
+        groups: [
+          expect.objectContaining<Partial<Group>>({
+            slug: 'yarn-modern-audit',
+            refs: [
+              { slug: 'yarn-modern-audit-prod', weight: 3 },
+              { slug: 'yarn-modern-audit-dev', weight: 1 },
+            ],
+          }),
+        ],
+      }),
+    );
+  });
+
   it('should use an icon that matches the chosen package manager', async () => {
     await expect(
       jsPackagesPlugin({ packageManager: 'pnpm' }),
