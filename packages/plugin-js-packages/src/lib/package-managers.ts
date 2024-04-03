@@ -1,24 +1,24 @@
-import { MaterialIcon } from '@code-pushup/models';
-import { DependencyGroup, PackageManager } from '../config';
-import { dependencyGroupToLong } from '../constants';
-import { AuditResult } from './audit/types';
+import type { MaterialIcon } from '@code-pushup/models';
+import { DependencyGroup, PackageManagerId } from './config';
+import { dependencyGroupToLong } from './constants';
+import { AuditResult } from './runner/audit/types';
 import {
   npmToAuditResult,
   pnpmToAuditResult,
   yarnv1ToAuditResult,
   yarnv2ToAuditResult,
-} from './audit/unify-type';
-import { OutdatedResult } from './outdated/types';
+} from './runner/audit/unify-type';
+import { OutdatedResult } from './runner/outdated/types';
 import {
   npmToOutdatedResult,
   pnpmToOutdatedResult,
   yarnv1ToOutdatedResult,
   yarnv2ToOutdatedResult,
-} from './outdated/unify-type';
-import { filterAuditResult } from './utils';
+} from './runner/outdated/unify-type';
+import { filterAuditResult } from './runner/utils';
 
-type PackageManagerAdapter = {
-  slug: PackageManager;
+type PackageManager = {
+  slug: PackageManagerId;
   name: string;
   command: string;
   icon: MaterialIcon;
@@ -51,7 +51,7 @@ const npmDependencyOptions: Record<DependencyGroup, string[]> = {
   optional: ['--include=optional', '--omit=dev'],
 };
 
-export const npmAdapter: PackageManagerAdapter = {
+export const npmPackageManager: PackageManager = {
   slug: 'npm',
   name: 'NPM',
   command: 'npm',
@@ -81,7 +81,7 @@ export const npmAdapter: PackageManagerAdapter = {
   },
 };
 
-export const yarnv1Adapter: PackageManagerAdapter = {
+export const yarnv1PackageManager: PackageManager = {
   slug: 'yarn-classic',
   name: 'Yarn v1',
   command: 'yarn',
@@ -114,7 +114,7 @@ const yarnv2EnvironmentOptions: Record<DependencyGroup, string> = {
   optional: '',
 };
 
-export const yarnv2Adapter: PackageManagerAdapter = {
+export const yarnv2PackageManager: PackageManager = {
   slug: 'yarn-modern',
   name: 'yarn-modern',
   command: 'yarn',
@@ -146,7 +146,7 @@ const pnpmDependencyOptions: Record<DependencyGroup, string[]> = {
   optional: [],
 };
 
-export const pnpmAdapter: PackageManagerAdapter = {
+export const pnpmPackageManager: PackageManager = {
   slug: 'pnpm',
   name: 'pnpm',
   command: 'pnpm',
@@ -180,9 +180,9 @@ export const pnpmAdapter: PackageManagerAdapter = {
   },
 };
 
-export const adapters: Record<PackageManager, PackageManagerAdapter> = {
-  npm: npmAdapter,
-  'yarn-classic': yarnv1Adapter,
-  'yarn-modern': yarnv2Adapter,
-  pnpm: pnpmAdapter,
+export const packageManagers: Record<PackageManagerId, PackageManager> = {
+  npm: npmPackageManager,
+  'yarn-classic': yarnv1PackageManager,
+  'yarn-modern': yarnv2PackageManager,
+  pnpm: pnpmPackageManager,
 };

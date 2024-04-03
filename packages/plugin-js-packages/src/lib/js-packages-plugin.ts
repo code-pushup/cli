@@ -6,13 +6,13 @@ import {
   DependencyGroup,
   JSPackagesPluginConfig,
   PackageCommand,
-  PackageManager,
+  PackageManagerId,
   dependencyGroups,
   jsPackagesPluginConfigSchema,
 } from './config';
 import { dependencyDocs, dependencyGroupWeights } from './constants';
+import { packageManagers } from './package-managers';
 import { createRunnerConfig } from './runner';
-import { adapters } from './runner/package-managers';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -35,9 +35,9 @@ export async function jsPackagesPlugin(
   config: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
-  const pkgManager = jsPackagesPluginConfig.packageManager;
   const checks = [...new Set(jsPackagesPluginConfig.checks)];
-  const adapter = adapters[pkgManager];
+  const id = jsPackagesPluginConfig.packageManager;
+  const pm = packageManagers[id];
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -47,44 +47,41 @@ export async function jsPackagesPlugin(
   return {
     slug: 'js-packages',
     title: 'JS Packages',
-    icon: adapter.icon,
+    icon: pm.icon,
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: adapter.docs.homepage,
+    docsUrl: pm.docs.homepage,
     packageName: name,
     version,
-    audits: createAudits(pkgManager, checks),
-    groups: createGroups(pkgManager, checks),
+    audits: createAudits(id, checks),
+    groups: createGroups(id, checks),
     runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
   };
 }
 
-function createGroups(
-  pkgManager: PackageManager,
-  checks: PackageCommand[],
-): Group[] {
-  const adapter = adapters[pkgManager];
+function createGroups(id: PackageManagerId, checks: PackageCommand[]): Group[] {
+  const pm = packageManagers[id];
   const supportedAuditDepGroups =
-    adapter.audit.supportedDepGroups ?? dependencyGroups;
+    pm.audit.supportedDepGroups ?? dependencyGroups;
   const groups: Record<PackageCommand, Group> = {
     audit: {
-      slug: `${adapter.slug}-audit`,
-      title: `${adapter.name} audit`,
-      description: `Group containing ${adapter.name} vulnerabilities.`,
-      docsUrl: adapter.docs.audit,
-      refs: supportedAuditDepGroups.map(dep => ({
-        slug: `${adapter.slug}-audit-${dep}`,
-        weight: dependencyGroupWeights[dep],
+      slug: `${pm.slug}-audit`,
+      title: `${pm.name} audit`,
+      description: `Group containing ${pm.name} vulnerabilities.`,
+      docsUrl: pm.docs.audit,
+      refs: supportedAuditDepGroups.map(depGroup => ({
+        slug: `${pm.slug}-audit-${depGroup}`,
+        weight: dependencyGroupWeights[depGroup],
       })),
     },
     outdated: {
-      slug: `${adapter.slug}-outdated`,
-      title: `${adapter.name} outdated dependencies`,
-      description: `Group containing outdated ${adapter.name} dependencies.`,
-      docsUrl: adapter.docs.outdated,
-      refs: dependencyGroups.map(dep => ({
-        slug: `${adapter.slug}-outdated-${dep}`,
-        weight: dependencyGroupWeights[dep],
+      slug: `${pm.slug}-outdated`,
+      title: `${pm.name} outdated dependencies`,
+      description: `Group containing outdated ${pm.name} dependencies.`,
+      docsUrl: pm.docs.outdated,
+      refs: dependencyGroups.map(depGroup => ({
+        slug: `${pm.slug}-outdated-${depGroup}`,
+        weight: dependencyGroupWeights[depGroup],
       })),
     },
   };
@@ -92,42 +89,36 @@ function createGroups(
   return checks.map(check => groups[check]);
 }
 
-function createAudits(
-  pkgManager: PackageManager,
-  checks: PackageCommand[],
-): Audit[] {
-  const { slug } = adapters[pkgManager];
+function createAudits(id: PackageManagerId, checks: PackageCommand[]): Audit[] {
+  const { slug } = packageManagers[id];
   return checks.flatMap(check => {
     const supportedDepGroups =
       check === 'audit'
-        ? adapters[pkgManager].audit.supportedDepGroups ?? dependencyGroups
+        ? packageManagers[id].audit.supportedDepGroups ?? dependencyGroups
         : dependencyGroups;
 
-    return supportedDepGroups.map(deps => ({
-      slug: `${slug}-${check}-${deps}`,
-      title: getAuditTitle(slug, check, deps),
-      description: getAuditDescription(check, deps),
-      docsUrl: dependencyDocs[deps],
+    return supportedDepGroups.map(depGroup => ({
+      slug: `${slug}-${check}-${depGroup}`,
+      title: getAuditTitle(slug, check, depGroup),
+      description: getAuditDescription(check, depGroup),
+      docsUrl: dependencyDocs[depGroup],
     }));
   });
 }
 
 function getAuditTitle(
-  pkgManager: PackageManager,
+  id: PackageManagerId,
   check: PackageCommand,
-  dependencyType: DependencyGroup,
+  depGroup: DependencyGroup,
 ) {
-  const adapter = adapters[pkgManager];
+  const pm = packageManagers[id];
   return check === 'audit'
-    ? `Vulnerabilities for ${adapter.name} ${dependencyType} dependencies.`
-    : `Outdated ${adapter.name} ${dependencyType} dependencies.`;
+    ? `Vulnerabilities for ${pm.name} ${depGroup} dependencies.`
+    : `Outdated ${pm.name} ${depGroup} dependencies.`;
 }
 
-function getAuditDescription(
-  check: PackageCommand,
-  dependencyType: DependencyGroup,
-) {
+function getAuditDescription(check: PackageCommand, depGroup: DependencyGroup) {
   return check === 'audit'
-    ? `Runs security audit on ${dependencyType} dependencies.`
-    : `Checks for outdated ${dependencyType} dependencies`;
+    ? `Runs security audit on ${depGroup} dependencies.`
+    : `Checks for outdated ${depGroup} dependencies`;
 }
