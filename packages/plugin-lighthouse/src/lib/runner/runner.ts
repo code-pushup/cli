@@ -3,7 +3,7 @@ import { runLighthouse } from 'lighthouse/cli/run.js';
 import { dirname } from 'node:path';
 import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import { ensureDirectoryExists } from '@code-pushup/utils';
-import { LIGHTHOUSE_OUTPUT_PATH, UnsupportedCliFlags } from '../constants';
+import { UnsupportedCliFlags } from '../constants';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import {
   getBudgets,
@@ -23,7 +23,7 @@ export function createRunnerFunction(
     const {
       budgetPath,
       budgets = [],
-      outputPath = LIGHTHOUSE_OUTPUT_PATH,
+      outputPath,
       configPath,
       preset,
       ...parsedFlags
@@ -43,7 +43,9 @@ export function createRunnerFunction(
       outputPath,
     };
 
-    await ensureDirectoryExists(dirname(outputPath));
+    if (outputPath) {
+      await ensureDirectoryExists(dirname(outputPath));
+    }
 
     const runnerResult: unknown = await runLighthouse(
       urlUnderTest,

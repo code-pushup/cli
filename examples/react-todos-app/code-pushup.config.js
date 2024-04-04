@@ -1,8 +1,6 @@
-import { join } from 'node:path';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 import lighthousePlugin, {
-  LIGHTHOUSE_REPORT_NAME,
   lighthouseGroupRef,
 } from '../../dist/packages/plugin-lighthouse';
 
@@ -29,9 +27,7 @@ export default {
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     }),
-    await lighthousePlugin('https://codepushup.dev/', {
-      outputPath: join('.code-pushup', LIGHTHOUSE_REPORT_NAME),
-    }),
+    await lighthousePlugin('https://codepushup.dev/'),
   ],
   categories: [
     {

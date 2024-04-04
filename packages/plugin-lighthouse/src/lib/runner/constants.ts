@@ -5,7 +5,14 @@ import {
   Audit as LHAudit,
   defaultConfig,
 } from 'lighthouse';
-import { Audit, Group } from '@code-pushup/models';
+import { join } from 'node:path';
+import { Audit, DEFAULT_PERSIST_OUTPUT_DIR, Group } from '@code-pushup/models';
+import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants';
+
+export const LIGHTHOUSE_OUTPUT_PATH = join(
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  LIGHTHOUSE_PLUGIN_SLUG,
+);
 
 const { audits, categories } = defaultConfig;
 

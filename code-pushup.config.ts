@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { join } from 'node:path';
 import { z } from 'zod';
 import {
   fileSizePlugin,
@@ -16,7 +15,6 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import {
-  LIGHTHOUSE_REPORT_NAME,
   lighthouseGroupRef,
   lighthousePlugin,
 } from './dist/packages/plugin-lighthouse';
@@ -79,9 +77,7 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin('https://codepushup.dev/', {
-      outputPath: join('.code-pushup', LIGHTHOUSE_REPORT_NAME),
-    }),
+    await lighthousePlugin('https://codepushup.dev/'),
   ],
 
   categories: [
