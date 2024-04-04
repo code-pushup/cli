@@ -1,3 +1,4 @@
+import { rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PluginReport, Report, reportSchema } from '@code-pushup/models';
@@ -24,6 +25,10 @@ describe('CLI collect', () => {
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e');
+  });
+
+  afterEach(async () => {
+    await rm('.code-pushup', { force: true, recursive: true });
   });
 
   it('should run ESLint plugin and create report.json', async () => {
@@ -91,6 +96,21 @@ describe('CLI collect', () => {
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+  });
+
+  it('should run Lighthouse plugin that runs lighthouse CLI and creates lh-report.json', async () => {
+    const { code, stderr } = await executeProcess({
+      command: 'code-pushup',
+      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
+      cwd: 'examples/react-todos-app',
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
