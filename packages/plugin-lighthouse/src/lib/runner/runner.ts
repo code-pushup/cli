@@ -33,6 +33,8 @@ export function createRunnerFunction(
       budgetPath,
       budgets = [],
       outputPath,
+      configPath,
+      preset,
       ...parsedFlags
     } = validateFlags({
       ...DEFAULT_CLI_FLAGS,
@@ -41,7 +43,7 @@ export function createRunnerFunction(
 
     setLogLevel(parsedFlags);
 
-    const config = await getConfig(parsedFlags);
+    const config = await getConfig({configPath, preset});
 
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
 

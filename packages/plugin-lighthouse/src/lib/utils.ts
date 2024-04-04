@@ -74,12 +74,12 @@ export function validateOnlyCategories(
 export function filterAuditsAndGroupsByOnlyOptions(
   audits: Audit[],
   groups: Group[],
-  options?: Pick<CliFlags, 'onlyAudits' | 'onlyCategories'>,
+  options: Pick<CliFlags, 'onlyAudits' | 'onlyCategories'> = {},
 ): {
   audits: Audit[];
   groups: Group[];
 } {
-  const { onlyAudits, onlyCategories } = options ?? {};
+  const { onlyAudits, onlyCategories } = options;
 
   // category wins over audits
   if (onlyCategories && onlyCategories.length > 0) {
