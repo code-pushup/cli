@@ -100,7 +100,7 @@ describe('CLI collect', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  it('should run Lighthouse plugin that runs lighthouse CLI and creates lh-report.json', async () => {
+  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
