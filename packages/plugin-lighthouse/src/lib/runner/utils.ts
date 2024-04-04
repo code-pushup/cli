@@ -107,6 +107,7 @@ const excludedFlags = new Set([
   'list-all-audits', // Prints a list of all available audits and exits.
   'list-locales', // Prints a list of all supported locales and exits.
   'list-trace-categories', // Prints a list of all required trace categories and exits.
+  'view', // Open HTML report in your browser
 ]);
 
 export function validateFlags(

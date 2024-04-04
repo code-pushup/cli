@@ -134,6 +134,14 @@ For a complete list the [official documentation of CLI flags](https://github.com
 > lighthousePlugin('https://example.com', { output: 'json', chromeFlags: ['--headless=shell']});
 > ```
 
+> [!note]
+> The following flags are **not supported** in the current implementation:
+>
+> - `list-all-audits` - Prints a list of all available audits and exits. Alternative: `npx code-pushup print-config --onlyPlugins lighthouse`
+> - `list-locales` - Prints a list of all supported locales and exits.
+> - `list-trace-categories` - Prints a list of all required trace categories and exits.
+> - `view` - Open HTML report in your browser
+
 ## Config
 
 The plugin accepts a third optional argument, `config`.
