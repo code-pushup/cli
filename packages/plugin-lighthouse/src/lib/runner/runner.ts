@@ -43,7 +43,7 @@ export function createRunnerFunction(
 
     setLogLevel(parsedFlags);
 
-    const config = await getConfig({configPath, preset});
+    const config = await getConfig({ configPath, preset });
 
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
 
