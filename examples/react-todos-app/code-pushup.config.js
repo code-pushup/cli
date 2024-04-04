@@ -58,7 +58,7 @@ export default {
       slug: 'pwa',
       title: 'PWA',
       isBinary: true,
-      refs: [lighthouseGroupRef('pwa'), eslintAuditRef('react-jsx-key', 1)],
+      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'code-coverage',
