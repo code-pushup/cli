@@ -114,11 +114,14 @@ const config: CoreConfig = {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
+      description: 'Lint rules that find **potential bugs** in your code.',
       refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
       title: 'Code style',
+      description:
+        'Lint rules that promote **good practices** and consistency in your code.',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
@@ -126,6 +129,7 @@ const config: CoreConfig = {
     {
       slug: 'code-coverage',
       title: 'Code coverage',
+      description: 'Measures how much of your code is **covered by tests**.',
       refs: [
         {
           type: 'group',
@@ -138,6 +142,7 @@ const config: CoreConfig = {
     {
       slug: 'security',
       title: 'Security',
+      description: 'Finds known **vulnerabilities** in 3rd-party packages.',
       refs: [
         {
           type: 'group',
@@ -150,6 +155,7 @@ const config: CoreConfig = {
     {
       slug: 'updates',
       title: 'Updates',
+      description: 'Finds **outdated** 3rd-party packages.',
       refs: [
         {
           type: 'group',

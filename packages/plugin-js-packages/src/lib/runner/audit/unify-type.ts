@@ -1,4 +1,5 @@
 import { fromJsonLines, objectToEntries } from '@code-pushup/utils';
+import { PackageAuditLevel } from '../../config';
 import { filterAuditResult } from '../utils';
 import {
   AuditResult,
@@ -6,6 +7,7 @@ import {
   NpmAuditResultJson,
   NpmFixInformation,
   NpmVulnerabilities,
+  PnpmAuditResultJson,
   Vulnerability,
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
@@ -189,11 +191,66 @@ export function yarnv2ToAuditResult(output: string): AuditResult {
     },
   );
 
-  const total = Object.values(yarnv2Audit.metadata.vulnerabilities).reduce(
-    (acc, value) => acc + value,
-    0,
-  );
-  const summary = { ...yarnv2Audit.metadata.vulnerabilities, total };
+  return {
+    vulnerabilities,
+    summary: {
+      ...yarnv2Audit.metadata.vulnerabilities,
+      total: getVulnerabilitiesTotal(yarnv2Audit.metadata.vulnerabilities),
+    },
+  };
+}
 
-  return { vulnerabilities, summary };
+export function pnpmToAuditResult(output: string): AuditResult {
+  const pnpmResult = JSON.parse(output) as PnpmAuditResultJson;
+
+  const vulnerabilities = Object.values(pnpmResult.advisories).map(
+    ({
+      module_name: name,
+      id,
+      title,
+      url,
+      severity,
+      vulnerable_versions: versionRange,
+      recommendation: fixInformation,
+      findings,
+    }): Vulnerability => {
+      const path = findings[0]?.paths[0];
+
+      return {
+        name,
+        id,
+        title,
+        url,
+        severity,
+        versionRange,
+        directDependency: path == null ? true : pnpmToDirectDependency(path),
+        fixInformation,
+      };
+    },
+  );
+
+  return {
+    vulnerabilities,
+    summary: {
+      ...pnpmResult.metadata.vulnerabilities,
+      total: getVulnerabilitiesTotal(pnpmResult.metadata.vulnerabilities),
+    },
+  };
+}
+
+export function pnpmToDirectDependency(path: string): string | true {
+  // the format is ". > <direct dependency>@<version> > ... > <current dependency>@<version>"
+  const deps = path.split(' > ').slice(1);
+
+  if (deps.length <= 1) {
+    return true;
+  }
+
+  return deps[0]?.split('@')[0] ?? true;
+}
+
+function getVulnerabilitiesTotal(
+  summary: Record<PackageAuditLevel, number>,
+): number {
+  return Object.values(summary).reduce((acc, value) => acc + value, 0);
 }

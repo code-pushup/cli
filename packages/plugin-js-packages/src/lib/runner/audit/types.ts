@@ -99,3 +99,22 @@ export type Yarnv2AuditResultJson = {
   advisories: Record<string, Yarnv2AuditAdvisory>;
   metadata: { vulnerabilities: Record<PackageAuditLevel, number> };
 };
+
+// Subset of PNPM audit JSON type
+/* eslint-disable @typescript-eslint/naming-convention */
+export type PnpmAuditAdvisory = {
+  module_name: string;
+  id: number;
+  severity: PackageAuditLevel;
+  vulnerable_versions: string;
+  recommendation: string;
+  title: string;
+  url: string;
+  findings: { paths: string[] }[];
+};
+/* eslint-enable @typescript-eslint/naming-convention */
+
+export type PnpmAuditResultJson = {
+  advisories: Record<string, PnpmAuditAdvisory>;
+  metadata: { vulnerabilities: Record<PackageAuditLevel, number> };
+};

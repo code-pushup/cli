@@ -4,9 +4,11 @@ import {
   PackageManager,
 } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
+import { filterAuditResult } from '../utils';
 import { AuditResult } from './types';
 import {
   npmToAuditResult,
+  pnpmToAuditResult,
   yarnv1ToAuditResult,
   yarnv2ToAuditResult,
 } from './unify-type';
@@ -28,9 +30,39 @@ export const normalizeAuditMapper: Record<
   npm: npmToAuditResult,
   'yarn-classic': yarnv1ToAuditResult,
   'yarn-modern': yarnv2ToAuditResult,
-  pnpm: () => {
-    throw new Error('PNPM audit is not supported yet.');
-  },
+  pnpm: pnpmToAuditResult,
+};
+
+const filterNpmAuditResults = (
+  results: Record<DependencyGroup, AuditResult>,
+) => ({
+  prod: results.prod,
+  dev: filterAuditResult(results.dev, 'name', results.prod),
+  optional: filterAuditResult(results.optional, 'name', results.prod),
+});
+
+const filterPnpmAuditResults = (
+  results: Record<DependencyGroup, AuditResult>,
+) => ({
+  prod: results.prod,
+  dev: results.dev,
+  optional: filterAuditResult(
+    filterAuditResult(results.optional, 'id', results.prod),
+    'id',
+    results.dev,
+  ),
+});
+
+export const postProcessingAuditMapper: Partial<
+  Record<
+    PackageManager,
+    (
+      result: Record<DependencyGroup, AuditResult>,
+    ) => Record<DependencyGroup, AuditResult>
+  >
+> = {
+  npm: filterNpmAuditResults, // prod dependencies need to be filtered out manually since v10
+  pnpm: filterPnpmAuditResults, // optional dependencies don't have an exclusive option so they need duplicates filtered out
 };
 
 const npmDependencyOptions: Record<DependencyGroup, string[]> = {
@@ -47,16 +79,17 @@ const yarnv2EnvironmentOptions: Record<DependencyGroup, string> = {
   optional: '',
 };
 
+const pnpmDependencyOptions: Record<DependencyGroup, string[]> = {
+  prod: ['--prod', '--no-optional'],
+  dev: ['--dev', '--no-optional'],
+  optional: [],
+};
+
 export const auditArgs = (
   groupDep: DependencyGroup,
 ): Record<PackageManager, string[]> => ({
-  npm: [...npmDependencyOptions[groupDep], '--json', '--audit-level=none'],
-  'yarn-classic': ['--json', '--groups', dependencyGroupToLong[groupDep]],
-  'yarn-modern': [
-    '--json',
-    '--environment',
-    yarnv2EnvironmentOptions[groupDep],
-  ],
-  // TODO: Add once PNPM is supported.
-  pnpm: [],
+  npm: [...npmDependencyOptions[groupDep], '--audit-level=none'],
+  'yarn-classic': ['--groups', dependencyGroupToLong[groupDep]],
+  'yarn-modern': ['--environment', yarnv2EnvironmentOptions[groupDep]],
+  pnpm: [...pnpmDependencyOptions[groupDep]],
 });

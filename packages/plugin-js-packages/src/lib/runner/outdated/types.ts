@@ -59,3 +59,11 @@ export type Yarnv2VersionOverview = {
 };
 
 export type Yarnv2OutdatedResultJson = Yarnv2VersionOverview[];
+
+// Subset of PNPM outdated JSON type
+export type PnpmVersionOverview = {
+  current: string;
+  latest: string;
+  dependencyType: DependencyGroupLong;
+};
+export type PnpmOutdatedResultJson = Record<string, PnpmVersionOverview>;

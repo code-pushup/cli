@@ -3,6 +3,7 @@ import {
   NpmNormalizedOverview,
   NpmOutdatedResultJson,
   OutdatedResult,
+  PnpmOutdatedResultJson,
   Yarnv1OutdatedResultJson,
   Yarnv2OutdatedResultJson,
 } from './types';
@@ -47,4 +48,17 @@ export function yarnv2ToOutdatedResult(output: string): OutdatedResult {
     latest,
     type,
   }));
+}
+
+export function pnpmToOutdatedResult(output: string): OutdatedResult {
+  const pnpmOutdated = JSON.parse(output) as PnpmOutdatedResultJson;
+
+  return objectToEntries(pnpmOutdated).map(
+    ([name, { current, latest, dependencyType: type }]) => ({
+      name,
+      current,
+      latest,
+      type,
+    }),
+  );
 }

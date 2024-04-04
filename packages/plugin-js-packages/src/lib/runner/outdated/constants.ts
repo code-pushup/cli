@@ -3,6 +3,7 @@ import { PackageManager } from '../../config';
 import { OutdatedResult, VersionType } from './types';
 import {
   npmToOutdatedResult,
+  pnpmToOutdatedResult,
   yarnv1ToOutdatedResult,
   yarnv2ToOutdatedResult,
 } from './unify-type';
@@ -13,13 +14,6 @@ export const outdatedSeverity: Record<VersionType, IssueSeverity> = {
   patch: 'info',
 };
 
-export const outdatedArgs: Record<PackageManager, string[]> = {
-  npm: ['--json', '--long'],
-  'yarn-classic': ['--json'],
-  'yarn-modern': ['--json'],
-  pnpm: [],
-};
-
 export const normalizeOutdatedMapper: Record<
   PackageManager,
   (output: string) => OutdatedResult
@@ -27,5 +21,12 @@ export const normalizeOutdatedMapper: Record<
   npm: npmToOutdatedResult,
   'yarn-classic': yarnv1ToOutdatedResult,
   'yarn-modern': yarnv2ToOutdatedResult,
-  pnpm: _ => [],
+  pnpm: pnpmToOutdatedResult,
+};
+
+export const outdatedArgs: Record<PackageManager, string[]> = {
+  npm: ['--long'],
+  'yarn-classic': [],
+  'yarn-modern': [],
+  pnpm: [],
 };
