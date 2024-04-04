@@ -8,6 +8,10 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
+import {
+  LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS,
+  UnsupportedCliFlags,
+} from '../constants';
 import type { LighthouseCliFlags } from './runner';
 
 export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
@@ -102,19 +106,11 @@ export async function getBudgets(
   return [];
 }
 
-const excludedFlags = new Set([
-  // lighthouse CLI specific debug logs
-  'list-all-audits', // Prints a list of all available audits and exits.
-  'list-locales', // Prints a list of all supported locales and exits.
-  'list-trace-categories', // Prints a list of all required trace categories and exits.
-  'view', // Open HTML report in your browser
-]);
-
 export function validateFlags(
   flags: LighthouseCliFlags = {},
 ): LighthouseCliFlags {
   const unsupportedFlagsInUse = Object.keys(flags).filter(flag =>
-    excludedFlags.has(flag),
+    LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flag as UnsupportedCliFlags),
   );
 
   if (unsupportedFlagsInUse.length > 0) {
@@ -127,6 +123,9 @@ export function validateFlags(
     );
   }
   return Object.fromEntries(
-    Object.entries(flags).filter(([flagName]) => !excludedFlags.has(flagName)),
+    Object.entries(flags).filter(
+      ([flagName]) =>
+        !LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flagName as UnsupportedCliFlags),
+    ),
   );
 }
