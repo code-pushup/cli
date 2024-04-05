@@ -3,6 +3,7 @@ import debug from 'debug';
 import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
 import Details from 'lighthouse/types/lhr/audit-details';
+import { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,6 +16,7 @@ import {
   getConfig,
   setLogLevel,
   toAuditOutputs,
+  unsupportedDetailTypes,
   validateFlags,
 } from './utils';
 
@@ -99,7 +101,28 @@ describe('toAuditOutputs', () => {
     );
   });
 
-  it('should inform that opportunity type is not supported yet', () => {
+  it('should inform that for all unsupported details', () => {
+    const types = [...unsupportedDetailTypes];
+    toAuditOutputs(
+      types.map(
+        type =>
+          ({
+            id: 'dummy-audit-1',
+            score: null,
+            details: {
+              type,
+            },
+          } as Result),
+      ),
+    );
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] Parsing details from audits and types unsupported: ${types.join(
+        ', ',
+      )}`,
+    );
+  });
+
+  it('should inform that opportunity detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'dummy-audit',
@@ -135,7 +158,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that table type is not supported yet', () => {
+  it('should inform that table detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'dummy-audit',
@@ -154,7 +177,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that debugdata type is not supported yet', () => {
+  it('should inform that debugdata detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'cumulative-layout-shift',
@@ -182,7 +205,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that filmstrip type is not supported yet', () => {
+  it('should inform that filmstrip detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'screenshot-thumbnails',
@@ -207,7 +230,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that screenshot type is not supported yet', () => {
+  it('should inform that screenshot detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'final-screenshot',
@@ -227,7 +250,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that treemap-data type is not supported yet', () => {
+  it('should inform that treemap-data detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'script-treemap-data',
@@ -245,7 +268,7 @@ describe('toAuditOutputs', () => {
     expect(outputs[0]?.details).toBeUndefined();
   });
 
-  it('should inform that criticalrequestchain type is not supported yet', () => {
+  it('should inform that criticalrequestchain detail type is not supported yet', () => {
     const outputs = toAuditOutputs([
       {
         id: 'critical-request-chains',

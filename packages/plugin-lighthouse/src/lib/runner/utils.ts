@@ -14,7 +14,29 @@ import {
 } from '../constants';
 import type { LighthouseCliFlags } from './runner';
 
+export const unsupportedDetailTypes = new Set([
+  'opportunity',
+  'table',
+  'treemap-data',
+  'screenshot',
+  'filmstrip',
+  'debugdata',
+  'criticalrequestchain',
+]);
+
 export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
+  // @TODO implement all details
+  const slugsWithDetailParsingErrors = lhrAudits
+    .filter(({ details }) =>
+      unsupportedDetailTypes.has(details?.type as string),
+    )
+    .map(({ details }) => details?.type);
+  ui().logger.info(
+    `Parsing details from audits and types unsupported: ${slugsWithDetailParsingErrors.join(
+      ', ',
+    )}`,
+  );
+
   return lhrAudits.map(
     ({
       id: slug,
@@ -33,12 +55,6 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       if (details == null) {
         return auditOutput;
       }
-
-      // @TODO implement switch case for detail parsing. Related to #90
-      const unsupportedType = details.type;
-      ui().logger.info(
-        `Parsing details from type ${unsupportedType} is not implemented.`,
-      );
 
       return auditOutput;
     },
