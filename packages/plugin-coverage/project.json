@@ -28,18 +28,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-coverage/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/plugin-coverage/unit-tests"
+        "config": "packages/plugin-coverage/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-coverage/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/plugin-coverage/integration-tests"
+        "config": "packages/plugin-coverage/vite.config.integration.ts"
       }
     },
     "publish": {

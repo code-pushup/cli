@@ -16,7 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/plugin-lighthouse/unit-tests',
-      exclude: ['mocks/**'],
+      exclude: ['mocks/**', '**/types.ts'],
     },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
