@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
+import { ui } from './logging';
 
 export async function readTextFile(path: string): Promise<string> {
   const buffer = await readFile(path);
@@ -38,7 +39,7 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    console.error((error as { code: string; message: string }).message);
+    ui().logger.error((error as { code: string; message: string }).message);
     if ((error as { code: string }).code !== 'EEXIST') {
       throw error;
     }
@@ -58,20 +59,19 @@ export function logMultipleFileResults(
   fileResults: MultipleFileResults,
   messagePrefix: string,
 ): void {
-  const succeededCallback = (result: PromiseFulfilledResult<FileResult>) => {
+  const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
     const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
-    console.info(`- ${chalk.bold(fileName)}${formattedSize}`);
+    return `- ${chalk.bold(fileName)}${formattedSize}`;
   };
-  const failedCallback = (result: PromiseRejectedResult) => {
-    console.warn(`- ${chalk.bold(result.reason)}`);
-  };
+  const failedTransform = (result: PromiseRejectedResult) =>
+    `- ${chalk.bold(result.reason)}`;
 
   logMultipleResults<FileResult>(
     fileResults,
     messagePrefix,
-    succeededCallback,
-    failedCallback,
+    succeededTransform,
+    failedTransform,
   );
 }
 

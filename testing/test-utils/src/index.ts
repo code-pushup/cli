@@ -1,8 +1,10 @@
 export * from './lib/constants';
 export * from './lib/utils/execute-process-helper.mock';
 export * from './lib/utils/os-agnostic-paths';
+export * from './lib/utils/logging';
 
 // static mocks
+export * from './lib/utils/commit.mock';
 export * from './lib/utils/core-config.mock';
 export * from './lib/utils/minimal-config.mock';
 export * from './lib/utils/report.mock';

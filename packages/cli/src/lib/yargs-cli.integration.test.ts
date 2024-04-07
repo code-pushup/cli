@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CoreConfig, Format } from '@code-pushup/models';
+import { CompareOptions } from './implementation/compare.model';
+import { yargsCompareOptionsDefinition } from './implementation/compare.options';
 import {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
@@ -117,5 +119,25 @@ describe('yargsCli', () => {
         onlyPlugins: ['lighthouse', 'eslint'],
       }),
     );
+  });
+
+  it('should parse compare options', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & CompareOptions>(
+      ['--before=source-report.json', '--after', 'target-report.json'],
+      {
+        options: { ...options, ...yargsCompareOptionsDefinition() },
+      },
+    ).parseAsync();
+    expect(parsedArgv.before).toBe('source-report.json');
+    expect(parsedArgv.after).toBe('target-report.json');
+  });
+
+  it('should error if required compare option is missing', () => {
+    expect(() =>
+      yargsCli<GeneralCliOptions & CompareOptions>([], {
+        options: { ...options, ...yargsCompareOptionsDefinition() },
+        noExitProcess: true,
+      }).parse(),
+    ).toThrow('Missing required arguments: before, after');
   });
 });

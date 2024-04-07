@@ -5,10 +5,11 @@ import {
   MultipleFileResults,
   directoryExists,
   generateMdReport,
-  generateStdoutSummary,
   logMultipleFileResults,
+  logStdoutSummary,
   scoreReport,
   sortReport,
+  ui,
 } from '@code-pushup/utils';
 
 export class PersistDirError extends Error {
@@ -30,7 +31,8 @@ export async function persistReport(
   const { outputDir, filename, format } = options;
 
   const sortedScoredReport = sortReport(scoreReport(report));
-  console.info(generateStdoutSummary(sortedScoredReport));
+  // terminal output
+  logStdoutSummary(sortedScoredReport);
 
   // collect physical format outputs
   const results = format.map(reportType => {
@@ -52,7 +54,7 @@ export async function persistReport(
     try {
       await mkdir(outputDir, { recursive: true });
     } catch (error) {
-      console.warn(error);
+      ui().logger.warning((error as Error).toString());
       throw new PersistDirError(outputDir);
     }
   }
@@ -75,7 +77,7 @@ async function persistResult(reportPath: string, content: string) {
       .then(() => stat(reportPath))
       .then(stats => [reportPath, stats.size] as const)
       .catch(error => {
-        console.warn(error);
+        ui().logger.warning((error as Error).toString());
         throw new PersistError(reportPath);
       })
   );
