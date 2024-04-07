@@ -14,7 +14,9 @@ const withIgnoreMockInLibs = () =>
   withLibraryMapper({
     mapperFn: ({ rootFolder }) => {
       return {
-        ignore: [rootFolder + '/mocks/**', /*rootFolder + '/perf/**' SHOULD WORK */],
+        ignore: [
+          rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
+        ],
         entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
       };
     },
@@ -63,6 +65,8 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
+      // ignored becasue fake dept from a thes (but valid catch)
+      '@example/custom-plugin',
       // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
       'global-setup.ts',
       'global-setup.e2e.ts',
