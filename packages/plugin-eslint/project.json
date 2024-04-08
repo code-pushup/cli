@@ -32,18 +32,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-eslint/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/plugin-eslint/unit-tests"
+        "config": "packages/plugin-eslint/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-eslint/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/plugin-eslint/integration-tests"
+        "config": "packages/plugin-eslint/vite.config.integration.ts"
       }
     }
   },
