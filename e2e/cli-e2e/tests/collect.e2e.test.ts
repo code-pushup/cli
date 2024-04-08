@@ -123,8 +123,7 @@ describe('CLI collect', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
+  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
