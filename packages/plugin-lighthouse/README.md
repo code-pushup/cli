@@ -58,7 +58,7 @@ Reference audits (or groups) which you wish to include in custom categories (use
 Assign weights based on what influence each Lighthouse audit on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups.
 
-#### Reference audits directly with `lighthouseAuditRef`
+#### Reference audits directly with `lighthouseGroupRef`
 
 ```ts
 import { lighthouseGroupRef } from './utils';
