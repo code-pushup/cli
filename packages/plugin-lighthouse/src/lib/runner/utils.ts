@@ -77,6 +77,7 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       };
 
       if (details == null) {
+        // @TODO implement details
         return auditOutput;
       }
 
