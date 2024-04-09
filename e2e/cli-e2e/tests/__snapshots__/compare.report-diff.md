@@ -6,7 +6,7 @@
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--:|:--:|:--:|
-|Code style|🟡 **77**|🟡 54|![↑ +23](https://img.shields.io/badge/%E2%86%91%20%2B23-green)|
+|Code style|🟡 **77**|🟡 54|![↑ +23.1](https://img.shields.io/badge/%E2%86%91%20%2B23.1-green)|
 |Bug prevention|🟡 **68**|🟡 68|–|
 
 ## 🎗️ Groups
@@ -16,7 +16,7 @@
 
 |🔌 Plugin|🗃️ Group|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--|:--:|:--:|:--:|
-|ESLint|Suggestions|🟡 **71**|🟡 50|![↑ +21](https://img.shields.io/badge/%E2%86%91%20%2B21-green)|
+|ESLint|Suggestions|🟡 **71**|🟡 50|![↑ +21.4](https://img.shields.io/badge/%E2%86%91%20%2B21.4-green)|
 
 3 other groups are unchanged.
 
