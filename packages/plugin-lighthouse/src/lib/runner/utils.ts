@@ -29,9 +29,6 @@ export function normalizeAuditOutputs(
   return auditOutputs.filter(({ slug }) => {
     const doSkip = toSkip.has(slug);
     if (doSkip) {
-      // TODO
-      // https://github.com/GoogleChrome/lighthouse/blob/65b65250e7854adcd9ecadeb5299aa4c80fdafc8/cli/run.js#L137
-      // https://github.com/GoogleChrome/lighthouse/blob/c35b375c6f31c6d658dd65d9ab91f158eec759f0/core/config/filters.js#L265
       ui().logger.info(
         `Audit ${chalk.bold(
           slug,

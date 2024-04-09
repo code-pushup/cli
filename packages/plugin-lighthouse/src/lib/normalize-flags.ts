@@ -12,7 +12,7 @@ export const DEFAULT_LIGHTHOUSE_OPTIONS = {
 // NOTE:
 // This is an intermediate variable to get `UnsupportedCliFlags`. For unknown reasons `typescript@5.3.3` doesn't work otherwise.
 const lighthouseUnsupportedCliFlags = [
-  'precomputedLanternDataPath', // @TODO add description
+  'precomputedLanternDataPath', // Path to the file where precomputed lantern data should be read from.
   'chromeIgnoreDefaultFlags', // ignore default flags from Lighthouse CLI
   // No error reporting implemented as in the source Sentry was involved
   // See: https://github.com/GoogleChrome/lighthouse/blob/d8ccf70692216b7fa047a4eaa2d1277b0b7fe947/cli/bin.js#L124
@@ -59,7 +59,7 @@ export function normalizeFlags(flags?: LighthouseOptions): LighthouseCliFlags {
             flagName as UnsupportedCliFlags,
           ),
       )
-      // in code-pushup lighthouse categories are mapped as groups, therefor we had to rename "onlyCategories" to "onlyGroups" for the user of the plugin
+      // in code-pushup lighthouse categories are mapped as groups, therefor we had to rename "onlyCategories" to "onlyGroups" for the user of the plugin as it was confusing
       .map(([key, v]) => [key === 'onlyGroups' ? 'onlyCategories' : key, v])
       // undefined | string | string[] => string[] (empty for undefined)
       .map(([key, v]) => {
