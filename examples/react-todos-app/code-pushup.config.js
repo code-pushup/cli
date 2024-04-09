@@ -1,8 +1,8 @@
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 import lighthousePlugin, {
+  lighthouseAuditRef,
   lighthouseGroupRef,
-  lighthouseAuditRef
 } from '../../dist/packages/plugin-lighthouse';
 
 const eslintAuditRef = (slug, weight) => ({
@@ -40,7 +40,7 @@ export default {
         'hreflang',
         // pwa category
         'installable-manifest',
-      ]
+      ],
     }),
   ],
   categories: [
@@ -49,7 +49,7 @@ export default {
       title: 'Performance',
       refs: [
         lighthouseGroupRef('performance'),
-        lighthouseAuditRef('largest-contentful-paint')
+        lighthouseAuditRef('largest-contentful-paint'),
       ],
     },
     {

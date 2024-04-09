@@ -12,7 +12,7 @@ import {
   filterAuditsAndGroupsByOnlyOptions,
   lighthouseAuditRef,
   lighthouseGroupRef,
-  validateOnlyAudits,
+  validateAudits,
   validateOnlyCategories,
 } from './utils';
 
@@ -46,29 +46,29 @@ describe('lighthouseGroupRef', () => {
   });
 });
 
-describe('validateOnlyAudits', () => {
+describe('validateAudits', () => {
   it('should not throw for audit slugs existing in given audits', () => {
     expect(
-      validateOnlyAudits(
+      validateAudits(
         [
           { slug: 'a', title: 'A' },
           { slug: 'b', title: 'B' },
           { slug: 'c', title: 'C' },
         ],
-        'a',
+        ['a'],
       ),
     ).toBeTruthy();
   });
 
-  it('should throw if given onlyAudits do not exist', () => {
+  it('should throw if given audits do not exist', () => {
     expect(() =>
-      validateOnlyAudits(
+      validateAudits(
         [
           { slug: 'a', title: 'A' },
           { slug: 'b', title: 'B' },
           { slug: 'c', title: 'C' },
         ],
-        'missing-audit',
+        ['missing-audit'],
       ),
     ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
@@ -112,238 +112,229 @@ describe('validateOnlyCategories', () => {
 });
 
 describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () => {
-  it('should return given audits and groups if no only filter is set', () => {
-    const audits: Audit[] = [{ slug: 'speed-index', title: 'Speed Index' }];
-    const groups: Group[] = [
+  type PartialGroup = Partial<
+    Omit<Group, 'refs'> & { refs: Partial<Group['refs'][number]>[] }
+  >;
+  const basePluginConfig = (
+    audits: Partial<Audit>[],
+    groups: PartialGroup[],
+  ): PluginConfig => ({
+    slug: 'coverage',
+    title: 'Code Coverage',
+    icon: 'file',
+    description: 'Runs test coverage and created audits',
+    runner: {
+      command: 'node',
+      outputFile: 'out.json',
+    },
+    audits: audits.map(({ slug: auditSlug, title: auditTitle }) => ({
+      slug: auditSlug ?? 'slug',
+      title: auditTitle ?? 'title',
+    })),
+    groups: groups.map(({ slug: groupSlug, title: groupTitle, refs = [] }) => ({
+      slug: groupSlug ?? 'slug',
+      title: groupTitle ?? 'title',
+      refs: refs.map(({ slug: auditRegSlug, weight } = {}) => ({
+        slug: auditRegSlug ?? 'slug',
+        weight: weight ?? 1,
+      })),
+    })),
+  });
+
+  it('should return given audits and groups if no filter is set', () => {
+    const audits = [{ slug: 'speed-index' }] as Audit[];
+    const groups = [
       {
         slug: 'performance',
-        title: 'Performance',
-        refs: [{ slug: 'speed-index', weight: 1 }],
+        refs: [{ slug: 'speed-index' }],
       },
-    ];
+    ] as Group[];
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(audits, groups, {});
 
     expect(filteredAudits).toStrictEqual(audits);
     expect(filteredGroups).toStrictEqual(groups);
 
-    const pluginConfig: PluginConfig = {
-      slug: 'coverage',
-      title: 'Code Coverage',
-      icon: 'file',
-      description: 'Runs test coverage and created audits',
-      audits: filteredAudits,
-      groups: filteredGroups,
-      runner: {
-        command: 'node',
-        outputFile: 'out.json',
-      },
-    };
-
+    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+  });
+
+  it('should filter audits if skipAudits is set', () => {
+    const { audits: filteredAudits, groups: filteredGroups } =
+      filterAuditsAndGroupsByOnlyOptions(
+        [
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+        ] as Audit[],
+        [
+          {
+            slug: 'performance',
+            refs: [{ slug: 'speed-index' }, { slug: 'first-contentful-paint' }],
+          },
+        ] as Group[],
+        { skipAudits: ['speed-index'] },
+      );
+
+    expect(filteredAudits).toHaveLength(1);
+    expect(filteredAudits.at(0)?.slug).toBe('first-contentful-paint');
+
+    expect(filteredGroups).toHaveLength(1);
+    expect(filteredGroups.at(0)?.slug).toBe('performance');
+    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
+    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe(
+      'first-contentful-paint',
+    );
+
+    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+  });
+
+  it('should throw if skipAudits is set with a missing audit slug', () => {
+    expect(() =>
+      filterAuditsAndGroupsByOnlyOptions(
+        [
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+        ] as Audit[],
+        [
+          {
+            slug: 'performance',
+            refs: [
+              { slug: 'speed-index' },
+              { slug: 'largest-contentful-paint' },
+            ],
+          },
+        ] as Group[],
+        { skipAudits: ['missing-audit'] },
+      ),
+    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
 
   it('should filter audits if onlyAudits is set', () => {
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'speed-index', title: 'Speed Index' },
-          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
-        ],
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+        ] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
-        ],
+        ] as Group[],
         { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual<Audit[]>([
-      { slug: 'speed-index', title: 'Speed Index' },
-    ]);
-    expect(filteredGroups).toStrictEqual<Group[]>([
-      {
-        slug: 'performance',
-        title: 'Performance',
-        refs: [{ slug: 'speed-index', weight: 1 }],
-      },
-    ]);
+    expect(filteredAudits).toHaveLength(1);
+    expect(filteredAudits.at(0)?.slug).toBe('speed-index');
 
-    const pluginConfig: PluginConfig = {
-      slug: 'coverage',
-      title: 'Code Coverage',
-      icon: 'file',
-      description: 'Runs test coverage and created audits',
-      audits: filteredAudits,
-      groups: filteredGroups,
-      runner: {
-        command: 'node',
-        outputFile: 'out.json',
-      },
-    };
+    expect(filteredGroups).toHaveLength(1);
+    expect(filteredGroups.at(0)?.slug).toBe('performance');
+    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
+    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('speed-index');
 
+    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a missing audit slug', () => {
-    const { audits: filteredAudits, groups: filteredGroups } =
+    expect(() =>
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'speed-index', title: 'Speed Index' },
-          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
-        ],
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+        ] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
-        ],
-        { onlyAudits: ['speed-index'] },
-      );
-    expect(filteredAudits).toStrictEqual<Audit[]>([
-      { slug: 'speed-index', title: 'Speed Index' },
-    ]);
-    expect(filteredGroups).toStrictEqual<Group[]>([
-      {
-        slug: 'performance',
-        title: 'Performance',
-        refs: [{ slug: 'speed-index', weight: 1 }],
-      },
-    ]);
-
-    const pluginConfig: PluginConfig = {
-      slug: 'coverage',
-      title: 'Code Coverage',
-      icon: 'file',
-      description: 'Runs test coverage and created audits',
-      audits: filteredAudits,
-      groups: filteredGroups,
-      runner: {
-        command: 'node',
-        outputFile: 'out.json',
-      },
-    };
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+        ] as Group[],
+        { onlyAudits: ['missing-audit'] },
+      ),
+    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
 
-  it('should filter categories if onlyCategories is set', () => {
+  it('should filter group if onlyGroups is set', () => {
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'speed-index', title: 'Speed Index' },
-          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
-          { slug: 'function-coverage', title: 'Function Coverage' },
-        ],
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+          { slug: 'function-coverage' },
+        ] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
           {
             slug: 'coverage',
-            title: 'Code coverage',
-            refs: [{ slug: 'function-coverage', weight: 1 }],
+            refs: [{ slug: 'function-coverage' }],
           },
-        ],
+        ] as Group[],
         { onlyCategories: ['coverage'] },
       );
 
-    expect(filteredAudits).toStrictEqual<Audit[]>([
-      { slug: 'function-coverage', title: 'Function Coverage' },
-    ]);
-    expect(filteredGroups).toStrictEqual<Group[]>([
-      {
-        slug: 'coverage',
-        title: 'Code coverage',
-        refs: [{ slug: 'function-coverage', weight: 1 }],
-      },
-    ]);
+    expect(filteredAudits).toHaveLength(1);
+    expect(filteredAudits.at(0)?.slug).toBe('function-coverage');
 
-    const pluginConfig: PluginConfig = {
-      slug: 'coverage',
-      title: 'Code Coverage',
-      icon: 'file',
-      description: 'Runs test coverage and created audits',
-      audits: filteredAudits,
-      groups: filteredGroups,
-      runner: {
-        command: 'node',
-        outputFile: 'out.json',
-      },
-    };
+    expect(filteredGroups).toHaveLength(1);
+    expect(filteredGroups.at(0)?.slug).toBe('coverage');
+    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
+    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('function-coverage');
 
+    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
-  it('should ignore onlyAudits and only filter categories if onlyCategories and onlyAudits is set', () => {
+  it('should ignore onlyAudits and only filter groups if onlyGroups and onlyAudits is set', () => {
     const { audits: filteredAudits, groups: filteredGroups } =
       filterAuditsAndGroupsByOnlyOptions(
         [
-          { slug: 'speed-index', title: 'Speed Index' },
-          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
-          { slug: 'function-coverage', title: 'Function Coverage' },
-        ],
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+          { slug: 'function-coverage' },
+        ] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
           {
             slug: 'coverage',
-            title: 'Code coverage',
-            refs: [{ slug: 'function-coverage', weight: 1 }],
+            refs: [{ slug: 'function-coverage' }],
           },
-        ],
+        ] as Group[],
         {
           onlyAudits: ['speed-index'],
           onlyCategories: ['coverage'],
         },
       );
 
-    expect(filteredAudits).toStrictEqual<Audit[]>([
-      { slug: 'function-coverage', title: 'Function Coverage' },
-    ]);
-    expect(filteredGroups).toStrictEqual<Group[]>([
-      {
-        slug: 'coverage',
-        title: 'Code coverage',
-        refs: [{ slug: 'function-coverage', weight: 1 }],
-      },
-    ]);
+    expect(filteredAudits).toHaveLength(1);
+    expect(filteredAudits.at(0)?.slug).toBe('function-coverage');
 
-    const pluginConfig: PluginConfig = {
-      slug: 'coverage',
-      title: 'Code Coverage',
-      icon: 'file',
-      description: 'Runs test coverage and created audits',
-      audits: filteredAudits,
-      groups: filteredGroups,
-      runner: {
-        command: 'node',
-        outputFile: 'out.json',
-      },
-    };
+    expect(filteredGroups).toHaveLength(1);
+    expect(filteredGroups.at(0)?.slug).toBe('coverage');
+    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
+    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('function-coverage');
 
+    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a audit slug that is not implemented', () => {
     expect(() =>
       filterAuditsAndGroupsByOnlyOptions(
-        [{ slug: 'speed-index', title: 'Speed Index' }],
+        [{ slug: 'speed-index' }] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
-        ],
+        ] as Group[],
         {
           onlyAudits: ['missing-audit'],
         },
@@ -351,21 +342,20 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
 
-  it('should throw if onlyCategories is set with a category slug that is not implemented', () => {
+  it('should throw if onlyGroups is set with a group slug that is not implemented', () => {
     expect(() =>
       filterAuditsAndGroupsByOnlyOptions(
-        [{ slug: 'speed-index', title: 'Speed Index' }],
+        [{ slug: 'speed-index' }] as Audit[],
         [
           {
             slug: 'performance',
-            title: 'Performance',
-            refs: [{ slug: 'speed-index', weight: 1 }],
+            refs: [{ slug: 'speed-index' }],
           },
-        ],
+        ] as Group[],
         {
-          onlyCategories: ['missing-category'],
+          onlyCategories: ['missing-group'],
         },
       ),
-    ).toThrow(new CategoriesNotImplementedError(['missing-category']));
+    ).toThrow(new CategoriesNotImplementedError(['missing-group']));
   });
 });

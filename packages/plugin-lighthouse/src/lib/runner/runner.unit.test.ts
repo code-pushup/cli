@@ -2,8 +2,9 @@ import { type Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
-import { LIGHTHOUSE_REPORT_NAME } from './constants';
-import { LighthouseCliFlags, createRunnerFunction } from './runner';
+import { DEFAULT_CLI_FLAGS } from './constants';
+import { createRunnerFunction } from './runner';
+import { LighthouseCliFlags } from './types';
 import { getBudgets, getConfig, setLogLevel } from './utils';
 
 // used for createRunnerMocking
@@ -71,12 +72,7 @@ describe('createRunnerFunction', () => {
 
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8080',
-      expect.objectContaining({
-        chromeFlags: '--headless=shell',
-        chromeIgnoreDefaultFlags: false,
-        output: ['json'],
-        outputPath: LIGHTHOUSE_REPORT_NAME,
-      }),
+      DEFAULT_CLI_FLAGS,
       undefined,
     );
   });
@@ -85,7 +81,7 @@ describe('createRunnerFunction', () => {
     await createRunnerFunction('https://localhost:8080', {
       verbose: true,
       quiet: true,
-    })(undefined);
+    } as LighthouseCliFlags)(undefined);
     expect(setLogLevel).toHaveBeenCalledWith(
       expect.objectContaining({ verbose: true, quiet: true }),
     );
@@ -94,7 +90,7 @@ describe('createRunnerFunction', () => {
   it('should call getConfig with given configPath', async () => {
     await createRunnerFunction('https://localhost:8080', {
       configPath: 'lh-config.js',
-    })(undefined);
+    } as LighthouseCliFlags)(undefined);
     expect(getConfig).toHaveBeenCalledWith(
       expect.objectContaining({ configPath: 'lh-config.js' }),
     );
@@ -103,7 +99,7 @@ describe('createRunnerFunction', () => {
   it('should derive budgets from the budgets object directly', async () => {
     await createRunnerFunction('https://localhost:8080', {
       budgets: [{ path: '*/xyz/' }],
-    })(undefined);
+    } as LighthouseCliFlags)(undefined);
     expect(getBudgets).not.toHaveBeenCalled();
     expect(runLighthouse).toHaveBeenCalledWith(
       expect.any(String),

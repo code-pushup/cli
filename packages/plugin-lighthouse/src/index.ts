@@ -1,7 +1,14 @@
 import { lighthousePlugin } from './lib/lighthouse-plugin';
 
-export default lighthousePlugin;
+export { LIGHTHOUSE_REPORT_NAME } from './lib/runner';
+export {
+  LIGHTHOUSE_PLUGIN_SLUG,
+  LIGHTHOUSE_OUTPUT_PATH,
+} from './lib/constants';
+export {
+  lighthouseAuditRef,
+  lighthouseGroupRef,
+  LighthouseGroupSlugs,
+} from './lib/utils';
 export { lighthousePlugin } from './lib/lighthouse-plugin';
-export { LIGHTHOUSE_PLUGIN_SLUG } from './lib/constants';
-export * from './lib/runner';
-export { lighthouseAuditRef, lighthouseGroupRef } from './lib/utils';
+export default lighthousePlugin;

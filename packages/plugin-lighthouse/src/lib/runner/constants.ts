@@ -2,17 +2,12 @@ import {
   type CliFlags,
   type Config,
   type IcuMessage,
-  Audit as LHAudit,
+  type Audit as LHAudit,
   defaultConfig,
 } from 'lighthouse';
 import { join } from 'node:path';
-import { Audit, DEFAULT_PERSIST_OUTPUT_DIR, Group } from '@code-pushup/models';
-import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants';
-
-export const LIGHTHOUSE_OUTPUT_PATH = join(
-  DEFAULT_PERSIST_OUTPUT_DIR,
-  LIGHTHOUSE_PLUGIN_SLUG,
-);
+import type { Audit, Group } from '@code-pushup/models';
+import { LIGHTHOUSE_OUTPUT_PATH } from '../constants';
 
 const { audits, categories } = defaultConfig;
 
@@ -54,12 +49,6 @@ export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
       })),
   }),
 );
-export type LighthouseGroupSlugs =
-  | 'performance'
-  | 'accessibility'
-  | 'best-practices'
-  | 'seo'
-  | 'pwa';
 
 function getMetaString(value: string | IcuMessage): string {
   if (typeof value === 'string') {
@@ -94,20 +83,23 @@ async function loadLighthouseAudit(
 
 export const LIGHTHOUSE_REPORT_NAME = 'lighthouse-report.json';
 
-export const DEFAULT_CLI_FLAGS: Partial<CliFlags> = {
+export const DEFAULT_CLI_FLAGS = {
   // default values extracted from
   // https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80
   verbose: false,
   quiet: false,
   saveAssets: false,
   // needed to pass CI on linux and windows (locally it works without headless too)
-  chromeFlags: '--headless=shell',
+  chromeFlags: ['--headless=shell'],
   port: 0,
   hostname: '127.0.0.1',
   view: false,
   channel: 'cli',
-  chromeIgnoreDefaultFlags: false,
   // custom overwrites in favour of the plugin
+  onlyAudits: [],
+  skipAudits: [],
+  onlyCategories: [],
+  budgets: [],
   output: ['json'],
-  outputPath: LIGHTHOUSE_REPORT_NAME,
-};
+  outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
+} satisfies Partial<CliFlags>;

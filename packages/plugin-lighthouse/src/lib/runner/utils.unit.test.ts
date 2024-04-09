@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import debug from 'debug';
 import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
@@ -10,14 +9,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { type LighthouseCliFlags } from './runner';
 import {
   getBudgets,
   getConfig,
   setLogLevel,
   toAuditOutputs,
   unsupportedDetailTypes,
-  validateFlags,
 } from './utils';
 
 // mock bundleRequire inside importEsmModule used for fetching config
@@ -115,7 +112,12 @@ describe('toAuditOutputs', () => {
           } as Result),
       ),
     );
-    expect(getLogMessages(ui().logger).at(0)).toBe(
+    expect(
+      getLogMessages(ui().logger)
+        .at(0)
+        // eslint-disable-next-line no-control-regex
+        ?.replace(/\u001B\[\d+m/g, ''),
+    ).toBe(
       `[ blue(info) ] Parsing details from audits and types unsupported: ${types.join(
         ', ',
       )}`,
@@ -464,31 +466,5 @@ describe('setLogLevel', () => {
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
-  });
-});
-
-describe('validateFlags', () => {
-  it('should work with empty flags', () => {
-    expect(validateFlags()).toStrictEqual({});
-  });
-
-  it('should forward supported entries', () => {
-    expect(validateFlags({ verbose: true })).toStrictEqual({ verbose: true });
-  });
-
-  it('should remove unsupported entries and log', () => {
-    expect(
-      validateFlags({
-        'list-all-audits': true,
-        verbose: true,
-      } as LighthouseCliFlags),
-    ).toStrictEqual({ verbose: true });
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] ${chalk.yellow(
-        '⚠',
-      )} The following used flags are not supported: ${chalk.bold(
-        'list-all-audits',
-      )}`,
-    );
   });
 });

@@ -1,55 +1,49 @@
-import type { CliFlags, RunnerResult } from 'lighthouse';
+import type { RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import { dirname } from 'node:path';
 import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import { ensureDirectoryExists } from '@code-pushup/utils';
-import { UnsupportedCliFlags } from '../constants';
 import { DEFAULT_CLI_FLAGS } from './constants';
+import { LighthouseCliFlags } from './types';
 import {
   getBudgets,
   getConfig,
+  normalizeAuditOutputs,
   setLogLevel,
   toAuditOutputs,
-  validateFlags,
 } from './utils';
-
-export type LighthouseCliFlags = Partial<Omit<CliFlags, UnsupportedCliFlags>>;
 
 export function createRunnerFunction(
   urlUnderTest: string,
-  flags: LighthouseCliFlags = {},
+  flags: LighthouseCliFlags = DEFAULT_CLI_FLAGS,
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     const {
-      budgetPath,
-      budgets = [],
-      outputPath,
       configPath,
       preset,
+      budgetPath,
+      budgets,
+      outputPath,
       ...parsedFlags
-    } = validateFlags({
-      ...DEFAULT_CLI_FLAGS,
-      ...flags,
-    });
+    }: Partial<LighthouseCliFlags> = flags;
 
     setLogLevel(parsedFlags);
 
     const config = await getConfig({ configPath, preset });
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
-
-    const flagsWithDefaults = {
-      ...parsedFlags,
-      budgets: budgetsJson,
-      outputPath,
-    };
-
-    if (outputPath) {
+    if (typeof outputPath === 'string') {
       await ensureDirectoryExists(dirname(outputPath));
     }
 
+    const enrichedFlags = {
+      ...parsedFlags,
+      outputPath,
+      budgets: budgetsJson,
+    };
+
     const runnerResult: unknown = await runLighthouse(
       urlUnderTest,
-      flagsWithDefaults,
+      enrichedFlags,
       config,
     );
 
@@ -58,6 +52,8 @@ export function createRunnerFunction(
     }
 
     const { lhr } = runnerResult as RunnerResult;
-    return toAuditOutputs(Object.values(lhr.audits));
+    const auditOutputs = toAuditOutputs(Object.values(lhr.audits));
+
+    return normalizeAuditOutputs(auditOutputs, enrichedFlags);
   };
 }

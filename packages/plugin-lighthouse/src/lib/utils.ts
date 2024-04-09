@@ -1,8 +1,14 @@
-import { type CliFlags } from 'lighthouse';
 import { Audit, CategoryRef, Group } from '@code-pushup/models';
 import { filterItemRefsBy, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { LighthouseGroupSlugs } from './runner';
+import { LighthouseCliFlags } from './runner';
+
+export type LighthouseGroupSlugs =
+  | 'performance'
+  | 'accessibility'
+  | 'best-practices'
+  | 'seo'
+  | 'pwa';
 
 export function lighthouseGroupRef(
   groupSlug: LighthouseGroupSlugs,
@@ -25,24 +31,13 @@ export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
   };
 }
 
-type RefinedLighthouseOption = {
-  url: CliFlags['_'];
-  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
-};
-
-export type LighthouseCliOptions = RefinedLighthouseOption &
-  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
-
 export class AuditsNotImplementedError extends Error {
   constructor(auditSlugs: string[]) {
     super(`audits: "${auditSlugs.join(', ')}" not implemented`);
   }
 }
 
-export function validateOnlyAudits(
-  audits: Audit[],
-  onlyAudits: string | string[],
-): boolean {
+export function validateAudits(audits: Audit[], onlyAudits: string[]): boolean {
   const missingAudtis = toArray(onlyAudits).filter(
     slug => !audits.some(audit => audit.slug === slug),
   );
@@ -71,18 +66,26 @@ export function validateOnlyCategories(
   return true;
 }
 
+export type FilterOptions = Partial<
+  Pick<LighthouseCliFlags, 'onlyAudits' | 'onlyCategories' | 'skipAudits'>
+>;
+
 export function filterAuditsAndGroupsByOnlyOptions(
   audits: Audit[],
   groups: Group[],
-  options: Pick<CliFlags, 'onlyAudits' | 'onlyCategories'> = {},
+  options?: FilterOptions,
 ): {
   audits: Audit[];
   groups: Group[];
 } {
-  const { onlyAudits, onlyCategories } = options;
+  const {
+    onlyAudits = [],
+    skipAudits = [],
+    onlyCategories = [],
+  } = options ?? {};
 
   // category wins over audits
-  if (onlyCategories && onlyCategories.length > 0) {
+  if (onlyCategories.length > 0) {
     validateOnlyCategories(groups, onlyCategories);
 
     const categorySlugs = new Set(onlyCategories);
@@ -98,12 +101,23 @@ export function filterAuditsAndGroupsByOnlyOptions(
       ),
       groups: filteredGroups,
     };
-  } else if (onlyAudits && onlyAudits.length > 0) {
-    validateOnlyAudits(audits, onlyAudits);
-    const auditSlugs = new Set(onlyAudits);
+  } else if (onlyAudits.length > 0 || skipAudits.length > 0) {
+    validateAudits(audits, onlyAudits);
+    validateAudits(audits, skipAudits);
+    const onlyAuditSlugs = new Set(onlyAudits);
+    const skipAuditSlugs = new Set(skipAudits);
+    const filterAudits = ({ slug }: Pick<Audit, 'slug'>) =>
+      !(
+        // audit is NOT in given onlyAuditSlugs
+        (
+          (onlyAudits.length > 0 && !onlyAuditSlugs.has(slug)) ||
+          // audit IS in given skipAuditSlugs
+          (skipAudits.length > 0 && skipAuditSlugs.has(slug))
+        )
+      );
     return {
-      audits: audits.filter(({ slug }) => auditSlugs.has(slug)),
-      groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
+      audits: audits.filter(filterAudits),
+      groups: filterItemRefsBy(groups, filterAudits),
     };
   }
   // return unchanged

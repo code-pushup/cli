@@ -8,11 +8,8 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
-import {
-  LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS,
-  UnsupportedCliFlags,
-} from '../constants';
-import type { LighthouseCliFlags } from './runner';
+import type { LighthouseOptions } from '../types';
+import { LighthouseCliFlags } from './types';
 
 export const unsupportedDetailTypes = new Set([
   'opportunity',
@@ -24,16 +21,43 @@ export const unsupportedDetailTypes = new Set([
   'criticalrequestchain',
 ]);
 
+export function normalizeAuditOutputs(
+  auditOutputs: AuditOutputs,
+  flags: LighthouseOptions = { skipAudits: [] },
+): AuditOutputs {
+  const toSkip = new Set(flags.skipAudits ?? []);
+  return auditOutputs.filter(({ slug }) => {
+    const doSkip = toSkip.has(slug);
+    if (doSkip) {
+      // TODO
+      // https://github.com/GoogleChrome/lighthouse/blob/65b65250e7854adcd9ecadeb5299aa4c80fdafc8/cli/run.js#L137
+      // https://github.com/GoogleChrome/lighthouse/blob/c35b375c6f31c6d658dd65d9ab91f158eec759f0/core/config/filters.js#L265
+      ui().logger.info(
+        `Audit ${chalk.bold(
+          slug,
+        )} was included in audit outputs of lighthouse but listed under ${chalk.bold(
+          'skipAudits',
+        )}.`,
+      );
+    }
+    return !doSkip;
+  });
+}
+
 export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
   // @TODO implement all details
-  const slugsWithDetailParsingErrors = lhrAudits
-    .filter(({ details }) =>
-      unsupportedDetailTypes.has(details?.type as string),
-    )
-    .map(({ details }) => details?.type);
+  const slugsWithDetailParsingErrors = [
+    ...new Set(
+      lhrAudits
+        .filter(({ details }) =>
+          unsupportedDetailTypes.has(details?.type as string),
+        )
+        .map(({ details }) => details?.type),
+    ),
+  ];
   ui().logger.info(
-    `Parsing details from audits and types unsupported: ${slugsWithDetailParsingErrors.join(
-      ', ',
+    `Parsing details from audits and types unsupported: ${chalk.bold(
+      slugsWithDetailParsingErrors.join(', '),
     )}`,
   );
 
@@ -78,22 +102,25 @@ export function setLogLevel({
   }
 }
 
+export type ConfigOptions = Partial<
+  Pick<LighthouseCliFlags, 'configPath' | 'preset'>
+>;
+
 export async function getConfig(
-  flags: Pick<LighthouseCliFlags, 'configPath' | 'preset'> = {},
+  options: ConfigOptions = {},
 ): Promise<Config | undefined> {
-  const { configPath: filepath, preset } = flags;
+  const { configPath: filepath, preset } = options;
 
-  if (filepath != null) {
-    // Resolve the config file path relative to where cli was called.
-
+  if (typeof filepath === 'string') {
     if (filepath.endsWith('.json')) {
+      // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
       return importEsmModule<Config>({ filepath });
     } else {
       ui().logger.info(`Format of file ${filepath} not supported`);
     }
-  } else if (typeof preset === 'string') {
+  } else if (preset != null) {
     switch (preset) {
       case 'desktop':
         return desktopConfig;
@@ -110,38 +137,12 @@ export async function getConfig(
   return undefined;
 }
 
-export async function getBudgets(
-  budgetPath?: string | null,
-): Promise<Budget[]> {
+export async function getBudgets(budgetPath?: string): Promise<Budget[]> {
   if (budgetPath) {
     /** @type {Array<LH.Budget>} */
     return await readJsonFile<Budget[]>(
       path.resolve(process.cwd(), budgetPath),
     );
   }
-  return [];
-}
-
-export function validateFlags(
-  flags: LighthouseCliFlags = {},
-): LighthouseCliFlags {
-  const unsupportedFlagsInUse = Object.keys(flags).filter(flag =>
-    LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flag as UnsupportedCliFlags),
-  );
-
-  if (unsupportedFlagsInUse.length > 0) {
-    ui().logger.info(
-      `${chalk.yellow(
-        '⚠',
-      )} The following used flags are not supported: ${chalk.bold(
-        unsupportedFlagsInUse.join(', '),
-      )}`,
-    );
-  }
-  return Object.fromEntries(
-    Object.entries(flags).filter(
-      ([flagName]) =>
-        !LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flagName as UnsupportedCliFlags),
-    ),
-  );
+  return [] as Budget[];
 }
