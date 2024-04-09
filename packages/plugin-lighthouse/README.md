@@ -98,7 +98,7 @@ export default {
 
 #### Reference groups with `lighthouseGroupRef`
 
-The lighthouse categories are reflected as groups.
+The Lighthouse categories are reflected as groups.
 Referencing individual audits for more granularity. Keep maintenance in mind.
 
 ```ts
