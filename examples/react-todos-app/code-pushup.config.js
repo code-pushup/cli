@@ -27,7 +27,20 @@ export default {
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     }),
-    await lighthousePlugin('https://codepushup.dev/'),
+    await lighthousePlugin('https://codepushup.dev/', {
+      onlyAudits: [
+        // performance category
+        'largest-contentful-paint',
+        // a11y category
+        'aria-allowed-attr',
+        // best-practices category
+        'deprecations',
+        // seo category
+        'hreflang',
+        // pwa category
+        'pwa-installable',
+      ]
+    }),
   ],
   categories: [
     {
