@@ -11,18 +11,18 @@ describe('constants', () => {
     },
   );
 
-  it('should only include audits supporting the "navigation" mode', () => {
-    const invalidAuditSlugs = new Set([
-      'interaction-to-next-paint',
-      'uses-responsive-images-snapshot',
-      'work-during-interaction',
-    ]);
-    expect(
-      LIGHTHOUSE_NAVIGATION_AUDITS.some(({ slug }) =>
-        invalidAuditSlugs.has(slug),
-      ),
-    ).toBe(false);
-  });
+    it.each([
+    'interaction-to-next-paint',
+    'uses-responsive-images-snapshot',
+    'work-during-interaction',
+  ])(
+    'should not include audit %s which does not support the "navigation" mode',
+    invalidSlug => {
+      expect(
+        LIGHTHOUSE_NAVIGATION_AUDITS.every(({ slug }) => slug !== invalidSlug),
+      ).toBe(true);
+    },
+  );
 
   it.each(LIGHTHOUSE_GROUPS.map(g => [g.slug, g]))(
     'should parse group "%s" correctly',
