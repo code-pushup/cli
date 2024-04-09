@@ -102,7 +102,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     return '';
   }
   return paragraphs(
-    h2('🎗️ Groups'),
+    h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
         '🔌 Plugin',

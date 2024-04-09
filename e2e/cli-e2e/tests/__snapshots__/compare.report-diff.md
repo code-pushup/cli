@@ -9,7 +9,7 @@
 |Code style|🟡 **77**|🟡 54|![↑ +23.1](https://img.shields.io/badge/%E2%86%91%20%2B23.1-green)|
 |Bug prevention|🟡 **68**|🟡 68|–|
 
-## 🎗️ Groups
+## 🗃️ Groups
 
 <details>
 <summary>👍 <strong>1</strong> group improved</summary>
