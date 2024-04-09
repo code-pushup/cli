@@ -11,7 +11,7 @@ describe('constants', () => {
     },
   );
 
-    it.each([
+  it.each([
     'interaction-to-next-paint',
     'uses-responsive-images-snapshot',
     'work-during-interaction',
