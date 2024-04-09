@@ -2,6 +2,7 @@ import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 import lighthousePlugin, {
   lighthouseGroupRef,
+  lighthouseAuditRef
 } from '../../dist/packages/plugin-lighthouse';
 
 const eslintAuditRef = (slug, weight) => ({
@@ -46,7 +47,10 @@ export default {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [lighthouseGroupRef('performance')],
+      refs: [
+        lighthouseGroupRef('performance'),
+        lighthouseAuditRef('largest-contentful-paint')
+      ],
     },
     {
       slug: 'a11y',
