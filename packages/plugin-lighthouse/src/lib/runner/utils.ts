@@ -21,6 +21,7 @@ export const unsupportedDetailTypes = new Set([
   'criticalrequestchain',
 ]);
 
+// @TODO fix https://github.com/code-pushup/cli/issues/612
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,
   flags: LighthouseOptions = { skipAudits: [] },
