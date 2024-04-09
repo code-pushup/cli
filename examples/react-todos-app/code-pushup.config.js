@@ -38,7 +38,7 @@ export default {
         // seo category
         'hreflang',
         // pwa category
-        'pwa-installable',
+        'installable-manifest',
       ]
     }),
   ],
