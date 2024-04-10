@@ -1,4 +1,3 @@
-import { rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -48,10 +47,6 @@ describe('CLI collect', () => {
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e');
-  });
-
-  afterEach(async () => {
-    await rm('.code-pushup', { force: true, recursive: true });
   });
 
   it('should run ESLint plugin and create report.json', async () => {
