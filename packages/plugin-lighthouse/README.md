@@ -55,7 +55,7 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
 
 Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config --onlyPlugins=lighthouse` to list audits and groups).
 
-Assign weights based on what influence each Lighthouse audit on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
+Assign weights based on what influence each Lighthouse audit has on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups.
 
 #### Reference audits directly with `lighthouseGroupRef`
