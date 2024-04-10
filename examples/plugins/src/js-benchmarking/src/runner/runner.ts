@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import { importEsmModule } from '@code-pushup/utils';
 import { JS_BENCHMARKING_PLUGIN_SLUG } from '../constants';
-import { BenchmarkResult, SuiteConfig } from './types';
+import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
 import { suiteResultToAuditOutput } from './utils';
 
 export function createRunnerFunction(
@@ -22,7 +22,7 @@ export function createRunnerFunction(
     // Execute each suite sequentially
     // eslint-disable-next-line functional/no-loop-statements
     for (const suite of suites) {
-      const runner = await importEsmModule({
+      const runner = await importEsmModule<BenchmarkRunner>({
         filepath,
       });
       const result: BenchmarkResult[] = await runner.run(suite);

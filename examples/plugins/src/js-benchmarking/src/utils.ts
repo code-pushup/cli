@@ -38,7 +38,7 @@ export function loadSuites(
   const { tsconfig } = options;
   return Promise.all(
     targets.map((filepath: string) =>
-      importEsmModule({
+      importEsmModule<SuiteConfig>({
         tsconfig,
         filepath,
       }),
