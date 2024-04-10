@@ -47,9 +47,7 @@ export default {
     {
       slug: 'performance',
       title: 'Performance',
-      refs: [
-        lighthouseGroupRef('performance'),
-      ],
+      refs: [lighthouseGroupRef('performance')],
     },
     {
       slug: 'a11y',
