@@ -1,7 +1,6 @@
 import { SimpleGit, StatusResult } from 'simple-git';
 import { describe, expect } from 'vitest';
-import { guardAgainstLocalChanges } from '@code-pushup/utils';
-import { GitStatusError } from './git';
+import { guardAgainstLocalChanges , GitStatusError } from './git';
 
 describe('guardAgainstLocalChanges', () => {
   it('should throw if no files are present', async () => {
