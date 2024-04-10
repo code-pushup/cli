@@ -2,6 +2,11 @@ import 'dotenv/config';
 import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
+  JS_BENCHMARKING_BENNY_RUNNER_PATH,
+  JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
+  JS_BENCHMARKING_PLUGIN_SLUG,
+  JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
   fileSizePlugin,
   fileSizeRecommendedRefs, // LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   jsBenchmarkingPlugin,
@@ -10,10 +15,6 @@ import {
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-  JS_BENCHMARKING_BENNY_RUNNER_PATH,
-  JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
-  JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
-  JS_BENCHMARKING_PLUGIN_SLUG, JS_BENCHMARKING_TINYBENCH_RUNNER_PATH
 } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -23,7 +24,6 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import type { CoreConfig } from './packages/models/src';
-
 
 // load upload configuration from environment
 const envSchema = z
@@ -105,11 +105,14 @@ const config: CoreConfig = {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
+      description: 'Lint rules that find **potential bugs** in your code.',
       refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
       title: 'Code style',
+      description:
+        'Lint rules that promote **good practices** and consistency in your code.',
       refs: [
         { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
@@ -117,6 +120,7 @@ const config: CoreConfig = {
     {
       slug: 'code-coverage',
       title: 'Code coverage',
+      description: 'Measures how much of your code is **covered by tests**.',
       refs: [
         {
           type: 'group',
@@ -129,6 +133,7 @@ const config: CoreConfig = {
     {
       slug: 'security',
       title: 'Security',
+      description: 'Finds known **vulnerabilities** in 3rd-party packages.',
       refs: [
         {
           type: 'group',
@@ -141,6 +146,7 @@ const config: CoreConfig = {
     {
       slug: 'updates',
       title: 'Updates',
+      description: 'Finds **outdated** 3rd-party packages.',
       refs: [
         {
           type: 'group',

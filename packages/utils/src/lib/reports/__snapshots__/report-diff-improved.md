@@ -10,7 +10,7 @@
 |Bug prevention|🟢 **95**|🟡 68|![↑ +27](https://img.shields.io/badge/%E2%86%91%20%2B27-green)|
 |Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
-## 🎗️ Groups
+## 🗃️ Groups
 
 <details>
 <summary>👍 <strong>2</strong> groups improved</summary>

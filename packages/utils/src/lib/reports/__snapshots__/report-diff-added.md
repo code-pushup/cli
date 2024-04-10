@@ -12,7 +12,7 @@
 
 _(\*) New category._
 
-## 🎗️ Groups
+## 🗃️ Groups
 
 All of 1 group is unchanged.
 
