@@ -4,9 +4,43 @@ import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_OUTPUT_PATH } from './constants';
-import { normalizeFlags } from './normalize-flags';
+import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
 import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
 import { LighthouseOptions } from './types';
+
+describe('logUnsupportedFlagsInUse', () => {
+  it('should log unsupported entries', () => {
+    logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        'lighthouse',
+      )} used unsupported flags: ${chalk.bold('list-all-audits')}`,
+    );
+  });
+  it('should log only 3 details of unsupported entries', () => {
+    const unsupportedFlags = {
+      'list-all-audits': true,
+      'list-locales': '',
+      'list-trace-categories': '',
+      chromeIgnoreDefaultFlags: false,
+      enableErrorReporting: '',
+      precomputedLanternDataPath: '',
+    };
+    logUnsupportedFlagsInUse({
+      // unsupported
+      ...unsupportedFlags,
+    } as unknown as LighthouseOptions);
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        'lighthouse',
+      )} used unsupported flags: ${chalk.bold(
+        'list-all-audits, list-locales, list-trace-categories',
+      )} and 3 more.`,
+    );
+  });
+});
 
 describe('normalizeFlags', () => {
   const normalizedDefaults = {
@@ -75,12 +109,8 @@ describe('normalizeFlags', () => {
 
   it('should remove unsupported entries and log', () => {
     const unsupportedFlags = {
-      'list-all-audits': true,
-      'list-locales': '',
-      'list-trace-categories': '',
+      'list-all-audits': '',
       chromeIgnoreDefaultFlags: false,
-      enableErrorReporting: '',
-      precomputedLanternDataPath: '',
     };
     const supportedFlags = {
       verbose: true,
@@ -93,12 +123,6 @@ describe('normalizeFlags', () => {
         ...supportedFlags,
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] ${chalk.yellow(
-        '⚠',
-      )} The following used flags are not supported: ${chalk.bold(
-        Object.keys(unsupportedFlags).join(', '),
-      )}`,
-    );
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
   });
 });

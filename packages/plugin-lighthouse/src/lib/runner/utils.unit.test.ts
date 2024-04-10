@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import debug from 'debug';
 import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
@@ -12,6 +13,7 @@ import { ui } from '@code-pushup/utils';
 import {
   getBudgets,
   getConfig,
+  logUnsupportedDetails,
   setLogLevel,
   toAuditOutputs,
   unsupportedDetailTypes,
@@ -40,6 +42,39 @@ vi.mock('bundle-require', async () => {
         };
       }),
   };
+});
+
+describe('logUnsupportedDetails', () => {
+  it('should log unsupported entries', () => {
+    logUnsupportedDetails([
+      { details: { type: 'table' } },
+    ] as unknown as Result[]);
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        'lighthouse',
+      )} skipped parsing of unsupported audit details: ${chalk.bold('table')}`,
+    );
+  });
+  it('should log only 3 details of unsupported entries', () => {
+    logUnsupportedDetails([
+      { details: { type: 'table' } },
+      { details: { type: 'filmstrip' } },
+      { details: { type: 'screenshot' } },
+      { details: { type: 'opportunity' } },
+      { details: { type: 'debugdata' } },
+      { details: { type: 'treemap-data' } },
+      { details: { type: 'criticalrequestchain' } },
+    ] as unknown as Result[]);
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        'lighthouse',
+      )} skipped parsing of unsupported audit details: ${chalk.bold(
+        'table, filmstrip, screenshot',
+      )} and 4 more.`,
+    );
+  });
 });
 
 describe('toAuditOutputs', () => {
@@ -98,30 +133,30 @@ describe('toAuditOutputs', () => {
     );
   });
 
-  it('should inform that for all unsupported details', () => {
+  it('should NOT inform that for all unsupported details if verbose is NOT given', () => {
     const types = [...unsupportedDetailTypes];
     toAuditOutputs(
       types.map(
         type =>
           ({
-            id: 'dummy-audit-1',
-            score: null,
-            details: {
-              type,
-            },
+            details: { type },
           } as Result),
       ),
     );
-    expect(
-      getLogMessages(ui().logger)
-        .at(0)
-        // eslint-disable-next-line no-control-regex
-        ?.replace(/\u001B\[\d+m/g, ''),
-    ).toBe(
-      `[ blue(info) ] Parsing details from audits and types unsupported: ${types.join(
-        ', ',
-      )}`,
+    expect(getLogMessages(ui().logger)).toHaveLength(0);
+  });
+  it('should inform that for all unsupported details if verbose IS given', () => {
+    const types = [...unsupportedDetailTypes];
+    toAuditOutputs(
+      types.map(
+        type =>
+          ({
+            details: { type },
+          } as Result),
+      ),
+      { verbose: true },
     );
+    expect(getLogMessages(ui().logger)).toHaveLength(1);
   });
 
   it('should inform that opportunity detail type is not supported yet', () => {

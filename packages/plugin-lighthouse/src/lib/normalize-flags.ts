@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { ui } from '@code-pushup/utils';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { DEFAULT_CLI_FLAGS, LighthouseCliFlags } from './runner';
 import type { LighthouseOptions } from './types';
 
@@ -37,19 +38,7 @@ const REFINED_STRING_OR_STRING_ARRAY = new Set([
 export function normalizeFlags(flags?: LighthouseOptions): LighthouseCliFlags {
   const prefilledFlags = { ...DEFAULT_LIGHTHOUSE_OPTIONS, ...flags };
 
-  const unsupportedFlagsInUse = Object.keys(prefilledFlags).filter(flag =>
-    LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flag as UnsupportedCliFlags),
-  );
-
-  if (unsupportedFlagsInUse.length > 0) {
-    ui().logger.info(
-      `${chalk.yellow(
-        '⚠',
-      )} The following used flags are not supported: ${chalk.bold(
-        unsupportedFlagsInUse.join(', '),
-      )}`,
-    );
-  }
+  logUnsupportedFlagsInUse(prefilledFlags);
 
   return Object.fromEntries(
     Object.entries(prefilledFlags)
@@ -69,4 +58,24 @@ export function normalizeFlags(flags?: LighthouseOptions): LighthouseCliFlags {
         return [key, Array.isArray(v) ? v : v == null ? [] : [v]];
       }),
   ) as LighthouseCliFlags;
+}
+
+export function logUnsupportedFlagsInUse(
+  flags: LighthouseOptions,
+  displayCount = 3,
+) {
+  const unsupportedFlagsInUse = Object.keys(flags).filter(flag =>
+    LIGHTHOUSE_UNSUPPORTED_CLI_FLAGS.has(flag as UnsupportedCliFlags),
+  );
+  if (unsupportedFlagsInUse.length > 0) {
+    const postFix = (count: number) =>
+      count > displayCount ? ` and ${count - displayCount} more.` : '';
+    ui().logger.debug(
+      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        LIGHTHOUSE_PLUGIN_SLUG,
+      )} used unsupported flags: ${chalk.bold(
+        unsupportedFlagsInUse.slice(0, displayCount).join(', '),
+      )}${postFix(unsupportedFlagsInUse.length)}`,
+    );
+  }
 }

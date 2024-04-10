@@ -16,6 +16,7 @@ const allRawLighthouseAudits = await Promise.all(
   (audits ?? []).map(loadLighthouseAudit),
 );
 
+export const PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
   // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
   // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`

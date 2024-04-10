@@ -9,17 +9,8 @@ import path from 'node:path';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
+import { PLUGIN_SLUG } from './constants';
 import { LighthouseCliFlags } from './types';
-
-export const unsupportedDetailTypes = new Set([
-  'opportunity',
-  'table',
-  'treemap-data',
-  'screenshot',
-  'filmstrip',
-  'debugdata',
-  'criticalrequestchain',
-]);
 
 // @TODO fix https://github.com/code-pushup/cli/issues/612
 export function normalizeAuditOutputs(
@@ -42,23 +33,14 @@ export function normalizeAuditOutputs(
   });
 }
 
-export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
-  // @TODO implement all details
-  const slugsWithDetailParsingErrors = [
-    ...new Set(
-      lhrAudits
-        .filter(({ details }) =>
-          unsupportedDetailTypes.has(details?.type as string),
-        )
-        .map(({ details }) => details?.type),
-    ),
-  ];
-  ui().logger.info(
-    `Parsing details from audits and types unsupported: ${chalk.bold(
-      slugsWithDetailParsingErrors.join(', '),
-    )}`,
-  );
-
+export function toAuditOutputs(
+  lhrAudits: Result[],
+  { verbose = false }: { verbose?: boolean } = {},
+): AuditOutputs {
+  if (verbose) {
+    // @TODO implement all details
+    logUnsupportedDetails(lhrAudits);
+  }
   return lhrAudits.map(
     ({
       id: slug,
@@ -82,6 +64,42 @@ export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
       return auditOutput;
     },
   );
+}
+
+export const unsupportedDetailTypes = new Set([
+  'opportunity',
+  'table',
+  'treemap-data',
+  'screenshot',
+  'filmstrip',
+  'debugdata',
+  'criticalrequestchain',
+]);
+
+export function logUnsupportedDetails(
+  lhrAudits: Result[],
+  { displayCount = 3 }: { displayCount?: number } = {},
+) {
+  const slugsWithDetailParsingErrors = [
+    ...new Set(
+      lhrAudits
+        .filter(({ details }) =>
+          unsupportedDetailTypes.has(details?.type as string),
+        )
+        .map(({ details }) => details?.type),
+    ),
+  ];
+  if (slugsWithDetailParsingErrors.length > 0) {
+    const postFix = (count: number) =>
+      count > displayCount ? ` and ${count - displayCount} more.` : '';
+    ui().logger.debug(
+      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
+        PLUGIN_SLUG,
+      )} skipped parsing of unsupported audit details: ${chalk.bold(
+        slugsWithDetailParsingErrors.slice(0, displayCount).join(', '),
+      )}${postFix(slugsWithDetailParsingErrors.length)}`,
+    );
+  }
 }
 
 export function setLogLevel({

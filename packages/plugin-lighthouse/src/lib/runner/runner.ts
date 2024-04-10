@@ -52,7 +52,7 @@ export function createRunnerFunction(
     }
 
     const { lhr } = runnerResult as RunnerResult;
-    const auditOutputs = toAuditOutputs(Object.values(lhr.audits));
+    const auditOutputs = toAuditOutputs(Object.values(lhr.audits), flags);
 
     return normalizeAuditOutputs(auditOutputs, enrichedFlags);
   };
