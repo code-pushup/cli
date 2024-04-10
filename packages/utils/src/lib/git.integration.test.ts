@@ -34,6 +34,10 @@ describe('git utils in a git repo', () => {
         'No names found, cannot describe anything',
       );
     });
+
+    it('getGitRoot should return git root in a set up repo', async () => {
+      await expect(getGitRoot(emptyGit)).resolves.toMatch(/tmp\/git-tests$/);
+    });
   });
 
   describe('with a branch and commits clean', () => {

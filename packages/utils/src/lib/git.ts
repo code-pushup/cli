@@ -7,15 +7,11 @@ import { toUnixPath } from './transform';
 export async function getLatestCommit(
   git = simpleGit(),
 ): Promise<Commit | null> {
-  // git log -1 --pretty=format:"%H %s %an %aI"
-  // https://git-scm.com/docs/pretty-formats
   const log = await git.log({
     maxCount: 1,
+    // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
     format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
   });
-  if (!log.latest) {
-    return null;
-  }
   return commitSchema.parse(log.latest);
 }
 
