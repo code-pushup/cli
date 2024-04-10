@@ -49,7 +49,6 @@ export default {
       title: 'Performance',
       refs: [
         lighthouseGroupRef('performance'),
-        lighthouseAuditRef('largest-contentful-paint'),
       ],
     },
     {
