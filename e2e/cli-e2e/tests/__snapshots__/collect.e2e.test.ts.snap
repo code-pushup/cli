@@ -1708,12 +1708,6 @@ exports[`CLI collect > should run Lighthouse plugin that runs lighthouse CLI and
           "type": "group",
           "weight": 1,
         },
-        {
-          "plugin": "lighthouse",
-          "slug": "largest-contentful-paint",
-          "type": "audit",
-          "weight": 1,
-        },
       ],
       "slug": "performance",
       "title": "Performance",
