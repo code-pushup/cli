@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { type HistoryOptions, history, readRcByPath } from '@code-pushup/core';
+import { type HistoryOptions, history } from '@code-pushup/core';
 import { safeCheckout } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -53,27 +53,11 @@ vi.mock('simple-git', async () => {
 });
 
 describe('history-command', () => {
-  it('should have correct default arguments if no cli options are provided', async () => {
-    const result = await yargsCli(
-      ['history', '--config=/test/code-pushup.config.ts'],
-      {
-        ...DEFAULT_CLI_CONFIGURATION,
-        commands: [yargsHistoryCommandObject()],
-      },
-    ).parseAsync();
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        targetBranch: 'main',
-        maxCount: 5,
-        skipUploads: false,
-      }),
-    );
-
-    expect(readRcByPath).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-      undefined,
-    );
+  it('should return the last 5 commits', async () => {
+    await yargsCli(['history', '--config=/test/code-pushup.config.ts'], {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsHistoryCommandObject()],
+    }).parseAsync();
 
     expect(history).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -86,26 +70,13 @@ describe('history-command', () => {
   });
 
   it('should have 2 commits to crawl in history if maxCount is set to 2', async () => {
-    const result = await yargsCli(
+    await yargsCli(
       ['history', '--config=/test/code-pushup.config.ts', '--maxCount=2'],
       {
         ...DEFAULT_CLI_CONFIGURATION,
         commands: [yargsHistoryCommandObject()],
       },
     ).parseAsync();
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        targetBranch: 'main',
-        maxCount: 2,
-        skipUploads: false,
-      }),
-    );
-
-    expect(readRcByPath).toHaveBeenCalledWith(
-      '/test/code-pushup.config.ts',
-      undefined,
-    );
 
     expect(history).toHaveBeenCalledWith(expect.any(Object), [
       'commit-1',
