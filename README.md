@@ -33,5 +33,4 @@ This monorepo contains code for open-source Code PushUp NPM packages:
   - [🧩 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
   - [🧩 @code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme) - standards, performance metrics, and best practices audits for the web
 
-
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
