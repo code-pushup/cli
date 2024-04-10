@@ -4,7 +4,7 @@ import { bennyRunner } from './benny.suite-runner';
 
 describe('bennyRunner-execution', () => {
   // @TODO move to e2e tests when plugin is released officially
-   
+
   it('should execute valid suite', async () => {
     await expect(bennyRunner.run(dummySuite)).resolves.toStrictEqual(
       expect.arrayContaining([
