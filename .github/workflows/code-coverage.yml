@@ -20,6 +20,7 @@ jobs:
           - plugin-eslint
           - plugin-coverage
           - plugin-js-packages
+          - plugin-lighthouse
         scope: [unit, integration]
     name: Update code coverage
     runs-on: ubuntu-latest

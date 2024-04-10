@@ -53,7 +53,69 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
 
 ### Optionally set up categories
 
-@TODO
+Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config --onlyPlugins=lighthouse` to list audits and groups).
+
+Assign weights based on what influence each Lighthouse audit has on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
+The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups.
+
+#### Reference audits directly with `lighthouseGroupRef`
+
+```ts
+import { lighthouseGroupRef } from './utils';
+
+export default {
+  // ...
+  categories: [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [lighthouseGroupRef('performance')],
+    },
+    {
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: [lighthouseGroupRef('accessibility')],
+    },
+    {
+      slug: 'best-practices',
+      title: 'Best Practices',
+      refs: [lighthouseGroupRef('best-practices')],
+    },
+    {
+      slug: 'seo',
+      title: 'SEO',
+      refs: [lighthouseGroupRef('seo')],
+    },
+    {
+      slug: 'pwa',
+      title: 'PWA',
+      isBinary: true,
+      refs: [lighthouseGroupRef('pwa')],
+    },
+  ],
+};
+```
+
+#### Reference groups with `lighthouseAuditRef`
+
+The Lighthouse categories are reflected as groups.
+Referencing individual audits offers more granularity. However, keep maintenance costs of a higher number of audits in mind as well.
+
+```ts
+import { lighthouseAuditRef } from './utils';
+
+export default {
+  // ...
+  categories: [
+    {
+      slug: 'pwa',
+      title: 'PWA',
+      isBinary: true,
+      refs: [lighthouseAuditRef('installable-manifest', 2), lighthouseAuditRef('splash-screen', 1), lighthouseAuditRef('themed-omnibox', 1), lighthouseAuditRef('content-width', 1), lighthouseAuditRef('themed-omnibox', 2), lighthouseAuditRef('viewport', 2), lighthouseAuditRef('maskable-icon', 1), lighthouseAuditRef('pwa-cross-browser', 0), lighthouseAuditRef('pwa-page-transitions', 0), lighthouseAuditRef('pwa-each-page-has-url', 0)],
+    },
+  ],
+};
+```
 
 ## Flags
 
@@ -76,6 +138,14 @@ For a complete list the [official documentation of CLI flags](https://github.com
 > ...
 > lighthousePlugin('https://example.com', { output: 'json', chromeFlags: ['--headless=shell']});
 > ```
+
+> [!note]
+> The following flags are **not supported** in the current implementation:
+>
+> - `list-all-audits` - Prints a list of all available audits and exits. Alternative: `npx code-pushup print-config --onlyPlugins lighthouse`
+> - `list-locales` - Prints a list of all supported locales and exits.
+> - `list-trace-categories` - Prints a list of all required trace categories and exits.
+> - `view` - Open HTML report in your browser
 
 ## Config
 
