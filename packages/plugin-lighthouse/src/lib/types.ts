@@ -23,7 +23,6 @@ export type LighthouseOptions = ExcludeNullFromPropertyTypes<
   >
 > & {
   onlyGroups?: string | string[];
-} & {
   onlyAudits?: string | string[];
   skipAudits?: string | string[];
 };
