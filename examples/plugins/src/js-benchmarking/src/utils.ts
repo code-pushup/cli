@@ -42,7 +42,7 @@ export function loadSuites(
         importEsmModule({
           tsconfig,
           filepath,
-        }) as Promise<SuiteConfig>,
+        }) ,
     ),
   );
 }
