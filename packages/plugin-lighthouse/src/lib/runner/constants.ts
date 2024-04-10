@@ -13,7 +13,7 @@ const { audits, categories } = defaultConfig;
 
 // internal intermediate variable to derive the relevant audits
 const allRawLighthouseAudits = await Promise.all(
-  (audits ?? []).map(async value => await loadLighthouseAudit(value)),
+  (audits ?? []).map(loadLighthouseAudit),
 );
 
 export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
