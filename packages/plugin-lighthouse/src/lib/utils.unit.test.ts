@@ -176,14 +176,13 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
       );
 
     expect(filteredAudits).toHaveLength(1);
-    expect(filteredAudits.at(0)?.slug).toBe('first-contentful-paint');
-
-    expect(filteredGroups).toHaveLength(1);
-    expect(filteredGroups.at(0)?.slug).toBe('performance');
-    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
-    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe(
-      'first-contentful-paint',
-    );
+    expect(filteredAudits).toStrictEqual([{ slug: 'first-contentful-paint' }]);
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'performance',
+        refs: [{ slug: 'first-contentful-paint' }],
+      },
+    ]);
 
     const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -227,13 +226,14 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
       );
 
     expect(filteredAudits).toHaveLength(1);
-    expect(filteredAudits.at(0)?.slug).toBe('speed-index');
-
+    expect(filteredAudits).toStrictEqual([{ slug: 'speed-index' }]);
     expect(filteredGroups).toHaveLength(1);
-    expect(filteredGroups.at(0)?.slug).toBe('performance');
-    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
-    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('speed-index');
-
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'performance',
+        refs: [{ slug: 'speed-index' }],
+      },
+    ]);
     const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
@@ -278,12 +278,14 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
       );
 
     expect(filteredAudits).toHaveLength(1);
-    expect(filteredAudits.at(0)?.slug).toBe('function-coverage');
-
+    expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
     expect(filteredGroups).toHaveLength(1);
-    expect(filteredGroups.at(0)?.slug).toBe('coverage');
-    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
-    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('function-coverage');
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'coverage',
+        refs: [{ slug: 'function-coverage' }],
+      },
+    ]);
 
     const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
@@ -314,12 +316,14 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
       );
 
     expect(filteredAudits).toHaveLength(1);
-    expect(filteredAudits.at(0)?.slug).toBe('function-coverage');
-
+    expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
     expect(filteredGroups).toHaveLength(1);
-    expect(filteredGroups.at(0)?.slug).toBe('coverage');
-    expect(filteredGroups.at(0)?.refs).toHaveLength(1);
-    expect(filteredGroups.at(0)?.refs.at(0)?.slug).toBe('function-coverage');
+    expect(filteredGroups).toStrictEqual([
+      {
+        slug: 'coverage',
+        refs: [{ slug: 'function-coverage' }],
+      },
+    ]);
 
     const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
