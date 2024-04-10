@@ -89,17 +89,14 @@ export async function guardAgainstLocalChanges(
 export async function getCurrentBranchOrTag(
   git = simpleGit(),
 ): Promise<string> {
-  const branch = await git.branch().then(r => r.current);
-  // eslint-disable-next-line unicorn/prefer-ternary
-  if (branch) {
-    return branch;
-  } else {
+  return (
+    (await git.branch().then(r => r.current)) ||
     // If no current branch, try to get the tag
     // @TODO use simple git
-    return await git
+    (await git
       .raw(['describe', '--tags', '--exact-match'])
-      .then(out => out.trim());
-  }
+      .then(out => out.trim()))
+  );
 }
 
 export async function safeCheckout(
