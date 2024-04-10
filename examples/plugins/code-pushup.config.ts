@@ -1,10 +1,10 @@
 import { join } from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
-  jsBenchmarkingSuiteNameToCategoryRef,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   jsBenchmarkingPlugin,
+  jsBenchmarkingSuiteNameToCategoryRef,
   lighthouseCorePerfGroupRefs,
   lighthousePlugin,
   packageJsonDocumentationGroupRef,

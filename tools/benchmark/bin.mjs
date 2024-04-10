@@ -1,10 +1,11 @@
-import {writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import yargs from 'yargs';
 import benchmarkRunner from './benchmark.runner.mjs';
-import tinybenchRunner from './tinybench.runner.mjs';
 import bennyRunner from './benny.runner.mjs';
-import {loadSuits} from './utils.mjs';
+import tinybenchRunner from './tinybench.runner.mjs';
+import { loadSuits } from './utils.mjs';
+
 const supportedRunner = new Set(['tinybench', 'benchmark', 'benny']);
 const cli = yargs(process.argv).options({
   targets: {
@@ -46,11 +47,11 @@ const cli = yargs(process.argv).options({
   }
 
   // execute benchmark
-  const allSuits = await loadSuits(targets, {tsconfig});
+  const allSuits = await loadSuits(targets, { tsconfig });
   if (verbose) {
     console.log(
       `Loaded targets: ${allSuits
-        .map(({suiteName}) => suiteName)
+        .map(({ suiteName }) => suiteName)
         .join(', ')}`,
     );
   }
@@ -82,8 +83,8 @@ const cli = yargs(process.argv).options({
       suiteName,
       name,
       hz: maxHz,
-    } = results.find(({isFastest}) => isFastest);
-    const target = results.find(({isTarget}) => isTarget);
+    } = results.find(({ isFastest }) => isFastest);
+    const target = results.find(({ isTarget }) => isTarget);
     console.log(
       `In suite ${suiteName} fastest is: ${name} target is ${target?.name}`,
     );
@@ -91,7 +92,7 @@ const cli = yargs(process.argv).options({
       await writeFile(
         join(outputDir, `${suiteName}-${runner}-${Date.now()}.json`),
         JSON.stringify(
-          results.map(({name, hz, rme, samples}) => ({
+          results.map(({ name, hz, rme, samples }) => ({
             name,
             hz,
             rme,
@@ -103,7 +104,7 @@ const cli = yargs(process.argv).options({
       );
     }
     console.table(
-      results.map(({name, hz, rme, samples, isTarget, isFastest}) => {
+      results.map(({ name, hz, rme, samples, isTarget, isFastest }) => {
         const targetIcon = isTarget ? '🎯' : '';
         const postfix = isFastest
           ? '(fastest 🔥)'

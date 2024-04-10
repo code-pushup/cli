@@ -1,10 +1,10 @@
-import {BenchmarkResult, BenchmarkRunner, SuiteConfig} from "./types";
-import {AuditOutputs, RunnerFunction} from "@code-pushup/models";
-import {importEsmModule} from "@code-pushup/utils";
-import {writeFile} from "node:fs/promises";
-import {join} from "node:path";
-import {suiteResultToAuditOutput} from "./utils";
-import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
+import { importEsmModule } from '@code-pushup/utils';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from '../constants';
+import { BenchmarkResult, BenchmarkRunner, SuiteConfig } from './types';
+import { suiteResultToAuditOutput } from './utils';
 
 export function createRunnerFunction(
   suites: SuiteConfig[],
@@ -13,7 +13,10 @@ export function createRunnerFunction(
     outputDir?: string;
   },
 ): RunnerFunction {
-  const { outputDir = join('.code-pushup', JS_BENCHMARKING_PLUGIN_SLUG), runnerPath: filepath } = options;
+  const {
+    outputDir = join('.code-pushup', JS_BENCHMARKING_PLUGIN_SLUG),
+    runnerPath: filepath,
+  } = options;
   return async (): Promise<AuditOutputs> => {
     const allSuiteResults: BenchmarkResult[][] = [];
     // Execute each suite sequentially

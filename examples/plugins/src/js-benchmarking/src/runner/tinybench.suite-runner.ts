@@ -1,17 +1,20 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Bench } from 'tinybench';
-import type {BenchmarkResult, BenchmarkRunner, BenchmarkRunnerOptions, SuiteConfig} from './types';
-import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
-import {writeFile} from "node:fs/promises";
-import {join} from "node:path";
-import {ensureDirectoryExists} from "@code-pushup/utils";
+import { ensureDirectoryExists } from '@code-pushup/utils';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from '../constants';
+import type {
+  BenchmarkResult,
+  BenchmarkRunner,
+  BenchmarkRunnerOptions,
+  SuiteConfig,
+} from './types';
 
 export const tinybenchRunner = {
-  run: async ({
-    suiteName,
-    cases,
-    targetImplementation,
-    time = 3000,
-  }: SuiteConfig, options: BenchmarkRunnerOptions = {}): Promise<BenchmarkResult[]> => {
+  run: async (
+    { suiteName, cases, targetImplementation, time = 3000 }: SuiteConfig,
+    options: BenchmarkRunnerOptions = {},
+  ): Promise<BenchmarkResult[]> => {
     const {
       outputFileName: fileName = 'tinybench-report',
       outputDir: folder = JS_BENCHMARKING_PLUGIN_SLUG,
@@ -31,9 +34,12 @@ export const tinybenchRunner = {
       time,
     });
 
-    if(fileName || folder) {
+    if (fileName || folder) {
       await ensureDirectoryExists(folder);
-      return writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => result);
+      return writeFile(
+        join(folder, `${fileName}.json`),
+        JSON.stringify(result, null, 2),
+      ).then(() => result);
     }
 
     return result;

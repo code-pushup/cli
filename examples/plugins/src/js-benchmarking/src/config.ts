@@ -6,7 +6,7 @@ export const jsBenchmarkingRunnerOptionsSchema = z.object({
   tsconfig: z.string().optional(),
   outputDir: z.string().optional(),
   outputFileName: z.string().optional(),
-  verbose: z.boolean().optional()
+  verbose: z.boolean().optional(),
 });
 
 export const jsBenchmarkingPluginOptionsSchema = z.object({
@@ -14,7 +14,7 @@ export const jsBenchmarkingPluginOptionsSchema = z.object({
   runnerPath: z.string().default(JS_BENCHMARKING_DEFAULT_RUNNER_PATH),
   tsconfig: z.string().optional(),
   outputDir: z.string().optional(),
-  verbose: z.boolean().optional()
+  verbose: z.boolean().optional(),
 });
 
 export type JsBenchmarkingPluginConfig = z.input<

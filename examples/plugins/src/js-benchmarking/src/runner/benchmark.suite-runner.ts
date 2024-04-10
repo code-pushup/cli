@@ -1,8 +1,13 @@
 import Benchmark, { Event, type Suite, type Target } from 'benchmark';
-import type {BenchmarkResult, BenchmarkRunner, BenchmarkRunnerOptions, SuiteConfig} from './types';
-import {JS_BENCHMARKING_PLUGIN_SLUG} from "../constants";
-import {writeFile} from "node:fs/promises";
-import {join} from "node:path";
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { JS_BENCHMARKING_PLUGIN_SLUG } from '../constants';
+import type {
+  BenchmarkResult,
+  BenchmarkRunner,
+  BenchmarkRunnerOptions,
+  SuiteConfig,
+} from './types';
 
 export const benchmarkRunner = {
   run: async (
@@ -34,13 +39,16 @@ export const benchmarkRunner = {
         },
         complete: () => {
           const result = benchToBenchmarkResult(suite, {
-              suiteName,
-              cases,
-              targetImplementation,
-            });
-          if(fileName || folder) {
-            void writeFile(join(folder, `${fileName}.json`), JSON.stringify(result, null, 2)).then(() => {
-                resolve(result);
+            suiteName,
+            cases,
+            targetImplementation,
+          });
+          if (fileName || folder) {
+            void writeFile(
+              join(folder, `${fileName}.json`),
+              JSON.stringify(result, null, 2),
+            ).then(() => {
+              resolve(result);
             });
           } else {
             resolve(result);

@@ -1,2 +1,3 @@
-import {bennyRunner} from './js-benchmarking/src/runner/benny.suite-runner';
+import { bennyRunner } from './js-benchmarking/src/runner/benny.suite-runner';
+
 export default bennyRunner;
