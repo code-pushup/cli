@@ -102,7 +102,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     return '';
   }
   return paragraphs(
-    h2('🎗️ Groups'),
+    h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
         '🔌 Plugin',
@@ -179,7 +179,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
 
 function formatScoreChange(diff: number): string {
   const marker = getDiffMarker(diff);
-  const text = formatDiffNumber(Math.round(diff * 100));
+  const text = formatDiffNumber(Math.round(diff * 1000) / 10); // round with max 1 decimal
   return colorByScoreDiff(`${marker} ${text}`, diff);
 }
 

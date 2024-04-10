@@ -8,13 +8,13 @@ export type DependencyGroup = (typeof dependencyGroups)[number];
 const packageCommandSchema = z.enum(['audit', 'outdated']);
 export type PackageCommand = z.infer<typeof packageCommandSchema>;
 
-const packageManagerSchema = z.enum([
+const packageManagerIdSchema = z.enum([
   'npm',
   'yarn-classic',
   'yarn-modern',
   'pnpm',
 ]);
-export type PackageManager = z.infer<typeof packageManagerSchema>;
+export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 
 export const packageAuditLevels = [
   'critical',
@@ -48,7 +48,9 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .min(1)
     .default(['audit', 'outdated']),
-  packageManager: packageManagerSchema.describe('Package manager to be used.'),
+  packageManager: packageManagerIdSchema.describe(
+    'Package manager to be used.',
+  ),
   auditLevelMapping: z
     .record(packageAuditLevelSchema, issueSeveritySchema, {
       description:
