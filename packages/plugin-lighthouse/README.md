@@ -99,7 +99,7 @@ export default {
 #### Reference groups with `lighthouseAuditRef`
 
 The Lighthouse categories are reflected as groups.
-Referencing individual audits for more granularity. Keep maintenance in mind.
+Referencing individual audits offers more granularity. However, keep maintenance costs of a higher number of audits in mind as well.
 
 ```ts
 import { lighthouseAuditRef } from './utils';
