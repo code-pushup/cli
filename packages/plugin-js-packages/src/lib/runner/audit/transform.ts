@@ -3,7 +3,7 @@ import { apostrophize, objectToEntries } from '@code-pushup/utils';
 import {
   AuditSeverity,
   DependencyGroup,
-  PackageManager,
+  PackageManagerId,
   packageAuditLevels,
 } from '../../config';
 import { auditScoreModifiers } from './constants';
@@ -11,8 +11,8 @@ import { AuditResult, AuditSummary, Vulnerability } from './types';
 
 export function auditResultToAuditOutput(
   result: AuditResult,
-  packageManager: PackageManager,
-  dependenciesType: DependencyGroup,
+  id: PackageManagerId,
+  depGroup: DependencyGroup,
   auditLevelMapping: AuditSeverity,
 ): AuditOutput {
   const issues = vulnerabilitiesToIssues(
@@ -21,7 +21,7 @@ export function auditResultToAuditOutput(
   );
 
   return {
-    slug: `${packageManager}-audit-${dependenciesType}`,
+    slug: `${id}-audit-${depGroup}`,
     score: calculateAuditScore(result.summary),
     value: result.summary.total,
     displayValue: summaryToDisplayValue(result.summary),

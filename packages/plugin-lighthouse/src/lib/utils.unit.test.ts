@@ -1,42 +1,58 @@
+import chalk from 'chalk';
+import debug from 'debug';
+import { type Budget } from 'lighthouse';
+import log from 'lighthouse-logger';
 import Details from 'lighthouse/types/lhr/audit-details';
-import { describe, expect, it } from 'vitest';
+import { vol } from 'memfs';
+import { join } from 'node:path';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   Audit,
-  AuditOutput,
+  CoreConfig,
   Group,
   PluginConfig,
+  auditOutputsSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
+import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
+import { LighthouseCliFlags } from './lighthouse-plugin';
 import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
   filterAuditsAndGroupsByOnlyOptions,
-  getLighthouseCliArguments,
+  getBudgets,
+  getConfig,
+  setLogLevel,
   toAuditOutputs,
+  validateFlags,
   validateOnlyAudits,
   validateOnlyCategories,
 } from './utils';
 
-describe('getLighthouseCliArguments', () => {
-  it('should parse valid options', () => {
-    expect(
-      getLighthouseCliArguments({
-        url: ['https://code-pushup-portal.com'],
-      }),
-    ).toEqual(expect.arrayContaining(['https://code-pushup-portal.com']));
-  });
+// mock bundleRequire inside importEsmModule used for fetching config
+vi.mock('bundle-require', async () => {
+  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
+    await vi.importActual('@code-pushup/test-utils');
 
-  it('should parse chrome-flags options correctly', () => {
-    const args = getLighthouseCliArguments({
-      url: ['https://code-pushup-portal.com'],
-      chromeFlags: { headless: 'new', 'user-data-dir': 'test' },
-    });
-    expect(args).toEqual(
-      expect.arrayContaining([
-        '--chromeFlags="--headless=new --user-data-dir=test"',
-      ]),
-    );
-  });
+  return {
+    bundleRequire: vi
+      .fn()
+      .mockImplementation((options: { filepath: string }) => {
+        const project = options.filepath.split('.').at(-2);
+        return {
+          mod: {
+            default: {
+              ...CORE_CONFIG_MOCK,
+              upload: {
+                ...CORE_CONFIG_MOCK?.upload,
+                project, // returns loaded file extension to check in test
+              },
+            },
+          },
+        };
+      }),
+  };
 });
 
 describe('validateOnlyAudits', () => {
@@ -365,6 +381,26 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
 
 describe('toAuditOutputs', () => {
   it('should parse valid lhr details', () => {
+    expect(() =>
+      auditOutputsSchema.parse(
+        toAuditOutputs([
+          {
+            id: 'first-contentful-paint',
+            title: 'First Contentful Paint',
+            description:
+              'First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).',
+            score: 0.55,
+            scoreDisplayMode: 'numeric',
+            numericValue: 2838.974,
+            numericUnit: 'millisecond',
+            displayValue: '2.8 s',
+          },
+        ]),
+      ),
+    ).not.toThrow();
+  });
+
+  it('should parse valid lhr float value to integer', () => {
     expect(
       toAuditOutputs([
         {
@@ -379,14 +415,7 @@ describe('toAuditOutputs', () => {
           displayValue: '2.8 s',
         },
       ]),
-    ).toStrictEqual<AuditOutput[]>([
-      {
-        displayValue: '2.8 s',
-        score: 0.55,
-        slug: 'first-contentful-paint',
-        value: 2838.974,
-      },
-    ]);
+    ).toStrictEqual([expect.objectContaining({ value: 2838 })]);
   });
 
   it('should convert null score to 1', () => {
@@ -585,5 +614,191 @@ describe('toAuditOutputs', () => {
     ]);
 
     expect(outputs[0]?.details).toBeUndefined();
+  });
+});
+
+describe('getConfig', () => {
+  it('should return undefined if no path is specified', async () => {
+    await expect(getConfig()).resolves.toBeUndefined();
+  });
+
+  it.each([
+    [
+      'desktop',
+      expect.objectContaining({
+        settings: expect.objectContaining({ formFactor: 'desktop' }),
+      }),
+    ],
+    [
+      'perf',
+      expect.objectContaining({
+        settings: expect.objectContaining({ onlyCategories: ['performance'] }),
+      }),
+    ],
+    [
+      'experimental',
+      expect.objectContaining({
+        audits: expect.arrayContaining(['autocomplete']),
+      }),
+    ],
+  ] satisfies readonly ['desktop' | 'perf' | 'experimental', object][])(
+    'should load config from lighthouse preset if %s preset is specified',
+    async (preset, config) => {
+      await expect(getConfig({ preset })).resolves.toEqual(config);
+    },
+  );
+
+  it('should return undefined if preset is specified wrong', async () => {
+    await expect(
+      getConfig({ preset: 'wrong' as 'desktop' }),
+    ).resolves.toBeUndefined();
+    expect(getLogMessages(ui().logger).at(0)).toMatch(
+      'Preset "wrong" is not supported',
+    );
+  });
+
+  it('should load config from json file if configPath is specified', async () => {
+    vol.fromJSON(
+      {
+        'lh-config.json': JSON.stringify(
+          { extends: 'lighthouse:default' },
+          null,
+          2,
+        ),
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(getConfig({ configPath: 'lh-config.json' })).resolves.toEqual({
+      extends: 'lighthouse:default',
+    });
+  });
+
+  it('should load config from lh-config.js file if configPath is specified', async () => {
+    await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual(
+      expect.objectContaining({
+        upload: expect.objectContaining({
+          project: expect.stringContaining('lh-config'),
+        }),
+      }),
+    );
+  });
+
+  it('should return undefined if configPath is specified wrong', async () => {
+    await expect(
+      getConfig({ configPath: join('wrong.xyz') }),
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe('getBudgets', () => {
+  it('should return and empty array if no path is specified', async () => {
+    await expect(getBudgets()).resolves.toStrictEqual([]);
+  });
+
+  it('should load budgets from specified path', async () => {
+    const budgets: Budget[] = [
+      {
+        path: '*',
+        resourceCounts: [
+          {
+            budget: 3,
+            resourceType: 'media',
+          },
+        ],
+      },
+    ];
+    vol.fromJSON(
+      {
+        'lh-budgets.json': JSON.stringify(budgets, null, 2),
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(getBudgets('lh-budgets.json')).resolves.toEqual(budgets);
+  });
+
+  it('should throw if path is specified wrong', async () => {
+    await expect(getBudgets('wrong.xyz')).rejects.toThrow(
+      'ENOENT: no such file or directory',
+    );
+  });
+});
+
+describe('setLogLevel', () => {
+  const debugLib = debug as { enabled: (flag: string) => boolean };
+  beforeEach(() => {
+    log.setLevel('info');
+  });
+
+  /**
+   *
+   *  case 'silent':
+   *    debug.enable('-LH:*');
+   *    break;
+   *  case 'verbose':
+   *    debug.enable('LH:*');
+   *    break;
+   *  case 'warn':
+   *    debug.enable('-LH:*, LH:*:warn, LH:*:error');
+   *    break;
+   *  case 'error':
+   *    debug.enable('-LH:*, LH:*:error');
+   *    break;
+   *  default: // 'info'
+   *    debug.enable('LH:*, -LH:*:verbose');
+   */
+
+  it('should set log level to info if no options are given', () => {
+    setLogLevel();
+    expect(log.isVerbose()).toBe(false);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to verbose', () => {
+    setLogLevel({ verbose: true });
+    expect(log.isVerbose()).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to quiet', () => {
+    setLogLevel({ quiet: true });
+    expect(log.isVerbose()).toBe(false);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('-LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+
+  it('should set log level to verbose if verbose and quiet are given', () => {
+    setLogLevel({ verbose: true, quiet: true });
+    expect(log.isVerbose()).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+});
+
+describe('validateFlags', () => {
+  it('should work with empty flags', () => {
+    expect(validateFlags()).toStrictEqual({});
+  });
+
+  it('should forward supported entries', () => {
+    expect(validateFlags({ verbose: true })).toStrictEqual({ verbose: true });
+  });
+
+  it('should remove unsupported entries and log', () => {
+    expect(
+      validateFlags({
+        'list-all-audits': true,
+        verbose: true,
+      } as LighthouseCliFlags),
+    ).toStrictEqual({ verbose: true });
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] ${chalk.yellow(
+        '⚠',
+      )} The following used flags are not supported: ${chalk.bold(
+        'list-all-audits',
+      )}`,
+    );
   });
 });
