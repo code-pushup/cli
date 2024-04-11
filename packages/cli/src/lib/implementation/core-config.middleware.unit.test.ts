@@ -1,6 +1,9 @@
 import { describe, expect, vi } from 'vitest';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import { coreConfigMiddleware } from './core-config.middleware';
+import { CoreConfigCliOptions } from './core-config.model';
+import { GeneralCliOptions } from './global.model';
+import { OnlyPluginsOptions } from './only-plugins.model';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -15,12 +18,16 @@ vi.mock('@code-pushup/core', async () => {
 
 describe('coreConfigMiddleware', () => {
   it('should attempt to load code-pushup.config.(ts|mjs|js) by default', async () => {
-    await coreConfigMiddleware({});
+    await coreConfigMiddleware(
+      {} as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions,
+    );
     expect(autoloadRc).toHaveBeenCalled();
   });
 
   it('should directly attempt to load passed config', async () => {
-    await coreConfigMiddleware({ config: 'cli/custom-config.mjs' });
+    await coreConfigMiddleware({
+      config: 'cli/custom-config.mjs',
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
     expect(autoloadRc).not.toHaveBeenCalled();
     expect(readRcByPath).toHaveBeenCalledWith(
       'cli/custom-config.mjs',
@@ -29,7 +36,9 @@ describe('coreConfigMiddleware', () => {
   });
 
   it('should forward --tsconfig option to config autoload', async () => {
-    await coreConfigMiddleware({ tsconfig: 'tsconfig.base.json' });
+    await coreConfigMiddleware({
+      tsconfig: 'tsconfig.base.json',
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
     expect(autoloadRc).toHaveBeenCalledWith('tsconfig.base.json');
   });
 
@@ -37,7 +46,7 @@ describe('coreConfigMiddleware', () => {
     await coreConfigMiddleware({
       config: 'apps/website/code-pushup.config.ts',
       tsconfig: 'apps/website/tsconfig.json',
-    });
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
     expect(readRcByPath).toHaveBeenCalledWith(
       'apps/website/code-pushup.config.ts',
       'apps/website/tsconfig.json',

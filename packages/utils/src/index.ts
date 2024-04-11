@@ -39,6 +39,7 @@ export {
 export {
   formatGitPath,
   getCurrentBranchOrTag,
+  guardAgainstLocalChanges,
   getGitRoot,
   getLatestCommit,
   safeCheckout,
