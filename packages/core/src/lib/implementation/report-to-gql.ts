@@ -95,6 +95,7 @@ function categoryToGQL(category: CategoryConfig): PortalCategory {
     slug: category.slug,
     title: category.title,
     description: category.description,
+    isBinary: category.isBinary,
     refs: category.refs.map(ref => ({
       plugin: ref.plugin,
       type: categoryRefTypeToGQL(ref.type),
