@@ -1,5 +1,5 @@
-import { expect } from 'vitest';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import {expect} from 'vitest';
+import {executeProcess} from '@code-pushup/utils';
 
 describe('nx-plugin g init', () => {
   it('should run init generator and execute correctly', async () => {
