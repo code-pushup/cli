@@ -1,0 +1,31 @@
+{
+  "name": "nx-plugin-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/nx-plugin-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/nx-plugin-e2e/**/*.ts"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "config": "e2e/nx-plugin-e2e/vite.config.e2e.ts"
+      }
+    }
+  },
+  "implicitDependencies": [
+    "nx-plugin",
+    "cli",
+    "plugin-eslint",
+    "plugin-lighthouse",
+    "plugin-coverage",
+    "plugin-js-packages",
+    "react-todos-app"
+  ],
+  "tags": ["scope:core", "scope:plugin", "type:e2e"]
+}
