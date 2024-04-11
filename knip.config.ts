@@ -15,7 +15,7 @@ const withProjectRules = () =>
     mapperFn: ({ rootFolder }) => {
       return {
         ignore: [
-         // rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
+          rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
         ],
         entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts', rootFolder + '/mocks/**/index.ts'],
       };
@@ -60,6 +60,8 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       'packages/models/zod2md.config.ts',
       'esbuild.config.js',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
+      // dep from a test for not existing depts
+      '@example/core'
     ],
     ignoreDependencies: [
       'prettier',
