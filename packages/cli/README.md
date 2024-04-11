@@ -168,9 +168,9 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 **Example for custom plugins:**
 
-- 📏 [File Size](../../examples/plugins/src/file-size)
-- 📦 [Package Json](../../examples/plugins/src/package-json)
-- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse))
+- 📏 [File Size](../../examples/plugins/src/file-size) - example of basic runner executor
+- 📦 [Package Json](../../examples/plugins/src/package-json) - example of audits and groups
+- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse)) - example of a basic command executor
 
 ## CLI commands and options
 

@@ -1,3 +1,4 @@
+export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
 export {
