@@ -5,8 +5,7 @@ import {
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { ui } from '@code-pushup/utils';
 import { AddToProjectGeneratorSchema } from './schema';
 
@@ -23,12 +22,7 @@ export async function addToProjectGenerator(
     return;
   }
 
-  generateFiles(
-    tree,
-    join(fileURLToPath(dirname(import.meta.url)), 'files'),
-    root,
-    options,
-  );
+  generateFiles(tree, join(__dirname, 'files'), root, options);
 
   updateProjectConfiguration(tree, options.project, {
     ...projectConfiguration,

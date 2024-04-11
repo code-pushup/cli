@@ -16,7 +16,7 @@ import {
   cpModelVersion,
   cpNxPluginVersion,
   cpUtilsVersion,
-} from '../../utils/versions';
+} from '../versions';
 import { InitGeneratorSchema } from './schema';
 
 const nxPluginPackageName = '@code-pushup/nx-plugin';
@@ -29,10 +29,10 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
-  devDependencies[nxPluginPackageName] = cpNxPluginVersion;
-  devDependencies['@code-pushup/models'] = cpModelVersion;
-  devDependencies['@code-pushup/utils'] = cpUtilsVersion;
-  devDependencies['@code-pushup/cli'] = cpCliVersion;
+  devDependencies[nxPluginPackageName] = cpNxPluginVersion();
+  devDependencies['@code-pushup/models'] = cpModelVersion();
+  devDependencies['@code-pushup/utils'] = cpUtilsVersion();
+  devDependencies['@code-pushup/cli'] = cpCliVersion();
 
   return addDependenciesToPackageJson(host, dependencies, devDependencies);
 }
