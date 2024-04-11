@@ -10,14 +10,14 @@ import {
   withVitest,
 } from '@beaussan/nx-knip';
 
-const withIgnoreMockInLibs = () =>
+const withProjectRules = () =>
   withLibraryMapper({
     mapperFn: ({ rootFolder }) => {
       return {
         ignore: [
-          rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
+         // rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
         ],
-        entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
+        entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts', rootFolder + '/mocks/**/index.ts'],
       };
     },
   });
@@ -90,7 +90,7 @@ export default combineNxKnipPlugins(
   withEsbuildApps(),
   withEsbuildPublishableLibs(),
   withVitest(),
-  withIgnoreMockInLibs(),
+  withProjectRules(),
   withEslint(),
   withReactExample(),
   withExamplePlugins(),
