@@ -20,4 +20,7 @@ export {
   knipPlugin,
   knipCategoryAuditRef,
   knipCategoryGroupRef,
+  KNIP_PLUGIN_SLUG,
+  KNIP_RAW_REPORT_NAME,
+  KNIP_REPORT_NAME,
 } from './knip/src/index';

@@ -2,6 +2,9 @@ import 'dotenv/config';
 import { join } from 'node:path';
 import { z } from 'zod';
 import {
+  KNIP_PLUGIN_SLUG,
+  KNIP_RAW_REPORT_NAME,
+  KNIP_REPORT_NAME,
   fileSizePlugin,
   fileSizeRecommendedRefs,
   knipCategoryGroupRef,
@@ -21,11 +24,6 @@ import {
   lighthouseGroupRef,
   lighthousePlugin,
 } from './dist/packages/plugin-lighthouse';
-import {
-  KNIP_PLUGIN_SLUG,
-  KNIP_RAW_REPORT_NAME,
-  KNIP_REPORT_NAME,
-} from './examples/plugins/src/knip/src/constants';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment

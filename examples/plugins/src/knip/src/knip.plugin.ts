@@ -27,5 +27,3 @@ export function knipPlugin(options: PluginOptions = {}): PluginConfig {
     groups: KNIP_GROUPS,
   };
 }
-
-export default knipPlugin;

@@ -46,8 +46,9 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       config: ['commitlint.config.js'],
     },
     entry: [
-       '**/src/bin.ts', '**/perf/**/index.ts',
-    // unknown why this is needed, it should be picked up by knip from the vitest setup files
+      '**/src/bin.ts',
+      '**/perf/**/index.ts',
+      // unknown why this is needed, it should be picked up by knip from the vitest setup files
       'testing/test-utils/src/index.ts',
       'testing/test-utils/src/lib/fixtures/configs/*.ts',
       'testing/test-setup/src/index.ts',
@@ -60,7 +61,7 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       'esbuild.config.js',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
     ],
-  ignoreDependencies: [
+    ignoreDependencies: [
       'prettier',
       '@swc/helpers',
       '@swc/cli',
@@ -69,13 +70,13 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       // ignored becasue fake dept from a thes (but valid catch)
       '@example/custom-plugin',
       // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
-    //  'global-setup.ts',
-    //  'global-setup.e2e.ts',
+      //  'global-setup.ts',
+      //  'global-setup.e2e.ts',
 
       // Should be picked up by knip from the vitest setup files
-     // 'basic',
+      // 'basic',
       // Should be picked up by the commit lint knip config
-    //  'commitlint-plugin-tense',
+      //  'commitlint-plugin-tense',
 
       // Prettier magic resolve is not picked up by knip
       '@trivago/prettier-plugin-sort-imports',
