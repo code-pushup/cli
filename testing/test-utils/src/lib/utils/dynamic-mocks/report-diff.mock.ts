@@ -37,11 +37,17 @@ export function reportsDiffMock(): ReportsDiff {
       after: COMMIT_ALT_MOCK,
     },
     categories: {
-      changed: CATEGORY_SLUGS.map(slug => ({
-        slug,
-        title: CATEGORIES_MAP[slug].title,
-        scores: categoryScores(slug),
-      })),
+      changed: CATEGORY_SLUGS.map(slug => {
+        const category = CATEGORIES_MAP[slug];
+        return {
+          slug,
+          title: category.title,
+          ...('docsUrl' in category && {
+            docsUrl: category.docsUrl,
+          }),
+          scores: categoryScores(slug),
+        };
+      }),
       unchanged: [],
       added: [],
       removed: [],
@@ -54,6 +60,7 @@ export function reportsDiffMock(): ReportsDiff {
           plugin: {
             slug: ESLINT_PLUGIN_META.slug,
             title: ESLINT_PLUGIN_META.title,
+            docsUrl: ESLINT_PLUGIN_META.docsUrl,
           },
           scores: { before: 0.5, after: 1, diff: 0.5 },
         },
@@ -74,9 +81,11 @@ export function reportsDiffMock(): ReportsDiff {
           (slug): AuditDiff => ({
             slug,
             title: ESLINT_AUDITS_MAP[slug].title,
+            docsUrl: ESLINT_AUDITS_MAP[slug].docsUrl,
             plugin: {
               slug: ESLINT_PLUGIN_META.slug,
               title: ESLINT_PLUGIN_META.title,
+              docsUrl: ESLINT_PLUGIN_META.docsUrl,
             },
             scores: toNumberComparison({
               before: ESLINT_AUDITS_MAP[slug].score,
@@ -98,6 +107,7 @@ export function reportsDiffMock(): ReportsDiff {
           (slug): AuditDiff => ({
             slug,
             title: LIGHTHOUSE_AUDITS_MAP[slug].title,
+            docsUrl: LIGHTHOUSE_AUDITS_MAP[slug].docsUrl,
             plugin: {
               slug: LH_PLUGIN_META.slug,
               title: LH_PLUGIN_META.title,
@@ -124,9 +134,11 @@ export function reportsDiffMock(): ReportsDiff {
           (slug): AuditResult => ({
             slug,
             title: ESLINT_AUDITS_MAP[slug].title,
+            docsUrl: ESLINT_AUDITS_MAP[slug].docsUrl,
             plugin: {
               slug: ESLINT_PLUGIN_META.slug,
               title: ESLINT_PLUGIN_META.title,
+              docsUrl: ESLINT_PLUGIN_META.docsUrl,
             },
             score: ESLINT_AUDITS_MAP[slug].score,
             value: ESLINT_AUDITS_MAP[slug].value,
@@ -139,6 +151,7 @@ export function reportsDiffMock(): ReportsDiff {
           (slug): AuditResult => ({
             slug,
             title: LIGHTHOUSE_AUDITS_MAP[slug].title,
+            docsUrl: LIGHTHOUSE_AUDITS_MAP[slug].docsUrl,
             plugin: { slug: LH_PLUGIN_META.slug, title: LH_PLUGIN_META.title },
             score: LIGHTHOUSE_AUDITS_MAP[slug].score,
             value: LIGHTHOUSE_AUDITS_MAP[slug].value,
@@ -211,9 +224,11 @@ export function reportsDiffAltMock(): ReportsDiff {
         {
           slug: 'no-unused-vars' satisfies ESLintAuditSlug,
           title: ESLINT_AUDITS_MAP['no-unused-vars'].title,
+          docsUrl: ESLINT_AUDITS_MAP['no-unused-vars'].docsUrl,
           plugin: {
             slug: ESLINT_PLUGIN_META.slug,
             title: ESLINT_PLUGIN_META.title,
+            docsUrl: ESLINT_PLUGIN_META.docsUrl,
           },
           scores: { before: 1, after: 0, diff: -1 },
           values: { before: 0, after: 1, diff: 1 },
@@ -228,9 +243,11 @@ export function reportsDiffAltMock(): ReportsDiff {
           (slug): AuditResult => ({
             slug,
             title: ESLINT_AUDITS_MAP[slug].title,
+            docsUrl: ESLINT_AUDITS_MAP[slug].docsUrl,
             plugin: {
               slug: ESLINT_PLUGIN_META.slug,
               title: ESLINT_PLUGIN_META.title,
+              docsUrl: ESLINT_PLUGIN_META.docsUrl,
             },
             score: ESLINT_AUDITS_MAP[slug].score,
             value: ESLINT_AUDITS_MAP[slug].value,
@@ -269,6 +286,7 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
           plugin: {
             slug: ESLINT_PLUGIN_META.slug,
             title: ESLINT_PLUGIN_META.title,
+            docsUrl: ESLINT_PLUGIN_META.docsUrl,
           },
           score: 0.5,
         },
@@ -289,9 +307,11 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
           (slug): AuditResult => ({
             slug,
             title: ESLINT_AUDITS_MAP[slug].title,
+            docsUrl: ESLINT_AUDITS_MAP[slug].docsUrl,
             plugin: {
               slug: ESLINT_PLUGIN_META.slug,
               title: ESLINT_PLUGIN_META.title,
+              docsUrl: ESLINT_PLUGIN_META.docsUrl,
             },
             score: ESLINT_AUDITS_MAP[slug].score,
             value: ESLINT_AUDITS_MAP[slug].value,
@@ -302,6 +322,7 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
           (slug): AuditResult => ({
             slug,
             title: LIGHTHOUSE_AUDITS_MAP[slug].title,
+            docsUrl: LIGHTHOUSE_AUDITS_MAP[slug].docsUrl,
             plugin: { slug: LH_PLUGIN_META.slug, title: LH_PLUGIN_META.title },
             score: LIGHTHOUSE_AUDITS_MAP[slug].score,
             value: LIGHTHOUSE_AUDITS_MAP[slug].value,
@@ -356,6 +377,7 @@ export function reportsDiffAddedPluginMock(): ReportsDiff {
         .map(audit => ({
           slug: audit.slug,
           title: audit.title,
+          docsUrl: audit.docsUrl,
           plugin: audit.plugin,
           score: audit.scores.after,
           value: audit.values.after,

@@ -10,7 +10,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
           "after": "passed",
           "before": "1 warning",
         },
+        "docsUrl": "https://eslint.org/docs/latest/rules/arrow-body-style",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -32,7 +34,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
           "after": "passed",
           "before": "3 warnings",
         },
+        "docsUrl": "https://eslint.org/docs/latest/rules/object-shorthand",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -54,7 +58,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
           "after": "passed",
           "before": "1 warning",
         },
+        "docsUrl": "https://eslint.org/docs/latest/rules/prefer-const",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -76,7 +82,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     "unchanged": [
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-cond-assign",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -87,7 +95,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-const-assign",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -98,7 +108,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-debugger",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -109,7 +121,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-invalid-regexp",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -120,7 +134,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -131,7 +147,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-unreachable-loop",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -142,7 +160,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-negation",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -153,7 +173,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -164,7 +186,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "1 warning",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -175,7 +199,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/use-isnan",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -186,7 +212,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -197,7 +225,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/camelcase",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -208,7 +238,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/curly",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -219,7 +251,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "1 warning",
+        "docsUrl": "https://eslint.org/docs/latest/rules/eqeqeq",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -230,7 +264,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "1 warning",
+        "docsUrl": "https://eslint.org/docs/latest/rules/max-lines-per-function",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -241,7 +277,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -252,7 +290,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "3 warnings",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-shadow",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -263,7 +303,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/no-var",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -274,7 +316,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/prefer-arrow-callback",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -285,7 +329,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/prefer-object-spread",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -296,7 +342,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -307,7 +355,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "1 warning",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -318,7 +368,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "6 warnings",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -329,7 +381,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -340,7 +394,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://reactjs.org/docs/hooks-rules.html",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -351,7 +407,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "2 warnings",
+        "docsUrl": "https://github.com/facebook/react/issues/14920",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -362,7 +420,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/display-name.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -373,7 +433,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-comment-textnodes.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -384,7 +446,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-duplicate-props.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -395,7 +459,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -406,7 +472,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-undef.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -417,7 +485,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-react.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -428,7 +498,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-vars.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -439,7 +511,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-children-prop.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -450,7 +524,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-danger-with-children.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -461,7 +537,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-deprecated.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -472,7 +550,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-direct-mutation-state.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -483,7 +563,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-find-dom-node.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -494,7 +576,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-is-mounted.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -505,7 +589,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-render-return-value.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -516,7 +602,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-string-refs.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -527,7 +615,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unescaped-entities.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -538,7 +628,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unknown-property.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -549,7 +641,9 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "displayValue": "passed",
+        "docsUrl": "https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md",
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -590,6 +684,7 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     "changed": [
       {
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -606,6 +701,7 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
     "unchanged": [
       {
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -615,6 +711,7 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
@@ -624,6 +721,7 @@ exports[`CLI compare > should compare report.json files and create report-diff.j
       },
       {
         "plugin": {
+          "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
           "slug": "eslint",
           "title": "ESLint",
         },
