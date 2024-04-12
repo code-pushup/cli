@@ -8,8 +8,12 @@ export function yargsHistoryOptionsDefinition(): Record<
   return {
     targetBranch: {
       describe: 'Branch to crawl history',
+      type: 'string'
+    },
+    semverTag: {
+      describe: 'analyse semver tags only',
       type: 'string',
-      default: 'main',
+      default: false,
     },
     forceCleanStatus: {
       describe:
