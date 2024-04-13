@@ -14,7 +14,7 @@ export async function historyMiddleware<
     HistoryOptions,
 >(processArgs: T): Promise<T> {
   const currentBranch = await getCurrentBranchOrTag();
-  let {
+  const {
     semverTag,
     targetBranch = currentBranch,
     // overwritten

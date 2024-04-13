@@ -69,7 +69,7 @@ export function yargsHistoryCommandObject() {
       ui().logger.info(chalk.gray(`Run ${command}`));
 
       const currentBranch = await getCurrentBranchOrTag();
-      let {
+      const {
         targetBranch,
         from,
         to,
@@ -90,7 +90,7 @@ export function yargsHistoryCommandObject() {
         )} for branch ${chalk.bold(targetBranch)}:`,
       );
       results.forEach(({ hash, message }) =>
-        ui().logger.info(`${hash} - ${message.slice(0, 85)}`),
+        { ui().logger.info(`${hash} - ${message.slice(0, 85)}`); },
       );
 
       try {

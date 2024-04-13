@@ -8,7 +8,7 @@ export async function emptyGitMock(
   git: SimpleGitFactory,
   opt: { baseDir: string } & { config?: GitConfig },
 ): Promise<SimpleGit> {
-  const { baseDir, config } = opt ?? {};
+  const { baseDir, config } = opt;
   const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
   await mkdir(baseDir, { recursive: true });
   const emptyGit = git(baseDir);
@@ -20,7 +20,7 @@ export async function emptyGitMock(
 
 export async function addBranch(
   git: SimpleGit,
-  branchName: string = 'master',
+  branchName = 'master',
 ): Promise<SimpleGit> {
   await git.branch([branchName]);
   return git;
@@ -45,8 +45,11 @@ export async function addUpdateFile(
     file ?? {};
   await writeFile(join(baseDir, name), content);
   await git.add(name);
-  tagName && (await git.tag([tagName]));
-  commitMsg && (await git.commit(commitMsg));
-
+  if(tagName) {
+    await git.tag([tagName])
+  }
+  if(commitMsg) {
+    await git.commit(commitMsg)
+  }
   return git;
 }

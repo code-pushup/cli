@@ -50,8 +50,8 @@ export function filterLogs(
   }
   validateFilter(opt);
   const { from, to, maxCount } = opt;
-  const finIndex = <T>(tagName: string = '', fallback: T) => {
-    const idx = allTags.findIndex(tag => tag === tagName);
+  const finIndex = <T>(tagName = '', fallback: T) => {
+    const idx = allTags.indexOf(tagName);
     if (idx > -1) {
       return idx;
     }
@@ -71,7 +71,7 @@ export async function getHashFromTag(
   const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
   const hash = tagDetails.trim(); // Remove quotes and trim whitespace
   return {
-    hash: hash?.split('\n').at(-1) ?? '',
+    hash: hash.split('\n').at(-1) ?? '',
     message: tag,
   };
 }
@@ -191,5 +191,5 @@ export async function getHashes(
     await git.checkout(currentBranch as string);
   }
 
-  return Array.from(logs.all);
+  return [...logs.all];
 }
