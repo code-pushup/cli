@@ -101,3 +101,4 @@ export {
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { getHashes } from './lib/git';
+export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';

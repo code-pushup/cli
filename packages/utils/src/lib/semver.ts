@@ -12,7 +12,7 @@ export function normalizeSemver(semverString: string): string {
   return semverString;
 }
 
-export function isSemver(semverString: string): boolean {
+export function isSemver(semverString: string = ''): boolean {
   return validate(normalizeSemver(semverString));
 }
 
