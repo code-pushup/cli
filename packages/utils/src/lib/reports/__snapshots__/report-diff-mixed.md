@@ -31,10 +31,10 @@
 
 |🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🔄 Value change|
 |:--|:--|:--:|:--:|:--:|
-|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red)|
-|Lighthouse|Largest Contentful Paint|🟨 **1.4 s**|🟨 1.5 s|![↓ −8 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928%E2%80%89%25-green)|
-|Lighthouse|First Contentful Paint|🟨 **1.1 s**|🟨 1.2 s|![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)|
-|Lighthouse|Speed Index|🟩 **1.1 s**|🟩 1.2 s|![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)|
+|[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|[Disallow unused variables](https://eslint.org/docs/latest/rules/no-unused-vars)|🟥 **1 error**|🟩 passed|![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red)|
+|Lighthouse|[Largest Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)|🟨 **1.4 s**|🟨 1.5 s|![↓ −8 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928%E2%80%89%25-green)|
+|Lighthouse|[First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)|🟨 **1.1 s**|🟨 1.2 s|![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)|
+|Lighthouse|[Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)|🟩 **1.1 s**|🟩 1.2 s|![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)|
 
 48 other audits are unchanged.
 

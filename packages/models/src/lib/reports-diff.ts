@@ -6,6 +6,7 @@ import {
 } from './audit-output';
 import { commitSchema } from './commit';
 import {
+  docsUrlSchema,
   executionMetaSchema,
   packageVersionSchema,
   scoreSchema,
@@ -37,11 +38,15 @@ function makeArraysComparisonSchema<
   );
 }
 
-const scorableMetaSchema = z.object({ slug: slugSchema, title: titleSchema });
+const scorableMetaSchema = z.object({
+  slug: slugSchema,
+  title: titleSchema,
+  docsUrl: docsUrlSchema,
+});
 const scorableWithPluginMetaSchema = scorableMetaSchema.merge(
   z.object({
     plugin: pluginMetaSchema
-      .pick({ slug: true, title: true })
+      .pick({ slug: true, title: true, docsUrl: true })
       .describe('Plugin which defines it'),
   }),
 );
