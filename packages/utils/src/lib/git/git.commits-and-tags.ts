@@ -1,7 +1,6 @@
-import { LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
-import { Commit, commitSchema } from '@code-pushup/models';
-import { throwIsNotPresentError } from '../reports/utils';
-import { isSemver } from '../semver';
+import {LogOptions as SimpleGitLogOptions, simpleGit} from 'simple-git';
+import {Commit, commitSchema} from '@code-pushup/models';
+import {isSemver} from '../semver';
 
 export async function getLatestCommit(
   git = simpleGit(),

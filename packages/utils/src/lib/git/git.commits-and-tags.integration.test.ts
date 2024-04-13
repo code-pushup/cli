@@ -1,18 +1,9 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { type SimpleGit, simpleGit } from 'simple-git';
-import { afterAll, beforeAll, describe, expect } from 'vitest';
-import {
-  addBranch,
-  addUpdateFile,
-  emptyGitMock,
-} from '@code-pushup/test-utils';
-import {
-  getCurrentBranchOrTag,
-  getHashes,
-  getLatestCommit,
-  getSemverTags,
-} from './git.commits-and-tags';
+import {mkdir, rm} from 'node:fs/promises';
+import {join} from 'node:path';
+import {type SimpleGit, simpleGit} from 'simple-git';
+import {afterAll, beforeAll, describe, expect} from 'vitest';
+import {addUpdateFile, emptyGitMock,} from '@code-pushup/test-utils';
+import {getCurrentBranchOrTag, getHashes, getLatestCommit, getSemverTags,} from './git.commits-and-tags';
 
 describe('getCurrentBranchOrTag', () => {
   const baseDir = join(process.cwd(), 'tmp', 'git-tests');
