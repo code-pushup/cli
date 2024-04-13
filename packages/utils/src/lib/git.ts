@@ -1,11 +1,9 @@
 import {isAbsolute, join, relative} from 'node:path';
-import {LogOptions, StatusResult, simpleGit} from 'simple-git';
-import type {DefaultLogFields} from 'simple-git/dist/src/lib/tasks/log';
-import {ListLogLine} from 'simple-git/dist/typings/response';
+import {LogOptions, simpleGit, StatusResult} from 'simple-git';
 import {Commit, commitSchema} from '@code-pushup/models';
 import {ui} from './logging';
 import {isSemver} from './semver';
-import {objectToCliArgs, toUnixPath} from './transform';
+import {toUnixPath} from './transform';
 
 export async function getLatestCommit(
   git = simpleGit(),
@@ -115,9 +113,13 @@ export async function safeCheckout(
 }
 
 export type LogResult = { hash: string; message: string; tagName?: string };
+export function filterLogs(allTags: string[], {from, to, maxCount}: Pick<LogOptions, 'from' | 'to' | 'maxCount'>) {
+  const finIndex = (tagName: string = '', fallback: number | undefined = 0): number | undefined => isSemver(tagName) ? allTags.findIndex((tag) => tag === tagName) : fallback;
+  return allTags.slice(finIndex(from), finIndex(to, undefined)).slice(0, maxCount);
+}
 
 export async function getSemverTags(
-  {maxCount, targetBranch, from}: { targetBranch?: string; from?: string; maxCount?: number } = {},
+  {targetBranch, ...opt}: { targetBranch?: string; from?: string; maxCount?: number } = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
   // make sure we have a target branch
@@ -136,8 +138,9 @@ export async function getSemverTags(
     .map(tag => tag.trim())
     .filter(Boolean)
     .filter(isSemver);
-  const finIndex = (tagName: string = '', fallback: number | undefined = 0): number | undefined => isSemver(tagName) ? allTags.findIndex((tag) => tag === tagName) : fallback;
-  const relevantTags = allTags.slice(finIndex(from), finIndex(from, undefined)).slice(0, maxCount);
+
+  const relevantTags = filterLogs(allTags, opt)
+
   //ui().logger.info(JSON.stringify(allTags))
   const tagsWithHashes: LogResult[] = [];
   for (const tag of relevantTags) {
@@ -150,7 +153,7 @@ export async function getSemverTags(
   }
 
   // Apply maxCount limit if specified
-  return prepareHashes(maxCount == null ? tagsWithHashes : tagsWithHashes.slice(0, maxCount));
+  return prepareHashes(tagsWithHashes);
 }
 
 /**
