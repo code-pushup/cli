@@ -24,7 +24,7 @@ export function yargsHistoryCommandObject() {
       ui().logger.info(chalk.gray(`Run ${command}`));
 
       const currentBranch = await getCurrentBranchOrTag();
-      const {
+      let {
         semverTag,
         targetBranch = currentBranch,
         forceCleanStatus,
@@ -35,9 +35,17 @@ export function yargsHistoryCommandObject() {
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
       // determine history to walk
-      const results: LogResult[] = semverTag
-        ? await getSemverTags({ targetBranch, maxCount })
-        : await getHashes({ targetBranch, maxCount, from, to });
+      if(semverTag) {
+        const tagHash = (await getSemverTags({ targetBranch })).find(({hash}) => hash === from)?.hash;
+        if(tagHash == null) {
+          ui().logger.info(`could not find hash for tag ${from}`)
+        } else {
+          from = tagHash;
+        }
+      }
+      const results: LogResult[] = await getHashes({ targetBranch, from, to })
+      //  semverTag ? await getSemverTags({ targetBranch, maxCount })
+      //  : await getHashes({ targetBranch, maxCount, from, to });
 
        ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
       results.forEach(({hash, message, tagName}) => ui().logger.info(`${hash} - ${tagName ? tagName: message.slice(0,55)}`));
