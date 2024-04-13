@@ -36,10 +36,10 @@ export function yargsHistoryCommandObject() {
             } = args as unknown as HistoryCliOptions & HistoryOptions;
 
             // turn tags into hashes
-            if (isSemver(from) || isSemver(to)) {
+          if (isSemver(from) || isSemver(to)) {
               const tags = (await getSemverTags({targetBranch}));
             //  ui().logger.log(JSON.stringify(tags))
-              if (from) {
+              if (isSemver(from)) {
                     const tagHash = tags.find(({hash}) => hash === from)?.hash;
                     if (tagHash == null) {
                         ui().logger.info(`could not find hash for tag ${from}`)
@@ -47,7 +47,7 @@ export function yargsHistoryCommandObject() {
                         from = tagHash;
                     }
                 }
-              if (to) {
+              if (isSemver(to)) {
                 const tagHash = tags.find(({hash}) => hash === to)?.hash;
                 if (tagHash == null) {
                   ui().logger.info(`could not find hash for tag ${to}`)
