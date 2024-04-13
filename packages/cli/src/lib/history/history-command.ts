@@ -66,12 +66,8 @@ export function yargsHistoryCommandObject() {
       ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
       results.forEach(({
                          hash,
-                         message,
-                         tagName
-                       }) => ui().logger.info(`${hash} - ${tagName ? tagName : message.slice(0, 55)}`));
-
-      // ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
-      // commits.forEach(({hash, message, tagName}) => ui().logger.info(`${hash} - ${tagName ? tagName: message.slice(0,55)}`));
+                         message
+                       }) => ui().logger.info(`${hash} - ${message.slice(0, 85)}`));
       return;
       try {
         // run history logic
