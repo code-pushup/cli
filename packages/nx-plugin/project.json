@@ -53,18 +53,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/nx-plugin/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/nx-plugin/unit-tests"
+        "config": "packages/nx-plugin/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/nx-plugin/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/nx-plugin/integration-tests"
+        "config": "packages/nx-plugin/vite.config.integration.ts"
       }
     }
   },

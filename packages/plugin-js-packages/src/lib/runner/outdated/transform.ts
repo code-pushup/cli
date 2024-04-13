@@ -1,6 +1,6 @@
 import { Issue } from '@code-pushup/models';
 import { pluralize } from '@code-pushup/utils';
-import { DependencyGroup, PackageManager } from '../../config';
+import { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
 import { outdatedSeverity } from './constants';
 import {
@@ -12,11 +12,11 @@ import {
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,
-  packageManager: PackageManager,
-  dependencyGroup: DependencyGroup,
+  packageManager: PackageManagerId,
+  depGroup: DependencyGroup,
 ) {
   const relevantDependencies: OutdatedResult = result.filter(
-    dep => dep.type === dependencyGroupToLong[dependencyGroup],
+    dep => dep.type === dependencyGroupToLong[depGroup],
   );
   const outdatedDependencies = relevantDependencies.filter(
     dep => dep.current !== dep.latest,
@@ -36,7 +36,7 @@ export function outdatedResultToAuditOutput(
       : outdatedToIssues(outdatedDependencies);
 
   return {
-    slug: `${packageManager}-outdated-${dependencyGroup}`,
+    slug: `${packageManager}-outdated-${depGroup}`,
     score: calculateOutdatedScore(
       outdatedStats.major,
       relevantDependencies.length,

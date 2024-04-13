@@ -13,17 +13,14 @@ import {
   AuditSeverity,
   DependencyGroup,
   FinalJSPackagesPluginConfig,
-  PackageManager,
+  PackageManagerId,
   dependencyGroups,
 } from '../config';
-import { pkgManagerCommands } from '../constants';
-import { auditArgs, normalizeAuditMapper } from './audit/constants';
+import { packageManagers } from '../package-managers';
 import { auditResultToAuditOutput } from './audit/transform';
 import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
-import { normalizeOutdatedMapper, outdatedArgs } from './outdated/constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
-import { filterAuditResult } from './utils';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -56,40 +53,38 @@ export async function executeRunner(): Promise<void> {
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(checkResults));
 }
 
-async function processOutdated(packageManager: PackageManager) {
+async function processOutdated(id: PackageManagerId) {
+  const pm = packageManagers[id];
   const { stdout } = await executeProcess({
-    command: pkgManagerCommands[packageManager],
-    args: ['outdated', ...outdatedArgs[packageManager]],
+    command: pm.command,
+    args: pm.outdated.commandArgs,
     cwd: process.cwd(),
-    ignoreExitCode: true, // npm outdated returns exit code 1 when outdated dependencies are found
+    ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
-  const normalizedResult = normalizeOutdatedMapper[packageManager](stdout);
-  return dependencyGroups.map(dep =>
-    outdatedResultToAuditOutput(normalizedResult, packageManager, dep),
+  const normalizedResult = pm.outdated.unifyResult(stdout);
+  return dependencyGroups.map(depGroup =>
+    outdatedResultToAuditOutput(normalizedResult, id, depGroup),
   );
 }
 
 async function processAudit(
-  packageManager: PackageManager,
+  id: PackageManagerId,
   auditLevelMapping: AuditSeverity,
 ) {
-  // Yarn v2 does not support audit for optional dependencies
-  const supportedDepGroups =
-    packageManager === 'yarn-modern'
-      ? dependencyGroups.filter(dep => dep !== 'optional')
-      : dependencyGroups;
+  const pm = packageManagers[id];
+  const supportedDepGroups = pm.audit.supportedDepGroups ?? dependencyGroups;
 
   const auditResults = await Promise.allSettled(
     supportedDepGroups.map(
-      async (dep): Promise<[DependencyGroup, AuditResult]> => {
+      async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
         const { stdout } = await executeProcess({
-          command: pkgManagerCommands[packageManager],
-          args: getAuditCommandArgs(packageManager, dep),
+          command: pm.command,
+          args: pm.audit.getCommandArgs(depGroup),
           cwd: process.cwd(),
-          ignoreExitCode: packageManager === 'yarn-classic', // yarn v1 does not have exit code configuration
+          ignoreExitCode: pm.audit.ignoreExitCode,
         });
-        return [dep, normalizeAuditMapper[packageManager](stdout)];
+        return [depGroup, pm.audit.unifyResult(stdout)];
       },
     ),
   );
@@ -100,46 +95,21 @@ async function processAudit(
       console.error(result.reason);
     });
 
-    throw new Error(
-      `JS Packages plugin: Running ${pkgManagerCommands[packageManager]} audit failed.`,
-    );
+    throw new Error(`JS Packages plugin: Running ${pm.name} audit failed.`);
   }
 
   const fulfilled = objectFromEntries(
     auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
   );
 
-  // For npm, one needs to filter out prod dependencies as there is no way to omit them
-  const uniqueResults =
-    packageManager === 'npm' ? filterNpmAuditResults(fulfilled) : fulfilled;
+  const uniqueResults = pm.audit.postProcessResult?.(fulfilled) ?? fulfilled;
 
-  return supportedDepGroups.map(group =>
+  return supportedDepGroups.map(depGroup =>
     auditResultToAuditOutput(
-      uniqueResults[group],
-      packageManager,
-      group,
+      uniqueResults[depGroup],
+      id,
+      depGroup,
       auditLevelMapping,
     ),
   );
-}
-
-function getAuditCommandArgs(
-  packageManager: PackageManager,
-  group: DependencyGroup,
-) {
-  return [
-    ...(packageManager === 'yarn-modern' ? ['npm'] : []),
-    'audit',
-    ...auditArgs(group)[packageManager],
-  ];
-}
-
-function filterNpmAuditResults(
-  results: Record<DependencyGroup, AuditResult>,
-): Record<DependencyGroup, AuditResult> {
-  return {
-    prod: results.prod,
-    dev: filterAuditResult(results.dev, 'name', results.prod),
-    optional: filterAuditResult(results.optional, 'name', results.prod),
-  };
 }

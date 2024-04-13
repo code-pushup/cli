@@ -16,7 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/nx-plugin/unit-tests',
-      exclude: ['mocks/**'],
+      exclude: ['mocks/**', '**/types.ts'],
     },
     passWithNoTests: true,
     environment: 'node',

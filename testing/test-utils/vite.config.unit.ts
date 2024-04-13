@@ -16,6 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/test-utils/unit-tests',
+      exclude: ['**/*.mock.{mjs,ts}', '**/*.config.{js,mjs,ts}'],
     },
     passWithNoTests: true,
     environment: 'node',
