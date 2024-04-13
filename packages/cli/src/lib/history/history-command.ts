@@ -56,7 +56,7 @@ export function yargsHistoryCommandObject() {
                 }
               }
             }
-            const results: LogResult[] = await getHashes({targetBranch, from, to, maxCount})
+            const results: LogResult[] = await getHashes({targetBranch, from, to, maxCount: maxCount && maxCount > 0 ? maxCount : undefined})
             //  semverTag ? await getSemverTags({ targetBranch, maxCount })
             //  : await getHashes({ targetBranch, maxCount, from, to });
 
