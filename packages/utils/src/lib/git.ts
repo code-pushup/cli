@@ -241,6 +241,6 @@ export function prepareHashes(
 ): { hash: string; message: string }[] {
   return logs
       .map(({ hash, message }) => ({hash, message}))
-      // sort from oldest to newest
+      // sort from oldest to newest @TODO => question this
      // .reverse();
 }

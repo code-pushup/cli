@@ -56,9 +56,10 @@ export function yargsHistoryCommandObject() {
                 }
               }
             }
-            const results: LogResult[] = await getHashes({targetBranch, from, to, maxCount: maxCount && maxCount > 0 ? maxCount : undefined})
-            //  semverTag ? await getSemverTags({ targetBranch, maxCount })
-            //  : await getHashes({ targetBranch, maxCount, from, to });
+
+
+            const results: LogResult[] = semverTag ? await getSemverTags({ targetBranch, maxCount: maxCount && maxCount > 0 ? maxCount : undefined })
+              : await getHashes({ targetBranch, from, to, maxCount: maxCount && maxCount > 0 ? maxCount : undefined });
 
             ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
             results.forEach(({
