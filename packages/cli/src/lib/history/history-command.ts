@@ -53,12 +53,17 @@ export function yargsHistoryCommandObject() {
       let {
         semverTag,
         targetBranch = currentBranch,
+        from: rawFrom,
+        to: rawTo,
+        maxCount: rawMaxCount,
         forceCleanStatus,
         ...restOptions
       } = args as unknown as HistoryCliOptions & HistoryOptions;
 
-      // turn tags into hashes
-      const filterOptions = await normalizeHashOptions({...restOptions, targetBranch});
+      const filterOptions = await normalizeHashOptions({
+        targetBranch,
+        from: rawFrom, to: rawTo, maxCount: rawMaxCount
+      });
       const results: LogResult[] = semverTag ?
         await getSemverTags({targetBranch, ...filterOptions}) :
         await getHashes({targetBranch,...filterOptions});
@@ -73,9 +78,8 @@ export function yargsHistoryCommandObject() {
         // run history logic
         const reports = await history(
           {
-            ...restOptions,
             targetBranch,
-            forceCleanStatus,
+            ...restOptions
           },
           results.map(({hash, tagName}) => tagName ?? hash),
         );
