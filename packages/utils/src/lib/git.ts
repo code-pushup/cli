@@ -118,6 +118,15 @@ export function filterLogs(allTags: string[], {from, to, maxCount}: Pick<LogOpti
   return allTags.slice(finIndex(from), finIndex(to, undefined)).slice(0, maxCount);
 }
 
+export async function getHashFromTag(tag: string, git = simpleGit()): Promise<LogResult> {
+  const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
+  const hash = tagDetails.trim(); // Remove quotes and trim whitespace
+  return {
+    hash: hash?.split('\n').at(-1) ?? '',
+    message: tag,
+  };
+}
+
 export async function getSemverTags(
   {targetBranch, ...opt}: { targetBranch?: string; from?: string; maxCount?: number } = {},
   git = simpleGit(),
@@ -141,19 +150,12 @@ export async function getSemverTags(
 
   const relevantTags = allTags; //filterLogs(allTags, opt)
 
-  //ui().logger.info(JSON.stringify(allTags))
   const tagsWithHashes: LogResult[] = [];
   for (const tag of relevantTags) {
-    const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
-    const hash = tagDetails.trim(); // Remove quotes and trim whitespace
-    tagsWithHashes.push({
-      hash: hash?.split('\n').at(-1),
-      message: tag,
-    } as LogResult);
+    tagsWithHashes.push(await getHashFromTag(tag, git));
   }
 
-  // Apply maxCount limit if specified
-  return prepareHashes(tagsWithHashes);
+  return tagsWithHashes;
 }
 
 /**
