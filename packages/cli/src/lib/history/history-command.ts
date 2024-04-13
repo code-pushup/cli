@@ -81,7 +81,7 @@ export function yargsHistoryCommandObject() {
             targetBranch,
             ...restOptions
           },
-          results.map(({hash, tagName}) => tagName ?? hash),
+          results.map(({hash}) => hash),
         );
 
         ui().logger.log(`Reports: ${reports.length}`);
