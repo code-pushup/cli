@@ -29,7 +29,7 @@ export function yargsHistoryCommandObject() {
                 semverTag,
                 targetBranch = currentBranch,
                 forceCleanStatus,
-                maxCount,
+                maxCount = 0,
                 from,
                 to,
                 ...restOptions
