@@ -135,7 +135,7 @@ export async function getSemverTags(
   let currentBranch;
   if (targetBranch) {
     currentBranch = await getCurrentBranchOrTag(git);
-    // await git.checkout(targetBranch);
+    await git.checkout(targetBranch);
   } else {
     targetBranch = await getCurrentBranchOrTag(git);
   }
@@ -153,6 +153,10 @@ export async function getSemverTags(
   const tagsWithHashes: LogResult[] = [];
   for (const tag of relevantTags) {
     tagsWithHashes.push(await getHashFromTag(tag, git));
+  }
+
+  if (currentBranch) {
+    await git.checkout(currentBranch);
   }
 
   return tagsWithHashes;
