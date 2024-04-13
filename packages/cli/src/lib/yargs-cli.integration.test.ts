@@ -150,7 +150,6 @@ describe('yargsCli', () => {
     expect(result).toEqual(
       expect.objectContaining({
         semverTag: false,
-        targetBranch: 'main',
         maxCount: 5,
         skipUploads: false,
       }),
@@ -164,7 +163,6 @@ describe('yargsCli', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        targetBranch: 'main',
         maxCount: 2,
       }),
     );

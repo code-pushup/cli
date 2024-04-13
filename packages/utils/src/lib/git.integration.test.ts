@@ -1,12 +1,14 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { afterAll, beforeAll, beforeEach, expect } from 'vitest';
+import {afterAll, beforeAll, beforeEach, describe, expect} from 'vitest';
 import {
   getCurrentBranchOrTag,
   getGitRoot,
+  getHashes,
   getLatestCommit,
-  guardAgainstLocalChanges,
+  getSemverTags,
+  guardAgainstLocalChanges, prepareHashes,
   safeCheckout,
   toGitPath,
 } from './git';
@@ -110,6 +112,7 @@ describe('git utils in a git repo', () => {
         "pathspec 'non-existing-branch' did not match any file(s) known to git",
       );
     });
+
   });
 
   describe('with a branch and commits dirty', () => {
@@ -200,6 +203,222 @@ describe('git utils in a git repo', () => {
           null,
           2,
         ),
+      );
+    });
+  });
+});
+
+
+describe('getHashes', () => {
+  const baseDir = join(process.cwd(), 'tmp', 'utils-git-get-hashes');
+  let gitMock: SimpleGit;
+
+  beforeAll(async () => {
+    await mkdir(baseDir, { recursive: true });
+    gitMock = simpleGit(baseDir);
+    await gitMock.init();
+    await gitMock.addConfig('user.name', 'John Doe');
+    await gitMock.addConfig('user.email', 'john.doe@example.com');
+  });
+
+  afterAll(async () => {
+    await rm(baseDir, { recursive: true, force: true });
+  });
+
+  describe('without a branch and commits', () => {
+    it('should throw', async () => {
+      await expect(getHashes({}, gitMock)).rejects.toThrow(
+        "your current branch 'master' does not have any commits yet",
+      );
+    });
+  });
+
+  describe('with a branch and commits clean', () => {
+    let commits: { hash: string, message: string }[] = [];
+    beforeAll(async () => {
+      await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Create README');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await writeFile(join(baseDir, 'README.md'), '# hello-world-1\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Update README 1');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await writeFile(join(baseDir, 'README.md'), '# hello-world-2\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Update README 2');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await gitMock.branch(['feature-branch']);
+      await gitMock.checkout(['master']);
+      commits = commits.map(({hash, message}) => ({hash, message}));
+    });
+
+    afterAll(async () => {
+      await gitMock.checkout(['master']);
+      await gitMock.deleteLocalBranch('feature-branch');
+    });
+
+    it('getHashes should get all commits from log if no option is passed', async () => {
+      await expect(getHashes({}, gitMock)).resolves.toStrictEqual(commits);
+    });
+
+    it('getHashes should get last 2 commits from log if maxCount is set to 2', async () => {
+      await expect(getHashes({ maxCount: 2 }, gitMock)).resolves.toStrictEqual([
+        commits.at(-2),
+        commits.at(-1),
+      ]);
+    });
+
+    it('getHashes should get commits from log based on "from"', async () => {
+      await expect(
+        getHashes({ from: commits.at(0)?.hash }, gitMock),
+      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+    });
+
+    it('getHashes should get commits from log based on "from" and "to"', async () => {
+      await expect(
+        getHashes({ from: commits.at(-1)?.hash, to: commits.at(0)?.hash }, gitMock),
+      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+    });
+
+    it('getHashes should get commits from log based on "from" and "to" and "maxCount"', async () => {
+      await expect(
+        getHashes(
+          { from: commits.at(-1)?.hash, to: commits.at(0)?.hash, maxCount: 1 },
+          gitMock,
+        ),
+      ).resolves.toEqual([commits.at(-1)]);
+    });
+
+    it('getHashes should throw if "from" is undefined but "to" is defined', async () => {
+      await expect(
+        getHashes({ from: undefined, to: 'a' }, gitMock),
+      ).rejects.toThrow(
+        'git log command needs the "from" option defined to accept the "to" option.',
+      );
+    });
+  });
+});
+
+
+describe('getSemverTags', () => {
+  const baseDir = join(process.cwd(), 'tmp', 'utils-git-get-semver-tags');
+  let gitMock: SimpleGit;
+
+  beforeAll(async () => {
+    await mkdir(baseDir, { recursive: true });
+    gitMock = simpleGit(baseDir);
+    await gitMock.init();
+    await gitMock.addConfig('user.name', 'John Doe');
+    await gitMock.addConfig('user.email', 'john.doe@example.com');
+  });
+
+  afterAll(async () => {
+    await rm(baseDir, { recursive: true, force: true });
+  });
+
+  describe('without a branch and commits', () => {
+    it('should throw', async () => {
+      await expect(getSemverTags({}, gitMock)).rejects.toThrow(
+        "your current branch 'master' does not have any commits yet",
+      );
+    });
+
+
+    it('should list no tags on a branch with no tags', async () => {
+      await expect(getSemverTags({}, gitMock)).resolves.toStrictEqual([]);
+    });
+  });
+
+  describe('with a branch and commits clean', () => {
+    let commits: { hash: string, message: string }[] = [];
+    beforeAll(async () => {
+      await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Create README');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await writeFile(join(baseDir, 'README.md'), '# hello-world-1\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Update README 1');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await writeFile(join(baseDir, 'README.md'), '# hello-world-2\n');
+      await gitMock.add('README.md');
+      await gitMock.commit('Update README 2');
+      // eslint-disable-next-line functional/immutable-data
+      commits.push((await gitMock.log()).latest as { hash: string, message: string });
+
+      await gitMock.branch(['feature-branch']);
+      await gitMock.checkout(['master']);
+      commits = commits.map(({hash, message}) => ({hash, message}));
+    });
+
+    afterAll(async () => {
+      await gitMock.checkout(['master']);
+      await gitMock.deleteLocalBranch('feature-branch');
+    });
+    it('should list all tags on the branch', async () => {
+      await expect(getSemverTags({}, emptyGit)).resolves.toStrictEqual([
+        {
+          hash: expect.any(String),
+          message: 'v1.0.0',
+        },
+        {
+          hash: expect.any(String),
+          message: 'core@1.0.2',
+        },
+        {
+          hash: expect.any(String),
+          message: '1.0.1',
+        },
+      ]);
+    });
+    it('should get all commits from log if no option is passed', async () => {
+      await expect(getSemverTags({}, gitMock)).resolves.toStrictEqual(commits);
+    });
+
+    it('should get last 2 commits from log if maxCount is set to 2', async () => {
+      await expect(getSemverTags({ maxCount: 2 }, gitMock)).resolves.toStrictEqual([
+        commits.at(-2),
+        commits.at(-1),
+      ]);
+    });
+
+    it('should get commits from log based on "from"', async () => {
+      await expect(
+        getSemverTags({ from: commits.at(0)?.hash }, gitMock),
+      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+    });
+
+    it('should get commits from log based on "from" and "to"', async () => {
+      await expect(
+        getSemverTags({ from: commits.at(-1)?.hash, to: commits.at(0)?.hash }, gitMock),
+      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+    });
+
+    it('should get commits from log based on "from" and "to" and "maxCount"', async () => {
+      await expect(
+        getSemverTags(
+          { from: commits.at(-1)?.hash, to: commits.at(0)?.hash, maxCount: 1 },
+          gitMock,
+        ),
+      ).resolves.toEqual([commits.at(-1)]);
+    });
+
+    it('should throw if "from" is undefined but "to" is defined', async () => {
+      await expect(
+        getSemverTags({ from: undefined, to: 'a' }, gitMock),
+      ).rejects.toThrow(
+        'git log command needs the "from" option defined to accept the "to" option.',
       );
     });
   });

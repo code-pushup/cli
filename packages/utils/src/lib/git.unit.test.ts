@@ -1,6 +1,8 @@
-import { SimpleGit, StatusResult } from 'simple-git';
-import { describe, expect } from 'vitest';
-import { GitStatusError, guardAgainstLocalChanges } from './git';
+import {simpleGit, SimpleGit, StatusResult} from 'simple-git';
+import {afterAll, beforeAll, describe, expect, vi} from 'vitest';
+import {getHashes, GitStatusError, guardAgainstLocalChanges} from './git';
+import {join} from "node:path";
+import {mkdir, rm, writeFile} from "node:fs/promises";
 
 describe('guardAgainstLocalChanges', () => {
   it('should throw if no files are present', async () => {

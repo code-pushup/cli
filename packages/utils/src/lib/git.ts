@@ -1,8 +1,11 @@
 import { isAbsolute, join, relative } from 'node:path';
-import { StatusResult, simpleGit } from 'simple-git';
+import { LogOptions, StatusResult, simpleGit } from 'simple-git';
+import type { DefaultLogFields } from 'simple-git/dist/src/lib/tasks/log';
+import { ListLogLine } from 'simple-git/dist/typings/response';
 import { Commit, commitSchema } from '@code-pushup/models';
 import { ui } from './logging';
-import { toUnixPath } from './transform';
+import { isSemver } from './semver';
+import { objectToCliArgs, toUnixPath } from './transform';
 
 export async function getLatestCommit(
   git = simpleGit(),
@@ -62,6 +65,7 @@ export class GitStatusError extends Error {
         ),
     );
   }
+
   constructor(status: StatusResult) {
     super(
       `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
@@ -108,4 +112,135 @@ export async function safeCheckout(
   }
   await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);
+}
+
+export type LogResult = { hash: string; message: string; tagName?: string };
+export async function getSemverTags(
+  { maxCount, targetBranch }: { targetBranch?: string; maxCount?: number } = {},
+  git = simpleGit(),
+): Promise<LogResult[]> {
+  // make sure we have a target branch
+  let currentBranch;
+  if (targetBranch) {
+    currentBranch = await getCurrentBranchOrTag(git);
+    // await git.checkout(targetBranch);
+  } else {
+    targetBranch = await getCurrentBranchOrTag(git);
+  }
+
+  // Fetch all tags merged into the target branch
+  const tagsRaw = await git.tag(['--merged', targetBranch]);
+  const allTags = tagsRaw
+    .split('\n')
+    .map(tag => tag.trim())
+    .filter(Boolean)
+    .filter(isSemver);
+  //ui().logger.info(JSON.stringify(allTags))
+  const tagsWithHashes: LogResult[] = [];
+  for (const tag of allTags) {
+    // Fetch commit hash for each tag
+    // format:{
+    //       hash: '%H',
+    //       message: '%s'
+    //     }
+    const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
+    const hash = tagDetails.trim(); // Remove quotes and trim whitespace
+    tagsWithHashes.push({
+      hash: hash?.split('\n').at(-1),
+      message: tag,
+    } as LogResult);
+  }
+
+  // Apply maxCount limit if specified
+  return  prepareHashes(maxCount == null ? tagsWithHashes : tagsWithHashes.slice(0, maxCount));
+}
+
+/**
+ * `getHashes` returns a list of commit hashes. Internally it uses `git.log()` to determine the commits within a range.
+ * The amount can be limited to a maximum number of commits specified by `maxCount`.
+ * With `from` and `to`, you can specify a range of commits.
+ *
+ * **NOTE:**
+ * In Git, specifying a range with two dots (`from..to`) selects commits that are reachable from `to` but not from `from`.
+ * Essentially, it shows the commits that are in `to` but not in `from`, excluding the commits unique to `from`.
+ *
+ * Example:
+ *
+ * Let's consider the following commit history:
+ *
+ *   A---B---C---D---E (main)
+ *
+ * Using `git log B..D`, you would get the commits C and D:
+ *
+ *   C---D
+ *
+ * This is because these commits are reachable from D but not from B.
+ *
+ * ASCII Representation:
+ *
+ *   Main Branch:    A---B---C---D---E
+ *                       \       \
+ *                        \       +--- Commits included in `git log B..D`
+ *                         \
+ *                          +--- Excluded by the `from` parameter
+ *
+ * With `simple-git`, when you specify a `from` and `to` range like this:
+ *
+ *   git.log({ from: 'B', to: 'D' });
+ *
+ * It interprets it similarly, selecting commits between B and D, inclusive of D but exclusive of B.
+ * For `git.log({ from: 'B', to: 'D' })` or `git log B..D`, commits C and D are selected.
+ *
+ * @param options Object containing `from`, `to`, and optionally `maxCount` to specify the commit range and limit.
+ * @param git The `simple-git` instance used to execute Git commands.
+ */
+export async function getHashes(
+  options: LogOptions & { targetBranch?: string } = {},
+  git = simpleGit(),
+): Promise<LogResult[]> {
+  const { targetBranch, from, to, maxCount, ...opt } = options;
+
+  if (to && !from) {
+    // throw more user-friendly error instead of:
+    // fatal: ambiguous argument '...a': unknown revision or path not in the working tree.
+    // Use '--' to separate paths from revisions, like this:
+    // 'git <command> [<revision>...] -- [<file>...]'
+    throw new Error(
+      `git log command needs the "from" option defined to accept the "to" option.\n`,
+    );
+  }
+
+  // Ensure you are on the correct branch
+  let currentBranch;
+  if (targetBranch) {
+    currentBranch = await getCurrentBranchOrTag(git);
+    await git.checkout(targetBranch);
+  }
+
+  const logs = await git.log({
+    ...opt,
+    format: {
+      hash: '%H',
+      message: '%s',
+    },
+    from,
+    to,
+    maxCount,
+  });
+
+  // Ensure you are back to the initial branch
+  if (targetBranch) {
+    await git.checkout(currentBranch as string);
+  }
+
+  return prepareHashes(Array.from(logs.all));
+}
+
+export function prepareHashes(
+  logs: { hash: string; message: string }[],
+): { hash: string; message: string }[] {
+  return logs
+      .map(({ hash, message }) => ({hash, message}))
+      // sort from oldest to newest
+      .reverse();
 }

@@ -1,7 +1,14 @@
 import chalk from 'chalk';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { HistoryOptions, getHashes, history } from '@code-pushup/core';
-import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
+import { HistoryOptions, history } from '@code-pushup/core';
+import {
+  LogResult,
+  getCurrentBranchOrTag,
+  getHashes,
+  getSemverTags,
+  safeCheckout,
+  ui,
+} from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
@@ -12,6 +19,49 @@ export function yargsHistoryCommandObject() {
   return {
     command,
     describe: 'Collect reports for commit history',
+    handler: async <T>(args: ArgumentsCamelCase<T>) => {
+      ui().logger.info(chalk.bold(CLI_NAME));
+      ui().logger.info(chalk.gray(`Run ${command}`));
+
+      const currentBranch = await getCurrentBranchOrTag();
+      const {
+        semverTag,
+        targetBranch = currentBranch,
+        forceCleanStatus,
+        maxCount,
+        from,
+        to,
+        ...restOptions
+      } = args as unknown as HistoryCliOptions & HistoryOptions;
+
+      // determine history to walk
+      const results: LogResult[] = semverTag
+        ? await getSemverTags({ targetBranch, maxCount })
+        : await getHashes({ targetBranch, maxCount, from, to });
+
+       ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
+      results.forEach(({hash, message, tagName}) => ui().logger.info(`${hash} - ${tagName ? tagName: message.slice(0,55)}`));
+
+      // ui().logger.info(`Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(targetBranch)}:`)
+      // commits.forEach(({hash, message, tagName}) => ui().logger.info(`${hash} - ${tagName ? tagName: message.slice(0,55)}`));
+return;
+      try {
+        // run history logic
+        const reports = await history(
+          {
+            ...restOptions,
+            targetBranch,
+            forceCleanStatus,
+          },
+          results.map(({ hash, tagName }) => tagName ?? hash),
+        );
+
+        ui().logger.log(`Reports: ${reports.length}`);
+      } finally {
+        // go back to initial branch
+        await safeCheckout(currentBranch);
+      }
+    },
     builder: yargs => {
       yargs.options({
         ...yargsHistoryOptionsDefinition(),
@@ -22,39 +72,6 @@ export function yargsHistoryCommandObject() {
         'History Options:',
       );
       return yargs;
-    },
-    handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.info(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}`));
-
-      const currentBranch = await getCurrentBranchOrTag();
-      const {
-        targetBranch = currentBranch,
-        forceCleanStatus,
-        maxCount,
-        from,
-        to,
-        ...restOptions
-      } = args as unknown as HistoryCliOptions & HistoryOptions;
-
-      // determine history to walk
-      const commits: string[] = await getHashes({ maxCount, from, to });
-      try {
-        // run history logic
-        const reports = await history(
-          {
-            ...restOptions,
-            targetBranch,
-            forceCleanStatus,
-          },
-          commits,
-        );
-
-        ui().logger.log(`Reports: ${reports.length}`);
-      } finally {
-        // go back to initial branch
-        await safeCheckout(currentBranch);
-      }
     },
   } satisfies CommandModule;
 }

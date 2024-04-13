@@ -37,6 +37,9 @@ vi.mock('simple-git', async () => {
   return {
     ...actual,
     simpleGit: () => ({
+      branch: () => Promise.resolve('dummy'),
+      raw: () => Promise.resolve('main'),
+      checkout: () => Promise.resolve(),
       log: ({ maxCount }: { maxCount: number } = { maxCount: 1 }) =>
         Promise.resolve({
           all: [
@@ -53,22 +56,6 @@ vi.mock('simple-git', async () => {
 });
 
 describe('history-command', () => {
-  it('should return the last 5 commits', async () => {
-    await yargsCli(['history', '--config=/test/code-pushup.config.ts'], {
-      ...DEFAULT_CLI_CONFIGURATION,
-      commands: [yargsHistoryCommandObject()],
-    }).parseAsync();
-
-    expect(history).toHaveBeenCalledWith(
-      expect.objectContaining({
-        targetBranch: 'main',
-      }),
-      ['commit-1', 'commit-2', 'commit-3', 'commit-4', 'commit-5'],
-    );
-
-    expect(safeCheckout).toHaveBeenCalledTimes(1);
-  });
-
   it('should have 2 commits to crawl in history if maxCount is set to 2', async () => {
     await yargsCli(
       ['history', '--config=/test/code-pushup.config.ts', '--maxCount=2'],

@@ -44,6 +44,8 @@ export {
   getLatestCommit,
   safeCheckout,
   toGitPath,
+  getSemverTags,
+  LogResult,
 } from './lib/git';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -98,3 +100,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { getHashes } from './lib/git';
