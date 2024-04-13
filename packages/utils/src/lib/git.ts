@@ -139,7 +139,7 @@ export async function getSemverTags(
     .filter(Boolean)
     .filter(isSemver);
 
-  const relevantTags = filterLogs(allTags, opt)
+  const relevantTags = allTags; //filterLogs(allTags, opt)
 
   //ui().logger.info(JSON.stringify(allTags))
   const tagsWithHashes: LogResult[] = [];
