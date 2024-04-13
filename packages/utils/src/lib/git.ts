@@ -1,11 +1,11 @@
-import { isAbsolute, join, relative } from 'node:path';
-import { LogOptions, StatusResult, simpleGit } from 'simple-git';
-import type { DefaultLogFields } from 'simple-git/dist/src/lib/tasks/log';
-import { ListLogLine } from 'simple-git/dist/typings/response';
-import { Commit, commitSchema } from '@code-pushup/models';
-import { ui } from './logging';
-import { isSemver } from './semver';
-import { objectToCliArgs, toUnixPath } from './transform';
+import {isAbsolute, join, relative} from 'node:path';
+import {LogOptions, StatusResult, simpleGit} from 'simple-git';
+import type {DefaultLogFields} from 'simple-git/dist/src/lib/tasks/log';
+import {ListLogLine} from 'simple-git/dist/typings/response';
+import {Commit, commitSchema} from '@code-pushup/models';
+import {ui} from './logging';
+import {isSemver} from './semver';
+import {objectToCliArgs, toUnixPath} from './transform';
 
 export async function getLatestCommit(
   git = simpleGit(),
@@ -13,7 +13,7 @@ export async function getLatestCommit(
   const log = await git.log({
     maxCount: 1,
     // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
-    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
+    format: {hash: '%H', message: '%s', author: '%an', date: '%aI'},
   });
   return commitSchema.parse(log.latest);
 }
@@ -47,7 +47,7 @@ export class GitStatusError extends Error {
           (
             entry: [
               string,
-              number | string | boolean | null | undefined | unknown[],
+                number | string | boolean | null | undefined | unknown[],
             ],
           ) => {
             const value = entry[1];
@@ -115,8 +115,9 @@ export async function safeCheckout(
 }
 
 export type LogResult = { hash: string; message: string; tagName?: string };
+
 export async function getSemverTags(
-  { maxCount, targetBranch }: { targetBranch?: string; maxCount?: number } = {},
+  {maxCount, targetBranch, from}: { targetBranch?: string; from?: string; maxCount?: number } = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
   // make sure we have a target branch
@@ -135,14 +136,11 @@ export async function getSemverTags(
     .map(tag => tag.trim())
     .filter(Boolean)
     .filter(isSemver);
+  const finIndex = (tagName: string = '', fallback: number | undefined = 0): number | undefined => isSemver(tagName) ? allTags.findIndex((tag) => tag === tagName) : fallback;
+  const relevantTags = allTags.slice(finIndex(from), finIndex(from, undefined)).slice(0, maxCount);
   //ui().logger.info(JSON.stringify(allTags))
   const tagsWithHashes: LogResult[] = [];
-  for (const tag of allTags) {
-    // Fetch commit hash for each tag
-    // format:{
-    //       hash: '%H',
-    //       message: '%s'
-    //     }
+  for (const tag of relevantTags) {
     const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
     const hash = tagDetails.trim(); // Remove quotes and trim whitespace
     tagsWithHashes.push({
@@ -152,7 +150,7 @@ export async function getSemverTags(
   }
 
   // Apply maxCount limit if specified
-  return  prepareHashes(maxCount == null ? tagsWithHashes : tagsWithHashes.slice(0, maxCount));
+  return prepareHashes(maxCount == null ? tagsWithHashes : tagsWithHashes.slice(0, maxCount));
 }
 
 /**
@@ -198,7 +196,7 @@ export async function getHashes(
   options: LogOptions & { targetBranch?: string } = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
-  const { targetBranch, from, to, maxCount, ...opt } = options;
+  const {targetBranch, from, to, maxCount, ...opt} = options;
 
   if (to && !from) {
     // throw more user-friendly error instead of:
@@ -240,7 +238,7 @@ export function prepareHashes(
   logs: { hash: string; message: string }[],
 ): { hash: string; message: string }[] {
   return logs
-      .map(({ hash, message }) => ({hash, message}))
-      // sort from oldest to newest @TODO => question this
-     // .reverse();
+    .map(({hash, message}) => ({hash, message}))
+  // sort from oldest to newest @TODO => question this
+  // .reverse();
 }
