@@ -242,5 +242,5 @@ export function prepareHashes(
   return logs
       .map(({ hash, message }) => ({hash, message}))
       // sort from oldest to newest
-      .reverse();
+     // .reverse();
 }
