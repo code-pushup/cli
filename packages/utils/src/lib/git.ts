@@ -1,5 +1,5 @@
 import {isAbsolute, join, relative} from 'node:path';
-import {LogOptions, simpleGit, StatusResult} from 'simple-git';
+import {LogOptions as SimpleGitLogOptions, simpleGit, StatusResult} from 'simple-git';
 import {Commit, commitSchema} from '@code-pushup/models';
 import {ui} from './logging';
 import {isSemver} from './semver';
@@ -112,7 +112,20 @@ export async function safeCheckout(
   await git.checkout(branchOrHash);
 }
 
-export type LogResult = { hash: string; message: string; tagName?: string };
+export type LogResult = { hash: string; message: string; };
+
+
+function validateFilter({from, to}: LogOptions) {
+  if (to && !from) {
+    // throw more user-friendly error instead of:
+    // fatal: ambiguous argument '...a': unknown revision or path not in the working tree.
+    // Use '--' to separate paths from revisions, like this:
+    // 'git <command> [<revision>...] -- [<file>...]'
+    throw new Error(
+      `filter needs the "from" option defined to accept the "to" option.\n`,
+    );
+  }
+}
 export function filterLogs(allTags: string[], {from, to, maxCount}: Pick<LogOptions, 'from' | 'to' | 'maxCount'>) {
   const finIndex = (tagName: string = '', fallback: number | undefined = 0): number | undefined => isSemver(tagName) ? allTags.findIndex((tag) => tag === tagName) : fallback;
   return allTags.slice(finIndex(from), finIndex(to, undefined)).slice(0, maxCount);
@@ -127,10 +140,14 @@ export async function getHashFromTag(tag: string, git = simpleGit()): Promise<Lo
   };
 }
 
+export type LogOptions = { targetBranch?: string; from?: string; to?: string; maxCount?: number };
 export async function getSemverTags(
-  {targetBranch, ...opt}: { targetBranch?: string; from?: string; maxCount?: number } = {},
+  {targetBranch, ...opt}: LogOptions = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
+
+  validateFilter(opt);
+
   // make sure we have a target branch
   let currentBranch;
   if (targetBranch) {
@@ -148,7 +165,7 @@ export async function getSemverTags(
     .filter(Boolean)
     .filter(isSemver);
 
-  const relevantTags = allTags; //filterLogs(allTags, opt)
+  const relevantTags = filterLogs(allTags, opt);
 
   const tagsWithHashes: LogResult[] = [];
   for (const tag of relevantTags) {
@@ -202,20 +219,12 @@ export async function getSemverTags(
  * @param git The `simple-git` instance used to execute Git commands.
  */
 export async function getHashes(
-  options: LogOptions & { targetBranch?: string } = {},
+  options: SimpleGitLogOptions & Pick<LogOptions, 'targetBranch'> = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
   const {targetBranch, from, to, maxCount, ...opt} = options;
 
-  if (to && !from) {
-    // throw more user-friendly error instead of:
-    // fatal: ambiguous argument '...a': unknown revision or path not in the working tree.
-    // Use '--' to separate paths from revisions, like this:
-    // 'git <command> [<revision>...] -- [<file>...]'
-    throw new Error(
-      `git log command needs the "from" option defined to accept the "to" option.\n`,
-    );
-  }
+  validateFilter({from, to});
 
   // Ensure you are on the correct branch
   let currentBranch;
