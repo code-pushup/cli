@@ -109,4 +109,3 @@ describe('history', () => {
     expect(upload).not.toHaveBeenCalled();
   });
 });
-

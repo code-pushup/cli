@@ -1,9 +1,7 @@
-import {isAbsolute, join, relative} from 'node:path';
-import {LogOptions as SimpleGitLogOptions, simpleGit, StatusResult} from 'simple-git';
-import {Commit, commitSchema} from '@code-pushup/models';
-import {ui} from './logging';
-import {isSemver} from './semver';
-import {toUnixPath} from './transform';
+import { LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
+import { Commit, commitSchema } from '@code-pushup/models';
+import { throwIsNotPresentError } from '../reports/utils';
+import { isSemver } from '../semver';
 
 export async function getLatestCommit(
   git = simpleGit(),
@@ -11,77 +9,9 @@ export async function getLatestCommit(
   const log = await git.log({
     maxCount: 1,
     // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
-    format: {hash: '%H', message: '%s', author: '%an', date: '%aI'},
+    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
   });
   return commitSchema.parse(log.latest);
-}
-
-export function getGitRoot(git = simpleGit()): Promise<string> {
-  return git.revparse('--show-toplevel');
-}
-
-export function formatGitPath(path: string, gitRoot: string): string {
-  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
-  const relativePath = relative(gitRoot, absolutePath);
-  return toUnixPath(relativePath);
-}
-
-export async function toGitPath(
-  path: string,
-  git = simpleGit(),
-): Promise<string> {
-  const gitRoot = await getGitRoot(git);
-  return formatGitPath(path, gitRoot);
-}
-
-export class GitStatusError extends Error {
-  static ignoredProps = new Set(['current', 'tracking']);
-
-  static getReducedStatus(status: StatusResult) {
-    return Object.fromEntries(
-      Object.entries(status)
-        .filter(([key]) => !this.ignoredProps.has(key))
-        .filter(
-          (
-            entry: [
-              string,
-                number | string | boolean | null | undefined | unknown[],
-            ],
-          ) => {
-            const value = entry[1];
-            if (value == null) {
-              return false;
-            }
-            if (Array.isArray(value) && value.length === 0) {
-              return false;
-            }
-            if (typeof value === 'number' && value === 0) {
-              return false;
-            }
-            return !(typeof value === 'boolean' && !value);
-          },
-        ),
-    );
-  }
-
-  constructor(status: StatusResult) {
-    super(
-      `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
-        GitStatusError.getReducedStatus(status),
-        null,
-        2,
-      )}`,
-    );
-  }
-}
-
-export async function guardAgainstLocalChanges(
-  git = simpleGit(),
-): Promise<void> {
-  const status = await git.status(['-s']);
-  if (status.files.length > 0) {
-    throw new GitStatusError(status);
-  }
 }
 
 export async function getCurrentBranchOrTag(
@@ -97,25 +27,9 @@ export async function getCurrentBranchOrTag(
   );
 }
 
-export async function safeCheckout(
-  branchOrHash: string,
-  forceCleanStatus = false,
-  git = simpleGit(),
-): Promise<void> {
-  // git requires a clean history to check out a branch
-  if (forceCleanStatus) {
-    await git.raw(['reset', '--hard']);
-    await git.clean(['f', 'd']);
-    ui().logger.info(`git status cleaned`);
-  }
-  await guardAgainstLocalChanges(git);
-  await git.checkout(branchOrHash);
-}
+export type LogResult = { hash: string; message: string };
 
-export type LogResult = { hash: string; message: string; };
-
-
-function validateFilter({from, to}: LogOptions) {
+function validateFilter({ from, to }: LogOptions) {
   if (to && !from) {
     // throw more user-friendly error instead of:
     // fatal: ambiguous argument '...a': unknown revision or path not in the working tree.
@@ -126,12 +40,34 @@ function validateFilter({from, to}: LogOptions) {
     );
   }
 }
-export function filterLogs(allTags: string[], {from, to, maxCount}: Pick<LogOptions, 'from' | 'to' | 'maxCount'>) {
-  const finIndex = (tagName: string = '', fallback: number | undefined = 0): number | undefined => isSemver(tagName) ? allTags.findIndex((tag) => tag === tagName) : fallback;
-  return allTags.slice(finIndex(from), finIndex(to, undefined)).slice(0, maxCount);
+
+export function filterLogs(
+  allTags: string[],
+  opt?: Pick<LogOptions, 'from' | 'to' | 'maxCount'>,
+) {
+  if (!opt) {
+    return allTags;
+  }
+  validateFilter(opt);
+  const { from, to, maxCount } = opt;
+  const finIndex = <T>(tagName: string = '', fallback: T) => {
+    const idx = allTags.findIndex(tag => tag === tagName);
+    if (idx > -1) {
+      return idx;
+    }
+    return fallback;
+  };
+  const fromIndex = finIndex(from, 0);
+  const toIndex = finIndex(to, undefined);
+  return allTags
+    .slice(fromIndex, toIndex ? toIndex + 1 : toIndex)
+    .slice(0, maxCount ?? undefined);
 }
 
-export async function getHashFromTag(tag: string, git = simpleGit()): Promise<LogResult> {
+export async function getHashFromTag(
+  tag: string,
+  git = simpleGit(),
+): Promise<LogResult> {
   const tagDetails = await git.show(['--no-patch', '--format=%H', tag]);
   const hash = tagDetails.trim(); // Remove quotes and trim whitespace
   return {
@@ -140,12 +76,17 @@ export async function getHashFromTag(tag: string, git = simpleGit()): Promise<Lo
   };
 }
 
-export type LogOptions = { targetBranch?: string; from?: string; to?: string; maxCount?: number };
+export type LogOptions = {
+  targetBranch?: string;
+  from?: string;
+  to?: string;
+  maxCount?: number;
+};
+
 export async function getSemverTags(
-  {targetBranch, ...opt}: LogOptions = {},
+  { targetBranch, ...opt }: LogOptions = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
-
   validateFilter(opt);
 
   // make sure we have a target branch
@@ -159,8 +100,9 @@ export async function getSemverTags(
 
   // Fetch all tags merged into the target branch
   const tagsRaw = await git.tag(['--merged', targetBranch]);
+
   const allTags = tagsRaw
-    .split('\n')
+    .split(/\n/)
     .map(tag => tag.trim())
     .filter(Boolean)
     .filter(isSemver);
@@ -222,9 +164,9 @@ export async function getHashes(
   options: SimpleGitLogOptions & Pick<LogOptions, 'targetBranch'> = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
-  const {targetBranch, from, to, maxCount, ...opt} = options;
+  const { targetBranch, from, to, maxCount, ...opt } = options;
 
-  validateFilter({from, to});
+  validateFilter({ from, to });
 
   // Ensure you are on the correct branch
   let currentBranch;
@@ -249,14 +191,5 @@ export async function getHashes(
     await git.checkout(currentBranch as string);
   }
 
-  return prepareHashes(Array.from(logs.all));
-}
-
-export function prepareHashes(
-  logs: { hash: string; message: string }[],
-): { hash: string; message: string }[] {
-  return logs
-    .map(({hash, message}) => ({hash, message}))
-  // sort from oldest to newest @TODO => question this
-  // .reverse();
+  return Array.from(logs.all);
 }

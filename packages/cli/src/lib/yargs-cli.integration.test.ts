@@ -167,4 +167,16 @@ describe('yargsCli', () => {
       }),
     );
   });
+
+  it('should parse history options and have semverTag true to crawl in history if semverTag is set', async () => {
+    const result = await yargsCli(['history', '--semverTag'], {
+      options: { ...options, ...yargsHistoryOptionsDefinition() },
+    }).parseAsync();
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        semverTag: true,
+      }),
+    );
+  });
 });

@@ -38,17 +38,19 @@ export {
 } from './lib/formatting';
 export {
   formatGitPath,
-  getCurrentBranchOrTag,
   guardAgainstLocalChanges,
   getGitRoot,
-  getLatestCommit,
   safeCheckout,
   toGitPath,
+} from './lib/git/git';
+export {
   getSemverTags,
   LogResult,
   getHashes,
-  getHashFromTag
-} from './lib/git';
+  getHashFromTag,
+  getCurrentBranchOrTag,
+  getLatestCommit,
+} from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
