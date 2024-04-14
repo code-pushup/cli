@@ -16,12 +16,6 @@
       }
     },
     {
-      "files": ["packages/nx-plugin/**/generators/**/*.ts"],
-      "rules": {
-        "unicorn/prefer-module": "off"
-      }
-    },
-    {
       "files": ["*.js", "*.jsx"],
       "rules": {}
     },
