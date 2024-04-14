@@ -10,6 +10,13 @@ import {
   getSemverTags,
 } from './git.commits-and-tags';
 
+async function getAllCommits(git: SimpleGit) {
+  return (await git.log()).all.map(({ hash, message }) => ({
+    hash,
+    message,
+  }));
+}
+
 describe('getCurrentBranchOrTag', () => {
   const baseDir = join(process.cwd(), 'tmp', 'git-tests');
   let currentBranchOrTagGitMock: SimpleGit;
@@ -105,22 +112,13 @@ describe('getHashes', () => {
   });
 
   describe('with a branch and commits clean', () => {
-    const commits: { hash: string; message: string }[] = [];
-
-    async function addLatestCommitToSet() {
-      const { hash = '', message = '' } = (await gitMock.log()).latest ?? {};
-      // eslint-disable-next-line functional/immutable-data
-      commits.unshift({ hash, message });
-    }
+    let commits: { hash: string; message: string }[] = [];
     beforeAll(async () => {
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Create README' });
-      await addLatestCommitToSet();
-
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 1' });
-      await addLatestCommitToSet();
-
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 2' });
-      await addLatestCommitToSet();
+      await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 3' });
+      commits = await getAllCommits(gitMock);
 
       await gitMock.checkout(['master']);
     });
@@ -142,26 +140,26 @@ describe('getHashes', () => {
 
     it('should get commits from log based on "from"', async () => {
       await expect(
-        getHashes({ from: commits.at(0)?.hash }, gitMock),
-      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+        getHashes({ from: commits.at(-1)?.hash }, gitMock),
+      ).resolves.toEqual([commits.at(0), commits.at(1), commits.at(2)]);
     });
 
     it('should get commits from log based on "from" and "to"', async () => {
       await expect(
         getHashes(
-          { from: commits.at(-1)?.hash, to: commits.at(0)?.hash },
+          { from: commits.at(-1)?.hash, to: commits.at(1)?.hash },
           gitMock,
         ),
-      ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
+      ).resolves.toEqual([commits.at(1), commits.at(2)]);
     });
 
     it('should get commits from log based on "from" and "to" and "maxCount"', async () => {
       await expect(
         getHashes(
-          { from: commits.at(-1)?.hash, to: commits.at(0)?.hash, maxCount: 1 },
+          { from: commits.at(-1)?.hash, to: commits.at(1)?.hash, maxCount: 1 },
           gitMock,
         ),
-      ).resolves.toEqual([commits.at(-1)]);
+      ).resolves.toEqual([commits.at(1)]);
     });
 
     it('should throw if "from" is undefined but "to" is defined', async () => {
@@ -241,7 +239,7 @@ describe('getSemverTags', () => {
         [
           {
             hash: expect.any(String),
-            message: 'release v1',
+            message: '1',
           },
         ],
       );
