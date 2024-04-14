@@ -175,7 +175,6 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { skipAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toHaveLength(1);
     expect(filteredAudits).toStrictEqual([{ slug: 'first-contentful-paint' }]);
     expect(filteredGroups).toStrictEqual([
       {
@@ -225,9 +224,7 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toHaveLength(1);
     expect(filteredAudits).toStrictEqual([{ slug: 'speed-index' }]);
-    expect(filteredGroups).toHaveLength(1);
     expect(filteredGroups).toStrictEqual([
       {
         slug: 'performance',
@@ -277,9 +274,7 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyCategories: ['coverage'] },
       );
 
-    expect(filteredAudits).toHaveLength(1);
     expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
-    expect(filteredGroups).toHaveLength(1);
     expect(filteredGroups).toStrictEqual([
       {
         slug: 'coverage',
@@ -315,9 +310,7 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         },
       );
 
-    expect(filteredAudits).toHaveLength(1);
     expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
-    expect(filteredGroups).toHaveLength(1);
     expect(filteredGroups).toStrictEqual([
       {
         slug: 'coverage',
