@@ -1,32 +1,22 @@
 import 'dotenv/config';
-import { join } from 'node:path';
-import { z } from 'zod';
+import {join} from 'node:path';
+import {z} from 'zod';
 import {
-  JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
-  JS_BENCHMARKING_BENNY_RUNNER_PATH,
-  JS_BENCHMARKING_DEFAULT_RUNNER_PATH,
-  JS_BENCHMARKING_PLUGIN_SLUG,
-  JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
   fileSizePlugin,
   fileSizeRecommendedRefs,
+  JS_BENCHMARKING_PLUGIN_SLUG,
+  JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
   jsBenchmarkingPlugin,
   jsBenchmarkingSuiteNameToCategoryRef,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin, {
-  getNxCoveragePaths,
-} from './dist/packages/plugin-coverage';
-import eslintPlugin, {
-  eslintConfigFromNxProjects,
-} from './dist/packages/plugin-eslint';
+import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
+import eslintPlugin, {eslintConfigFromNxProjects,} from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import {
-  lighthouseGroupRef,
-  lighthousePlugin,
-} from './dist/packages/plugin-lighthouse';
-import type { CoreConfig } from './packages/models/src';
+import {lighthouseGroupRef, lighthousePlugin,} from './dist/packages/plugin-lighthouse';
+import type {CoreConfig} from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z
@@ -91,8 +81,8 @@ const config: CoreConfig = {
 
     await jsBenchmarkingPlugin({
       tsconfig: join('packages', 'utils', 'tsconfig.perf.ts'),
-      runnerPath: JS_BENCHMARKING_BENCHMARK_RUNNER_PATH,
-      outputFolder: join('.code-pushup', JS_BENCHMARKING_PLUGIN_SLUG),
+      runnerPath: JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
+      outputDir: join('.code-pushup', JS_BENCHMARKING_PLUGIN_SLUG),
       targets: benchmarkJsSuiteNames.map(suit =>
         join('packages', 'utils', 'perf', suit, 'index.ts'),
       ),
