@@ -89,8 +89,7 @@ export function compareAudits(
 
 function categoryToResult(category: ScoredCategoryConfig): CategoryResult {
   return {
-    slug: category.slug,
-    title: category.title,
+    ...selectMeta(category),
     score: category.score,
   };
 }
@@ -100,8 +99,7 @@ function categoryPairToDiff({
   after,
 }: Diff<ScoredCategoryConfig>): CategoryDiff {
   return {
-    slug: after.slug,
-    title: after.title,
+    ...selectMeta(after),
     scores: {
       before: before.score,
       after: after.score,
@@ -117,12 +115,8 @@ type PluginGroup = {
 
 function pluginGroupToResult({ group, plugin }: PluginGroup): GroupResult {
   return {
-    slug: group.slug,
-    title: group.title,
-    plugin: {
-      slug: plugin.slug,
-      title: plugin.title,
-    },
+    ...selectMeta(group),
+    plugin: selectMeta(plugin),
     score: group.score,
   };
 }
@@ -132,12 +126,8 @@ function pluginGroupPairToDiff({
   after,
 }: Diff<PluginGroup>): GroupDiff {
   return {
-    slug: after.group.slug,
-    title: after.group.title,
-    plugin: {
-      slug: after.plugin.slug,
-      title: after.plugin.title,
-    },
+    ...selectMeta(after.group),
+    plugin: selectMeta(after.plugin),
     scores: {
       before: before.group.score,
       after: after.group.score,
@@ -153,12 +143,8 @@ type PluginAudit = {
 
 function pluginAuditToResult({ audit, plugin }: PluginAudit): AuditResult {
   return {
-    slug: audit.slug,
-    title: audit.title,
-    plugin: {
-      slug: plugin.slug,
-      title: plugin.title,
-    },
+    ...selectMeta(audit),
+    plugin: selectMeta(plugin),
     score: audit.score,
     value: audit.value,
     displayValue: audit.displayValue,
@@ -170,12 +156,8 @@ function pluginAuditPairToDiff({
   after,
 }: Diff<PluginAudit>): AuditDiff {
   return {
-    slug: after.audit.slug,
-    title: after.audit.title,
-    plugin: {
-      slug: after.plugin.slug,
-      title: after.plugin.title,
-    },
+    ...selectMeta(after.audit),
+    plugin: selectMeta(after.plugin),
     scores: {
       before: before.audit.score,
       after: after.audit.score,
@@ -190,5 +172,17 @@ function pluginAuditPairToDiff({
       before: before.audit.displayValue,
       after: after.audit.displayValue,
     },
+  };
+}
+
+function selectMeta<
+  T extends ScoredCategoryConfig | ScoredGroup | AuditReport | PluginMeta,
+>(meta: T): Pick<T, 'slug' | 'title' | 'docsUrl'> {
+  return {
+    slug: meta.slug,
+    title: meta.title,
+    ...(meta.docsUrl && {
+      docsUrl: meta.docsUrl,
+    }),
   };
 }

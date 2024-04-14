@@ -83,16 +83,15 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          npx nx release --yes
-      - name: Collect and upload Code PushUp report
-        run: npx nx code-pushup -- autorun
+          npx nx release --skipPublish
+          git push --follow-tags
+          npx nx release publish
+      - name: Run Code PushUp on release commit
+        uses: code-pushup/github-action@v0
+        with:
+          bin: npx nx code-pushup --
         env:
           CP_SERVER: ${{ secrets.CP_SERVER }}
           CP_API_KEY: ${{ secrets.CP_API_KEY }}
           CP_ORGANIZATION: code-pushup
           CP_PROJECT: cli
-      - name: Save report files as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-pushup-report
-          path: .code-pushup/

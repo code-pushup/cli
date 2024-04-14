@@ -83,6 +83,7 @@
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/benchmark": "^2.1.4",
     "@types/chalk": "^2.2.0",
+    "@types/debug": "^4.1.12",
     "@types/eslint": "^8.44.2",
     "@types/node": "18.19.21",
     "@types/react": "18.2.24",
