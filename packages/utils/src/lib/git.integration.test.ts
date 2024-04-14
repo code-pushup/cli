@@ -31,8 +31,12 @@ describe('git utils in a git repo', () => {
   describe('without a branch and commits', () => {
     it('getCurrentBranchOrTag should throw if no branch or tag is given', async () => {
       await expect(getCurrentBranchOrTag(emptyGit)).rejects.toThrow(
-        'Could not get current tag or branch.',
+        'No names found, cannot describe anything',
       );
+    });
+
+    it('getGitRoot should return git root in a set up repo', async () => {
+      await expect(getGitRoot(emptyGit)).resolves.toMatch(/tmp\/git-tests$/);
     });
   });
 
@@ -154,13 +158,48 @@ describe('git utils in a git repo', () => {
 
     it('safeCheckout should throw if history is dirty', async () => {
       await expect(safeCheckout('master', undefined, emptyGit)).rejects.toThrow(
-        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+        `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+          {
+            not_added: ['new-file.md'],
+            files: [
+              {
+                path: 'new-file.md',
+                index: '?',
+                working_dir: '?',
+              },
+            ],
+          },
+          null,
+          2,
+        )}`,
       );
     });
 
     it('guardAgainstLocalChanges should throw if history is dirty', async () => {
-      await expect(guardAgainstLocalChanges(emptyGit)).rejects.toThrow(
-        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
+      let errorMsg;
+      try {
+        await guardAgainstLocalChanges(emptyGit);
+      } catch (error) {
+        errorMsg = (error as Error).message;
+      }
+      expect(errorMsg).toMatch(
+        'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them:',
+      );
+      expect(errorMsg).toMatch(
+        JSON.stringify(
+          {
+            not_added: ['new-file.md'],
+            files: [
+              {
+                path: 'new-file.md',
+                index: '?',
+                working_dir: '?',
+              },
+            ],
+          },
+          null,
+          2,
+        ),
       );
     });
   });

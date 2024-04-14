@@ -34,6 +34,7 @@ export const ESLINT_PLUGIN_META = {
   title: 'ESLint',
   icon: 'eslint',
   description: 'Official Code PushUp ESLint plugin',
+  docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
   packageName: '@code-pushup/eslint-plugin',
   version: '0.1.0',
 } satisfies Partial<PluginConfig>;

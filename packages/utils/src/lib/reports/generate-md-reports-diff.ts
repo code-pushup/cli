@@ -1,7 +1,16 @@
 import { AuditDiff, ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import { Alignment, details, h1, h2, paragraphs, style, tableMd } from './md';
+import {
+  Alignment,
+  details,
+  h1,
+  h2,
+  link,
+  paragraphs,
+  style,
+  tableMd,
+} from './md';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -73,19 +82,19 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
             '🔄 Score change',
           ],
           ...sortChanges(changed).map(category => [
-            category.title,
+            formatTitle(category),
             formatScoreWithColor(category.scores.after),
             formatScoreWithColor(category.scores.before, { skipBold: true }),
             formatScoreChange(category.scores.diff),
           ]),
           ...added.map(category => [
-            category.title,
+            formatTitle(category),
             formatScoreWithColor(category.score),
             style('n/a (\\*)', ['i']),
             style('n/a (\\*)', ['i']),
           ]),
           ...unchanged.map(category => [
-            category.title,
+            formatTitle(category),
             formatScoreWithColor(category.score),
             formatScoreWithColor(category.score, { skipBold: true }),
             '–',
@@ -112,8 +121,8 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
         '🔄 Score change',
       ],
       rows: sortChanges(diff.groups.changed).map(group => [
-        group.plugin.title,
-        group.title,
+        formatTitle(group.plugin),
+        formatTitle(group),
         formatScoreWithColor(group.scores.after),
         formatScoreWithColor(group.scores.before, { skipBold: true }),
         formatScoreChange(group.scores.diff),
@@ -135,8 +144,8 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
         '🔄 Value change',
       ],
       rows: sortChanges(diff.audits.changed).map(audit => [
-        audit.plugin.title,
-        audit.title,
+        formatTitle(audit.plugin),
+        formatTitle(audit),
         `${getSquaredScoreMarker(audit.scores.after)} ${style(
           audit.displayValues.after || audit.values.after.toString(),
         )}`,
@@ -233,6 +242,19 @@ function summarizeDiffOutcomes(outcomes: DiffOutcome[], token: string): string {
       }
     })
     .join(', ');
+}
+
+function formatTitle({
+  title,
+  docsUrl,
+}: {
+  title: string;
+  docsUrl?: string;
+}): string {
+  if (docsUrl) {
+    return link(docsUrl, title);
+  }
+  return title;
 }
 
 type Change = {
