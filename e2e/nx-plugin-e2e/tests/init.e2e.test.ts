@@ -7,7 +7,7 @@ describe('nx-plugin g init', () => {
       command: 'nx',
       args: [
         'g',
-        './dist/packages/nx-plugin:init examples-react-todos-app --dryRun',
+        '@code-pushup/nx-plugin:init examples-react-todos-app --dryRun',
       ],
       observer: { onStdout: console.info },
     });
@@ -23,7 +23,7 @@ describe('nx-plugin g configuration', () => {
       command: 'nx',
       args: [
         'g',
-        './dist/packages/nx-plugin:init examples-react-todos-app --dryRun',
+        '@code-pushup/nx-plugin:init examples-react-todos-app --dryRun',
       ],
     });
 
