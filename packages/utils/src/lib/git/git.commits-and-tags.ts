@@ -1,6 +1,6 @@
-import {LogOptions as SimpleGitLogOptions, simpleGit} from 'simple-git';
-import {Commit, commitSchema} from '@code-pushup/models';
-import {isSemver} from '../semver';
+import { LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
+import { Commit, commitSchema } from '@code-pushup/models';
+import { isSemver } from '../semver';
 
 export async function getLatestCommit(
   git = simpleGit(),
@@ -49,8 +49,8 @@ export function filterLogs(
   }
   validateFilter(opt);
   const { from, to, maxCount } = opt;
-  const finIndex = <T>(tagName = '', fallback: T) => {
-    const idx = allTags.indexOf(tagName);
+  const finIndex = <T>(tagName?: string, fallback?: T) => {
+    const idx = allTags.indexOf(tagName ?? '');
     if (idx > -1) {
       return idx;
     }
@@ -83,22 +83,24 @@ export type LogOptions = {
 };
 
 export async function getSemverTags(
-  { targetBranch, ...opt }: LogOptions = {},
+  opt: LogOptions = {},
   git = simpleGit(),
 ): Promise<LogResult[]> {
   validateFilter(opt);
-
+  const { targetBranch, ...options } = opt;
   // make sure we have a target branch
+  // eslint-disable-next-line functional/no-let
   let currentBranch;
   if (targetBranch) {
     currentBranch = await getCurrentBranchOrTag(git);
     await git.checkout(targetBranch);
-  } else {
-    targetBranch = await getCurrentBranchOrTag(git);
   }
 
   // Fetch all tags merged into the target branch
-  const tagsRaw = await git.tag(['--merged', targetBranch]);
+  const tagsRaw = await git.tag([
+    '--merged',
+    targetBranch ?? (await getCurrentBranchOrTag(git)),
+  ]);
 
   const allTags = tagsRaw
     .split(/\n/)
@@ -106,12 +108,11 @@ export async function getSemverTags(
     .filter(Boolean)
     .filter(isSemver);
 
-  const relevantTags = filterLogs(allTags, opt);
+  const relevantTags = filterLogs(allTags, options);
 
-  const tagsWithHashes: LogResult[] = [];
-  for (const tag of relevantTags) {
-    tagsWithHashes.push(await getHashFromTag(tag, git));
-  }
+  const tagsWithHashes: LogResult[] = await Promise.all(
+    relevantTags.map(tag => getHashFromTag(tag, git)),
+  );
 
   if (currentBranch) {
     await git.checkout(currentBranch);
@@ -168,6 +169,7 @@ export async function getHashes(
   validateFilter({ from, to });
 
   // Ensure you are on the correct branch
+  // eslint-disable-next-line functional/no-let
   let currentBranch;
   if (targetBranch) {
     currentBranch = await getCurrentBranchOrTag(git);

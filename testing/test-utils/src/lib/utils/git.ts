@@ -45,11 +45,11 @@ export async function addUpdateFile(
     file ?? {};
   await writeFile(join(baseDir, name), content);
   await git.add(name);
-  if(tagName) {
-    await git.tag([tagName])
+  if (tagName) {
+    await git.tag([tagName]);
   }
-  if(commitMsg) {
-    await git.commit(commitMsg)
+  if (commitMsg) {
+    await git.commit(commitMsg);
   }
   return git;
 }

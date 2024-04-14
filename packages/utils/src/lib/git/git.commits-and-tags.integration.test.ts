@@ -1,9 +1,14 @@
-import {mkdir, rm} from 'node:fs/promises';
-import {join} from 'node:path';
-import {type SimpleGit, simpleGit} from 'simple-git';
-import {afterAll, beforeAll, describe, expect} from 'vitest';
-import {addUpdateFile, emptyGitMock,} from '@code-pushup/test-utils';
-import {getCurrentBranchOrTag, getHashes, getLatestCommit, getSemverTags,} from './git.commits-and-tags';
+import { mkdir, rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { type SimpleGit, simpleGit } from 'simple-git';
+import { afterAll, beforeAll, describe, expect } from 'vitest';
+import { addUpdateFile, emptyGitMock } from '@code-pushup/test-utils';
+import {
+  getCurrentBranchOrTag,
+  getHashes,
+  getLatestCommit,
+  getSemverTags,
+} from './git.commits-and-tags';
 
 describe('getCurrentBranchOrTag', () => {
   const baseDir = join(process.cwd(), 'tmp', 'git-tests');
@@ -92,7 +97,7 @@ describe.skip('getHashes', () => {
   });
 
   describe('without a branch and commits', () => {
-    it('getHashes should throw', async () => {
+    it('should throw', async () => {
       await expect(getHashes({}, gitMock)).rejects.toThrow(
         "your current branch 'master' does not have any commits yet",
       );
@@ -100,49 +105,48 @@ describe.skip('getHashes', () => {
   });
 
   describe('with a branch and commits clean', () => {
-    let commits: { hash: string; message: string }[] = [];
+    const commits: { hash: string; message: string }[] = [];
+
+    async function addLatestCommitToSet() {
+      const { hash = '', message = '' } = (await gitMock.log()).latest ?? {};
+      // eslint-disable-next-line functional/immutable-data
+      commits.unshift({ hash, message });
+    }
     beforeAll(async () => {
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Create README' });
-      commits.unshift(
-        (await gitMock.log()).latest as { hash: string; message: string },
-      );
+      await addLatestCommitToSet();
 
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 1' });
-      commits.unshift(
-        (await gitMock.log()).latest as { hash: string; message: string },
-      );
+      await addLatestCommitToSet();
 
       await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 2' });
-      commits.unshift(
-        (await gitMock.log()).latest as { hash: string; message: string },
-      );
+      await addLatestCommitToSet();
 
       await gitMock.checkout(['master']);
-      commits = commits.map(({ hash, message }) => ({ hash, message }));
     });
 
     afterAll(async () => {
       await gitMock.checkout(['master']);
     });
 
-    it('getHashes should get all commits from log if no option is passed', async () => {
+    it('should get all commits from log if no option is passed', async () => {
       await expect(getHashes({}, gitMock)).resolves.toStrictEqual(commits);
     });
 
-    it('getHashes should get last 2 commits from log if maxCount is set to 2', async () => {
+    it('should get last 2 commits from log if maxCount is set to 2', async () => {
       await expect(getHashes({ maxCount: 2 }, gitMock)).resolves.toStrictEqual([
         commits.at(0),
         commits.at(1),
       ]);
     });
 
-    it('getHashes should get commits from log based on "from"', async () => {
+    it('should get commits from log based on "from"', async () => {
       await expect(
         getHashes({ from: commits.at(0)?.hash }, gitMock),
       ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
     });
 
-    it('getHashes should get commits from log based on "from" and "to"', async () => {
+    it('should get commits from log based on "from" and "to"', async () => {
       await expect(
         getHashes(
           { from: commits.at(-1)?.hash, to: commits.at(0)?.hash },
@@ -151,7 +155,7 @@ describe.skip('getHashes', () => {
       ).resolves.toEqual([commits.at(-2), commits.at(-1)]);
     });
 
-    it('getHashes should get commits from log based on "from" and "to" and "maxCount"', async () => {
+    it('should get commits from log based on "from" and "to" and "maxCount"', async () => {
       await expect(
         getHashes(
           { from: commits.at(-1)?.hash, to: commits.at(0)?.hash, maxCount: 1 },
@@ -160,7 +164,7 @@ describe.skip('getHashes', () => {
       ).resolves.toEqual([commits.at(-1)]);
     });
 
-    it('getHashes should throw if "from" is undefined but "to" is defined', async () => {
+    it('should throw if "from" is undefined but "to" is defined', async () => {
       await expect(
         getHashes({ from: undefined, to: 'a' }, gitMock),
       ).rejects.toThrow(
@@ -192,21 +196,12 @@ describe('getSemverTags', () => {
   });
 
   describe('with a branch and only commits clean', () => {
-    let commits: { hash: string; message: string }[] = [];
     beforeAll(async () => {
       await addUpdateFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'Create README',
       });
-      commits.unshift(
-        (await gitSemverTagsMock.log()).latest as {
-          hash: string;
-          message: string;
-        },
-      );
-
       await gitSemverTagsMock.checkout(['master']);
-      commits = commits.map(({ hash, message }) => ({ hash, message }));
     });
 
     afterAll(async () => {
@@ -221,34 +216,20 @@ describe('getSemverTags', () => {
   });
 
   describe.skip('with a branch and tagged commits clean', () => {
-    let commits: { hash: string; message: string }[] = [];
     beforeAll(async () => {
       await gitSemverTagsMock.checkout(['master']);
       await addUpdateFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'Create README',
       });
-      commits.unshift(
-        (await gitSemverTagsMock.log()).latest as {
-          hash: string;
-          message: string;
-        },
-      );
 
       await addUpdateFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'release v1',
         tagName: '1',
       });
-      commits.unshift(
-        (await gitSemverTagsMock.log()).latest as {
-          hash: string;
-          message: string;
-        },
-      );
 
       await gitSemverTagsMock.checkout(['master']);
-      commits = commits.map(({ hash, message }) => ({ hash, message }));
     });
 
     afterAll(async () => {

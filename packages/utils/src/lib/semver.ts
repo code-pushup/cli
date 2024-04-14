@@ -17,11 +17,10 @@ export function isSemver(semverString = ''): boolean {
 }
 // eslint-disable functional/immutable-data
 export function sortSemvers(semverStrings: string[]): string[] {
-  return semverStrings
+  return [...semverStrings]
     .filter(Boolean)
     .filter(isSemver)
     .sort((a, b) =>
-      compare(normalizeSemver(a), normalizeSemver(b), '<=') ? -1 : 0,
-    )
-    .reverse();
+      compare(normalizeSemver(a), normalizeSemver(b), '>') ? -1 : 0,
+    );
 }
