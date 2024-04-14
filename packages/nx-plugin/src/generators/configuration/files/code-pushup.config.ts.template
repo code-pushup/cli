@@ -1,16 +1,13 @@
 import type { CoreConfig } from '@code-pushup/models';
 
+// see: https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md#coreconfig
 const config: CoreConfig = {
   persist: {
-    outputDir: '.code-pushup',
     format: ['json', 'md'],
   },
   plugins: [
     // ...
-  ],
-  categories: [
-    // ...
-  ],
+  ]
 };
 
 export default config;

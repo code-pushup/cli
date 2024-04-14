@@ -1,3 +1,3 @@
-export type AddToProjectGeneratorSchema = {
+export type ConfigurationGeneratorSchema = {
   project: string;
 };

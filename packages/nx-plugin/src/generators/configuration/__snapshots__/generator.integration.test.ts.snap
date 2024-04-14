@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`init generator > should add code-pushup.config.ts to the project root 1`] = `true`;
