@@ -7,6 +7,7 @@ import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { configurationGenerator } from './generator';
+import {readFile} from "node:fs/promises";
 
 describe('configuration generator', () => {
   let tree: Tree;
@@ -42,7 +43,7 @@ describe('configuration generator', () => {
         )}`,
       },
     });
-    expect(tree.exists('test-app/code-pushup.config.ts')).toMatchSnapshot();
+    expect(tree.read('test-app/code-pushup.config.ts')?.toString()).toMatchSnapshot();
   });
 
   it('should NOT add code-pushup.config.ts to the project root if code-pushup.config.js is given', async () => {
