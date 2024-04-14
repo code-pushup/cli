@@ -23,7 +23,7 @@ All of 1 group is unchanged.
 
 |🔌 Plugin|🛡️ Audit|📏 Current value|📏 Previous value|🔄 Value change|
 |:--|:--|:--:|:--:|:--:|
-|ESLint|Disallow unused variables|🟥 **1 error**|🟩 passed|![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red)|
+|[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|[Disallow unused variables](https://eslint.org/docs/latest/rules/no-unused-vars)|🟥 **1 error**|🟩 passed|![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red)|
 
 48 other audits are unchanged.
 
