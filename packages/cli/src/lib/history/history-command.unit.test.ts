@@ -59,19 +59,19 @@ vi.mock('simple-git', async () => {
 });
 
 describe('history-command', () => {
-  it.skip('should have 2 commits to crawl in history if maxCount is set to 2', async () => {
-    await yargsCli(
-      ['history', '--config=/test/code-pushup.config.ts', '--maxCount=2'],
-      {
-        ...DEFAULT_CLI_CONFIGURATION,
-        commands: [yargsHistoryCommandObject()],
-      },
-    ).parseAsync();
+  it('should pass targetBranch and forceCleanStatus to core history logic', async () => {
+    await yargsCli(['history', '--config=/test/code-pushup.config.ts'], {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsHistoryCommandObject()],
+    }).parseAsync();
 
-    expect(history).toHaveBeenCalledWith(expect.any(Object), [
-      'commit-1',
-      'commit-2--release-v1',
-    ]);
+    expect(history).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetBranch: 'main',
+        forceCleanStatus: false,
+      }),
+      expect.any(Array),
+    );
 
     expect(safeCheckout).toHaveBeenCalledTimes(1);
   });

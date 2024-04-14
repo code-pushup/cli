@@ -29,8 +29,8 @@ export async function normalizeHashOptions(
   return {
     ...processOptions,
     semverTag,
+    maxCount: maxCount && maxCount > 0 ? maxCount : undefined,
     from,
     to,
-    maxCount: maxCount && maxCount > 0 ? maxCount : undefined,
   };
 }

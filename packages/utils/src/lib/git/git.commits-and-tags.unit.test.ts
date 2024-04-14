@@ -63,7 +63,7 @@ describe('filterLogs', () => {
   });
 });
 
-describe('gitSemverTagsMock', () => {
+describe('getSemverTags', () => {
   it('should list all tags on the branch', async () => {
     await expect(getSemverTags({})).resolves.toStrictEqual([
       {

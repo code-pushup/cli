@@ -33,15 +33,16 @@ async function handler(args: unknown) {
   const results: LogResult[] = semverTag
     ? await getSemverTags(filterOptions)
     : await getHashes(filterOptions);
-
+  /*
   ui().logger.info(
     `Log ${chalk.bold(semverTag ? 'tags' : 'commits')} for branch ${chalk.bold(
       targetBranch,
     )}:`,
   );
   results.forEach(({ hash, message }) => {
-    ui().logger.info(`${hash} - ${message.slice(0, 100)}`);
+    ui().logger.info(`${hash} - ${message}`);
   });
+*/
 
   try {
     // run history logic

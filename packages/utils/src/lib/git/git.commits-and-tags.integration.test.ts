@@ -84,7 +84,7 @@ describe('getLatestCommit', () => {
   });
 });
 
-describe.skip('getHashes', () => {
+describe('getHashes', () => {
   const baseDir = join(process.cwd(), 'tmp', 'utils-git-get-hashes');
   let gitMock: SimpleGit;
 
@@ -215,7 +215,7 @@ describe('getSemverTags', () => {
     });
   });
 
-  describe.skip('with a branch and tagged commits clean', () => {
+  describe('with a branch and tagged commits clean', () => {
     beforeAll(async () => {
       await gitSemverTagsMock.checkout(['master']);
       await addUpdateFile(gitSemverTagsMock, {
