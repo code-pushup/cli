@@ -1,5 +1,7 @@
 import { knipPlugin } from './knip.plugin';
 
+export { knipPlugin } from './knip.plugin';
+
 export {
   KNIP_GROUP_DEPENDENCIES,
   KNIP_GROUP_FILES,
