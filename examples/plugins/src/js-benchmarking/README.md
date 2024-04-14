@@ -38,20 +38,20 @@ You can configure the plugin with the following options:
    };
    ```
 
-3.1. Create benchmark suite:
+   1. Create benchmark suite:
 
-```ts
-// typescript
-const suiteConfig = {
-  suiteName: 'glob',
-  targetImplementation: 'version-2',
-  cases: [
-    ['version-1', () => new Promise(resolve => setTimeout(resolve, 30))],
-    ['version-2', () => new Promise(resolve => setTimeout(resolve, 10))],
-    ['version-3', () => new Promise(resolve => setTimeout(resolve, 20))],
-  ],
-};
-```
+      ```ts
+      // typescript
+      const suiteConfig = {
+        suiteName: 'glob',
+        targetImplementation: 'version-2',
+        cases: [
+          ['version-1', () => new Promise(resolve => setTimeout(resolve, 30))],
+          ['version-2', () => new Promise(resolve => setTimeout(resolve, 10))],
+          ['version-3', () => new Promise(resolve => setTimeout(resolve, 20))],
+        ],
+      };
+      ```
 
 4. (Optional) Set up categories (use `npx code-pushup print-config` to list audits and groups).
 
