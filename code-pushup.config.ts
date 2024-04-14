@@ -1,22 +1,29 @@
 import 'dotenv/config';
-import {join} from 'node:path';
-import {z} from 'zod';
+import { join } from 'node:path';
+import { z } from 'zod';
 import {
-  fileSizePlugin,
-  fileSizeRecommendedRefs,
   JS_BENCHMARKING_PLUGIN_SLUG,
   JS_BENCHMARKING_TINYBENCH_RUNNER_PATH,
+  fileSizePlugin,
+  fileSizeRecommendedRefs,
   jsBenchmarkingPlugin,
   jsBenchmarkingSuiteNameToCategoryRef,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
-import eslintPlugin, {eslintConfigFromNxProjects,} from './dist/packages/plugin-eslint';
+import coveragePlugin, {
+  getNxCoveragePaths,
+} from './dist/packages/plugin-coverage';
+import eslintPlugin, {
+  eslintConfigFromNxProjects,
+} from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import {lighthouseGroupRef, lighthousePlugin,} from './dist/packages/plugin-lighthouse';
-import type {CoreConfig} from './packages/models/src';
+import {
+  lighthouseGroupRef,
+  lighthousePlugin,
+} from './dist/packages/plugin-lighthouse';
+import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z
