@@ -18,8 +18,8 @@ export async function configurationGenerator(
   const { root, targets } = projectConfiguration;
 
   const supportedFormats = ['ts', 'mjs', 'js'];
-  const firstExistingFormat = supportedFormats.find(
-    ext => tree.exists(join(root, `code-pushup.config.${ext}`))
+  const firstExistingFormat = supportedFormats.find(ext =>
+    tree.exists(join(root, `code-pushup.config.${ext}`)),
   );
   if (firstExistingFormat) {
     logger.warn(
