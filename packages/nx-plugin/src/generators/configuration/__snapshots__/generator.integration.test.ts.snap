@@ -5,9 +5,6 @@ exports[`configuration generator > should add code-pushup.config.ts to the proje
 
 // see: https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md#coreconfig
 const config: CoreConfig = {
-  persist: {
-    format: ['json', 'md'],
-  },
   plugins: [
     // ...
   ],
