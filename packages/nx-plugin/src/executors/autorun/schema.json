@@ -19,10 +19,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": [
-              "json",
-              "md"
-            ]
+            "enum": ["json", "md"]
           }
         }
       },
@@ -58,12 +55,7 @@
           "description": "Request timeout in minutes (default is 5)"
         }
       },
-      "required": [
-        "server",
-        "apiKey",
-        "organization",
-        "project"
-      ],
+      "required": ["server", "apiKey", "organization", "project"],
       "additionalProperties": false
     },
     "CoreConfig": {

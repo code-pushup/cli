@@ -33,10 +33,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": [
-              "json",
-              "md"
-            ]
+            "enum": ["json", "md"]
           }
         }
       },
@@ -72,12 +69,7 @@
           "description": "Request timeout in minutes (default is 5)"
         }
       },
-      "required": [
-        "server",
-        "apiKey",
-        "organization",
-        "project"
-      ],
+      "required": ["server", "apiKey", "organization", "project"],
       "additionalProperties": false
     },
     "CoreConfig": {
@@ -999,10 +991,7 @@
                         "description": "Output path"
                       }
                     },
-                    "required": [
-                      "command",
-                      "outputFile"
-                    ],
+                    "required": ["command", "outputFile"],
                     "additionalProperties": false,
                     "description": "How to execute runner"
                   }
@@ -1040,10 +1029,7 @@
                       "description": "Link to documentation (rationale)"
                     }
                   },
-                  "required": [
-                    "slug",
-                    "title"
-                  ],
+                  "required": ["slug", "title"],
                   "additionalProperties": false
                 },
                 "minItems": 1,
@@ -1077,10 +1063,7 @@
                             "description": "Weight used to calculate score"
                           }
                         },
-                        "required": [
-                          "slug",
-                          "weight"
-                        ],
+                        "required": ["slug", "weight"],
                         "additionalProperties": false,
                         "description": "Weighted reference to a group"
                       },
@@ -1107,23 +1090,13 @@
                       "description": "Group documentation site"
                     }
                   },
-                  "required": [
-                    "slug",
-                    "refs",
-                    "title"
-                  ],
+                  "required": ["slug", "refs", "title"],
                   "additionalProperties": false
                 },
                 "description": "List of groups"
               }
             },
-            "required": [
-              "title",
-              "slug",
-              "icon",
-              "runner",
-              "audits"
-            ],
+            "required": ["title", "slug", "icon", "runner", "audits"],
             "additionalProperties": false
           },
           "minItems": 1,
@@ -1164,10 +1137,7 @@
                     },
                     "type": {
                       "type": "string",
-                      "enum": [
-                        "audit",
-                        "group"
-                      ],
+                      "enum": ["audit", "group"],
                       "description": "Discriminant for reference kind, affects where `slug` is looked up"
                     },
                     "plugin": {
@@ -1177,12 +1147,7 @@
                       "description": "Plugin slug (plugin should contain referenced audit or group)"
                     }
                   },
-                  "required": [
-                    "slug",
-                    "weight",
-                    "type",
-                    "plugin"
-                  ],
+                  "required": ["slug", "weight", "type", "plugin"],
                   "additionalProperties": false
                 },
                 "minItems": 1
@@ -1212,19 +1177,13 @@
                 "description": "Is this a binary category (i.e. only a perfect score considered a \"pass\")?"
               }
             },
-            "required": [
-              "slug",
-              "refs",
-              "title"
-            ],
+            "required": ["slug", "refs", "title"],
             "additionalProperties": false
           },
           "description": "Categorization of individual audits"
         }
       },
-      "required": [
-        "plugins"
-      ],
+      "required": ["plugins"],
       "additionalProperties": false
     }
   },

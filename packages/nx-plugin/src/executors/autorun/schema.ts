@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from 'zod';
 
 const executorOnlySchema = z.object({
   projectPrefix: z
@@ -17,9 +17,7 @@ const globalOptionsSchema = z.object({
   verbose: z.boolean().describe('additional information').optional(),
 });
 
-export const executorSchema = globalOptionsSchema
- .merge(executorOnlySchema)
-
+export const executorSchema = globalOptionsSchema.merge(executorOnlySchema);
 
 // @TODO add RunCommandOptions
 export type AutorunCommandExecutor = z.infer<typeof executorSchema>;

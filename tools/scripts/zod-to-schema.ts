@@ -1,9 +1,9 @@
-import {writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import yargs from 'yargs';
-import {zodToJsonSchema} from 'zod-to-json-schema';
-import {persistConfigSchema} from './packages/models/src';
-import {z} from "zod";
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+import { persistConfigSchema } from './packages/models/src';
 
 const executorOnlySchema = z.object({
   projectPrefix: z
@@ -23,17 +23,15 @@ const globalOptionsSchema = z.object({
 });
 
 export const executorSchema = persistConfigSchema;
-globalOptionsSchema
-  .merge(executorOnlySchema)
-  .merge(z
-    .object({
-      // persist: z.optional(persistConfigSchema).optional(),
-      // upload: persistConfigSchema.optional()
-    }));
+globalOptionsSchema.merge(executorOnlySchema).merge(
+  z.object({
+    // persist: z.optional(persistConfigSchema).optional(),
+    // upload: persistConfigSchema.optional()
+  }),
+);
 
 export type AutorunCommandExecutor = z.infer<typeof executorSchema>;
 export default executorSchema;
-
 
 const cli = yargs(process.argv).options({
   filename: {

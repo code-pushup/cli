@@ -1,8 +1,8 @@
-import {writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import yargs from 'yargs';
-import {zodToJsonSchema} from 'zod-to-json-schema';
-import {z} from "zod";
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const executorOnlySchema = z.object({
   projectPrefix: z
@@ -21,13 +21,10 @@ const globalOptionsSchema = z.object({
   verbose: z.boolean().describe('additional information').optional(),
 });
 
-export const executorSchema = globalOptionsSchema
-  .merge(executorOnlySchema)
+export const executorSchema = globalOptionsSchema.merge(executorOnlySchema);
 
 export type AutorunCommandExecutor = z.infer<typeof executorSchema>;
 export default executorSchema;
-
-
 
 const cli = yargs(process.argv).options({
   filename: {
