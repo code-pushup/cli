@@ -5,8 +5,9 @@ import { executeProcess } from '@code-pushup/utils';
 describe('nx-plugin g configuration', () => {
   it('should run configuration generator on react-todos-app', async () => {
     const { code, stderr, stdout } = await executeProcess({
-      command: 'nx',
+      command: 'npx',
       args: [
+        'nx',
         'g',
         '@code-pushup/nx-plugin:configuration react-todos-app --dryRun',
       ],
