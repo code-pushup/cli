@@ -40,12 +40,7 @@
     },
     "nx-release-publish": {
       "cache": false,
-      "dependsOn": [
-        {
-          "target": "build",
-          "params": "forward"
-        }
-      ],
+      "dependsOn": ["build"],
       "options": {
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/"
@@ -114,7 +109,8 @@
       "conventionalCommits": true,
       "generatorOptions": {
         "skipLockFileUpdate": true
-      }
+      },
+      "preVersionCommand": "nx run-many --targets=build --skip-nx-cache"
     },
     "releaseTagPattern": "v{version}"
   },
