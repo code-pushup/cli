@@ -47,16 +47,17 @@ describe('configuration generator', () => {
     ).toMatchSnapshot();
   });
 
-  it('should NOT add code-pushup.config.ts to the project root if code-pushup.config.js is given', async () => {
+  it('should skip code-pushup.config.ts generation if config fin in ts, mjs or js format already exists', async () => {
     tree.write(join('code-pushup.config.js'), 'export default {}');
-    expect(tree.exists('code-pushup.config.js')).toBe(true);
-
     await configurationGenerator(tree, { project: testProjectName });
 
     const projectConfiguration = readProjectConfiguration(
       tree,
       testProjectName,
     );
+
+    expect(tree.exists('code-pushup.config.ts')).toBe(false);
+
     expect(projectConfiguration.targets?.['code-pushup']).toEqual({
       executor: 'nx:run-commands',
       options: {
