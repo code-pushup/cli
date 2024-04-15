@@ -18,12 +18,9 @@ export async function configurationGenerator(
   const { root, targets } = projectConfiguration;
 
   const supportedFormats = ['ts', 'mjs', 'js'];
-  const firstExistingFormat = supportedFormats
-    .map(ext =>
-      tree.exists(join(root, `code-pushup.config.${ext}`)) ? ext : false,
-    )
-    .filter(Boolean)
-    .at(0);
+  const firstExistingFormat = supportedFormats.find(
+    ext => tree.exists(join(root, `code-pushup.config.${ext}`))
+  );
   if (firstExistingFormat) {
     logger.warn(
       `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
