@@ -2,6 +2,7 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import yargs from 'yargs';
 import {zodToJsonSchema} from 'zod-to-json-schema';
+import {persistConfigSchema} from './packages/models/src';
 import {z} from "zod";
 
 const executorOnlySchema = z.object({
@@ -21,12 +22,17 @@ const globalOptionsSchema = z.object({
   verbose: z.boolean().describe('additional information').optional(),
 });
 
-export const executorSchema = globalOptionsSchema
+export const executorSchema = persistConfigSchema;
+globalOptionsSchema
   .merge(executorOnlySchema)
+  .merge(z
+    .object({
+      // persist: z.optional(persistConfigSchema).optional(),
+      // upload: persistConfigSchema.optional()
+    }));
 
 export type AutorunCommandExecutor = z.infer<typeof executorSchema>;
 export default executorSchema;
-
 
 
 const cli = yargs(process.argv).options({
@@ -52,6 +58,11 @@ const cli = yargs(process.argv).options({
 
   const jsonSchema = zodToJsonSchema(executorSchema, {
     name: 'CoreConfig',
+    target: 'jsonSchema7',
+    definitions: {
+      persistOptions: persistConfigSchema,
+      //   uploadOptions: uploadConfigSchema,
+    },
   });
 
   const outputPath = join(outputDir, filename);

@@ -1,6 +1,4 @@
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import { persistConfigSchema } from '@code-pushup/models';
+import {z} from "zod";
 
 const executorOnlySchema = z.object({
   projectPrefix: z
@@ -18,13 +16,11 @@ const globalOptionsSchema = z.object({
   progress: z.boolean().describe('show progress').optional(),
   verbose: z.boolean().describe('additional information').optional(),
 });
-const executorSchema = z
-  .object({
-    persist: z.optional(persistConfigSchema).optional(),
-    // upload: persistConfigSchema.optional()
-  })
-  .merge(globalOptionsSchema)
-  .merge(executorOnlySchema);
 
+export const executorSchema = globalOptionsSchema
+ .merge(executorOnlySchema)
+
+
+// @TODO add RunCommandOptions
 export type AutorunCommandExecutor = z.infer<typeof executorSchema>;
 export default executorSchema;

@@ -2,38 +2,34 @@ import {
   Tree,
   formatFiles,
   generateFiles,
-  logger,
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
-import { join } from 'node:path';
-import { ConfigurationGeneratorSchema } from './schema';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { ui } from '@code-pushup/utils';
+import { AddToProjectGeneratorSchema } from './schema';
 
-export async function configurationGenerator(
+export async function addToProjectGenerator(
   tree: Tree,
-  options: ConfigurationGeneratorSchema,
+  options: AddToProjectGeneratorSchema,
 ) {
   const projectConfiguration = readProjectConfiguration(tree, options.project);
 
   const { root, targets } = projectConfiguration;
 
-  const supportedFormats = ['ts', 'mjs', 'js'];
-  const firstExistingFormat = supportedFormats
-    .map(ext =>
-      tree.exists(join(root, `code-pushup.config.${ext}`)) ? ext : false,
-    )
-    .filter(Boolean)
-    .at(0);
-  if (firstExistingFormat) {
-    logger.warn(
-      `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
-    );
+  if (tree.exists(join(root, 'code-pushup.config.ts'))) {
+    ui().logger.info('Code PushUp already configured for this project');
     return;
   }
 
-  generateFiles(tree, join(__dirname, 'files'), root, options);
+  generateFiles(
+    tree,
+    join(fileURLToPath(dirname(import.meta.url)), 'files'),
+    root,
+    options,
+  );
 
-  // @TODO remove when implementing https://github.com/code-pushup/cli/issues/619
   updateProjectConfiguration(tree, options.project, {
     ...projectConfiguration,
     targets: {
@@ -54,4 +50,4 @@ export async function configurationGenerator(
   await formatFiles(tree);
 }
 
-export default configurationGenerator;
+export default addToProjectGenerator;

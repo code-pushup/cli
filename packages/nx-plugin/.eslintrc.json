@@ -11,9 +11,7 @@
       "parserOptions": {
         "project": ["packages/nx-plugin/tsconfig.*?.json"]
       },
-      "rules": {
-        "unicorn/prefer-module": "off"
-      }
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
@@ -27,7 +25,7 @@
       }
     },
     {
-      "files": ["./package.json", "./generators.json", "./executors.json"],
+      "files": ["./package.json", "./generators.json"],
       "parser": "jsonc-eslint-parser",
       "rules": {
         "@nx/nx-plugin-checks": "error"
