@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "autorun": {
+      "implementation": "./src/executors/autorun/executor",
+      "schema": "./src/executors/autorun/schema.json",
+      "description": "autorun executor"
+    }
+  }
+}

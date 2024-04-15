@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Autorun executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "dryRun": {
+      "type": "boolean",
+      "description": "Don't execute, just print the produced command",
+      "default": false
+    },
+    "projectPrefix": {
+      "type": "string",
+      "description": "Prefix the project name under upload configuration. A '-' is appended automatically E.g. 'cp' => 'cp-<project>'"
+    },
+    "persist": {
+      "type": "object",
+      "description": "Prefix the project name under upload configuration. A '-' is appended automatically E.g. 'cp' => 'cp-<project>'"
+    }
+  },
+  "required": []
+}

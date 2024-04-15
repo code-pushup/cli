@@ -44,6 +44,10 @@
       "command": "nx g ./dist/packages/nx-plugin:configuration",
       "dependsOn": ["build"]
     },
+    "generate-schemas": {
+      "command": "tsx packages/nx-plugin/tools/schema.generate.ts",
+      "dependsOn": ["build"]
+    },
     "publish": {
       "command": "node tools/scripts/publish.mjs nx-plugin {args.ver} {args.tag}",
       "dependsOn": ["build"]

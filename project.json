@@ -26,6 +26,12 @@
           "target": "build"
         }
       ]
+    },
+    "cp--autorun": {
+      "executor": "@code-pushup/nx-plugin:autorun",
+      "options": {
+        "projectPrefix": "zz"
+      }
     }
   }
 }
