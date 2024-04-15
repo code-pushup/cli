@@ -12,23 +12,23 @@ describe('nx-plugin g configuration', () => {
       ],
     });
 
-    const cleadStderr = removeColorCodes(stderr);
+    const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
 
-    expect(cleadStderr).toContain(
+    expect(cleanedStderr).toContain(
       `NOTE: No config file created as code-pushup.config.js file already exists.`,
     );
-    expect(cleadStderr).toContain(
+    expect(cleanedStderr).toContain(
       'NOTE: The "dryRun" flag means no changes were made.',
     );
 
-    const cleadStdout = removeColorCodes(stdout);
-    expect(cleadStdout).toContain(
+    const cleanedStdout = removeColorCodes(stdout);
+    expect(cleanedStdout).toContain(
       `NX  Generating @code-pushup/nx-plugin:configuration`,
     );
     /*
-     expect(cleadStdout).toContain(`CREATE examples/react-todos-app/code-pushup.config.ts`);
-     expect(cleadStdout).toContain(`UPDATE examples/react-todos-app/project.json`);
+     expect(cleanedStdout).toContain(`CREATE examples/react-todos-app/code-pushup.config.ts`);
+     expect(cleanedStdout).toContain(`UPDATE examples/react-todos-app/project.json`);
      */
   });
 });

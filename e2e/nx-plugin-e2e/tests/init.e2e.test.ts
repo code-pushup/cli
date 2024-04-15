@@ -10,14 +10,16 @@ describe('nx-plugin g init', () => {
       observer: { onStdout: console.info },
     });
 
-    const cleadStderr = removeColorCodes(stderr);
-    expect(cleadStderr).toContain(
+    const cleanedStderr = removeColorCodes(stderr);
+    expect(cleanedStderr).toContain(
       'NOTE: The "dryRun" flag means no changes were made.',
     );
     expect(code).toBe(0);
-    const cleadStdout = removeColorCodes(stdout);
-    expect(cleadStdout).toContain(`NX  Generating @code-pushup/nx-plugin:init`);
-    expect(cleadStdout).toContain(`UPDATE package.json`);
-    expect(cleadStdout).toContain(`UPDATE nx.json`);
+    const cleanedStdout = removeColorCodes(stdout);
+    expect(cleanedStdout).toContain(
+      `NX  Generating @code-pushup/nx-plugin:init`,
+    );
+    expect(cleanedStdout).toContain(`UPDATE package.json`);
+    expect(cleanedStdout).toContain(`UPDATE nx.json`);
   });
 });
