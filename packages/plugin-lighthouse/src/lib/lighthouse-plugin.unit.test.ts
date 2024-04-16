@@ -1,18 +1,15 @@
 import { expect } from 'vitest';
-import {
-  auditSchema,
-  groupSchema,
-  pluginConfigSchema,
-} from '@code-pushup/models';
-import { AUDITS, GROUPS } from './constants';
+import { pluginConfigSchema } from '@code-pushup/models';
 import { lighthousePlugin } from './lighthouse-plugin';
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {
     const pluginConfig = lighthousePlugin('https://code-pushup-portal.com');
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.audits.length).toBeGreaterThan(0);
-    expect(pluginConfig.groups?.length).toBeGreaterThan(0);
+
+    const { audits, groups } = pluginConfig;
+    expect(audits.length).toBeGreaterThan(100);
+    expect(groups).toHaveLength(5);
   });
 
   it('should filter audits by onlyAudits string "first-contentful-paint"', () => {
@@ -48,22 +45,4 @@ describe('lighthousePlugin-config-object', () => {
       ]),
     );
   });
-});
-
-describe('constants', () => {
-  it.each(AUDITS.map(a => [a.slug, a]))(
-    'should parse audit "%s" correctly',
-    (slug, audit) => {
-      expect(() => auditSchema.parse(audit)).not.toThrow();
-      expect(audit.slug).toEqual(slug);
-    },
-  );
-
-  it.each(GROUPS.map(g => [g.slug, g]))(
-    'should parse group "%s" correctly',
-    (slug, group) => {
-      expect(() => groupSchema.parse(group)).not.toThrow();
-      expect(group.slug).toEqual(slug);
-    },
-  );
 });

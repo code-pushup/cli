@@ -10,26 +10,8 @@
         "storage": "tmp/local-registry/storage"
       }
     },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "syncVersions": true,
-        "preset": "angular",
-        "commitMessageFormat": "release: {version} [skip ci]",
-        "postTargets": ["github"],
-        "push": true,
-        "skipProjectChangelog": true
-      }
-    },
-    "github": {
-      "executor": "@jscutlery/semver:github",
-      "options": {
-        "tag": "{tag}",
-        "notes": "{notes}"
-      }
-    },
-    "run-collect": {
-      "command": "npx dist/packages/cli collect",
+    "code-pushup": {
+      "command": "npx dist/packages/cli",
       "dependsOn": [
         {
           "projects": [
@@ -37,38 +19,7 @@
             "plugin-eslint",
             "plugin-coverage",
             "plugin-js-packages",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
-        }
-      ]
-    },
-    "run-upload": {
-      "command": "npx dist/packages/cli upload",
-      "dependsOn": [
-        {
-          "projects": [
-            "cli",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
-        }
-      ]
-    },
-    "run-autorun": {
-      "command": "npx dist/packages/cli autorun",
-      "dependsOn": [
-        {
-          "projects": [
-            "cli",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
+            "plugin-lighthouse",
             "examples-plugins",
             "react-todos-app"
           ],

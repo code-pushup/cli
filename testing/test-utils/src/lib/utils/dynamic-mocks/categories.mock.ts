@@ -1,7 +1,7 @@
 import type { CategoryConfig } from '@code-pushup/models';
 import { eslintAuditRefMock } from './eslint-plugin.mock';
 
-const CATEGORIES_MAP = {
+export const CATEGORIES_MAP = {
   performance: {
     slug: 'performance',
     title: 'Performance',
@@ -66,7 +66,9 @@ const CATEGORIES_MAP = {
   },
 } satisfies Record<string, CategoryConfig>;
 
-type CategorySlug = keyof typeof CATEGORIES_MAP;
+export type CategorySlug = keyof typeof CATEGORIES_MAP;
+
+export const CATEGORY_SLUGS = Object.keys(CATEGORIES_MAP) as CategorySlug[];
 
 export function categoryConfigMock(
   slug: CategorySlug = 'performance',

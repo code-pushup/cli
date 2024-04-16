@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { IssueSeverity } from '@code-pushup/models';
 import {
+  AuditSeverity,
   FinalJSPackagesPluginConfig,
   JSPackagesPluginConfig,
-  PackageAuditLevel,
   fillAuditLevelMapping,
   jsPackagesPluginConfigSchema,
 } from './config';
@@ -56,9 +55,7 @@ describe('jsPackagesPluginConfigSchema', () => {
 
 describe('fillAuditLevelMapping', () => {
   it('should fill in defaults', () => {
-    expect(fillAuditLevelMapping({})).toEqual<
-      Record<PackageAuditLevel, IssueSeverity>
-    >({
+    expect(fillAuditLevelMapping({})).toEqual<AuditSeverity>({
       critical: 'error',
       high: 'error',
       moderate: 'warning',
@@ -68,9 +65,9 @@ describe('fillAuditLevelMapping', () => {
   });
 
   it('should override mapping for given values', () => {
-    expect(fillAuditLevelMapping({ high: 'warning', low: 'info' })).toEqual<
-      Record<PackageAuditLevel, IssueSeverity>
-    >({
+    expect(
+      fillAuditLevelMapping({ high: 'warning', low: 'info' }),
+    ).toEqual<AuditSeverity>({
       critical: 'error',
       high: 'warning',
       moderate: 'warning',

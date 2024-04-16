@@ -12,6 +12,25 @@ Make sure to install dependencies:
 npm install
 ```
 
+## Environment Variables
+
+This table provides a quick overview of the environmental setup, with detailed explanations in the corresponding sections.
+
+| Feature                          | Local Default | CI Default         | Description                                                                                                                   |
+| -------------------------------- | ------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`             | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
+| `env.CUSTOM_CHROME_PATH`         | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
+| Quality Pipeline                 | Off           | On                 | Runs all plugins against the codebase.                                                                                        |
+
+**❗️** Test Inclusion Logic
+
+- `INCLUDE_SLOW_TESTS='false'` skips long tests.
+- without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
+
+**❗️❗️** Windows specific path set only in CI
+
+- some setups also require this setting locally
+
 ## Development
 
 Refer to docs on [how to run tasks in Nx](https://nx.dev/core-features/run-tasks).
@@ -38,8 +57,17 @@ npx nx build cli
 npx nx affected:lint
 
 # run Code PushUp command on this repository
-npx nx run-collect
+npx nx code-pushup -- collect
 ```
+
+## Testing
+
+Some of the plugins have a longer runtime. In order to ensure better DX, longer tests are excluded by default when executing tests locally.
+
+You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
+
+To change this setup, open (or create) the `.env` file in the root folder.
+Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
 ## Git
 

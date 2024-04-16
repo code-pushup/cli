@@ -16,6 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/models/integration-tests',
+      exclude: ['mocks/**', '**/types.ts', 'zod2md.config.ts'],
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

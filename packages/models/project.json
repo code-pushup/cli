@@ -31,23 +31,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/models/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/models/unit-tests"
+        "config": "packages/models/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/models/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/models/integration-tests"
-      }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/models"
+        "config": "packages/models/vite.config.integration.ts"
       }
     },
     "generate-docs": {

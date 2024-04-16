@@ -27,23 +27,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-lighthouse/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/plugin-lighthouse/unit-tests"
+        "config": "packages/plugin-lighthouse/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/plugin-lighthouse/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/plugin-lighthouse/integration-tests"
-      }
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/plugin-lighthouse"
+        "config": "packages/plugin-lighthouse/vite.config.integration.ts"
       }
     }
   },

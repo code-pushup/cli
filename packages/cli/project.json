@@ -31,18 +31,14 @@
     },
     "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/cli/vite.config.unit.ts",
-        "reportsDirectory": "../../coverage/cli/unit-tests"
+        "config": "packages/cli/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "packages/cli/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/cli/integration-tests"
+        "config": "packages/cli/vite.config.integration.ts"
       }
     },
     "run-help": {
@@ -62,11 +58,6 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    },
-    "deploy": {
-      "options": {
-        "distFolderPath": "dist/packages/cli"
-      }
     }
   },
   "tags": ["scope:core", "type:app"]

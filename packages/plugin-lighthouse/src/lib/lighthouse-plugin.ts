@@ -1,28 +1,42 @@
+import type { PluginConfig } from '@code-pushup/models';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
+import { normalizeFlags } from './normalize-flags';
 import {
-  type Config as LighthouseConfig,
-  type CliFlags as LighthouseFlags,
-} from 'lighthouse';
-import { PluginConfig } from '@code-pushup/models';
-import { AUDITS, GROUPS, LIGHTHOUSE_PLUGIN_SLUG } from './constants';
+  LIGHTHOUSE_GROUPS,
+  LIGHTHOUSE_NAVIGATION_AUDITS,
+  createRunnerFunction,
+} from './runner';
+import type { LighthouseOptions } from './types';
 import { filterAuditsAndGroupsByOnlyOptions } from './utils';
 
 export function lighthousePlugin(
   url: string,
-  flags?: Partial<LighthouseFlags>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  config?: Partial<LighthouseConfig>,
+  flags?: LighthouseOptions,
 ): PluginConfig {
+  const {
+    skipAudits = [],
+    onlyAudits = [],
+    onlyCategories = [],
+    ...unparsedFlags
+  } = normalizeFlags(flags ?? {});
+
   const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
-    AUDITS,
-    GROUPS,
-    flags,
+    LIGHTHOUSE_NAVIGATION_AUDITS,
+    LIGHTHOUSE_GROUPS,
+    { skipAudits, onlyAudits, onlyCategories },
   );
+
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: 'Lighthouse',
     icon: 'lighthouse',
     audits,
     groups,
-    runner: () => audits.map(({ slug }) => ({ slug, value: 0, score: 0 })),
+    runner: createRunnerFunction(url, {
+      skipAudits,
+      onlyAudits,
+      onlyCategories,
+      ...unparsedFlags,
+    }),
   };
 }

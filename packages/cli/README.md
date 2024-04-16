@@ -168,9 +168,9 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 **Example for custom plugins:**
 
-- 📏 [File Size](../../examples/plugins/src/file-size)
-- 📦 [Package Json](../../examples/plugins/src/package-json)
-- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse))
+- 📏 [File Size](../../examples/plugins/src/file-size) - example of basic runner executor
+- 📦 [Package Json](../../examples/plugins/src/package-json) - example of audits and groups
+- 🔥 [Lighthouse](../../examples/plugins/src/lighthouse) (official implementation [here](../../../../packages/plugin-lighthouse)) - example of a basic command executor
 
 ## CLI commands and options
 
@@ -239,6 +239,25 @@ Description:
 Run plugins, collect results and upload the report to the Code PushUp portal.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+#### `history` command
+
+Usage:
+`code-pushup history`
+
+Description:
+Run plugins, collect results and upload the report to the Code PushUp portal for a specified number of commits.
+
+Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+| Option                   | Type      | Default | Description                                                      |
+| ------------------------ | --------- | ------- | ---------------------------------------------------------------- |
+| **`--targetBranch`**     | `string`  | 'main'  | Branch to crawl history.                                         |
+| **`--forceCleanStatus`** | `boolean` | `false` | If we reset the status to a clean git history forcefully or not. |
+| **`--maxCount`**         | `number`  | 5       | Number of commits.                                               |
+| **`--skipUploads`**      | `boolean` | `false` | Upload created reports                                           |
+| **`--from`**             | `string`  | n/a     | Hash to start in history                                         |
+| **`--to`**               | `string`  | n/a     | Hash to end in history                                           |
 
 ### `compare` command
 

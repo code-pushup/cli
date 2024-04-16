@@ -1,59 +1,34 @@
-import { type CliFlags } from 'lighthouse';
-import { Result } from 'lighthouse/types/lhr/audit-result';
-import { Audit, AuditOutput, AuditOutputs, Group } from '@code-pushup/models';
-import {
-  filterItemRefsBy,
-  objectToCliArgs,
-  toArray,
-  ui,
-} from '@code-pushup/utils';
-import { LIGHTHOUSE_REPORT_NAME } from './constants';
+import { Audit, CategoryRef, Group } from '@code-pushup/models';
+import { filterItemRefsBy, toArray } from '@code-pushup/utils';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
+import { LighthouseCliFlags } from './runner';
 
-type RefinedLighthouseOption = {
-  url: CliFlags['_'];
-  chromeFlags?: Record<CliFlags['chromeFlags'][number], string>;
-};
-export type LighthouseCliOptions = RefinedLighthouseOption &
-  Partial<Omit<CliFlags, keyof RefinedLighthouseOption>>;
+export type LighthouseGroupSlugs =
+  | 'performance'
+  | 'accessibility'
+  | 'best-practices'
+  | 'seo'
+  | 'pwa';
 
-export function getLighthouseCliArguments(
-  options: LighthouseCliOptions,
-): string[] {
-  const {
-    url,
-    outputPath = LIGHTHOUSE_REPORT_NAME,
-    onlyAudits = [],
-    output = 'json',
-    verbose = false,
-    chromeFlags = {},
-  } = options;
-
-  // eslint-disable-next-line functional/no-let
-  let argsObj: Record<string, unknown> = {
-    _: ['lighthouse', url.join(',')],
-    verbose,
-    output,
-    'output-path': outputPath,
+export function lighthouseGroupRef(
+  groupSlug: LighthouseGroupSlugs,
+  weight = 1,
+): CategoryRef {
+  return {
+    plugin: LIGHTHOUSE_PLUGIN_SLUG,
+    slug: groupSlug,
+    type: 'group',
+    weight,
   };
+}
 
-  if (onlyAudits != null && onlyAudits.length > 0) {
-    argsObj = {
-      ...argsObj,
-      onlyAudits,
-    };
-  }
-
-  // handle chrome flags
-  if (Object.keys(chromeFlags).length > 0) {
-    argsObj = {
-      ...argsObj,
-      chromeFlags: Object.entries(chromeFlags)
-        .map(([key, value]) => `--${key}=${value}`)
-        .join(' '),
-    };
-  }
-
-  return objectToCliArgs(argsObj);
+export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
+  return {
+    plugin: LIGHTHOUSE_PLUGIN_SLUG,
+    slug: auditSlug,
+    type: 'audit',
+    weight,
+  };
 }
 
 export class AuditsNotImplementedError extends Error {
@@ -62,10 +37,7 @@ export class AuditsNotImplementedError extends Error {
   }
 }
 
-export function validateOnlyAudits(
-  audits: Audit[],
-  onlyAudits: string | string[],
-): boolean {
+export function validateAudits(audits: Audit[], onlyAudits: string[]): boolean {
   const missingAudtis = toArray(onlyAudits).filter(
     slug => !audits.some(audit => audit.slug === slug),
   );
@@ -73,37 +45,6 @@ export function validateOnlyAudits(
     throw new AuditsNotImplementedError(missingAudtis);
   }
   return true;
-}
-
-export function toAuditOutputs(lhrAudits: Result[]): AuditOutputs {
-  return lhrAudits.map(
-    ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      details,
-      displayValue,
-    }: Result) => {
-      const auditOutput: AuditOutput = {
-        slug,
-        score: score ?? 1, // score can be null
-        value,
-        displayValue,
-      };
-
-      if (details == null) {
-        return auditOutput;
-      }
-
-      // @TODO implement switch case for detail parsing. Related to #90
-      const unsupportedType = details.type;
-      ui().logger.info(
-        `Parsing details from type ${unsupportedType} is not implemented.`,
-      );
-
-      return auditOutput;
-    },
-  );
 }
 
 export class CategoriesNotImplementedError extends Error {
@@ -125,23 +66,31 @@ export function validateOnlyCategories(
   return true;
 }
 
+export type FilterOptions = Partial<
+  Pick<LighthouseCliFlags, 'onlyAudits' | 'onlyCategories' | 'skipAudits'>
+>;
+
 export function filterAuditsAndGroupsByOnlyOptions(
   audits: Audit[],
   groups: Group[],
-  options?: Pick<CliFlags, 'onlyAudits' | 'onlyCategories'>,
+  options?: FilterOptions,
 ): {
   audits: Audit[];
   groups: Group[];
 } {
-  const { onlyAudits, onlyCategories } = options ?? {};
+  const {
+    onlyAudits = [],
+    skipAudits = [],
+    onlyCategories = [],
+  } = options ?? {};
 
   // category wins over audits
-  if (onlyCategories && onlyCategories.length > 0) {
+  if (onlyCategories.length > 0) {
     validateOnlyCategories(groups, onlyCategories);
 
-    const categorieSlugs = new Set(onlyCategories);
+    const categorySlugs = new Set(onlyCategories);
     const filteredGroups: Group[] = groups.filter(({ slug }) =>
-      categorieSlugs.has(slug),
+      categorySlugs.has(slug),
     );
     const auditSlugsFromRemainingGroups = new Set(
       filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
@@ -152,12 +101,23 @@ export function filterAuditsAndGroupsByOnlyOptions(
       ),
       groups: filteredGroups,
     };
-  } else if (onlyAudits && onlyAudits.length > 0) {
-    validateOnlyAudits(audits, onlyAudits);
-    const auditSlugs = new Set(onlyAudits);
+  } else if (onlyAudits.length > 0 || skipAudits.length > 0) {
+    validateAudits(audits, onlyAudits);
+    validateAudits(audits, skipAudits);
+    const onlyAuditSlugs = new Set(onlyAudits);
+    const skipAuditSlugs = new Set(skipAudits);
+    const filterAudits = ({ slug }: Pick<Audit, 'slug'>) =>
+      !(
+        // audit is NOT in given onlyAuditSlugs
+        (
+          (onlyAudits.length > 0 && !onlyAuditSlugs.has(slug)) ||
+          // audit IS in given skipAuditSlugs
+          (skipAudits.length > 0 && skipAuditSlugs.has(slug))
+        )
+      );
     return {
-      audits: audits.filter(({ slug }) => auditSlugs.has(slug)),
-      groups: filterItemRefsBy(groups, ({ slug }) => auditSlugs.has(slug)),
+      audits: audits.filter(filterAudits),
+      groups: filterItemRefsBy(groups, filterAudits),
     };
   }
   // return unchanged

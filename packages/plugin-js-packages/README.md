@@ -10,8 +10,13 @@ This plugin checks for known vulnerabilities and outdated dependencies.
 It supports the following package managers:
 
 - [NPM](https://docs.npmjs.com/)
-- [Yarn v1](https://classic.yarnpkg.com/docs/) & [Yarn v2+](https://yarnpkg.com/getting-started)
+- [Yarn v1](https://classic.yarnpkg.com/docs/)
+- [Yarn v2+](https://yarnpkg.com/getting-started)
+  - In order to check outdated dependencies for Yarn v2+, you need to install [`yarn-plugin-outdated`](https://github.com/mskelton/yarn-plugin-outdated).
 - [PNPM](https://pnpm.io/pnpm-cli)
+
+> ![NOTE]
+> As of now, Yarn v2 does not support security audit of optional dependencies. Only production and dev dependencies audits will be included in the report.
 
 ## Getting started
 
@@ -97,7 +102,7 @@ The plugin accepts the following parameters:
 
 ### Audits and group
 
-This plugin provides a group per check for a convenient declaration in your config.
+This plugin provides a group per check for a convenient declaration in your config. Each group contains audits for all supported groups of dependencies (`prod`, `dev` and `optional`).
 
 ```ts
      // ...
@@ -158,3 +163,33 @@ Each dependency group has its own audit. If you want to check only a subset of d
        // ...
      ],
 ```
+
+## Score calculation
+
+Audit output score is a numeric value in the range 0-1.
+
+### Security audit
+
+The score for security audit is decreased for each vulnerability found based on its **severity**.
+
+The mapping is as follows:
+
+- Critical vulnerabilities set score to 0.
+- High-severity vulnerabilities reduce score by 0.1.
+- Moderate vulnerabilities reduce score by 0.05.
+- Low-severity vulnerabilities reduce score by 0.02.
+- Information-level vulnerabilities reduce score by 0.01.
+
+Examples:
+
+- 1+ **critical** vulnerabilities → score will be 0
+- 1 high and 2 low vulnerabilities → score will be 1 - 0.1 - 2\*0.02 = 0.86
+
+### Outdated dependencies
+
+In order for this audit not to drastically lower the score, the current logic is such that only dependencies with **major** outdated version lower the score by a proportional amount to the total amount of dependencies on your project.
+
+Examples:
+
+- 5 dependencies out of which 1 has an outdated **major** version → score will be (5 - 1) / 5 = 0.8
+- 2 dependencies out of which 1 has an outdated minor version and one is up-to-date → score stay 1

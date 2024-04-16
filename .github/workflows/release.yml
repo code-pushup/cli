@@ -42,10 +42,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute version target
-        run: npx nx version @code-pushup/cli-source --dryRun
-      - name: Deploy to NPM
-        run: npx nx run-many --target=deploy --dry-run
+      - name: Version, release and publish packages
+        run: npx nx release --yes --dry-run
   release:
     if: |
       github.repository == 'code-pushup/cli' && (
@@ -79,26 +77,21 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Execute version target on all affected packages and release them
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        run: npx nx version @code-pushup/cli-source
-      - name: Deploy to NPM
+      - name: Version, release and publish packages
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        # un-exclude packages when they're ready for public release
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          npx nx run-many -t=deploy --exclude=plugin-lighthouse,nx-plugin
-      - name: Collect and upload Code PushUp report
-        run: npx nx run-autorun
+          npx nx release --skipPublish
+          git push --follow-tags
+          npx nx release publish
+      - name: Run Code PushUp on release commit
+        uses: code-pushup/github-action@v0
+        with:
+          bin: npx nx code-pushup --
         env:
           CP_SERVER: ${{ secrets.CP_SERVER }}
           CP_API_KEY: ${{ secrets.CP_API_KEY }}
           CP_ORGANIZATION: code-pushup
           CP_PROJECT: cli
-      - name: Save report files as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-pushup-report
-          path: .code-pushup/

@@ -1,6 +1,11 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PluginReport, Report, reportSchema } from '@code-pushup/models';
+import {
+  AuditReport,
+  PluginReport,
+  Report,
+  reportSchema,
+} from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
@@ -9,17 +14,35 @@ describe('CLI collect', () => {
   const exampleAuditTitle = 'Disallow unused variables';
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  const omitVariableData = ({
+  const omitVariableAuditData = ({
+    score,
+    value,
+    displayValue,
+    ...auditReport
+  }: AuditReport) => auditReport;
+  const omitVariablePluginData = ({
+    date,
+    duration,
+    version,
+    audits,
+    ...pluginReport
+  }: PluginReport) =>
+    ({
+      ...pluginReport,
+      audits: audits.map(
+        pluginReport.slug === 'lighthouse' ? omitVariableAuditData : p => p,
+      ) as AuditReport[],
+    } as PluginReport);
+  const omitVariableReportData = ({
+    commit,
     date,
     duration,
     version,
     ...report
-  }: Omit<Report, 'commit'> | PluginReport) => report;
-  const omitVariableReportData = ({ commit, ...report }: Report) =>
-    omitVariableData({
-      ...report,
-      plugins: report.plugins.map(omitVariableData) as PluginReport[],
-    });
+  }: Report) => ({
+    ...report,
+    plugins: report.plugins.map(omitVariablePluginData),
+  });
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
@@ -91,6 +114,21 @@ describe('CLI collect', () => {
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+  });
+
+  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
+    const { code, stderr } = await executeProcess({
+      command: 'code-pushup',
+      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
+      cwd: 'examples/react-todos-app',
+    });
+
+    expect(code).toBe(0);
+    expect(stderr).toBe('');
+
+    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });

@@ -1,11 +1,11 @@
 {
   "name": "@code-pushup/eslint-plugin",
-  "version": "0.26.1",
+  "version": "0.35.0",
   "license": "MIT",
   "dependencies": {
-    "@code-pushup/utils": "*",
-    "@code-pushup/models": "*",
-    "eslint": "~8.46.0",
+    "@code-pushup/utils": "0.35.0",
+    "@code-pushup/models": "0.35.0",
+    "eslint": "^8.46.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {

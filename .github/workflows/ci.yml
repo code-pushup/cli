@@ -105,6 +105,15 @@ jobs:
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
+      - name: Set custom Chrome path for Windows only
+        if: matrix.os == 'windows-latest'
+        # This path is considered in `testing/setup/src/lib/chrome-path-setup.ts` and used in different test configurations
+        run: |
+          echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        shell: pwsh
+      #- name: Log all environment variables
+      #  run: |
+      #      printenv
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
 
@@ -151,31 +160,3 @@ jobs:
         run: npm ci
       - name: Build affected projects
         run: npx nx affected:build --parallel=3
-
-  code-pushup:
-    runs-on: ubuntu-latest
-    name: Code PushUp
-    env:
-      CP_SERVER: ${{ secrets.CP_SERVER }}
-      CP_API_KEY: ${{ secrets.CP_API_KEY }}
-      CP_ORGANIZATION: code-pushup
-      CP_PROJECT: cli
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Collect Code PushUp report
-        run: npx nx run-collect
-      - name: Upload Code PushUp report to portal
-        run: npx nx run-upload
-      - name: Save report files as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-pushup-report
-          path: .code-pushup/

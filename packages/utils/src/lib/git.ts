@@ -1,5 +1,5 @@
 import { isAbsolute, join, relative } from 'node:path';
-import { simpleGit } from 'simple-git';
+import { StatusResult, simpleGit } from 'simple-git';
 import { Commit, commitSchema } from '@code-pushup/models';
 import { ui } from './logging';
 import { toUnixPath } from './transform';
@@ -7,15 +7,11 @@ import { toUnixPath } from './transform';
 export async function getLatestCommit(
   git = simpleGit(),
 ): Promise<Commit | null> {
-  // git log -1 --pretty=format:"%H %s %an %aI"
-  // https://git-scm.com/docs/pretty-formats
   const log = await git.log({
     maxCount: 1,
+    // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
     format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
   });
-  if (!log.latest) {
-    return null;
-  }
   return commitSchema.parse(log.latest);
 }
 
@@ -37,36 +33,66 @@ export async function toGitPath(
   return formatGitPath(path, gitRoot);
 }
 
+export class GitStatusError extends Error {
+  static ignoredProps = new Set(['current', 'tracking']);
+
+  static getReducedStatus(status: StatusResult) {
+    return Object.fromEntries(
+      Object.entries(status)
+        .filter(([key]) => !this.ignoredProps.has(key))
+        .filter(
+          (
+            entry: [
+              string,
+              number | string | boolean | null | undefined | unknown[],
+            ],
+          ) => {
+            const value = entry[1];
+            if (value == null) {
+              return false;
+            }
+            if (Array.isArray(value) && value.length === 0) {
+              return false;
+            }
+            if (typeof value === 'number' && value === 0) {
+              return false;
+            }
+            return !(typeof value === 'boolean' && !value);
+          },
+        ),
+    );
+  }
+  constructor(status: StatusResult) {
+    super(
+      `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
+        GitStatusError.getReducedStatus(status),
+        null,
+        2,
+      )}`,
+    );
+  }
+}
+
 export async function guardAgainstLocalChanges(
   git = simpleGit(),
 ): Promise<void> {
-  const isClean = await git.status(['-s']).then(r => r.files.length === 0);
-  if (!isClean) {
-    throw new Error(
-      'Working directory needs to be clean before we you can proceed. Commit your local changes or stash them.',
-    );
+  const status = await git.status(['-s']);
+  if (status.files.length > 0) {
+    throw new GitStatusError(status);
   }
 }
 
 export async function getCurrentBranchOrTag(
   git = simpleGit(),
 ): Promise<string> {
-  try {
-    const branch = await git.branch().then(r => r.current);
-    // eslint-disable-next-line unicorn/prefer-ternary
-    if (branch) {
-      return branch;
-    } else {
-      // If no current branch, try to get the tag
-      // @TODO use simple git
-      return await git
-        .raw(['describe', '--tags', '--exact-match'])
-        .then(out => out.trim());
-    }
-  } catch {
-    // Return a custom error message when something goes wrong
-    throw new Error('Could not get current tag or branch.');
-  }
+  return (
+    (await git.branch().then(r => r.current)) ||
+    // If no current branch, try to get the tag
+    // @TODO use simple git
+    (await git
+      .raw(['describe', '--tags', '--exact-match'])
+      .then(out => out.trim()))
+  );
 }
 
 export async function safeCheckout(
