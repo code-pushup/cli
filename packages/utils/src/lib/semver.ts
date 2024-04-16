@@ -17,9 +17,5 @@ export function isSemver(semverString = ''): boolean {
 }
 
 export function sortSemvers(semverStrings: string[]): string[] {
-  return semverStrings
-    .map(normalizeSemver)
-    .filter(Boolean)
-    .filter(isSemver)
-    .sort((a, b) => rcompare(a, b));
+  return semverStrings.map(normalizeSemver).filter(isSemver).sort(rcompare);
 }
