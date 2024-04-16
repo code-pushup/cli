@@ -15,9 +15,9 @@ export function normalizeSemver(semverString: string): string {
 export function isSemver(semverString = ''): boolean {
   return validate(normalizeSemver(semverString));
 }
-// eslint-disable functional/immutable-data
+
 export function sortSemvers(semverStrings: string[]): string[] {
-  return [...semverStrings]
+  return semverStrings
     .filter(Boolean)
     .filter(isSemver)
     .sort((a, b) =>
