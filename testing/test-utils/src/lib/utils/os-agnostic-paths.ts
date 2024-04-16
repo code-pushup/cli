@@ -11,7 +11,7 @@ export function osAgnosticPath(path: string): string {
 export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
   audit: T,
 ): T {
-  const { issues = [], table } = audit.details ?? {};
+  const { issues = [] } = audit.details ?? {};
   if (issues.every(({ source }) => source == null)) {
     return audit;
   }
