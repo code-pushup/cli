@@ -1,24 +1,13 @@
 import { z } from 'zod';
+import { baseExecutorSchema, uploadOnlySchema } from '../internal/schema';
 
-const executorOnlySchema = z.object({
-  projectPrefix: z
-    .string()
-    .describe(
-      "Prefix the project name under upload configuration. A '-' is appended automatically E.g. 'cp' => 'cp-<project>'",
-    )
-    .optional(),
-  dryRun: z
-    .boolean()
-    .describe("Don't execute, just print the produced command")
-    .optional(),
-});
-const globalOptionsSchema = z.object({
-  progress: z.boolean().describe('show progress').optional(),
-  verbose: z.boolean().describe('additional information').optional(),
-});
+export const autorunCommandOptionsSchema =
+  baseExecutorSchema.merge(uploadOnlySchema);
 
-export const executorSchema = globalOptionsSchema.merge(executorOnlySchema);
-
-// @TODO add RunCommandOptions
-export type AutorunCommandExecutor = z.infer<typeof executorSchema>;
-export default executorSchema;
+export type AutorunCommandExecutorOptions = z.infer<
+  typeof autorunCommandOptionsSchema
+> & {
+  persist?: Record<string, string | undefined>;
+  upload?: Record<string, string | undefined>;
+};
+export default autorunCommandOptionsSchema;

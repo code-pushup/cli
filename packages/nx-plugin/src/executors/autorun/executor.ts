@@ -7,18 +7,18 @@ import {
   persistConfig,
   uploadConfig,
 } from '../../internal/config';
-import { objectToCliArgs } from './cli';
+import { createCliCommand } from '../internal/cli';
+import { normalizeContext } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
-import { AutorunCommandExecutor } from './schema';
-import { normalizeContext } from './utils';
+import { AutorunCommandExecutorOptions } from './schema';
 
 export default async function runExecutor(
-  options: AutorunCommandExecutor,
+  options: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ) {
   const normalizedContext = normalizeContext(context);
 
-  const { projectPrefix, dryRun, ...cliOptions } = options as any;
+  const { projectPrefix, dryRun, ...cliOptions } = options;
 
   const cliArgumentObject = {
     ...globalConfig(cliOptions),
@@ -29,9 +29,8 @@ export default async function runExecutor(
     ),
   };
 
-  const command = `npx @code-pushup/cli ${AUTORUN_COMMAND} ${objectToCliArgs(
-    cliArgumentObject,
-  ).join(' ')}`;
+  const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
+
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
   } else {

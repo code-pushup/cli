@@ -41,9 +41,10 @@ const cli = yargs(process.argv).options({
   },
 });
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises, unicorn/prefer-top-level-await
 (async () => {
-  let { filename, outputDir, schemaPath } = await cli.parseAsync();
-  console.log(`Run generate schemas for ${schemaPath}`);
+  const { filename, outputDir, schemaPath } = await cli.parseAsync();
+  console.info(`Run generate schemas for ${schemaPath}`);
 
   // const { mod: schema } = await bundleRequire({ filepath: schemaPath });
 
@@ -52,6 +53,6 @@ const cli = yargs(process.argv).options({
   });
 
   const outputPath = join(outputDir, filename);
-  console.log(`Generated ${outputPath}`);
-  await writeFile(outputPath, JSON.stringify(jsonSchema));
+  console.info(`Generated ${outputPath}`);
+  await writeFile(outputPath, JSON.stringify(jsonSchema, null, 2));
 })();

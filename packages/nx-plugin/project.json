@@ -45,8 +45,7 @@
       "dependsOn": ["build"]
     },
     "generate-schemas": {
-      "command": "tsx packages/nx-plugin/tools/schema.generate.ts",
-      "dependsOn": ["build"]
+      "command": "tsx packages/nx-plugin/tools/generate-schema.bin.ts"
     },
     "publish": {
       "command": "node tools/scripts/publish.mjs nx-plugin {args.ver} {args.tag}",

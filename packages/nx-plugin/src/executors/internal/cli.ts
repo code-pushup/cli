@@ -1,5 +1,12 @@
 import { CliArgsObject } from '@code-pushup/utils';
 
+export function createCliCommand(
+  command: string,
+  args: Record<string, unknown>,
+): string {
+  return `npx @code-pushup/cli ${command} ${objectToCliArgs(args).join(' ')}`;
+}
+
 type ArgumentValue = number | string | boolean | string[];
 // @TODO import from @code-pushup/utils
 // eslint-disable-next-line sonarjs/cognitive-complexity

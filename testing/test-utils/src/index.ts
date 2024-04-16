@@ -3,7 +3,6 @@ export * from './lib/utils/execute-process-helper.mock';
 export * from './lib/utils/os-agnostic-paths';
 export * from './lib/utils/logging';
 export * from './lib/utils/env';
-export * from './lib/utils/string';
 
 // static mocks
 export * from './lib/utils/commit.mock';
