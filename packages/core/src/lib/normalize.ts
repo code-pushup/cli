@@ -7,9 +7,11 @@ export async function normalizeAuditOutputs(
   const gitRoot = await getGitRoot();
 
   return audits.map(audit => {
+    const { issues = [], table } = audit.details ?? {};
     if (
-      audit.details?.issues == null ||
-      audit.details.issues.every(issue => issue.source == null)
+      issues == null ||
+      // @TODO should be covered by type i guess?
+      issues.every(issue => issue.source == null)
     ) {
       return audit;
     }
@@ -17,7 +19,8 @@ export async function normalizeAuditOutputs(
       ...audit,
       details: {
         ...audit.details,
-        issues: audit.details.issues.map(issue =>
+        table: table,
+        issues: issues.map(issue =>
           issue.source == null
             ? issue
             : {

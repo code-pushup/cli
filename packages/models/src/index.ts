@@ -33,6 +33,7 @@ export {
 } from './lib/implementation/limits';
 export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
+export { Table, tableSchema } from './lib/table';
 export {
   Issue,
   IssueSeverity,

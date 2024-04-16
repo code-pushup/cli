@@ -1,5 +1,6 @@
-import { AuditReport, CategoryConfig, Issue } from '@code-pushup/models';
+import { AuditReport, Issue, Table } from '@code-pushup/models';
 import { formatDate, formatDuration, slugify } from '../formatting';
+import { tableToFlatArray } from '../transform';
 import {
   FOOTER_PREFIX,
   NEW_LINE,
@@ -140,7 +141,7 @@ function auditItemToCategorySection(
   return li(
     `${getSquaredScoreMarker(
       audit.score,
-    )} ${auditTitle} (_${pluginTitle}_) - ${getAuditResult(audit)}`,
+    )} ${auditTitle} (_${pluginTitle}_) - ${getAuditValue(audit)}`,
   );
 }
 
@@ -159,7 +160,7 @@ function groupItemToCategorySection(
       audit.title,
     );
     return `${acc}  ${li(
-      `${getSquaredScoreMarker(audit.score)} ${auditTitle} - ${getAuditResult(
+      `${getSquaredScoreMarker(audit.score)} ${auditTitle} - ${getAuditValue(
         audit,
       )}`,
     )}${NEW_LINE}`;
@@ -193,19 +194,28 @@ function reportToAuditsSection(report: ScoredReport): string {
   return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + auditsSection;
 }
 
-function reportToDetailsSection(audit: AuditReport) {
-  const detailsTitle = `${getSquaredScoreMarker(audit.score)} ${getAuditResult(
+export function renderDetailsAuditValue(audit: AuditReport) {
+  return `${getSquaredScoreMarker(audit.score)} ${getAuditValue(
     audit,
     true,
   )} (score: ${formatReportScore(audit.score)})`;
+}
 
-  if (!audit.details?.issues.length) {
-    return detailsTitle;
+export function renderTableSection(table: Table | undefined) {
+  if (table == null) {
+    return '';
   }
+  const tableData = tableToFlatArray(table);
+  return `<h4>Additional Information</h4>${NEW_LINE}${tableHtml(tableData)}`;
+}
 
+export function renderIssuesSection(issues: Issue[] = []) {
+  if (issues.length === 0) {
+    return '';
+  }
   const detailsTableData = [
     detailsTableHeaders,
-    ...audit.details.issues.map((issue: Issue) => {
+    ...issues.map((issue: Issue) => {
       const severity = `${getSeverityIcon(issue.severity)} <i>${
         issue.severity
       }</i>`;
@@ -227,14 +237,40 @@ function reportToDetailsSection(audit: AuditReport) {
       return [severity, message, file, line];
     }),
   ];
-  const detailsTable = `<h4>Issues</h4>${tableHtml(detailsTableData)}`;
-  return details(detailsTitle, detailsTable);
+  return `<h4>Issues</h4>${NEW_LINE}${tableHtml(detailsTableData)}`;
 }
 
-function reportToAboutSection(report: ScoredReport): string {
-  const date = formatDate(new Date());
+export function reportToDetailsSection(audit: AuditReport) {
+  const detailsValue = renderDetailsAuditValue(audit);
 
-  const { duration, version, commit, plugins, categories } = report;
+  if (!audit.details) {
+    return detailsValue;
+  }
+
+  // eslint-disable-next-line functional/no-let
+  let md = '';
+  const { table, issues } = audit.details;
+
+  if (table != null) {
+    md += renderTableSection(table);
+  }
+
+  if (issues && issues.length > 0) {
+    md += renderIssuesSection(issues);
+  }
+
+  return details(detailsValue, md);
+}
+
+export function reportToAboutSection(
+  report: Pick<
+    ScoredReport,
+    'date' | 'duration' | 'version' | 'commit' | 'plugins' | 'categories'
+  >,
+): string {
+  const { date, duration, version, commit, plugins, categories } = report;
+
+  const formattedDate = formatDate(new Date(date));
   const commitInfo = commit ? `${commit.message} (${commit.hash})` : 'N/A';
   const reportMetaTable: string[][] = [
     reportMetaTableHeaders,
@@ -263,7 +299,7 @@ function reportToAboutSection(report: ScoredReport): string {
     h2('About') +
     NEW_LINE +
     NEW_LINE +
-    `Report was created by [Code PushUp](${README_LINK}) on ${date}.` +
+    `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.` +
     NEW_LINE +
     NEW_LINE +
     tableMd(reportMetaTable, ['l', 'c', 'c', 'c', 'c', 'c']) +
@@ -276,30 +312,32 @@ function reportToAboutSection(report: ScoredReport): string {
   );
 }
 
-function getDocsAndDescription({
+// @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
+export function getDocsAndDescription({
   docsUrl,
   description,
-}: AuditReport | CategoryConfig): string {
+}: Pick<AuditReport, 'docsUrl' | 'description'>): string {
+  const endingNewLine = NEW_LINE + NEW_LINE;
   if (docsUrl) {
     const docsLink = link(docsUrl, '📖 Docs');
     if (!description) {
-      return docsLink + NEW_LINE + NEW_LINE;
+      return docsLink + endingNewLine;
     }
+    // @TODO introduce NEW_LINE at the end of a code block
     if (description.endsWith('```')) {
       // when description ends in code block, link must be moved to next paragraph
-      return description + NEW_LINE + NEW_LINE + docsLink + NEW_LINE + NEW_LINE;
+      return description + NEW_LINE + NEW_LINE + docsLink + endingNewLine;
     }
-    return `${description} ${docsLink}${NEW_LINE}${NEW_LINE}`;
+    return `${description} ${docsLink}${endingNewLine}`;
   }
   if (description) {
-    return description + NEW_LINE + NEW_LINE;
+    return description + endingNewLine;
   }
   return '';
 }
 
-function getAuditResult(audit: AuditReport, isHtml = false): string {
+export function getAuditValue(audit: AuditReport, isHtml = false): string {
   const { displayValue, value } = audit;
-  return isHtml
-    ? `<b>${displayValue || value}</b>`
-    : style(String(displayValue || value));
+  const test = displayValue || value;
+  return isHtml ? `<b>${test}</b>` : style(String(test));
 }

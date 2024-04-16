@@ -40,13 +40,14 @@ export function tableHtml(data: (string | number)[][]): string {
     throw new Error("Data can't be empty");
   }
 
+  // @TODO add formatting
   const tableContent = data.map((arr, index) => {
     if (index === 0) {
-      const headerRow = arr.map(s => `<th>${s}</th>`).join('');
-      return `<tr>${headerRow}</tr>`;
+      const headerRow = arr.map(s => `<th>${s}</th>\n`).join('');
+      return `<tr>${headerRow}</tr>\n`;
     }
-    const row = arr.map(s => `<td>${s}</td>`).join('');
-    return `<tr>${row}</tr>`;
+    const row = arr.map(s => `<td>${s}</td>\n`).join('');
+    return `<tr>${row}</tr>\n`;
   });
-  return `<table>${tableContent.join('')}</table>`;
+  return `<table>\n${tableContent.join('')}</table>`;
 }

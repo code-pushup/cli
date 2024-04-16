@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
+import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   calcDuration,
@@ -15,9 +16,11 @@ import {
   formatReportScore,
   formatScoreWithColor,
   getPluginNameFromSlug,
+  getSeverityIcon,
   getSortableAuditByRef,
   getSortableGroupByRef,
   getSortedGroupAudits,
+  getSquaredScoreMarker,
   loadReport,
 } from './utils';
 
@@ -592,5 +595,31 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'b', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'c', position: { startLine: 1 } } },
     ]);
+  });
+});
+
+describe('getSquaredScoreMarker', () => {
+  it.each([
+    ['🟥', 0],
+    ['🟥', 0.49],
+    ['🟨', SCORE_COLOR_RANGE.YELLOW_MIN],
+    ['🟨', 0.51],
+    ['🟨', 0.89],
+    ['🟩', SCORE_COLOR_RANGE.GREEN_MIN],
+    ['🟩', 0.91],
+    ['🟩', 1],
+  ])('should return icon %s for score %s', (icon, score) => {
+    expect(getSquaredScoreMarker(score)).toBe(icon);
+  });
+});
+
+describe('getSeverityIcon', () => {
+  it.each<[string, IssueSeverity]>([
+    ['🚨', 'error'],
+    ['⚠️', 'warning'],
+    ['ℹ️', 'info'],
+    ['ℹ️', '' as IssueSeverity],
+  ])('should return icon %s for severity %s', (icon, severity) => {
+    expect(getSeverityIcon(severity)).toBe(icon);
   });
 });

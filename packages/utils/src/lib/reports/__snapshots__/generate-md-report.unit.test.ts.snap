@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderIssuesSection > should render complete section 1`] = `
+"<h4>Issues</h4>
+<table>
+<tr><th>Severity</th>
+<th>Message</th>
+<th>Source file</th>
+<th>Line(s)</th>
+</tr>
+<tr><td>ℹ️ <i>info</i></td>
+<td>File \`index.js\` is 56Kb.</td>
+<td><code>index.js</code></td>
+<td></td>
+</tr>
+<tr><td>⚠️ <i>warning</i></td>
+<td>Package license is has to be "MIT"</td>
+<td><code>package.json</code></td>
+<td>4</td>
+</tr>
+<tr><td>🚨 <i>error</i></td>
+<td>no unused vars</td>
+<td><code>index.js</code></td>
+<td>400-200</td>
+</tr>
+</table>"
+`;
+
+exports[`renderTableSection > should render complete section 1`] = `
+"<h4>Additional Information</h4>
+<table>
+<tr><th>Phase</th>
+<th>% of LCP</th>
+<th>Timing</th>
+</tr>
+<tr><td>TTFB</td>
+<td>27%</td>
+<td>620 ms</td>
+</tr>
+<tr><td>Load Delay</td>
+<td>25%</td>
+<td>580 ms</td>
+</tr>
+<tr><td>Load Time</td>
+<td>41%</td>
+<td>940 ms</td>
+</tr>
+<tr><td>Render Delay</td>
+<td>6%</td>
+<td>140 ms</td>
+</tr>
+</table>"
+`;
+
+exports[`reportToAboutSection > should return full about section 1`] = `
+"## About
+
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|ci: update action (535b8e9e557336618a764f3fa45609d224a62837)|\`v1.0.0\`|4.20 s|1|3|3|
+
+The following plugins were run:
+
+|Plugin|Audits|Version|Duration|
+|:--|:--:|:--:|:--:|
+|Lighthouse|3|\`1.1.1\`|42 ms|"
+`;
+
+exports[`reportToDetailsSection > should render complete details section 1`] = `
+"<details>
+<summary>🟩 <b>190ms</b> (score: 99)</summary>
+
+<h4>Additional Information</h4>
+<table>
+<tr><th>Class Names</th>
+<th>element</th>
+</tr>
+<tr><td>.btn, .icon</td>
+<td>button</td>
+</tr>
+</table><h4>Issues</h4>
+<table>
+<tr><th>Severity</th>
+<th>Message</th>
+<th>Source file</th>
+<th>Line(s)</th>
+</tr>
+<tr><td>🚨 <i>error</i></td>
+<td>Use design system components instead of classes</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+</details>
+"
+`;

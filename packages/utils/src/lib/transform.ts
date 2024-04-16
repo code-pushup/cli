@@ -1,4 +1,5 @@
 import { platform } from 'node:os';
+import { Table } from '@code-pushup/models';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -169,3 +170,33 @@ export function toOrdinal(value: number): string {
   return `${value}th`;
 }
 /* eslint-enable no-magic-numbers */
+
+export function tableToFlatArray(table: Table) {
+  const firstItemKeys =
+    typeof table.items.at(0) === 'string'
+      ? ['Value']
+      : Object.keys(table.items.at(0) as Record<string, unknown>);
+  const preparedTHeadersData =
+    table.headings?.flatMap(heading => heading.label ?? heading.key) ??
+    firstItemKeys;
+
+  const headingKeys = table.headings?.flatMap(({ key }) => key);
+  const itemKeys = headingKeys ?? firstItemKeys;
+
+  return [
+    preparedTHeadersData,
+    ...table.items.filter(Boolean).map(item => {
+      if (typeof item === 'string') {
+        return [item];
+      }
+
+      if (!Array.isArray(item)) {
+        return itemKeys.map(
+          key => (item as Record<typeof key, string>)[key] ?? '',
+        );
+      }
+
+      return [''];
+    }),
+  ] satisfies string[][];
+}

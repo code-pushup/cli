@@ -11,8 +11,7 @@ export const SCORE_COLOR_RANGE = {
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because of ❤️ has output issues
 export const CODE_PUSHUP_DOMAIN = 'code-pushup.dev';
-export const README_LINK =
-  'https://github.com/flowup/quality-metrics-cli#readme';
+export const README_LINK = 'https://github.com/code-pushup/cli#readme';
 export const reportHeadlineText = 'Code PushUp Report';
 export const reportOverviewTableHeaders = [
   '🏷 Category',
