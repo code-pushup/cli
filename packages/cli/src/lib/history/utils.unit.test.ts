@@ -55,7 +55,7 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should forward hashes "form" and "to" as is if "semverTag" is false', async () => {
+  it('should forward hashes "from" and "to" as is if "semverTag" is false', async () => {
     await expect(
       normalizeHashOptions({
         from: 'commit-3',
