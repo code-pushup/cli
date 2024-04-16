@@ -6,7 +6,7 @@ export type GitConfig = { name: string; email: string };
 
 export async function emptyGitMock(
   git: SimpleGitFactory,
-  opt: { baseDir: string } & { config?: GitConfig },
+  opt: { baseDir: string; config?: GitConfig },
 ): Promise<SimpleGit> {
   const { baseDir, config } = opt;
   const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
