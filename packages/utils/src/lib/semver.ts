@@ -1,4 +1,4 @@
-import { compare, validate } from 'compare-versions';
+import { rcompare, valid } from 'semver';
 
 export function normalizeSemver(semverString: string): string {
   if (semverString.startsWith('v') || semverString.startsWith('V')) {
@@ -13,14 +13,13 @@ export function normalizeSemver(semverString: string): string {
 }
 
 export function isSemver(semverString = ''): boolean {
-  return validate(normalizeSemver(semverString));
+  return valid(normalizeSemver(semverString)) != null;
 }
 
 export function sortSemvers(semverStrings: string[]): string[] {
   return semverStrings
+    .map(normalizeSemver)
     .filter(Boolean)
     .filter(isSemver)
-    .sort((a, b) =>
-      compare(normalizeSemver(a), normalizeSemver(b), '>') ? -1 : 0,
-    );
+    .sort((a, b) => rcompare(a, b));
 }

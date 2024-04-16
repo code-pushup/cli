@@ -6,7 +6,7 @@ export async function normalizeHashOptions(
   processArgs: HistoryCliOptions & HistoryOptions,
 ): Promise<HistoryCliOptions & HistoryOptions> {
   const {
-    semverTag,
+    onlySemverTags,
     // overwritten
     maxCount,
     ...opt
@@ -15,7 +15,7 @@ export async function normalizeHashOptions(
   // eslint-disable-next-line functional/no-let, prefer-const
   let { from, to, ...processOptions } = opt;
   // if no semver filter is used resolve hash of tags, as hashes are used to collect history
-  if (!semverTag) {
+  if (!onlySemverTags) {
     if (from && isSemver(from)) {
       const { hash } = await getHashFromTag(from);
       from = hash;
@@ -28,7 +28,7 @@ export async function normalizeHashOptions(
 
   return {
     ...processOptions,
-    semverTag,
+    onlySemverTags,
     maxCount: maxCount && maxCount > 0 ? maxCount : undefined,
     from,
     to,

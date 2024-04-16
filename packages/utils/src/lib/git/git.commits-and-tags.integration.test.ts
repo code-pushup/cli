@@ -224,7 +224,7 @@ describe('getSemverTags', () => {
       await addUpdateFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'release v1',
-        tagName: '1',
+        tagName: '1.0.0',
       });
 
       await gitSemverTagsMock.checkout(['master']);
@@ -239,7 +239,7 @@ describe('getSemverTags', () => {
         [
           {
             hash: expect.any(String),
-            message: '1',
+            message: '1.0.0',
           },
         ],
       );

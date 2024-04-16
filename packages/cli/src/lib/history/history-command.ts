@@ -23,14 +23,20 @@ async function handler(args: unknown) {
   const currentBranch = await getCurrentBranchOrTag();
   const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &
     HistoryOptions;
-  const { targetBranch, from, to, maxCount, semverTag, ...historyOptions } =
-    await normalizeHashOptions({
-      ...opt,
-      targetBranch: rawTargetBranch ?? currentBranch,
-    });
+  const {
+    targetBranch,
+    from,
+    to,
+    maxCount,
+    onlySemverTags,
+    ...historyOptions
+  } = await normalizeHashOptions({
+    ...opt,
+    targetBranch: rawTargetBranch ?? currentBranch,
+  });
 
   const filterOptions = { targetBranch, from, to, maxCount };
-  const results: LogResult[] = semverTag
+  const results: LogResult[] = onlySemverTags
     ? await getSemverTags(filterOptions)
     : await getHashes(filterOptions);
 

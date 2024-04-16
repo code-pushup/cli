@@ -3,6 +3,6 @@ import { HistoryOnlyOptions } from '@code-pushup/core';
 
 export type HistoryCliOptions = {
   targetBranch?: string;
-  semverTag?: boolean;
+  onlySemverTags?: boolean;
 } & Pick<LogOptions, 'maxCount' | 'from' | 'to'> &
   HistoryOnlyOptions;

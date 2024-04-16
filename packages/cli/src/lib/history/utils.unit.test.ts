@@ -5,14 +5,15 @@ import { normalizeHashOptions } from './utils';
 
 vi.mock('simple-git', async () => {
   const actual = await vi.importActual('simple-git');
+  const orderedTagsHistory = ['2.0.0', '1.0.0'];
   return {
     ...actual,
     simpleGit: () => ({
       branch: () => Promise.resolve('dummy'),
       raw: () => Promise.resolve('main'),
-      tag: () => Promise.resolve(`2\n1`),
+      tag: () => Promise.resolve(orderedTagsHistory.join('\n')),
       show: ([_, __, tag]: string) =>
-        ['1', '2'].includes(tag || '')
+        orderedTagsHistory.includes(tag || '')
           ? Promise.resolve(`${tag}\ncommit--release-v${tag}`)
           : Promise.reject('NOT FOUND TAG'),
       checkout: () => Promise.resolve(),
@@ -21,9 +22,9 @@ vi.mock('simple-git', async () => {
           all: [
             { hash: 'commit-6' },
             { hash: 'commit-5' },
-            { hash: 'commit--release-v2' },
+            { hash: `commit--release-v${orderedTagsHistory.at(0)}` },
             { hash: 'commit-3' },
-            { hash: 'commit--release-v1' },
+            { hash: `commit--release-v${orderedTagsHistory.at(1)}` },
             { hash: 'commit-1' },
           ].slice(-maxCount),
         }),
@@ -55,7 +56,7 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should forward hashes "from" and "to" as is if "semverTag" is false', async () => {
+  it('should forward hashes "from" and "to" as is if "onlySemverTags" is false', async () => {
     await expect(
       normalizeHashOptions({
         from: 'commit-3',
@@ -69,48 +70,48 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should transform tags "from" and "to" to commit hashes if "semverTag" is false', async () => {
+  it('should transform tags "from" and "to" to commit hashes if "onlySemverTags" is false', async () => {
     await expect(
       normalizeHashOptions({
-        semverTag: false,
-        from: '2',
-        to: '1',
+        onlySemverTags: false,
+        from: '2.0.0',
+        to: '1.0.0',
       } as HistoryCliOptions & HistoryOptions),
     ).resolves.toEqual(
       expect.objectContaining({
-        semverTag: false,
-        from: 'commit--release-v2',
-        to: 'commit--release-v1',
+        onlySemverTags: false,
+        from: 'commit--release-v2.0.0',
+        to: 'commit--release-v1.0.0',
       }),
     );
   });
 
-  it('should forward tags "from" and "to" if "semverTag" is true', async () => {
+  it('should forward tags "from" and "to" if "onlySemverTags" is true', async () => {
     await expect(
       normalizeHashOptions({
-        semverTag: true,
-        from: '2',
-        to: '1',
+        onlySemverTags: true,
+        from: '2.0.0',
+        to: '1.0.0',
       } as HistoryCliOptions & HistoryOptions),
     ).resolves.toEqual(
       expect.objectContaining({
-        semverTag: true,
-        from: '2',
-        to: '1',
+        onlySemverTags: true,
+        from: '2.0.0',
+        to: '1.0.0',
       }),
     );
   });
 
-  it('should forward hashes "from" and "to" if "semverTag" is true', async () => {
+  it('should forward hashes "from" and "to" if "onlySemverTags" is true', async () => {
     await expect(
       normalizeHashOptions({
-        semverTag: true,
+        onlySemverTags: true,
         from: 'commit-3',
         to: 'commit-1',
       } as HistoryCliOptions & HistoryOptions),
     ).resolves.toEqual(
       expect.objectContaining({
-        semverTag: true,
+        onlySemverTags: true,
         from: 'commit-3',
         to: 'commit-1',
       }),

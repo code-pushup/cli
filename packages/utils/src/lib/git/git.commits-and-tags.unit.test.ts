@@ -3,12 +3,13 @@ import { filterLogs, getSemverTags } from './git.commits-and-tags';
 
 vi.mock('simple-git', async () => {
   const actual = await vi.importActual('simple-git');
+  const orderedTagsHistory = ['5.0.0', '4.0.0', '3.0.0', '2.0.0', '1.0.0'];
   return {
     ...actual,
     simpleGit: () => ({
       branch: () => Promise.resolve('dummy'),
       // @TODO fix return value
-      tag: () => Promise.resolve(`5\n 4\n 3\n 2\n 1`),
+      tag: () => Promise.resolve(orderedTagsHistory.join('\n')),
       show: ([_, __, tag]: string) =>
         Promise.resolve(`release v${tag}\n ${tag}`),
       raw: () => Promise.resolve('main'),
@@ -38,16 +39,18 @@ describe('filterLogs', () => {
 
   it('should forward list the first N items based on "maxCount" filter', () => {
     expect(
-      filterLogs(['1', '2', '3', '4', '5'], { maxCount: 2 }),
-    ).toStrictEqual(['1', '2']);
+      filterLogs(['1.0.0', '2.0.0', '3.0.0', '4.0.0', '5.0.0'], {
+        maxCount: 2,
+      }),
+    ).toStrictEqual(['1.0.0', '2.0.0']);
   });
 
   it('should forward list items starting from index based on "from" filter', () => {
-    expect(filterLogs(['1', '2', '3', '4', '5'], { from: '3' })).toStrictEqual([
-      '3',
-      '4',
-      '5',
-    ]);
+    expect(
+      filterLogs(['1.0.0', '2.0.0', '3.0.0', '4.0.0', '5.0.0'], {
+        from: '3.0.0',
+      }),
+    ).toStrictEqual(['3.0.0', '4.0.0', '5.0.0']);
   });
 
   it('should throw for "to" without "from" filter', () => {
@@ -58,8 +61,11 @@ describe('filterLogs', () => {
 
   it('should forward list items starting from index based on "from" & "to" filter', () => {
     expect(
-      filterLogs(['1', '2', '3', '4', '5'], { from: '2', to: '4' }),
-    ).toStrictEqual(['2', '3', '4']);
+      filterLogs(['1.0.0', '2.0.0', '3.0.0', '4.0.0', '5.0.0'], {
+        from: '2.0.0',
+        to: '4.0.0',
+      }),
+    ).toStrictEqual(['2.0.0', '3.0.0', '4.0.0']);
   });
 });
 
@@ -68,23 +74,23 @@ describe('getSemverTags', () => {
     await expect(getSemverTags({})).resolves.toStrictEqual([
       {
         hash: expect.any(String),
-        message: '5',
+        message: '5.0.0',
       },
       {
         hash: expect.any(String),
-        message: '4',
+        message: '4.0.0',
       },
       {
         hash: expect.any(String),
-        message: '3',
+        message: '3.0.0',
       },
       {
         hash: expect.any(String),
-        message: '2',
+        message: '2.0.0',
       },
       {
         hash: expect.any(String),
-        message: '1',
+        message: '1.0.0',
       },
     ]);
   });
@@ -93,64 +99,66 @@ describe('getSemverTags', () => {
     await expect(getSemverTags({ maxCount: 2 })).resolves.toStrictEqual([
       {
         hash: expect.any(String),
-        message: '5',
+        message: '5.0.0',
       },
       {
         hash: expect.any(String),
-        message: '4',
+        message: '4.0.0',
       },
     ]);
   });
 
   it('should get tags from branch based on "from"', async () => {
-    await expect(getSemverTags({ from: '4' })).resolves.toEqual([
+    await expect(getSemverTags({ from: '4.0.0' })).resolves.toEqual([
       {
         hash: expect.any(String),
-        message: '4',
+        message: '4.0.0',
       },
       {
         hash: expect.any(String),
-        message: '3',
+        message: '3.0.0',
       },
       {
         hash: expect.any(String),
-        message: '2',
+        message: '2.0.0',
       },
       {
         hash: expect.any(String),
-        message: '1',
+        message: '1.0.0',
       },
     ]);
   });
 
   it('should get tags from branch based on "from" and "to"', async () => {
-    await expect(getSemverTags({ from: '4', to: '2' })).resolves.toEqual([
+    await expect(
+      getSemverTags({ from: '4.0.0', to: '2.0.0' }),
+    ).resolves.toEqual([
       {
         hash: expect.any(String),
-        message: '4',
+        message: '4.0.0',
       },
       {
         hash: expect.any(String),
-        message: '3',
+        message: '3.0.0',
       },
       {
         hash: expect.any(String),
-        message: '2',
+        message: '2.0.0',
       },
     ]);
   });
 
   it('should get tags from branch based on "from" and "to" and "maxCount"', async () => {
     await expect(
-      getSemverTags({ from: '4', to: '2', maxCount: 2 }),
+      getSemverTags({ from: '4.0.0', to: '2.0.0', maxCount: 2 }),
     ).resolves.toEqual([
       {
         hash: expect.any(String),
-        message: '4',
+        message: '4.0.0',
       },
       {
         hash: expect.any(String),
-        message: '3',
+        message: '3.0.0',
       },
     ]);
   });
