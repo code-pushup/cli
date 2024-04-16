@@ -69,7 +69,7 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should transform tags "form" and "to" to commit hashes if "semverTag" is false', async () => {
+  it('should transform tags "from" and "to" to commit hashes if "semverTag" is false', async () => {
     await expect(
       normalizeHashOptions({
         semverTag: false,
@@ -85,7 +85,7 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should forward tags "form" and "to" if "semverTag" is true', async () => {
+  it('should forward tags "from" and "to" if "semverTag" is true', async () => {
     await expect(
       normalizeHashOptions({
         semverTag: true,
@@ -101,7 +101,7 @@ describe('normalizeHashOptions', () => {
     );
   });
 
-  it('should forward hashes "form" and "to" if "semverTag" is true', async () => {
+  it('should forward hashes "from" and "to" if "semverTag" is true', async () => {
     await expect(
       normalizeHashOptions({
         semverTag: true,
