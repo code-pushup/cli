@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "$id": "AddToProject",
+  "$id": "ConfigurationGenerator",
   "title": "",
   "type": "object",
   "properties": {

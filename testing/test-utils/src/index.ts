@@ -4,6 +4,7 @@ export * from './lib/utils/os-agnostic-paths';
 export * from './lib/utils/logging';
 export * from './lib/utils/env';
 export * from './lib/utils/git';
+export * from './lib/utils/string';
 
 // static mocks
 export * from './lib/utils/commit.mock';

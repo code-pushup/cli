@@ -36,8 +36,8 @@
         ]
       }
     },
-    "exec:init": {
-      "command": "nx g ./dist/packages/nx-plugin:init",
+    "publish": {
+      "command": "node tools/scripts/publish.mjs nx-plugin {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {
