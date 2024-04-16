@@ -10,8 +10,8 @@ export function yargsHistoryOptionsDefinition(): Record<
       describe: 'Branch to crawl history',
       type: 'string',
     },
-    semverTag: {
-      describe: 'analyse semver tags only',
+    onlySemverTags: {
+      describe: 'Skip commits not tagged with a semantic version',
       type: 'boolean',
       default: false,
     },
