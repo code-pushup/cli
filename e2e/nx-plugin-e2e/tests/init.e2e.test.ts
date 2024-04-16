@@ -5,8 +5,8 @@ import { executeProcess } from '@code-pushup/utils';
 describe('nx-plugin g init', () => {
   it('should run init generator and execute correctly', async () => {
     const { code, stderr, stdout } = await executeProcess({
-      command: 'nx',
-      args: ['g', '@code-pushup/nx-plugin:init --dryRun'],
+      command: 'npx',
+      args: ['nx', 'g', '@code-pushup/nx-plugin:init --dryRun'],
       observer: { onStdout: console.info },
     });
 
