@@ -31,7 +31,7 @@ export function createRunnerFunction(
 
     const config = await getConfig({ configPath, preset });
     const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
-    if (typeof outputPath === 'string') {
+    if (outputPath != null) {
       await ensureDirectoryExists(dirname(outputPath));
     }
 

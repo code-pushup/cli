@@ -1,12 +1,13 @@
 import chalk from 'chalk';
-import type { Budget, Config } from 'lighthouse';
+import type { Budget, Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
+import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
-import { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import { AuditDetails, AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { PLUGIN_SLUG } from './constants';
@@ -33,12 +34,43 @@ export function normalizeAuditOutputs(
   });
 }
 
+export function toAuditDetails<T extends FormattedIcu<Details>>(
+  details: T | undefined,
+): AuditDetails {
+  const { type } = details ?? {};
+
+  if (type === 'debugdata') {
+    const { items = [] } = details as Pick<Details.DebugData, 'items'>;
+    return items.length
+      ? {
+          table: {
+            items,
+          },
+        }
+      : {};
+  }
+
+  if (type && ['table', 'opportunity'].includes(type)) {
+    const { headings, items } = details as Details.Table;
+    return {
+      table: {
+        headings: headings.map(({ key, label }) => ({
+          key: key ?? '',
+          label: typeof label === 'string' ? label : undefined,
+        })),
+        items,
+      },
+    };
+  }
+
+  return {};
+}
+
 export function toAuditOutputs(
   lhrAudits: Result[],
   { verbose = false }: { verbose?: boolean } = {},
 ): AuditOutputs {
   if (verbose) {
-    // @TODO implement all details
     logUnsupportedDetails(lhrAudits);
   }
   return lhrAudits.map(
@@ -56,9 +88,11 @@ export function toAuditOutputs(
         displayValue,
       };
 
-      if (details == null) {
-        // @TODO implement details
-        return auditOutput;
+      if (details != null) {
+        return {
+          ...auditOutput,
+          details: toAuditDetails(details),
+        };
       }
 
       return auditOutput;
@@ -66,13 +100,11 @@ export function toAuditOutputs(
   );
 }
 
+// @TODO implement all details
 export const unsupportedDetailTypes = new Set([
-  'opportunity',
-  'table',
   'treemap-data',
   'screenshot',
   'filmstrip',
-  'debugdata',
   'criticalrequestchain',
 ]);
 
@@ -128,7 +160,7 @@ export async function getConfig(
 ): Promise<Config | undefined> {
   const { configPath: filepath, preset } = options;
 
-  if (typeof filepath === 'string') {
+  if (filepath != null) {
     if (filepath.endsWith('.json')) {
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
