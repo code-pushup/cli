@@ -40,7 +40,7 @@ export function tableHtml(data: (string | number)[][]): string {
     throw new Error("Data can't be empty");
   }
 
-  // @TODO add formatting
+  // @TODO add formatting via prettier
   const tableContent = data.map((arr, index) => {
     if (index === 0) {
       const headerRow = arr.map(s => `<th>${s}</th>\n`).join('');
