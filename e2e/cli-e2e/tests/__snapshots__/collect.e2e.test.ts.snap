@@ -1696,3 +1696,161 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
   ],
 }
 `;
+
+exports[`CLI collect > should run Lighthouse plugin that runs lighthouse CLI and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "performance",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "performance",
+      "title": "Performance",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "accessibility",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "a11y",
+      "title": "Accessibility",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "best-practices",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "best-practices",
+      "title": "Best Practices",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "seo",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "seo",
+      "title": "SEO",
+    },
+    {
+      "isBinary": true,
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "pwa",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "pwa",
+      "title": "PWA",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+          "slug": "largest-contentful-paint",
+          "title": "Largest Contentful Paint",
+        },
+        {
+          "description": "Service worker is the technology that enables your app to use many Progressive Web App features, such as offline, add to homescreen, and push notifications. With proper service worker and manifest implementations, browsers can proactively prompt users to add your app to their homescreen, which can lead to higher engagement. [Learn more about manifest installability requirements](https://developer.chrome.com/docs/lighthouse/pwa/installable-manifest/).",
+          "slug": "installable-manifest",
+          "title": "Web app manifest and service worker meet the installability requirements",
+        },
+        {
+          "description": "Deprecated APIs will eventually be removed from the browser. [Learn more about deprecated APIs](https://developer.chrome.com/docs/lighthouse/best-practices/deprecations/).",
+          "slug": "deprecations",
+          "title": "Avoids deprecated APIs",
+        },
+        {
+          "description": "Each ARIA \`role\` supports a specific subset of \`aria-*\` attributes. Mismatching these invalidates the \`aria-*\` attributes. [Learn how to match ARIA attributes to their roles](https://dequeuniversity.com/rules/axe/4.8/aria-allowed-attr).",
+          "slug": "aria-allowed-attr",
+          "title": "\`[aria-*]\` attributes match their roles",
+        },
+        {
+          "description": "hreflang links tell search engines what version of a page they should list in search results for a given language or region. [Learn more about \`hreflang\`](https://developer.chrome.com/docs/lighthouse/seo/hreflang/).",
+          "slug": "hreflang",
+          "title": "Document has a valid \`hreflang\`",
+        },
+      ],
+      "groups": [
+        {
+          "refs": [
+            {
+              "slug": "largest-contentful-paint",
+              "weight": 25,
+            },
+          ],
+          "slug": "performance",
+          "title": "Performance",
+        },
+        {
+          "description": "These checks highlight opportunities to [improve the accessibility of your web app](https://developer.chrome.com/docs/lighthouse/accessibility/). Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so [manual testing](https://web.dev/articles/how-to-review) is also encouraged.",
+          "refs": [
+            {
+              "slug": "aria-allowed-attr",
+              "weight": 10,
+            },
+          ],
+          "slug": "accessibility",
+          "title": "Accessibility",
+        },
+        {
+          "refs": [
+            {
+              "slug": "deprecations",
+              "weight": 5,
+            },
+          ],
+          "slug": "best-practices",
+          "title": "Best Practices",
+        },
+        {
+          "description": "These checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on [Core Web Vitals](https://web.dev/explore/vitals). [Learn more about Google Search Essentials](https://support.google.com/webmasters/answer/35769).",
+          "refs": [
+            {
+              "slug": "hreflang",
+              "weight": 1,
+            },
+          ],
+          "slug": "seo",
+          "title": "SEO",
+        },
+        {
+          "description": "These checks validate the aspects of a Progressive Web App. [Learn what makes a good Progressive Web App](https://web.dev/articles/pwa-checklist).",
+          "refs": [
+            {
+              "slug": "installable-manifest",
+              "weight": 2,
+            },
+          ],
+          "slug": "pwa",
+          "title": "PWA",
+        },
+      ],
+      "icon": "lighthouse",
+      "slug": "lighthouse",
+      "title": "Lighthouse",
+    },
+  ],
+}
+`;

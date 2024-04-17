@@ -31,5 +31,6 @@ This monorepo contains code for open-source Code PushUp NPM packages:
   - [🧩 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
   - [🧩 @code-pushup/coverage-plugin](./packages/plugin-coverage#readme) - code coverage analysis
   - [🧩 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
+  - [🧩 @code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme) - web performance and best practices from **Lighthouse**
 
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).

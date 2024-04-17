@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CoreConfig, Format } from '@code-pushup/models';
+import { yargsHistoryOptionsDefinition } from './history/history.options';
 import { CompareOptions } from './implementation/compare.model';
 import { yargsCompareOptionsDefinition } from './implementation/compare.options';
 import {
@@ -139,5 +140,33 @@ describe('yargsCli', () => {
         noExitProcess: true,
       }).parse(),
     ).toThrow('Missing required arguments: before, after');
+  });
+
+  it('should provide default arguments for history command', async () => {
+    const result = await yargsCli(['history'], {
+      options: { ...options, ...yargsHistoryOptionsDefinition() },
+    }).parseAsync();
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        targetBranch: 'main',
+        maxCount: 5,
+        skipUploads: false,
+      }),
+    );
+  });
+
+  it('should parse history options and have 2 commits to crawl in history if maxCount is set to 2', async () => {
+    const result = await yargsCli(['history', '--maxCount=2'], {
+      options: { ...options, ...yargsHistoryOptionsDefinition() },
+    }).parseAsync();
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        targetBranch: 'main',
+        maxCount: 2,
+        skipUploads: false,
+      }),
+    );
   });
 });
