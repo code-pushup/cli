@@ -80,7 +80,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     formattedValue,
     ...(details && {
       details: {
-        ...(issues.length ? { issues: issues.map(issueToGQL) } : {}),
+        ...(issues.length > 0 ? { issues: issues.map(issueToGQL) } : {}),
         // @TODO add when https://github.com/code-pushup/cli/issues/530 is implemented
         // ...(Object.keys(table).length ? {table} : {}),
       },
