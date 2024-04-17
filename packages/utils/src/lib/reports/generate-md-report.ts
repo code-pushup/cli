@@ -338,6 +338,6 @@ export function getDocsAndDescription({
 
 export function getAuditValue(audit: AuditReport, isHtml = false): string {
   const { displayValue, value } = audit;
-  const test = displayValue || value;
-  return isHtml ? `<b>${test}</b>` : style(String(test));
+  const text = displayValue || value.toString();
+  return isHtml ? `<b>${text}</b>` : style(text);
 }
