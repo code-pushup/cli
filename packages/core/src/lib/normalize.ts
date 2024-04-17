@@ -9,7 +9,7 @@ export async function normalizeAuditOutputs(
   return audits.map(audit => {
     const { issues = [], table } = audit.details ?? {};
     if (
-      // @TODO should be covered by type i guess?
+      // @TODO should be covered by type I guess?
       issues.every(issue => issue.source == null)
     ) {
       return audit;
