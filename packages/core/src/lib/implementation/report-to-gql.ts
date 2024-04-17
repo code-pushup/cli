@@ -69,7 +69,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     displayValue: formattedValue,
     details,
   } = audit;
-  const { issues = [], table = {} } = details ?? {};
+  const { issues = [] /*, table = {}*/ } = details ?? {};
   return {
     slug,
     title,
