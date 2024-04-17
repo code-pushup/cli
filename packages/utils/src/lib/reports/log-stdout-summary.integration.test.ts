@@ -1,16 +1,11 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
-import { reportMock } from '@code-pushup/test-utils';
+import { removeColorCodes, reportMock } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
 import { scoreReport } from './scoring';
 import { sortReport } from './sorting';
 
 describe('logStdoutSummary', () => {
-  // removes all color codes from the output for snapshot readability
-  const removeColorCodes = (stdout: string) =>
-    // eslint-disable-next-line no-control-regex
-    stdout.replace(/\u001B\[\d+m/g, '');
-
   let logs: string[];
 
   beforeAll(() => {

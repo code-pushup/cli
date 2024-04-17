@@ -19,6 +19,7 @@
             "plugin-eslint",
             "plugin-coverage",
             "plugin-js-packages",
+            "plugin-lighthouse",
             "examples-plugins",
             "react-todos-app"
           ],

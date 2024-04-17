@@ -39,7 +39,7 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    ui().logger.error((error as { code: string; message: string }).message);
+    ui().logger.info((error as { code: string; message: string }).message);
     if ((error as { code: string }).code !== 'EEXIST') {
       throw error;
     }
