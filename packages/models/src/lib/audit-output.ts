@@ -20,7 +20,7 @@ export const auditDetailsSchema = z.object(
       .array(issueSchema, { description: 'List of findings' })
       .optional(),
     table: tableSchema(
-      'Table of additional data related to the finding',
+      'Table of related findings',
     ).optional(),
   },
   { description: 'Detailed information' },
