@@ -59,20 +59,30 @@ function groupToGQL(group: Group): PortalGroup {
 }
 
 function auditToGQL(audit: AuditReport): PortalAudit {
+  const {
+    slug,
+    title,
+    description,
+    docsUrl,
+    score,
+    value,
+    displayValue: formattedValue,
+    details,
+  } = audit;
+  const { issues = [], table = {} } = details ?? {};
   return {
-    slug: audit.slug,
-    title: audit.title,
-    description: audit.description,
-    docsUrl: audit.docsUrl,
-    score: audit.score,
-    value: audit.value,
-    formattedValue: audit.displayValue,
-    ...(audit.details && {
+    slug,
+    title,
+    description,
+    docsUrl,
+    score,
+    value,
+    formattedValue,
+    ...(details && {
       details: {
-        ...(audit.details.issues
-          ? { issues: audit.details.issues.map(issueToGQL) }
-          : {}),
-        ...(audit.details.table ? { table: audit.details.table } : {}),
+        ...(issues.length ? { issues: issues.map(issueToGQL) } : {}),
+        // @TODO add when https://github.com/code-pushup/cli/issues/530 is implemented
+        // ...(Object.keys(table).length ? {table} : {}),
       },
     }),
   };
