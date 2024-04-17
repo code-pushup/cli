@@ -176,12 +176,13 @@ export function tableToFlatArray(table: Table) {
   const firstItemKeys =
     typeof items.at(0) === 'string'
       ? ['Value']
-      : Object.keys((items?.at(0) as Record<string, unknown>) ?? {});
+      : Object.keys(items.at(0) ?? {});
+  const preparedHeadings = headings.flatMap(({ key, label }) => label ?? key);
   const preparedTHeadersData =
-    headings?.flatMap(({ key, label }) => label ?? key) ?? firstItemKeys;
+    preparedHeadings.length > 0 ? preparedHeadings : firstItemKeys;
 
-  const headingKeys = headings?.flatMap(({ key }) => key);
-  const itemKeys = headingKeys ?? firstItemKeys;
+  const headingKeys = headings.flatMap(({ key }) => key);
+  const itemKeys = headingKeys.length > 0 ? headingKeys : firstItemKeys;
 
   return [
     preparedTHeadersData,
