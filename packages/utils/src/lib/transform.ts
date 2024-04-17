@@ -172,20 +172,20 @@ export function toOrdinal(value: number): string {
 /* eslint-enable no-magic-numbers */
 
 export function tableToFlatArray(table: Table) {
+  const { headings = [], items } = table;
   const firstItemKeys =
-    typeof table.items.at(0) === 'string'
+    typeof items.at(0) === 'string'
       ? ['Value']
-      : Object.keys(table.items.at(0) as Record<string, unknown>);
+      : Object.keys((items?.at(0) as Record<string, unknown>) ?? {});
   const preparedTHeadersData =
-    table.headings?.flatMap(heading => heading.label ?? heading.key) ??
-    firstItemKeys;
+    headings?.flatMap(({ key, label }) => label ?? key) ?? firstItemKeys;
 
-  const headingKeys = table.headings?.flatMap(({ key }) => key);
+  const headingKeys = headings?.flatMap(({ key }) => key);
   const itemKeys = headingKeys ?? firstItemKeys;
 
   return [
     preparedTHeadersData,
-    ...table.items.filter(Boolean).map(item => {
+    ...items.filter(Boolean).map(item => {
       if (typeof item === 'string') {
         return [item];
       }
