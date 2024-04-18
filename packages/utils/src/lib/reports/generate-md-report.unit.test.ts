@@ -323,7 +323,7 @@ describe('reportToDetailsSection', () => {
     expect(md).toMatch('</details>');
   });
 
-  it('should display issue section if in "issues" are present', () => {
+  it('should display issue section if issues are present', () => {
     const md = reportToDetailsSection({
       score: 0,
       value: 0,
