@@ -169,7 +169,7 @@ describe('renderDetailsTitle', () => {
     expect(renderDetailsAuditValue({ score: 0 } as AuditReport)).toMatch(/^🟥/);
   });
 
-  it('should produce full title', () => {
+  it('should include both display value and score when provided', () => {
     expect(
       renderDetailsAuditValue({
         score: 1,
