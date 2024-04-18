@@ -304,7 +304,7 @@ describe('renderTableSection', () => {
 });
 
 describe('reportToDetailsSection', () => {
-  it('should return details title only if no details are given', () => {
+  it('should only return audit value if no details are given', () => {
     expect(
       reportToDetailsSection({ score: 0, value: 125 } as AuditReport),
     ).toBe('🟥 <b>125</b> (score: 0)');
