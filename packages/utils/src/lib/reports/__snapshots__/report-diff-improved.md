@@ -1,9 +1,6 @@
 # Code PushUp
-
 🥳 Code PushUp report has **improved** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
-
 ## 🏷️ Categories
-
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--:|:--:|:--:|
 |Code style|🟢 **100**|🟡 54|![↑ +46](https://img.shields.io/badge/%E2%86%91%20%2B46-green)|
@@ -11,7 +8,6 @@
 |[Performance](https://developers.google.com/web/fundamentals/performance)|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
 ## 🗃️ Groups
-
 <details>
 <summary>👍 <strong>2</strong> groups improved</summary>
 
@@ -20,11 +16,10 @@
 |[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|Maximum lines limitation|🟢 **100**|🟡 50|![↑ +50](https://img.shields.io/badge/%E2%86%91%20%2B50-green)|
 |Lighthouse|Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
+
 </details>
 
-
 ## 🛡️ Audits
-
 <details>
 <summary>👍 <strong>12</strong> audits improved</summary>
 

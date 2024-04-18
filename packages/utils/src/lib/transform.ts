@@ -38,14 +38,14 @@ export function deepClone<T>(obj: T): T {
   return obj == null || typeof obj !== 'object' ? obj : structuredClone(obj);
 }
 
-export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
-  const itemCount = items.length;
-  // early exit for empty items
+export function factorOf<T>(rows: T[], filterFn: (i: T) => boolean): number {
+  const itemCount = rows.length;
+  // early exit for empty rows
   if (!itemCount) {
     return 1;
   }
-  const filterCount = items.filter(filterFn).length;
-  // if no items result from the filter fn we forward return 1 as factor
+  const filterCount = rows.filter(filterFn).length;
+  // if no rows result from the filter fn we forward return 1 as factor
   return filterCount === 0 ? 1 : (itemCount - filterCount) / itemCount;
 }
 
@@ -171,33 +171,44 @@ export function toOrdinal(value: number): string {
 }
 /* eslint-enable no-magic-numbers */
 
-export function tableToFlatArray(table: Table) {
-  const { headings = [], items } = table;
-  const firstItemKeys =
-    typeof items.at(0) === 'string'
-      ? ['Value']
-      : Object.keys(items.at(0) ?? {});
-  const preparedHeadings = headings.flatMap(({ key, label }) => label ?? key);
-  const preparedTHeadersData =
-    preparedHeadings.length > 0 ? preparedHeadings : firstItemKeys;
-
-  const headingKeys = headings.flatMap(({ key }) => key);
-  const itemKeys = headingKeys.length > 0 ? headingKeys : firstItemKeys;
-
-  return [
-    preparedTHeadersData,
-    ...items.filter(Boolean).map(item => {
-      if (typeof item === 'string') {
-        return [item];
+export function tableToFlatArray({
+  headings,
+  rows,
+}: Table): (string | number)[][] {
+  const firstRow = rows[0];
+  // Determine effective headings based on the input rows and optional headings parameter
+  const generateHeadings = (): string[] => {
+    if (headings && headings.length > 0) {
+      return headings.map(({ label, key }) => label ?? key);
+    } else {
+      if (typeof firstRow === 'object' && !Array.isArray(firstRow)) {
+        return Object.keys(firstRow);
       }
+      // Default to indexing if the rows are primitive types or single-element arrays
+      return firstRow?.map((_, idx) => idx.toString()) ?? [];
+    }
+  };
 
-      if (!Array.isArray(item)) {
-        return itemKeys.map(
-          key => (item as Record<typeof key, string>)[key] ?? '',
-        );
+  // Construct the row data based on headings and type of row items
+  const generateRows = (): (string | number)[][] =>
+    rows.map(item => {
+      if (typeof item === 'object' && !Array.isArray(item)) {
+        // For object rows, map heading to the value in the object
+        return headings
+          ? headings.map(({ key }) => item[key] ?? '')
+          : Object.values(item);
       }
+      // For array rows, return the item itself (assuming one element per array for simplicity)
+      if (Array.isArray(item)) {
+        return item;
+      }
+      // This branch shouldn't be reached based on current spec, but included for robustness
+      return [item];
+    });
 
-      return [''];
-    }),
-  ] satisfies string[][];
+  const effectiveHeadings = generateHeadings();
+  const tableRows = generateRows();
+
+  // Combine headings and rows to create the full table array
+  return [effectiveHeadings, ...tableRows];
 }

@@ -5,6 +5,8 @@ import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
 import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
+  MARKERS,
+  MarkerTypes,
   calcDuration,
   colorByScoreDiff,
   compareAudits,
@@ -16,12 +18,12 @@ import {
   formatReportScore,
   formatScoreWithColor,
   getPluginNameFromSlug,
-  getSeverityIcon,
   getSortableAuditByRef,
   getSortableGroupByRef,
   getSortedGroupAudits,
-  getSquaredScoreMarker,
   loadReport,
+  scoreMarker,
+  severityMarker,
 } from './utils';
 
 describe('formatReportScore', () => {
@@ -598,19 +600,69 @@ describe('sortAuditIssues', () => {
   });
 });
 
-describe('getSquaredScoreMarker', () => {
-  it.each([
-    ['🟥', 0],
-    ['🟥', 0.49],
-    ['🟨', SCORE_COLOR_RANGE.YELLOW_MIN],
-    ['🟨', 0.51],
-    ['🟨', 0.89],
-    ['🟩', SCORE_COLOR_RANGE.GREEN_MIN],
-    ['🟩', 0.91],
-    ['🟩', 1],
-  ])('should return icon %s for score %s', (icon, score) => {
-    expect(getSquaredScoreMarker(score)).toBe(icon);
+describe('scoreMarker', () => {
+  const {
+    red: redCircle,
+    yellow: yellowCircle,
+    green: greenCircle,
+  } = MARKERS.circle;
+  const {
+    red: redSquare,
+    yellow: yellowSquare,
+    green: greenSquare,
+  } = MARKERS.square;
+
+  it('should return circle by default', () => {
+    expect(scoreMarker(0)).toBe(redCircle);
   });
+
+  it.each<[string, MarkerTypes | undefined]>([
+    [redCircle, undefined],
+    [redCircle, 'circle'],
+    [redSquare, 'square'],
+  ])('should return icon %s for marker type %s', (icon, type) => {
+    expect(scoreMarker(0, type)).toBe(icon);
+  });
+
+  it.each<[string, number]>([
+    [redCircle, 0],
+    [redCircle, SCORE_COLOR_RANGE.YELLOW_MIN - 0.001],
+    [yellowCircle, SCORE_COLOR_RANGE.YELLOW_MIN],
+    [yellowCircle, SCORE_COLOR_RANGE.GREEN_MIN - 0.001],
+    [greenCircle, SCORE_COLOR_RANGE.GREEN_MIN],
+    [greenCircle, 1],
+  ])(
+    'should return circle icon %s for score %s if type is undefined',
+    (icon, score) => {
+      expect(scoreMarker(score)).toBe(icon);
+    },
+  );
+  it.each<[string, number]>([
+    [redCircle, 0],
+    [redCircle, SCORE_COLOR_RANGE.YELLOW_MIN - 0.001],
+    [yellowCircle, SCORE_COLOR_RANGE.YELLOW_MIN],
+    [yellowCircle, SCORE_COLOR_RANGE.GREEN_MIN - 0.001],
+    [greenCircle, SCORE_COLOR_RANGE.GREEN_MIN],
+    [greenCircle, 1],
+  ])(
+    'should return circle icon %s for score %s if type is circle',
+    (icon, score) => {
+      expect(scoreMarker(score, 'circle')).toBe(icon);
+    },
+  );
+  it.each<[string, number]>([
+    [redSquare, 0],
+    [redSquare, SCORE_COLOR_RANGE.YELLOW_MIN - 0.001],
+    [yellowSquare, SCORE_COLOR_RANGE.YELLOW_MIN],
+    [yellowSquare, SCORE_COLOR_RANGE.GREEN_MIN - 0.001],
+    [greenSquare, SCORE_COLOR_RANGE.GREEN_MIN],
+    [greenSquare, 1],
+  ])(
+    'should return circle icon %s for score %s if type is square',
+    (icon, score) => {
+      expect(scoreMarker(score, 'square')).toBe(icon);
+    },
+  );
 });
 
 describe('getSeverityIcon', () => {
@@ -620,6 +672,6 @@ describe('getSeverityIcon', () => {
     ['ℹ️', 'info'],
     ['ℹ️', '' as IssueSeverity],
   ])('should return icon %s for severity %s', (icon, severity) => {
-    expect(getSeverityIcon(severity)).toBe(icon);
+    expect(severityMarker(severity)).toBe(icon);
   });
 });

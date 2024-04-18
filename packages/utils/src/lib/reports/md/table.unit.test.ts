@@ -1,50 +1,57 @@
-import { NEW_LINE } from '../constants';
-import { Alignment, tableMd } from './table';
+import { Table } from '@code-pushup/models';
+import { tableMd } from './table';
 
 describe('table function', () => {
   it('should create a table with center alignment by default', () => {
-    const data: (string | number)[][] = [
-      ['Header 1', 'Header 2'],
-      ['row1col1', 'row1col2'],
-      ['row2col1', 'row2col2'],
-    ];
+    const data: Table = { rows: [[1, 2]] };
     const result = tableMd(data);
-    const expected = `|Header 1|Header 2|${NEW_LINE}|:--:|:--:|${NEW_LINE}|row1col1|row1col2|${NEW_LINE}|row2col1|row2col2|`;
-    expect(result).toBe(expected);
+    expect(result).toMatch('|:--:|:--:|');
   });
 
   it('should create a table with specified alignment', () => {
-    const data: (string | number)[][] = [
-      ['Header 1', 'Header 2'],
-      ['row1col1', 'row1col2'],
-      ['row2col1', 'row2col2'],
-    ];
-    const align: Alignment[] = ['l', 'r'];
-    const result = tableMd(data, align);
-    const expected = `|Header 1|Header 2|${NEW_LINE}|:--|--:|${NEW_LINE}|row1col1|row1col2|${NEW_LINE}|row2col1|row2col2|`;
-    expect(result).toBe(expected);
+    const data: Table = { rows: [[1, 2]], alignment: ['l', 'r'] };
+    const result = tableMd(data);
+    expect(result).toMatch('|:--|--:|');
   });
 
   it('should throw for empty data', () => {
-    const data: (string | number)[][] = [];
+    const data: Table = { rows: [] };
     expect(() => tableMd(data)).toThrow("Data can't be empty");
   });
 
-  it('should create a table with a single row', () => {
-    const data: (string | number)[][] = [['Header 1', 'Header 2']];
+  it('should create a table from primitive values', () => {
+    const data: Table = { rows: [['Value 1', 'Value 2']] };
     const result = tableMd(data);
-    const expected = `|Header 1|Header 2|`;
-    expect(result).toContain(expected);
+    expect(result).toMatch('|0|1|');
+    expect(result).toMatch('|Value 1|Value 2|');
   });
 
-  it('should include number values', () => {
-    const data: (string | number)[][] = [
-      ['Header 1', 'Header 2'],
-      [1, 2],
-      [3, 4],
-    ];
+  it('should create a table from object values', () => {
+    const data: Table = {
+      headings: [
+        { key: 'col1', label: 'Header 1' },
+        { key: 'col2', label: 'Header 2' },
+      ],
+      rows: [{ col1: '11', col2: '12' }],
+    };
     const result = tableMd(data);
-    const expected = `|Header 1|Header 2|${NEW_LINE}|:--:|:--:|${NEW_LINE}|1|2|${NEW_LINE}|3|4|`;
-    expect(result).toBe(expected);
+    expect(result).toMatch('|Header 1|Header 2|');
+    expect(result).toMatch('|11|12|');
+  });
+
+  it('should create a complete table', () => {
+    const data: Table = {
+      headings: [
+        { key: 'date', label: 'Date of Action' },
+        { key: 'time', label: 'Time of Action' },
+        { key: 'action', label: 'Action' },
+      ],
+      rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
+      alignment: ['r', 'l', 'c'],
+    };
+    const result = tableMd(data);
+    expect(result).toMatch('|Date of Action|Time of Action|Action|');
+    expect(result).toMatch('|--:|:--|:--:|');
+    expect(result).toMatch('|2025.01.01|00:00:00|add item|');
   });
 });

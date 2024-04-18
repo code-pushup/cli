@@ -1,9 +1,6 @@
 # Code PushUp
-
 😟 Code PushUp report has **regressed** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
-
 ## 🏷️ Categories
-
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
 |:--|:--:|:--:|:--:|
 |Bug prevention|🟡 **63**|🟡 68|![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red)|
@@ -11,13 +8,9 @@
 |Code style|🟡 **54**|🟡 54|–|
 
 _(\*) New category._
-
 ## 🗃️ Groups
-
 All of 1 group is unchanged.
-
 ## 🛡️ Audits
-
 <details>
 <summary>👎 <strong>1</strong> audit regressed</summary>
 

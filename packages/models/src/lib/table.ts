@@ -1,19 +1,31 @@
 import { z } from 'zod';
 
-const headingSchema = z.object(
+export const tableHeadingSchema = z.object(
   {
     key: z.string(),
     label: z.string().optional(),
   },
   { description: 'Source file location' },
 );
-export type Heading = z.infer<typeof headingSchema>;
+export type TableHeading = z.infer<typeof tableHeadingSchema>;
 
+export const tableAlignmentSchema = z.enum(['l', 'c', 'r'], {
+  description: 'Cell alignment',
+});
+export type TableAlignment = z.infer<typeof tableAlignmentSchema>;
+export const primitiveValueSchema = z.union([z.string(), z.number()]);
+export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
 export const tableSchema = (description = 'Table information') =>
   z.object(
     {
-      headings: z.array(headingsSchema).optional(),
-      items: z.array(z.union([z.unknown(), z.record(z.string())])),
+      headings: z.array(tableHeadingSchema).optional(),
+      alignment: z.array(tableAlignmentSchema).optional(),
+      rows: z.array(
+        z.union([
+          z.array(primitiveValueSchema),
+          z.record(primitiveValueSchema),
+        ]),
+      ),
     },
     { description },
   );

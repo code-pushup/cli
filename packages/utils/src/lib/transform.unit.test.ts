@@ -307,15 +307,15 @@ describe('tableToFlatArray', () => {
   it('should flatten Table shape of simple items', () => {
     expect(
       tableToFlatArray({
-        items: ['1'],
+        rows: [['1']],
       }),
-    ).toStrictEqual([['Value'], ['1']]);
+    ).toStrictEqual([['0'], ['1']]);
   });
 
   it('should flatten Table shape of objects', () => {
     expect(
       tableToFlatArray({
-        items: [{ test: 'prop value' }],
+        rows: [{ test: 'prop value' }],
       }),
     ).toStrictEqual([['test'], ['prop value']]);
   });
@@ -324,7 +324,7 @@ describe('tableToFlatArray', () => {
     expect(
       tableToFlatArray({
         headings: [{ key: 'slug' }],
-        items: [{ slug: 'my-slug', value: 'my value' }],
+        rows: [{ slug: 'my-slug', value: 'my value' }],
       }),
     ).toStrictEqual([['slug'], ['my-slug']]);
   });
@@ -333,7 +333,7 @@ describe('tableToFlatArray', () => {
     expect(
       tableToFlatArray({
         headings: [{ key: 'value', label: 'Value' }],
-        items: [{ slug: 'my-slug', value: 'my value' }],
+        rows: [{ slug: 'my-slug', value: 'my value' }],
       }),
     ).toStrictEqual([['Value'], ['my value']]);
   });
