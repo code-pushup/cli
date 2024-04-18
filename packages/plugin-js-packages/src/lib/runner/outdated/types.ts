@@ -7,10 +7,12 @@ export type DependencyGroupLong =
   | 'optionalDependencies';
 
 // Unified Outdated result type
-export type OutdatedResult = {
+export type OutdatedDependency = {
   name: string;
   current: string;
   latest: string;
   type: DependencyGroupLong;
   url?: string;
-}[];
+};
+
+export type OutdatedResult = OutdatedDependency[];
