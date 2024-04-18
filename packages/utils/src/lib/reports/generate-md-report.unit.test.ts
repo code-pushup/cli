@@ -310,7 +310,7 @@ describe('reportToDetailsSection', () => {
     ).toBe('🟥 <b>125</b> (score: 0)');
   });
 
-  it('should wrap "details" into HTML details element if in details are present', () => {
+  it('should wrap details into an HTML details element if details are present', () => {
     const md = reportToDetailsSection({
       score: 0,
       value: 0,
