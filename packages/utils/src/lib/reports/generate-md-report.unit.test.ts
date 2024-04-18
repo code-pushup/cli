@@ -335,7 +335,7 @@ describe('reportToDetailsSection', () => {
     expect(md).not.toMatch('<h4>Table</h4>');
   });
 
-  it('should display table section if in "table" is present', () => {
+  it('should display table section if table is present', () => {
     const md = reportToDetailsSection({
       score: 0,
       value: 0,
