@@ -1,29 +1,19 @@
-import { AuditReport, Issue, Table } from '@code-pushup/models';
-import { formatDate, formatDuration, slugify } from '../formatting';
+import {AuditReport, Issue, Report, Table} from '@code-pushup/models';
+import {formatDate, formatDuration, slugify} from '../formatting';
 import {
   CATEGORIES_TITLE,
   FOOTER_PREFIX,
-  NEW_LINE,
-  README_LINK,
   issuesTableHeadings,
+  NEW_LINE,
   pluginMetaTableHeaders,
+  README_LINK,
   reportHeadlineText,
   reportMetaTableHeaders,
   reportOverviewTableHeaders,
 } from './constants';
-import { styleBold, tableSection } from './formatting';
-import {
-  Alignment,
-  details,
-  h2,
-  h3,
-  headline,
-  li,
-  link,
-  paragraphs,
-  style,
-} from './md';
-import { ScoredGroup, ScoredReport } from './types';
+import {styleBold, tableSection} from './formatting';
+import {Alignment, details, h2, h3, headline, li, link, paragraphs, style,} from './md';
+import {ScoredGroup, ScoredReport} from './types';
 import {
   countCategoryAudits,
   formatReportScore,
@@ -34,18 +24,14 @@ import {
   severityMarker,
 } from './utils';
 
-export function reportHeader(): string {
-  return headline(reportHeadlineText);
-}
-
 export function reportOverview(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
-  const { categories, plugins } = report;
+  const {categories, plugins} = report;
   if (categories.length > 0 && plugins.length > 0) {
     const tableContent: Table = {
       headings: reportOverviewTableHeaders,
-      rows: categories.map(({ title, refs, score }) => ({
+      rows: categories.map(({title, refs, score}) => ({
         // @TODO shouldn't this be the category slug?
         category: link(`#${slugify(title)}`, title),
         score: `${scoreMarker(score)} ${style(formatReportScore(score))}`,
@@ -60,7 +46,7 @@ export function reportOverview(
 export function categoriesDetails(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
-  const { categories, plugins } = report;
+  const {categories, plugins} = report;
 
   const categoryDetails = categories.reduce((acc, category) => {
     const categoryTitle = h3(category.title);
@@ -74,7 +60,7 @@ export function categoriesDetails(
         const group = getSortableGroupByRef(ref, plugins);
         const groupAudits = group.refs.map(groupRef =>
           getSortableAuditByRef(
-            { ...groupRef, plugin: group.plugin, type: 'audit' },
+            {...groupRef, plugin: group.plugin, type: 'audit'},
             plugins,
           ),
         );
@@ -103,7 +89,7 @@ export function categoriesDetails(
 }
 
 export function categoryRef(
-  { title, score, value, displayValue }: AuditReport,
+  {title, score, value, displayValue}: AuditReport,
   pluginTitle: string,
 ): string {
   const auditTitleAsLink = link(
@@ -122,7 +108,7 @@ export function categoryRef(
 }
 
 export function categoryGroupItem(
-  { score = 0, title }: ScoredGroup,
+  {score = 0, title}: ScoredGroup,
   groupAudits: AuditReport[],
   pluginTitle: string,
 ): string {
@@ -143,22 +129,22 @@ export function categoryGroupItem(
 }
 
 export function auditDetailsAuditValue({
-  score,
-  value,
-  displayValue,
-}: AuditReport) {
+                                         score,
+                                         value,
+                                         displayValue,
+                                       }: AuditReport) {
   return `${scoreMarker(score, 'square')} ${styleBold(
-    { value, displayValue },
+    {value, displayValue},
     true,
   )} (score: ${formatReportScore(score)})`;
 }
 
 export function generateMdReport(report: ScoredReport): string {
-  const printCategories = report.categories.length > 0;
+  const printCategories = report.categories?.length > 0;
 
   return paragraphs(
     // header section
-    reportHeader(),
+    headline(reportHeadlineText),
     // categories overview section
     printCategories ? reportOverview(report) : '',
     // categories section
@@ -186,24 +172,24 @@ export function auditDetailsIssues(issues: Issue[] = []) {
       const message = issue.message;
 
       if (!issue.source) {
-        return { severity, message, file: '', line: '' } satisfies Partial<
+        return {severity, message, file: '', line: ''} satisfies Partial<
           Record<ItemKeys, string>
         >;
       }
       // TODO: implement file links, ticket #149
       const file = `<code>${issue.source.file}</code>`;
       if (!issue.source.position) {
-        return { severity, message, file, line: '' };
+        return {severity, message, file, line: ''};
       }
-      const { startLine, endLine } = issue.source.position;
+      const {startLine, endLine} = issue.source.position;
       const line = `${startLine || ''}${
         endLine && startLine !== endLine ? `-${endLine}` : ''
       }`;
-      return { severity, message, file, line };
+      return {severity, message, file, line};
     }),
   };
 
-  return tableSection(detailsTableData, { heading: 'Issues' });
+  return tableSection(detailsTableData, {heading: 'Issues'});
 }
 
 export function auditDetails(audit: AuditReport) {
@@ -223,9 +209,9 @@ export function auditDetails(audit: AuditReport) {
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
 export function metaDescription({
-  docsUrl,
-  description,
-}: Pick<AuditReport, 'docsUrl' | 'description'>): string {
+                                  docsUrl,
+                                  description,
+                                }: Pick<AuditReport, 'docsUrl' | 'description'>): string {
   const endingNewLine = NEW_LINE + NEW_LINE;
   if (docsUrl) {
     const docsLink = link(docsUrl, '📖 Docs');
@@ -245,12 +231,12 @@ export function metaDescription({
   return '';
 }
 
-export function auditsSection(report: Pick<ScoredReport, 'plugins'>): string {
-  const content = report.plugins.reduce((pluginAcc, plugin) => {
-    const auditsData = plugin.audits.reduce((auditAcc, audit) => {
+export function auditsSection({plugins}: Pick<ScoredReport, 'plugins'>): string {
+  const content = plugins.reduce((pluginAcc, {slug, title, audits}) => {
+    const auditsData = audits.reduce((auditAcc, audit) => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
-        plugin.slug,
-        report.plugins,
+        slug,
+        plugins,
       )})`;
       const detailsContent = auditDetails(audit);
       const descriptionContent = metaDescription(audit);
@@ -276,60 +262,68 @@ export function aboutSection(
 ): string {
   const {
     date,
-    duration,
-    version: reportVersion,
-    commit,
     plugins,
-    categories,
   } = report;
 
   const formattedDate = formatDate(new Date(date));
-  const commitInfo = commit ? `${commit.message} (${commit.hash})` : 'N/A';
-  const reportMetaTable: Table = {
-    headings: reportMetaTableHeaders,
-    rows: [
-      {
-        commit: commitInfo,
-        version: style(reportVersion || '', ['c']),
-        duration: formatDuration(duration),
-        plugins: plugins.length,
-        categories: categories.length,
-        audits: plugins
-          .reduce((acc, { audits }) => acc + audits.length, 0)
-          .toString(),
-      },
-    ],
-    alignment: ['l', 'c', 'c', 'c', 'c', 'c'] as Alignment[],
-  };
+  const reportMetaTable = reportMetaData(report);
 
-  const pluginMetaTable = {
+  const pluginMetaTable = reportPluginMeta({plugins});
+  const level = 3;
+  return paragraphs(
+    h2('About'),
+    `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.`,
+    tableSection(reportMetaTable, {heading: 'Report overview:', level}),
+    tableSection(pluginMetaTable, {heading: 'Plugins overview:', level}),
+  );
+}
+
+export function reportPluginMeta({plugins}: Pick<Report, 'plugins'>) {
+  return {
     headings: pluginMetaTableHeaders,
     rows: plugins.map(
       ({
-        title: plugin,
-        audits,
-        version: pluginVersion,
-        duration: pluginDuration,
-      }) => ({
-        plugin,
+         title: pluginTitle,
+         audits,
+         version: pluginVersion,
+         duration: pluginDuration,
+       }) => ({
+        plugin: pluginTitle,
         audits: audits.length.toString(),
         version: style(pluginVersion || '', ['c']),
         duration: formatDuration(pluginDuration),
       }),
     ),
     alignment: ['l', 'c', 'c', 'c'] as Alignment[],
+  }
+}
+
+export function reportMetaData({commit, version, duration, plugins, categories}: Pick<
+  ScoredReport,
+  'date' | 'duration' | 'version' | 'commit' | 'plugins' | 'categories'
+>): Table {
+  const commitInfo = commit ? `${commit.message} (${commit.hash})` : 'N/A';
+
+  return {
+    headings: reportMetaTableHeaders,
+    rows: [
+      {
+        commit: commitInfo,
+        version: style(version || '', ['c']),
+        duration: formatDuration(duration),
+        plugins: plugins.length,
+        categories: categories.length,
+        audits: plugins
+          .reduce((acc, {audits}) => acc + audits.length, 0)
+          .toString(),
+      },
+    ],
+    alignment: ['l', 'c', 'c', 'c', 'c', 'c'] as Alignment[],
   };
-  const level = 3;
-  return paragraphs(
-    h2('About'),
-    paragraphs(
-      `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.`,
-    ),
-    tableSection(reportMetaTable, { heading: 'Report overview:', level }),
-    tableSection(pluginMetaTable, { heading: 'Plugins overview:', level }),
-  );
+}
+
 export function getAuditValue(audit: AuditReport, isHtml = false): string {
-  const { displayValue, value } = audit;
+  const {displayValue, value} = audit;
   const text = displayValue || value.toString();
   return isHtml ? `<b>${text}</b>` : style(text);
 }

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { AuditReport, Issue } from '@code-pushup/models';
+import {describe, expect, it} from 'vitest';
+import {AuditReport, Issue} from '@code-pushup/models';
 import {
   aboutSection,
   auditDetails,
@@ -8,12 +8,39 @@ import {
   auditsSection,
   categoriesDetails,
   categoryGroupItem,
-  categoryRef,
+  categoryRef, generateMdReport,
   metaDescription,
-  reportHeader,
   reportOverview,
 } from './generate-md-report';
-import { ScoredGroup, ScoredReport } from './types';
+import {ScoredGroup, ScoredReport} from './types';
+
+const baseScoredReport = {
+  date: '2025.01.01',
+  duration: 4200,
+  version: 'v1.0.0',
+  commit: {
+    message: 'ci: update action',
+    author: 'Michael <michael.hladky@push-based.io>',
+    date: new Date('2025.01.01'),
+    hash: '535b8e9e557336618a764f3fa45609d224a62837',
+  },
+  plugins: [
+    {
+      slug: 'lighthouse',
+      version: '1.0.1',
+      duration: 15_365,
+      title: 'Lighthouse',
+      audits: [{slug: 'largest-contentful-paint', title: 'Largest Contentful Paint', score: .6, value: 2700}],
+    },
+  ],
+  categories: [{
+    title: 'Performance',
+    slug: 'performance',
+    score: 0.93,
+    refs: [{slug: 'largest-contentful-paint', plugin: 'lighthouse'}],
+  }]
+} as ScoredReport;
+
 
 describe('metaDescription', () => {
   it('should return empty string if no options are given', () => {
@@ -57,14 +84,6 @@ describe('metaDescription', () => {
   });
 });
 
-// === Header Section
-
-describe('reportHeader', () => {
-  it('should return title as h1', () => {
-    expect(reportHeader()).toBe('# Code PushUp Report');
-  });
-});
-
 // === Categories Overview Section
 
 describe('categoriesSection', () => {
@@ -93,19 +112,19 @@ describe('categoriesSection', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 0.98,
-            refs: [{ slug: 'no-let', type: 'audit' }],
+            refs: [{slug: 'no-let', type: 'audit'}],
           },
           {
             slug: 'performance',
             title: 'Performance',
             score: 0.74,
-            refs: [{ slug: 'largest-contentful-paint', type: 'audit' }],
+            refs: [{slug: 'largest-contentful-paint', type: 'audit'}],
           },
           {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
-            refs: [{ slug: 'no-any', type: 'audit' }],
+            refs: [{slug: 'no-any', type: 'audit'}],
           },
         ],
       } as unknown as ScoredReport),
@@ -159,8 +178,8 @@ describe('categoryGroupItem', () => {
           score: 0.9,
         } as ScoredGroup,
         [
-          { title: 'No let', slug: 'no-let', score: 0, value: 23 },
-          { title: 'No any', slug: 'no-any', score: 0.6, value: 91 },
+          {title: 'No let', slug: 'no-let', score: 0, value: 23},
+          {title: 'No any', slug: 'no-any', score: 0.6, value: 91},
         ],
         'Eslint',
       ),
@@ -183,7 +202,7 @@ describe('categoryGroupItem', () => {
             value: 12,
             displayValue: '12 errors',
           },
-          { title: 'No let', slug: 'no-let', score: 1, value: 0 },
+          {title: 'No let', slug: 'no-let', score: 1, value: 0},
         ],
         'Eslint',
       ),
@@ -200,8 +219,8 @@ describe('categoriesDetails', () => {
             slug: 'eslint',
             title: 'Eslint',
             audits: [
-              { slug: 'no-let', title: 'No let', score: 0, value: 5 },
-              { slug: 'no-any', title: 'No any', score: 1, value: 0 },
+              {slug: 'no-let', title: 'No let', score: 0, value: 5},
+              {slug: 'no-any', title: 'No any', score: 1, value: 0},
             ],
           },
           {
@@ -222,7 +241,7 @@ describe('categoriesDetails', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 0.98,
-            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+            refs: [{slug: 'no-let', type: 'audit', plugin: 'eslint'}],
           },
           {
             slug: 'performance',
@@ -240,7 +259,7 @@ describe('categoriesDetails', () => {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
-            refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
+            refs: [{slug: 'no-any', type: 'audit', plugin: 'eslint'}],
           },
         ],
       } as unknown as ScoredReport),
@@ -252,19 +271,19 @@ describe('categoriesDetails', () => {
 
 describe('auditDetailsAuditValue', () => {
   it('should include score', () => {
-    expect(auditDetailsAuditValue({ score: 0.77 } as AuditReport)).toMatch(
+    expect(auditDetailsAuditValue({score: 0.77} as AuditReport)).toMatch(
       '(score: 77)',
     );
   });
 
   it('should include value', () => {
-    expect(auditDetailsAuditValue({ value: 125 } as AuditReport)).toMatch(
+    expect(auditDetailsAuditValue({value: 125} as AuditReport)).toMatch(
       '<b>125</b>',
     );
   });
 
   it('should add score icon for scores at the beginning', () => {
-    expect(auditDetailsAuditValue({ score: 0 } as AuditReport)).toMatch(/^🟥/);
+    expect(auditDetailsAuditValue({score: 0} as AuditReport)).toMatch(/^🟥/);
   });
 
   it('should include both display value and score when provided', () => {
@@ -320,18 +339,18 @@ describe('auditDetailsIssues', () => {
   it('should include message', () => {
     expect(
       auditDetailsIssues([
-        { message: 'File `index.js` is 56Kb too big.' } as Issue,
+        {message: 'File `index.js` is 56Kb too big.'} as Issue,
       ]),
     ).toMatch('File `index.js` is 56Kb too big.');
   });
 
   it('should include correct severity icon', () => {
-    expect(auditDetailsIssues([{ severity: 'info' } as Issue])).toMatch('ℹ️');
+    expect(auditDetailsIssues([{severity: 'info'} as Issue])).toMatch('ℹ️');
   });
 
   it('should include source file', () => {
     expect(
-      auditDetailsIssues([{ source: { file: 'index.js' } } as Issue]),
+      auditDetailsIssues([{source: {file: 'index.js'}} as Issue]),
     ).toMatch('<code>index.js</code>');
   });
 
@@ -445,7 +464,7 @@ describe('auditDetails', () => {
           {
             message: '',
             severity: 'info',
-            source: { file: '' },
+            source: {file: ''},
           },
         ],
       },
@@ -465,8 +484,8 @@ describe('auditDetails', () => {
         details: {
           table: {
             headings: [
-              { key: 'classNames', label: 'Class Names' },
-              { key: 'element' },
+              {key: 'classNames', label: 'Class Names'},
+              {key: 'element'},
             ],
             rows: [
               {
@@ -521,7 +540,7 @@ describe('auditsSection', () => {
   it('should render audit result', () => {
     expect(
       auditsSection({
-        plugins: [{ audits: [{ score: 1, value: 0 }] }],
+        plugins: [{audits: [{score: 1, value: 0}]}],
       } as ScoredReport),
     ).toMatch('🟩 <b>0</b> (score: 100)');
   });
@@ -533,8 +552,8 @@ describe('auditsSection', () => {
           audits: [
             {
               details: {
-                issues: [{ source: {} }],
-                table: { rows: [{ value: 42 }] },
+                issues: [{source: {}}],
+                table: {rows: [{value: 42}]},
               },
             },
           ],
@@ -617,30 +636,9 @@ describe('auditsSection', () => {
 // === About
 
 describe('aboutSection', () => {
-  const baseReport = {
-    date: '2025.01.01',
-    duration: 4200,
-    duration: 4200,
-    version: 'v1.0.0',
-    commit: {
-      message: 'ci: update action',
-      author: 'Michael <michael.hladky@push-based.io>',
-      date: new Date('2025.01.01'),
-      hash: '535b8e9e557336618a764f3fa45609d224a62837',
-    },
-    plugins: [
-      {
-        version: '1.0.1',
-        duration: 15_365,
-        title: 'Lighthouse',
-        audits: Array.from({ length: 78 }),
-      },
-    ],
-    categories: [],
-  };
 
   it('should return about section with h2 and created by in plain test', () => {
-    const md = aboutSection(baseReport);
+    const md = aboutSection(baseScoredReport);
     expect(md).toMatch('## About');
     expect(md).toMatch(
       'Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.',
@@ -649,16 +647,16 @@ describe('aboutSection', () => {
 
   it('should return commit section', () => {
     const md = aboutSection({
-      ...baseReport,
+      ...baseScoredReport,
       plugins: [
         {
           version: '1.1.1',
           duration: 4200,
           title: 'Lighthouse',
-          audits: Array.from({ length: 3 }),
+          audits: Array.from({length: 3}),
         },
       ],
-      categories: Array.from({ length: 3 }),
+      categories: Array.from({length: 3}),
     } as unknown as ScoredReport);
     expect(md).toMatch('### Report overview:');
     expect(md).toMatch('|Commit|Version|Duration|Plugins|Categories|Audits|');
@@ -669,19 +667,19 @@ describe('aboutSection', () => {
 
   it('should return plugins section with content', () => {
     const md = aboutSection({
-      ...baseReport,
+      ...baseScoredReport,
       plugins: [
         {
           version: '1.0.1',
           duration: 15_365,
           title: 'Lighthouse',
-          audits: Array.from({ length: 78 }),
+          audits: Array.from({length: 78}),
         },
         {
           version: '0.3.12',
           duration: 260,
           title: 'File Size',
-          audits: Array.from({ length: 2 }),
+          audits: Array.from({length: 2}),
         },
       ],
     } as unknown as ScoredReport);
@@ -693,17 +691,179 @@ describe('aboutSection', () => {
 
   it('should return full about section', () => {
     const md = aboutSection({
-      ...baseReport,
+      ...baseScoredReport,
       plugins: [
         {
           version: '1.1.1',
           duration: 42,
           title: 'Lighthouse',
-          audits: Array.from({ length: 3 }),
+          audits: Array.from({length: 3}),
         },
       ],
-      categories: Array.from({ length: 3 }),
+      categories: Array.from({length: 3}),
     } as ScoredReport);
     expect(md).toMatchSnapshot();
+  });
+});
+
+// FULL REPORT
+
+describe('generateMdReport', () => {
+  it('should render all sections of the report', () => {
+    // report title
+    expect(generateMdReport(baseScoredReport)).toMatch('# Code PushUp Report');
+    // categories section heading
+    expect(generateMdReport(baseScoredReport)).toMatch('|🏷 Category|⭐ Score|🛡 Audits|');
+    // categories section heading
+    expect(generateMdReport(baseScoredReport)).toMatch('## 🏷 Categories');
+    // audits heading
+    expect(generateMdReport(baseScoredReport)).toMatch('## 🛡️ Audits');
+    // about section heading
+    expect(generateMdReport(baseScoredReport)).toMatch('## About');
+    // plugin heading
+    expect(generateMdReport(baseScoredReport)).toMatch('### Plugins overview');
+    // made with <3
+    expect(generateMdReport(baseScoredReport)).toMatch('Made with ❤ by [Code PushUp]');
+  });
+
+  it('should render complete md report', () => {
+    expect(generateMdReport({
+      packageName: '@code-pushup/cli',
+      version: 'v1.0.0',
+      date: 'Wed, Apr 17, 2024, 2:37 PM GMT+2',
+      duration: 42_356,
+      commit: {
+        message: 'ci: update action',
+        author: 'Michael <michael.hladky@push-based.io>',
+        date: new Date('2025.01.01'),
+        hash: '535b8e9e557336618a764f3fa45609d224a62837',
+      },
+      plugins: [
+        {
+          date: 'Wed, Apr 17, 2024, 2:38 PM GMT+2',
+          slug: 'lighthouse',
+          title: 'Lighthouse',
+          packageName: '@code-pushup/lighthouse',
+          version: '1.0.1.beta-1',
+          duration: 17_968,
+          icon: 'lighthouse',
+          audits: [
+            {
+              slug: 'largest-contentful-paint',
+              title: 'Largest Contentful Paint',
+              score: 0.672_8,
+              value: 2_705,
+              displayValue: '2,7 s',
+              description: 'This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)',
+              docsUrl: 'https://web.dev/lcp',
+            },
+            {
+              slug: 'splash-screen',
+              title: 'Splash Screen',
+              score: 1,
+              value: 1,
+            },
+            {
+              slug: 'is-crawlable',
+              title: 'Website is crawlable',
+              score: 0,
+              value: 0,
+              description: 'Search engines are unable to include your pages in search results if they don\'t have permission to crawl them. [Learn more about crawler directives](https://developer.chrome.com/docs/lighthouse/seo/is-crawlable/).',
+            }
+          ],
+          groups: [
+            {
+              slug: 'performance-group',
+              title: 'Performance Group',
+              description: 'Collection of performance focused rules.',
+              score: 0,
+              docsUrl: 'https://web.dev/lighthouse#performance-group',
+              refs: [
+                {slug: 'largest-contentful-paint', weight: 721}
+              ]
+            }
+          ],
+        },
+        {
+          date: 'Wed, Apr 17, 2024, 2:38 PM GMT+2',
+          slug: 'eslint',
+          title: 'Eslint',
+          packageName: '@code-pushup/eslint',
+          version: '3.71.8',
+          duration: 17_968,
+          icon: 'eslint',
+          audits: [
+            {
+              slug: 'no-explicit-any',
+              title: 'No explicit any',
+              score: 0,
+              value: 63,
+              displayValue: '63 errors',
+              description:
+`The any type in TypeScript is a dangerous "escape hatch" from the type system. Using any disables many type checking rules and is generally best used only as a last resort or when prototyping code. This rule reports on explicit uses of the any keyword as a type annotation.
+
+Preferable alternatives to any include:
+
+If the type is known, describing it in an interface or type
+If the type is not known, using the safer unknown type
+TypeScript's --noImplicitAny compiler option prevents an implied any, but doesn't prevent any from being explicitly used the way this rule does.
+
+\`\`\`ts
+.eslintrc.cjs
+module.exports = {
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error"
+  }
+};
+\`\`\`
+`,
+              docsUrl: 'https://typescript-eslint.io/rules/no-explicit-any/',
+            }
+          ]
+        },
+      ],
+      categories: [
+        {
+          title: 'Performance',
+          slug: 'performance',
+          score: 0.43,
+          refs: [
+            {
+              slug: 'performance-group',
+              plugin: 'lighthouse',
+              type: 'group',
+              weight: 81
+            }
+          ],
+        },
+        {
+          title: 'SEO',
+          slug: 'seo',
+          score: 1,
+          refs: [
+            {
+              slug: 'is-crawlable',
+              plugin: 'lighthouse',
+              type: 'audit',
+              weight: 2
+            }
+          ],
+        },
+        {
+          title: 'PWA',
+          slug: 'pwa',
+          score: 0,
+          isBinary: true,
+          refs: [
+            {
+              slug: 'splash-screen',
+              plugin: 'lighthouse',
+              type: 'audit',
+              weight: 1
+            }
+          ],
+        }
+      ]
+    })).toMatchSnapshot();
   });
 });

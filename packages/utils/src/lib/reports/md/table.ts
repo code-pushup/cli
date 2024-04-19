@@ -1,6 +1,7 @@
 import { Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
 import { NEW_LINE } from '../constants';
+import {paragraphs} from "./paragraphs";
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
@@ -9,9 +10,10 @@ const alignString = new Map<Alignment, string>([
   ['r', '--:'],
 ]);
 
-function stringsToTableRowAndNewLine(rows: (string | number)[]): string {
-  return `|${rows.join('|')}|${NEW_LINE}`;
+function tableRow(rows: (string | number)[]): string {
+  return `|${rows.join('|')}|`;
 }
+
 /**
  * | Table Header 1  | Table Header 2 |
  * | --------------- | -------------- |
@@ -35,14 +37,12 @@ export function tableMd<T extends Table>(data: T): string {
   const alignmentSetting =
     alignment == null ? allCenterAlignments : alignment.map(align => align);
 
-  const alignmentRow = alignmentSetting.map(
-    s => alignString.get(s) ?? String(alignString.get('c')),
-  );
+  const alignmentRow = alignmentSetting.map(s => alignString.get(s) ?? String(alignString.get('c')));
 
-  return (
-    stringsToTableRowAndNewLine(stringArr.at(0) ?? []) +
-    stringsToTableRowAndNewLine(alignmentRow) +
-    stringArr.slice(1).map(stringsToTableRowAndNewLine).join('')
+  return paragraphs(
+    tableRow(stringArr.at(0) ?? []),
+    tableRow(alignmentRow),
+    ...stringArr.slice(1).map(tableRow)
   );
 }
 
@@ -51,14 +51,14 @@ export function tableHtml(data: Table): string {
     throw new Error("Data can't be empty");
   }
 
-  // @TODO add formatting via prettier
+  // @TODO add formatting
   const tableContent = tableToFlatArray(data).map((arr, index) => {
     if (index === 0) {
-      const headerRow = arr.map(s => `<th>${s}</th>\n`).join('');
-      return `<tr>${headerRow}</tr>\n`;
+      const headerRow = arr.map(s => `<th>${s}</th>${NEW_LINE}`).join('');
+      return `<tr>${headerRow}</tr>${NEW_LINE}`;
     }
-    const row = arr.map(s => `<td>${s}</td>\n`).join('');
-    return `<tr>${row}</tr>\n`;
+    const row = arr.map(s => `<td>${s}</td>${NEW_LINE}`).join('');
+    return `<tr>${row}</tr>${NEW_LINE}`;
   });
-  return `<table>\n${tableContent.join('')}</table>`;
+  return `<table>${NEW_LINE}${tableContent.join('')}</table>`;
 }

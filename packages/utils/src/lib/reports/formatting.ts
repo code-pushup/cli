@@ -35,5 +35,5 @@ export function tableSection(
     l === 0 ? heading : headline(h, l);
   return `${heading ? render(heading, level) : ''}${NEW_LINE}${tableMd(
     table,
-  )}${NEW_LINE}${NEW_LINE}`;
+  )}`;
 }
