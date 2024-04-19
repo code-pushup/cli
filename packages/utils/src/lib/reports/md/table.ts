@@ -1,7 +1,7 @@
 import { Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
-import { NEW_LINE } from '../constants';
-import {paragraphs} from "./paragraphs";
+import { NEW_LINE } from './constants';
+import { paragraphs } from './paragraphs';
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
@@ -37,28 +37,14 @@ export function tableMd<T extends Table>(data: T): string {
   const alignmentSetting =
     alignment == null ? allCenterAlignments : alignment.map(align => align);
 
-  const alignmentRow = alignmentSetting.map(s => alignString.get(s) ?? String(alignString.get('c')));
+  const alignmentRow = alignmentSetting.map(
+    s => alignString.get(s) ?? String(alignString.get('c')),
+  );
 
   return paragraphs(
     tableRow(stringArr.at(0) ?? []),
     tableRow(alignmentRow),
-    ...stringArr.slice(1).map(tableRow)
+    ...stringArr.slice(1).map(tableRow),
+    NEW_LINE,
   );
-}
-
-export function tableHtml(data: Table): string {
-  if (data.rows.length === 0) {
-    throw new Error("Data can't be empty");
-  }
-
-  // @TODO add formatting
-  const tableContent = tableToFlatArray(data).map((arr, index) => {
-    if (index === 0) {
-      const headerRow = arr.map(s => `<th>${s}</th>${NEW_LINE}`).join('');
-      return `<tr>${headerRow}</tr>${NEW_LINE}`;
-    }
-    const row = arr.map(s => `<td>${s}</td>${NEW_LINE}`).join('');
-    return `<tr>${row}</tr>${NEW_LINE}`;
-  });
-  return `<table>${NEW_LINE}${tableContent.join('')}</table>`;
 }

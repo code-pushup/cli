@@ -1,25 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AuditReport } from '@code-pushup/models';
-import { styleBold, tableSection } from './formatting';
-
-describe('styleBold', () => {
-  it('should return MD format by default', () => {
-    expect(styleBold({ value: 0 } as AuditReport)).toBe('**0**');
-  });
-
-  it('should return HTML format if isHtml is true', () => {
-    expect(styleBold({ value: 0 } as AuditReport, true)).toBe('<b>0</b>');
-  });
-
-  it('should return displayValue if given', () => {
-    expect(
-      styleBold({
-        value: 0,
-        displayValue: '0ms',
-      } as AuditReport),
-    ).toBe('**0ms**');
-  });
-});
+import { tableSection } from './formatting';
 
 describe('tableSection', () => {
   it('should render complete section', () => {
@@ -54,7 +34,7 @@ describe('tableSection', () => {
             },
           ],
         },
-        { heading: 'LCP Breakdown:', level: 3 },
+        { heading: 'LCP Breakdown', level: 3 },
       ),
     ).toMatchSnapshot();
   });

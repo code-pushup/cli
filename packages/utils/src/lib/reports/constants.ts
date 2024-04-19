@@ -1,8 +1,8 @@
 // https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
 import { TableHeading } from '@code-pushup/models';
+import { Alignment } from './md';
 
 export const TERMINAL_WIDTH = 80;
-export const NEW_LINE = '\n';
 
 /* eslint-disable no-magic-numbers */
 export const SCORE_COLOR_RANGE = {
@@ -20,76 +20,71 @@ export const reportOverviewTableHeaders = [
   {
     key: 'category',
     label: '🏷 Category',
-    align: 'l',
   },
   {
     key: 'score',
     label: '⭐ Score',
-    align: 'c',
   },
   {
     key: 'audits',
     label: '🛡 Audits',
-    align: 'c',
   },
 ] as const satisfies TableHeading[];
+export const reportOverviewTableAlignment: Alignment[] = ['l', 'c', 'c'];
 export const reportRawOverviewTableHeaders = ['Category', 'Score', 'Audits'];
 export const reportMetaTableHeaders = [
   {
     key: 'commit',
     label: 'Commit',
-    align: 'l',
   },
   {
     key: 'version',
     label: 'Version',
-    align: 'c',
   },
   {
     key: 'duration',
     label: 'Duration',
-    align: 'c',
   },
   {
     key: 'plugins',
     label: 'Plugins',
-    align: 'c',
   },
   {
     key: 'categories',
     label: 'Categories',
-    align: 'c',
   },
   {
     key: 'audits',
     label: 'Audits',
-    align: 'c',
   },
 ] as const satisfies TableHeading[];
-
+export const reportMetaTableAlignment: Alignment[] = [
+  'l',
+  'c',
+  'c',
+  'c',
+  'c',
+  'c',
+];
 export const pluginMetaTableHeaders = [
   {
     key: 'plugin',
     label: 'Plugin',
-    align: 'l',
   },
   {
     key: 'audits',
     label: 'Audits',
-    align: 'c',
   },
   {
     key: 'version',
     label: 'Version',
-    align: 'c',
   },
   {
     key: 'duration',
     label: 'Duration',
-    align: 'c',
   },
 ] as const satisfies TableHeading[];
-
+export const pluginMetaTableAlignment: Alignment[] = ['l', 'c', 'c', 'c'];
 // details headers
 
 export const issuesTableHeadings = [

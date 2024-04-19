@@ -1,19 +1,33 @@
-import {AuditReport, Issue, Report, Table} from '@code-pushup/models';
-import {formatDate, formatDuration, slugify} from '../formatting';
+import { AuditReport, Issue, Report, Table } from '@code-pushup/models';
+import { formatDate, formatDuration, slugify } from '../formatting';
 import {
   CATEGORIES_TITLE,
   FOOTER_PREFIX,
-  issuesTableHeadings,
-  NEW_LINE,
-  pluginMetaTableHeaders,
   README_LINK,
+  issuesTableHeadings,
+  pluginMetaTableAlignment,
+  pluginMetaTableHeaders,
   reportHeadlineText,
+  reportMetaTableAlignment,
   reportMetaTableHeaders,
+  reportOverviewTableAlignment,
   reportOverviewTableHeaders,
 } from './constants';
-import {styleBold, tableSection} from './formatting';
-import {Alignment, details, h2, h3, headline, li, link, paragraphs, style,} from './md';
-import {ScoredGroup, ScoredReport} from './types';
+import { tableSection } from './formatting';
+import { style as htmlFontStyle } from './html/font-style';
+import {
+  details,
+  h2,
+  h3,
+  headline,
+  indentation,
+  li,
+  link,
+  paragraphs,
+  style,
+} from './md';
+import { NEW_LINE } from './md/constants';
+import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
   formatReportScore,
@@ -27,16 +41,17 @@ import {
 export function reportOverview(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
-  const {categories, plugins} = report;
+  const { categories, plugins } = report;
   if (categories.length > 0 && plugins.length > 0) {
     const tableContent: Table = {
       headings: reportOverviewTableHeaders,
-      rows: categories.map(({title, refs, score}) => ({
-        // @TODO shouldn't this be the category slug?
+      rows: categories.map(({ title, refs, score }) => ({
+        // @TODO shouldn't this be the category slug as title is not unique? => slugify(title) -> slug
         category: link(`#${slugify(title)}`, title),
         score: `${scoreMarker(score)} ${style(formatReportScore(score))}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
+      alignment: reportOverviewTableAlignment,
     };
     return tableSection(tableContent);
   }
@@ -46,101 +61,102 @@ export function reportOverview(
 export function categoriesDetails(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
-  const {categories, plugins} = report;
+  const { categories, plugins } = report;
 
-  const categoryDetails = categories.reduce((acc, category) => {
+  const categoryDetails = categories.flatMap(category => {
     const categoryTitle = h3(category.title);
     const categoryScore = `${scoreMarker(category.score)} Score:  ${style(
       formatReportScore(category.score),
     )}`;
 
-    const categoryMDItems = category.refs.reduce((refAcc, ref) => {
-      // @TODO add documentation
+    const categoryMDItems = category.refs.map(ref => {
+      // Add group details
       if (ref.type === 'group') {
         const group = getSortableGroupByRef(ref, plugins);
         const groupAudits = group.refs.map(groupRef =>
           getSortableAuditByRef(
-            {...groupRef, plugin: group.plugin, type: 'audit'},
+            { ...groupRef, plugin: group.plugin, type: 'audit' },
             plugins,
           ),
         );
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        const mdGroupItem = categoryGroupItem(group, groupAudits, pluginTitle);
-        return refAcc + mdGroupItem + NEW_LINE;
-      } else {
+        return categoryGroupItem(group, groupAudits, pluginTitle);
+      }
+      // Add audit details
+      else {
         const audit = getSortableAuditByRef(ref, plugins);
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        const mdAuditItem = categoryRef(audit, pluginTitle);
-        return refAcc + mdAuditItem + NEW_LINE;
+        return categoryRef(audit, pluginTitle);
       }
-    }, '');
-    const categoryDocs = metaDescription(category);
+    });
 
-    return paragraphs(
-      acc,
+    return [
       categoryTitle,
-      categoryDocs,
+      metaDescription(category),
       categoryScore,
-      categoryMDItems,
-    );
-  }, '');
+      ...categoryMDItems,
+    ];
+  });
 
-  return paragraphs(h2(CATEGORIES_TITLE), categoryDetails);
+  return paragraphs(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(
-  {title, score, value, displayValue}: AuditReport,
+  { title, score, value, displayValue }: AuditReport,
   pluginTitle: string,
 ): string {
   const auditTitleAsLink = link(
     `#${slugify(title)}-${slugify(pluginTitle)}`,
     title,
   );
+  const marker = scoreMarker(score, 'square');
   return li(
-    `${scoreMarker(
-      score,
-      'square',
-    )} ${auditTitleAsLink} (_${pluginTitle}_) - ${styleBold({
-      value,
-      displayValue,
-    })}`,
+    `${marker} ${auditTitleAsLink} (_${pluginTitle}_) - ${style(
+      (displayValue || value).toString(),
+    )}${NEW_LINE}`,
   );
 }
 
 export function categoryGroupItem(
-  {score = 0, title}: ScoredGroup,
+  { score = 0, title }: ScoredGroup,
   groupAudits: AuditReport[],
   pluginTitle: string,
 ): string {
   const groupTitle = li(`${scoreMarker(score)} ${title} (_${pluginTitle}_)`);
-  const auditTitles = groupAudits.reduce((acc, audit) => {
-    const auditTitle = link(
-      `#${slugify(audit.title)}-${slugify(pluginTitle)}`,
-      audit.title,
-    );
-    return `${acc}  ${li(
-      `${scoreMarker(audit.score, 'square')} ${auditTitle} - ${styleBold(
-        audit,
-      )}`,
-    )}${NEW_LINE}`;
-  }, '');
+  const auditTitles = groupAudits.map(
+    ({ title: auditTitle, score: auditScore, value, displayValue }) => {
+      const auditTitleLink = link(
+        `#${slugify(auditTitle)}-${slugify(pluginTitle)}`,
+        title,
+      );
+      const marker = scoreMarker(auditScore, 'square');
+      return indentation(
+        li(
+          `${marker} ${auditTitleLink} - ${style(
+            String(displayValue ?? value),
+          )}`,
+        ),
+      );
+    },
+  );
 
-  return paragraphs(groupTitle, auditTitles);
+  return paragraphs(groupTitle, ...auditTitles, NEW_LINE);
 }
 
 export function auditDetailsAuditValue({
-                                         score,
-                                         value,
-                                         displayValue,
-                                       }: AuditReport) {
-  return `${scoreMarker(score, 'square')} ${styleBold(
-    {value, displayValue},
-    true,
+  score,
+  value,
+  displayValue,
+}: AuditReport) {
+  const marker = scoreMarker(score, 'square');
+  const auditDisplayValue = String(displayValue ?? value);
+  return `${marker} ${htmlFontStyle(
+    auditDisplayValue,
   )} (score: ${formatReportScore(score)})`;
 }
 
 export function generateMdReport(report: ScoredReport): string {
-  const printCategories = report.categories?.length > 0;
+  const printCategories = report.categories.length > 0;
 
   return paragraphs(
     // header section
@@ -172,24 +188,24 @@ export function auditDetailsIssues(issues: Issue[] = []) {
       const message = issue.message;
 
       if (!issue.source) {
-        return {severity, message, file: '', line: ''} satisfies Partial<
+        return { severity, message, file: '', line: '' } satisfies Partial<
           Record<ItemKeys, string>
         >;
       }
       // TODO: implement file links, ticket #149
       const file = `<code>${issue.source.file}</code>`;
       if (!issue.source.position) {
-        return {severity, message, file, line: ''};
+        return { severity, message, file, line: '' };
       }
-      const {startLine, endLine} = issue.source.position;
+      const { startLine, endLine } = issue.source.position;
       const line = `${startLine || ''}${
         endLine && startLine !== endLine ? `-${endLine}` : ''
       }`;
-      return {severity, message, file, line};
+      return { severity, message, file, line };
     }),
   };
 
-  return tableSection(detailsTableData, {heading: 'Issues'});
+  return tableSection(detailsTableData, { heading: 'Issues' });
 }
 
 export function auditDetails(audit: AuditReport) {
@@ -200,105 +216,97 @@ export function auditDetails(audit: AuditReport) {
   }
 
   const { table, issues } = audit.details;
-  const tableSectionContent = table == null ? '' : tableSection(table);
-  const issuesSection =
-    issues == null || issues.length === 0 ? '' : auditDetailsIssues(issues);
+  const tableSectionContent =
+    table == null
+      ? ''
+      : tableSection(table, { heading: 'Additional Information' });
+  const issuesSectionContent =
+    issues && issues.length > 0 ? auditDetailsIssues(issues) : '';
 
-  return details(detailsValue, `${tableSectionContent}${issuesSection}`);
+  return details(detailsValue, `${tableSectionContent}${issuesSectionContent}`);
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
 export function metaDescription({
-                                  docsUrl,
-                                  description,
-                                }: Pick<AuditReport, 'docsUrl' | 'description'>): string {
-  const endingNewLine = NEW_LINE + NEW_LINE;
+  docsUrl,
+  description,
+}: Pick<AuditReport, 'docsUrl' | 'description'>): string {
   if (docsUrl) {
     const docsLink = link(docsUrl, '📖 Docs');
     if (!description) {
-      return docsLink + endingNewLine;
+      return docsLink;
     }
-    // @TODO introduce NEW_LINE at the end of a code block
-    if (description.endsWith('```')) {
-      // when description ends in code block, link must be moved to next paragraph
-      return description + NEW_LINE + NEW_LINE + docsLink + endingNewLine;
-    }
-    return `${description} ${docsLink}${endingNewLine}`;
+    return paragraphs(description, docsLink);
   }
   if (description) {
-    return description + endingNewLine;
+    return description;
   }
   return '';
 }
 
-export function auditsSection({plugins}: Pick<ScoredReport, 'plugins'>): string {
-  const content = plugins.reduce((pluginAcc, {slug, title, audits}) => {
-    const auditsData = audits.reduce((auditAcc, audit) => {
+export function auditsSection({
+  plugins,
+}: Pick<ScoredReport, 'plugins'>): string {
+  const content = plugins.flatMap(({ slug, audits }) =>
+    audits.flatMap(audit => {
       const auditTitle = `${audit.title} (${getPluginNameFromSlug(
         slug,
         plugins,
       )})`;
       const detailsContent = auditDetails(audit);
       const descriptionContent = metaDescription(audit);
-      return (
-        auditAcc +
-        h3(auditTitle) +
-        NEW_LINE +
-        NEW_LINE +
-        detailsContent +
-        NEW_LINE +
-        NEW_LINE +
-        descriptionContent
-      );
-    }, '');
-    return pluginAcc + auditsData;
-  }, '');
+      return [h3(auditTitle), detailsContent, descriptionContent, NEW_LINE];
+    }),
+  );
 
-  return h2('🛡️ Audits') + NEW_LINE + NEW_LINE + content;
+  return paragraphs(h2('🛡️ Audits'), ...content);
 }
 
 export function aboutSection(
   report: Omit<ScoredReport, 'packageName'>,
 ): string {
-  const {
-    date,
-    plugins,
-  } = report;
+  const { date, plugins } = report;
 
   const formattedDate = formatDate(new Date(date));
   const reportMetaTable = reportMetaData(report);
 
-  const pluginMetaTable = reportPluginMeta({plugins});
+  const pluginMetaTable = reportPluginMeta({ plugins });
   const level = 3;
   return paragraphs(
     h2('About'),
     `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.`,
-    tableSection(reportMetaTable, {heading: 'Report overview:', level}),
-    tableSection(pluginMetaTable, {heading: 'Plugins overview:', level}),
+    tableSection(reportMetaTable, { heading: 'Report overview:', level }),
+    tableSection(pluginMetaTable, { heading: 'Plugins overview:', level }),
   );
 }
 
-export function reportPluginMeta({plugins}: Pick<Report, 'plugins'>) {
+export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
   return {
     headings: pluginMetaTableHeaders,
     rows: plugins.map(
       ({
-         title: pluginTitle,
-         audits,
-         version: pluginVersion,
-         duration: pluginDuration,
-       }) => ({
+        title: pluginTitle,
+        audits,
+        version: pluginVersion,
+        duration: pluginDuration,
+      }) => ({
         plugin: pluginTitle,
         audits: audits.length.toString(),
         version: style(pluginVersion || '', ['c']),
         duration: formatDuration(pluginDuration),
       }),
     ),
-    alignment: ['l', 'c', 'c', 'c'] as Alignment[],
-  }
+    alignment: pluginMetaTableAlignment,
+  };
 }
 
-export function reportMetaData({commit, version, duration, plugins, categories}: Pick<
+export function reportMetaData({
+  commit,
+  version,
+  duration,
+  plugins,
+  categories,
+}: Pick<
   ScoredReport,
   'date' | 'duration' | 'version' | 'commit' | 'plugins' | 'categories'
 >): Table {
@@ -314,16 +322,10 @@ export function reportMetaData({commit, version, duration, plugins, categories}:
         plugins: plugins.length,
         categories: categories.length,
         audits: plugins
-          .reduce((acc, {audits}) => acc + audits.length, 0)
+          .reduce((acc, { audits }) => acc + audits.length, 0)
           .toString(),
       },
     ],
-    alignment: ['l', 'c', 'c', 'c', 'c', 'c'] as Alignment[],
+    alignment: reportMetaTableAlignment,
   };
-}
-
-export function getAuditValue(audit: AuditReport, isHtml = false): string {
-  const {displayValue, value} = audit;
-  const text = displayValue || value.toString();
-  return isHtml ? `<b>${text}</b>` : style(text);
 }
