@@ -247,19 +247,12 @@ export function reportToDetailsSection(audit: AuditReport) {
     return detailsValue;
   }
 
-  // eslint-disable-next-line functional/no-let
-  let md = '';
   const { table, issues } = audit.details;
+  const tableSection = table == null ? '' : renderTableSection(table);
+  const issuesSection =
+    issues == null || issues.length === 0 ? '' : renderIssuesSection(issues);
 
-  if (table != null) {
-    md += renderTableSection(table);
-  }
-
-  if (issues && issues.length > 0) {
-    md += renderIssuesSection(issues);
-  }
-
-  return details(detailsValue, md);
+  return details(detailsValue, `${tableSection}${issuesSection}`);
 }
 
 export function reportToAboutSection(
