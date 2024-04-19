@@ -499,7 +499,7 @@ describe('auditDetails', () => {
               element: 'div',
             },
           ],
-        }
+        },
       },
     } as AuditReport);
     expect(md).toMatch('<details>');
