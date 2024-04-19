@@ -127,7 +127,7 @@ export function categoryGroupItem(
     ({ title: auditTitle, score: auditScore, value, displayValue }) => {
       const auditTitleLink = link(
         `#${slugify(auditTitle)}-${slugify(pluginTitle)}`,
-        title,
+        auditTitle,
       );
       const marker = scoreMarker(auditScore, 'square');
       return indentation(
@@ -216,6 +216,9 @@ export function auditDetails(audit: AuditReport) {
   }
 
   const { table, issues } = audit.details;
+  if (issues && issues.length === 0 && table == null) {
+    return detailsValue;
+  }
   const tableSectionContent =
     table == null
       ? ''

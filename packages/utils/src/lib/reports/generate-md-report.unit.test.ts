@@ -464,29 +464,49 @@ describe('auditDetails', () => {
         issues: [{}],
       },
     } as AuditReport);
+    expect(md).toMatch('<details>');
     expect(md).toMatch('#### Issues');
-    expect(md).not.toMatch('#### Table');
+    expect(md).not.toMatch('#### Additional Information');
   });
 
-  it('should display table section if table is present', () => {
+  it('should NOT display issue section if only issues array is present but empty', () => {
     const md = auditDetails({
       score: 0,
       value: 0,
       details: {
+        issues: [],
+      },
+    } as unknown as AuditReport);
+    expect(md).not.toMatch('<details>');
+    expect(md).not.toMatch('#### Issues');
+    expect(md).not.toMatch('#### Additional Information');
+  });
+
+  it('should display table section if table is present', () => {
+    const md = auditDetails({
+      slug: 'prefer-design-system-over-css-classes',
+      title: 'Prefer the design system over CSS classes',
+      score: 0.99,
+      value: 0,
+      displayValue: '190ms',
+      details: {
         table: {
-          rows: [['1', '2', '3']],
-        },
-        issues: [
-          {
-            message: '',
-            severity: 'info',
-            source: { file: '' },
-          },
-        ],
+          rows: [
+            {
+              element: 'button',
+            },
+            {
+              element: 'div',
+            },
+          ],
+        }
       },
     } as AuditReport);
-    expect(md).toMatch('#### Issues');
-    expect(md).not.toMatch('#### Table');
+    expect(md).toMatch('<details>');
+    expect(md).toMatch('#### Additional Information');
+    expect(md).toMatch('|button|');
+    expect(md).toMatch('|div|');
+    expect(md).not.toMatch('#### Issues');
   });
 
   it('should render complete details section', () => {
