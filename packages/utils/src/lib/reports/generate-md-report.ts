@@ -263,10 +263,7 @@ export function reportToDetailsSection(audit: AuditReport) {
 }
 
 export function reportToAboutSection(
-  report: Pick<
-    ScoredReport,
-    'date' | 'duration' | 'version' | 'commit' | 'plugins' | 'categories'
-  >,
+  report: Omit<ScoredReport, 'packageName'>,
 ): string {
   const { date, duration, version, commit, plugins, categories } = report;
 
