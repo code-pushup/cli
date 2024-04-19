@@ -1,14 +1,14 @@
 import { z } from 'zod';
 
-const headingsSchema = z.object(
+const headingSchema = z.object(
   {
     key: z.string(),
     label: z.string().optional(),
   },
   { description: 'Source file location' },
 );
+export type Heading = z.infer<typeof headingSchema>;
 
-export type Headings = z.infer<typeof headingsSchema>;
 export const tableSchema = (description = 'Table information') =>
   z.object(
     {
