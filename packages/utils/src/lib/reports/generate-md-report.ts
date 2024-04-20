@@ -226,7 +226,10 @@ export function auditDetails(audit: AuditReport) {
   const issuesSectionContent =
     issues && issues.length > 0 ? auditDetailsIssues(issues) : '';
 
-  return details(detailsValue, `${tableSectionContent}${issuesSectionContent}`);
+  return details(
+    detailsValue,
+    paragraphs(tableSectionContent, issuesSectionContent),
+  );
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type

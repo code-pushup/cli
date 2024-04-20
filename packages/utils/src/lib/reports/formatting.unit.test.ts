@@ -33,6 +33,7 @@ describe('tableSection', () => {
               timing: '140 ms',
             },
           ],
+          alignment: ['c', 'l', 'r'],
         },
         { heading: 'LCP Breakdown', level: 3 },
       ),

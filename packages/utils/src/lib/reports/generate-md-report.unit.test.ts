@@ -799,6 +799,38 @@ describe('generateMdReport', () => {
                 description:
                   'This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)',
                 docsUrl: 'https://web.dev/lcp',
+                details: {
+                  table: {
+                    headings: [
+                      { key: 'phase', label: 'Phase' },
+                      { key: 'percentageLcp', label: '% of LCP' },
+                      { key: 'timing', label: 'Timing' },
+                    ],
+                    rows: [
+                      {
+                        phase: 'TTFB',
+                        percentageLcp: '27%',
+                        timing: '620 ms',
+                      },
+                      {
+                        phase: 'Load Delay',
+                        percentageLcp: '25%',
+                        timing: '580 ms',
+                      },
+                      {
+                        phase: 'Load Time',
+                        percentageLcp: '41%',
+                        timing: '940 ms',
+                      },
+                      {
+                        phase: 'Render Delay',
+                        percentageLcp: '6%',
+                        timing: '140 ms',
+                      },
+                    ],
+                    alignment: ['c', 'l', 'r'],
+                  },
+                },
               },
               {
                 slug: 'splash-screen',
@@ -809,7 +841,7 @@ describe('generateMdReport', () => {
               {
                 slug: 'fast-images',
                 title: 'Fast Images',
-                score: 0.6,
+                score: 0.97,
                 value: 1,
               },
               {
@@ -868,6 +900,38 @@ module.exports = {
 \`\`\`
 `,
                 docsUrl: 'https://typescript-eslint.io/rules/no-explicit-any/',
+                details: {
+                  issues: [
+                    {
+                      severity: 'info',
+                      message: 'File `index.js` is 56Kb.',
+                      source: {
+                        file: 'index.js',
+                      },
+                    },
+                    {
+                      severity: 'warning',
+                      message: 'Package license is has to be "MIT"',
+                      source: {
+                        file: 'package.json',
+                        position: {
+                          startLine: 4,
+                        },
+                      },
+                    },
+                    {
+                      severity: 'error',
+                      message: 'no unused vars',
+                      source: {
+                        file: 'index.js',
+                        position: {
+                          startLine: 400,
+                          endLine: 200,
+                        },
+                      },
+                    },
+                  ],
+                },
               },
             ],
           },
