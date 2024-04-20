@@ -180,7 +180,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
               ['i'],
             ),
           unchanged.length > 0 &&
-          summarizeUnchanged(token, { changed, unchanged }),
+            summarizeUnchanged(token, { changed, unchanged }),
         ),
       );
 }
@@ -211,13 +211,15 @@ function summarizeUnchanged(
   token: 'category' | 'group' | 'audit',
   { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
 ): string {
-  return section([
-    changed.length > 0
-      ? pluralizeToken(`other ${token}`, unchanged.length)
-      : `All of ${pluralizeToken(token, unchanged.length)}`,
-    unchanged.length === 1 ? 'is' : 'are',
-    'unchanged.',
-  ].join(' '));
+  return section(
+    [
+      changed.length > 0
+        ? pluralizeToken(`other ${token}`, unchanged.length)
+        : `All of ${pluralizeToken(token, unchanged.length)}`,
+      unchanged.length === 1 ? 'is' : 'are',
+      'unchanged.',
+    ].join(' '),
+  );
 }
 
 function summarizeDiffOutcomes(outcomes: DiffOutcome[], token: string): string {
