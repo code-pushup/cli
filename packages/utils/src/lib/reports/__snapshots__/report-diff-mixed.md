@@ -10,7 +10,6 @@
 |Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 |Code style|🟡 **54**|🟡 54|–|
 
-
 ## 🗃️ Groups
 
 <details>
@@ -22,7 +21,6 @@
 
 1 other group is unchanged.
 </details>
-
 
 ## 🛡️ Audits
 
@@ -38,4 +36,3 @@
 
 48 other audits are unchanged.
 </details>
-

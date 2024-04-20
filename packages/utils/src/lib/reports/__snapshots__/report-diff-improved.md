@@ -10,7 +10,6 @@
 |Bug prevention|🟢 **95**|🟡 68|![↑ +27](https://img.shields.io/badge/%E2%86%91%20%2B27-green)|
 |[Performance](https://developers.google.com/web/fundamentals/performance)|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
-
 ## 🗃️ Groups
 
 <details>
@@ -22,7 +21,6 @@
 |Lighthouse|Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
 </details>
-
 
 ## 🛡️ Audits
 
@@ -46,4 +44,3 @@
 
 40 other audits are unchanged.
 </details>
-

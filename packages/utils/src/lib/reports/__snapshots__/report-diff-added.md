@@ -11,11 +11,9 @@
 |Code style|🟡 **54**|🟡 54|–|
 
 _(\*) New category._
-
 ## 🗃️ Groups
 
 All of 1 group is unchanged.
-
 ## 🛡️ Audits
 
 <details>
@@ -27,4 +25,3 @@ All of 1 group is unchanged.
 
 48 other audits are unchanged.
 </details>
-
