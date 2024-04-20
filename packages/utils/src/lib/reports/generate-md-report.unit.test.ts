@@ -622,9 +622,7 @@ describe('auditsSection', () => {
           },
         ],
       } as ScoredReport),
-    ).toMatch(
-      `Measures responsiveness. [📖 Docs](https://web.dev/inp)`,
-    );
+    ).toMatch(`Measures responsiveness. [📖 Docs](https://web.dev/inp)`);
   });
 
   it('should render complete audit section', () => {
