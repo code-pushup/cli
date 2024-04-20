@@ -81,7 +81,7 @@ describe('metaDescription', () => {
         docsUrl: 'http://code-pushup.dev/audits/#lcp',
       }),
     ).toBe(
-      `Audit for loading performance${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`,
+      `Audit for loading performance [📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`,
     );
   });
 
@@ -623,7 +623,7 @@ describe('auditsSection', () => {
         ],
       } as ScoredReport),
     ).toMatch(
-      `Measures responsiveness.${NEW_LINE}[📖 Docs](https://web.dev/inp)`,
+      `Measures responsiveness. [📖 Docs](https://web.dev/inp)`,
     );
   });
 

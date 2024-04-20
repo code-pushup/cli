@@ -5,8 +5,5 @@ export function paragraphs(
 ): string {
   return sections
     .filter(Boolean)
-    .map(text =>
-      text?.toString().endsWith('```') ? `${text}${NEW_LINE}` : text,
-    )
     .join(NEW_LINE);
 }
