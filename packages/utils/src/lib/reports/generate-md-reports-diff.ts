@@ -2,6 +2,7 @@ import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
 import { details, h1, h2, link, paragraphs, style, tableMd } from './md';
+import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -10,7 +11,6 @@ import {
   getDiffMarker,
   scoreMarker,
 } from './utils';
-import {section} from "./md/section";
 
 // to prevent exceeding Markdown comment character limit
 const MAX_ROWS = 100;
@@ -46,10 +46,12 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
 
   return paragraphs(
     h1('Code PushUp'),
-    section(diff.commits
-      ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
-      : `${outcomeTexts[outcome]}.`,
-  ));
+    section(
+      diff.commits
+        ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
+        : `${outcomeTexts[outcome]}.`,
+    ),
+  );
 }
 
 function formatDiffCategoriesSection(diff: ReportsDiff): string {
