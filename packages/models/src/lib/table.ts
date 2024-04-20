@@ -15,6 +15,7 @@ export const tableAlignmentSchema = z.enum(['l', 'c', 'r'], {
 export type TableAlignment = z.infer<typeof tableAlignmentSchema>;
 export const primitiveValueSchema = z.union([z.string(), z.number()]);
 export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
+
 export const tableSchema = (description = 'Table information') =>
   z.object(
     {

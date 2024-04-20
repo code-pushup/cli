@@ -3,7 +3,12 @@ import { Table, tableSchema } from './table';
 
 describe('tableSchema', () => {
   it('should parse table with primitive data rows only', () => {
-    const table: Table = { rows: [['TTFB']] };
+    const table: Table = {
+      rows: [
+        ['TTFB', '27%', '620 ms'],
+        ['Load Delay', '25%', '580 ms'],
+      ],
+    };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
