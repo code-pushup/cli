@@ -29,6 +29,7 @@ exports[`auditDetails > should render complete details section 1`] = `
 |:--:|:--:|
 |.btn, .icon|button|
 |.badge, .badge-icon|div|
+
 #### Issues
 
 |Severity|Message|Source file|Line(s)|
@@ -128,7 +129,7 @@ exports[`generateMdReport > should render complete md report 1`] = `
 🟡 Score:  **61**
 - 🔴 Performance Group (_Lighthouse_)
   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
-  - 🟨 [Fast Images](#fast-images-lighthouse) - **1**
+  - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
 
 ### SEO
 
@@ -144,7 +145,20 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 ### Largest Contentful Paint (Lighthouse)
 
-🟨 <b>2,7 s</b> (score: 67)
+<details>
+<summary>🟨 <b>2,7 s</b> (score: 67)</summary>
+
+#### Additional Information
+
+|Phase|% of LCP|Timing|
+|:--:|:--|--:|
+|TTFB|27%|620 ms|
+|Load Delay|25%|580 ms|
+|Load Time|41%|940 ms|
+|Render Delay|6%|140 ms|
+
+</details>
+
 This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)
 [📖 Docs](https://web.dev/lcp)
 
@@ -153,7 +167,7 @@ This is the largest contentful element painted within the viewport. [Learn more 
 🟩 <b>1</b> (score: 100)
 ### Fast Images (Lighthouse)
 
-🟨 <b>1</b> (score: 60)
+🟩 <b>1</b> (score: 97)
 ### Website is crawlable (Lighthouse)
 
 🟥 <b>0</b> (score: 0)
@@ -161,7 +175,19 @@ Search engines are unable to include your pages in search results if they don't 
 
 ### No explicit any (Eslint)
 
-🟥 <b>63 errors</b> (score: 0)
+<details>
+<summary>🟥 <b>63 errors</b> (score: 0)</summary>
+
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|ℹ️ <i>info</i>|File \`index.js\` is 56Kb.|<code>index.js</code>||
+|⚠️ <i>warning</i>|Package license is has to be "MIT"|<code>package.json</code>|4|
+|🚨 <i>error</i>|no unused vars|<code>index.js</code>|400-200|
+
+</details>
+
 The any type in TypeScript is a dangerous "escape hatch" from the type system. Using any disables many type checking rules and is generally best used only as a last resort or when prototyping code. This rule reports on explicit uses of the any keyword as a type annotation.
 
 Preferable alternatives to any include:
