@@ -58,14 +58,17 @@ exports[`auditsSection > should render complete audit section 1`] = `
 ### No any (Eslint)
 
 🟩 <b>0</b> (score: 100)
+
 No unsafe any assignment
 
 ### No let (Eslint)
 
 🟥 <b>5 errors</b> (score: 0)
+
 ### Largest contentful paint (Lighthouse)
 
 🟨 <b>0</b> (score: 60)
+
 No unsafe any assignment [📖 Docs](https://web.dev/lcp)
 
 "
@@ -163,12 +166,15 @@ This is the largest contentful element painted within the viewport. [Learn more 
 ### Splash Screen (Lighthouse)
 
 🟩 <b>1</b> (score: 100)
+
 ### Fast Images (Lighthouse)
 
 🟩 <b>1</b> (score: 97)
+
 ### Website is crawlable (Lighthouse)
 
 🟥 <b>0</b> (score: 0)
+
 Search engines are unable to include your pages in search results if they don't have permission to crawl them. [Learn more about crawler directives](https://developer.chrome.com/docs/lighthouse/seo/is-crawlable/).
 
 ### No explicit any (Eslint)

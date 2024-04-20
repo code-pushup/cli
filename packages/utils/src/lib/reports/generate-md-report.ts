@@ -214,22 +214,20 @@ export function auditDetailsIssues(issues: Issue[] = []) {
 }
 
 export function auditDetails(audit: AuditReport) {
+  const { table, issues = [] } = audit?.details ?? {};
   const detailsValue = auditDetailsAuditValue(audit);
 
-  if (!audit.details) {
-    return detailsValue;
+  // undefined details or empty details === undefined issues OR empty issues AND empty table
+  if (issues.length === 0 && table == null) {
+    return section(detailsValue);
   }
 
-  const { table, issues } = audit.details;
-  if (issues && issues.length === 0 && table == null) {
-    return detailsValue;
-  }
   const tableSectionContent =
     table == null
       ? ''
       : tableSection(table, { heading: 'Additional Information' });
   const issuesSectionContent =
-    issues && issues.length > 0 ? auditDetailsIssues(issues) : '';
+    issues.length > 0 ? auditDetailsIssues(issues) : '';
 
   return details(
     detailsValue,

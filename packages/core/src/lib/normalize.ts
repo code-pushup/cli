@@ -8,28 +8,26 @@ export async function normalizeAuditOutputs(
 
   return audits.map(audit => {
     const { issues = [], table } = audit.details ?? {};
-    if (
-      // early exit to avoid object cloning
-      issues.every(issue => issue.source == null)
-    ) {
-      return audit;
-    }
+
     return {
       ...audit,
       details: {
         ...audit.details,
         table: table,
-        issues: issues.map(issue =>
-          issue.source == null
-            ? issue
-            : {
-                ...issue,
-                source: {
-                  ...issue.source,
-                  file: formatGitPath(issue.source.file, gitRoot),
-                },
-              },
-        ),
+        // early exit to avoid object cloning
+        issues: issues.every(issue => issue.source == null)
+          ? issues
+          : issues.map(issue =>
+              issue.source == null
+                ? issue
+                : {
+                    ...issue,
+                    source: {
+                      ...issue.source,
+                      file: formatGitPath(issue.source.file, gitRoot),
+                    },
+                  },
+            ),
       },
     };
   });

@@ -438,7 +438,7 @@ describe('tableSection', () => {
 describe('auditDetails', () => {
   it('should only return audit value if no details are given', () => {
     expect(auditDetails({ score: 0, value: 125 } as AuditReport)).toBe(
-      '🟥 <b>125</b> (score: 0)',
+      `🟥 <b>125</b> (score: 0)${NEW_LINE}`,
     );
   });
 

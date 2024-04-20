@@ -226,211 +226,253 @@ ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 ### Disallow `target="_blank"` attribute without `rel="noreferrer"` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-no-target-blank**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-target-blank.md)
 
 ### Disallow assignment operators in conditional expressions (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-cond-assign**. [📖 Docs](https://eslint.org/docs/latest/rules/no-cond-assign)
 
 ### Disallow comments from being inserted as text nodes (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-no-comment-textnodes**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-comment-textnodes.md)
 
 ### Disallow direct mutation of this.state (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-direct-mutation-state**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-direct-mutation-state.md)
 
 ### Disallow duplicate properties in JSX (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-no-duplicate-props**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-duplicate-props.md)
 
 ### Disallow invalid regular expression strings in `RegExp` constructors (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-invalid-regexp**. [📖 Docs](https://eslint.org/docs/latest/rules/no-invalid-regexp)
 
 ### Disallow loops with a body that allows only one iteration (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-unreachable-loop**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unreachable-loop)
 
 ### Disallow missing displayName in a React component definition (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **display-name**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/display-name.md)
 
 ### Disallow missing React when using JSX (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **react-in-jsx-scope**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/react-in-jsx-scope.md)
 
 ### Disallow negating the left operand of relational operators (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-unsafe-negation**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unsafe-negation)
 
 ### Disallow passing of children as props (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-children-prop**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-children-prop.md)
 
 ### Disallow React to be incorrectly marked as unused (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-uses-react**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-react.md)
 
 ### Disallow reassigning `const` variables (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-const-assign**. [📖 Docs](https://eslint.org/docs/latest/rules/no-const-assign)
 
 ### Disallow the use of `debugger` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-debugger**. [📖 Docs](https://eslint.org/docs/latest/rules/no-debugger)
 
 ### Disallow the use of undeclared variables unless mentioned in `/*global */` comments (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-undef**. [📖 Docs](https://eslint.org/docs/latest/rules/no-undef)
 
 ### Disallow undeclared variables in JSX (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-no-undef**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-no-undef.md)
 
 ### Disallow unescaped HTML entities from appearing in markup (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-unescaped-entities**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unescaped-entities.md)
 
 ### Disallow usage of deprecated methods (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-deprecated**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-deprecated.md)
 
 ### Disallow usage of findDOMNode (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-find-dom-node**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-find-dom-node.md)
 
 ### Disallow usage of isMounted (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-is-mounted**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-is-mounted.md)
 
 ### Disallow usage of the return value of ReactDOM.render (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-render-return-value**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-render-return-value.md)
 
 ### Disallow usage of unknown DOM property (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-unknown-property**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-unknown-property.md)
 
 ### Disallow use of optional chaining in contexts where the `undefined` value is not allowed (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-unsafe-optional-chaining**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining)
 
 ### Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **prefer-object-spread**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-object-spread)
 
 ### Disallow using string references (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-string-refs**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-string-refs.md)
 
 ### Disallow variables used in JSX to be incorrectly marked as unused (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **jsx-uses-vars**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-uses-vars.md)
 
 ### Disallow when a DOM element is using both children and dangerouslySetInnerHTML (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-danger-with-children**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/no-danger-with-children.md)
 
 ### Enforce a maximum number of lines per file (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **max-lines**. [📖 Docs](https://eslint.org/docs/latest/rules/max-lines)
 
 ### Enforce camelcase naming convention (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **camelcase**. [📖 Docs](https://eslint.org/docs/latest/rules/camelcase)
 
 ### Enforce comparing `typeof` expressions against valid strings (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **valid-typeof**. [📖 Docs](https://eslint.org/docs/latest/rules/valid-typeof)
 
 ### Enforce consistent brace style for all control statements (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **curly**. [📖 Docs](https://eslint.org/docs/latest/rules/curly)
 
 ### Enforce ES5 or ES6 class for returning value in render function (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **require-render-return**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/require-render-return.md)
 
 ### enforces the Rules of Hooks (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **rules-of-hooks**, from _react-hooks_ plugin. [📖 Docs](https://reactjs.org/docs/hooks-rules.html)
 
 ### Require `let` or `const` instead of `var` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **no-var**. [📖 Docs](https://eslint.org/docs/latest/rules/no-var)
 
 ### Require calls to `isNaN()` when checking for `NaN` (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **use-isnan**. [📖 Docs](https://eslint.org/docs/latest/rules/use-isnan)
 
 ### Require or disallow "Yoda" conditions (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **yoda**. [📖 Docs](https://eslint.org/docs/latest/rules/yoda)
 
 ### Require using arrow functions for callbacks (ESLint)
 
 🟩 <b>passed</b> (score: 100)
+
 ESLint rule **prefer-arrow-callback**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-arrow-callback)
 
 ### First Contentful Paint (Lighthouse)
 
 🟨 <b>1.2 s</b> (score: 76)
+
 First Contentful Paint marks the time at which the first text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)
 
 ### Largest Contentful Paint (Lighthouse)
 
 🟨 <b>1.5 s</b> (score: 81)
+
 Largest Contentful Paint marks the time at which the largest text or image is painted. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)
 
 ### Speed Index (Lighthouse)
 
 🟩 <b>1.2 s</b> (score: 93)
+
 Speed Index shows how quickly the contents of a page are visibly populated. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)
 
 ### Cumulative Layout Shift (Lighthouse)
 
 🟩 <b>0</b> (score: 100)
+
 Cumulative Layout Shift measures the movement of visible elements within the viewport. [📖 Docs](https://web.dev/cls/)
 
 ### Total Blocking Time (Lighthouse)
 
 🟩 <b>0 ms</b> (score: 100)
+
 Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
 
 
