@@ -5,7 +5,7 @@ export const tableHeadingSchema = z.object(
     key: z.string(),
     label: z.string().optional(),
   },
-  { description: 'Source file location' },
+  { description: 'Table heading' },
 );
 export type TableHeading = z.infer<typeof tableHeadingSchema>;
 
