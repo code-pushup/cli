@@ -26,7 +26,7 @@ import {
   paragraphs,
   style,
 } from './md';
-import { NEW_LINE } from './md/constants';
+import { section } from './md/section';
 import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
@@ -38,7 +38,7 @@ import {
   severityMarker,
 } from './utils';
 
-export function reportOverview(
+export function reportOverviewSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
   const { categories, plugins } = report;
@@ -58,7 +58,7 @@ export function reportOverview(
   return '';
 }
 
-export function categoriesDetails(
+export function categoriesDetailsSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
 ): string {
   const { categories, plugins } = report;
@@ -80,22 +80,22 @@ export function categoriesDetails(
           ),
         );
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return categoryGroupItem(group, groupAudits, pluginTitle);
+        return paragraphs(categoryGroupItem(group, groupAudits, pluginTitle));
       }
       // Add audit details
       else {
         const audit = getSortableAuditByRef(ref, plugins);
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return categoryRef(audit, pluginTitle);
+        return paragraphs(categoryRef(audit, pluginTitle));
       }
     });
 
-    return [
+    return section(
       categoryTitle,
       metaDescription(category),
       categoryScore,
       ...categoryMDItems,
-    ];
+    );
   });
 
   return paragraphs(h2(CATEGORIES_TITLE), ...categoryDetails);
@@ -113,7 +113,7 @@ export function categoryRef(
   return li(
     `${marker} ${auditTitleAsLink} (_${pluginTitle}_) - ${style(
       (displayValue || value).toString(),
-    )}${NEW_LINE}`,
+    )}`,
   );
 }
 
@@ -140,7 +140,7 @@ export function categoryGroupItem(
     },
   );
 
-  return paragraphs(groupTitle, ...auditTitles, NEW_LINE);
+  return paragraphs(groupTitle, ...auditTitles);
 }
 
 export function auditDetailsAuditValue({
@@ -162,9 +162,9 @@ export function generateMdReport(report: ScoredReport): string {
     // header section
     headline(reportHeadlineText),
     // categories overview section
-    printCategories ? reportOverview(report) : '',
+    printCategories ? reportOverviewSection(report) : '',
     // categories section
-    printCategories ? categoriesDetails(report) : '',
+    printCategories ? categoriesDetailsSection(report) : '',
     // audits section
     auditsSection(report),
     // about section
@@ -237,12 +237,12 @@ export function metaDescription({
   if (docsUrl) {
     const docsLink = link(docsUrl, '📖 Docs');
     if (!description) {
-      return docsLink;
+      return section(docsLink);
     }
-    return paragraphs(description, docsLink);
+    return section(description, docsLink);
   }
   if (description) {
-    return description;
+    return section(description);
   }
   return '';
 }
@@ -258,11 +258,11 @@ export function auditsSection({
       )})`;
       const detailsContent = auditDetails(audit);
       const descriptionContent = metaDescription(audit);
-      return [h3(auditTitle), detailsContent, descriptionContent, NEW_LINE];
+      return [h3(auditTitle), detailsContent, descriptionContent];
     }),
   );
 
-  return paragraphs(h2('🛡️ Audits'), ...content);
+  return section(h2('🛡️ Audits'), ...content);
 }
 
 export function aboutSection(
@@ -277,7 +277,9 @@ export function aboutSection(
   const level = 3;
   return paragraphs(
     h2('About'),
-    `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.`,
+    section(
+      `Report was created by [Code PushUp](${README_LINK}) on ${formattedDate}.`,
+    ),
     tableSection(reportMetaTable, { heading: 'Report overview:', level }),
     tableSection(pluginMetaTable, { heading: 'Plugins overview:', level }),
   );

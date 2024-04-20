@@ -7,12 +7,12 @@ import {
   auditDetailsAuditValue,
   auditDetailsIssues,
   auditsSection,
-  categoriesDetails,
+  categoriesDetailsSection,
   categoryGroupItem,
   categoryRef,
   generateMdReport,
   metaDescription,
-  reportOverview,
+  reportOverviewSection,
 } from './generate-md-report';
 import { NEW_LINE } from './md/constants';
 import { ScoredGroup, ScoredReport } from './types';
@@ -63,15 +63,15 @@ describe('metaDescription', () => {
       metaDescription({
         description: 'Audit to track bundle size',
       }),
-    ).toBe(`Audit to track bundle size`);
+    ).toBe(`Audit to track bundle size${NEW_LINE}`);
   });
 
   it('should return docsUrl if only docsUrl is given', () => {
     expect(
       metaDescription({
-        docsUrl: 'http://code-pushup.dev/audits/#lcp',
+        docsUrl: `http://code-pushup.dev/audits/#lcp`,
       }),
-    ).toBe(`[📖 Docs](http://code-pushup.dev/audits/#lcp)`);
+    ).toBe(`[📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`);
   });
 
   it('should docs and description if both given', () => {
@@ -81,7 +81,7 @@ describe('metaDescription', () => {
         docsUrl: 'http://code-pushup.dev/audits/#lcp',
       }),
     ).toBe(
-      `Audit for loading performance${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)`,
+      `Audit for loading performance${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`,
     );
   });
 
@@ -92,7 +92,7 @@ describe('metaDescription', () => {
         docsUrl: 'http://code-pushup.dev/audits/#lcp',
       }),
     ).toBe(
-      `Audit to loading performance\`\`\`${NEW_LINE}${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)`,
+      `Audit to loading performance\`\`\`${NEW_LINE}${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`,
     );
   });
 });
@@ -101,7 +101,7 @@ describe('metaDescription', () => {
 
 describe('categoriesSection', () => {
   it('should NOT render categories table', () => {
-    const md = reportOverview({
+    const md = reportOverviewSection({
       plugins: [],
       categories: [],
     } as unknown as ScoredReport);
@@ -110,7 +110,7 @@ describe('categoriesSection', () => {
 
   it('should render complete categories table', () => {
     expect(
-      reportOverview({
+      reportOverviewSection({
         plugins: [
           {
             slug: 'eslint',
@@ -161,7 +161,7 @@ describe('categoryRef', () => {
         'lighthouse',
       ),
     ).toBe(
-      `- 🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**${NEW_LINE}`,
+      '- 🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**',
     );
   });
 
@@ -178,7 +178,7 @@ describe('categoryRef', () => {
         'lighthouse',
       ),
     ).toBe(
-      `- 🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**${NEW_LINE}`,
+      '- 🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**',
     );
   });
 });
@@ -228,7 +228,7 @@ describe('categoryGroupItem', () => {
 describe('categoriesDetails', () => {
   it('should render complete categories details', () => {
     expect(
-      categoriesDetails({
+      categoriesDetailsSection({
         plugins: [
           {
             slug: 'eslint',
@@ -623,7 +623,7 @@ describe('auditsSection', () => {
         ],
       } as ScoredReport),
     ).toMatch(
-      `Measures responsiveness.${NEW_LINE}[📖 Docs](https://web.dev/inp)${NEW_LINE}`,
+      `Measures responsiveness.${NEW_LINE}[📖 Docs](https://web.dev/inp)`,
     );
   });
 

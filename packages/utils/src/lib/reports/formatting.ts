@@ -1,6 +1,5 @@
 import { Table } from '@code-pushup/models';
-import { Hierarchy, headline, tableMd } from './md';
-import { NEW_LINE } from './md/constants';
+import { Hierarchy, headline, paragraphs, tableMd } from './md';
 
 export function tableSection(
   table: Table | undefined,
@@ -21,8 +20,8 @@ export function tableSection(
     typeof options === 'string'
       ? { heading: options, level: 0 }
       : options ?? {};
-  // if hierarchy is 0 render just text
+  // if hierarchy is 0 do not apply heading styles
   const render = (h: string, l: Hierarchy | 0) =>
-    `${l === 0 ? heading : headline(h, l)}${NEW_LINE}`;
-  return `${heading ? render(heading, level) : ''}${tableMd(table)}`;
+    l === 0 ? heading : headline(h, l);
+  return paragraphs(heading ? render(heading, level) : false, tableMd(table));
 }

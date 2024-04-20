@@ -9,7 +9,6 @@
 |Bug prevention|🟡 **68**|
 |Code style|🟡 **54**|
 
-
 ## 🗃️ Groups
 
 All of 2 groups are unchanged.

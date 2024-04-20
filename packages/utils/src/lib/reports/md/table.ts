@@ -1,7 +1,7 @@
 import { Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
-import { NEW_LINE } from './constants';
 import { paragraphs } from './paragraphs';
+import { section } from './section';
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
@@ -41,10 +41,11 @@ export function tableMd<T extends Table>(data: T): string {
     s => alignString.get(s) ?? String(alignString.get('c')),
   );
 
-  return paragraphs(
-    tableRow(stringArr.at(0) ?? []),
-    tableRow(alignmentRow),
-    ...stringArr.slice(1).map(tableRow),
-    NEW_LINE,
+  return section(
+    `${paragraphs(
+      tableRow(stringArr.at(0) ?? []),
+      tableRow(alignmentRow),
+      ...stringArr.slice(1).map(tableRow),
+    )}`,
   );
 }

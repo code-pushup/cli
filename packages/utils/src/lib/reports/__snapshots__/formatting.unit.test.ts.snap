@@ -9,6 +9,5 @@ exports[`tableSection > should render complete section 1`] = `
 |Load Delay|25%|580 ms|
 |Load Time|41%|940 ms|
 |Render Delay|6%|140 ms|
-
 "
 `;
