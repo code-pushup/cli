@@ -1,6 +1,7 @@
 # Code PushUp
 
 🤨 Code PushUp report has both **improvements and regressions** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
+
 ## 🏷️ Categories
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
@@ -8,6 +9,7 @@
 |Bug prevention|🟡 **63**|🟡 68|![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red)|
 |Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 |Code style|🟡 **54**|🟡 54|–|
+
 
 ## 🗃️ Groups
 
@@ -20,6 +22,7 @@
 
 1 other group is unchanged.
 </details>
+
 
 ## 🛡️ Audits
 
@@ -35,3 +38,4 @@
 
 48 other audits are unchanged.
 </details>
+

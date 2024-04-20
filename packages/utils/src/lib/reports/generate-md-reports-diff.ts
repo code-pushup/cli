@@ -2,6 +2,7 @@ import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
 import { details, h1, h2, link, paragraphs, style, tableMd } from './md';
+import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -43,7 +44,7 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
   const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) =>
     `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
 
-  return paragraphs(
+  return section(
     h1('Code PushUp'),
     diff.commits
       ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
@@ -67,7 +68,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     { key: 'before', label: '⭐ Previous score' },
     { key: 'change', label: '🔄 Score change' },
   ];
-  return paragraphs(
+  return section(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
       tableMd({
@@ -106,7 +107,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
   if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
     return '';
   }
-  return paragraphs(
+  return section(
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
@@ -129,7 +130,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
 }
 
 function formatDiffAuditsSection(diff: ReportsDiff): string {
-  return paragraphs(
+  return section(
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
       headings: [

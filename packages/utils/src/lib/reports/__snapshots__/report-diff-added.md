@@ -1,6 +1,7 @@
 # Code PushUp
 
 😟 Code PushUp report has **regressed** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
+
 ## 🏷️ Categories
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|
@@ -10,9 +11,11 @@
 |Code style|🟡 **54**|🟡 54|–|
 
 _(\*) New category._
+
 ## 🗃️ Groups
 
 All of 1 group is unchanged.
+
 ## 🛡️ Audits
 
 <details>
@@ -24,3 +27,4 @@ All of 1 group is unchanged.
 
 48 other audits are unchanged.
 </details>
+
