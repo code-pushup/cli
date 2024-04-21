@@ -16,6 +16,8 @@ import {
 import { tableSection } from './formatting';
 import { style as htmlFontStyle } from './html/font-style';
 import {
+  NEW_LINE,
+  SPACE,
   details,
   h1,
   h2,
@@ -24,10 +26,9 @@ import {
   li,
   link,
   paragraphs,
+  section,
   style,
 } from './md';
-import { NEW_LINE, SPACE } from './md/constants';
-import { section } from './md/section';
 import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
