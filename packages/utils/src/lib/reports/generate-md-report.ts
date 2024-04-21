@@ -162,17 +162,11 @@ export function generateMdReport(report: ScoredReport): string {
   const printCategories = report.categories.length > 0;
 
   return paragraphs(
-    // header section
     h1(reportHeadlineText),
-    // categories overview section
     printCategories ? reportOverviewSection(report) : '',
-    // categories section
     printCategories ? categoriesDetailsSection(report) : '',
-    // audits section
     auditsSection(report),
-    // about section
     aboutSection(report),
-    // footer section
     `${FOOTER_PREFIX}${SPACE}${link(README_LINK, 'Code PushUp')}`,
   );
 }
