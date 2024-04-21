@@ -74,47 +74,6 @@ No unsafe any assignment [📖 Docs](https://web.dev/lcp)
 "
 `;
 
-exports[`categoriesDetails > should render complete categories details 1`] = `
-"## 🏷 Categories
-
-### Bug Prevention
-
-🟢 Score:  **98**
-- 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
-
-### Performance
-
-🟡 Score:  **74**
-- 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) (_Lighthouse_) - **2905**
-
-### Typescript
-
-🔴 Score:  **14**
-- 🟩 [No any](#no-any-eslint) (_Eslint_) - **0**
-"
-`;
-
-exports[`categoriesSection > should render complete categories table 1`] = `
-"|🏷 Category|⭐ Score|🛡 Audits|
-|:--|:--:|:--:|
-|[Bug Prevention](#bug-prevention)|🟢 **98**|1|
-|[Performance](#performance)|🟡 **74**|1|
-|[Typescript](#typescript)|🔴 **14**|1|
-"
-`;
-
-exports[`categoryGroupItem > should render complete category reference 1`] = `
-"- 🟡 Bug Prevention (_Eslint_)
-  - 🟥 [No any](#no-any-eslint) - **12 errors**
-  - 🟩 [No let](#no-let-eslint) - **0**"
-`;
-
-exports[`categoryGroupItem > should render partial category reference 1`] = `
-"- 🟢 Bug Prevention (_Eslint_)
-  - 🟥 [No let](#no-let-eslint) - **23**
-  - 🟨 [No any](#no-any-eslint) - **91**"
-`;
-
 exports[`generateMdReport > should render complete md report 1`] = `
 "# Code PushUp Report
 

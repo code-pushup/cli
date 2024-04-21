@@ -24,7 +24,7 @@ export async function normalizeAuditOutputs(
     if (audit.details == null) {
       return audit;
     }
-    const { issues, table, ...details } = audit.details ?? {};
+    const { issues, table, ...details } = audit.details;
     const noPathsInIssues =
       Array.isArray(issues) && issues.every(issue => issue.source == null);
     return {

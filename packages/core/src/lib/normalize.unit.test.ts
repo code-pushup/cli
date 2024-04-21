@@ -22,6 +22,13 @@ describe('normalizeAuditOutputs', () => {
     expect(outputs.at(0)).toBe(audit);
   });
 
+  it('should forward audit details with table', async () => {
+    const outputs = await normalizeAuditOutputs([
+      { details: { table: {} } } as unknown as AuditOutput,
+    ]);
+    expect(outputs.at(0)).toStrictEqual({ details: { table: {} } });
+  });
+
   it('should forward audit details without issues', async () => {
     const outputs = await normalizeAuditOutputs([
       { details: { issues: undefined } } as unknown as AuditOutput,
@@ -73,7 +80,7 @@ describe('normalizeIssue', () => {
     expect(normalizeIssue(issue, '/User/code-pushup')).toBe(issue);
   });
 
-  it('should ?? issue if source file is guven', () => {
+  it('should normalize filepath in issue if source file is given', () => {
     expect(
       normalizeIssue(
         {
