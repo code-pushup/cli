@@ -1,4 +1,7 @@
-import { NEW_LINE } from '../constants';
+import { Table } from '@code-pushup/models';
+import { tableToFlatArray } from '../../transform';
+import { paragraphs } from './paragraphs';
+import { section } from './section';
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
@@ -7,6 +10,10 @@ const alignString = new Map<Alignment, string>([
   ['r', '--:'],
 ]);
 
+function tableRow(rows: (string | number)[]): string {
+  return `|${rows.join('|')}|`;
+}
+
 /**
  * | Table Header 1  | Table Header 2 |
  * | --------------- | -------------- |
@@ -14,39 +21,31 @@ const alignString = new Map<Alignment, string>([
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
-export function tableMd(
-  data: (string | number)[][],
-  align?: Alignment[],
-): string {
-  if (data.length === 0) {
+export function tableMd<T extends Table>(data: T): string {
+  const { rows = [], alignment } = data;
+  if (rows.length === 0) {
     throw new Error("Data can't be empty");
   }
-  const alignmentSetting = align ?? data[0]?.map(() => 'c');
-  const tableContent = data.map(arr => `|${arr.join('|')}|`);
-  const alignmentRow = `|${alignmentSetting
-    ?.map(s => alignString.get(s))
-    .join('|')}|`;
-  return (
-    tableContent[0] +
-    NEW_LINE +
-    alignmentRow +
-    NEW_LINE +
-    tableContent.slice(1).join(NEW_LINE)
+
+  const stringArr = tableToFlatArray(data);
+
+  const allCenterAlignments = (
+    typeof rows.at(0) === 'string'
+      ? Array.from({ length: rows.length })
+      : Object.keys(rows.at(0) ?? {})
+  ).map(() => 'c' as Alignment);
+  const alignmentSetting =
+    alignment == null ? allCenterAlignments : alignment.map(align => align);
+
+  const alignmentRow = alignmentSetting.map(
+    s => alignString.get(s) ?? String(alignString.get('c')),
   );
-}
 
-export function tableHtml(data: (string | number)[][]): string {
-  if (data.length === 0) {
-    throw new Error("Data can't be empty");
-  }
-
-  const tableContent = data.map((arr, index) => {
-    if (index === 0) {
-      const headerRow = arr.map(s => `<th>${s}</th>`).join('');
-      return `<tr>${headerRow}</tr>`;
-    }
-    const row = arr.map(s => `<td>${s}</td>`).join('');
-    return `<tr>${row}</tr>`;
-  });
-  return `<table>${tableContent.join('')}</table>`;
+  return section(
+    `${paragraphs(
+      tableRow(stringArr.at(0) ?? []),
+      tableRow(alignmentRow),
+      ...stringArr.slice(1).map(tableRow),
+    )}`,
+  );
 }

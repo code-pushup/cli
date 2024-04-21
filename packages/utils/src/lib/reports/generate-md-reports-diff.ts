@@ -1,23 +1,15 @@
-import { AuditDiff, ReportsDiff } from '@code-pushup/models';
+import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import {
-  Alignment,
-  details,
-  h1,
-  h2,
-  link,
-  paragraphs,
-  style,
-  tableMd,
-} from './md';
+import { details, h1, h2, link, paragraphs, style, tableMd } from './md';
+import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
   formatDiffNumber,
   formatScoreWithColor,
   getDiffMarker,
-  getSquaredScoreMarker,
+  scoreMarker,
 } from './utils';
 
 // to prevent exceeding Markdown comment character limit
@@ -54,9 +46,11 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
 
   return paragraphs(
     h1('Code PushUp'),
-    diff.commits
-      ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
-      : `${outcomeTexts[outcome]}.`,
+    section(
+      diff.commits
+        ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
+        : `${outcomeTexts[outcome]}.`,
+    ),
   );
 }
 
@@ -70,39 +64,44 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     return '';
   }
 
+  const headings = [
+    { key: 'category', label: '🏷️ Category' },
+    { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
+    { key: 'before', label: '⭐ Previous score' },
+    { key: 'change', label: '🔄 Score change' },
+  ];
   return paragraphs(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
-      tableMd(
-        [
-          [
-            '🏷️ Category',
-            hasChanges ? '⭐ Current score' : '⭐ Score',
-            '⭐ Previous score',
-            '🔄 Score change',
-          ],
-          ...sortChanges(changed).map(category => [
-            formatTitle(category),
-            formatScoreWithColor(category.scores.after),
-            formatScoreWithColor(category.scores.before, { skipBold: true }),
-            formatScoreChange(category.scores.diff),
-          ]),
-          ...added.map(category => [
-            formatTitle(category),
-            formatScoreWithColor(category.score),
-            style('n/a (\\*)', ['i']),
-            style('n/a (\\*)', ['i']),
-          ]),
-          ...unchanged.map(category => [
-            formatTitle(category),
-            formatScoreWithColor(category.score),
-            formatScoreWithColor(category.score, { skipBold: true }),
-            '–',
-          ]),
-        ].map(row => (hasChanges ? row : row.slice(0, 2))),
-        hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
-      ),
-    added.length > 0 && style('(\\*) New category.', ['i']),
+      tableMd({
+        headings: hasChanges ? headings : headings.slice(0, 2),
+        rows: [
+          ...sortChanges(changed).map(category => ({
+            category: formatTitle(category),
+            after: formatScoreWithColor(category.scores.after),
+            before: formatScoreWithColor(category.scores.before, {
+              skipBold: true,
+            }),
+            change: formatScoreChange(category.scores.diff),
+          })),
+          ...added.map(category => ({
+            category: formatTitle(category),
+            after: formatScoreWithColor(category.score),
+            before: style('n/a (\\*)', ['i']),
+            change: style('n/a (\\*)', ['i']),
+          })),
+          ...unchanged.map(category => ({
+            category: formatTitle(category),
+            after: formatScoreWithColor(category.score),
+            before: formatScoreWithColor(category.score, { skipBold: true }),
+            change: '–',
+          })),
+        ].map(row =>
+          hasChanges ? row : { category: row.category, after: row.after },
+        ),
+        alignment: hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
+      }),
+    added.length > 0 && section(style('(\\*) New category.', ['i'])),
   );
 }
 
@@ -114,20 +113,20 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
-        '🔌 Plugin',
-        '🗃️ Group',
-        '⭐ Current score',
-        '⭐ Previous score',
-        '🔄 Score change',
+        { key: 'plugin', label: '🔌 Plugin' },
+        { key: 'group', label: '🗃️ Group' },
+        { key: 'after', label: '⭐ Current score' },
+        { key: 'before', label: '⭐ Previous score' },
+        { key: 'change', label: '🔄 Score change' },
       ],
-      rows: sortChanges(diff.groups.changed).map(group => [
-        formatTitle(group.plugin),
-        formatTitle(group),
-        formatScoreWithColor(group.scores.after),
-        formatScoreWithColor(group.scores.before, { skipBold: true }),
-        formatScoreChange(group.scores.diff),
-      ]),
-      align: ['l', 'l', 'c', 'c', 'c'],
+      rows: sortChanges(diff.groups.changed).map(group => ({
+        plugin: formatTitle(group.plugin),
+        group: formatTitle(group),
+        after: formatScoreWithColor(group.scores.after),
+        before: formatScoreWithColor(group.scores.before, { skipBold: true }),
+        change: formatScoreChange(group.scores.diff),
+      })),
+      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }
@@ -137,24 +136,24 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
       headings: [
-        '🔌 Plugin',
-        '🛡️ Audit',
-        '📏 Current value',
-        '📏 Previous value',
-        '🔄 Value change',
+        { key: 'plugin', label: '🔌 Plugin' },
+        { key: 'audit', label: '🛡️ Audit' },
+        { key: 'after', label: '📏 Current value' },
+        { key: 'before', label: '📏 Previous value' },
+        { key: 'change', label: '🔄 Value change' },
       ],
-      rows: sortChanges(diff.audits.changed).map(audit => [
-        formatTitle(audit.plugin),
-        formatTitle(audit),
-        `${getSquaredScoreMarker(audit.scores.after)} ${style(
+      rows: sortChanges(diff.audits.changed).map(audit => ({
+        plugin: formatTitle(audit.plugin),
+        audit: formatTitle(audit),
+        after: `${scoreMarker(audit.scores.after, 'square')} ${style(
           audit.displayValues.after || audit.values.after.toString(),
         )}`,
-        `${getSquaredScoreMarker(audit.scores.before)} ${
+        before: `${scoreMarker(audit.scores.before, 'square')} ${
           audit.displayValues.before || audit.values.before.toString()
         }`,
-        formatValueChange(audit),
-      ]),
-      align: ['l', 'l', 'c', 'c', 'c'],
+        change: formatValueChange(audit),
+      })),
+      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }
@@ -162,17 +161,17 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
 function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
   token: T,
   { changed, unchanged }: ReportsDiff[`${T}s`],
-  table: { headings: string[]; rows: string[][]; align?: Alignment[] },
+  table: Table,
 ): string {
   return changed.length === 0
     ? summarizeUnchanged(token, { changed, unchanged })
     : details(
         summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
         paragraphs(
-          tableMd(
-            [table.headings, ...table.rows.slice(0, MAX_ROWS)],
-            table.align,
-          ),
+          tableMd({
+            ...table,
+            rows: table.rows.slice(0, MAX_ROWS),
+          }),
           changed.length > MAX_ROWS &&
             style(
               `Only the ${MAX_ROWS} most affected ${pluralize(
@@ -212,13 +211,15 @@ function summarizeUnchanged(
   token: 'category' | 'group' | 'audit',
   { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
 ): string {
-  return [
-    changed.length > 0
-      ? pluralizeToken(`other ${token}`, unchanged.length)
-      : `All of ${pluralizeToken(token, unchanged.length)}`,
-    unchanged.length === 1 ? 'is' : 'are',
-    'unchanged.',
-  ].join(' ');
+  return section(
+    [
+      changed.length > 0
+        ? pluralizeToken(`other ${token}`, unchanged.length)
+        : `All of ${pluralizeToken(token, unchanged.length)}`,
+      unchanged.length === 1 ? 'is' : 'are',
+      'unchanged.',
+    ].join(' '),
+  );
 }
 
 function summarizeDiffOutcomes(outcomes: DiffOutcome[], token: string): string {

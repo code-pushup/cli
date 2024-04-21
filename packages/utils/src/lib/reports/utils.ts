@@ -30,27 +30,35 @@ export function formatScoreWithColor(
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
     : style(formatReportScore(score));
-  return `${getRoundScoreMarker(score)} ${styledNumber}`;
+  return `${scoreMarker(score)} ${styledNumber}`;
 }
 
-export function getRoundScoreMarker(score: number): string {
-  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return '🟢';
-  }
-  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return '🟡';
-  }
-  return '🔴';
-}
+export type MarkerTypes = 'circle' | 'square';
+export type ScoreColors = 'red' | 'yellow' | 'green';
+export const MARKERS: Record<MarkerTypes, Record<ScoreColors, string>> = {
+  circle: {
+    red: '🔴',
+    yellow: '🟡',
+    green: '🟢',
+  },
+  square: {
+    red: '🟥',
+    yellow: '🟨',
+    green: '🟩',
+  },
+};
 
-export function getSquaredScoreMarker(score: number): string {
+export function scoreMarker(
+  score: number,
+  markerType: MarkerTypes = 'circle',
+): string {
   if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return '🟩';
+    return MARKERS[markerType].green;
   }
   if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return '🟨';
+    return MARKERS[markerType].yellow;
   }
-  return '🟥';
+  return MARKERS[markerType].red;
 }
 
 export function getDiffMarker(diff: number): string {
@@ -82,9 +90,7 @@ export function formatDiffNumber(diff: number): string {
   return `${sign}${number}`;
 }
 
-export function getSeverityIcon(
-  severity: 'info' | 'warning' | 'error',
-): string {
+export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
   if (severity === 'error') {
     return '🚨';
   }

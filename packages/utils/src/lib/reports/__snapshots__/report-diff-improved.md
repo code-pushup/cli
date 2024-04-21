@@ -22,7 +22,6 @@
 
 </details>
 
-
 ## 🛡️ Audits
 
 <details>
