@@ -1768,41 +1768,26 @@ exports[`CLI collect > should run Lighthouse plugin that runs lighthouse CLI and
       "audits": [
         {
           "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
-          "details": {
-            "issues": [],
-          },
           "slug": "largest-contentful-paint",
           "title": "Largest Contentful Paint",
         },
         {
           "description": "Service worker is the technology that enables your app to use many Progressive Web App features, such as offline, add to homescreen, and push notifications. With proper service worker and manifest implementations, browsers can proactively prompt users to add your app to their homescreen, which can lead to higher engagement. [Learn more about manifest installability requirements](https://developer.chrome.com/docs/lighthouse/pwa/installable-manifest/).",
-          "details": {
-            "issues": [],
-          },
           "slug": "installable-manifest",
           "title": "Web app manifest and service worker meet the installability requirements",
         },
         {
           "description": "Deprecated APIs will eventually be removed from the browser. [Learn more about deprecated APIs](https://developer.chrome.com/docs/lighthouse/best-practices/deprecations/).",
-          "details": {
-            "issues": [],
-          },
           "slug": "deprecations",
           "title": "Avoids deprecated APIs",
         },
         {
           "description": "Each ARIA \`role\` supports a specific subset of \`aria-*\` attributes. Mismatching these invalidates the \`aria-*\` attributes. [Learn how to match ARIA attributes to their roles](https://dequeuniversity.com/rules/axe/4.8/aria-allowed-attr).",
-          "details": {
-            "issues": [],
-          },
           "slug": "aria-allowed-attr",
           "title": "\`[aria-*]\` attributes match their roles",
         },
         {
           "description": "hreflang links tell search engines what version of a page they should list in search results for a given language or region. [Learn more about \`hreflang\`](https://developer.chrome.com/docs/lighthouse/seo/hreflang/).",
-          "details": {
-            "issues": [],
-          },
           "slug": "hreflang",
           "title": "Document has a valid \`hreflang\`",
         },

@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { describe, expect } from 'vitest';
 import { AuditOutput, Issue } from '@code-pushup/models';
 import { normalizeAuditOutputs, normalizeIssue } from './normalize';
@@ -90,13 +91,13 @@ describe('normalizeIssue', () => {
             file: 'index.js',
           },
         },
-        '/User/code-pushup',
+        join('User', 'code-pushup'),
       ),
     ).toEqual({
       message: 'file too big',
       severity: 'error',
       source: {
-        file: '../../test/index.js',
+        file: join('..', '..', 'index.js'),
       },
     });
   });
