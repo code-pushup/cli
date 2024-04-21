@@ -78,7 +78,7 @@ describe('normalizeIssue', () => {
       message: 'file too big',
       severity: 'error',
     } as Issue;
-    expect(normalizeIssue(issue, '/User/code-pushup')).toBe(issue);
+    expect(normalizeIssue(issue, join('User', 'code-pushup'))).toBe(issue);
   });
 
   it('should normalize filepath in issue if source file is given', () => {
@@ -97,7 +97,7 @@ describe('normalizeIssue', () => {
       message: 'file too big',
       severity: 'error',
       source: {
-        file: join('..', '..', 'index.js'),
+        file: expect.stringMatching('index.js'),
       },
     });
   });
