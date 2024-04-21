@@ -17,9 +17,9 @@ import { tableSection } from './formatting';
 import { style as htmlFontStyle } from './html/font-style';
 import {
   details,
+  h1,
   h2,
   h3,
-  headline,
   indentation,
   li,
   link,
@@ -153,10 +153,8 @@ export function auditDetailsAuditValue({
   value,
   displayValue,
 }: AuditReport) {
-  const marker = scoreMarker(score, 'square');
-  const auditDisplayValue = String(displayValue ?? value);
-  return `${marker} ${htmlFontStyle(
-    auditDisplayValue,
+  return `${scoreMarker(score, 'square')} ${htmlFontStyle(
+    String(displayValue ?? value),
   )} (score: ${formatReportScore(score)})`;
 }
 
@@ -165,7 +163,7 @@ export function generateMdReport(report: ScoredReport): string {
 
   return paragraphs(
     // header section
-    headline(reportHeadlineText),
+    h1(reportHeadlineText),
     // categories overview section
     printCategories ? reportOverviewSection(report) : '',
     // categories section
@@ -183,41 +181,37 @@ export function auditDetailsIssues(issues: Issue[] = []) {
   if (issues.length === 0) {
     return '';
   }
-  type ItemKeys = (typeof issuesTableHeadings)[number]['key'];
   const detailsTableData = {
     headings: issuesTableHeadings,
-    rows: issues.map((issue: Issue) => {
-      const severity = `${severityMarker(issue.severity)} <i>${
-        issue.severity
-      }</i>`;
-      const message = issue.message;
+    rows: issues.map(
+      ({ severity: severityVal, message, source: sourceVal }: Issue) => {
+        const severity = `${severityMarker(severityVal)} <i>${severityVal}</i>`;
 
-      if (!issue.source) {
-        return { severity, message, file: '', line: '' } satisfies Partial<
-          Record<ItemKeys, string>
-        >;
-      }
-      // TODO: implement file links, ticket #149
-      const file = `<code>${issue.source.file}</code>`;
-      if (!issue.source.position) {
-        return { severity, message, file, line: '' };
-      }
-      const { startLine, endLine } = issue.source.position;
-      const line = `${startLine || ''}${
-        endLine && startLine !== endLine ? `-${endLine}` : ''
-      }`;
-      return { severity, message, file, line };
-    }),
+        if (!sourceVal) {
+          return { severity, message, file: '', line: '' };
+        }
+        // TODO: implement file links, ticket #149
+        const file = `<code>${sourceVal.file}</code>`;
+        if (!sourceVal.position) {
+          return { severity, message, file, line: '' };
+        }
+        const { startLine, endLine } = sourceVal.position;
+        const line = `${startLine || ''}${
+          endLine && startLine !== endLine ? `-${endLine}` : ''
+        }`;
+        return { severity, message, file, line };
+      },
+    ),
   };
 
   return tableSection(detailsTableData, { heading: 'Issues' });
 }
 
 export function auditDetails(audit: AuditReport) {
-  const { table, issues = [] } = audit?.details ?? {};
+  const { table, issues = [] } = audit.details ?? {};
   const detailsValue = auditDetailsAuditValue(audit);
 
-  // undefined details or empty details === undefined issues OR empty issues AND empty table
+  // undefined details OR empty details (undefined issues OR empty issues AND empty table)
   if (issues.length === 0 && table == null) {
     return section(detailsValue);
   }

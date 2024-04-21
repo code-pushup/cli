@@ -36,7 +36,7 @@ describe('normalizeAuditOutputs', () => {
     expect(outputs.at(0)).toStrictEqual({ details: { issues: [] } });
   });
 
-  it('should forward audit details with issues and all undefined source ', async () => {
+  it('should forward audit details with issues and all undefined source', async () => {
     const issues = [
       { source: undefined },
       { source: undefined },
@@ -48,7 +48,7 @@ describe('normalizeAuditOutputs', () => {
     expect(outputs.at(0)?.details?.issues).toBe(issues);
   });
 
-  it('should clone audit details with issues NOT all undefined source ', async () => {
+  it('should clone audit details with issues NOT all undefined source', async () => {
     const issues = [
       { source: undefined },
       { source: 'index.js' },

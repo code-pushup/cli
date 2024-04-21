@@ -32,14 +32,14 @@ export async function normalizeAuditOutputs(
       details: {
         ...details,
         ...(table ? { table } : {}),
-        ...(issues != null
-          ? {
+        ...(issues == null
+          ? {}
+          : {
               // early exit to avoid issues object cloning
               issues: noPathsInIssues
                 ? issues
                 : issues.map(issue => normalizeIssue(issue, gitRoot)),
-            }
-          : {}),
+            }),
       },
     };
   });
