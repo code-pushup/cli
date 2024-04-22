@@ -20,6 +20,7 @@
 |[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|Maximum lines limitation|🟢 **100**|🟡 50|![↑ +50](https://img.shields.io/badge/%E2%86%91%20%2B50-green)|
 |Lighthouse|Performance|🟢 **94**|🟢 92|![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)|
 
+
 </details>
 
 ## 🛡️ Audits
@@ -43,5 +44,6 @@
 |Lighthouse|[Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)|🟩 **1.1 s**|🟩 1.2 s|![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)|
 
 40 other audits are unchanged.
+
 
 </details>

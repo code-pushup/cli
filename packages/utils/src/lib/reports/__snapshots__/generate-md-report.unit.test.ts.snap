@@ -37,6 +37,7 @@ exports[`auditDetails > should render complete details section 1`] = `
 |🚨 <i>error</i>|Use design system components instead of classes|<code>list.component.ts</code>|400-200|
 |🚨 <i>error</i>|File size is 20KB too big|<code>list.component.ts</code>||
 
+
 </details>
 "
 `;
@@ -118,6 +119,7 @@ exports[`generateMdReport > should render complete md report 1`] = `
 |Load Time|41%|940 ms|
 |Render Delay|6%|140 ms|
 
+
 </details>
 
 This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/) [📖 Docs](https://web.dev/lcp)
@@ -148,6 +150,7 @@ Search engines are unable to include your pages in search results if they don't 
 |ℹ️ <i>info</i>|File \`index.js\` is 56Kb.|<code>index.js</code>||
 |⚠️ <i>warning</i>|Package license is has to be "MIT"|<code>package.json</code>|4|
 |🚨 <i>error</i>|no unused vars|<code>index.js</code>|400-200|
+
 
 </details>
 

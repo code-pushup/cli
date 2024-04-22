@@ -1,7 +1,8 @@
 import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import { details, h1, h2, link, paragraphs, style, tableMd } from './md';
+import { details } from './html/details';
+import { h1, h2, link, paragraphs, style, tableMd } from './md';
 import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
