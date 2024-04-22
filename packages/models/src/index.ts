@@ -34,6 +34,12 @@ export {
 export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
 export {
+  TableAlignment,
+  tableAlignmentSchema,
+  TableHeading,
+  tableHeadingSchema,
+  TableRow,
+  tableRowSchema,
   Table,
   tableSchema,
 } from './lib/table';
