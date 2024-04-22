@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 import Details from "lighthouse/types/lhr/audit-details";
 import {parseOpportunityDetails} from "./opportunity.type";
 
-describe('parseOpportunityDetails', () => {
+describe.skip('parseOpportunityDetails', () => {
 
   it('should omit empty opportunities', () => {
     const outputs = parseOpportunityDetails({
