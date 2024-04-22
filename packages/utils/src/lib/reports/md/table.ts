@@ -33,7 +33,7 @@ export function tableMd<T extends Table>(data: T): string {
     typeof rows.at(0) === 'string'
       ? Array.from({ length: rows.length })
       : Object.keys(rows.at(0) ?? {})
-  ).map(() => 'c' as Alignment);
+  ).map((): Alignment => 'c');
   const alignmentSetting =
     alignment == null ? allCenterAlignments : alignment.map(align => align);
 
