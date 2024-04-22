@@ -6,7 +6,7 @@ import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   MARKERS,
-  MarkerTypes,
+  MarkerShape,
   calcDuration,
   colorByScoreDiff,
   compareAudits,
@@ -616,7 +616,7 @@ describe('scoreMarker', () => {
     expect(scoreMarker(0)).toBe(redCircle);
   });
 
-  it.each<[string, MarkerTypes | undefined]>([
+  it.each<[string, MarkerShape | undefined]>([
     [redCircle, undefined],
     [redCircle, 'circle'],
     [redSquare, 'square'],
