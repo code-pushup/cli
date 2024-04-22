@@ -35,7 +35,7 @@ export async function normalizeAuditOutputs(
         ...(issues == null
           ? {}
           : {
-              // early exit to avoid issues object cloning
+              // early exit to avoid issues object cloning.
               issues: noPathsInIssues
                 ? issues
                 : issues.map(issue => normalizeIssue(issue, gitRoot)),
