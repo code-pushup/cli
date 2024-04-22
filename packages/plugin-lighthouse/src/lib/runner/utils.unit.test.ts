@@ -1,24 +1,15 @@
-import chalk from 'chalk';
 import debug from 'debug';
-import { type Budget } from 'lighthouse';
+import {type Budget} from 'lighthouse';
 import log from 'lighthouse-logger';
-import Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
-import { vol } from 'memfs';
-import { join } from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
-import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
-import {
-  getBudgets,
-  getConfig,
-  logUnsupportedDetails,
-  setLogLevel,
-  toAuditDetails,
-  toAuditOutputs,
-  unsupportedDetailTypes,
-} from './utils';
+import {Result} from 'lighthouse/types/lhr/audit-result';
+import {vol} from 'memfs';
+import {join} from 'node:path';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {auditOutputsSchema, CoreConfig} from '@code-pushup/models';
+import {getLogMessages, MEMFS_VOLUME} from '@code-pushup/test-utils';
+import {ui} from '@code-pushup/utils';
+import {getBudgets, getConfig, setLogLevel, toAuditOutputs,} from './utils';
+import {unsupportedDetailTypes} from "./details/details";
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -43,41 +34,6 @@ vi.mock('bundle-require', async () => {
         };
       }),
   };
-});
-
-describe('logUnsupportedDetails', () => {
-  it('should log unsupported entries', () => {
-    logUnsupportedDetails([
-      { details: { type: 'screenshot' } },
-    ] as unknown as Result[]);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
-        'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
-        'screenshot',
-      )}`,
-    );
-  });
-  it('should log only 3 details of unsupported entries', () => {
-    logUnsupportedDetails([
-      { details: { type: 'table' } },
-      { details: { type: 'filmstrip' } },
-      { details: { type: 'screenshot' } },
-      { details: { type: 'opportunity' } },
-      { details: { type: 'debugdata' } },
-      { details: { type: 'treemap-data' } },
-      { details: { type: 'criticalrequestchain' } },
-    ] as unknown as Result[]);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
-        'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
-        'filmstrip, screenshot, treemap-data',
-      )} and 1 more.`,
-    );
-  });
 });
 
 describe('toAuditOutputs', () => {
@@ -161,188 +117,6 @@ describe('toAuditOutputs', () => {
       { verbose: true },
     );
     expect(getLogMessages(ui().logger)).toHaveLength(1);
-  });
-});
-describe('toAuditDetails', () => {
-  it('should render audit details of type opportunity', () => {
-    const outputs = toAuditDetails({
-      type: 'opportunity',
-      headings: [
-        {
-          key: 'url',
-          valueType: 'url',
-          label: 'URL',
-        },
-        {
-          key: 'responseTime',
-          valueType: 'timespanMs',
-          label: 'Time Spent',
-        },
-      ],
-      items: [
-        {
-          url: 'https://staging.code-pushup.dev/login',
-          responseTime: 449.292_000_000_000_03,
-        },
-      ],
-    } satisfies Details.Opportunity);
-
-    expect(outputs).toStrictEqual({
-      table: {
-        headings: [
-          {
-            key: 'url',
-            label: 'URL',
-          },
-          {
-            key: 'responseTime',
-            label: 'Time Spent',
-          },
-        ],
-        items: [
-          {
-            url: 'https://staging.code-pushup.dev/login',
-            responseTime: 449.292_000_000_000_03,
-          },
-        ],
-      },
-    });
-  });
-
-  it('should render audit details of type table', () => {
-    const outputs = toAuditDetails({
-      type: 'table',
-      headings: [
-        {
-          key: 'name',
-          valueType: 'text',
-          label: 'Name',
-        },
-        {
-          key: 'duration',
-          valueType: 'ms',
-          label: 'Duration',
-        },
-      ],
-      items: [
-        {
-          name: 'Zone',
-          duration: 0.634,
-        },
-        {
-          name: 'Zone:ZoneAwarePromise',
-          duration: 0.783,
-        },
-      ],
-    });
-
-    expect(outputs).toStrictEqual({
-      table: {
-        headings: [
-          {
-            key: 'name',
-            label: 'Name',
-          },
-          {
-            key: 'duration',
-            label: 'Duration',
-          },
-        ],
-        items: [
-          {
-            name: 'Zone',
-            duration: 0.634,
-          },
-          {
-            name: 'Zone:ZoneAwarePromise',
-            duration: 0.783,
-          },
-        ],
-      },
-    });
-  });
-
-  it('should render audit details of type debugdata', () => {
-    const outputs = toAuditDetails({
-      type: 'debugdata',
-      items: [
-        {
-          cumulativeLayoutShiftMainFrame: 0.000_350_978_852_728_593_95,
-        },
-      ],
-    });
-
-    // @TODO add check that cliui.logger is called. Resolve TODO after PR #487 is merged.
-
-    expect(outputs).toStrictEqual({
-      table: {
-        items: [
-          {
-            cumulativeLayoutShiftMainFrame: 0.000_350_978_852_728_593_95,
-          },
-        ],
-      },
-    });
-  });
-
-  it('should inform that filmstrip detail type is not supported yet', () => {
-    const outputs = toAuditDetails({
-      type: 'filmstrip',
-      scale: 3000,
-      items: [
-        {
-          timing: 375,
-          timestamp: 106_245_424_545,
-          data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwY...',
-        },
-      ],
-    });
-
-    expect(outputs).toStrictEqual({});
-  });
-
-  it('should inform that screenshot detail type is not supported yet', () => {
-    const outputs = toAuditDetails({
-      type: 'screenshot',
-      timing: 541,
-      timestamp: 106_245_590_644,
-      data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//2Q==',
-    });
-
-    expect(outputs).toStrictEqual({});
-  });
-
-  it('should inform that treemap-data detail type is not supported yet', () => {
-    const outputs = toAuditDetails({
-      type: 'treemap-data',
-      nodes: [],
-    });
-
-    expect(outputs).toStrictEqual({});
-  });
-
-  it('should inform that criticalrequestchain detail type is not supported yet', () => {
-    const outputs = toAuditDetails({
-      type: 'criticalrequestchain',
-      chains: {
-        EED301D300C9A7B634A444E0C6019FC1: {
-          request: {
-            url: 'https://example.com/',
-            startTime: 106_245.050_727,
-            endTime: 106_245.559_225,
-            responseReceivedTime: 106_245.559_001,
-            transferSize: 849,
-          },
-        },
-      },
-      longestChain: {
-        duration: 508.498_000_010_848_05,
-        length: 1,
-        transferSize: 849,
-      },
-    });
-
-    expect(outputs).toStrictEqual({});
   });
 });
 

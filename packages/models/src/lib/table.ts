@@ -13,20 +13,21 @@ export const tableAlignmentSchema = z.enum(['l', 'c', 'r'], {
   description: 'Cell alignment',
 });
 export type TableAlignment = z.infer<typeof tableAlignmentSchema>;
-export const primitiveValueSchema = z.union([z.string(), z.number()]);
+export const primitiveValueSchema = z.union([z.string(), z.number(), z.boolean()]);
 export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
+
+export const tableRowSchema = z.union([
+  z.array(primitiveValueSchema),
+  z.record(z.union([primitiveValueSchema, z.undefined()])),
+]);
+export type TableRow = z.infer<typeof tableRowSchema>;
 
 export const tableSchema = (description = 'Table information') =>
   z.object(
     {
       headings: z.array(tableHeadingSchema).optional(),
       alignment: z.array(tableAlignmentSchema).optional(),
-      rows: z.array(
-        z.union([
-          z.array(primitiveValueSchema),
-          z.record(primitiveValueSchema),
-        ]),
-      ),
+      rows: z.array(tableRowSchema),
     },
     { description },
   );

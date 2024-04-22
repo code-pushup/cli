@@ -7,6 +7,7 @@ import {
   distinct,
   factorOf,
   fromJsonLines,
+  normalizeTable,
   objectFromEntries,
   objectToCliArgs,
   objectToEntries,
@@ -336,5 +337,60 @@ describe('tableToFlatArray', () => {
         rows: [{ slug: 'my-slug', value: 'my value' }],
       }),
     ).toStrictEqual([['Value'], ['my value']]);
+  });
+});
+
+describe('normalizeTable', () => {
+  it('should remove empty optional fields', () => {
+    expect(
+      normalizeTable({
+        headings: undefined,
+        alignment: undefined,
+        rows: [['1']],
+      }),
+    ).toStrictEqual({
+      rows: [['1']],
+    });
+  });
+
+  it('should normalize table of primitive items', () => {
+    expect(
+      normalizeTable({
+        rows: [['1']],
+      }),
+    ).toStrictEqual({
+      rows: [['1']],
+    });
+  });
+
+  it('should throw for table of primitive items with headings', () => {
+    expect(() =>
+      normalizeTable({
+        headings: [],
+        rows: [['1']],
+      }),
+    ).toThrow('Rows have to be objects if headings are given');
+  });
+
+  it('should normalize table of objects', () => {
+    expect(
+      normalizeTable({
+        rows: [{ test: 'prop value' }],
+      }),
+    ).toStrictEqual({
+      rows: [{ test: 'prop value' }],
+    });
+  });
+
+  it('should normalize table of objects and headings with key to only displayed data', () => {
+    expect(
+      normalizeTable({
+        headings: [{ key: 'slug' }],
+        rows: [{ slug: 'my-audit-slug', value: 'my value', title: 'My Audit' }],
+      }),
+    ).toStrictEqual({
+      headings: [{ key: 'slug' }],
+      rows: [{ slug: 'my-audit-slug' }],
+    });
   });
 });

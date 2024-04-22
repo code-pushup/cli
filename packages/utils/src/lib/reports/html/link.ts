@@ -1,3 +1,3 @@
 export function link(href: string, text?: string): string {
-  return `[${text || href}](${href})`;
+  return `<a href="${href}">${text || href}"</a>`;
 }

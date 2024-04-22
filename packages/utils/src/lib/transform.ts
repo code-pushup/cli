@@ -1,5 +1,6 @@
 import { platform } from 'node:os';
 import { Table } from '@code-pushup/models';
+import { PrimitiveValue } from 'packages/models/src/lib/table';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -169,12 +170,13 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
+
 /* eslint-enable no-magic-numbers */
 
 export function tableToFlatArray({
   headings,
   rows,
-}: Table): (string | number)[][] {
+}: Table): (PrimitiveValue)[][] {
   const firstRow = rows[0];
   // Determine effective headings based on the input rows and optional headings parameter
   const generateHeadings = (): string[] => {
@@ -190,7 +192,7 @@ export function tableToFlatArray({
   };
 
   // Construct the row data based on headings and type of row items
-  const generateRows = (): (string | number)[][] =>
+  const generateRows = (): (string | number | boolean | undefined)[][] =>
     rows.map(item => {
       if (typeof item === 'object' && !Array.isArray(item)) {
         // For object rows, map heading to the value in the object
@@ -210,5 +212,26 @@ export function tableToFlatArray({
   const tableRows = generateRows();
 
   // Combine headings and rows to create the full table array
-  return [effectiveHeadings, ...tableRows];
+  return [effectiveHeadings, ...tableRows.map(v => v.map(vv => vv == null ? 'undefined' : vv))];
+}
+
+export function normalizeTable({ headings, rows, alignment }: Table): Table {
+  const headingKeys = new Set((headings ?? []).map(({ key }) => key));
+
+  if (headings && rows.some(row => Array.isArray(row))) {
+    throw new Error('Rows have to be objects if headings are given');
+  }
+  // headings && object rows
+  const rowsNeedNormalization = !headings;
+  return {
+    rows: rowsNeedNormalization
+      ? rows
+      : rows.map(row =>
+          Object.fromEntries(
+            Object.entries(row).filter(([key]) => headingKeys.has(key)),
+          ),
+        ),
+    ...(headings && { headings }),
+    ...(alignment && { alignment }),
+  };
 }

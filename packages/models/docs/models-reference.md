@@ -6,10 +6,10 @@ Detailed information
 
 _Object containing the following properties:_
 
-| Property | Description               | Type                                                                                                                                                                                                                                       |
-| :------- | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `issues` | List of findings          | _Array of [Issue](#issue) items_                                                                                                                                                                                                           |
-| `table`  | Table of related findings | _Object with properties:_<ul><li>`headings`: _Array of [TableHeading](#tableheading) items_</li><li>`alignment`: `Array<'l' \| 'c' \| 'r'>`</li><li>`rows`: `Array<Array<string \| number> \| Record<string, string \| number>>`</li></ul> |
+| Property | Description               | Type                                                                                                                                                                                                                                 |
+| :------- | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `issues` | List of findings          | _Array of [Issue](#issue) items_                                                                                                                                                                                                     |
+| `table`  | Table of related findings | _Object with properties:_<ul><li>`headings`: _Array of [TableHeading](#tableheading) items_</li><li>`alignment`: _Array of [TableAlignment](#tablealignment) items_</li><li>`rows`: _Array of [TableRow](#tablerow) items_</li></ul> |
 
 _All properties are optional._
 
@@ -1193,6 +1193,14 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## PrimitiveValue
+
+_Union of the following possible types:_
+
+- `string`
+- `number`
+- `boolean`
+
 ## Report
 
 _Object containing the following properties:_
@@ -1253,9 +1261,19 @@ _Returns:_
 
 - [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)
 
+## TableAlignment
+
+Cell alignment
+
+_Enum string, one of the following possible values:_
+
+- `'l'`
+- `'c'`
+- `'r'`
+
 ## TableHeading
 
-Source file location
+Table heading
 
 _Object containing the following properties:_
 
@@ -1265,6 +1283,13 @@ _Object containing the following properties:_
 | `label`        | `string` |
 
 _(\*) Required._
+
+## TableRow
+
+_Union of the following possible types:_
+
+- _Array of [PrimitiveValue](#primitivevalue) items_
+- _Object with dynamic keys of type_ `string` _and values of type_ [PrimitiveValue](#primitivevalue) _or_ `undefined` (_optional_) (_optional_)
 
 ## UploadConfig
 

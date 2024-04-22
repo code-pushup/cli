@@ -78,6 +78,9 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
+import * as html from './lib/reports/html';
+export const htmlFormat = {...html};
+export * as markdown from './lib/reports/md';
 export {
   CliArgsObject,
   apostrophize,
@@ -96,5 +99,6 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
+  normalizeTable,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';

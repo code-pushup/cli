@@ -17,6 +17,11 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
+  it('should parse table with object data rows only some undefined', () => {
+    const table: Table = { rows: [{ metrics: 'TTFB', value: undefined }] };
+    expect(() => tableSchema().parse(table)).not.toThrow();
+  });
+
   it('should parse table with rows and headings', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
