@@ -15,5 +15,14 @@ export function details(
 ): string {
   return `<details${
     cfg.open ? ' open' : ''
-  }>${NEW_LINE}<summary>${title}</summary>${NEW_LINE}${NEW_LINE}${content}${NEW_LINE}${NEW_LINE}</details>${NEW_LINE}`;
+  }>${NEW_LINE}<summary>${title}</summary>${NEW_LINE}${
+    // ⚠️ The blank line is needed to ensure Markdown in content is rendered correctly.
+    NEW_LINE
+  }${content}${NEW_LINE}${
+    // ⚠️ The blank line ensure Markdown in content is rendered correctly.
+    NEW_LINE
+  }</details>${
+    // ⚠️ The blank line is needed to ensure Markdown after details is rendered correctly.
+    NEW_LINE
+  }`;
 }

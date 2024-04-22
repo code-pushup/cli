@@ -36,7 +36,7 @@ export function categoriesOverviewSection(
     const tableContent: Table = {
       headings: reportOverviewTableHeaders,
       rows: categories.map(({ title, refs, score }) => ({
-        // @TODO shouldn't this be the category slug as title is not unique? => slugify(title) -> slug
+        // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
         score: `${scoreMarker(score)}${SPACE}${style(
           formatReportScore(score),
