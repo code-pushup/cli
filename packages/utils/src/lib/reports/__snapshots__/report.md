@@ -14,15 +14,15 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 🟢 Score:  **92**
 - 🟢 Performance (_Lighthouse_)
-  - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
-  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
-  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
-  - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
-  - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
+   - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
+   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
+   - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
+   - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
+   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
 - 🟡 Maximum lines limitation (_ESLint_)
-  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
-  - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+   - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
+   - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
 
 ### Bug prevention
 

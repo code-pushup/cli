@@ -31,12 +31,12 @@ exports[`categoriesOverviewSection > should render complete categories table 1`]
 
 exports[`categoryGroupItem > should render complete category reference 1`] = `
 "- 🟡 Bug Prevention (_Eslint_)
-  - 🟥 [No any](#no-any-eslint) - **12 errors**
-  - 🟩 [No let](#no-let-eslint) - **0**"
+   - 🟥 [No any](#no-any-eslint) - **12 errors**
+   - 🟩 [No let](#no-let-eslint) - **0**"
 `;
 
 exports[`categoryGroupItem > should render partial category reference 1`] = `
 "- 🟢 Bug Prevention (_Eslint_)
-  - 🟥 [No let](#no-let-eslint) - **23**
-  - 🟨 [No any](#no-any-eslint) - **91**"
+   - 🟥 [No let](#no-let-eslint) - **23**
+   - 🟨 [No any](#no-any-eslint) - **91**"
 `;
