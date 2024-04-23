@@ -1,5 +1,5 @@
-import { type AuditOutputs, Issue } from '@code-pushup/models';
-import { formatGitPath, getGitRoot } from '@code-pushup/utils';
+import {type AuditOutputs, Issue} from '@code-pushup/models';
+import {formatGitPath, getGitRoot} from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {
   const { source, ...issueWithoutSource } = issue;
@@ -24,7 +24,7 @@ export async function normalizeAuditOutputs(
     // early exit to avoid issues object cloning.
     const noPathsInIssues =
       Array.isArray(audit.details?.issues) &&
-      audit.details?.issues.every(issue => issue.source == null);
+      audit.details.issues.every(issue => issue.source == null);
     if (audit.details == null || noPathsInIssues) {
       return audit;
     }
