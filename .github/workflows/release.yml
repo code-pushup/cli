@@ -83,9 +83,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          npx nx release --skipPublish
-          git push --follow-tags
-          npx nx release publish
+          npx nx release --yes
       - name: Run Code PushUp on release commit
         uses: code-pushup/github-action@v0
         with:

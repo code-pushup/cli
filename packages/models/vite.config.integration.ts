@@ -18,6 +18,7 @@ export default defineConfig({
       reportsDirectory: '../../coverage/models/integration-tests',
       exclude: ['mocks/**', '**/types.ts', 'zod2md.config.ts'],
     },
+    passWithNoTests: true,
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['../../global-setup.ts'],

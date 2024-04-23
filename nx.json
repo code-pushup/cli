@@ -39,8 +39,8 @@
       }
     },
     "nx-release-publish": {
+      "cache": false,
       "dependsOn": ["build"],
-      "executor": "@nx/js:release-publish",
       "options": {
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/"
@@ -91,7 +91,6 @@
     "projects": ["packages/*", "!packages/nx-plugin"],
     "projectsRelationship": "fixed",
     "changelog": {
-      "automaticFromRef": true,
       "projectChangelogs": false,
       "workspaceChangelog": {
         "createRelease": "github"
@@ -99,8 +98,6 @@
     },
     "git": {
       "commit": true,
-      "push": true,
-      "pushRemote": "origin",
       "tag": true,
       "commitMessage": "release: {version} [skip ci]"
     },
@@ -108,8 +105,10 @@
       "conventionalCommits": true,
       "generatorOptions": {
         "skipLockFileUpdate": true
-      }
+      },
+      "preVersionCommand": "nx run-many --targets=build --skip-nx-cache"
     },
     "releaseTagPattern": "v{version}"
-  }
+  },
+  "useInferencePlugins": false
 }
