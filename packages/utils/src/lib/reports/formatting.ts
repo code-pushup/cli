@@ -4,6 +4,7 @@ import {
   NEW_LINE,
   SPACE,
   headline,
+  lines,
   link,
   paragraphs,
   section,
@@ -32,7 +33,7 @@ export function tableSection(
   // if hierarchy is 0 do not apply heading styles
   const render = (h: string, l: Hierarchy | 0) =>
     l === 0 ? heading : headline(h, l);
-  return paragraphs(heading ? render(heading, level) : false, tableMd(table));
+  return lines(heading ? render(heading, level) : false, tableMd(table));
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type

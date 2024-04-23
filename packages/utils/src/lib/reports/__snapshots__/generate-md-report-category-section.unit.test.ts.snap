@@ -7,12 +7,10 @@ exports[`categoriesDetails > should render complete categories details 1`] = `
 
 🟢 Score:  **98**
 - 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
-
 ### Performance
 
 🟡 Score:  **74**
 - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) (_Lighthouse_) - **2905**
-
 ### Typescript
 
 🔴 Score:  **14**

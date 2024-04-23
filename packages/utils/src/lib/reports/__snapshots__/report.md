@@ -23,7 +23,6 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟡 Maximum lines limitation (_ESLint_)
    - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
    - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
-
 ### Bug prevention
 
 🟡 Score:  **68**
@@ -43,7 +42,6 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Disallow use of optional chaining in contexts where the `undefined` value is not allowed](#disallow-use-of-optional-chaining-in-contexts-where-the-undefined-value-is-not-allowed-eslint) (_ESLint_) - **passed**
 - 🟩 [Enforce comparing `typeof` expressions against valid strings](#enforce-comparing-typeof-expressions-against-valid-strings-eslint) (_ESLint_) - **passed**
 - 🟩 [Require calls to `isNaN()` when checking for `NaN`](#require-calls-to-isnan-when-checking-for-nan-eslint) (_ESLint_) - **passed**
-
 ### Code style
 
 🟡 Score:  **54**

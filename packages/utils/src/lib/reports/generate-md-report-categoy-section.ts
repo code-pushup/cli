@@ -13,6 +13,7 @@ import {
   h3,
   indentation,
   li,
+  lines,
   link,
   paragraphs,
   section,
@@ -72,17 +73,17 @@ export function categoriesDetailsSection(
           ),
         );
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return paragraphs(categoryGroupItem(group, groupAudits, pluginTitle));
+        return categoryGroupItem(group, groupAudits, pluginTitle);
       }
       // Add audit details
       else {
         const audit = getSortableAuditByRef(ref, plugins);
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return paragraphs(categoryRef(audit, pluginTitle));
+        return categoryRef(audit, pluginTitle);
       }
     });
 
-    return section(
+    return lines(
       categoryTitle,
       metaDescription(category),
       categoryScore,
@@ -90,7 +91,7 @@ export function categoriesDetailsSection(
     );
   });
 
-  return paragraphs(h2(CATEGORIES_TITLE), ...categoryDetails);
+  return section(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(
@@ -134,7 +135,7 @@ export function categoryGroupItem(
     },
   );
 
-  return paragraphs(groupTitle, ...auditTitles);
+  return lines(groupTitle, ...auditTitles);
 }
 
 export function auditDetailsAuditValue({
