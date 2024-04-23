@@ -3,7 +3,7 @@ import { formatGitPath, getGitRoot } from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {
   const { source, ...issueWithoutSource } = issue;
-  // early exit to avoid issue object cloning
+  // early exit to avoid issue object cloning.
   return source == null
     ? issue
     : {
@@ -21,7 +21,7 @@ export async function normalizeAuditOutputs(
   const gitRoot = await getGitRoot();
 
   return audits.map(audit => {
-    // early exit to avoid details object cloning
+    // early exit to avoid details object cloning.
     if (audit.details == null) {
       return audit;
     }
