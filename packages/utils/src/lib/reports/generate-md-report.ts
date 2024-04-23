@@ -17,17 +17,7 @@ import {
 } from './generate-md-report-categoy-section';
 import { details } from './html/details';
 import { style as htmlFontStyle } from './html/font-style';
-import {
-  SPACE,
-  h1,
-  h2,
-  h3,
-  lines,
-  link,
-  paragraphs,
-  section,
-  style,
-} from './md';
+import { SPACE, h1, h2, h3, lines, link, section, style } from './md';
 import { ScoredReport } from './types';
 import {
   formatReportScore,

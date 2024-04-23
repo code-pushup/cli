@@ -1,5 +1,4 @@
 import { NEW_LINE } from './constants';
-import { paragraphs } from './paragraphs';
 
 export function section(...contents: (string | undefined | boolean)[]): string {
   return `${lines(...contents)}${NEW_LINE}`;

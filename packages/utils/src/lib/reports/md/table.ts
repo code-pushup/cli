@@ -1,6 +1,5 @@
 import { Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
-import { paragraphs } from './paragraphs';
 import { lines, section } from './section';
 
 export type Alignment = 'l' | 'c' | 'r';

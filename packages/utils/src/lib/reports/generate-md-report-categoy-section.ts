@@ -15,7 +15,6 @@ import {
   li,
   lines,
   link,
-  paragraphs,
   section,
   style,
 } from './md';

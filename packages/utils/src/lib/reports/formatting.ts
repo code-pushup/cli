@@ -6,7 +6,6 @@ import {
   headline,
   lines,
   link,
-  paragraphs,
   section,
   tableMd,
 } from './md';
