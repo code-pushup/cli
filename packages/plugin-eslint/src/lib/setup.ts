@@ -1,7 +1,7 @@
 import { ESLint } from 'eslint';
-import { ESLintPluginConfig } from './config';
+import type { ESLintTarget } from './config';
 
-export function setupESLint(eslintrc: ESLintPluginConfig['eslintrc']) {
+export function setupESLint(eslintrc: ESLintTarget['eslintrc']) {
   return new ESLint({
     ...(typeof eslintrc === 'string'
       ? { overrideConfigFile: eslintrc }

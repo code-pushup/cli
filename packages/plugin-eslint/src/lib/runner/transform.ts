@@ -15,6 +15,16 @@ type LintIssue = Linter.LintMessage & {
   filePath: string;
 };
 
+export function mergeLinterOutputs(outputs: LinterOutput[]): LinterOutput {
+  return outputs.reduce<LinterOutput>(
+    (acc, { results, ruleOptionsPerFile }) => ({
+      results: [...acc.results, ...results],
+      ruleOptionsPerFile: { ...acc.ruleOptionsPerFile, ...ruleOptionsPerFile },
+    }),
+    { results: [], ruleOptionsPerFile: {} },
+  );
+}
+
 export function lintResultsToAudits({
   results,
   ruleOptionsPerFile,

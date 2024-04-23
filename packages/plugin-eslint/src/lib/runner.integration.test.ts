@@ -7,6 +7,7 @@ import { MockInstance, describe, expect, it } from 'vitest';
 import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { ensureDirectoryExists, readJsonFile } from '@code-pushup/utils';
+import type { ESLintTarget } from './config';
 import { listAuditsAndGroups } from './meta';
 import {
   ESLINTRC_PATH,
@@ -15,7 +16,6 @@ import {
   createRunnerConfig,
   executeRunner,
 } from './runner';
-import { setupESLint } from './setup';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -23,9 +23,9 @@ describe('executeRunner', () => {
 
   const createPluginConfig = async (eslintrc: string) => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
-    const eslint = setupESLint(eslintrc);
-    const { audits } = await listAuditsAndGroups(eslint, patterns);
-    await createRunnerConfig('bin.js', audits, eslintrc, patterns);
+    const targets: ESLintTarget[] = [{ eslintrc, patterns }];
+    const { audits } = await listAuditsAndGroups(targets);
+    await createRunnerConfig('bin.js', audits, targets);
   };
 
   const appDir = join(

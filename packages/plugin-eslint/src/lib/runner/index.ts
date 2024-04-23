@@ -5,11 +5,11 @@ import {
   ensureDirectoryExists,
   pluginWorkDir,
   readJsonFile,
-  toArray,
 } from '@code-pushup/utils';
-import { ESLintPluginRunnerConfig } from '../config';
+import { ESLintPluginRunnerConfig, type ESLintTarget } from '../config';
 import { lint } from './lint';
-import { lintResultsToAudits } from './transform';
+import { lintResultsToAudits, mergeLinterOutputs } from './transform';
+import type { LinterOutput } from './types';
 
 export const WORKDIR = pluginWorkDir('eslint');
 export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
@@ -21,15 +21,15 @@ export const PLUGIN_CONFIG_PATH = join(
 );
 
 export async function executeRunner(): Promise<void> {
-  const { slugs, eslintrc, patterns } =
-    await readJsonFile<ESLintPluginRunnerConfig>(PLUGIN_CONFIG_PATH);
+  const { slugs, targets } = await readJsonFile<ESLintPluginRunnerConfig>(
+    PLUGIN_CONFIG_PATH,
+  );
 
-  const lintResults = await lint({
-    // if file created from inline object, provide inline to preserve relative links
-    eslintrc:
-      eslintrc === ESLINTRC_PATH ? await readJsonFile(eslintrc) : eslintrc,
-    patterns,
-  });
+  const linterOutputs = await targets.reduce(
+    async (acc, target) => [...(await acc), await lint(target)],
+    Promise.resolve<LinterOutput[]>([]),
+  );
+  const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 
   const audits = slugs.map(
@@ -50,13 +50,11 @@ export async function executeRunner(): Promise<void> {
 export async function createRunnerConfig(
   scriptPath: string,
   audits: Audit[],
-  eslintrc: string,
-  patterns: string | string[],
+  targets: ESLintTarget[],
 ): Promise<RunnerConfig> {
   const config: ESLintPluginRunnerConfig = {
-    eslintrc,
+    targets,
     slugs: audits.map(audit => audit.slug),
-    patterns: toArray(patterns),
   };
   await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
   await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
