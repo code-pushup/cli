@@ -1,6 +1,5 @@
 export * from './constants';
 export * from './section';
-export * from './details';
 export * from './font-style';
 export * from './headline';
 export * from './image';

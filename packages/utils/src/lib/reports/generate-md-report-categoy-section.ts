@@ -13,8 +13,8 @@ import {
   h3,
   indentation,
   li,
+  lines,
   link,
-  paragraphs,
   section,
   style,
 } from './md';
@@ -36,7 +36,7 @@ export function categoriesOverviewSection(
     const tableContent: Table = {
       headings: reportOverviewTableHeaders,
       rows: categories.map(({ title, refs, score }) => ({
-        // @TODO shouldn't this be the category slug as title is not unique? => slugify(title) -> slug
+        // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
         score: `${scoreMarker(score)}${SPACE}${style(
           formatReportScore(score),
@@ -72,17 +72,17 @@ export function categoriesDetailsSection(
           ),
         );
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return paragraphs(categoryGroupItem(group, groupAudits, pluginTitle));
+        return categoryGroupItem(group, groupAudits, pluginTitle);
       }
       // Add audit details
       else {
         const audit = getSortableAuditByRef(ref, plugins);
         const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return paragraphs(categoryRef(audit, pluginTitle));
+        return categoryRef(audit, pluginTitle);
       }
     });
 
-    return section(
+    return lines(
       categoryTitle,
       metaDescription(category),
       categoryScore,
@@ -90,7 +90,7 @@ export function categoriesDetailsSection(
     );
   });
 
-  return paragraphs(h2(CATEGORIES_TITLE), ...categoryDetails);
+  return section(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(
@@ -134,7 +134,7 @@ export function categoryGroupItem(
     },
   );
 
-  return paragraphs(groupTitle, ...auditTitles);
+  return lines(groupTitle, ...auditTitles);
 }
 
 export function auditDetailsAuditValue({

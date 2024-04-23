@@ -1,7 +1,8 @@
 import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import { details, h1, h2, link, paragraphs, style, tableMd } from './md';
+import { details } from './html/details';
+import { h1, h2, lines, link, style, tableMd } from './md';
 import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
@@ -16,7 +17,7 @@ import {
 const MAX_ROWS = 100;
 
 export function generateMdReportsDiff(diff: ReportsDiff): string {
-  return paragraphs(
+  return lines(
     formatDiffHeaderSection(diff),
     formatDiffCategoriesSection(diff),
     formatDiffGroupsSection(diff),
@@ -44,7 +45,7 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
   const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) =>
     `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
 
-  return paragraphs(
+  return lines(
     h1('Code PushUp'),
     section(
       diff.commits
@@ -70,7 +71,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     { key: 'before', label: '⭐ Previous score' },
     { key: 'change', label: '🔄 Score change' },
   ];
-  return paragraphs(
+  return lines(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
       tableMd({
@@ -109,7 +110,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
   if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
     return '';
   }
-  return paragraphs(
+  return lines(
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
@@ -132,7 +133,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
 }
 
 function formatDiffAuditsSection(diff: ReportsDiff): string {
-  return paragraphs(
+  return lines(
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
       headings: [
@@ -167,7 +168,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
     ? summarizeUnchanged(token, { changed, unchanged })
     : details(
         summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
-        paragraphs(
+        lines(
           tableMd({
             ...table,
             rows: table.rows.slice(0, MAX_ROWS),

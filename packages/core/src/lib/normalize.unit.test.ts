@@ -59,16 +59,24 @@ describe('normalizeAuditOutputs', () => {
   it('should clone audit details with issues NOT all undefined source', async () => {
     const issues = [
       { source: undefined },
-      { source: 'index.js' },
+      { source: { file: 'index.js' } },
       { source: undefined },
-    ];
+    ] as Issue[];
     await expect(
       normalizeAuditOutputs([
         { details: { issues } } as unknown as AuditOutput,
       ]),
-    ).rejects.toThrow(
-      'The "path" argument must be of type string. Received undefined',
-    );
+    ).resolves.toStrictEqual([
+      {
+        details: {
+          issues: [
+            { source: undefined },
+            { source: { file: 'index.js' } },
+            { source: undefined },
+          ],
+        },
+      },
+    ]);
   });
 });
 

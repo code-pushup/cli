@@ -1,7 +1,7 @@
-// https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
 import { TableHeading } from '@code-pushup/models';
 import { Alignment } from './md';
 
+// https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
 export const TERMINAL_WIDTH = 80;
 
 /* eslint-disable no-magic-numbers */

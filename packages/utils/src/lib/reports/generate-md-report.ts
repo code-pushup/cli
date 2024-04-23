@@ -15,18 +15,9 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
+import { details } from './html/details';
 import { style as htmlFontStyle } from './html/font-style';
-import {
-  SPACE,
-  details,
-  h1,
-  h2,
-  h3,
-  link,
-  paragraphs,
-  section,
-  style,
-} from './md';
+import { SPACE, h1, h2, h3, lines, link, section, style } from './md';
 import { ScoredReport } from './types';
 import {
   formatReportScore,
@@ -48,7 +39,7 @@ export function auditDetailsAuditValue({
 export function generateMdReport(report: ScoredReport): string {
   const printCategories = report.categories.length > 0;
 
-  return paragraphs(
+  return lines(
     h1(reportHeadlineText),
     printCategories ? categoriesOverviewSection(report) : '',
     printCategories ? categoriesDetailsSection(report) : '',
@@ -106,7 +97,7 @@ export function auditDetails(audit: AuditReport) {
 
   return details(
     detailsValue,
-    paragraphs(tableSectionContent, issuesSectionContent),
+    lines(tableSectionContent, issuesSectionContent),
   );
 }
 
@@ -135,7 +126,7 @@ export function aboutSection(
   const reportMetaTable = reportMetaData(report);
   const pluginMetaTable = reportPluginMeta({ plugins });
   const level = 3;
-  return paragraphs(
+  return lines(
     h2('About'),
     section(
       `Report was created by [Code PushUp](${README_LINK}) on ${formatDate(

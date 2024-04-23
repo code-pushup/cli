@@ -7,12 +7,10 @@ exports[`categoriesDetails > should render complete categories details 1`] = `
 
 🟢 Score:  **98**
 - 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
-
 ### Performance
 
 🟡 Score:  **74**
 - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) (_Lighthouse_) - **2905**
-
 ### Typescript
 
 🔴 Score:  **14**
@@ -31,12 +29,12 @@ exports[`categoriesOverviewSection > should render complete categories table 1`]
 
 exports[`categoryGroupItem > should render complete category reference 1`] = `
 "- 🟡 Bug Prevention (_Eslint_)
-  - 🟥 [No any](#no-any-eslint) - **12 errors**
-  - 🟩 [No let](#no-let-eslint) - **0**"
+   - 🟥 [No any](#no-any-eslint) - **12 errors**
+   - 🟩 [No let](#no-let-eslint) - **0**"
 `;
 
 exports[`categoryGroupItem > should render partial category reference 1`] = `
 "- 🟢 Bug Prevention (_Eslint_)
-  - 🟥 [No let](#no-let-eslint) - **23**
-  - 🟨 [No any](#no-any-eslint) - **91**"
+   - 🟥 [No let](#no-let-eslint) - **23**
+   - 🟨 [No any](#no-any-eslint) - **91**"
 `;

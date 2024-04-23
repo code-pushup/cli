@@ -18,6 +18,7 @@
 |⚠️ <i>warning</i>|'todos.map' is missing in props validation|<code>src/components/TodoList.jsx</code>|6|
 |⚠️ <i>warning</i>|'onEdit' is missing in props validation|<code>src/components/TodoList.jsx</code>|13|
 
+
 </details>
 
 ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
@@ -34,6 +35,7 @@ ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/
 |⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|11|
 |⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|29|
 |⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|41|
+
 
 </details>
 
@@ -52,6 +54,7 @@ ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-s
 |⚠️ <i>warning</i>|Expected property shorthand.|<code>src/hooks/useTodos.js</code>|32|
 |⚠️ <i>warning</i>|Expected property shorthand.|<code>src/hooks/useTodos.js</code>|33|
 
+
 </details>
 
 ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rules/object-shorthand)
@@ -68,6 +71,7 @@ ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rul
 |⚠️ <i>warning</i>|React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?|<code>src/hooks/useTodos.js</code>|17|
 |⚠️ <i>warning</i>|React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?|<code>src/hooks/useTodos.js</code>|40|
 
+
 </details>
 
 ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://github.com/facebook/react/issues/14920)
@@ -82,6 +86,7 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 |Severity|Message|Source file|Line(s)|
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|Missing "key" prop for element in iterator|<code>src/components/TodoList.jsx</code>|7-28|
+
 
 </details>
 
@@ -98,6 +103,7 @@ ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|'loading' is assigned a value but never used.|<code>src/App.jsx</code>|8|
 
+
 </details>
 
 ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unused-vars)
@@ -112,6 +118,7 @@ ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules
 |Severity|Message|Source file|Line(s)|
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|Arrow function has too many lines (71). Maximum allowed is 50.|<code>src/hooks/useTodos.js</code>|3-73|
+
 
 </details>
 
@@ -128,6 +135,7 @@ ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/late
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|'root' is never reassigned. Use 'const' instead.|<code>src/index.jsx</code>|5|
 
+
 </details>
 
 ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-const)
@@ -143,6 +151,7 @@ ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/p
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.|<code>src/components/TodoFilter.jsx</code>|3-25|
 
+
 </details>
 
 ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rules/arrow-body-style)
@@ -157,6 +166,7 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 |Severity|Message|Source file|Line(s)|
 |:--:|:--:|:--:|:--:|
 |⚠️ <i>warning</i>|Expected '===' and instead saw '=='.|<code>src/hooks/useTodos.js</code>|41|
+
 
 </details>
 

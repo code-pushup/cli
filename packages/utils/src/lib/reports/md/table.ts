@@ -1,7 +1,6 @@
-import {PrimitiveValue, Table} from '@code-pushup/models';
+import { PrimitiveValue, Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
-import { paragraphs } from './paragraphs';
-import { section } from './section';
+import { lines, section } from './section';
 
 export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
@@ -10,7 +9,7 @@ const alignString = new Map<Alignment, string>([
   ['r', '--:'],
 ]);
 
-function tableRow(rows: (PrimitiveValue)[]): string {
+function tableRow(rows: PrimitiveValue[]): string {
   return `|${rows.join('|')}|`;
 }
 
@@ -33,7 +32,7 @@ export function tableMd<T extends Table>(data: T): string {
     typeof rows.at(0) === 'string'
       ? Array.from({ length: rows.length })
       : Object.keys(rows.at(0) ?? {})
-  ).map(() => 'c' as Alignment);
+  ).map((): Alignment => 'c');
   const alignmentSetting =
     alignment == null ? allCenterAlignments : alignment.map(align => align);
 
@@ -42,7 +41,7 @@ export function tableMd<T extends Table>(data: T): string {
   );
 
   return section(
-    `${paragraphs(
+    `${lines(
       tableRow(stringArr.at(0) ?? []),
       tableRow(alignmentRow),
       ...stringArr.slice(1).map(tableRow),

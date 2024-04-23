@@ -37,6 +37,7 @@ exports[`auditDetails > should render complete details section 1`] = `
 |🚨 <i>error</i>|Use design system components instead of classes|<code>list.component.ts</code>|400-200|
 |🚨 <i>error</i>|File size is 20KB too big|<code>list.component.ts</code>||
 
+
 </details>
 "
 `;
@@ -89,14 +90,12 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 🟡 Score:  **61**
 - 🔴 Performance Group (_Lighthouse_)
-  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
-  - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
-
+   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
+   - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
 ### SEO
 
 🟢 Score:  **100**
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
-
 ### PWA
 
 🔴 Score:  **0**
@@ -117,6 +116,7 @@ exports[`generateMdReport > should render complete md report 1`] = `
 |Load Delay|25%|580 ms|
 |Load Time|41%|940 ms|
 |Render Delay|6%|140 ms|
+
 
 </details>
 
@@ -148,6 +148,7 @@ Search engines are unable to include your pages in search results if they don't 
 |ℹ️ <i>info</i>|File \`index.js\` is 56Kb.|<code>index.js</code>||
 |⚠️ <i>warning</i>|Package license is has to be "MIT"|<code>package.json</code>|4|
 |🚨 <i>error</i>|no unused vars|<code>index.js</code>|400-200|
+
 
 </details>
 

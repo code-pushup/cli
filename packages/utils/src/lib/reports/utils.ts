@@ -33,9 +33,9 @@ export function formatScoreWithColor(
   return `${scoreMarker(score)} ${styledNumber}`;
 }
 
-export type MarkerTypes = 'circle' | 'square';
+export type MarkerShape = 'circle' | 'square';
 export type ScoreColors = 'red' | 'yellow' | 'green';
-export const MARKERS: Record<MarkerTypes, Record<ScoreColors, string>> = {
+export const MARKERS: Record<MarkerShape, Record<ScoreColors, string>> = {
   circle: {
     red: '🔴',
     yellow: '🟡',
@@ -50,7 +50,7 @@ export const MARKERS: Record<MarkerTypes, Record<ScoreColors, string>> = {
 
 export function scoreMarker(
   score: number,
-  markerType: MarkerTypes = 'circle',
+  markerType: MarkerShape = 'circle',
 ): string {
   if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
     return MARKERS[markerType].green;

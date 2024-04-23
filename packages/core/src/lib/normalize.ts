@@ -2,14 +2,15 @@ import { type AuditOutputs, Issue } from '@code-pushup/models';
 import { formatGitPath, getGitRoot } from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {
+  const { source, ...issueWithoutSource } = issue;
   // early exit to avoid issue object cloning
-  return issue.source == null
+  return source == null
     ? issue
     : {
-        ...issue,
+        ...issueWithoutSource,
         source: {
-          ...issue.source,
-          file: formatGitPath(issue.source.file, gitRoot),
+          ...source,
+          file: formatGitPath(source.file, gitRoot),
         },
       };
 }
@@ -35,7 +36,7 @@ export async function normalizeAuditOutputs(
         ...(issues == null
           ? {}
           : {
-              // early exit to avoid issues object cloning
+              // early exit to avoid issues object cloning.
               issues: noPathsInIssues
                 ? issues
                 : issues.map(issue => normalizeIssue(issue, gitRoot)),
