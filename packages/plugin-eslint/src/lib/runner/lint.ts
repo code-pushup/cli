@@ -1,13 +1,13 @@
 import type { Linter } from 'eslint';
 import { distinct, toArray } from '@code-pushup/utils';
-import { ESLintPluginConfig } from '../config';
+import { type ESLintTarget } from '../config';
 import { setupESLint } from '../setup';
 import type { LinterOutput, RuleOptionsPerFile } from './types';
 
 export async function lint({
   eslintrc,
   patterns,
-}: ESLintPluginConfig): Promise<LinterOutput> {
+}: ESLintTarget): Promise<LinterOutput> {
   const eslint = setupESLint(eslintrc);
 
   const results = await eslint.lintFiles(patterns);
