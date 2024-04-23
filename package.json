@@ -138,9 +138,10 @@
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.19.4",
-    "@nx/nx-darwin-arm64": "^16.9.1",
-    "@nx/nx-darwin-x64": "^16.10.0",
-    "@nx/nx-linux-x64-gnu": "16.7.4"
+    "@nx/nx-darwin-arm64": "18.2.4",
+    "@nx/nx-darwin-x64": "18.2.4",
+    "@nx/nx-linux-x64-gnu": "18.2.4",
+    "@rollup/rollup-linux-x64-gnu": "4.16.3"
   },
   "config": {
     "commitizen": {
