@@ -149,7 +149,7 @@ describe('executePlugins', () => {
     const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
     expect(logs[1]).toBe(
-      '[ yellow(warn) ] Audit metadata not found for slug node-version',
+      '[ yellow(warn) ] Error: Audit metadata not found for slug node-version',
     );
 
     expect(pluginConfig.runner).toHaveBeenCalled();

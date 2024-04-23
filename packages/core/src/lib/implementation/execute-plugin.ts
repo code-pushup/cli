@@ -152,10 +152,13 @@ export async function executePlugins(
 
   const progressBar = progress ? getProgressBar('Run plugins') : null;
 
-  const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => [
+  const pluginsResult = await plugins.reduce(
+    async (acc, pluginCfg) => [
       ...(await acc),
       wrapProgress(pluginCfg, plugins.length, progressBar),
-    ], Promise.resolve([] as Promise<PluginReport>[]));
+    ],
+    Promise.resolve([] as Promise<PluginReport>[]),
+  );
 
   progressBar?.endProgress('Done running plugins');
 
