@@ -21,25 +21,22 @@ export async function normalizeAuditOutputs(
   const gitRoot = await getGitRoot();
 
   return audits.map(audit => {
-    // early exit to avoid details object cloning.
-    if (audit.details == null) {
+    // early exit to avoid issues object cloning.
+    const noPathsInIssues =
+      Array.isArray(audit.details?.issues) &&
+      audit.details?.issues.every(issue => issue.source == null);
+    if (audit.details == null || noPathsInIssues) {
       return audit;
     }
-    const { issues, table, ...details } = audit.details;
-    const noPathsInIssues =
-      Array.isArray(issues) && issues.every(issue => issue.source == null);
+    const { issues, ...details } = audit.details;
     return {
       ...audit,
       details: {
         ...details,
-        ...(table ? { table } : {}),
         ...(issues == null
           ? {}
           : {
-              // early exit to avoid issues object cloning.
-              issues: noPathsInIssues
-                ? issues
-                : issues.map(issue => normalizeIssue(issue, gitRoot)),
+              issues: issues.map(issue => normalizeIssue(issue, gitRoot)),
             }),
       },
     };
