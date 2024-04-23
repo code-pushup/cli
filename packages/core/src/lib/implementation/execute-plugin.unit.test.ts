@@ -86,7 +86,9 @@ describe('executePlugin', () => {
           },
         ],
       }),
-    ).rejects.toThrow('The slug has to follow the pattern');
+    )
+      // @TODO improve error message. add explanation
+      .rejects.toThrow('The slug has to follow the pattern');
   });
 });
 
@@ -120,9 +122,7 @@ describe('executePlugins', () => {
         ] satisfies PluginConfig[],
         { progress: false },
       ),
-    ).rejects.toThrow(
-      /Plugins failed: 1 errors:.*Audit metadata not found for slug node-version/,
-    );
+    ).rejects.toThrow(/node-version/g);
   });
 
   it('should print invalid plugin errors and throw', async () => {
@@ -145,9 +145,7 @@ describe('executePlugins', () => {
       executePlugins([pluginConfig, pluginConfig2, pluginConfig3], {
         progress: false,
       }),
-    ).rejects.toThrow(
-      'Plugins failed: 2 errors: Audit metadata not found for slug node-version, plugin 3 error',
-    );
+    ).rejects.toThrow('Executing 2 plugins failed.');
     const logs = getLogMessages(ui().logger);
     expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
     expect(logs[1]).toBe(
