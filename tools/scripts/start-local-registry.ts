@@ -8,7 +8,8 @@ export default async () => {
   // local registry target to run
   const localRegistryTarget = '@code-pushup/cli-source:local-registry';
   // storage folder for the local registry
-  const storage = './tmp/local-registry/storage';
+  // as we ports are different but storage is the same we end up in race conditions, adding a random path per registry setup solved this
+  const storage = `./tmp/local-registry/storage-${Math.random()}`;
 
   global.stopLocalRegistry = await startLocalRegistry({
     localRegistryTarget,
