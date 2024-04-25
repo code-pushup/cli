@@ -4,9 +4,9 @@
 
 In order to add a support for a new package manager, one needs to do the following:
 
-1. Expand `packageManagerIdSchema` in `config.ts`.
+1. Expand `packageManagerIdSchema` in `config.ts`.  
 2. Create a new object of `PackageManager` type in `package-managers/<name>/<name>.ts` and fill it in with all relevant data. Following the current pattern of separate files for audit and outdated result and types is recommended.
-3. Extend `package-managers/package-managers.ts` record with the new package manager.
+3. Extend `package-managers/package-managers.ts` record with the new package manager.  
 
 > [!NOTE]
 > Should your package manager require specific behaviour, feel free to request a property addition or change.
