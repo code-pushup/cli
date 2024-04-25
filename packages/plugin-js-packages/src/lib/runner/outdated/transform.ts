@@ -18,9 +18,14 @@ export function outdatedResultToAuditOutput(
   const relevantDependencies: OutdatedResult = result.filter(
     dep => dep.type === dependencyGroupToLong[depGroup],
   );
-  const outdatedDependencies = relevantDependencies.filter(
-    dep => dep.current !== dep.latest,
-  );
+  // TODO use semver logic to compare versions
+  const outdatedDependencies = relevantDependencies
+    .filter(dep => dep.current !== dep.latest)
+    .filter(
+      dep =>
+        dep.current.split('-')[0]?.toString() !==
+        dep.latest.split('-')[0]?.toString(),
+    );
 
   const outdatedStats = outdatedDependencies.reduce(
     (acc, dep) => {
@@ -114,7 +119,8 @@ export function getOutdatedLevel(
 }
 
 export function splitPackageVersion(fullVersion: string): PackageVersion {
-  const [major, minor, patch] = fullVersion.split('.').map(Number);
+  const semanticVersion = String(fullVersion.split('-')[0]);
+  const [major, minor, patch] = semanticVersion.split('.').map(Number);
 
   if (major == null || minor == null || patch == null) {
     throw new Error(`Invalid version description ${fullVersion}`);
