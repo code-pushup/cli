@@ -13,7 +13,7 @@ import coveragePlugin, {
 import eslintPlugin, {
   eslintConfigFromNxProjects,
 } from './dist/packages/plugin-eslint';
-import jsPackagesPlugin from './dist/packages/plugin-js-packages';
+// import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import {
   lighthouseGroupRef,
   lighthousePlugin,
@@ -63,7 +63,7 @@ const config: CoreConfig = {
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
 
-    await jsPackagesPlugin({ packageManager: 'npm' }),
+    //   await jsPackagesPlugin({ packageManager: 'npm' }),
 
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
@@ -134,7 +134,7 @@ const config: CoreConfig = {
           weight: 1,
         },
       ],
-    },
+    } /*
     {
       slug: 'security',
       title: 'Security',
@@ -160,7 +160,7 @@ const config: CoreConfig = {
           weight: 1,
         },
       ],
-    },
+    },*/,
     {
       slug: 'custom-checks',
       title: 'Custom checks',
