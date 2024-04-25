@@ -124,6 +124,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     name: E2E tests
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
