@@ -87,7 +87,7 @@ describe('outdatedResultToAuditOutput', () => {
           {
             name: 'nx',
             current: '15.8.1',
-            latest: '17.0.0',
+            latest: '17.0.0-stable',
             type: 'dependencies',
           },
           {
@@ -164,6 +164,34 @@ describe('outdatedResultToAuditOutput', () => {
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-optional',
+      score: 1,
+      value: 0,
+      displayValue: 'all dependencies are up to date',
+    });
+  });
+
+  it('should skip identical semantic versions with different label', () => {
+    expect(
+      outdatedResultToAuditOutput(
+        [
+          {
+            name: 'cypress',
+            current: '13.7.0-alpha',
+            latest: '13.7.0-beta',
+            type: 'devDependencies',
+          },
+          {
+            name: 'nx',
+            current: '17.0.0-12',
+            latest: '17.0.0-15',
+            type: 'devDependencies',
+          },
+        ],
+        'npm',
+        'dev',
+      ),
+    ).toEqual<AuditOutput>({
+      slug: 'npm-outdated-dev',
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
