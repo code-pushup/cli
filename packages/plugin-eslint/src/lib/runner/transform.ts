@@ -36,7 +36,9 @@ export function lintResultsToAudits({
     .reduce<Record<string, LintIssue[]>>((acc, issue) => {
       const { ruleId, message, filePath } = issue;
       if (!ruleId) {
-        ui().logger.warning(`ESLint core error - ${message}`);
+        ui().logger.warning(
+          `ESLint core error - ${message} (file: ${filePath})`,
+        );
         return acc;
       }
       const options = ruleOptionsPerFile[filePath]?.[ruleId] ?? [];
