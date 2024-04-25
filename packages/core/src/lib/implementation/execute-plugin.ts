@@ -24,7 +24,11 @@ import { executeRunnerConfig, executeRunnerFunction } from './runner';
  */
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string) {
-    super(`Audit metadata not found for slug ${chalk.bold(auditSlug)}`);
+    super(
+      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        auditSlug,
+      )}`,
+    );
   }
 }
 
@@ -73,7 +77,7 @@ export async function executePlugin(
   // validate auditOutputs
   const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
   if (!result.success) {
-    throw new Error(`THIS IS NOT WORKING!! ${result.error.message}`);
+    throw new Error(`Audit output is invalid: ${result.error.message}`);
   }
   const auditOutputs = result.data;
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
