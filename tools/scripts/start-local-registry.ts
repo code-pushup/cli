@@ -84,7 +84,7 @@ function startLocalRegistry({
           ),
           ...(storage ? [`--storage`, storage] : []),
         ],
-        { stdio: 'pipe', shell: true },
+        { stdio: 'pipe', shell: true, detached: true },
       );
 
       const listener = data => {
@@ -114,8 +114,11 @@ function startLocalRegistry({
           resolve({
             registry,
             stop: () => {
+              if (childProcess.pid) {
+                process.kill(-childProcess.pid);
+              }
+              // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
               childProcess.kill();
-              console.info('Local registry stopped');
               execSync(`npm config delete //localhost:${port}/:_authToken`);
             },
           });
