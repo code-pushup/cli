@@ -1,13 +1,11 @@
 import chalk from 'chalk';
 import { vol } from 'memfs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
-  getLogMessages,
 } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
 import {
   PluginOutputMissingAuditError,
   executePlugin,
@@ -156,8 +154,8 @@ describe('executePlugins', () => {
 
   it('should throw for one failing plugin', async () => {
     const missingAuditSlug = 'missing-audit-slug';
-    try {
-      const r = await executePlugins(
+    await expect(() =>
+      executePlugins(
         [
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -165,7 +163,7 @@ describe('executePlugins', () => {
             title: 'plg1',
             runner: () => [
               {
-                slug: missingAuditSlug + '-a',
+                slug: `${missingAuditSlug}-a`,
                 score: 0.3,
                 value: 16,
                 displayValue: '16.0.0',
@@ -174,17 +172,14 @@ describe('executePlugins', () => {
           },
         ] satisfies PluginConfig[],
         { progress: false },
-      );
-    } catch (e) {
-      const msg = (e as Error).message;
-      expect(msg).toMatch('Executing 1 plugin failed.\n\n');
-    }
+      ),
+    ).rejects.toThrow('Executing 1 plugin failed.\n\n');
   });
 
   it('should throw for multiple failing plugins', async () => {
     const missingAuditSlug = 'missing-audit-slug';
-    try {
-      const r = await executePlugins(
+    await expect(() =>
+      executePlugins(
         [
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -192,7 +187,7 @@ describe('executePlugins', () => {
             title: 'plg1',
             runner: () => [
               {
-                slug: missingAuditSlug + '-a',
+                slug: `${missingAuditSlug}-a`,
                 score: 0.3,
                 value: 16,
                 displayValue: '16.0.0',
@@ -205,7 +200,7 @@ describe('executePlugins', () => {
             title: 'plg2',
             runner: () => [
               {
-                slug: missingAuditSlug + '-b',
+                slug: `${missingAuditSlug}-b`,
                 score: 0.3,
                 value: 16,
                 displayValue: '16.0.0',
@@ -214,17 +209,15 @@ describe('executePlugins', () => {
           },
         ] satisfies PluginConfig[],
         { progress: false },
-      );
-    } catch (e) {
-      const msg = (e as Error).message;
-      expect(msg).toMatch('Executing 2 plugins failed.\n\n');
-    }
+      ),
+    ).rejects.toThrow('Executing 2 plugins failed.\n\n');
   });
 
   it('should throw with indentation in message', async () => {
     const missingAuditSlug = 'missing-audit-slug';
-    try {
-      const r = await executePlugins(
+
+    await expect(() =>
+      executePlugins(
         [
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -232,7 +225,7 @@ describe('executePlugins', () => {
             title: 'plg1',
             runner: () => [
               {
-                slug: missingAuditSlug + '-a',
+                slug: `${missingAuditSlug}-a`,
                 score: 0.3,
                 value: 16,
                 displayValue: '16.0.0',
@@ -245,7 +238,7 @@ describe('executePlugins', () => {
             title: 'plg2',
             runner: () => [
               {
-                slug: missingAuditSlug + '-b',
+                slug: `${missingAuditSlug}-b`,
                 score: 0.3,
                 value: 16,
                 displayValue: '16.0.0',
@@ -254,30 +247,18 @@ describe('executePlugins', () => {
           },
         ] satisfies PluginConfig[],
         { progress: false },
-      );
-    } catch (e) {
-      const msg = (e as Error).message;
-      expect(msg).toMatch(
-        `Error: - Plugin ${chalk.bold('plg1')} (${chalk.bold(
-          'plg1',
-        )}) produced the following error:\n`,
-      );
-      expect(msg).toMatch(
-        `  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
-          'missing-audit-slug-a',
-        )}\n`,
-      );
-      expect(msg).toMatch(
-        `Error: - Plugin ${chalk.bold('plg2')} (${chalk.bold(
-          'plg2',
-        )}) produced the following error:\n`,
-      );
-      expect(msg).toMatch(
-        `  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
-          'missing-audit-slug-b',
-        )}`,
-      );
-    }
+      ),
+    ).rejects.toThrow(
+      `Error: - Plugin ${chalk.bold('plg1')} (${chalk.bold(
+        'plg1',
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        'missing-audit-slug-a',
+      )}\nError: - Plugin ${chalk.bold('plg2')} (${chalk.bold(
+        'plg2',
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        'missing-audit-slug-b',
+      )}`,
+    );
   });
 
   it('should use outputTransform if provided', async () => {
