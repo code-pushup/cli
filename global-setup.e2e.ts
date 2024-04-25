@@ -10,9 +10,6 @@ export async function setup() {
   try {
     execSync(`npm install -D @code-pushup/cli@e2e --registry=${registry}`);
     execSync(
-      `npm install -D @code-pushup/nx-plugin@e2e --registry=${registry}`,
-    );
-    execSync(
       `npm install -D @code-pushup/eslint-plugin@e2e --registry=${registry}`,
     );
     execSync(
@@ -27,7 +24,6 @@ export async function setup() {
 export async function teardown() {
   stopLocalRegistry();
   execSync('npm uninstall @code-pushup/cli');
-  execSync('npm uninstall @code-pushup/nx-plugin');
   execSync('npm uninstall @code-pushup/eslint-plugin');
   execSync('npm uninstall @code-pushup/coverage-plugin');
   await teardownTestFolder('tmp/e2e');

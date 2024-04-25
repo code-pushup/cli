@@ -88,7 +88,7 @@
     }
   },
   "release": {
-    "projects": ["packages/*"],
+    "projects": ["packages/*", "!packages/nx-plugin"],
     "projectsRelationship": "fixed",
     "changelog": {
       "projectChangelogs": false,
