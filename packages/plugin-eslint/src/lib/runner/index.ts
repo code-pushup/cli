@@ -13,7 +13,6 @@ import type { LinterOutput } from './types';
 
 export const WORKDIR = pluginWorkDir('eslint');
 export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
-export const ESLINTRC_PATH = join(process.cwd(), WORKDIR, '.eslintrc.json');
 export const PLUGIN_CONFIG_PATH = join(
   process.cwd(),
   WORKDIR,
