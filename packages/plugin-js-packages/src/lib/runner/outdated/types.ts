@@ -1,6 +1,6 @@
-export const versionType = ['major', 'minor', 'patch'] as const;
-export type VersionType = (typeof versionType)[number];
-export type PackageVersion = Record<VersionType, number>;
+import type { ReleaseType } from 'semver';
+
+export type PackageVersion = Record<ReleaseType, number>;
 export type DependencyGroupLong =
   | 'dependencies'
   | 'devDependencies'

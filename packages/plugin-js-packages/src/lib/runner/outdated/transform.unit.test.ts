@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
+import { objectFromEntries } from '@code-pushup/utils';
+import { RELEASE_TYPES } from './constants';
 import {
   calculateOutdatedScore,
-  getOutdatedLevel,
   outdatedResultToAuditOutput,
   outdatedToDisplayValue,
   outdatedToIssues,
-  splitPackageVersion,
 } from './transform';
-import { PackageVersion } from './types';
 
 describe('outdatedResultToAuditOutput', () => {
   it('should create an audit output', () => {
@@ -87,7 +86,7 @@ describe('outdatedResultToAuditOutput', () => {
           {
             name: 'nx',
             current: '15.8.1',
-            latest: '17.0.0-stable',
+            latest: '17.0.0',
             type: 'dependencies',
           },
           {
@@ -170,20 +169,54 @@ describe('outdatedResultToAuditOutput', () => {
     });
   });
 
-  it('should skip identical semantic versions with different label', () => {
+  it('should skip non-standard versions', () => {
     expect(
       outdatedResultToAuditOutput(
         [
           {
-            name: 'cypress',
-            current: '13.7.0-alpha',
-            latest: '13.7.0-beta',
+            name: 'memfs',
+            current: '4.0.0-alpha.2',
+            latest: 'exotic',
+            type: 'devDependencies',
+          },
+        ],
+        'npm',
+        'optional',
+      ),
+    ).toEqual<AuditOutput>({
+      slug: 'npm-outdated-optional',
+      score: 1,
+      value: 0,
+      displayValue: 'all dependencies are up to date',
+    });
+  });
+
+  it('should identify and categorise pre-release tags', () => {
+    expect(
+      outdatedResultToAuditOutput(
+        [
+          {
+            name: 'esbuild',
+            current: '0.5.3',
+            latest: '0.6.0-alpha.1',
             type: 'devDependencies',
           },
           {
-            name: 'nx',
-            current: '17.0.0-12',
-            latest: '17.0.0-15',
+            name: 'nx-knip',
+            current: '0.0.5-5',
+            latest: '0.0.5-15',
+            type: 'devDependencies',
+          },
+          {
+            name: 'semver',
+            current: '7.6.0',
+            latest: '7.6.8-2',
+            type: 'devDependencies',
+          },
+          {
+            name: 'code-pushup',
+            current: '0.30.0',
+            latest: '1.0.0-alpha.1',
             type: 'devDependencies',
           },
         ],
@@ -193,8 +226,37 @@ describe('outdatedResultToAuditOutput', () => {
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-dev',
       score: 1,
-      value: 0,
-      displayValue: 'all dependencies are up to date',
+      value: 4,
+      displayValue:
+        '4 outdated package versions (1 premajor, 1 preminor, 1 prepatch, 1 prerelease)',
+      details: {
+        issues: [
+          {
+            message: expect.stringContaining(
+              '`esbuild` requires a **preminor** update',
+            ),
+            severity: 'info',
+          },
+          {
+            message: expect.stringContaining(
+              '`nx-knip` requires a **prerelease** update',
+            ),
+            severity: 'info',
+          },
+          {
+            message: expect.stringContaining(
+              '`semver` requires a **prepatch** update',
+            ),
+            severity: 'info',
+          },
+          {
+            message: expect.stringContaining(
+              '`code-pushup` requires a **premajor** update',
+            ),
+            severity: 'info',
+          },
+        ],
+      },
     });
   });
 });
@@ -210,27 +272,41 @@ describe('calculateOutdatedScore', () => {
 });
 
 describe('outdatedToDisplayValue', () => {
+  const ZERO_STATS = objectFromEntries(
+    RELEASE_TYPES.map(versionType => [versionType, 0]),
+  );
+
   it('should display perfect value e for no outdated dependencies', () => {
-    expect(outdatedToDisplayValue({ major: 0, minor: 0, patch: 0 })).toBe(
+    expect(outdatedToDisplayValue(ZERO_STATS)).toBe(
       'all dependencies are up to date',
     );
   });
 
   it('should explicitly state outdated dependencies', () => {
-    expect(outdatedToDisplayValue({ major: 5, minor: 2, patch: 1 })).toBe(
-      '8 outdated package versions (5 major, 2 minor, 1 patch)',
+    expect(
+      outdatedToDisplayValue({
+        major: 5,
+        premajor: 1,
+        minor: 2,
+        preminor: 2,
+        patch: 1,
+        prepatch: 1,
+        prerelease: 3,
+      }),
+    ).toBe(
+      '15 outdated package versions (5 major, 1 premajor, 2 minor, 2 preminor, 1 patch, 1 prepatch, 3 prerelease)',
     );
   });
 
   it('should only list version types that have outdated dependencies', () => {
-    expect(outdatedToDisplayValue({ major: 2, minor: 0, patch: 3 })).toBe(
+    expect(outdatedToDisplayValue({ ...ZERO_STATS, major: 2, patch: 3 })).toBe(
       '5 outdated package versions (2 major, 3 patch)',
     );
   });
 
   it('should skip breakdown if only one version type is outdated', () => {
-    expect(outdatedToDisplayValue({ major: 0, minor: 4, patch: 0 })).toBe(
-      '4 minor outdated package versions',
+    expect(outdatedToDisplayValue({ ...ZERO_STATS, prerelease: 4 })).toBe(
+      '4 prerelease outdated package versions',
     );
   });
 });
@@ -292,31 +368,5 @@ describe('outdatedToIssues', () => {
 
   it('should return empty issues for no outdated dependencies', () => {
     expect(outdatedToIssues([])).toEqual([]);
-  });
-});
-
-describe('getOutdatedLevel', () => {
-  it('should return outdated major version', () => {
-    expect(getOutdatedLevel('4.2.1', '5.2.0')).toBe('major');
-  });
-
-  it('should prioritise higher outdated version level', () => {
-    expect(getOutdatedLevel('6.2.1', '6.3.2')).toBe('minor');
-  });
-});
-
-describe('splitPackageVersion', () => {
-  it('should split version into major, minor and patch', () => {
-    expect(splitPackageVersion('0.32.4')).toEqual<PackageVersion>({
-      major: 0,
-      minor: 32,
-      patch: 4,
-    });
-  });
-
-  it('should throw for an incomplete version', () => {
-    expect(() => splitPackageVersion('5.0')).toThrow(
-      'Invalid version description 5.0',
-    );
   });
 });
