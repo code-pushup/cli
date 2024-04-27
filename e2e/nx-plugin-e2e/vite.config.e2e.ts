@@ -3,10 +3,10 @@ import { defineConfig } from 'vite';
 import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/cli-e2e',
+  cacheDir: '../../node_modules/.vite/nx-plugin-e2e',
   test: {
     reporters: ['basic'],
-    testTimeout: 140_000,
+    testTimeout: 60_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
@@ -16,7 +16,7 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.e2e.ts'],
+    globalSetup: ['../../global-setup.ts'],
     setupFiles: ['../../testing/test-setup/src/lib/reset.mocks.ts'],
   },
 });

@@ -11,7 +11,9 @@
       "parserOptions": {
         "project": ["packages/nx-plugin/tsconfig.*?.json"]
       },
-      "rules": {}
+      "rules": {
+        "unicorn/prefer-module": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

@@ -10,31 +10,32 @@ import {
   withVitest,
 } from '@beaussan/nx-knip';
 
-const withProjectRules = () =>
+const withIgnoreMockInLibs = () =>
   withLibraryMapper({
     mapperFn: ({ rootFolder }) => {
       return {
-        ignore: [
-          rootFolder + '/mocks/**' /*rootFolder + '/perf/**' SHOULD WORK */,
-        ],
-        entry: [
-          rootFolder + '/src/bin.ts',
-          rootFolder + '/perf/**/index.ts',
-          rootFolder + '/mocks/**/index.ts',
-        ],
+        ignore: [rootFolder + '/mocks/**', rootFolder + '/perf/**'],
+        entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
       };
     },
   });
 
 const withExamplePlugins = (): KnipConfigPlugin => () => {
   return {
-    entry: ['examples/plugins/**/src/index.ts'],
+    // Given there is no publish target, thoes libs were not picked up by the auto discovery
+    entry: [
+      'examples/plugins/src/index.ts',
+      'packages/plugin-lighthouse/src/index.ts',
+    ],
   };
 };
 
 const withReactExample = (): KnipConfigPlugin => () => {
   return {
-    entry: ['examples/react-todos-app/src/index.jsx'],
+    entry: [
+      'examples/react-todos-app/src/index.jsx',
+      'examples/react-todos-app/test-setup.js',
+    ],
     eslint: {
       // Given there is no lint target on the project, we need to manually specify the entry point
       config: ['examples/react-todos-app/.eslintrc.js'],
@@ -49,6 +50,7 @@ const withNxStandards = (): KnipConfigPlugin => () => {
     commitlint: {
       config: ['commitlint.config.js'],
     },
+    exclude: ['duplicates'],
     entry: [
       '**/src/bin.ts',
       '**/perf/**/index.ts',
@@ -59,9 +61,15 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       'testing/test-setup/src/lib/**/*.{js,mjs,ts,cjs,mts,cts}',
       'global-setup.ts',
       'global-setup.e2e.ts',
+      'examples/react-todos-app/code-pushup.config.js',
+      'examples/plugins/code-pushup.config.ts',
+      'testing/test-utils/src/lib/fixtures/configs/code-pushup.config.js',
+      'testing/test-utils/src/lib/fixtures/configs/code-pushup.empty.config.js',
+      'examples/plugins/src/package-json/src/index.ts',
+      // missing knip plugin for now, so this is in the root entry
+      'packages/models/zod2md.config.ts',
       // missing knip plugin for now, so this is in the root entry
       '**/code-pushup.config.{ts,js,mjs}',
-      'packages/models/zod2md.config.ts',
       'esbuild.config.js',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
       // dep from a test for not existing depts
@@ -73,16 +81,14 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
-      // ignored becasue fake dept from a thes (but valid catch)
-      '@example/custom-plugin',
       // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
-      //  'global-setup.ts',
-      //  'global-setup.e2e.ts',
+      // 'global-setup.ts',
+      // 'global-setup.e2e.ts',
 
-      // Should be picked up by knip from the vitest setup files
-      // 'basic',
-      // Should be picked up by the commit lint knip config
-      //  'commitlint-plugin-tense',
+      // Knip should be able to pick up this
+      'tsx',
+      // Not a npm library, and resolved in a different typescript path than the global import one
+      '@example/custom-plugin',
 
       // Prettier magic resolve is not picked up by knip
       '@trivago/prettier-plugin-sort-imports',
@@ -96,7 +102,7 @@ export default combineNxKnipPlugins(
   withEsbuildApps(),
   withEsbuildPublishableLibs(),
   withVitest(),
-  withProjectRules(),
+  withIgnoreMockInLibs(),
   withEslint(),
   withReactExample(),
   withExamplePlugins(),
