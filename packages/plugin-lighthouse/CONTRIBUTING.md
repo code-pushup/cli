@@ -49,14 +49,17 @@ In the CI you can set a static path if needed over the env variable like this:
 We consider this path in our `beforeAll` hook in a [set-setup script](https://github.com/code-pushup/cli/blob/f11f8a70e1ca4e7fc879fb7b658e8523bb4ee575/testing/test-setup/src/lib/chrome-path.setup.ts).
 
 ```ts
+// testing/test-setup/src/lib/chrome-path.setup.ts
+import { getChromePath } from 'chrome-launcher';
+import * as process from 'node:process';
+import { beforeEach, vi } from 'vitest';
+
 beforeEach(() => {
-  try {
+  const customChromePath = process.env['CUSTOM_CHROME_PATH'];
+
+  if (customChromePath == null) {
     vi.stubEnv('CHROME_PATH', getChromePath());
-  } catch (e) {
-    const customChromePath = process.env['CUSTOM_CHROME_PATH'];
-    if (customChromePath == null || customChromePath === '') {
-      throw new Error('Chrome path not found. Please read the in the packages CONTRIBUTING.md/#trouble-shooting section.');
-    }
+  } else {
     vi.stubEnv('CHROME_PATH', customChromePath);
   }
 });
