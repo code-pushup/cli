@@ -69,7 +69,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     displayValue: formattedValue,
     details,
   } = audit;
-  const { issues /*, table = {}*/ } = details ?? {};
+  const { issues /*, table */ } = details ?? {};
   return {
     slug,
     title,
@@ -82,7 +82,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
       details: {
         ...(issues && { issues: issues.map(issueToGQL) }),
         // @TODO add when https://github.com/code-pushup/cli/issues/530 is implemented
-        // ...(Object.keys(table).length ? {table} : {}),
+        // ...(table ? {table} : {}),
       },
     }),
   };

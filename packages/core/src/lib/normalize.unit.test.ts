@@ -34,7 +34,7 @@ describe('normalizeAuditOutputs', () => {
     const outputs = await normalizeAuditOutputs([
       { details: { issues: undefined } } as unknown as AuditOutput,
     ]);
-    expect(outputs.at(0)).toStrictEqual({ details: {} });
+    expect(outputs.at(0)).toStrictEqual({ details: { issues: undefined } });
   });
 
   it('should forward audit details with empty issues', async () => {
