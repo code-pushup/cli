@@ -81,7 +81,7 @@ describe('normalizeAuditOutputs', () => {
 });
 
 describe('normalizeIssue', () => {
-  it('should forward issue if source == null', () => {
+  it('should forward issue without a source', () => {
     const issue = {
       message: 'file too big',
       severity: 'error',
