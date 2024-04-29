@@ -14,7 +14,7 @@ describe('categoriesOverviewSection', () => {
     const md = categoriesOverviewSection({
       plugins: [],
       categories: [],
-    } as unknown as ScoredReport);
+    });
     expect(md).toBe('');
   });
 
