@@ -1,7 +1,6 @@
 # Code PushUp
 
 🥳 Code PushUp report has **improved** – compared target commit `<commit-sha>` with source commit `<commit-sha>`.
-
 ## 🏷️ Categories
 
 |🏷️ Category|⭐ Current score|⭐ Previous score|🔄 Score change|

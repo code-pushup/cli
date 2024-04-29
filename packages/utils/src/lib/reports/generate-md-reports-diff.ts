@@ -47,11 +47,9 @@ function formatDiffHeaderSection(diff: ReportsDiff): string {
 
   return lines(
     h1('Code PushUp'),
-    section(
-      diff.commits
-        ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
-        : `${outcomeTexts[outcome]}.`,
-    ),
+    diff.commits
+      ? `${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
+      : `${outcomeTexts[outcome]}.`,
   );
 }
 

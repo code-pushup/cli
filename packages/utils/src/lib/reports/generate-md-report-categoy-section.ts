@@ -82,7 +82,7 @@ export function categoriesDetailsSection(
       }
     });
 
-    return lines(
+    return section(
       categoryTitle,
       metaDescription(category),
       categoryScore,
@@ -90,7 +90,7 @@ export function categoriesDetailsSection(
     );
   });
 
-  return section(h2(CATEGORIES_TITLE), ...categoryDetails);
+  return lines(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(

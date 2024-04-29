@@ -90,12 +90,14 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 🟡 Score:  **61**
 - 🔴 Performance Group (_Lighthouse_)
-   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
-   - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
+  - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
+
 ### SEO
 
 🟢 Score:  **100**
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
+
 ### PWA
 
 🔴 Score:  **0**
