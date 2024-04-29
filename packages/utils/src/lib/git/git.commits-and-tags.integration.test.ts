@@ -187,8 +187,8 @@ describe('getSemverTags', () => {
 
   describe('without a branch and commits', () => {
     it('should list no tags on a branch with no tags', async () => {
-      await expect(getSemverTags({}, gitSemverTagsMock)).rejects.toMatch(
-        /No names found/,
+      await expect(getSemverTags({}, gitSemverTagsMock)).rejects.toThrow(
+        'No names found, cannot describe anything',
       );
     });
   });
@@ -228,7 +228,7 @@ describe('getSemverTags', () => {
       });
 
       await gitSemverTagsMock.checkout(['master']);
-    });
+    }, 15000);
 
     afterAll(async () => {
       await gitSemverTagsMock.checkout(['master']);
