@@ -41,7 +41,7 @@ export default {
         // pwa category
         'installable-manifest',
       ],
-      chromeFlags: DEFAULT_FLAGS,
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless', '--no-sandbox']),
     }),
   ],
   categories: [
