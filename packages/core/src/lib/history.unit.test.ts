@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
-import { HistoryOptions, history, prepareHashes } from './history';
+import { HistoryOptions, history } from './history';
 import { upload } from './upload';
 
 vi.mock('@code-pushup/utils', async () => {
@@ -107,49 +107,5 @@ describe('history', () => {
     await history(historyBaseOptions, ['abc']);
 
     expect(upload).not.toHaveBeenCalled();
-  });
-});
-
-describe('prepareHashes', () => {
-  it('should return commit hashes in reverse order', () => {
-    expect(
-      prepareHashes({
-        all: [
-          {
-            hash: '22287eb716a84f82b5d59e7238ffcae7147f707a',
-            date: 'Thu Mar 7 20:13:33 2024 +0100',
-            message:
-              'test: change test reported to basic in order to work on Windows',
-            refs: 'string',
-            body: '',
-            author_name: 'John Doe',
-            author_email: 'john.doe@gmail.com',
-          },
-          {
-            hash: '111b284e48ddf464a498dcf22426a9ce65e2c01c',
-            date: 'Thu Mar 7 20:13:34 2024 +0100',
-            message: 'chore: exclude fixtures from ESLint',
-            refs: 'string',
-            body: '',
-            author_name: 'Jane Doe',
-            author_email: 'jane.doe@gmail.com',
-          },
-        ],
-        total: 2,
-        latest: {
-          hash: '22287eb716a84f82b5d59e7238ffcae7147f707a',
-          date: 'Thu Mar 7 20:13:33 2024 +0100',
-          message:
-            'test: change test reported to basic in order to work on Windows',
-          refs: 'string',
-          body: '',
-          author_name: 'John Doe',
-          author_email: 'john.doe@gmail.com',
-        },
-      }),
-    ).toStrictEqual([
-      '111b284e48ddf464a498dcf22426a9ce65e2c01c',
-      '22287eb716a84f82b5d59e7238ffcae7147f707a',
-    ]);
   });
 });

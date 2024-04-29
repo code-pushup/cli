@@ -9,6 +9,7 @@
     "@isaacs/cliui": "^8.0.2",
     "simple-git": "^3.20.0",
     "multi-progress-bars": "^5.0.3",
-    "@poppinss/cliui": "^6.4.0"
+    "@poppinss/cliui": "^6.4.0",
+    "semver": "^7.6.0"
   }
 }
