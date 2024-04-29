@@ -21,8 +21,9 @@ beforeEach(async () => {
           } Using chromium from node_modules instead: ${chromium.path}`,
         );
         vi.stubEnv('CHROME_PATH', chromium.path);
+      } else {
+        throw error;
       }
-      throw error;
     }
   } else {
     vi.stubEnv('CHROME_PATH', customChromePath);
