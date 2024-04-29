@@ -56,7 +56,7 @@ describe('normalizeAuditOutputs', () => {
     expect(outputs.at(0)?.details?.issues).toBe(issues);
   });
 
-  it('should clone audit details with issues NOT all undefined source', async () => {
+  it('should clone audit details with issues that have source specified', async () => {
     const issues = [
       { source: undefined },
       { source: { file: 'index.js' } },
