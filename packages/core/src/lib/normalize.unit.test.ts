@@ -18,9 +18,9 @@ describe('normalizeAuditOutputs', () => {
   });
 
   it('should forward audits without details', async () => {
-    const audit = { slug: 'no-any' } as AuditOutput;
-    const outputs = await normalizeAuditOutputs([audit]);
-    expect(outputs.at(0)).toBe(audit);
+    await expect(
+      normalizeAuditOutputs([{ slug: 'no-any' } as AuditOutput]),
+    ).resolves.toEqual([{ slug: 'no-any' }]);
   });
 
   it('should forward audit details with table', async () => {
