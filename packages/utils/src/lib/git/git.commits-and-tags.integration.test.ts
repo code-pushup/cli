@@ -228,7 +228,7 @@ describe('getSemverTags', () => {
       });
 
       await gitSemverTagsMock.checkout(['master']);
-    }, 15000);
+    });
 
     afterAll(async () => {
       await gitSemverTagsMock.checkout(['master']);
