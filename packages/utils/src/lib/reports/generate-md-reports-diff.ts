@@ -18,7 +18,7 @@ const MAX_ROWS = 100;
 
 export function generateMdReportsDiff(diff: ReportsDiff): string {
   return lines(
-    formatDiffHeaderSection(diff),
+    section(formatDiffHeaderSection(diff)),
     formatDiffCategoriesSection(diff),
     formatDiffGroupsSection(diff),
     formatDiffAuditsSection(diff),
