@@ -187,7 +187,7 @@ describe('categoriesDetails', () => {
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as unknown as ScoredReport),
+      } as ScoredReport),
     ).toMatchSnapshot();
   });
 });
