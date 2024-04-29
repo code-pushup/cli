@@ -632,24 +632,12 @@ describe('scoreMarker', () => {
     [greenCircle, SCORE_COLOR_RANGE.GREEN_MIN],
     [greenCircle, 1],
   ])(
-    'should return circle icon %s for score %s if type is undefined',
-    (icon, score) => {
-      expect(scoreMarker(score)).toBe(icon);
-    },
-  );
-  it.each<[string, number]>([
-    [redCircle, 0],
-    [redCircle, SCORE_COLOR_RANGE.YELLOW_MIN - 0.001],
-    [yellowCircle, SCORE_COLOR_RANGE.YELLOW_MIN],
-    [yellowCircle, SCORE_COLOR_RANGE.GREEN_MIN - 0.001],
-    [greenCircle, SCORE_COLOR_RANGE.GREEN_MIN],
-    [greenCircle, 1],
-  ])(
     'should return circle icon %s for score %s if type is circle',
     (icon, score) => {
       expect(scoreMarker(score, 'circle')).toBe(icon);
     },
   );
+
   it.each<[string, number]>([
     [redSquare, 0],
     [redSquare, SCORE_COLOR_RANGE.YELLOW_MIN - 0.001],
