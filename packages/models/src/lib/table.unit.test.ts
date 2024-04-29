@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Table, tableSchema } from './table';
 
 describe('tableSchema', () => {
-  it('should parse table with primitive data rows only', () => {
+  it('should accept a valid table with primitive data rows only', () => {
     const table: Table = {
       rows: [
         ['TTFB', '27%', '620 ms'],
