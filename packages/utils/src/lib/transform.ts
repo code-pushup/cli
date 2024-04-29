@@ -38,13 +38,13 @@ export function deepClone<T>(obj: T): T {
   return obj == null || typeof obj !== 'object' ? obj : structuredClone(obj);
 }
 
-export function factorOf<T>(rows: T[], filterFn: (i: T) => boolean): number {
-  const itemCount = rows.length;
+export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
+  const itemCount = items.length;
   // early exit for empty rows
   if (!itemCount) {
     return 1;
   }
-  const filterCount = rows.filter(filterFn).length;
+  const filterCount = items.filter(filterFn).length;
   // if no rows result from the filter fn we forward return 1 as factor
   return filterCount === 0 ? 1 : (itemCount - filterCount) / itemCount;
 }
