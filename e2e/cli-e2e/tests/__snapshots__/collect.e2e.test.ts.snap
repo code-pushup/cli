@@ -164,23 +164,12 @@ exports[`CLI collect > should run Code coverage plugin that runs coverage tool a
                 },
               },
               {
-                "message": "Lines 10-28 are not covered in any test case.",
+                "message": "Lines 7-28 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
                   "file": "examples/react-todos-app/src/components/TodoList.jsx",
                   "position": {
                     "endLine": 28,
-                    "startLine": 10,
-                  },
-                },
-              },
-              {
-                "message": "Lines 7-9 are not covered in any test case.",
-                "severity": "warning",
-                "source": {
-                  "file": "examples/react-todos-app/src/components/TodoList.jsx",
-                  "position": {
-                    "endLine": 9,
                     "startLine": 7,
                   },
                 },

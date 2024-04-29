@@ -1,3 +1,23 @@
+## 0.39.0 (2024-04-29)
+
+### 🚀 Features
+
+- **plugin-eslint:** support array of config and patterns to lint separately ([7b1e4585](https://github.com/code-pushup/cli/commit/7b1e4585))
+- **plugin-eslint:** nx helpers generate array of lint targets ([10dd3c6a](https://github.com/code-pushup/cli/commit/10dd3c6a))
+
+### 🩹 Fixes
+
+- **ci:** temporarily adjust e2e job ([1e494c76](https://github.com/code-pushup/cli/commit/1e494c76))
+
+### 🔥 Performance
+
+- **plugin-eslint:** run eslint as separate process to prevent exceeding memory ([c25b3671](https://github.com/code-pushup/cli/commit/c25b3671))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+
 ## 0.35.0 (2024-04-09)
 
 This was a version bump only, there were no code changes.

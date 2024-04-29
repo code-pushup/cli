@@ -22,7 +22,21 @@ It supports the following package managers:
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Insert plugin configuration with your package manager. By default, both `audit` and `outdated` checks will be run. The result should look as follows:
+2. Install as a dev dependency with your package manager:
+
+   ```sh
+   npm install --save-dev @code-pushup/js-packages-plugin
+   ```
+
+   ```sh
+   yarn add --dev @code-pushup/js-packages-plugin
+   ```
+
+   ```sh
+   pnpm add --save-dev @code-pushup/js-packages-plugin
+   ```
+
+3. Insert plugin configuration with your package manager. By default, both `audit` and `outdated` checks will be run. The result should look as follows:
 
    ```js
    import jsPackagesPlugin from '@code-pushup/js-packages-plugin';
@@ -50,7 +64,7 @@ It supports the following package managers:
    };
    ```
 
-3. (Optional) Reference individual audits or the provided plugin groups which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+4. (Optional) Reference individual audits or the provided plugin groups which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    💡 Assign weights based on what influence each command should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
@@ -88,7 +102,7 @@ It supports the following package managers:
    };
    ```
 
-4. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
 ## Plugin architecture
 
