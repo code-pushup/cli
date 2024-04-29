@@ -10,7 +10,7 @@ import { ScoredGroup, ScoredReport } from './types';
 // === Categories Overview Section
 
 describe('categoriesOverviewSection', () => {
-  it('should NOT render categories table', () => {
+  it('should skip categories table if categories are empty', () => {
     const md = categoriesOverviewSection({
       plugins: [],
       categories: [],

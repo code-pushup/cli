@@ -235,7 +235,7 @@ describe('auditDetails', () => {
     expect(md).not.toMatch('#### Additional Information');
   });
 
-  it('should NOT display issue section if only issues array is present but empty', () => {
+  it('should skip issue section if empty issues array is present', () => {
     const md = auditDetails({
       score: 0,
       value: 0,
