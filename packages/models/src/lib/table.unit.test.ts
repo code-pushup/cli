@@ -17,6 +17,22 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
+  it('should not throw for empty rows', () => {
+    const table: Table = {
+      rows: [],
+    };
+    expect(() => tableSchema().parse(table)).not.toThrow();
+  });
+
+  it('should throw for unsupported values in rows', () => {
+    const table: Table = {
+      rows: [[[] as unknown as string]],
+    };
+    expect(() => tableSchema().parse(table)).toThrow(
+      'Expected string, received array',
+    );
+  });
+
   it('should parse table with rows and headings', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
