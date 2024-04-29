@@ -31,4 +31,25 @@ describe('lcovResultsToAuditOutputs', () => {
     );
     expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
   });
+
+  it('should correctly merge all lines for coverage', async () => {
+    const results = await lcovResultsToAuditOutputs(
+      [
+        {
+          resultsPath: join(
+            fileURLToPath(dirname(import.meta.url)),
+            '..',
+            '..',
+            '..',
+            '..',
+            'mocks',
+            'no-coverage-lcov.info',
+          ),
+          pathToProject: 'packages/cli',
+        },
+      ],
+      ['line'],
+    );
+    expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
+  });
 });
