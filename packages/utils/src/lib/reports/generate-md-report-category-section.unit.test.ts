@@ -108,7 +108,7 @@ describe('categoryGroupItem', () => {
         ],
         'Eslint',
       ),
-    ).toMatchSnapshot('');
+    ).toMatchSnapshot();
   });
 
   it('should render complete category reference', () => {
