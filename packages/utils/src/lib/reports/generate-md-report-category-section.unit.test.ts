@@ -51,7 +51,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-any', type: 'audit' }],
           },
         ],
-      } as unknown as ScoredReport),
+      } as ScoredReport),
     ).toMatchSnapshot();
   });
 });
