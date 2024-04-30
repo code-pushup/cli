@@ -15,7 +15,7 @@ To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
-We try to detect it automatically in the [set-setup script](https://github.com/code-pushup/cli/blob/f11f8a70e1ca4e7fc879fb7b658e8523bb4ee575/testing/test-setup/src/lib/chrome-path.setup.ts).
+We try to detect it automatically in the [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
 There we use `getChromePath` and have `chromium` installed as NPM package, so detecting the path should not cause any problem.
 
 However, if no chrome path is detected automatically the error looks like this:
