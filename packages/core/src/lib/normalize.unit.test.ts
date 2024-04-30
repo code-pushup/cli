@@ -24,36 +24,35 @@ describe('normalizeAuditOutputs', () => {
   });
 
   it('should forward audit details with table', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { table: {} } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: { table: {} } });
+    const audit = { details: { table: {} } } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)).toBe(audit);
   });
 
   it('should forward audit details without issues', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues: undefined } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: { issues: undefined } });
+    const audit = { details: { issues: undefined } } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)).toBe(audit);
   });
 
   it('should forward audit details with empty issues', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues: [] } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: { issues: [] } });
+    const audit = { details: { issues: [] as Issue[] } } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)).toBe(audit);
   });
 
   it('should forward audit details with issues and all undefined source', async () => {
-    const issues = [
-      { source: undefined },
-      { source: undefined },
-      { source: undefined },
-    ];
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)?.details?.issues).toBe(issues);
+    const audit = {
+      details: {
+        issues: [
+          { source: undefined },
+          { source: undefined },
+          { source: undefined },
+        ],
+      },
+    } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)?.details?.issues).toBe(audit.details?.issues);
   });
 
   it('should clone audit details with issues that have source specified', async () => {
@@ -63,9 +62,7 @@ describe('normalizeAuditOutputs', () => {
       { source: undefined },
     ] as Issue[];
     await expect(
-      normalizeAuditOutputs([
-        { details: { issues } } as unknown as AuditOutput,
-      ]),
+      normalizeAuditOutputs([{ details: { issues } } as AuditOutput]),
     ).resolves.toStrictEqual([
       {
         details: {
