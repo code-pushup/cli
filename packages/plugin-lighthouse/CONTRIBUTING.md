@@ -46,7 +46,7 @@ In the CI you can set a static path if needed over the env variable like this:
 # ...
 ```
 
-We consider this path in our `beforeAll` hook in a [set-setup script](https://github.com/code-pushup/cli/blob/f11f8a70e1ca4e7fc879fb7b658e8523bb4ee575/testing/test-setup/src/lib/chrome-path.setup.ts).
+We consider this path in our `beforeAll` hook in a [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
 
 ```ts
 // testing/test-setup/src/lib/chrome-path.setup.ts
