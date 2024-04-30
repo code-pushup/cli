@@ -653,7 +653,7 @@ describe('scoreMarker', () => {
   );
 });
 
-describe('getSeverityIcon', () => {
+describe('severityMarker', () => {
   it.each<[string, IssueSeverity]>([
     ['🚨', 'error'],
     ['⚠️', 'warning'],
