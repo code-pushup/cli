@@ -10,15 +10,16 @@ beforeEach(async () => {
       const path = getChromePath();
       vi.stubEnv('CHROME_PATH', path);
     } catch (error) {
-      if ((error as Error).message.includes('No Chrome installations found.')) {
+      if (
+        error instanceof Error &&
+        error.message.includes('No Chrome installations found.')
+      ) {
         const chromium = (await import('chromium' as string)) as Record<
           'path',
           string
         >;
         console.info(
-          `${
-            (error as Error).message
-          } Using chromium from node_modules instead: ${chromium.path}`,
+          `${error.message} Using chromium from node_modules instead: ${chromium.path}`,
         );
         vi.stubEnv('CHROME_PATH', chromium.path);
       } else {
