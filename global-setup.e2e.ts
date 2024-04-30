@@ -7,6 +7,7 @@ import stopLocalRegistry from './tools/scripts/stop-local-registry';
 export async function setup() {
   await globalSetup();
   const registry = await startLocalRegistry();
+  // we can only install packages released by nx, see nx.json release.projects globs
   try {
     execSync(`npm install -D @code-pushup/cli@e2e --registry=${registry}`);
     execSync(
