@@ -48,23 +48,6 @@ In the CI you can set a static path if needed over the env variable like this:
 
 We consider this path in our `beforeAll` hook in a [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
 
-```ts
-// testing/test-setup/src/lib/chrome-path.setup.ts
-import { getChromePath } from 'chrome-launcher';
-import * as process from 'node:process';
-import { beforeEach, vi } from 'vitest';
-
-beforeEach(() => {
-  const customChromePath = process.env['CUSTOM_CHROME_PATH'];
-
-  if (customChromePath == null) {
-    vi.stubEnv('CHROME_PATH', getChromePath());
-  } else {
-    vi.stubEnv('CHROME_PATH', customChromePath);
-  }
-});
-```
-
 ### Testing chrome flags
 
 1. run `npx chrome-debug --<chromium-flag>` to pass terminal arguments to Chrome. E.g. `npx chrome-debug --headless=shell`.
