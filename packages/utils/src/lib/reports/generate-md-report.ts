@@ -133,8 +133,7 @@ export function aboutSection(
         new Date(date),
       )}.`,
     ),
-    tableSection(reportMetaTable, { heading: 'Report overview:', level }),
-    tableSection(pluginMetaTable, { heading: 'Plugins overview:', level }),
+    tableSection(pluginMetaTable, { heading: 'Plugins:', level }),
   );
 }
 
