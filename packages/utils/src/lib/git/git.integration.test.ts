@@ -1,16 +1,14 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { afterAll, beforeAll, beforeEach, expect } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
+import { toUnixPath } from '../transform';
 import {
-  getCurrentBranchOrTag,
   getGitRoot,
-  getLatestCommit,
   guardAgainstLocalChanges,
   safeCheckout,
   toGitPath,
 } from './git';
-import { toUnixPath } from './transform';
 
 describe('git utils in a git repo', () => {
   const baseDir = join(process.cwd(), 'tmp', 'git-tests');
@@ -29,12 +27,6 @@ describe('git utils in a git repo', () => {
   });
 
   describe('without a branch and commits', () => {
-    it('getCurrentBranchOrTag should throw if no branch or tag is given', async () => {
-      await expect(getCurrentBranchOrTag(emptyGit)).rejects.toThrow(
-        'No names found, cannot describe anything',
-      );
-    });
-
     it('getGitRoot should return git root in a set up repo', async () => {
       await expect(getGitRoot(emptyGit)).resolves.toMatch(/tmp\/git-tests$/);
     });
@@ -53,15 +45,6 @@ describe('git utils in a git repo', () => {
     afterAll(async () => {
       await emptyGit.checkout(['master']);
       await emptyGit.deleteLocalBranch('feature-branch');
-    });
-
-    it('should log latest commit', async () => {
-      await expect(getLatestCommit(emptyGit)).resolves.toEqual({
-        hash: expect.stringMatching(/^[\da-f]{40}$/),
-        message: 'Create README',
-        author: 'John Doe',
-        date: expect.any(Date),
-      });
     });
 
     it('should find Git root', async () => {
@@ -84,10 +67,6 @@ describe('git utils in a git repo', () => {
       await expect(toGitPath('Backend/API/Startup.cs', emptyGit)).resolves.toBe(
         '../../Backend/API/Startup.cs',
       );
-    });
-
-    it('getCurrentBranchOrTag should log current branch', async () => {
-      await expect(getCurrentBranchOrTag(emptyGit)).resolves.toBe('master');
     });
 
     it('guardAgainstLocalChanges should not throw if history is clean', async () => {

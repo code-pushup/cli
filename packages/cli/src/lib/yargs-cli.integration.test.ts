@@ -149,7 +149,7 @@ describe('yargsCli', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        targetBranch: 'main',
+        onlySemverTags: false,
         maxCount: 5,
         skipUploads: false,
       }),
@@ -163,9 +163,19 @@ describe('yargsCli', () => {
 
     expect(result).toEqual(
       expect.objectContaining({
-        targetBranch: 'main',
         maxCount: 2,
-        skipUploads: false,
+      }),
+    );
+  });
+
+  it('should parse history options and have onlySemverTags true to crawl in history if onlySemverTags is set', async () => {
+    const result = await yargsCli(['history', '--onlySemverTags'], {
+      options: { ...options, ...yargsHistoryOptionsDefinition() },
+    }).parseAsync();
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        onlySemverTags: true,
       }),
     );
   });

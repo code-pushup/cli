@@ -11,14 +11,19 @@ export function calculateCoverage(hit: number, found: number): number {
 }
 
 export function mergeConsecutiveNumbers(numberArr: number[]): NumberRange[] {
-  return [...numberArr].sort().reduce<NumberRange[]>((acc, currValue) => {
-    const prevValue = acc.at(-1);
-    if (
-      prevValue != null &&
-      (prevValue.start === currValue - 1 || prevValue.end === currValue - 1)
-    ) {
-      return [...acc.slice(0, -1), { start: prevValue.start, end: currValue }];
-    }
-    return [...acc, { start: currValue }];
-  }, []);
+  return [...numberArr]
+    .sort((a, b) => a - b)
+    .reduce<NumberRange[]>((acc, currValue) => {
+      const prevValue = acc.at(-1);
+      if (
+        prevValue != null &&
+        (prevValue.start === currValue - 1 || prevValue.end === currValue - 1)
+      ) {
+        return [
+          ...acc.slice(0, -1),
+          { start: prevValue.start, end: currValue },
+        ];
+      }
+      return [...acc, { start: currValue }];
+    }, []);
 }

@@ -1,7 +1,8 @@
 import type { ESLint } from 'eslint';
 import { type ZodType, z } from 'zod';
+import { toArray } from '@code-pushup/utils';
 
-export const eslintPluginConfigSchema = z.object({
+export const eslintTargetSchema = z.object({
   eslintrc: z.union(
     [
       z.string({ description: 'Path to ESLint config file' }),
@@ -16,11 +17,14 @@ export const eslintPluginConfigSchema = z.object({
       'Lint target files. May contain file paths, directory paths or glob patterns',
   }),
 });
+export type ESLintTarget = z.infer<typeof eslintTargetSchema>;
 
-export type ESLintPluginConfig = z.infer<typeof eslintPluginConfigSchema>;
+export const eslintPluginConfigSchema = z
+  .union([eslintTargetSchema, z.array(eslintTargetSchema).min(1)])
+  .transform(toArray);
+export type ESLintPluginConfig = z.input<typeof eslintPluginConfigSchema>;
 
 export type ESLintPluginRunnerConfig = {
-  eslintrc: string;
+  targets: ESLintTarget[];
   slugs: string[];
-  patterns: string[];
 };

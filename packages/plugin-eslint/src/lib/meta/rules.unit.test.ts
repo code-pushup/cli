@@ -1,7 +1,7 @@
-import { ESLint } from 'eslint';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
+import type { ESLintTarget } from '../config';
 import { RuleData, listRules, parseRuleId } from './rules';
 
 describe('listRules', () => {
@@ -28,22 +28,19 @@ describe('listRules', () => {
     const appRootDir = join(fixturesDir, 'todos-app');
     const eslintrc = join(appRootDir, '.eslintrc.js');
 
-    const eslint = new ESLint({
-      useEslintrc: false,
-      baseConfig: { extends: eslintrc },
-    });
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
+    const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
     beforeAll(() => {
       cwdSpy.mockReturnValue(appRootDir);
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toHaveLength(47);
+      await expect(listRules(targets)).resolves.toHaveLength(47);
     });
 
     it('should include explicitly set built-in rule', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: 'no-const-assign',
         meta: {
           docs: {
@@ -62,7 +59,7 @@ describe('listRules', () => {
     });
 
     it('should include explicitly set plugin rule', async () => {
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: 'react/jsx-key',
         meta: {
           docs: {
@@ -94,24 +91,21 @@ describe('listRules', () => {
     const nxRootDir = join(fixturesDir, 'nx-monorepo');
     const eslintrc = join(nxRootDir, 'packages/utils/.eslintrc.json');
 
-    const eslint = new ESLint({
-      useEslintrc: false,
-      baseConfig: { extends: eslintrc },
-    });
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
+    const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
     beforeAll(() => {
       cwdSpy.mockReturnValue(nxRootDir);
     });
 
     it('should list expected number of rules', async () => {
-      const rules = await listRules(eslint, patterns);
+      const rules = await listRules(targets);
       expect(rules.length).toBeGreaterThanOrEqual(50);
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
       // set in root .eslintrc.json
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: '@nx/enforce-module-boundaries',
         meta: expect.any(Object),
         options: [
@@ -131,7 +125,7 @@ describe('listRules', () => {
 
     it('should include built-in rule set implicitly by extending recommended config', async () => {
       // extended via @nx/typescript -> @typescript-eslint/eslint-recommended
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: 'no-var',
         meta: expect.any(Object),
         options: [],
@@ -140,7 +134,7 @@ describe('listRules', () => {
 
     it('should include plugin rule set implicitly by extending recommended config', async () => {
       // extended via @nx/typescript -> @typescript-eslint/recommended
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: '@typescript-eslint/no-unused-vars',
         meta: expect.any(Object),
         options: [],
@@ -149,7 +143,7 @@ describe('listRules', () => {
 
     it('should not include rule which was turned off in extended config', async () => {
       // extended TypeScript config sets "no-unused-semi": "off"
-      await expect(listRules(eslint, patterns)).resolves.not.toContainEqual(
+      await expect(listRules(targets)).resolves.not.toContainEqual(
         expect.objectContaining({
           ruleId: 'no-unused-vars',
         } satisfies Partial<RuleData>),
@@ -158,7 +152,7 @@ describe('listRules', () => {
 
     it('should include rule added to root config by project config', async () => {
       // set only in packages/utils/.eslintrc.json
-      await expect(listRules(eslint, patterns)).resolves.toContainEqual({
+      await expect(listRules(targets)).resolves.toContainEqual({
         ruleId: '@nx/dependency-checks',
         meta: expect.any(Object),
         options: [],

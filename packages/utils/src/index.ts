@@ -38,13 +38,19 @@ export {
 } from './lib/formatting';
 export {
   formatGitPath,
-  getCurrentBranchOrTag,
   guardAgainstLocalChanges,
   getGitRoot,
-  getLatestCommit,
   safeCheckout,
   toGitPath,
-} from './lib/git';
+} from './lib/git/git';
+export {
+  getSemverTags,
+  LogResult,
+  getHashes,
+  getHashFromTag,
+  getCurrentBranchOrTag,
+  getLatestCommit,
+} from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
@@ -98,3 +104,4 @@ export {
   toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
