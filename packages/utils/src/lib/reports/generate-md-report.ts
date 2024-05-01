@@ -125,7 +125,6 @@ export function aboutSection(
   const { date, plugins } = report;
   const reportMetaTable = reportMetaData(report);
   const pluginMetaTable = reportPluginMeta({ plugins });
-  const level = 3;
   return lines(
     h2('About'),
     section(
@@ -133,7 +132,8 @@ export function aboutSection(
         new Date(date),
       )}.`,
     ),
-    tableSection(pluginMetaTable, { heading: 'Plugins:', level }),
+    tableSection(pluginMetaTable),
+    tableSection(reportMetaTable),
   );
 }
 
