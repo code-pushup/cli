@@ -8,9 +8,7 @@ vi.mock('@code-pushup/utils', async () => {
 
   return {
     ...actual,
-    getGitRoot: vi
-      .fn()
-      .mockResolvedValue('/Users/user/Projects/myProject'),
+    getGitRoot: vi.fn().mockResolvedValue('/Users/user/Projects/myProject'),
   };
 });
 
