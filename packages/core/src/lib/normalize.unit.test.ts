@@ -8,7 +8,9 @@ vi.mock('@code-pushup/utils', async () => {
 
   return {
     ...actual,
-    gitRoot: vi.fn().mockResolvedValue('/User/code-pushup'),
+    getGitRoot: vi
+      .fn()
+      .mockResolvedValue('/Users/user/Projects/myProject'),
   };
 });
 
@@ -55,10 +57,11 @@ describe('normalizeAuditOutputs', () => {
     expect(outputs.at(0)?.details?.issues).toBe(audit.details?.issues);
   });
 
-  it('should clone audit details with issues that have source specified', async () => {
+  it('should normalize audit details with issues that have a source specified', async () => {
+    const path = '/Users/user/Projects/myProject/utils/index.js';
     const issues = [
       { source: undefined },
-      { source: { file: 'index.js' } },
+      { source: { file: path } },
       { source: undefined },
     ] as Issue[];
     await expect(
@@ -68,7 +71,7 @@ describe('normalizeAuditOutputs', () => {
         details: {
           issues: [
             { source: undefined },
-            { source: { file: 'index.js' } },
+            { source: { file: 'utils/index.js' } },
             { source: undefined },
           ],
         },
@@ -87,22 +90,24 @@ describe('normalizeIssue', () => {
   });
 
   it('should normalize filepath in issue if source file is given', () => {
+    const path = '/myProject/utils/index.js';
+    const gitRoot = '/myProject';
     expect(
       normalizeIssue(
         {
           message: 'file too big',
           severity: 'error',
           source: {
-            file: 'index.js',
+            file: path,
           },
         },
-        join('User', 'code-pushup'),
+        gitRoot,
       ),
     ).toEqual({
       message: 'file too big',
       severity: 'error',
       source: {
-        file: expect.stringMatching('index.js'),
+        file: 'utils/index.js',
       },
     });
   });
