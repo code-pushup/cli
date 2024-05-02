@@ -1,3 +1,4 @@
+export * from './lib/text-formats/index';
 export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
@@ -101,7 +102,7 @@ export {
   toNumberPrecision,
   toOrdinal,
   toUnixNewlines,
-  toUnixPath,
+  toUnixPath
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';

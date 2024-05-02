@@ -1,11 +1,11 @@
-const stylesMap = {
+import type { FontStyleShortcuts } from '../types';
+
+const stylesMap: Partial<Record<FontStyleShortcuts, string>> = {
   i: '_', // italic
   b: '**', // bold
   s: '~', // strike through
   c: '`', // code
 } as const;
-
-export type FontStyle = keyof typeof stylesMap;
 
 /**
  * **{text}** // default is bold
@@ -14,6 +14,9 @@ export type FontStyle = keyof typeof stylesMap;
  *
  * ~**{text}**~ // bold & stroke-through - styles set to `['b','s']`
  */
-export function style(text: string, styles: FontStyle[] = ['b']): string {
+export function style(
+  text: string,
+  styles: FontStyleShortcuts[] = ['b'],
+): string {
   return styles.reduce((t, s) => `${stylesMap[s]}${t}${stylesMap[s]}`, text);
 }

@@ -1,7 +1,7 @@
 import { Table } from '@code-pushup/models';
-import { tableHtml } from './table';
+import { table } from './table';
 
-describe('tableHtml', () => {
+describe('Html - table', () => {
   it('should create a complete table', () => {
     const data: Table = {
       headings: [
@@ -12,6 +12,6 @@ describe('tableHtml', () => {
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
       alignment: ['r', 'l', 'c'],
     };
-    expect(tableHtml(data)).toMatchSnapshot();
+    expect(table(data)).toMatchSnapshot();
   });
 });

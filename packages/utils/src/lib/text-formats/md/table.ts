@@ -1,8 +1,8 @@
 import { Table } from '@code-pushup/models';
-import { tableToFlatArray } from '../../transform';
+import { tableToFlatArray } from '../transform';
+import { Alignment } from '../types';
 import { lines, section } from './section';
 
-export type Alignment = 'l' | 'c' | 'r';
 const alignString = new Map<Alignment, string>([
   ['l', ':--'],
   ['c', ':--:'],
@@ -20,7 +20,7 @@ function tableRow(rows: (string | number)[]): string {
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
-export function tableMd<T extends Table>(data: T): string {
+export function table<T extends Table>(data: T): string {
   const { rows = [], alignment } = data;
   if (rows.length === 0) {
     throw new Error("Data can't be empty");

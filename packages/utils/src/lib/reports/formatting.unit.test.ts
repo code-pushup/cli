@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { NEW_LINE } from '../text-formats/constants';
 import { metaDescription, tableSection } from './formatting';
-import { NEW_LINE } from './md';
 
 describe('tableSection', () => {
   it('should render complete section', () => {

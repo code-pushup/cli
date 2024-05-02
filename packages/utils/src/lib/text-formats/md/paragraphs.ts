@@ -1,4 +1,4 @@
-import { NEW_LINE } from './constants';
+import { NEW_LINE } from '../constants';
 
 export function paragraphs(
   ...sections: (string | undefined | boolean)[]

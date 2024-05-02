@@ -1,8 +1,8 @@
 import { Table } from '@code-pushup/models';
-import { tableToFlatArray } from '../../transform';
-import { NEW_LINE } from '../md/constants';
+import { NEW_LINE } from '../constants';
+import { tableToFlatArray } from '../transform';
 
-export function tableHtml(data: Table): string {
+export function table(data: Table): string {
   if (data.rows.length === 0) {
     throw new Error("Data can't be empty");
   }

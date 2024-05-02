@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AuditReport, Issue } from '@code-pushup/models';
+import { NEW_LINE } from '../text-formats/constants';
 import { tableSection } from './formatting';
 import {
   aboutSection,
@@ -9,7 +10,6 @@ import {
   auditsSection,
   generateMdReport,
 } from './generate-md-report';
-import { NEW_LINE } from './md';
 import { ScoredReport } from './types';
 
 const baseScoredReport = {

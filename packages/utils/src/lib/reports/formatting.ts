@@ -1,17 +1,10 @@
 import { AuditReport, Table } from '@code-pushup/models';
-import {
-  Hierarchy,
-  NEW_LINE,
-  SPACE,
-  headline,
-  lines,
-  link,
-  section,
-  tableMd,
-} from './md';
+import { Hierarchy, NEW_LINE, SPACE, md } from '../text-formats';
+
+const { headline, lines, link, section, table } = md;
 
 export function tableSection(
-  table: Table | undefined,
+  tableData: Table | undefined,
   options?:
     | {
         heading?: string;
@@ -19,10 +12,10 @@ export function tableSection(
       }
     | string,
 ) {
-  if (table == null) {
+  if (tableData == null) {
     return '';
   }
-  if (table.rows.length === 0) {
+  if (tableData.rows.length === 0) {
     return '';
   }
   const { heading, level = 4 } =
@@ -32,7 +25,7 @@ export function tableSection(
   // if hierarchy is 0 do not apply heading styles
   const render = (h: string, l: Hierarchy | 0) =>
     l === 0 ? heading : headline(h, l);
-  return lines(heading ? render(heading, level) : false, tableMd(table));
+  return lines(heading ? render(heading, level) : false, table(tableData));
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type

@@ -1,9 +1,7 @@
 import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
+import { html, md } from '../text-formats';
 import { objectToEntries } from '../transform';
-import { details } from './html/details';
-import { h1, h2, lines, link, style, tableMd } from './md';
-import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -12,6 +10,9 @@ import {
   getDiffMarker,
   scoreMarker,
 } from './utils';
+
+const { h1, h2, lines, link, fontStyle, table, section } = md;
+const { details } = html;
 
 // to prevent exceeding Markdown comment character limit
 const MAX_ROWS = 100;
@@ -27,12 +28,12 @@ export function generateMdReportsDiff(diff: ReportsDiff): string {
 
 function formatDiffHeaderSection(diff: ReportsDiff): string {
   const outcomeTexts: Record<DiffOutcome, string> = {
-    positive: `🥳 Code PushUp report has ${style('improved')}`,
-    negative: `😟 Code PushUp report has ${style('regressed')}`,
-    mixed: `🤨 Code PushUp report has both ${style(
+    positive: `🥳 Code PushUp report has ${fontStyle('improved')}`,
+    negative: `😟 Code PushUp report has ${fontStyle('regressed')}`,
+    mixed: `🤨 Code PushUp report has both ${fontStyle(
       'improvements and regressions',
     )}`,
-    unchanged: `😐 Code PushUp report is ${style('unchanged')}`,
+    unchanged: `😐 Code PushUp report is ${fontStyle('unchanged')}`,
   };
   const outcome = mergeDiffOutcomes(
     changesToDiffOutcomes([
@@ -72,7 +73,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
   return lines(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
-      tableMd({
+    table({
         headings: hasChanges ? headings : headings.slice(0, 2),
         rows: [
           ...sortChanges(changed).map(category => ({
@@ -86,8 +87,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           ...added.map(category => ({
             category: formatTitle(category),
             after: formatScoreWithColor(category.score),
-            before: style('n/a (\\*)', ['i']),
-            change: style('n/a (\\*)', ['i']),
+            before: fontStyle('n/a (\\*)', ['i']),
+            change: fontStyle('n/a (\\*)', ['i']),
           })),
           ...unchanged.map(category => ({
             category: formatTitle(category),
@@ -100,7 +101,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
         ),
         alignment: hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
       }),
-    added.length > 0 && section(style('(\\*) New category.', ['i'])),
+    added.length > 0 && section(fontStyle('(\\*) New category.', ['i'])),
   );
 }
 
@@ -144,7 +145,7 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
       rows: sortChanges(diff.audits.changed).map(audit => ({
         plugin: formatTitle(audit.plugin),
         audit: formatTitle(audit),
-        after: `${scoreMarker(audit.scores.after, 'square')} ${style(
+        after: `${scoreMarker(audit.scores.after, 'square')} ${fontStyle(
           audit.displayValues.after || audit.values.after.toString(),
         )}`,
         before: `${scoreMarker(audit.scores.before, 'square')} ${
@@ -160,19 +161,19 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
 function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
   token: T,
   { changed, unchanged }: ReportsDiff[`${T}s`],
-  table: Table,
+  tableData: Table,
 ): string {
   return changed.length === 0
     ? summarizeUnchanged(token, { changed, unchanged })
     : details(
         summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
         lines(
-          tableMd({
-            ...table,
-            rows: table.rows.slice(0, MAX_ROWS),
+          table({
+            ...tableData,
+            rows: tableData.rows.slice(0, MAX_ROWS),
           }),
           changed.length > MAX_ROWS &&
-            style(
+            fontStyle(
               `Only the ${MAX_ROWS} most affected ${pluralize(
                 token,
               )} are listed above for brevity.`,

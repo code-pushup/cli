@@ -1,22 +1,13 @@
 import { AuditReport, Table } from '@code-pushup/models';
 import { slugify } from '../formatting';
+import { md } from '../text-formats';
+import { SPACE } from '../text-formats/constants';
 import {
   CATEGORIES_TITLE,
   reportOverviewTableAlignment,
   reportOverviewTableHeaders,
 } from './constants';
 import { metaDescription, tableSection } from './formatting';
-import {
-  SPACE,
-  h2,
-  h3,
-  indentation,
-  li,
-  lines,
-  link,
-  section,
-  style,
-} from './md';
 import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
@@ -26,6 +17,8 @@ import {
   getSortableGroupByRef,
   scoreMarker,
 } from './utils';
+
+const { link, section, h2, lines, li, fontStyle, h3, indentation } = md;
 
 export function categoriesOverviewSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
@@ -37,7 +30,7 @@ export function categoriesOverviewSection(
       rows: categories.map(({ title, refs, score }) => ({
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
-        score: `${scoreMarker(score)}${SPACE}${style(
+        score: `${scoreMarker(score)}${SPACE}${fontStyle(
           formatReportScore(score),
         )}`,
         audits: countCategoryAudits(refs, plugins).toString(),
@@ -58,7 +51,7 @@ export function categoriesDetailsSection(
     const categoryTitle = h3(category.title);
     const categoryScore = `${scoreMarker(
       category.score,
-    )}${SPACE}Score:  ${style(formatReportScore(category.score))}`;
+    )}${SPACE}Score:  ${fontStyle(formatReportScore(category.score))}`;
 
     const categoryMDItems = category.refs.map(ref => {
       // Add group details
@@ -102,7 +95,7 @@ export function categoryRef(
   );
   const marker = scoreMarker(score, 'square');
   return li(
-    `${marker}${SPACE}${auditTitleAsLink}${SPACE}(_${pluginTitle}_) - ${style(
+    `${marker}${SPACE}${auditTitleAsLink}${SPACE}(_${pluginTitle}_) - ${fontStyle(
       (displayValue || value).toString(),
     )}`,
   );
@@ -125,7 +118,7 @@ export function categoryGroupItem(
       const marker = scoreMarker(auditScore, 'square');
       return indentation(
         li(
-          `${marker}${SPACE}${auditTitleLink} - ${style(
+          `${marker}${SPACE}${auditTitleLink} - ${fontStyle(
             String(displayValue ?? value),
           )}`,
         ),

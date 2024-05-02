@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`tableHtml > should create a complete table 1`] = `
+exports[`Html - table > should create a complete table 1`] = `
 "<table>
 <tr><th>Date of Action</th>
 <th>Time of Action</th>
