@@ -1,12 +1,11 @@
+import chalk from 'chalk';
 import { vol } from 'memfs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
-  getLogMessages,
 } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
 import {
   PluginOutputMissingAuditError,
   executePlugin,
@@ -65,7 +64,7 @@ describe('executePlugin', () => {
     ]);
   });
 
-  it('should throw when plugin slug is invalid', async () => {
+  it('should throw when audit slug is invalid', async () => {
     await expect(() =>
       executePlugin({
         ...MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -74,19 +73,24 @@ describe('executePlugin', () => {
     ).rejects.toThrow(new PluginOutputMissingAuditError('node-version'));
   });
 
-  it('should throw if invalid runnerOutput is produced', async () => {
+  it('should throw for missing audit', async () => {
+    const missingSlug = 'missing-audit-slug';
     await expect(() =>
       executePlugin({
         ...MINIMAL_PLUGIN_CONFIG_MOCK,
         runner: () => [
           {
-            slug: '-invalid-audit-slug',
+            slug: missingSlug,
             score: 0,
             value: 0,
           },
         ],
       }),
-    ).rejects.toThrow('The slug has to follow the pattern');
+    ).rejects.toThrow(
+      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        missingSlug,
+      )}`,
+    );
   });
 });
 
@@ -108,55 +112,153 @@ describe('executePlugins', () => {
     expect(pluginResult[0]?.audits[0]?.slug).toBe('node-version');
   });
 
-  it('should throw for invalid plugins', async () => {
+  it('should throw for invalid audit output', async () => {
+    const slug = 'simulate-invalid-audit-slug';
+    const title = 'Simulate an invalid audit slug in outputs';
     await expect(() =>
       executePlugins(
         [
-          MINIMAL_PLUGIN_CONFIG_MOCK,
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
-            audits: [{ slug: '-invalid-slug', title: 'Invalid audit' }],
+            slug,
+            title,
+            runner: () => [
+              {
+                slug: 'invalid-audit-slug-',
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        { progress: false },
+      ),
+    ).rejects
+      .toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${chalk.bold(
+      title,
+    )} (${chalk.bold(slug)}) produced the following error:
+  - Audit output is invalid: [
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug",
+    "path": [
+      0,
+      "slug"
+    ]
+  }
+]
+`);
+  });
+
+  it('should throw for one failing plugin', async () => {
+    const missingAuditSlug = 'missing-audit-slug';
+    await expect(() =>
+      executePlugins(
+        [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        { progress: false },
+      ),
+    ).rejects.toThrow('Executing 1 plugin failed.\n\n');
+  });
+
+  it('should throw for multiple failing plugins', async () => {
+    const missingAuditSlug = 'missing-audit-slug';
+    await expect(() =>
+      executePlugins(
+        [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg2',
+            title: 'plg2',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-b`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        { progress: false },
+      ),
+    ).rejects.toThrow('Executing 2 plugins failed.\n\n');
+  });
+
+  it('should throw with indentation in message', async () => {
+    const missingAuditSlug = 'missing-audit-slug';
+
+    await expect(() =>
+      executePlugins(
+        [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg2',
+            title: 'plg2',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-b`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
           },
         ] satisfies PluginConfig[],
         { progress: false },
       ),
     ).rejects.toThrow(
-      /Plugins failed: 1 errors:.*Audit metadata not found for slug node-version/,
+      `Error: - Plugin ${chalk.bold('plg1')} (${chalk.bold(
+        'plg1',
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        'missing-audit-slug-a',
+      )}\nError: - Plugin ${chalk.bold('plg2')} (${chalk.bold(
+        'plg2',
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        'missing-audit-slug-b',
+      )}`,
     );
-  });
-
-  it('should print invalid plugin errors and throw', async () => {
-    const pluginConfig = {
-      ...MINIMAL_PLUGIN_CONFIG_MOCK,
-      runner: vi
-        .fn()
-        .mockRejectedValue('Audit metadata not found for slug node-version'),
-    };
-    const pluginConfig2 = {
-      ...MINIMAL_PLUGIN_CONFIG_MOCK,
-      runner: vi.fn().mockResolvedValue([]),
-    };
-    const pluginConfig3 = {
-      ...MINIMAL_PLUGIN_CONFIG_MOCK,
-      runner: vi.fn().mockRejectedValue('plugin 3 error'),
-    };
-
-    await expect(() =>
-      executePlugins([pluginConfig, pluginConfig2, pluginConfig3], {
-        progress: false,
-      }),
-    ).rejects.toThrow(
-      'Plugins failed: 2 errors: Audit metadata not found for slug node-version, plugin 3 error',
-    );
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ yellow(warn) ] Plugins failed: ');
-    expect(logs[1]).toBe(
-      '[ yellow(warn) ] Audit metadata not found for slug node-version',
-    );
-
-    expect(pluginConfig.runner).toHaveBeenCalled();
-    expect(pluginConfig2.runner).toHaveBeenCalled();
-    expect(pluginConfig3.runner).toHaveBeenCalled();
   });
 
   it('should use outputTransform if provided', async () => {
