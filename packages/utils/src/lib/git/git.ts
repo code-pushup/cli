@@ -1,19 +1,7 @@
 import { isAbsolute, join, relative } from 'node:path';
 import { StatusResult, simpleGit } from 'simple-git';
-import { Commit, commitSchema } from '@code-pushup/models';
-import { ui } from './logging';
-import { toUnixPath } from './transform';
-
-export async function getLatestCommit(
-  git = simpleGit(),
-): Promise<Commit | null> {
-  const log = await git.log({
-    maxCount: 1,
-    // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
-    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
-  });
-  return commitSchema.parse(log.latest);
-}
+import { ui } from '../logging';
+import { toUnixPath } from '../transform';
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
   return git.revparse('--show-toplevel');
@@ -62,6 +50,7 @@ export class GitStatusError extends Error {
         ),
     );
   }
+
   constructor(status: StatusResult) {
     super(
       `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
@@ -80,19 +69,6 @@ export async function guardAgainstLocalChanges(
   if (status.files.length > 0) {
     throw new GitStatusError(status);
   }
-}
-
-export async function getCurrentBranchOrTag(
-  git = simpleGit(),
-): Promise<string> {
-  return (
-    (await git.branch().then(r => r.current)) ||
-    // If no current branch, try to get the tag
-    // @TODO use simple git
-    (await git
-      .raw(['describe', '--tags', '--exact-match'])
-      .then(out => out.trim()))
-  );
 }
 
 export async function safeCheckout(

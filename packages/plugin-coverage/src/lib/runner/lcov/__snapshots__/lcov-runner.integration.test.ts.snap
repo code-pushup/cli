@@ -61,3 +61,29 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
   },
 ]
 `;
+
+exports[`lcovResultsToAuditOutputs > should correctly merge all lines for coverage 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Lines 1-30 are not covered in any test case.",
+          "severity": "warning",
+          "source": {
+            "file": "packages/cli/src/lib/index.ts",
+            "position": {
+              "endLine": 30,
+              "startLine": 1,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "0 %",
+    "score": 0,
+    "slug": "line-coverage",
+    "value": 0,
+  },
+]
+`;
