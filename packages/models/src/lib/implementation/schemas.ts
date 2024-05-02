@@ -7,6 +7,9 @@ import {
 } from './limits';
 import { filenameRegex, slugRegex } from './utils';
 
+export const primitiveValueSchema = z.union([z.string(), z.number()]);
+export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
+
 /**
  * Schema for execution meta date
  */

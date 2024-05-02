@@ -15,12 +15,7 @@ export {
   PersistError,
   persistReport,
 } from './lib/implementation/persist';
-export {
-  history,
-  HistoryOptions,
-  HistoryOnlyOptions,
-  getHashes,
-} from './lib/history';
+export { history, HistoryOptions, HistoryOnlyOptions } from './lib/history';
 export {
   ConfigPathError,
   autoloadRc,
