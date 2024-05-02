@@ -1,4 +1,4 @@
-import { PrimitiveValue, Table } from '@code-pushup/models';
+import { Table } from '@code-pushup/models';
 import { tableToFlatArray } from '../../transform';
 import { lines, section } from './section';
 
@@ -9,7 +9,7 @@ const alignString = new Map<Alignment, string>([
   ['r', '--:'],
 ]);
 
-function tableRow(rows: PrimitiveValue[]): string {
+function tableRow(rows: (string | number)[]): string {
   return `|${rows.join('|')}|`;
 }
 

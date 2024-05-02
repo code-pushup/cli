@@ -6,7 +6,6 @@ import {
   reportOverviewTableHeaders,
 } from './constants';
 import { metaDescription, tableSection } from './formatting';
-import { style as htmlFontStyle } from './html/font-style';
 import {
   SPACE,
   h2,
@@ -82,7 +81,7 @@ export function categoriesDetailsSection(
       }
     });
 
-    return lines(
+    return section(
       categoryTitle,
       metaDescription(category),
       categoryScore,
@@ -90,7 +89,7 @@ export function categoriesDetailsSection(
     );
   });
 
-  return section(h2(CATEGORIES_TITLE), ...categoryDetails);
+  return lines(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(
@@ -135,14 +134,4 @@ export function categoryGroupItem(
   );
 
   return lines(groupTitle, ...auditTitles);
-}
-
-export function auditDetailsAuditValue({
-  score,
-  value,
-  displayValue,
-}: AuditReport) {
-  return `${scoreMarker(score, 'square')} ${htmlFontStyle(
-    String(displayValue ?? value),
-  )} (score: ${formatReportScore(score)})`;
 }

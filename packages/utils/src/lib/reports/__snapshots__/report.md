@@ -14,15 +14,16 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 🟢 Score:  **92**
 - 🟢 Performance (_Lighthouse_)
-   - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
-   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
-   - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
-   - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
-   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
+  - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
+  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
+  - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
+  - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
 - 🟡 Maximum lines limitation (_ESLint_)
-   - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
-   - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+  - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
+  - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+
 ### Bug prevention
 
 🟡 Score:  **68**
@@ -42,6 +43,7 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Disallow use of optional chaining in contexts where the `undefined` value is not allowed](#disallow-use-of-optional-chaining-in-contexts-where-the-undefined-value-is-not-allowed-eslint) (_ESLint_) - **passed**
 - 🟩 [Enforce comparing `typeof` expressions against valid strings](#enforce-comparing-typeof-expressions-against-valid-strings-eslint) (_ESLint_) - **passed**
 - 🟩 [Require calls to `isNaN()` when checking for `NaN`](#require-calls-to-isnan-when-checking-for-nan-eslint) (_ESLint_) - **passed**
+
 ### Code style
 
 🟡 Score:  **54**
@@ -488,17 +490,13 @@ Sum of all time periods between FCP and Time to Interactive, when task length ex
 
 Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Oct 18, 2023, 7:49 AM UTC.
 
-### Report overview:
-
-|Commit|Version|Duration|Plugins|Categories|Audits|
-|:--|:--:|:--:|:--:|:--:|:--:|
-|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|3|52|
-
-### Plugins overview:
-
 |Plugin|Audits|Version|Duration|
 |:--|:--:|:--:|:--:|
 |ESLint|47|`0.1.0`|368 ms|
 |Lighthouse|5|`0.1.0`|1.23 s|
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|3|52|
 
 Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)

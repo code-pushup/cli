@@ -1,5 +1,7 @@
 import type { ESLint, Linter, Rule } from 'eslint';
 import { distinct, toArray, ui } from '@code-pushup/utils';
+import type { ESLintTarget } from '../config';
+import { setupESLint } from '../setup';
 import { jsonHash } from './hash';
 
 export type RuleData = {
@@ -8,10 +10,23 @@ export type RuleData = {
   options: unknown[] | undefined;
 };
 
-export async function listRules(
+type RulesMap = Record<string, Record<string, RuleData>>;
+
+export async function listRules(targets: ESLintTarget[]): Promise<RuleData[]> {
+  const rulesMap = await targets.reduce(async (acc, { eslintrc, patterns }) => {
+    const eslint = setupESLint(eslintrc);
+    const prev = await acc;
+    const curr = await loadRulesMap(eslint, patterns);
+    return mergeRulesMaps(prev, curr);
+  }, Promise.resolve<RulesMap>({}));
+
+  return Object.values(rulesMap).flatMap<RuleData>(Object.values);
+}
+
+async function loadRulesMap(
   eslint: ESLint,
   patterns: string | string[],
-): Promise<RuleData[]> {
+): Promise<RulesMap> {
   const configs = await toArray(patterns).reduce(
     async (acc, pattern) => [
       ...(await acc),
@@ -31,35 +46,43 @@ export async function listRules(
     } as ESLint.LintResult,
   ]);
 
-  const rulesMap = configs
+  return configs
     .flatMap(config => Object.entries(config.rules ?? {}))
     .filter(([, ruleEntry]) => ruleEntry != null && !isRuleOff(ruleEntry))
-    .reduce<Record<string, Record<string, RuleData>>>(
-      (acc, [ruleId, ruleEntry]) => {
-        const meta = rulesMeta[ruleId];
-        if (!meta) {
-          ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
-          return acc;
-        }
-        const options = toArray(ruleEntry).slice(1);
-        const optionsHash = jsonHash(options);
-        const ruleData: RuleData = {
-          ruleId,
-          meta,
-          options,
-        };
-        return {
-          ...acc,
-          [ruleId]: {
-            ...acc[ruleId],
-            [optionsHash]: ruleData,
-          },
-        };
-      },
-      {},
-    );
+    .reduce<RulesMap>((acc, [ruleId, ruleEntry]) => {
+      const meta = rulesMeta[ruleId];
+      if (!meta) {
+        ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
+        return acc;
+      }
+      const options = toArray(ruleEntry).slice(1);
+      const optionsHash = jsonHash(options);
+      const ruleData: RuleData = {
+        ruleId,
+        meta,
+        options,
+      };
+      return {
+        ...acc,
+        [ruleId]: {
+          ...acc[ruleId],
+          [optionsHash]: ruleData,
+        },
+      };
+    }, {});
+}
 
-  return Object.values(rulesMap).flatMap<RuleData>(Object.values);
+function mergeRulesMaps(prev: RulesMap, curr: RulesMap): RulesMap {
+  return Object.entries(curr).reduce(
+    (acc, [ruleId, ruleVariants]) => ({
+      ...acc,
+      [ruleId]: {
+        ...acc[ruleId],
+        ...ruleVariants,
+      },
+    }),
+    prev,
+  );
 }
 
 function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {

@@ -235,7 +235,7 @@ describe('auditDetails', () => {
     expect(md).not.toMatch('#### Additional Information');
   });
 
-  it('should NOT display issue section if only issues array is present but empty', () => {
+  it('should skip issue section if empty issues array is present', () => {
     const md = auditDetails({
       score: 0,
       value: 0,
@@ -459,7 +459,6 @@ describe('aboutSection', () => {
       ],
       categories: Array.from({ length: 3 }),
     } as unknown as ScoredReport);
-    expect(md).toMatch('### Report overview:');
     expect(md).toMatch('|Commit|Version|Duration|Plugins|Categories|Audits|');
     expect(md).toMatch(
       '|ci: update action (535b8e9e557336618a764f3fa45609d224a62837)|`v1.0.0`|4.20 s|1|3|3|',
@@ -484,7 +483,6 @@ describe('aboutSection', () => {
         },
       ],
     } as unknown as ScoredReport);
-    expect(md).toMatch('### Plugins overview:');
     expect(md).toMatch('|Plugin|Audits|Version|Duration|');
     expect(md).toMatch('|Lighthouse|78|`1.0.1`|15.37 s|');
     expect(md).toMatch('|File Size|2|`0.3.12`|260 ms|');
@@ -511,24 +509,21 @@ describe('aboutSection', () => {
 
 describe('generateMdReport', () => {
   it('should render all sections of the report', () => {
+    const md = generateMdReport(baseScoredReport);
     // report title
-    expect(generateMdReport(baseScoredReport)).toMatch('# Code PushUp Report');
+    expect(md).toMatch('# Code PushUp Report');
     // categories section heading
-    expect(generateMdReport(baseScoredReport)).toMatch(
-      '|🏷 Category|⭐ Score|🛡 Audits|',
-    );
+    expect(md).toMatch('|🏷 Category|⭐ Score|🛡 Audits|');
     // categories section heading
-    expect(generateMdReport(baseScoredReport)).toMatch('## 🏷 Categories');
+    expect(md).toMatch('## 🏷 Categories');
     // audits heading
-    expect(generateMdReport(baseScoredReport)).toMatch('## 🛡️ Audits');
+    expect(md).toMatch('## 🛡️ Audits');
     // about section heading
-    expect(generateMdReport(baseScoredReport)).toMatch('## About');
-    // plugin heading
-    expect(generateMdReport(baseScoredReport)).toMatch('### Plugins overview');
+    expect(md).toMatch('## About');
+    // plugin table
+    expect(md).toMatch('|Plugin|Audits|Version|Duration|');
     // made with <3
-    expect(generateMdReport(baseScoredReport)).toMatch(
-      'Made with ❤ by [Code PushUp]',
-    );
+    expect(md).toMatch('Made with ❤ by [Code PushUp]');
   });
 
   it('should render complete md report', () => {

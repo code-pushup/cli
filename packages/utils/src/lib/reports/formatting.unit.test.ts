@@ -74,7 +74,7 @@ describe('metaDescription', () => {
     );
   });
 
-  it('should have a NEW_LINE if description ends with a code block', () => {
+  it('should include additional empty lines if description ends with a code block', () => {
     expect(
       metaDescription({
         description: 'Audit to loading performance```',

@@ -1,6 +1,5 @@
 import { platform } from 'node:os';
 import { Table } from '@code-pushup/models';
-import { PrimitiveValue } from 'packages/models/src/lib/table';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -39,13 +38,13 @@ export function deepClone<T>(obj: T): T {
   return obj == null || typeof obj !== 'object' ? obj : structuredClone(obj);
 }
 
-export function factorOf<T>(rows: T[], filterFn: (i: T) => boolean): number {
-  const itemCount = rows.length;
+export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
+  const itemCount = items.length;
   // early exit for empty rows
   if (!itemCount) {
     return 1;
   }
-  const filterCount = rows.filter(filterFn).length;
+  const filterCount = items.filter(filterFn).length;
   // if no rows result from the filter fn we forward return 1 as factor
   return filterCount === 0 ? 1 : (itemCount - filterCount) / itemCount;
 }
@@ -170,13 +169,12 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
-
 /* eslint-enable no-magic-numbers */
 
 export function tableToFlatArray({
   headings,
   rows,
-}: Table): (PrimitiveValue)[][] {
+}: Table): (string | number)[][] {
   const firstRow = rows[0];
   // Determine effective headings based on the input rows and optional headings parameter
   const generateHeadings = (): string[] => {
@@ -192,7 +190,7 @@ export function tableToFlatArray({
   };
 
   // Construct the row data based on headings and type of row items
-  const generateRows = (): (string | number | boolean | undefined)[][] =>
+  const generateRows = (): (string | number)[][] =>
     rows.map(item => {
       if (typeof item === 'object' && !Array.isArray(item)) {
         // For object rows, map heading to the value in the object
@@ -212,26 +210,5 @@ export function tableToFlatArray({
   const tableRows = generateRows();
 
   // Combine headings and rows to create the full table array
-  return [effectiveHeadings, ...tableRows.map(v => v.map(vv => vv == null ? 'undefined' : vv))];
-}
-
-export function normalizeTable({ headings, rows, alignment }: Table): Table {
-  const headingKeys = new Set((headings ?? []).map(({ key }) => key));
-
-  if (headings && rows.some(row => Array.isArray(row))) {
-    throw new Error('Rows have to be objects if headings are given');
-  }
-  // headings && object rows
-  const rowsNeedNormalization = !headings;
-  return {
-    rows: rowsNeedNormalization
-      ? rows
-      : rows.map(row =>
-          Object.fromEntries(
-            Object.entries(row).filter(([key]) => headingKeys.has(key)),
-          ),
-        ),
-    ...(headings && { headings }),
-    ...(alignment && { alignment }),
-  };
+  return [effectiveHeadings, ...tableRows];
 }

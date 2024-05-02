@@ -34,8 +34,6 @@ export {
 export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
 export {
-  PrimitiveValue,
-  primitiveValueSchema,
   TableAlignment,
   tableAlignmentSchema,
   TableHeading,

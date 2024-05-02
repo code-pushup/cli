@@ -279,8 +279,26 @@ describe('vulnerabilitiesToIssues', () => {
     ).toEqual<Issue[]>([
       expect.objectContaining({
         message: expect.stringContaining(
-          "`cypress`' dependency `@cypress/request`",
+          "`cypress`' dependency `@cypress/request` has",
         ),
+      }),
+    ]);
+  });
+
+  it('should omit direct dependency when not provided', () => {
+    expect(
+      vulnerabilitiesToIssues(
+        [
+          {
+            name: 'semver',
+            directDependency: '',
+          },
+        ] as Vulnerability[],
+        defaultAuditLevelMapping,
+      ),
+    ).toEqual<Issue[]>([
+      expect.objectContaining({
+        message: expect.stringContaining('`semver` dependency has'),
       }),
     ]);
   });

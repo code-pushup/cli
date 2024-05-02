@@ -1,3 +1,5 @@
+import * as html from './lib/reports/html';
+
 export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
@@ -38,13 +40,19 @@ export {
 } from './lib/formatting';
 export {
   formatGitPath,
-  getCurrentBranchOrTag,
   guardAgainstLocalChanges,
   getGitRoot,
-  getLatestCommit,
   safeCheckout,
   toGitPath,
-} from './lib/git';
+} from './lib/git/git';
+export {
+  getSemverTags,
+  LogResult,
+  getHashes,
+  getHashFromTag,
+  getCurrentBranchOrTag,
+  getLatestCommit,
+} from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
@@ -78,8 +86,8 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
-import * as html from './lib/reports/html';
-export const htmlFormat = {...html};
+
+export const htmlFormat = { ...html };
 export * as markdown from './lib/reports/md';
 export {
   CliArgsObject,
@@ -102,3 +110,4 @@ export {
   normalizeTable,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
+export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';

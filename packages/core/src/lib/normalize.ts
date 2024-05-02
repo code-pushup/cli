@@ -1,9 +1,9 @@
-import { type AuditOutputs, Issue } from '@code-pushup/models';
+import { type AuditOutputs } from '@code-pushup/models';
 import { formatGitPath, getGitRoot } from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {
   const { source, ...issueWithoutSource } = issue;
-  // early exit to avoid issue object cloning
+  // early exit to avoid issue object cloning.
   return source == null
     ? issue
     : {
@@ -21,26 +21,19 @@ export async function normalizeAuditOutputs(
   const gitRoot = await getGitRoot();
 
   return audits.map(audit => {
-    // early exit to avoid details object cloning
-    if (audit.details == null) {
+    if (
+      audit.details?.issues == null ||
+      audit.details.issues.every(issue => issue.source == null)
+    ) {
       return audit;
     }
-    const { issues, table, ...details } = audit.details;
-    const noPathsInIssues =
-      Array.isArray(issues) && issues.every(issue => issue.source == null);
     return {
       ...audit,
       details: {
-        ...details,
-        ...(table ? { table } : {}),
-        ...(issues == null
-          ? {}
-          : {
-              // early exit to avoid issues object cloning.
-              issues: noPathsInIssues
-                ? issues
-                : issues.map(issue => normalizeIssue(issue, gitRoot)),
-            }),
+        ...audit.details,
+        issues: audit.details.issues.map(issue =>
+          normalizeIssue(issue, gitRoot),
+        ),
       },
     };
   });

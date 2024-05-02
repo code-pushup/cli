@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Table, tableSchema } from './table';
 
 describe('tableSchema', () => {
-  it('should parse table with primitive data rows only', () => {
+  it('should accept a valid table with primitive data rows only', () => {
     const table: Table = {
       rows: [
         ['TTFB', '27%', '620 ms'],
@@ -17,9 +17,20 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
-  it('should parse table with object data rows only some undefined', () => {
-    const table: Table = { rows: [{ metrics: 'TTFB', value: undefined }] };
+  it('should not throw for empty rows', () => {
+    const table: Table = {
+      rows: [],
+    };
     expect(() => tableSchema().parse(table)).not.toThrow();
+  });
+
+  it('should throw for unsupported values in rows', () => {
+    const table: Table = {
+      rows: [[[] as unknown as string]],
+    };
+    expect(() => tableSchema().parse(table)).toThrow(
+      'Expected string, received array',
+    );
   });
 
   it('should parse table with rows and headings', () => {

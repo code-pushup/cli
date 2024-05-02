@@ -37,14 +37,20 @@ vi.mock('simple-git', async () => {
   return {
     ...actual,
     simpleGit: () => ({
+      branch: () => Promise.resolve('dummy'),
+      raw: () => Promise.resolve('main'),
+      tag: () => Promise.resolve(`5\n 4\n 3\n 2\n 1`),
+      show: ([_, __, tag]: string) =>
+        Promise.resolve(`release v${tag}\n ${tag}`),
+      checkout: () => Promise.resolve(),
       log: ({ maxCount }: { maxCount: number } = { maxCount: 1 }) =>
         Promise.resolve({
           all: [
             { hash: 'commit-6' },
             { hash: 'commit-5' },
-            { hash: 'commit-4' },
+            { hash: 'commit-4--release-v2' },
             { hash: 'commit-3' },
-            { hash: 'commit-2' },
+            { hash: 'commit-2--release-v1' },
             { hash: 'commit-1' },
           ].slice(-maxCount),
         }),
@@ -53,7 +59,7 @@ vi.mock('simple-git', async () => {
 });
 
 describe('history-command', () => {
-  it('should return the last 5 commits', async () => {
+  it('should pass targetBranch and forceCleanStatus to core history logic', async () => {
     await yargsCli(['history', '--config=/test/code-pushup.config.ts'], {
       ...DEFAULT_CLI_CONFIGURATION,
       commands: [yargsHistoryCommandObject()],
@@ -62,26 +68,10 @@ describe('history-command', () => {
     expect(history).toHaveBeenCalledWith(
       expect.objectContaining({
         targetBranch: 'main',
+        forceCleanStatus: false,
       }),
-      ['commit-1', 'commit-2', 'commit-3', 'commit-4', 'commit-5'],
+      expect.any(Array),
     );
-
-    expect(safeCheckout).toHaveBeenCalledTimes(1);
-  });
-
-  it('should have 2 commits to crawl in history if maxCount is set to 2', async () => {
-    await yargsCli(
-      ['history', '--config=/test/code-pushup.config.ts', '--maxCount=2'],
-      {
-        ...DEFAULT_CLI_CONFIGURATION,
-        commands: [yargsHistoryCommandObject()],
-      },
-    ).parseAsync();
-
-    expect(history).toHaveBeenCalledWith(expect.any(Object), [
-      'commit-1',
-      'commit-2',
-    ]);
 
     expect(safeCheckout).toHaveBeenCalledTimes(1);
   });

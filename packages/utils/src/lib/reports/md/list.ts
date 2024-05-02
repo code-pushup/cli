@@ -13,5 +13,5 @@ export function li(text: string, order: Order = 'unordered'): string {
 // eslint-disable-next-line no-magic-numbers
 export type Indentations = 1 | 2 | 3;
 export function indentation(text: string, level: Indentations = 1) {
-  return `${TAB.repeat(level)} ${text}`;
+  return `${TAB.repeat(level)}${text}`;
 }

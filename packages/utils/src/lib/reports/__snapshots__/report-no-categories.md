@@ -429,17 +429,13 @@ Sum of all time periods between FCP and Time to Interactive, when task length ex
 
 Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Oct 18, 2023, 7:49 AM UTC.
 
-### Report overview:
-
-|Commit|Version|Duration|Plugins|Categories|Audits|
-|:--|:--:|:--:|:--:|:--:|:--:|
-|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|0|52|
-
-### Plugins overview:
-
 |Plugin|Audits|Version|Duration|
 |:--|:--:|:--:|:--:|
 |ESLint|47|`0.1.0`|368 ms|
 |Lighthouse|5|`0.1.0`|1.23 s|
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|0|52|
 
 Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)

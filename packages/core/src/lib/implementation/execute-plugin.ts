@@ -10,9 +10,11 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import {
+  ProgressBar,
   getProgressBar,
   groupByStatus,
   logMultipleResults,
+  pluralizeToken,
 } from '@code-pushup/utils';
 import { normalizeAuditOutputs } from '../normalize';
 import { executeRunnerConfig, executeRunnerFunction } from './runner';
@@ -22,7 +24,11 @@ import { executeRunnerConfig, executeRunnerFunction } from './runner';
  */
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string) {
-    super(`Audit metadata not found for slug ${auditSlug}`);
+    super(
+      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+        auditSlug,
+      )}`,
+    );
   }
 }
 
@@ -69,7 +75,11 @@ export async function executePlugin(
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   // validate auditOutputs
-  const auditOutputs = auditOutputsSchema.parse(unvalidatedAuditOutputs);
+  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
+  if (!result.success) {
+    throw new Error(`Audit output is invalid: ${result.error.message}`);
+  }
+  const auditOutputs = result.data;
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   const normalizedAuditOutputs = await normalizeAuditOutputs(auditOutputs);
@@ -94,6 +104,28 @@ export async function executePlugin(
     ...(groups && { groups }),
   };
 }
+
+const wrapProgress = async (
+  pluginCfg: PluginConfig,
+  steps: number,
+  progressBar: ProgressBar | null,
+) => {
+  progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
+  try {
+    const pluginReport = await executePlugin(pluginCfg);
+    progressBar?.incrementInSteps(steps);
+    return pluginReport;
+  } catch (error) {
+    progressBar?.incrementInSteps(steps);
+    throw new Error(
+      error instanceof Error
+        ? `- Plugin ${chalk.bold(pluginCfg.title)} (${chalk.bold(
+            pluginCfg.slug,
+          )}) produced the following error:\n  - ${error.message}`
+        : String(error),
+    );
+  }
+};
 
 /**
  * Execute multiple plugins and aggregates their output.
@@ -124,21 +156,13 @@ export async function executePlugins(
 
   const progressBar = progress ? getProgressBar('Run plugins') : null;
 
-  const pluginsResult = await plugins.reduce(async (acc, pluginCfg) => {
-    progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
-
-    try {
-      const pluginReport = await executePlugin(pluginCfg);
-      progressBar?.incrementInSteps(plugins.length);
-      return [...(await acc), Promise.resolve(pluginReport)];
-    } catch (error) {
-      progressBar?.incrementInSteps(plugins.length);
-      return [
-        ...(await acc),
-        Promise.reject(error instanceof Error ? error.message : String(error)),
-      ];
-    }
-  }, Promise.resolve([] as Promise<PluginReport>[]));
+  const pluginsResult = await plugins.reduce(
+    async (acc, pluginCfg) => [
+      ...(await acc),
+      wrapProgress(pluginCfg, plugins.length, progressBar),
+    ],
+    Promise.resolve([] as Promise<PluginReport>[]),
+  );
 
   progressBar?.endProgress('Done running plugins');
 
@@ -151,9 +175,12 @@ export async function executePlugins(
   if (rejected.length > 0) {
     const errorMessages = rejected
       .map(({ reason }) => String(reason))
-      .join(', ');
+      .join('\n');
     throw new Error(
-      `Plugins failed: ${rejected.length} errors: ${errorMessages}`,
+      `Executing ${pluralizeToken(
+        'plugin',
+        rejected.length,
+      )} failed.\n\n${errorMessages}\n\n`,
     );
   }
 

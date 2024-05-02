@@ -8,7 +8,7 @@ vi.mock('@code-pushup/utils', async () => {
 
   return {
     ...actual,
-    gitRoot: vi.fn().mockResolvedValue('/User/code-pushup'),
+    getGitRoot: vi.fn().mockResolvedValue('/Users/user/Projects/myProject'),
   };
 });
 
@@ -18,60 +18,58 @@ describe('normalizeAuditOutputs', () => {
   });
 
   it('should forward audits without details', async () => {
-    const audit = { slug: 'no-any' } as AuditOutput;
+    await expect(
+      normalizeAuditOutputs([{ slug: 'no-any' } as AuditOutput]),
+    ).resolves.toEqual([{ slug: 'no-any' }]);
+  });
+
+  it('should forward audit details with table', async () => {
+    const audit = { details: { table: {} } } as AuditOutput;
     const outputs = await normalizeAuditOutputs([audit]);
     expect(outputs.at(0)).toBe(audit);
   });
 
-  it('should forward audit details with table', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { table: {} } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: { table: {} } });
-  });
-
   it('should forward audit details without issues', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues: undefined } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: {} });
+    const audit = { details: { issues: undefined } } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)).toBe(audit);
   });
 
   it('should forward audit details with empty issues', async () => {
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues: [] } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)).toStrictEqual({ details: { issues: [] } });
+    const audit = { details: { issues: [] as Issue[] } } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)).toBe(audit);
   });
 
   it('should forward audit details with issues and all undefined source', async () => {
-    const issues = [
-      { source: undefined },
-      { source: undefined },
-      { source: undefined },
-    ];
-    const outputs = await normalizeAuditOutputs([
-      { details: { issues } } as unknown as AuditOutput,
-    ]);
-    expect(outputs.at(0)?.details?.issues).toBe(issues);
+    const audit = {
+      details: {
+        issues: [
+          { source: undefined },
+          { source: undefined },
+          { source: undefined },
+        ],
+      },
+    } as AuditOutput;
+    const outputs = await normalizeAuditOutputs([audit]);
+    expect(outputs.at(0)?.details?.issues).toBe(audit.details?.issues);
   });
 
-  it('should clone audit details with issues NOT all undefined source', async () => {
+  it('should normalize audit details with issues that have a source specified', async () => {
+    const path = '/Users/user/Projects/myProject/utils/index.js';
     const issues = [
       { source: undefined },
-      { source: { file: 'index.js' } },
+      { source: { file: path } },
       { source: undefined },
     ] as Issue[];
     await expect(
-      normalizeAuditOutputs([
-        { details: { issues } } as unknown as AuditOutput,
-      ]),
+      normalizeAuditOutputs([{ details: { issues } } as AuditOutput]),
     ).resolves.toStrictEqual([
       {
         details: {
           issues: [
             { source: undefined },
-            { source: { file: 'index.js' } },
+            { source: { file: 'utils/index.js' } },
             { source: undefined },
           ],
         },
@@ -81,7 +79,7 @@ describe('normalizeAuditOutputs', () => {
 });
 
 describe('normalizeIssue', () => {
-  it('should forward issue if source == null', () => {
+  it('should forward issue without a source', () => {
     const issue = {
       message: 'file too big',
       severity: 'error',
@@ -90,22 +88,24 @@ describe('normalizeIssue', () => {
   });
 
   it('should normalize filepath in issue if source file is given', () => {
+    const path = '/myProject/utils/index.js';
+    const gitRoot = '/myProject';
     expect(
       normalizeIssue(
         {
           message: 'file too big',
           severity: 'error',
           source: {
-            file: 'index.js',
+            file: path,
           },
         },
-        join('User', 'code-pushup'),
+        gitRoot,
       ),
     ).toEqual({
       message: 'file too big',
       severity: 'error',
       source: {
-        file: expect.stringMatching('index.js'),
+        file: 'utils/index.js',
       },
     });
   });

@@ -19,6 +19,7 @@ export function details(
     // ⚠️ The blank line is needed to ensure Markdown in content is rendered correctly.
     NEW_LINE
   }${content}${NEW_LINE}${
+    // @TODO in the future we could consider adding it only if the content ends with a code block
     // ⚠️ The blank line ensure Markdown in content is rendered correctly.
     NEW_LINE
   }</details>${

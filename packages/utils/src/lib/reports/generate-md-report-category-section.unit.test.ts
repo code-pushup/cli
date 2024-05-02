@@ -10,11 +10,11 @@ import { ScoredGroup, ScoredReport } from './types';
 // === Categories Overview Section
 
 describe('categoriesOverviewSection', () => {
-  it('should NOT render categories table', () => {
+  it('should skip categories table if categories are empty', () => {
     const md = categoriesOverviewSection({
       plugins: [],
       categories: [],
-    } as unknown as ScoredReport);
+    });
     expect(md).toBe('');
   });
 
@@ -51,7 +51,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-any', type: 'audit' }],
           },
         ],
-      } as unknown as ScoredReport),
+      } as ScoredReport),
     ).toMatchSnapshot();
   });
 });
@@ -108,7 +108,7 @@ describe('categoryGroupItem', () => {
         ],
         'Eslint',
       ),
-    ).toMatchSnapshot('');
+    ).toMatchSnapshot();
   });
 
   it('should render complete category reference', () => {
@@ -187,7 +187,7 @@ describe('categoriesDetails', () => {
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as unknown as ScoredReport),
+      } as ScoredReport),
     ).toMatchSnapshot();
   });
 });
