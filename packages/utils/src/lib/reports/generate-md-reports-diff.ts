@@ -1,4 +1,9 @@
-import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
+import {
+  AuditDiff,
+  ReportsDiff,
+  Table,
+  TableHeading,
+} from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
 import { details } from './html/details';
@@ -63,8 +68,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     return '';
   }
 
-  const headings = [
-    { key: 'category', label: '🏷️ Category' },
+  const headings: TableHeading[] = [
+    { key: 'category', label: '🏷️ Category', align: 'l' },
     { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'before', label: '⭐ Previous score' },
     { key: 'change', label: '🔄 Score change' },
@@ -98,7 +103,6 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
         ].map(row =>
           hasChanges ? row : { category: row.category, after: row.after },
         ),
-        alignment: hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
       }),
     added.length > 0 && section(style('(\\*) New category.', ['i'])),
   );
@@ -112,8 +116,8 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
-        { key: 'plugin', label: '🔌 Plugin' },
-        { key: 'group', label: '🗃️ Group' },
+        { key: 'plugin', label: '🔌 Plugin', align: 'l' },
+        { key: 'group', label: '🗃️ Group', align: 'l' },
         { key: 'after', label: '⭐ Current score' },
         { key: 'before', label: '⭐ Previous score' },
         { key: 'change', label: '🔄 Score change' },
@@ -125,7 +129,6 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
         before: formatScoreWithColor(group.scores.before, { skipBold: true }),
         change: formatScoreChange(group.scores.diff),
       })),
-      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }
@@ -135,8 +138,8 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
       headings: [
-        { key: 'plugin', label: '🔌 Plugin' },
-        { key: 'audit', label: '🛡️ Audit' },
+        { key: 'plugin', label: '🔌 Plugin', align: 'l' },
+        { key: 'audit', label: '🛡️ Audit', align: 'l' },
         { key: 'after', label: '📏 Current value' },
         { key: 'before', label: '📏 Previous value' },
         { key: 'change', label: '🔄 Value change' },
@@ -152,7 +155,6 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
         }`,
         change: formatValueChange(audit),
       })),
-      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }

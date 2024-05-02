@@ -1,5 +1,11 @@
 import { platform } from 'node:os';
-import { Table } from '@code-pushup/models';
+import {
+  PrimitiveValue,
+  Table,
+  TableAlignment,
+  TableHeading,
+  TableRow,
+} from '@code-pushup/models';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -171,7 +177,7 @@ export function toOrdinal(value: number): string {
 }
 /* eslint-enable no-magic-numbers */
 
-export function tableToFlatArray({
+export function tableToStringArray({
   headings,
   rows,
 }: Table): (string | number)[][] {
@@ -179,7 +185,7 @@ export function tableToFlatArray({
   // Determine effective headings based on the input rows and optional headings parameter
   const generateHeadings = (): string[] => {
     if (headings && headings.length > 0) {
-      return headings.map(({ label, key }) => label ?? key);
+      return headings.map(({ label, key }) => label ?? capitalize(key ?? ''));
     } else {
       if (typeof firstRow === 'object' && !Array.isArray(firstRow)) {
         return Object.keys(firstRow);
@@ -189,26 +195,63 @@ export function tableToFlatArray({
     }
   };
 
-  // Construct the row data based on headings and type of row items
-  const generateRows = (): (string | number)[][] =>
-    rows.map(item => {
-      if (typeof item === 'object' && !Array.isArray(item)) {
-        // For object rows, map heading to the value in the object
-        return headings
-          ? headings.map(({ key }) => item[key] ?? '')
-          : Object.values(item);
-      }
-      // For array rows, return the item itself (assuming one element per array for simplicity)
-      if (Array.isArray(item)) {
-        return item;
-      }
-      // This branch shouldn't be reached based on current spec, but included for robustness
-      return [item];
-    });
-
-  const effectiveHeadings = generateHeadings();
-  const tableRows = generateRows();
-
   // Combine headings and rows to create the full table array
-  return [effectiveHeadings, ...tableRows];
+  return [generateHeadings(), ...rowToStringArray(rows, headings)];
+}
+
+export function rowToStringArray(
+  unparsedRows: TableRow[],
+  givenHeadings: TableHeading[] = [],
+): string[][] {
+  return unparsedRows.map(row => {
+    // For array rows, return the row itself (assuming one element per array for simplicity)
+    if (Array.isArray(row)) {
+      return row.map(String);
+    }
+
+    const objectRow = row;
+    // For object rows, map heading to the value in the object
+    return givenHeadings.length > 0
+      ? givenHeadings.map(({ key }): string => {
+          const k = key ?? '';
+          return String(objectRow[k] ?? '');
+        })
+      : Object.values(objectRow).map(String);
+  });
+}
+
+export function getColumnAlignments(
+  rows: TableRow[],
+  headings?: TableHeading[],
+): TableAlignment[] {
+  // this is caught by the table schema in @code-pushup/models
+  if (rows.at(0) == null) {
+    throw new Error('first row cant be undefined.');
+  }
+
+  if (Array.isArray(rows.at(0))) {
+    const firstPrimitiveRow = rows.at(0) as PrimitiveValue[];
+    return Array.from({ length: firstPrimitiveRow.length }).map((_, idx) =>
+      getColumnAlignmentForIndex(idx, headings),
+    );
+  }
+
+  const firstObject = rows.at(0) as Record<string, unknown>;
+  return Object.keys(firstObject).map(key =>
+    getColumnAlignmentForKey(key, headings),
+  );
+}
+
+export function getColumnAlignmentForKey(
+  targetKey: string,
+  headings: TableHeading[] = [],
+): TableAlignment {
+  return headings.find(({ key }) => targetKey === key)?.align ?? ('c' as const);
+}
+
+export function getColumnAlignmentForIndex(
+  idx: number,
+  headings: TableHeading[] = [],
+): TableAlignment {
+  return headings.at(idx)?.align ?? ('c' as const);
 }

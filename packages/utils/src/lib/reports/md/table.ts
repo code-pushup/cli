@@ -1,5 +1,5 @@
 import { Table } from '@code-pushup/models';
-import { tableToFlatArray } from '../../transform';
+import { getColumnAlignments, tableToStringArray } from '../../transform';
 import { lines, section } from './section';
 
 export type Alignment = 'l' | 'c' | 'r';
@@ -21,22 +21,14 @@ function tableRow(rows: (string | number)[]): string {
  * |  String 1       |  3             |
  */
 export function tableMd<T extends Table>(data: T): string {
-  const { rows = [], alignment } = data;
+  const { rows = [], headings = [] } = data;
   if (rows.length === 0) {
     throw new Error("Data can't be empty");
   }
 
-  const stringArr = tableToFlatArray(data);
+  const stringArr = tableToStringArray(data);
 
-  const allCenterAlignments = (
-    typeof rows.at(0) === 'string'
-      ? Array.from({ length: rows.length })
-      : Object.keys(rows.at(0) ?? {})
-  ).map((): Alignment => 'c');
-  const alignmentSetting =
-    alignment == null ? allCenterAlignments : alignment.map(align => align);
-
-  const alignmentRow = alignmentSetting.map(
+  const alignmentRow = getColumnAlignments(rows, headings).map(
     s => alignString.get(s) ?? String(alignString.get('c')),
   );
 

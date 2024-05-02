@@ -9,9 +9,12 @@ describe('table function', () => {
   });
 
   it('should create a table with specified alignment', () => {
-    const data: Table = { rows: [[1, 2]], alignment: ['l', 'r'] };
+    const data: Table = {
+      rows: [[1, 2, 3]],
+      headings: [{ align: 'l' }, {}, { align: 'r' }],
+    };
     const result = tableMd(data);
-    expect(result).toMatch('|:--|--:|');
+    expect(result).toMatch('|:--|:--:|--:|');
   });
 
   it('should throw for empty data', () => {
@@ -42,12 +45,11 @@ describe('table function', () => {
   it('should create a complete table', () => {
     const data: Table = {
       headings: [
-        { key: 'date', label: 'Date of Action' },
-        { key: 'time', label: 'Time of Action' },
-        { key: 'action', label: 'Action' },
+        { key: 'date', label: 'Date of Action', align: 'r' },
+        { key: 'time', label: 'Time of Action', align: 'l' },
+        { key: 'action', label: 'Action', align: 'c' },
       ],
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
-      alignment: ['r', 'l', 'c'],
     };
     const result = tableMd(data);
     expect(result).toMatch('|Date of Action|Time of Action|Action|');

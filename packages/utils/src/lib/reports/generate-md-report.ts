@@ -4,11 +4,7 @@ import {
   FOOTER_PREFIX,
   README_LINK,
   issuesTableHeadings,
-  pluginMetaTableAlignment,
-  pluginMetaTableHeaders,
   reportHeadlineText,
-  reportMetaTableAlignment,
-  reportMetaTableHeaders,
 } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import {
@@ -139,7 +135,21 @@ export function aboutSection(
 
 export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
   return {
-    headings: pluginMetaTableHeaders,
+    headings: [
+      {
+        key: 'plugin',
+        align: 'l' as const,
+      },
+      {
+        key: 'audits',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+    ],
     rows: plugins.map(
       ({
         title: pluginTitle,
@@ -153,7 +163,6 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
         duration: formatDuration(pluginDuration),
       }),
     ),
-    alignment: pluginMetaTableAlignment,
   };
 }
 
@@ -172,7 +181,27 @@ export function reportMetaData({
     : 'N/A';
 
   return {
-    headings: reportMetaTableHeaders,
+    headings: [
+      {
+        key: 'commit',
+        align: 'l',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+      {
+        key: 'plugins',
+      },
+      {
+        key: 'categories',
+      },
+      {
+        key: 'audits',
+      },
+    ],
     rows: [
       {
         commit: commitInfo,
@@ -185,6 +214,5 @@ export function reportMetaData({
           .toString(),
       },
     ],
-    alignment: reportMetaTableAlignment,
   };
 }

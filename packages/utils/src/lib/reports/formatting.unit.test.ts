@@ -9,8 +9,8 @@ describe('tableSection', () => {
         {
           headings: [
             { key: 'phase', label: 'Phase' },
-            { key: 'percentageLcp', label: '% of LCP' },
-            { key: 'timing', label: 'Timing' },
+            { key: 'percentageLcp', label: '% of LCP', align: 'l' },
+            { key: 'timing', label: 'Timing', align: 'r' },
           ],
           rows: [
             {
@@ -34,7 +34,6 @@ describe('tableSection', () => {
               timing: '140 ms',
             },
           ],
-          alignment: ['c', 'l', 'r'],
         },
         { heading: 'LCP Breakdown', level: 3 },
       ),

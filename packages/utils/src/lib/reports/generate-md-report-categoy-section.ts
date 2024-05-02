@@ -1,10 +1,6 @@
 import { AuditReport, Table } from '@code-pushup/models';
 import { slugify } from '../formatting';
-import {
-  CATEGORIES_TITLE,
-  reportOverviewTableAlignment,
-  reportOverviewTableHeaders,
-} from './constants';
+import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import {
   SPACE,
@@ -42,7 +38,6 @@ export function categoriesOverviewSection(
         )}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
-      alignment: reportOverviewTableAlignment,
     };
     return tableSection(tableContent);
   }

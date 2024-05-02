@@ -21,7 +21,7 @@ exports[`auditDetails > should render complete details section 1`] = `
 
 #### Additional Information
 
-|Class Names|element|
+|Class Names|Element|
 |:--:|:--:|
 |.btn, .icon|button|
 |.badge, .badge-icon|div|

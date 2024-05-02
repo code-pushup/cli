@@ -1,5 +1,5 @@
 import { Table } from '@code-pushup/models';
-import { tableToFlatArray } from '../../transform';
+import { tableToStringArray } from '../../transform';
 import { NEW_LINE } from '../md/constants';
 
 export function tableHtml(data: Table): string {
@@ -7,8 +7,8 @@ export function tableHtml(data: Table): string {
     throw new Error("Data can't be empty");
   }
 
-  // @TODO add formatting
-  const tableContent = tableToFlatArray(data).map((arr, index) => {
+  // @TODO add formatting #635
+  const tableContent = tableToStringArray(data).map((arr, index) => {
     if (index === 0) {
       const headerRow = arr.map(s => `<th>${s}</th>${NEW_LINE}`).join('');
       return `<tr>${headerRow}</tr>${NEW_LINE}`;

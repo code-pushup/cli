@@ -1,5 +1,4 @@
 import { TableHeading } from '@code-pushup/models';
-import { Alignment } from './md';
 
 // https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
 export const TERMINAL_WIDTH = 80;
@@ -20,6 +19,7 @@ export const reportOverviewTableHeaders = [
   {
     key: 'category',
     label: '🏷 Category',
+    align: 'l',
   },
   {
     key: 'score',
@@ -30,61 +30,8 @@ export const reportOverviewTableHeaders = [
     label: '🛡 Audits',
   },
 ] as const satisfies TableHeading[];
-export const reportOverviewTableAlignment: Alignment[] = ['l', 'c', 'c'];
 export const reportRawOverviewTableHeaders = ['Category', 'Score', 'Audits'];
-export const reportMetaTableHeaders = [
-  {
-    key: 'commit',
-    label: 'Commit',
-  },
-  {
-    key: 'version',
-    label: 'Version',
-  },
-  {
-    key: 'duration',
-    label: 'Duration',
-  },
-  {
-    key: 'plugins',
-    label: 'Plugins',
-  },
-  {
-    key: 'categories',
-    label: 'Categories',
-  },
-  {
-    key: 'audits',
-    label: 'Audits',
-  },
-] as const satisfies TableHeading[];
-export const reportMetaTableAlignment: Alignment[] = [
-  'l',
-  'c',
-  'c',
-  'c',
-  'c',
-  'c',
-];
-export const pluginMetaTableHeaders = [
-  {
-    key: 'plugin',
-    label: 'Plugin',
-  },
-  {
-    key: 'audits',
-    label: 'Audits',
-  },
-  {
-    key: 'version',
-    label: 'Version',
-  },
-  {
-    key: 'duration',
-    label: 'Duration',
-  },
-] as const satisfies TableHeading[];
-export const pluginMetaTableAlignment: Alignment[] = ['l', 'c', 'c', 'c'];
+
 // details headers
 
 export const issuesTableHeadings = [
