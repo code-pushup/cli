@@ -32,6 +32,7 @@ export default defineConfig({
       dir: '../../node_modules/.vitest',
     },
     coverage: {
+      enabled: true,
       reporter: ['lcov', 'text'],
       provider: 'v8',
       reportsDirectory: '../../coverage/react-todos-app',

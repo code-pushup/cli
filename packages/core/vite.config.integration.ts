@@ -14,6 +14,7 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
     coverage: {
+      enabled: true,
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/core/integration-tests',
       exclude: ['mocks/**', '**/types.ts'],

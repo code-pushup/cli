@@ -14,6 +14,7 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
     coverage: {
+      enabled: true,
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/models/unit-tests',
       exclude: ['mocks/**', '**/types.ts', 'zod2md.config.ts'],
