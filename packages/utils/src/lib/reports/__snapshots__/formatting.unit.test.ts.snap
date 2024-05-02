@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tableSection > should render complete section 1`] = `
+"### LCP Breakdown
+
+|Phase|% of LCP|Timing|
+|:--:|:--|--:|
+|TTFB|27%|620 ms|
+|Load Delay|25%|580 ms|
+|Load Time|41%|940 ms|
+|Render Delay|6%|140 ms|
+"
+`;

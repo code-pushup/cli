@@ -6,6 +6,7 @@ import {
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 import { issueSchema } from './issue';
+import { tableSchema } from './table';
 
 export const auditValueSchema =
   nonnegativeIntSchema.describe('Raw numeric value');
@@ -15,7 +16,10 @@ export const auditDisplayValueSchema = z
 
 export const auditDetailsSchema = z.object(
   {
-    issues: z.array(issueSchema, { description: 'List of findings' }),
+    issues: z
+      .array(issueSchema, { description: 'List of findings' })
+      .optional(),
+    table: tableSchema('Table of related findings').optional(),
   },
   { description: 'Detailed information' },
 );

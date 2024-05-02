@@ -11,6 +11,7 @@ import {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  tableToFlatArray,
   toArray,
   toJsonLines,
   toNumberPrecision,
@@ -299,5 +300,41 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('tableToFlatArray', () => {
+  it('should flatten Table shape of simple items', () => {
+    expect(
+      tableToFlatArray({
+        rows: [['1']],
+      }),
+    ).toStrictEqual([['0'], ['1']]);
+  });
+
+  it('should flatten Table shape of objects', () => {
+    expect(
+      tableToFlatArray({
+        rows: [{ test: 'prop value' }],
+      }),
+    ).toStrictEqual([['test'], ['prop value']]);
+  });
+
+  it('should flatten Table shape of objects and headings with key', () => {
+    expect(
+      tableToFlatArray({
+        headings: [{ key: 'slug' }],
+        rows: [{ slug: 'my-slug', value: 'my value' }],
+      }),
+    ).toStrictEqual([['slug'], ['my-slug']]);
+  });
+
+  it('should flatten Table shape of objects and headings with key and label', () => {
+    expect(
+      tableToFlatArray({
+        headings: [{ key: 'value', label: 'Value' }],
+        rows: [{ slug: 'my-slug', value: 'my value' }],
+      }),
+    ).toStrictEqual([['Value'], ['my value']]);
   });
 });

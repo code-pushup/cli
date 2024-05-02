@@ -1,4 +1,6 @@
 /* eslint-disable no-magic-numbers */
+import { NEW_LINE } from './constants';
+
 export type Hierarchy = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
@@ -7,7 +9,7 @@ export type Hierarchy = 1 | 2 | 3 | 4 | 5 | 6;
  * \## {text} // hierarchy set to 2
  */
 export function headline(text: string, hierarchy: Hierarchy = 1): string {
-  return `${'#'.repeat(hierarchy)} ${text}`;
+  return `${'#'.repeat(hierarchy)} ${text}${NEW_LINE}`;
 }
 
 export function h(text: string, hierarchy: Hierarchy = 1): string {
