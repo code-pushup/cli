@@ -1,3 +1,8 @@
+export {
+  PrimitiveValue,
+  primitiveValueSchema,
+} from './lib/implementation/schemas';
+
 export { Audit, auditSchema } from './lib/audit';
 export {
   AuditDetails,

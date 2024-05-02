@@ -33,14 +33,6 @@ describe('tableSchema', () => {
     );
   });
 
-  it('should parse table with rows and headings', () => {
-    const table: Table = {
-      rows: [{ metrics: 'TTFB' }],
-      headings: [{ key: 'metrics', label: 'Metrics Name' }],
-    };
-    expect(() => tableSchema().parse(table)).not.toThrow();
-  });
-
   it('should parse table with rows and headings with keys only', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
@@ -49,11 +41,18 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
-  it('should parse table with rows and headings and alignments', () => {
+  it('should parse table with rows and headings', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
       headings: [{ key: 'metrics', label: 'Metrics Name' }],
-      alignment: ['l'],
+    };
+    expect(() => tableSchema().parse(table)).not.toThrow();
+  });
+
+  it('should parse table with rows and headings and alignments', () => {
+    const table: Table = {
+      rows: [{ metrics: 'TTFB' }],
+      headings: [{ key: 'metrics', label: 'Metrics Name', align: 'l' }],
     };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
@@ -61,9 +60,10 @@ describe('tableSchema', () => {
   it('should parse complete table', () => {
     const fullTable: Table = {
       headings: [
+        // center oftern is the default when rendering in MD or HTML
         { key: 'phase', label: 'Phase' },
-        { key: 'percentageLcp', label: '% of LCP' },
-        { key: 'timing', label: 'Timing' },
+        { key: 'percentageLcp', label: '% of LCP', align: 'r' },
+        { key: 'timing', label: 'Timing', align: 'l' },
       ],
       rows: [
         {
@@ -87,7 +87,6 @@ describe('tableSchema', () => {
           timing: '140 ms',
         },
       ],
-      alignment: ['c', 'r', 'l'],
     };
     expect(() => tableSchema().parse(fullTable)).not.toThrow();
   });
