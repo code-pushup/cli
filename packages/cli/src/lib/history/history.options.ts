@@ -9,7 +9,11 @@ export function yargsHistoryOptionsDefinition(): Record<
     targetBranch: {
       describe: 'Branch to crawl history',
       type: 'string',
-      default: 'main',
+    },
+    onlySemverTags: {
+      describe: 'Skip commits not tagged with a semantic version',
+      type: 'boolean',
+      default: false,
     },
     forceCleanStatus: {
       describe:

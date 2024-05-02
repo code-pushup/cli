@@ -20,8 +20,8 @@
 
 3 other groups are unchanged.
 
-</details>
 
+</details>
 
 ## 🛡️ Audits
 
@@ -35,5 +35,6 @@
 |[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|[Require `const` declarations for variables that are never reassigned after declared](https://eslint.org/docs/latest/rules/prefer-const)|🟩 **passed**|🟥 1 warning|![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green)|
 
 44 other audits are unchanged.
+
 
 </details>

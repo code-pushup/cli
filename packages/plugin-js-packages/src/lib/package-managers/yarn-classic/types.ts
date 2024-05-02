@@ -1,5 +1,4 @@
 import { PackageAuditLevel } from '../../config';
-import { DependencyGroupLong } from '../../runner/outdated/types';
 
 // Subset of Yarn v1 audit JSON type
 export type Yarnv1AuditAdvisory = {
@@ -35,22 +34,22 @@ export type Yarnv1AuditResultJson = [
   Yarnv1AuditSummary,
 ];
 
-// Subset of Yarn v1 outdated JSON type
-export type Yarnv1VersionOverview = [
-  string, // package
-  string, // current
-  string, // wanted
-  string, // latest
-  string, // workspace
-  DependencyGroupLong, // package type
-  string, // URL
-];
+export const yarnv1FieldNames = [
+  'Package',
+  'Current',
+  'Latest',
+  'Package Type',
+  'URL',
+] as const;
+
+export type Yarnv1FieldName = (typeof yarnv1FieldNames)[number];
 
 type Yarnv1Info = { type: 'info' };
 type Yarnv1Table = {
   type: 'table';
   data: {
-    body: Yarnv1VersionOverview[];
+    head: string[];
+    body: string[][];
   };
 };
 

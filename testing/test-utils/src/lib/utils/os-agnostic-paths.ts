@@ -11,16 +11,14 @@ export function osAgnosticPath(path: string): string {
 export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
   audit: T,
 ): T {
-  if (
-    !audit.details?.issues.length ||
-    audit.details.issues.every(issue => issue.source == null)
-  ) {
+  const { issues = [] } = audit.details ?? {};
+  if (issues.every(({ source }) => source == null)) {
     return audit;
   }
   return {
     ...audit,
     details: {
-      issues: audit.details.issues.map(issue =>
+      issues: issues.map(issue =>
         issue.source == null
           ? issue
           : {

@@ -450,7 +450,7 @@ We will extend the file-size example from above to calculate the score based on 
 
 Let's extend the options object with a `budget` property and use it in the runner config:
 
-**file-size plugin form section [RunnerFunction](#RunnerFunction)**
+**file-size plugin from section [RunnerFunction](#RunnerFunction)**
 
 ```typescript
 // file-size.plugin.ts
