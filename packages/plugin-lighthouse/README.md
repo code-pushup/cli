@@ -156,7 +156,7 @@ The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package p
 > // code-pushup.config.ts
 > import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 > ...
-> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: DEFAULT_FLAGS});
+> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: DEFAULT_FLAGS });
 > ```
 
 ## Config
