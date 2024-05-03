@@ -151,7 +151,6 @@ For a complete list the [official documentation of CLI flags](https://github.com
 
 We recommend using Chrome flags for more stable runs in a tooling environment.
 The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package provides a set of flags dedicated to tooling that they also documented very well.
-``
 
 > ```ts
 > // code-pushup.config.ts
