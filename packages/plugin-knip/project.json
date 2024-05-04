@@ -1,0 +1,42 @@
+{
+  "name": "plugin-knip",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-knip/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-knip",
+        "main": "packages/plugin-knip/src/index.ts",
+        "tsConfig": "packages/plugin-knip/tsconfig.lib.json",
+        "assets": ["packages/plugin-knip/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-knip/**/*.ts",
+          "packages/plugin-knip/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "config": "packages/plugin-knip/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "config": "packages/plugin-knip/vite.config.integration.ts"
+      }
+    }
+  },
+  "tags": ["scope:plugin", "type:feature"]
+}

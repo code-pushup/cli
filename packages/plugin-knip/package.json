@@ -1,0 +1,7 @@
+{
+  "name": "@code-pushup/knip-plugin",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {},
+  "peerDependencies": {}
+}
