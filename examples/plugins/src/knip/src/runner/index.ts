@@ -54,8 +54,9 @@ export function createRunnerConfig(options: RunnerOptions = {}): RunnerConfig {
     command: 'npx',
     args: [
       'knip',
-      // off by default to guarantee execution without interference
+      // off as we want to CI to pass
       '--no-exit-code',
+      // off by default to guarantee execution without interference
       '--no-progress',
       // code-pushup reporter is used statically
       // @TODO replace with correct path after release (@code-pushup/knip-plugin/src/reporter/index.js)

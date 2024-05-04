@@ -1,3 +1,4 @@
+export { filePathSchema } from './lib/implementation/schemas';
 export { Audit, auditSchema } from './lib/audit';
 export {
   AuditDetails,

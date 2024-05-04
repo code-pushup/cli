@@ -10,6 +10,19 @@
         "storage": "tmp/local-registry/storage"
       }
     },
+    "knip": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx knip --no-exit-code --reporter=./dist/examples/plugins/knip/src/reporter/index.js --reporter-options='{\"outputFile\":\".code-pushup/knip/knip-report.json\"}'",
+        "forwardAllArgs": true
+      },
+      "dependsOn": [
+        {
+          "projects": ["examples-plugins"],
+          "target": "build"
+        }
+      ]
+    },
     "code-pushup": {
       "command": "npx dist/packages/cli",
       "dependsOn": [

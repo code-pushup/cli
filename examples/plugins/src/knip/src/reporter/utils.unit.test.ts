@@ -1,588 +1,216 @@
 import {
-  type Issue,
-  ReporterOptions,
-  SymbolType,
+  type Issue as KnipIssue,
+  Issues as KnipIssues,
 } from 'knip/dist/types/issues';
 import { describe, expect, it } from 'vitest';
 import { auditOutputsSchema } from '@code-pushup/models';
-import rawKnipReport from '../../../../mocks/knip-raw';
-import {
-  createAuditOutputFromKnipFiles,
-  createAuditOutputFromKnipIssues,
-  getSource,
-  knipIssueToIssue,
-  knipToCpReport,
-} from './utils';
+import { getPosition, knipToCpReport, toIssues } from './utils';
 
-describe('getSource', () => {
-  it('should return undefined if no filePath is given', () => {
-    expect(getSource({} as Issue)).toBeUndefined();
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+  return {
+    ...actual,
+    getGitRoot: vi.fn().mockResolvedValue('User/projects/code-pushup-cli/'),
+  };
+});
+
+describe('getPosition', () => {
+  it('should return false if no positional information is given', () => {
+    expect(getPosition({} as KnipIssue)).toBeFalsy();
   });
 
   it('should return a object containing file if filePath is given', () => {
-    expect(getSource({ filePath: 'file.ts' } as Issue)).toEqual({
-      file: 'file.ts',
-    });
-  });
-
-  it('should return a object containing file and position if filePath, col and line are given', () => {
-    expect(
-      getSource({ filePath: 'file.ts', col: 7, line: 13 } as Issue),
-    ).toEqual({
-      file: 'file.ts',
-      position: {
-        startColumn: 7,
-        startLine: 13,
-      },
-    });
-  });
-
-  it('should return not return position of first symbol if the Issue contains col and line on root level', () => {
-    expect(
-      getSource({
-        filePath: 'file.ts',
-        col: 7,
-        line: 13,
-        symbols: [{ col: 0, line: 712 }],
-      } as Issue),
-    ).toEqual({
-      file: 'file.ts',
-      position: {
-        startColumn: 7,
-        startLine: 13,
-      },
-    });
-  });
-
-  it('should return return position of first symbol if the Issue contains no col and line on root level', () => {
-    expect(
-      getSource({
-        filePath: 'file.ts',
-        symbols: [{ col: 0, line: 712 }],
-      } as Issue),
-    ).toEqual({
-      file: 'file.ts',
-      position: {
-        startColumn: 0,
-        startLine: 712,
-      },
+    expect(getPosition({ col: 3, line: 2 } as KnipIssue)).toEqual({
+      startColumn: 3,
+      startLine: 2,
     });
   });
 });
 
-describe('processIssue', () => {
-  it('should return message and severity correctly from minimal', () => {
-    expect(
-      knipIssueToIssue({
-        type: 'types',
-        symbol: 'file.ts',
-        severity: 'warn',
-      } as Issue),
-    ).toEqual({
-      message: 'Type file.ts',
-      severity: 'warning',
-    });
+describe('toIssues', () => {
+  it('should return empty issues if a given knip Issue set is empty', async () => {
+    await expect(
+      toIssues('files', {
+        files: new Set<string>([]),
+      } as KnipIssues),
+    ).resolves.toStrictEqual([]);
   });
 
-  // @TODO only list one issue per dependency
-  it('should return message and severity correctly from issue with filePath', () => {
-    expect(
-      knipIssueToIssue({
-        type: 'unlisted',
-        symbol: 'file.ts',
-        severity: 'warn',
-        filePath: 'test/file.ts',
-      } as Issue).source,
-    ).toEqual({ file: 'test/file.ts' });
+  it('should return empty issues if a given knip issue object is empty', async () => {
+    await expect(
+      toIssues('dependencies', {
+        dependencies: {},
+      } as KnipIssues),
+    ).resolves.toStrictEqual([]);
   });
 
-  it('should return message and severity correctly from issue with filePath and positional information', () => {
-    expect(
-      knipIssueToIssue({
-        type: 'types',
-        symbol: 'file.ts',
-        severity: 'warn',
-        filePath: 'test/file.ts',
-        col: 2,
-        line: 6,
-      } as Issue).source?.position,
-    ).toStrictEqual({ startColumn: 2, startLine: 6 });
+  it('should return issues with message', async () => {
+    await expect(
+      toIssues('files', {
+        files: new Set<string>(['main.js']),
+      } as KnipIssues),
+    ).resolves.toStrictEqual([
+      expect.objectContaining({
+        message: 'Unused file main.js',
+      }),
+    ]);
+  });
+
+  it('should return message', async () => {
+    await expect(
+      toIssues('files', {
+        files: new Set<string>(['main.js']),
+      } as KnipIssues),
+    ).resolves.toStrictEqual([
+      expect.objectContaining({
+        message: 'Unused file main.js',
+      }),
+    ]);
+  });
+
+  it('should return severity', async () => {
+    await expect(
+      toIssues('types', {
+        types: {
+          'logging.ts': {
+            CliUi: {
+              severity: 'error',
+            },
+          },
+        },
+      }),
+    ).resolves.toStrictEqual([
+      expect.objectContaining({
+        severity: 'error',
+      }),
+    ]);
+  });
+
+  it('should return source with formatted file path', async () => {
+    await expect(
+      toIssues('files', {
+        files: new Set<string>([
+          'User/projects/code-pushup-cli/packages/utils/main.js',
+        ]),
+      } as KnipIssues),
+    ).resolves.toStrictEqual([
+      expect.objectContaining({
+        source: {
+          file: 'packages/utils/main.js',
+        },
+      }),
+    ]);
+  });
+
+  it('should return source position', async () => {
+    await expect(
+      toIssues('types', {
+        types: {
+          'logging.ts': {
+            CliUi: {
+              type: 'types',
+              filePath: 'logging.ts',
+              symbol: 'CliUi',
+              symbolType: 'type',
+              pos: 124,
+              line: 5,
+              col: 13,
+              severity: 'error',
+            },
+          },
+        },
+      }),
+    ).resolves.toStrictEqual([
+      expect.objectContaining({
+        source: expect.objectContaining({
+          position: {
+            startColumn: 13,
+            startLine: 5,
+          },
+        }),
+      }),
+    ]);
   });
 });
 
 describe('knipToCpReport', () => {
-  it('should return correct audit and issues for dependencies', () => {
-    expect(() =>
-      auditOutputsSchema.parse(
-        knipToCpReport(rawKnipReport as Pick<ReporterOptions, 'issues'>),
-      ),
-    ).not.toThrow();
-  });
-});
-
-describe('createAuditOutputFromKnipFiles', () => {
-  it('should return correct audit and issues for files', () => {
-    expect(createAuditOutputFromKnipFiles(['/package.json'])).toEqual({
-      slug: 'files',
-      value: 1,
-      displayValue: '1 file',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'File /package.json',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for dependencies', () => {
-    expect(
-      createAuditOutputFromKnipIssues('dependencies', [
-        {
-          type: 'dependencies',
-          filePath: '/package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
+  it('should return empty audits if no report is flagged positive', async () => {
+    await expect(
+      knipToCpReport({
+        report: {
+          files: false,
+          dependencies: false,
+          // other options are falsy as undefined
         },
-      ]),
-    ).toEqual({
-      slug: 'dependencies',
-      value: 1,
-      displayValue: '1 dependency',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Dependency @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
+        issues: {},
+      }),
+    ).resolves.toStrictEqual([]);
   });
 
-  it('should return correct audit and issues for devDependencies', () => {
-    expect(
-      createAuditOutputFromKnipIssues('devDependencies', [
-        {
-          type: 'devDependencies',
-          filePath: '/package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
+  it('should return only audits flagged in report object', async () => {
+    await expect(
+      knipToCpReport({
+        report: {
+          files: true,
+          dependencies: true,
+          // other options are falsy as undefined
         },
+        issues: {
+          files: new Set(),
+          dependencies: {},
+        },
+      }),
+    ).resolves.toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ slug: 'unused-files' }),
+        expect.objectContaining({ slug: 'unused-dependencies' }),
       ]),
-    ).toEqual({
-      slug: 'devdependencies',
-      value: 1,
-      displayValue: '1 devDependency',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'DevDependency @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
+    );
   });
 
-  it('should return correct audit and issues for optionalPeerDependencies', () => {
-    expect(
-      createAuditOutputFromKnipIssues('optionalPeerDependencies', [
-        {
-          type: 'optionalPeerDependencies',
-          filePath: '/package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'optionalpeerdependencies',
-      value: 1,
-      displayValue: '1 optionalPeerDependency',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message:
-              'OptionalPeerDependency @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
+  it('should have value as number of issues', async () => {
+    await expect(
+      knipToCpReport({
+        report: { files: true },
+        issues: { files: new Set(['a.js', 'b.js', 'c.js']) },
+      }),
+    ).resolves.toStrictEqual([expect.objectContaining({ value: 3 })]);
   });
 
-  it('should return correct audit and issues for unlisted', () => {
-    expect(
-      createAuditOutputFromKnipIssues('unlisted', [
-        {
-          type: 'unlisted',
-          filePath: '/package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'unlisted',
-      value: 1,
-      displayValue: '1 unlisted',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Unlisted @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
+  it('should have no display value', async () => {
+    await expect(
+      knipToCpReport({
+        report: { files: true },
+        issues: { files: new Set(['main.js']) },
+      }),
+    ).resolves.toStrictEqual([
+      expect.not.objectContaining({ displayValue: expect.any(String) }),
+    ]);
   });
 
-  it('should return correct audit and issues for binaries', () => {
-    expect(
-      createAuditOutputFromKnipIssues('binaries', [
-        {
-          type: 'binaries',
-          filePath: '/package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'binaries',
-      value: 1,
-      displayValue: '1 binary',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Binary @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: '/package.json',
-            },
-          },
-        ],
-      },
-    });
+  it('should score audits with empty issues with 1', async () => {
+    await expect(
+      knipToCpReport({
+        report: { files: true },
+        issues: { files: new Set() },
+      }),
+    ).resolves.toStrictEqual([expect.objectContaining({ score: 1 })]);
   });
 
-  it('should return correct audit and issues for unresolved', () => {
-    expect(
-      createAuditOutputFromKnipIssues('unresolved', [
-        {
-          type: 'unresolved',
-          filePath: 'package.json',
-          symbol: '@trivago/prettier-plugin-sort-imports',
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'unresolved',
-      value: 1,
-      displayValue: '1 unresolved',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Unresolved @trivago/prettier-plugin-sort-imports',
-            severity: 'error',
-            source: {
-              file: 'package.json',
-            },
-          },
-        ],
-      },
-    });
+  it('should score audits with issues with 0', async () => {
+    await expect(
+      knipToCpReport({
+        report: { files: true },
+        issues: { files: new Set(['main.js']) },
+      }),
+    ).resolves.toStrictEqual([expect.objectContaining({ score: 0 })]);
   });
 
-  it('should return correct audit and issues for exports', () => {
-    expect(
-      createAuditOutputFromKnipIssues('exports', [
-        {
-          type: 'exports',
-          filePath: '/packages/models/src/lib/category-config.ts',
-          symbol: 'duplicateRefsInCategoryMetricsErrorMsg',
-          symbolType: 'function' as SymbolType,
-          pos: 1571,
-          line: 54,
-          col: 17,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'exports',
-      value: 1,
-      displayValue: '1 export',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Export duplicateRefsInCategoryMetricsErrorMsg',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/category-config.ts',
-              position: {
-                startColumn: 17,
-                startLine: 54,
-              },
-            },
-          },
-        ],
-      },
+  it('should return valid outputs schema', async () => {
+    const result = await knipToCpReport({
+      report: { files: true },
+      issues: { files: new Set(['main.js']) },
     });
-  });
-
-  it('should return correct audit and issues for nsExports', () => {
-    expect(
-      createAuditOutputFromKnipIssues('nsExports', [
-        {
-          type: 'nsExports',
-          filePath: '/packages/models/src/lib/category-config.ts',
-          symbol: 'duplicateRefsInCategoryMetricsErrorMsg',
-          symbolType: 'function' as SymbolType,
-          pos: 1571,
-          line: 54,
-          col: 17,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'nsexports',
-      value: 1,
-      displayValue: '1 nsExport',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'NsExport duplicateRefsInCategoryMetricsErrorMsg',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/category-config.ts',
-              position: {
-                startColumn: 17,
-                startLine: 54,
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for types', () => {
-    expect(
-      createAuditOutputFromKnipIssues('types', [
-        {
-          type: 'types',
-          filePath: '/packages/models/src/lib/group.ts',
-          symbol: 'GroupMeta',
-          symbolType: 'type' as SymbolType,
-          pos: 701,
-          line: 26,
-          col: 13,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'types',
-      value: 1,
-      displayValue: '1 type',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Type GroupMeta',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/group.ts',
-              position: {
-                startColumn: 13,
-                startLine: 26,
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for nsTypes', () => {
-    expect(
-      createAuditOutputFromKnipIssues('nsTypes', [
-        {
-          type: 'nsTypes',
-          filePath: '/packages/models/src/lib/group.ts',
-          symbol: 'GroupMeta',
-          symbolType: 'type' as SymbolType,
-          pos: 701,
-          line: 26,
-          col: 13,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'nstypes',
-      value: 1,
-      displayValue: '1 nsType',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'NsType GroupMeta',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/group.ts',
-              position: {
-                startColumn: 13,
-                startLine: 26,
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for enumMembers', () => {
-    expect(
-      createAuditOutputFromKnipIssues('enumMembers', [
-        {
-          type: 'enumMembers',
-          filePath: '/packages/models/src/lib/group.ts',
-          symbol: 'GroupMeta',
-          symbolType: 'type' as SymbolType,
-          pos: 701,
-          line: 26,
-          col: 13,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'enummembers',
-      value: 1,
-      displayValue: '1 enumMember',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'EnumMember GroupMeta',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/group.ts',
-              position: {
-                startColumn: 13,
-                startLine: 26,
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for classMembers', () => {
-    expect(
-      createAuditOutputFromKnipIssues('classMembers', [
-        {
-          type: 'classMembers',
-          filePath: '/packages/models/src/lib/group.ts',
-          symbol: 'GroupMeta',
-          symbolType: 'type' as SymbolType,
-          pos: 701,
-          line: 26,
-          col: 13,
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'classmembers',
-      value: 1,
-      displayValue: '1 classMember',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'ClassMember GroupMeta',
-            severity: 'error',
-            source: {
-              file: '/packages/models/src/lib/group.ts',
-              position: {
-                startColumn: 13,
-                startLine: 26,
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  it('should return correct audit and issues for duplicates', () => {
-    expect(
-      createAuditOutputFromKnipIssues('duplicates', [
-        {
-          type: 'duplicates',
-          filePath:
-            '/packages/nx-plugin/src/generators/configuration/generator.ts',
-          symbol: 'addToProjectGenerator|default',
-          symbols: [
-            {
-              symbol: 'addToProjectGenerator',
-              line: 10,
-              col: 56,
-              pos: 268,
-            },
-            {
-              symbol: 'default',
-              line: 52,
-              col: 15,
-              pos: 1197,
-            },
-          ],
-          severity: 'error',
-        },
-      ]),
-    ).toEqual({
-      slug: 'duplicates',
-      value: 1,
-      displayValue: '1 duplicate',
-      score: 0,
-      details: {
-        issues: [
-          {
-            message: 'Duplicate addToProjectGenerator|default',
-            severity: 'error',
-            source: {
-              file: '/packages/nx-plugin/src/generators/configuration/generator.ts',
-              position: {
-                startLine: 52,
-                startColumn: 15,
-              },
-            },
-          },
-        ],
-      },
-    });
+    expect(() => auditOutputsSchema.parse(result)).not.toThrow();
   });
 });

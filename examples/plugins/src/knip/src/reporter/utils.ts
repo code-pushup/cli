@@ -1,124 +1,97 @@
 import type {
+  IssueSet,
+  IssueType,
   Issue as KnipIssue,
+  Issues as KnipIssues,
   IssueSeverity as KnipSeverity,
   ReporterOptions,
 } from 'knip/dist/types/issues';
+import type { Entries } from 'type-fest';
 import {
   AuditOutput,
-  Issue as CodePushupIssue,
+  AuditOutputs,
   IssueSeverity as CondPushupIssueSeverity,
+  Issue as CpIssue,
+  Issue,
 } from '@code-pushup/models';
-import { capital, singular, slugify } from '@code-pushup/utils';
+import { formatGitPath, getGitRoot, slugify } from '@code-pushup/utils';
+import { ISSUE_TYPE_MESSAGE, ISSUE_TYPE_TITLE } from './constants';
+import { DeepPartial } from './types';
 
-export function getSource({
-  filePath: file,
-  col,
-  line,
-  symbols,
-}: KnipIssue): CodePushupIssue['source'] {
-  if (!file) {
-    return undefined;
-  }
-
-  if (col !== undefined && line !== undefined) {
-    return {
-      file,
-      position: {
-        startLine: line,
-        startColumn: col,
-      },
-    };
-  } else if (
-    symbols &&
-    symbols.at(-1) &&
-    symbols.at(-1)?.line != null &&
-    symbols.at(-1)?.col != null
-  ) {
-    return {
-      file,
-      position: {
-        startLine: symbols.at(-1)?.line ?? 1,
-        startColumn: symbols.at(-1)?.col,
-      },
-    };
-  }
-
-  return { file };
-}
-
-const severityMap: Record<KnipSeverity, CondPushupIssueSeverity> = {
+const severityMap: Record<KnipSeverity | 'unknown', CondPushupIssueSeverity> = {
+  unknown: 'info',
   off: 'info',
   error: 'error',
   warn: 'warning',
 } as const;
 
-export function knipIssueToIssue(issue: KnipIssue) {
-  const { type, filePath, symbol, severity = 'off' } = issue;
-  return {
-    message: `${capital(singular(type))} ${symbol}`,
-    severity: severityMap[severity],
-    ...(filePath ? { source: getSource(issue) } : {}),
-  };
-}
-
-export function createAuditOutputFromKnipIssues(
-  type: string,
-  knipIssues: KnipIssue[],
-): AuditOutput {
-  const issues = knipIssues.map(knipIssueToIssue);
-  return {
-    slug: slugify(type),
-    value: knipIssues.length,
-    displayValue: `${knipIssues.length} ${
-      knipIssues.length === 1 ? singular(type) : type
-    }`,
-    score: knipIssues.length > 0 ? 0 : 1,
-    details: { issues },
-  };
-}
-
-export function createAuditOutputFromKnipFiles(
-  knipIssues: string[],
-): AuditOutput {
-  const issues = knipIssues.map(
-    file =>
-      ({
-        message: `${capital(singular('files'))} ${file}`,
-        severity: severityMap['error'],
-        source: {
-          file,
-        },
-      } satisfies CodePushupIssue),
-  );
-  return {
-    slug: 'files',
-    value: knipIssues.length,
-    displayValue: `${knipIssues.length} ${
-      knipIssues.length === 1 ? singular('files') : 'files'
-    }`,
-    score: knipIssues.length > 0 ? 0 : 1,
-    details: { issues },
-  };
-}
-
-export function knipToCpReport({ issues }: Pick<ReporterOptions, 'issues'>) {
-  const { files, ...issueRecords } = issues;
-
-  //  issues = devDependencies.<file>.<symbol>.{type: IssueType}
-  return [
-    createAuditOutputFromKnipFiles(Object.values(files) as string[]),
-
-    // { devDependencies: { <file> : { <symbol> : { type: IssueType } } } }
-    ...Object.entries(issueRecords)
-      .filter(([key]) => key !== 'files')
-      .map(([type, fileIssueRecords]) => {
-        // { <file> { <symbol> : { type: IssueType } } }
-        const symbolIssueRecords = Object.values(fileIssueRecords);
-        // { <symbol> : { type: IssueType } }
-        const issueArray = Object.values(symbolIssueRecords)
-          //
-          .flatMap(symbolIssues => Object.values(symbolIssues));
-        return createAuditOutputFromKnipIssues(type, issueArray);
+export function knipToCpReport({
+  issues: rawIssues = {},
+  report,
+}: DeepPartial<ReporterOptions>): Promise<AuditOutputs> {
+  return Promise.all(
+    (Object.entries(report ?? {}) as Entries<typeof report>)
+      .filter(([_, isReportType]) => isReportType)
+      .map(async ([issueType]): Promise<AuditOutput> => {
+        const issues = await toIssues(issueType, rawIssues);
+        return {
+          slug: slugify(
+            ISSUE_TYPE_TITLE[issueType as keyof typeof ISSUE_TYPE_TITLE],
+          ),
+          score: issues.length === 0 ? 1 : 0,
+          value: issues.length,
+          ...(issues.length > 0 ? { details: { issues } } : {}),
+        };
       }),
-  ];
+  );
+}
+
+export function getPosition(issue: KnipIssue) {
+  return issue.line && issue.col
+    ? {
+        startColumn: issue.col,
+        startLine: issue.line,
+      }
+    : false;
+}
+
+export async function toIssues(
+  issueType: IssueType,
+  issues: DeepPartial<KnipIssues>,
+): Promise<CpIssue[]> {
+  const isSet = issues[issueType] instanceof Set;
+  const issuesForType: string[] | KnipIssue[] = isSet
+    ? [...(issues[issueType] as IssueSet)]
+    : Object.values(issues[issueType] as Issue).flatMap(Object.values);
+
+  const gitRoot = await getGitRoot();
+  if (issuesForType.length > 0) {
+    if (isSet) {
+      const knipIssueSets = issuesForType as string[];
+      return knipIssueSets.map(
+        (filePath): CpIssue => ({
+          message: ISSUE_TYPE_MESSAGE[issueType](filePath),
+          severity: severityMap['unknown'], // @TODO rethink
+          source: {
+            file: formatGitPath(filePath, gitRoot),
+          },
+        }),
+      );
+    } else {
+      const knipIssues = issuesForType as KnipIssue[];
+      return knipIssues.map((issue): CpIssue => {
+        const { symbol, filePath, severity = 'unknown' } = issue;
+        const position = getPosition(issue);
+        return {
+          message: ISSUE_TYPE_MESSAGE[issueType](symbol),
+          severity: severityMap[severity],
+          source: {
+            file: filePath,
+            ...(position ? { position } : {}),
+          },
+        };
+      });
+    }
+  }
+  return [];
 }
