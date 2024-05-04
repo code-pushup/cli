@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/plugin-eslint',
+  cacheDir: '../../node_modules/.vite/plugin-knip',
   test: {
     reporters: ['basic'],
     globals: true,
@@ -15,7 +15,7 @@ export default defineConfig({
     poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/plugin-eslint/unit-tests',
+      reportsDirectory: '../../coverage/plugin-knip/unit-tests',
       exclude: ['mocks/**', '**/types.ts'],
     },
     environment: 'node',
