@@ -60,7 +60,7 @@ describe('tableSchema', () => {
   it('should parse complete table', () => {
     const fullTable: Table = {
       headings: [
-        // center oftern is the default when rendering in MD or HTML
+        // center is often the default when rendering in MD or HTML
         { key: 'phase', label: 'Phase' },
         { key: 'percentageLcp', label: '% of LCP', align: 'r' },
         { key: 'timing', label: 'Timing', align: 'l' },
