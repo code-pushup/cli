@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { primitiveValueSchema } from './implementation/schemas';
 
-export const tableAlignmentSchema = z.enum(['l', 'c', 'r'], {
-  description: 'Cell alignment (l:left, r:right, c:center)',
+export const tableAlignmentSchema = z.enum(['left', 'center', 'right'], {
+  description: 'Cell alignment',
 });
 export type TableAlignment = z.infer<typeof tableAlignmentSchema>;
 

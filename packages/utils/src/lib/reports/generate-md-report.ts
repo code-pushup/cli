@@ -138,7 +138,7 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
     headings: [
       {
         key: 'plugin',
-        align: 'l' as const,
+        align: 'left' as const,
       },
       {
         key: 'audits',
@@ -184,7 +184,7 @@ export function reportMetaData({
     headings: [
       {
         key: 'commit',
-        align: 'l',
+        align: 'left',
       },
       {
         key: 'version',

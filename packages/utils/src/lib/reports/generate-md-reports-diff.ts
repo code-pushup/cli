@@ -69,7 +69,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
   }
 
   const headings: TableHeading[] = [
-    { key: 'category', label: '🏷️ Category', align: 'l' },
+    { key: 'category', label: '🏷️ Category', align: 'left' },
     { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'before', label: '⭐ Previous score' },
     { key: 'change', label: '🔄 Score change' },
@@ -116,8 +116,8 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
       headings: [
-        { key: 'plugin', label: '🔌 Plugin', align: 'l' },
-        { key: 'group', label: '🗃️ Group', align: 'l' },
+        { key: 'plugin', label: '🔌 Plugin', align: 'left' },
+        { key: 'group', label: '🗃️ Group', align: 'left' },
         { key: 'after', label: '⭐ Current score' },
         { key: 'before', label: '⭐ Previous score' },
         { key: 'change', label: '🔄 Score change' },
@@ -138,8 +138,8 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
       headings: [
-        { key: 'plugin', label: '🔌 Plugin', align: 'l' },
-        { key: 'audit', label: '🛡️ Audit', align: 'l' },
+        { key: 'plugin', label: '🔌 Plugin', align: 'left' },
+        { key: 'audit', label: '🛡️ Audit', align: 'left' },
         { key: 'after', label: '📏 Current value' },
         { key: 'before', label: '📏 Previous value' },
         { key: 'change', label: '🔄 Value change' },

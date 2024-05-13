@@ -246,12 +246,14 @@ export function getColumnAlignmentForKey(
   targetKey: string,
   headings: TableHeading[] = [],
 ): TableAlignment {
-  return headings.find(({ key }) => targetKey === key)?.align ?? ('c' as const);
+  return (
+    headings.find(({ key }) => targetKey === key)?.align ?? ('center' as const)
+  );
 }
 
 export function getColumnAlignmentForIndex(
   idx: number,
   headings: TableHeading[] = [],
 ): TableAlignment {
-  return headings.at(idx)?.align ?? ('c' as const);
+  return headings.at(idx)?.align ?? ('center' as const);
 }

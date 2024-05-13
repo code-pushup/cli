@@ -388,7 +388,7 @@ describe('rowToStringArray', () => {
 
 describe('getColumnAlignmentForKey', () => {
   it('return center align for a key and no heading definitions', () => {
-    expect(getColumnAlignmentForKey('value')).toBe('c');
+    expect(getColumnAlignmentForKey('value')).toBe('center');
   });
 
   it('return center align for a key and heading definitions without align', () => {
@@ -397,51 +397,53 @@ describe('getColumnAlignmentForKey', () => {
         { key: 'value' },
         { key: 'other-prop' },
       ]),
-    ).toBe('c');
+    ).toBe('center');
   });
 
   it('return defined align for a key', () => {
     expect(
       getColumnAlignmentForKey('value', [
-        { key: 'value', align: 'l' },
+        { key: 'value', align: 'left' },
         { key: 'other-prop' },
       ]),
-    ).toBe('l');
+    ).toBe('left');
   });
 });
 
 describe('getColumnAlignmentForIndex', () => {
   it('return center align for a index and no heading definitions', () => {
-    expect(getColumnAlignmentForIndex(60)).toBe('c');
+    expect(getColumnAlignmentForIndex(60)).toBe('center');
   });
 
   it('return center align for a index and heading definitions without align', () => {
     expect(
       getColumnAlignmentForIndex(1, [{ key: 'other-prop' }, { key: 'value' }]),
-    ).toBe('c');
+    ).toBe('center');
   });
 
   it('return defined align for a index', () => {
     expect(
       getColumnAlignmentForIndex(1, [
         { key: 'other-prop' },
-        { key: 'value', align: 'l' },
+        { key: 'value', align: 'left' },
       ]),
-    ).toBe('l');
+    ).toBe('left');
   });
 });
 
 describe('getColumnAlignments', () => {
   it('return center align for primitive rows without heading definitions', () => {
-    expect(getColumnAlignments([[1, 2, 3]])).toStrictEqual(['c', 'c', 'c']);
+    expect(getColumnAlignments([[1, 2, 3]])).toStrictEqual([
+      'center',
+      'center',
+      'center',
+    ]);
   });
 
   it('return accept align for primitive rows and heading definitions', () => {
-    expect(getColumnAlignments([[1, 2, 3]], [{ align: 'l' }])).toStrictEqual([
-      'l',
-      'c',
-      'c',
-    ]);
+    expect(getColumnAlignments([[1, 2, 3]], [{ align: 'left' }])).toStrictEqual(
+      ['left', 'center', 'center'],
+    );
   });
 
   it('return center align for object rows without heading definitions', () => {
@@ -451,7 +453,7 @@ describe('getColumnAlignments', () => {
         { value: 2, name: 'second' },
         { value: 3, name: 'third' },
       ]),
-    ).toStrictEqual(['c', 'c']);
+    ).toStrictEqual(['center', 'center']);
   });
 
   it('return accept align for object rows and heading definitions', () => {
@@ -462,9 +464,9 @@ describe('getColumnAlignments', () => {
           { value: 2, name: 'second' },
           { value: 3, name: 'third' },
         ],
-        [{ key: 'value', align: 'l' }],
+        [{ key: 'value', align: 'left' }],
       ),
-    ).toStrictEqual(['l', 'c']);
+    ).toStrictEqual(['left', 'center']);
   });
 
   it('throws for a undefined row', () => {

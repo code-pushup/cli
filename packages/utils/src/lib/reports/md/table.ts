@@ -1,12 +1,11 @@
-import { Table } from '@code-pushup/models';
+import { Table, TableAlignment } from '@code-pushup/models';
 import { getColumnAlignments, tableToStringArray } from '../../transform';
 import { lines, section } from './section';
 
-export type Alignment = 'l' | 'c' | 'r';
-const alignString = new Map<Alignment, string>([
-  ['l', ':--'],
-  ['c', ':--:'],
-  ['r', '--:'],
+const alignString = new Map<TableAlignment, string>([
+  ['left', ':--'],
+  ['center', ':--:'],
+  ['right', '--:'],
 ]);
 
 function tableRow(rows: (string | number)[]): string {
@@ -29,7 +28,7 @@ export function tableMd<T extends Table>(data: T): string {
   const stringArr = tableToStringArray(data);
 
   const alignmentRow = getColumnAlignments(rows, headings).map(
-    s => alignString.get(s) ?? String(alignString.get('c')),
+    s => alignString.get(s) ?? String(alignString.get('center')),
   );
 
   return section(

@@ -52,7 +52,7 @@ describe('tableSchema', () => {
   it('should parse table with rows and headings and alignments', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
-      headings: [{ key: 'metrics', label: 'Metrics Name', align: 'l' }],
+      headings: [{ key: 'metrics', label: 'Metrics Name', align: 'left' }],
     };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
@@ -62,8 +62,8 @@ describe('tableSchema', () => {
       headings: [
         // center is often the default when rendering in MD or HTML
         { key: 'phase', label: 'Phase' },
-        { key: 'percentageLcp', label: '% of LCP', align: 'r' },
-        { key: 'timing', label: 'Timing', align: 'l' },
+        { key: 'percentageLcp', label: '% of LCP', align: 'right' },
+        { key: 'timing', label: 'Timing', align: 'left' },
       ],
       rows: [
         {

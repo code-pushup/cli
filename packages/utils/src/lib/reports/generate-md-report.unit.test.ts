@@ -562,8 +562,12 @@ describe('generateMdReport', () => {
                   table: {
                     headings: [
                       { key: 'phase', label: 'Phase' },
-                      { key: 'percentageLcp', label: '% of LCP', align: 'l' },
-                      { key: 'timing', label: 'Timing', align: 'r' },
+                      {
+                        key: 'percentageLcp',
+                        label: '% of LCP',
+                        align: 'left',
+                      },
+                      { key: 'timing', label: 'Timing', align: 'right' },
                     ],
                     rows: [
                       {
