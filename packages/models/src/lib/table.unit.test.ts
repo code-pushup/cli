@@ -22,7 +22,9 @@ describe('tableAlignmentSchema', () => {
 
   it('should throw for a invalid enum', () => {
     const alignment = 'crooked';
-    expect(() => tableAlignmentSchema.parse(alignment)).toThrow('invalid enum');
+    expect(() => tableAlignmentSchema.parse(alignment)).toThrow(
+      'invalid_enum_value',
+    );
   });
 });
 
@@ -35,7 +37,7 @@ describe('tableColumnPrimitiveSchema', () => {
   it('should throw for a invalid enum', () => {
     const column = 'crooked';
     expect(() => tableColumnPrimitiveSchema.parse(column)).toThrow(
-      'invalid enum',
+      'invalid_enum_value',
     );
   });
 });
@@ -48,35 +50,33 @@ describe('tableColumnObjectSchema', () => {
 
   it('should throw for a invalid object', () => {
     const column = { test: 42 };
-    expect(() => tableColumnObjectSchema.parse(column)).toThrow(
-      'invalid object',
-    );
+    expect(() => tableColumnObjectSchema.parse(column)).toThrow('invalid_type');
   });
 });
 
 describe('tableRowPrimitiveSchema', () => {
   it('should accept a valid array', () => {
-    const column: TableRowPrimitive = ['100 ms'];
-    expect(() => tableRowPrimitiveSchema.parse(column)).not.toThrow();
+    const row: TableRowPrimitive = ['100 ms'];
+    expect(() => tableRowPrimitiveSchema.parse(row)).not.toThrow();
   });
 
   it('should throw for a invalid array', () => {
-    const column = [{}];
-    expect(() => tableRowPrimitiveSchema.parse(column)).toThrow(
-      'invalid array',
+    const row = [{}];
+    expect(() => tableRowPrimitiveSchema.parse(row)).toThrow(
+      'Expected string, received object',
     );
   });
 });
 
 describe('tableRowObjectSchema', () => {
   it('should accept a valid object', () => {
-    const column: TableRowObject = { key: 'value' };
-    expect(() => tableRowObjectSchema.parse(column)).not.toThrow();
+    const row: TableRowObject = { key: 'value' };
+    expect(() => tableRowObjectSchema.parse(row)).not.toThrow();
   });
 
   it('should throw for a invalid object', () => {
-    const column = { test: 42 };
-    expect(() => tableRowObjectSchema.parse(column)).toThrow('invalid object');
+    const row = { prop: undefined };
+    expect(() => tableRowObjectSchema.parse(row)).toThrow('invalid_union');
   });
 });
 
