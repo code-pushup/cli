@@ -1,7 +1,7 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 import lighthousePlugin, {
-  lighthouseAuditRef,
   lighthouseGroupRef,
 } from '../../dist/packages/plugin-lighthouse';
 
@@ -41,6 +41,7 @@ export default {
         // pwa category
         'installable-manifest',
       ],
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
   ],
   categories: [
