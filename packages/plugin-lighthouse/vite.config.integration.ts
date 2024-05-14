@@ -14,7 +14,6 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
     coverage: {
-      enabled: true,
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/plugin-lighthouse/integration-tests',
       exclude: ['mocks/**', '**/types.ts'],
