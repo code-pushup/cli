@@ -1,5 +1,84 @@
 import { describe, expect, it } from 'vitest';
-import { Table, tableSchema } from './table';
+import {
+  Table,
+  TableAlignment,
+  TableColumnObject,
+  TableColumnPrimitive,
+  TableRowObject,
+  TableRowPrimitive,
+  tableAlignmentSchema,
+  tableColumnObjectSchema,
+  tableColumnPrimitiveSchema,
+  tableRowObjectSchema,
+  tableRowPrimitiveSchema,
+  tableSchema,
+} from './table';
+
+describe('tableAlignmentSchema', () => {
+  it('should accept a valid enum', () => {
+    const alignment: TableAlignment = 'center';
+    expect(() => tableAlignmentSchema.parse(alignment)).not.toThrow();
+  });
+
+  it('should throw for a invalid enum', () => {
+    const alignment = 'crooked';
+    expect(() => tableAlignmentSchema.parse(alignment)).toThrow('invalid enum');
+  });
+});
+
+describe('tableColumnPrimitiveSchema', () => {
+  it('should accept a valid enum', () => {
+    const column: TableColumnPrimitive = 'center';
+    expect(() => tableColumnPrimitiveSchema.parse(column)).not.toThrow();
+  });
+
+  it('should throw for a invalid enum', () => {
+    const column = 'crooked';
+    expect(() => tableColumnPrimitiveSchema.parse(column)).toThrow(
+      'invalid enum',
+    );
+  });
+});
+
+describe('tableColumnObjectSchema', () => {
+  it('should accept a valid object', () => {
+    const column: TableColumnObject = { key: 'value' };
+    expect(() => tableColumnObjectSchema.parse(column)).not.toThrow();
+  });
+
+  it('should throw for a invalid object', () => {
+    const column = { test: 42 };
+    expect(() => tableColumnObjectSchema.parse(column)).toThrow(
+      'invalid object',
+    );
+  });
+});
+
+describe('tableRowPrimitiveSchema', () => {
+  it('should accept a valid array', () => {
+    const column: TableRowPrimitive = ['100 ms'];
+    expect(() => tableRowPrimitiveSchema.parse(column)).not.toThrow();
+  });
+
+  it('should throw for a invalid array', () => {
+    const column = [{}];
+    expect(() => tableRowPrimitiveSchema.parse(column)).toThrow(
+      'invalid array',
+    );
+  });
+});
+
+describe('tableRowObjectSchema', () => {
+  it('should accept a valid object', () => {
+    const column: TableRowObject = { key: 'value' };
+    expect(() => tableRowObjectSchema.parse(column)).not.toThrow();
+  });
+
+  it('should throw for a invalid object', () => {
+    const column = { test: 42 };
+    expect(() => tableRowObjectSchema.parse(column)).toThrow('invalid object');
+  });
+});
 
 describe('tableSchema', () => {
   it('should accept a valid table with primitive data rows only', () => {
@@ -50,7 +129,7 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).toThrow('invalid_union');
   });
 
-  it('should parse table with rows and headings with alignment only', () => {
+  it('should parse table with rows and columns with alignment only', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
       columns: ['left'],
@@ -58,7 +137,7 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
-  it('should parse table with rows and headings with keys only', () => {
+  it('should parse table with rows and columns with keys only', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
       columns: [{ key: 'metrics' }],
@@ -66,7 +145,7 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
-  it('should parse table with rows and headings', () => {
+  it('should parse table with rows and columns', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
       columns: [{ key: 'metrics', label: 'Metrics Name' }],
@@ -74,7 +153,7 @@ describe('tableSchema', () => {
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
-  it('should parse table with rows and headings and alignments', () => {
+  it('should parse table with rows and columns and alignments', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
       columns: [{ key: 'metrics', label: 'Metrics Name', align: 'left' }],
