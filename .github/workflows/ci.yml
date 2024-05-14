@@ -105,15 +105,6 @@ jobs:
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
-      - name: Set custom Chrome path for Windows only
-        if: matrix.os == 'windows-latest'
-        # This path is considered in `testing/setup/src/lib/chrome-path-setup.ts` and used in different test configurations
-        run: |
-          echo "CUSTOM_CHROME_PATH=C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-        shell: pwsh
-      #- name: Log all environment variables
-      #  run: |
-      #      printenv
       - name: Integration test affected projects
         run: npx nx affected -t integration-test --parallel=3 --coverage.enabled
 
@@ -140,7 +131,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: E2E test affected projects
-        run: npx nx affected:e2e --parallel=3 --skipNxCache
+        run: npx nx affected:e2e --parallel=3
 
   build:
     runs-on: ubuntu-latest

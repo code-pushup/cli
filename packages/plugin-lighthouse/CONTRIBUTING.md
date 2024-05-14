@@ -15,9 +15,14 @@ To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
-We try to detect it automatically in the set-setup script.
+We try to detect it automatically in the [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
+There we use `getChromePath` and have `chromium` installed as NPM package, so detecting the path should not cause any problem.
 
-If no chrome path is detected the error looks like this: `Runtime error encountered: No Chrome installations found.`
+However, if no chrome path is detected automatically the error looks like this:
+
+```bash
+Runtime error encountered: No Chrome installations found.
+```
 
 To prevent this from happening you have to provide the path manually in your `.env`:
 
@@ -25,7 +30,7 @@ To prevent this from happening you have to provide the path manually in your `.e
 CUSTOM_CHROME_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 ```
 
-In the CI you can set the env variable like this:
+In the CI you can set a static path if needed over the env variable like this:
 
 ```yml
 # ...
@@ -41,21 +46,7 @@ In the CI you can set the env variable like this:
 # ...
 ```
 
-We added consider this path in our `beforeAll` hook.
-
-```ts
-beforeEach(() => {
-  try {
-    vi.stubEnv('CHROME_PATH', getChromePath());
-  } catch (e) {
-    const customChromePath = process.env['CUSTOM_CHROME_PATH'];
-    if (customChromePath == null || customChromePath === '') {
-      throw new Error('Chrome path not found. Please read the in the packages CONTRIBUTING.md/#trouble-shooting section.');
-    }
-    vi.stubEnv('CHROME_PATH', customChromePath);
-  }
-});
-```
+We consider this path in our `beforeAll` hook in a [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
 
 ### Testing chrome flags
 
@@ -114,6 +105,8 @@ _A helpful chromium setup is preconfigured with the following settings:_
 
 4. Understand error messages (⏳ could also be because of timeout problems :D )
 
+- Lighthouse error - `Runtime error encountered: No Chrome installations found.`
+  Read further under [chrome-path](#chrome-path)
 - Could not find `report.json` (⏳)
   ![lighthouse-error-2.png](./docs/images/lighthouse-error-2.png)
 - Lighthouse Error - `Could Not Connect to Chrome` (⏳)

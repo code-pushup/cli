@@ -4,6 +4,7 @@
   "dependencies": {
     "@code-pushup/models": "0.40.1",
     "@code-pushup/utils": "0.40.1",
+    "semver": "^7.6.0",
     "zod": "^3.22.4"
   }
 }
