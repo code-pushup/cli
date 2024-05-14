@@ -1,20 +1,32 @@
 import { Table } from '@code-pushup/models';
-import { tableToStringArray } from '../../transform';
+import { columnsToStringArray, rowToStringArray } from '../../table';
 import { NEW_LINE } from '../md/constants';
 
-export function tableHtml(data: Table): string {
-  if (data.rows.length === 0) {
+function wrap(elem: string, content: string): string {
+  return `<${elem}>${content}</${elem}>${NEW_LINE}`;
+}
+
+function wrapRow(content: string): string {
+  const elem = 'tr';
+  return `<${elem}>${NEW_LINE}${content}</${elem}>${NEW_LINE}`;
+}
+
+export function tableHtml(table: Table): string {
+  if (table.rows.length === 0) {
     throw new Error("Data can't be empty");
   }
 
-  // @TODO add formatting #635
-  const tableContent = tableToStringArray(data).map((arr, index) => {
-    if (index === 0) {
-      const headerRow = arr.map(s => `<th>${s}</th>${NEW_LINE}`).join('');
-      return `<tr>${headerRow}</tr>${NEW_LINE}`;
-    }
-    const row = arr.map(s => `<td>${s}</td>${NEW_LINE}`).join('');
-    return `<tr>${row}</tr>${NEW_LINE}`;
-  });
-  return `<table>${NEW_LINE}${tableContent.join('')}</table>${NEW_LINE}`;
+  // @TODO add formatting
+  const tableHeaderCols = columnsToStringArray(table)
+    .map(s => wrap('th', s))
+    .join('');
+  const tableHeaderRow = wrapRow(tableHeaderCols);
+  const tableBody = rowToStringArray(table)
+    .map(arr => {
+      const columns = arr.map(s => wrap('td', s)).join('');
+      return wrapRow(columns);
+    })
+    .join('');
+
+  return wrap('table', `${NEW_LINE}${tableHeaderRow}${tableBody}`);
 }

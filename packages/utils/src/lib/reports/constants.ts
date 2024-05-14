@@ -1,6 +1,6 @@
-import { TableHeading } from '@code-pushup/models';
-
 // https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
+import { TableColumnObject } from '@code-pushup/models';
+
 export const TERMINAL_WIDTH = 80;
 
 /* eslint-disable no-magic-numbers */
@@ -29,7 +29,7 @@ export const reportOverviewTableHeaders = [
     key: 'audits',
     label: '🛡 Audits',
   },
-] as const satisfies TableHeading[];
+] as const satisfies TableColumnObject[];
 export const reportRawOverviewTableHeaders = ['Category', 'Score', 'Audits'];
 
 // details headers
@@ -51,4 +51,4 @@ export const issuesTableHeadings = [
     key: 'line',
     label: 'Line(s)',
   },
-] as const satisfies TableHeading[];
+] as const satisfies TableColumnObject[];

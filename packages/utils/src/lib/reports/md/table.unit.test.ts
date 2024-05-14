@@ -11,7 +11,7 @@ describe('table function', () => {
   it('should create a table with specified alignment', () => {
     const data: Table = {
       rows: [[1, 2, 3]],
-      headings: [{ align: 'left' }, {}, { align: 'right' }],
+      columns: ['left', 'center', 'right'],
     };
     const result = tableMd(data);
     expect(result).toMatch('|:--|:--:|--:|');
@@ -31,7 +31,7 @@ describe('table function', () => {
 
   it('should create a table from object values', () => {
     const data: Table = {
-      headings: [
+      columns: [
         { key: 'col1', label: 'Header 1' },
         { key: 'col2', label: 'Header 2' },
       ],
@@ -44,7 +44,7 @@ describe('table function', () => {
 
   it('should create a complete table', () => {
     const data: Table = {
-      headings: [
+      columns: [
         { key: 'date', label: 'Date of Action', align: 'right' },
         { key: 'time', label: 'Time of Action', align: 'left' },
         { key: 'action', label: 'Action', align: 'center' },

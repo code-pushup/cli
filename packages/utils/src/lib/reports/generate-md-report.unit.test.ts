@@ -169,7 +169,7 @@ describe('tableSection', () => {
   it('should render complete section', () => {
     expect(
       tableSection({
-        headings: [
+        columns: [
           { key: 'phase', label: 'Phase' },
           { key: 'percentageLcp', label: '% of LCP' },
           { key: 'timing', label: 'Timing' },
@@ -285,7 +285,7 @@ describe('auditDetails', () => {
         displayValue: '190ms',
         details: {
           table: {
-            headings: [
+            columns: [
               { key: 'classNames', label: 'Class Names' },
               { key: 'element' },
             ],
@@ -560,7 +560,7 @@ describe('generateMdReport', () => {
                 docsUrl: 'https://web.dev/lcp',
                 details: {
                   table: {
-                    headings: [
+                    columns: [
                       { key: 'phase', label: 'Phase' },
                       {
                         key: 'percentageLcp',

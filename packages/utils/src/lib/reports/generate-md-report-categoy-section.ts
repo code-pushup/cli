@@ -29,7 +29,7 @@ export function categoriesOverviewSection(
   const { categories, plugins } = report;
   if (categories.length > 0 && plugins.length > 0) {
     const tableContent: Table = {
-      headings: reportOverviewTableHeaders,
+      columns: reportOverviewTableHeaders,
       rows: categories.map(({ title, refs, score }) => ({
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),

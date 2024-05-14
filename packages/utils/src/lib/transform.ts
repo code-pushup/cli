@@ -1,11 +1,4 @@
 import { platform } from 'node:os';
-import {
-  PrimitiveValue,
-  Table,
-  TableAlignment,
-  TableHeading,
-  TableRow,
-} from '@code-pushup/models';
 
 export function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
@@ -175,85 +168,5 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
+
 /* eslint-enable no-magic-numbers */
-
-export function tableToStringArray({
-  headings,
-  rows,
-}: Table): (string | number)[][] {
-  const firstRow = rows[0];
-  // Determine effective headings based on the input rows and optional headings parameter
-  const generateHeadings = (): string[] => {
-    if (headings && headings.length > 0) {
-      return headings.map(({ label, key }) => label ?? capitalize(key ?? ''));
-    } else {
-      if (typeof firstRow === 'object' && !Array.isArray(firstRow)) {
-        return Object.keys(firstRow);
-      }
-      // Default to indexing if the rows are primitive types or single-element arrays
-      return firstRow?.map((_, idx) => idx.toString()) ?? [];
-    }
-  };
-
-  // Combine headings and rows to create the full table array
-  return [generateHeadings(), ...rowToStringArray(rows, headings)];
-}
-
-export function rowToStringArray(
-  unparsedRows: TableRow[],
-  givenHeadings: TableHeading[] = [],
-): string[][] {
-  return unparsedRows.map(row => {
-    // For array rows, return the row itself (assuming one element per array for simplicity)
-    if (Array.isArray(row)) {
-      return row.map(String);
-    }
-
-    const objectRow = row;
-    // For object rows, map heading to the value in the object
-    return givenHeadings.length > 0
-      ? givenHeadings.map(({ key }): string => {
-          const k = key ?? '';
-          return String(objectRow[k] ?? '');
-        })
-      : Object.values(objectRow).map(String);
-  });
-}
-
-export function getColumnAlignments(
-  rows: TableRow[],
-  headings?: TableHeading[],
-): TableAlignment[] {
-  // this is caught by the table schema in @code-pushup/models
-  if (rows.at(0) == null) {
-    throw new Error('first row cant be undefined.');
-  }
-
-  if (Array.isArray(rows.at(0))) {
-    const firstPrimitiveRow = rows.at(0) as PrimitiveValue[];
-    return Array.from({ length: firstPrimitiveRow.length }).map((_, idx) =>
-      getColumnAlignmentForIndex(idx, headings),
-    );
-  }
-
-  const firstObject = rows.at(0) as Record<string, unknown>;
-  return Object.keys(firstObject).map(key =>
-    getColumnAlignmentForKey(key, headings),
-  );
-}
-
-export function getColumnAlignmentForKey(
-  targetKey: string,
-  headings: TableHeading[] = [],
-): TableAlignment {
-  return (
-    headings.find(({ key }) => targetKey === key)?.align ?? ('center' as const)
-  );
-}
-
-export function getColumnAlignmentForIndex(
-  idx: number,
-  headings: TableHeading[] = [],
-): TableAlignment {
-  return headings.at(idx)?.align ?? ('center' as const);
-}

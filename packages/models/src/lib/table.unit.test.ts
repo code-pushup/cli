@@ -33,10 +33,35 @@ describe('tableSchema', () => {
     );
   });
 
+  it('should throw for mixed column types', () => {
+    const table = {
+      rows: [['1', { prop1: '2' }]],
+    };
+    expect(() => tableSchema().parse(table)).toThrow(
+      'Expected string, received object',
+    );
+  });
+
+  it('should throw for unsupported combination of rows and column types', () => {
+    const table = {
+      rows: [['1']],
+      columns: [{ key: 'prop1' }],
+    };
+    expect(() => tableSchema().parse(table)).toThrow('invalid_union');
+  });
+
+  it('should parse table with rows and headings with alignment only', () => {
+    const table: Table = {
+      rows: [{ metrics: 'TTFB' }],
+      columns: ['left'],
+    };
+    expect(() => tableSchema().parse(table)).not.toThrow();
+  });
+
   it('should parse table with rows and headings with keys only', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
-      headings: [{ key: 'metrics' }],
+      columns: [{ key: 'metrics' }],
     };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
@@ -44,7 +69,7 @@ describe('tableSchema', () => {
   it('should parse table with rows and headings', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
-      headings: [{ key: 'metrics', label: 'Metrics Name' }],
+      columns: [{ key: 'metrics', label: 'Metrics Name' }],
     };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
@@ -52,14 +77,14 @@ describe('tableSchema', () => {
   it('should parse table with rows and headings and alignments', () => {
     const table: Table = {
       rows: [{ metrics: 'TTFB' }],
-      headings: [{ key: 'metrics', label: 'Metrics Name', align: 'left' }],
+      columns: [{ key: 'metrics', label: 'Metrics Name', align: 'left' }],
     };
     expect(() => tableSchema().parse(table)).not.toThrow();
   });
 
   it('should parse complete table', () => {
     const fullTable: Table = {
-      headings: [
+      columns: [
         // center is often the default when rendering in MD or HTML
         { key: 'phase', label: 'Phase' },
         { key: 'percentageLcp', label: '% of LCP', align: 'right' },

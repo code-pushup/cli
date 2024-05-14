@@ -1,5 +1,9 @@
 import { Table, TableAlignment } from '@code-pushup/models';
-import { getColumnAlignments, tableToStringArray } from '../../transform';
+import {
+  columnsToStringArray,
+  getColumnAlignments,
+  rowToStringArray,
+} from '../../table';
 import { lines, section } from './section';
 
 const alignString = new Map<TableAlignment, string>([
@@ -8,34 +12,31 @@ const alignString = new Map<TableAlignment, string>([
   ['right', '--:'],
 ]);
 
-function tableRow(rows: (string | number)[]): string {
+function tableRow(rows: string[]): string {
   return `|${rows.join('|')}|`;
 }
 
 /**
  * | Table Header 1  | Table Header 2 |
- * | --------------- | -------------- |
+ * | :-------------- | -------------: |
  * |  String 1       |  1             |
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
 export function tableMd<T extends Table>(data: T): string {
-  const { rows = [], headings = [] } = data;
-  if (rows.length === 0) {
+  if (data.rows.length === 0) {
     throw new Error("Data can't be empty");
   }
 
-  const stringArr = tableToStringArray(data);
-
-  const alignmentRow = getColumnAlignments(rows, headings).map(
+  const alignmentRow = getColumnAlignments(data).map(
     s => alignString.get(s) ?? String(alignString.get('center')),
   );
 
   return section(
     `${lines(
-      tableRow(stringArr.at(0) ?? []),
+      tableRow(columnsToStringArray(data)),
       tableRow(alignmentRow),
-      ...stringArr.slice(1).map(tableRow),
+      ...rowToStringArray(data).map(tableRow),
     )}`,
   );
 }

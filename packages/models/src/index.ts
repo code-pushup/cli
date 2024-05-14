@@ -41,10 +41,14 @@ export { exists } from './lib/implementation/utils';
 export {
   TableAlignment,
   tableAlignmentSchema,
-  TableHeading,
-  tableHeadingSchema,
-  TableRow,
-  tableRowSchema,
+  TableRowPrimitive,
+  tableRowPrimitiveSchema,
+  TableRowObject,
+  tableRowObjectSchema,
+  TableColumnPrimitive,
+  tableColumnPrimitiveSchema,
+  TableColumnObject,
+  tableColumnObjectSchema,
   Table,
   tableSchema,
 } from './lib/table';

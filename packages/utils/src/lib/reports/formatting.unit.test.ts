@@ -7,7 +7,7 @@ describe('tableSection', () => {
     expect(
       tableSection(
         {
-          headings: [
+          columns: [
             { key: 'phase', label: 'Phase' },
             { key: 'percentageLcp', label: '% of LCP', align: 'left' },
             { key: 'timing', label: 'Timing', align: 'right' },

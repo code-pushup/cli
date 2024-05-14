@@ -50,7 +50,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     return '';
   }
   const detailsTableData = {
-    headings: issuesTableHeadings,
+    columns: issuesTableHeadings,
     rows: issues.map(
       ({ severity: severityVal, message, source: sourceVal }: Issue) => {
         const severity = `${severityMarker(severityVal)} <i>${severityVal}</i>`;
@@ -135,7 +135,7 @@ export function aboutSection(
 
 export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
   return {
-    headings: [
+    columns: [
       {
         key: 'plugin',
         align: 'left' as const,
@@ -181,7 +181,7 @@ export function reportMetaData({
     : 'N/A';
 
   return {
-    headings: [
+    columns: [
       {
         key: 'commit',
         align: 'left',

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { TableRow } from '@code-pushup/models';
 import {
   apostrophize,
   capitalize,
@@ -8,15 +7,10 @@ import {
   distinct,
   factorOf,
   fromJsonLines,
-  getColumnAlignmentForIndex,
-  getColumnAlignmentForKey,
-  getColumnAlignments,
   objectFromEntries,
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
-  rowToStringArray,
-  tableToStringArray,
   toArray,
   toJsonLines,
   toNumberPrecision,
@@ -305,173 +299,5 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
-  });
-});
-
-describe('tableToStringArray', () => {
-  it('should flatten Table shape of simple items', () => {
-    expect(
-      tableToStringArray({
-        rows: [['1']],
-      }),
-    ).toStrictEqual([['0'], ['1']]);
-  });
-
-  it('should flatten Table shape of objects', () => {
-    expect(
-      tableToStringArray({
-        rows: [{ test: 'prop value' }],
-      }),
-    ).toStrictEqual([['test'], ['prop value']]);
-  });
-
-  it('should flatten Table shape of objects and headings with key', () => {
-    expect(
-      tableToStringArray({
-        headings: [{ key: 'slug' }],
-        rows: [{ slug: 'my-slug', value: 'my value' }],
-      }),
-    ).toStrictEqual([['Slug'], ['my-slug']]);
-  });
-
-  it('should flatten Table shape of objects and headings with key and label', () => {
-    expect(
-      tableToStringArray({
-        headings: [{ key: 'value', label: 'Value' }],
-        rows: [{ slug: 'my-slug', value: 'my value' }],
-      }),
-    ).toStrictEqual([['Value'], ['my value']]);
-  });
-
-  it('should only output headings row the present rows', () => {
-    expect(
-      tableToStringArray({
-        headings: [{ key: 'value', label: 'Value' }],
-        rows: [{ slug: 'my-slug', value: 'my value' }],
-      }),
-    ).toStrictEqual([['Value'], ['my value']]);
-  });
-});
-
-describe('rowToStringArray', () => {
-  it('turns row of primitive values row to a string array', () => {
-    expect(rowToStringArray([[1, 2, 3]])).toStrictEqual([['1', '2', '3']]);
-  });
-
-  it('turns row of object row to a string array', () => {
-    expect(
-      rowToStringArray([
-        {
-          prop1: 1,
-          prop2: 2,
-          prop3: 3,
-        },
-      ]),
-    ).toStrictEqual([['1', '2', '3']]);
-  });
-
-  it('turns row of object row defined by headings to a string array', () => {
-    expect(
-      rowToStringArray(
-        [
-          {
-            prop1: 1,
-            prop2: 2,
-            prop3: 3,
-          },
-        ],
-        [{ key: 'prop2' }],
-      ),
-    ).toStrictEqual([['2']]);
-  });
-});
-
-describe('getColumnAlignmentForKey', () => {
-  it('return center align for a key and no heading definitions', () => {
-    expect(getColumnAlignmentForKey('value')).toBe('center');
-  });
-
-  it('return center align for a key and heading definitions without align', () => {
-    expect(
-      getColumnAlignmentForKey('value', [
-        { key: 'value' },
-        { key: 'other-prop' },
-      ]),
-    ).toBe('center');
-  });
-
-  it('return defined align for a key', () => {
-    expect(
-      getColumnAlignmentForKey('value', [
-        { key: 'value', align: 'left' },
-        { key: 'other-prop' },
-      ]),
-    ).toBe('left');
-  });
-});
-
-describe('getColumnAlignmentForIndex', () => {
-  it('return center align for a index and no heading definitions', () => {
-    expect(getColumnAlignmentForIndex(60)).toBe('center');
-  });
-
-  it('return center align for a index and heading definitions without align', () => {
-    expect(
-      getColumnAlignmentForIndex(1, [{ key: 'other-prop' }, { key: 'value' }]),
-    ).toBe('center');
-  });
-
-  it('return defined align for a index', () => {
-    expect(
-      getColumnAlignmentForIndex(1, [
-        { key: 'other-prop' },
-        { key: 'value', align: 'left' },
-      ]),
-    ).toBe('left');
-  });
-});
-
-describe('getColumnAlignments', () => {
-  it('return center align for primitive rows without heading definitions', () => {
-    expect(getColumnAlignments([[1, 2, 3]])).toStrictEqual([
-      'center',
-      'center',
-      'center',
-    ]);
-  });
-
-  it('return accept align for primitive rows and heading definitions', () => {
-    expect(getColumnAlignments([[1, 2, 3]], [{ align: 'left' }])).toStrictEqual(
-      ['left', 'center', 'center'],
-    );
-  });
-
-  it('return center align for object rows without heading definitions', () => {
-    expect(
-      getColumnAlignments([
-        { value: 1, name: 'first' },
-        { value: 2, name: 'second' },
-        { value: 3, name: 'third' },
-      ]),
-    ).toStrictEqual(['center', 'center']);
-  });
-
-  it('return accept align for object rows and heading definitions', () => {
-    expect(
-      getColumnAlignments(
-        [
-          { value: 1, name: 'first' },
-          { value: 2, name: 'second' },
-          { value: 3, name: 'third' },
-        ],
-        [{ key: 'value', align: 'left' }],
-      ),
-    ).toStrictEqual(['left', 'center']);
-  });
-
-  it('throws for a undefined row', () => {
-    expect(() =>
-      getColumnAlignments([undefined as unknown as TableRow]),
-    ).toThrow('first row cant be undefined.');
   });
 });

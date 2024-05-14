@@ -2,7 +2,7 @@ import {
   AuditDiff,
   ReportsDiff,
   Table,
-  TableHeading,
+  TableColumnObject,
 } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
@@ -68,7 +68,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     return '';
   }
 
-  const headings: TableHeading[] = [
+  const columns: TableColumnObject[] = [
     { key: 'category', label: '🏷️ Category', align: 'left' },
     { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'before', label: '⭐ Previous score' },
@@ -78,7 +78,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
       tableMd({
-        headings: hasChanges ? headings : headings.slice(0, 2),
+        columns: hasChanges ? columns : columns.slice(0, 2),
         rows: [
           ...sortChanges(changed).map(category => ({
             category: formatTitle(category),
@@ -115,7 +115,7 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
   return lines(
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
-      headings: [
+      columns: [
         { key: 'plugin', label: '🔌 Plugin', align: 'left' },
         { key: 'group', label: '🗃️ Group', align: 'left' },
         { key: 'after', label: '⭐ Current score' },
@@ -137,7 +137,7 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
   return lines(
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
-      headings: [
+      columns: [
         { key: 'plugin', label: '🔌 Plugin', align: 'left' },
         { key: 'audit', label: '🛡️ Audit', align: 'left' },
         { key: 'after', label: '📏 Current value' },

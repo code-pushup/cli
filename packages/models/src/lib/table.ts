@@ -6,28 +6,59 @@ export const tableAlignmentSchema = z.enum(['left', 'center', 'right'], {
 });
 export type TableAlignment = z.infer<typeof tableAlignmentSchema>;
 
-export const tableHeadingSchema = z.object(
-  {
-    key: z.string().optional(),
-    label: z.string().optional(),
-    align: tableAlignmentSchema.optional(),
-  },
-  { description: 'Table heading' },
-);
-export type TableHeading = z.infer<typeof tableHeadingSchema>;
+export const tableColumnPrimitiveSchema = tableAlignmentSchema;
+export type TableColumnPrimitive = z.infer<typeof tableColumnPrimitiveSchema>;
 
-export const tableRowSchema = z.union([
-  z.array(primitiveValueSchema),
-  z.record(primitiveValueSchema),
-]);
-export type TableRow = z.infer<typeof tableRowSchema>;
+export const tableColumnObjectSchema = z.object({
+  key: z.string(),
+  label: z.string().optional(),
+  align: tableAlignmentSchema.optional(),
+});
+export type TableColumnObject = z.infer<typeof tableColumnObjectSchema>;
+
+export const tableRowObjectSchema = z.record(primitiveValueSchema, {
+  description: 'Object row',
+});
+export type TableRowObject = z.infer<typeof tableRowObjectSchema>;
+
+export const tableRowPrimitiveSchema = z.array(primitiveValueSchema, {
+  description: 'Primitive row',
+});
+export type TableRowPrimitive = z.infer<typeof tableRowPrimitiveSchema>;
+
+const tablePrimitiveSchema = z.object(
+  {
+    columns: z.array(tableAlignmentSchema).optional(),
+    rows: z.array(tableRowPrimitiveSchema),
+  },
+  { description: 'Table with primitive rows and optional alignment columns' },
+);
+
+const tableObjectColPSchema = z.object(
+  {
+    columns: z.array(tableAlignmentSchema).optional(),
+    rows: z.array(tableRowObjectSchema),
+  },
+  {
+    description:
+      'Table with object rows and optional alignment or object columns',
+  },
+);
+
+const tableObjectColOSchema = z.object(
+  {
+    columns: z.array(tableColumnObjectSchema).optional(),
+    rows: z.array(tableRowObjectSchema),
+  },
+  {
+    description:
+      'Table with object rows and optional alignment or object columns',
+  },
+);
 
 export const tableSchema = (description = 'Table information') =>
-  z.object(
-    {
-      headings: z.array(tableHeadingSchema).optional(),
-      rows: z.array(tableRowSchema),
-    },
+  z.union(
+    [tablePrimitiveSchema, tableObjectColPSchema, tableObjectColOSchema],
     { description },
   );
 export type Table = z.infer<ReturnType<typeof tableSchema>>;
