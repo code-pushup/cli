@@ -3,7 +3,6 @@ import {
   ReportsDiff,
   Table,
   TableColumnObject,
-  TableRowObject,
 } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
