@@ -3,6 +3,7 @@ import {
   ReportsDiff,
   Table,
   TableColumnObject,
+  TableRowObject,
 } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
@@ -171,7 +172,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
         lines(
           tableMd({
             ...table,
-            rows: table.rows.slice(0, MAX_ROWS),
+            rows: table.rows.slice(0, MAX_ROWS) as never, // use never to avoid typing problem
           }),
           changed.length > MAX_ROWS &&
             style(

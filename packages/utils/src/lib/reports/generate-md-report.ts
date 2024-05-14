@@ -119,8 +119,8 @@ export function aboutSection(
   report: Omit<ScoredReport, 'packageName'>,
 ): string {
   const { date, plugins } = report;
-  const reportMetaTable = reportMetaData(report);
-  const pluginMetaTable = reportPluginMeta({ plugins });
+  const reportMetaTable: Table = reportMetaData(report);
+  const pluginMetaTable: Table = reportPluginMeta({ plugins });
   return lines(
     h2('About'),
     section(
@@ -133,12 +133,12 @@ export function aboutSection(
   );
 }
 
-export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
+export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>): Table {
   return {
     columns: [
       {
         key: 'plugin',
-        align: 'left' as const,
+        align: 'left',
       },
       {
         key: 'audits',
