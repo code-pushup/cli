@@ -102,7 +102,7 @@ export {
   toNumberPrecision,
   toOrdinal,
   toUnixNewlines,
-  toUnixPath
+  toUnixPath,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';

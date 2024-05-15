@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { tableToFlatArray } from './text-formats/transform';
 import {
   apostrophize,
   capitalize,

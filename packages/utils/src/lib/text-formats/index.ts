@@ -1,4 +1,5 @@
 import { codeSection } from './html/code-section';
+import { details } from './html/details';
 import { style as fontStyleHtml } from './html/font-style';
 import { link as linkHtml } from './html/link';
 import { table as tableHtml } from './html/table';
@@ -10,7 +11,6 @@ import { indentation, li } from './md/list';
 import { paragraphs } from './md/paragraphs';
 import { lines, section } from './md/section';
 import { table as tableMd } from './md/table';
-import {details} from "./html/details";
 
 export { NEW_LINE, SPACE, TAB } from './constants';
 export { FontStyleShortcuts, Hierarchy, Alignment } from './types';

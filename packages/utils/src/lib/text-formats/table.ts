@@ -5,7 +5,7 @@ import {
   TableColumnObject,
   TableColumnPrimitive,
 } from '@code-pushup/models';
-import { capitalize } from './transform';
+import { capitalize } from '../transform';
 
 export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
   if (Array.isArray(rows.at(0)) && typeof columns.at(0) === 'object') {
