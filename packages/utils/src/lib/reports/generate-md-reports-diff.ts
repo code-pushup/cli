@@ -1,4 +1,9 @@
-import { AuditDiff, ReportsDiff, Table } from '@code-pushup/models';
+import {
+  AuditDiff,
+  ReportsDiff,
+  Table,
+  TableColumnObject,
+} from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { html, md } from '../text-formats';
 import { objectToEntries } from '../transform';
@@ -64,8 +69,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
     return '';
   }
 
-  const headings = [
-    { key: 'category', label: '🏷️ Category' },
+  const columns: TableColumnObject[] = [
+    { key: 'category', label: '🏷️ Category', align: 'left' },
     { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'before', label: '⭐ Previous score' },
     { key: 'change', label: '🔄 Score change' },
@@ -73,8 +78,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
   return lines(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
-    table({
-        headings: hasChanges ? headings : headings.slice(0, 2),
+      table({
+        columns: hasChanges ? columns : columns.slice(0, 2),
         rows: [
           ...sortChanges(changed).map(category => ({
             category: formatTitle(category),
@@ -99,7 +104,6 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
         ].map(row =>
           hasChanges ? row : { category: row.category, after: row.after },
         ),
-        alignment: hasChanges ? ['l', 'c', 'c', 'c'] : ['l', 'c'],
       }),
     added.length > 0 && section(fontStyle('(\\*) New category.', ['i'])),
   );
@@ -112,9 +116,9 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
   return lines(
     h2('🗃️ Groups'),
     formatGroupsOrAuditsDetails('group', diff.groups, {
-      headings: [
-        { key: 'plugin', label: '🔌 Plugin' },
-        { key: 'group', label: '🗃️ Group' },
+      columns: [
+        { key: 'plugin', label: '🔌 Plugin', align: 'left' },
+        { key: 'group', label: '🗃️ Group', align: 'left' },
         { key: 'after', label: '⭐ Current score' },
         { key: 'before', label: '⭐ Previous score' },
         { key: 'change', label: '🔄 Score change' },
@@ -126,7 +130,6 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
         before: formatScoreWithColor(group.scores.before, { skipBold: true }),
         change: formatScoreChange(group.scores.diff),
       })),
-      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }
@@ -135,9 +138,9 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
   return lines(
     h2('🛡️ Audits'),
     formatGroupsOrAuditsDetails('audit', diff.audits, {
-      headings: [
-        { key: 'plugin', label: '🔌 Plugin' },
-        { key: 'audit', label: '🛡️ Audit' },
+      columns: [
+        { key: 'plugin', label: '🔌 Plugin', align: 'left' },
+        { key: 'audit', label: '🛡️ Audit', align: 'left' },
         { key: 'after', label: '📏 Current value' },
         { key: 'before', label: '📏 Previous value' },
         { key: 'change', label: '🔄 Value change' },
@@ -153,7 +156,6 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
         }`,
         change: formatValueChange(audit),
       })),
-      alignment: ['l', 'l', 'c', 'c', 'c'],
     }),
   );
 }
@@ -170,7 +172,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
         lines(
           table({
             ...tableData,
-            rows: tableData.rows.slice(0, MAX_ROWS),
+            rows: tableData.rows.slice(0, MAX_ROWS) as never, // use never to avoid typing problem
           }),
           changed.length > MAX_ROWS &&
             fontStyle(

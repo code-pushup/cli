@@ -4,13 +4,12 @@ import { table } from './table';
 describe('Html - table', () => {
   it('should create a complete table', () => {
     const data: Table = {
-      headings: [
-        { key: 'date', label: 'Date of Action' },
-        { key: 'time', label: 'Time of Action' },
+      columns: [
+        { key: 'date', label: 'Date of Action', align: 'right' },
+        { key: 'time', label: 'Time of Action', align: 'left' },
         { key: 'action', label: 'Action' },
       ],
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
-      alignment: ['r', 'l', 'c'],
     };
     expect(table(data)).toMatchSnapshot();
   });

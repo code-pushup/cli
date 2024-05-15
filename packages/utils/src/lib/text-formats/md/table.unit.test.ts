@@ -9,9 +9,12 @@ describe('MD table', () => {
   });
 
   it('should create a table with specified alignment', () => {
-    const data: Table = { rows: [[1, 2]], alignment: ['l', 'r'] };
+    const data: Table = {
+      rows: [[1, 2, 3]],
+      columns: ['left', 'center', 'right'],
+    };
     const result = table(data);
-    expect(result).toMatch('|:--|--:|');
+    expect(result).toMatch('|:--|:--:|--:|');
   });
 
   it('should throw for empty data', () => {
@@ -28,7 +31,7 @@ describe('MD table', () => {
 
   it('should create a table from object values', () => {
     const data: Table = {
-      headings: [
+      columns: [
         { key: 'col1', label: 'Header 1' },
         { key: 'col2', label: 'Header 2' },
       ],
@@ -41,13 +44,12 @@ describe('MD table', () => {
 
   it('should create a complete table', () => {
     const data: Table = {
-      headings: [
-        { key: 'date', label: 'Date of Action' },
-        { key: 'time', label: 'Time of Action' },
-        { key: 'action', label: 'Action' },
+      columns: [
+        { key: 'date', label: 'Date of Action', align: 'right' },
+        { key: 'time', label: 'Time of Action', align: 'left' },
+        { key: 'action', label: 'Action', align: 'center' },
       ],
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
-      alignment: ['r', 'l', 'c'],
     };
     const result = table(data);
     expect(result).toMatch('|Date of Action|Time of Action|Action|');

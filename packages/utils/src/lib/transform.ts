@@ -168,4 +168,5 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
+
 /* eslint-enable no-magic-numbers */
