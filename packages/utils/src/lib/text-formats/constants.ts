@@ -1,8 +1,8 @@
-export const FONT_STYLES_SHORTS = {
-  italic: 'i',
-  bold: 'b',
-  'strike through': 's',
-  code: 'c',
+export const FONT_STYLES = {
+  italic: 'italic',
+  bold: 'bold',
+  'strike through': 'strike-through',
+  code: 'code',
 } as const;
 
 export const NEW_LINE = '\n';

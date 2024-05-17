@@ -13,7 +13,7 @@ import { lines, section } from './md/section';
 import { table as tableMd } from './md/table';
 
 export { NEW_LINE, SPACE, TAB } from './constants';
-export { FontStyleShortcuts, Hierarchy, Alignment } from './types';
+export { FontStyles, Hierarchy } from './types';
 
 export const md = {
   fontStyle: fontStyleMd,
