@@ -34,7 +34,7 @@ const tablePrimitiveSchema = z.object(
   { description: 'Table with primitive rows and optional alignment columns' },
 );
 
-const tableObjectColumnSchema = z.object(
+const tableObjectSchema = z.object(
   {
     columns: z
       .union([z.array(tableAlignmentSchema), z.array(tableColumnObjectSchema)])
@@ -48,5 +48,5 @@ const tableObjectColumnSchema = z.object(
 );
 
 export const tableSchema = (description = 'Table information') =>
-  z.union([tablePrimitiveSchema, tableObjectColumnSchema], { description });
+  z.union([tablePrimitiveSchema, tableObjectSchema], { description });
 export type Table = z.infer<ReturnType<typeof tableSchema>>;
