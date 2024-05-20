@@ -1,6 +1,6 @@
 import { Table } from '@code-pushup/models';
 import { columnsToStringArray, rowToStringArray } from '../../table';
-import { NEW_LINE } from '../md/constants';
+import { NEW_LINE } from '../constants';
 
 function wrap(elem: string, content: string): string {
   return `<${elem}>${content}</${elem}>${NEW_LINE}`;
@@ -11,17 +11,17 @@ function wrapRow(content: string): string {
   return `<${elem}>${NEW_LINE}${content}</${elem}>${NEW_LINE}`;
 }
 
-export function tableHtml(table: Table): string {
-  if (table.rows.length === 0) {
+export function table(tableData: Table): string {
+  if (tableData.rows.length === 0) {
     throw new Error("Data can't be empty");
   }
 
   // @TODO add formatting
-  const tableHeaderCols = columnsToStringArray(table)
+  const tableHeaderCols = columnsToStringArray(tableData)
     .map(s => wrap('th', s))
     .join('');
   const tableHeaderRow = wrapRow(tableHeaderCols);
-  const tableBody = rowToStringArray(table)
+  const tableBody = rowToStringArray(tableData)
     .map(arr => {
       const columns = arr.map(s => wrap('td', s)).join('');
       return wrapRow(columns);

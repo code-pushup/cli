@@ -6,23 +6,23 @@ describe('style', () => {
     expect(result).toBe('**Hello World**');
   });
 
-  it('should return italic text when styles set to ["i"]', () => {
-    const result = style('Hello World', ['i']);
+  it('should return italic text when styles set to ["italic"]', () => {
+    const result = style('Hello World', ['italic']);
     expect(result).toBe('_Hello World_');
   });
 
-  it('should return strike-through text when styles set to ["s"]', () => {
-    const result = style('Hello World', ['s']);
+  it('should return strike-through text when styles set to ["strike-through"]', () => {
+    const result = style('Hello World', ['strike-through']);
     expect(result).toBe('~Hello World~');
   });
 
-  it('should return bold and strike-through text when styles set to ["b", "s"]', () => {
-    const result = style('Hello World', ['b', 's']);
+  it('should return bold and strike-through text when styles set to ["bold", "strike-through"]', () => {
+    const result = style('Hello World', ['bold', 'strike-through']);
     expect(result).toBe('~**Hello World**~');
   });
 
   it('should return text with mixed styles', () => {
-    const result = style('Hello World', ['i', 'b', 's']);
+    const result = style('Hello World', ['italic', 'bold', 'strike-through']);
     expect(result).toBe('~**_Hello World_**~');
   });
 
@@ -32,7 +32,7 @@ describe('style', () => {
   });
 
   it('should apply formatting on empty string', () => {
-    const result = style('', ['i', 'b']);
+    const result = style('', ['italic', 'bold']);
     expect(result).toBe('**__**');
   });
 });

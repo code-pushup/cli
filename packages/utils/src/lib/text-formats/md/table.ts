@@ -23,7 +23,7 @@ function tableRow(rows: string[]): string {
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
-export function tableMd(data: Table): string {
+export function table(data: Table): string {
   if (data.rows.length === 0) {
     throw new Error("Data can't be empty");
   }

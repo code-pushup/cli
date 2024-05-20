@@ -92,8 +92,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           ...added.map(category => ({
             category: formatTitle(category),
             after: formatScoreWithColor(category.score),
-            before: fontStyle('n/a (\\*)', ['i']),
-            change: fontStyle('n/a (\\*)', ['i']),
+            before: fontStyle('n/a (\\*)', ['italic']),
+            change: fontStyle('n/a (\\*)', ['italic']),
           })),
           ...unchanged.map(category => ({
             category: formatTitle(category),
@@ -105,7 +105,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           hasChanges ? row : { category: row.category, after: row.after },
         ),
       }),
-    added.length > 0 && section(fontStyle('(\\*) New category.', ['i'])),
+    added.length > 0 && section(fontStyle('(\\*) New category.', ['italic'])),
   );
 }
 
@@ -179,7 +179,7 @@ function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
               `Only the ${MAX_ROWS} most affected ${pluralize(
                 token,
               )} are listed above for brevity.`,
-              ['i'],
+              ['italic'],
             ),
           unchanged.length > 0 &&
             summarizeUnchanged(token, { changed, unchanged }),

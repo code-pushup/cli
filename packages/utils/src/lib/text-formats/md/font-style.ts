@@ -20,7 +20,7 @@ export function style(
   styles: FontStyles[] = [FONT_STYLES.bold],
 ): string {
   return styles.reduce(
-    (content, style) => `${stylesMap[style]}${content}${stylesMap[style]}`,
+    (content, fontStyle) => `${stylesMap[fontStyle]}${content}${stylesMap[fontStyle]}`,
     text,
   );
 }

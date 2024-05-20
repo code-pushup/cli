@@ -160,7 +160,7 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>): Table {
       }) => ({
         plugin: pluginTitle,
         audits: audits.length.toString(),
-        version: fontStyleMd(pluginVersion || '', ['c']),
+        version: fontStyleMd(pluginVersion || '', ['code']),
         duration: formatDuration(pluginDuration),
       }),
     ),
@@ -206,7 +206,7 @@ export function reportMetaData({
     rows: [
       {
         commit: commitInfo,
-        version: fontStyleMd(version || '', ['c']),
+        version: fontStyleMd(version || '', ['code']),
         duration: formatDuration(duration),
         plugins: plugins.length,
         categories: categories.length,

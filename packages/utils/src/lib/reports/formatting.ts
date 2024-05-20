@@ -11,7 +11,7 @@ export function tableSection(
         level?: Hierarchy | 0;
       }
     | string,
-) {
+): string {
   if (tableData == null) {
     return '';
   }
