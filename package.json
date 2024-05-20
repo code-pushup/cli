@@ -139,6 +139,7 @@
   },
   "optionalDependencies": {
     "@esbuild/darwin-arm64": "^0.19.4",
+    "@esbuild/linux-x64": "^0.19.4",
     "@nx/nx-darwin-arm64": "18.2.4",
     "@nx/nx-darwin-x64": "18.2.4",
     "@nx/nx-linux-x64-gnu": "18.2.4",
