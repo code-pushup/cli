@@ -1,18 +1,14 @@
-import { FONT_STYLES } from '../constants';
-import { FontStyles } from '../types';
+const boldElement = 'b';
+export function bold(text: string): string {
+  return `<${boldElement}>${text}</${boldElement}>`;
+}
 
-const stylesMap: Partial<Record<FontStyles, string>> = {
-  italic: 'i', // italic
-  bold: 'b', // bold
-  code: 'code', // code
-} as const;
+const italicElement = 'i';
+export function italic(text: string): string {
+  return `<${italicElement}>${text}</${italicElement}>`;
+}
 
-export function style(
-  text: string,
-  styles: Partial<FontStyles>[] = [FONT_STYLES.bold],
-): string {
-  return styles.reduce(
-    (t, s) => `<${stylesMap[s]}>${t}</${stylesMap[s]}>`,
-    text,
-  );
+const codeElement = 'code';
+export function code(text: string): string {
+  return `<${codeElement}>${text}</${codeElement}>`;
 }

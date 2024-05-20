@@ -1,7 +1,6 @@
 import { AuditReport, Table } from '@code-pushup/models';
 import { slugify } from '../formatting';
-import { md } from '../text-formats';
-import { SPACE } from '../text-formats/constants';
+import { SPACE, md } from '../text-formats';
 import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import { ScoredGroup, ScoredReport } from './types';
@@ -14,7 +13,7 @@ import {
   scoreMarker,
 } from './utils';
 
-const { link, section, h2, lines, li, fontStyle, h3, indentation } = md;
+const { link, section, h2, lines, li, bold: boldMd, h3, indentation } = md;
 
 export function categoriesOverviewSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
@@ -26,7 +25,7 @@ export function categoriesOverviewSection(
       rows: categories.map(({ title, refs, score }) => ({
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
-        score: `${scoreMarker(score)}${SPACE}${fontStyle(
+        score: `${scoreMarker(score)}${SPACE}${boldMd(
           formatReportScore(score),
         )}`,
         audits: countCategoryAudits(refs, plugins).toString(),
@@ -46,7 +45,7 @@ export function categoriesDetailsSection(
     const categoryTitle = h3(category.title);
     const categoryScore = `${scoreMarker(
       category.score,
-    )}${SPACE}Score:  ${fontStyle(formatReportScore(category.score))}`;
+    )}${SPACE}Score:  ${boldMd(formatReportScore(category.score))}`;
 
     const categoryMDItems = category.refs.map(ref => {
       // Add group details
@@ -90,7 +89,7 @@ export function categoryRef(
   );
   const marker = scoreMarker(score, 'square');
   return li(
-    `${marker}${SPACE}${auditTitleAsLink}${SPACE}(_${pluginTitle}_) - ${fontStyle(
+    `${marker}${SPACE}${auditTitleAsLink}${SPACE}(_${pluginTitle}_) - ${boldMd(
       (displayValue || value).toString(),
     )}`,
   );
@@ -113,7 +112,7 @@ export function categoryGroupItem(
       const marker = scoreMarker(auditScore, 'square');
       return indentation(
         li(
-          `${marker}${SPACE}${auditTitleLink} - ${fontStyle(
+          `${marker}${SPACE}${auditTitleLink} - ${boldMd(
             String(displayValue ?? value),
           )}`,
         ),
