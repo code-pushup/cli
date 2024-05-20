@@ -3,7 +3,7 @@ import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
-} from '../table';
+} from '../../table';
 import { lines, section } from './section';
 
 const alignString = new Map<TableAlignment, string>([
@@ -23,7 +23,7 @@ function tableRow(rows: string[]): string {
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
-export function table(data: Table): string {
+export function tableMd(data: Table): string {
   if (data.rows.length === 0) {
     throw new Error("Data can't be empty");
   }
