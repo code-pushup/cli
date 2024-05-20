@@ -47,7 +47,7 @@ describe('MD table', () => {
       columns: [
         { key: 'date', label: 'Date of Action', align: 'right' },
         { key: 'time', label: 'Time of Action', align: 'left' },
-        { key: 'action', label: 'Action' },
+        { key: 'action', label: 'Action', align: 'center' },
       ],
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
     };
