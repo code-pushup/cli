@@ -7,10 +7,10 @@ describe('tableSection', () => {
     expect(
       tableSection(
         {
-          headings: [
+          columns: [
             { key: 'phase', label: 'Phase' },
-            { key: 'percentageLcp', label: '% of LCP' },
-            { key: 'timing', label: 'Timing' },
+            { key: 'percentageLcp', label: '% of LCP', align: 'left' },
+            { key: 'timing', label: 'Timing', align: 'right' },
           ],
           rows: [
             {
@@ -34,7 +34,6 @@ describe('tableSection', () => {
               timing: '140 ms',
             },
           ],
-          alignment: ['c', 'l', 'r'],
         },
         { heading: 'LCP Breakdown', level: 3 },
       ),

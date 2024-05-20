@@ -1,10 +1,6 @@
 import { AuditReport, Table } from '@code-pushup/models';
 import { slugify } from '../formatting';
-import {
-  CATEGORIES_TITLE,
-  reportOverviewTableAlignment,
-  reportOverviewTableHeaders,
-} from './constants';
+import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import {
   SPACE,
@@ -33,7 +29,7 @@ export function categoriesOverviewSection(
   const { categories, plugins } = report;
   if (categories.length > 0 && plugins.length > 0) {
     const tableContent: Table = {
-      headings: reportOverviewTableHeaders,
+      columns: reportOverviewTableHeaders,
       rows: categories.map(({ title, refs, score }) => ({
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
@@ -42,7 +38,6 @@ export function categoriesOverviewSection(
         )}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
-      alignment: reportOverviewTableAlignment,
     };
     return tableSection(tableContent);
   }

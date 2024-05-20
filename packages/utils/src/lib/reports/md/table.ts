@@ -1,50 +1,42 @@
-import { Table } from '@code-pushup/models';
-import { tableToFlatArray } from '../../transform';
+import { Table, TableAlignment } from '@code-pushup/models';
+import {
+  columnsToStringArray,
+  getColumnAlignments,
+  rowToStringArray,
+} from '../../table';
 import { lines, section } from './section';
 
-export type Alignment = 'l' | 'c' | 'r';
-const alignString = new Map<Alignment, string>([
-  ['l', ':--'],
-  ['c', ':--:'],
-  ['r', '--:'],
+const alignString = new Map<TableAlignment, string>([
+  ['left', ':--'],
+  ['center', ':--:'],
+  ['right', '--:'],
 ]);
 
-function tableRow(rows: (string | number)[]): string {
+function tableRow(rows: string[]): string {
   return `|${rows.join('|')}|`;
 }
 
 /**
  * | Table Header 1  | Table Header 2 |
- * | --------------- | -------------- |
+ * | :-------------- | -------------: |
  * |  String 1       |  1             |
  * |  String 1       |  2             |
  * |  String 1       |  3             |
  */
-export function tableMd<T extends Table>(data: T): string {
-  const { rows = [], alignment } = data;
-  if (rows.length === 0) {
+export function tableMd(data: Table): string {
+  if (data.rows.length === 0) {
     throw new Error("Data can't be empty");
   }
 
-  const stringArr = tableToFlatArray(data);
-
-  const allCenterAlignments = (
-    typeof rows.at(0) === 'string'
-      ? Array.from({ length: rows.length })
-      : Object.keys(rows.at(0) ?? {})
-  ).map((): Alignment => 'c');
-  const alignmentSetting =
-    alignment == null ? allCenterAlignments : alignment.map(align => align);
-
-  const alignmentRow = alignmentSetting.map(
-    s => alignString.get(s) ?? String(alignString.get('c')),
+  const alignmentRow = getColumnAlignments(data).map(
+    s => alignString.get(s) ?? String(alignString.get('center')),
   );
 
   return section(
     `${lines(
-      tableRow(stringArr.at(0) ?? []),
+      tableRow(columnsToStringArray(data)),
       tableRow(alignmentRow),
-      ...stringArr.slice(1).map(tableRow),
+      ...rowToStringArray(data).map(tableRow),
     )}`,
   );
 }

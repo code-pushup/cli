@@ -4,11 +4,7 @@ import {
   FOOTER_PREFIX,
   README_LINK,
   issuesTableHeadings,
-  pluginMetaTableAlignment,
-  pluginMetaTableHeaders,
   reportHeadlineText,
-  reportMetaTableAlignment,
-  reportMetaTableHeaders,
 } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import {
@@ -54,7 +50,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     return '';
   }
   const detailsTableData = {
-    headings: issuesTableHeadings,
+    columns: issuesTableHeadings,
     rows: issues.map(
       ({ severity: severityVal, message, source: sourceVal }: Issue) => {
         const severity = `${severityMarker(severityVal)} <i>${severityVal}</i>`;
@@ -123,8 +119,8 @@ export function aboutSection(
   report: Omit<ScoredReport, 'packageName'>,
 ): string {
   const { date, plugins } = report;
-  const reportMetaTable = reportMetaData(report);
-  const pluginMetaTable = reportPluginMeta({ plugins });
+  const reportMetaTable: Table = reportMetaData(report);
+  const pluginMetaTable: Table = reportPluginMeta({ plugins });
   return lines(
     h2('About'),
     section(
@@ -137,9 +133,23 @@ export function aboutSection(
   );
 }
 
-export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
+export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>): Table {
   return {
-    headings: pluginMetaTableHeaders,
+    columns: [
+      {
+        key: 'plugin',
+        align: 'left',
+      },
+      {
+        key: 'audits',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+    ],
     rows: plugins.map(
       ({
         title: pluginTitle,
@@ -153,7 +163,6 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
         duration: formatDuration(pluginDuration),
       }),
     ),
-    alignment: pluginMetaTableAlignment,
   };
 }
 
@@ -172,7 +181,27 @@ export function reportMetaData({
     : 'N/A';
 
   return {
-    headings: reportMetaTableHeaders,
+    columns: [
+      {
+        key: 'commit',
+        align: 'left',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+      {
+        key: 'plugins',
+      },
+      {
+        key: 'categories',
+      },
+      {
+        key: 'audits',
+      },
+    ],
     rows: [
       {
         commit: commitInfo,
@@ -185,6 +214,5 @@ export function reportMetaData({
           .toString(),
       },
     ],
-    alignment: reportMetaTableAlignment,
   };
 }
