@@ -6,10 +6,10 @@ Detailed information
 
 _Object containing the following properties:_
 
-| Property | Description               | Type                                                                                                                                                                                                                                       |
-| :------- | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `issues` | List of findings          | _Array of [Issue](#issue) items_                                                                                                                                                                                                           |
-| `table`  | Table of related findings | _Object with properties:_<ul><li>`headings`: _Array of [TableHeading](#tableheading) items_</li><li>`alignment`: `Array<'l' \| 'c' \| 'r'>`</li><li>`rows`: `Array<Array<string \| number> \| Record<string, string \| number>>`</li></ul> |
+| Property | Description               | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| :------- | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `issues` | List of findings          | _Array of [Issue](#issue) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `table`  | Table of related findings | _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_</li><li>`rows`: _Array of [TableRowPrimitive](#tablerowprimitive) items_</li></ul> _or_ _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_ _or_ _Array of [TableColumnObject](#tablecolumnobject) items_</li><li>`rows`: _Array of [TableRowObject](#tablerowobject) items_</li></ul> |
 
 _All properties are optional._
 
@@ -1193,6 +1193,13 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## PrimitiveValue
+
+_Union of the following possible types:_
+
+- `string`
+- `number`
+
 ## Report
 
 _Object containing the following properties:_
@@ -1253,18 +1260,52 @@ _Returns:_
 
 - [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)
 
-## TableHeading
+## TableAlignment
 
-Source file location
+Cell alignment
+
+_Enum string, one of the following possible values:_
+
+- `'left'`
+- `'center'`
+- `'right'`
+
+## TableColumnObject
 
 _Object containing the following properties:_
 
-| Property       | Type     |
-| :------------- | :------- |
-| **`key`** (\*) | `string` |
-| `label`        | `string` |
+| Property       | Description    | Type                              |
+| :------------- | :------------- | :-------------------------------- |
+| **`key`** (\*) |                | `string`                          |
+| `label`        |                | `string`                          |
+| `align`        | Cell alignment | [TableAlignment](#tablealignment) |
 
 _(\*) Required._
+
+## TableColumnPrimitive
+
+Cell alignment
+
+_Enum string, one of the following possible values:_
+
+- `'left'`
+- `'center'`
+- `'right'`
+
+## TableRowObject
+
+Object row
+
+_Object record with dynamic keys:_
+
+- _keys of type_ `string`
+- _values of type_ [PrimitiveValue](#primitivevalue)
+
+## TableRowPrimitive
+
+Primitive row
+
+_Array of [PrimitiveValue](#primitivevalue) items._
 
 ## UploadConfig
 

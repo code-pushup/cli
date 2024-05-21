@@ -26,25 +26,34 @@ export const tableRowPrimitiveSchema = z.array(primitiveValueSchema, {
 });
 export type TableRowPrimitive = z.infer<typeof tableRowPrimitiveSchema>;
 
-const tablePrimitiveSchema = z.object(
-  {
-    columns: z.array(tableAlignmentSchema).optional(),
-    rows: z.array(tableRowPrimitiveSchema),
-  },
-  { description: 'Table with primitive rows and optional alignment columns' },
+const tableSharedSchema = z.object({
+  title: z.string().optional().describe('Display title for table'),
+});
+const tablePrimitiveSchema = tableSharedSchema.merge(
+  z.object(
+    {
+      columns: z.array(tableAlignmentSchema).optional(),
+      rows: z.array(tableRowPrimitiveSchema),
+    },
+    { description: 'Table with primitive rows and optional alignment columns' },
+  ),
 );
-
-const tableObjectSchema = z.object(
-  {
-    columns: z
-      .union([z.array(tableAlignmentSchema), z.array(tableColumnObjectSchema)])
-      .optional(),
-    rows: z.array(tableRowObjectSchema),
-  },
-  {
-    description:
-      'Table with object rows and optional alignment or object columns',
-  },
+const tableObjectSchema = tableSharedSchema.merge(
+  z.object(
+    {
+      columns: z
+        .union([
+          z.array(tableAlignmentSchema),
+          z.array(tableColumnObjectSchema),
+        ])
+        .optional(),
+      rows: z.array(tableRowObjectSchema),
+    },
+    {
+      description:
+        'Table with object rows and optional alignment or object columns',
+    },
+  ),
 );
 
 export const tableSchema = (description = 'Table information') =>

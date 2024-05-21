@@ -163,6 +163,7 @@ describe('tableSchema', () => {
 
   it('should parse complete table', () => {
     const fullTable: Table = {
+      title: 'Largest Contentful Paint element',
       columns: [
         // center is often the default when rendering in MD or HTML
         { key: 'phase', label: 'Phase' },
