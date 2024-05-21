@@ -1,7 +1,6 @@
 /* eslint-disable no-magic-numbers */
-import { NEW_LINE } from './constants';
-
-export type Hierarchy = 1 | 2 | 3 | 4 | 5 | 6;
+import { NEW_LINE } from '../constants';
+import { Hierarchy } from '../types';
 
 /**
  * \# {text} // hierarchy set to 1

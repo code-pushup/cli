@@ -1,5 +1,4 @@
-import * as html from './lib/reports/html';
-
+export * from './lib/text-formats';
 export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
@@ -86,9 +85,6 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
-
-export const htmlFormat = { ...html };
-export * as markdown from './lib/reports/md';
 export {
   CliArgsObject,
   apostrophize,
@@ -107,7 +103,6 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
-  normalizeTable,
 } from './lib/transform';
 export { verboseUtils } from './lib/verbose-utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';

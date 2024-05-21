@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
+import { NEW_LINE } from '../text-formats/constants';
 import { metaDescription, tableSection } from './formatting';
-import { NEW_LINE } from './md';
 
 describe('tableSection', () => {
   it('should render complete section', () => {
     expect(
       tableSection(
         {
-          headings: [
+          title: 'LCP Breakdown',
+          columns: [
             { key: 'phase', label: 'Phase' },
-            { key: 'percentageLcp', label: '% of LCP' },
-            { key: 'timing', label: 'Timing' },
+            { key: 'percentageLcp', label: '% of LCP', align: 'left' },
+            { key: 'timing', label: 'Timing', align: 'right' },
           ],
           rows: [
             {
@@ -34,9 +35,8 @@ describe('tableSection', () => {
               timing: '140 ms',
             },
           ],
-          alignment: ['c', 'l', 'r'],
         },
-        { heading: 'LCP Breakdown', level: 3 },
+        { level: 3 },
       ),
     ).toMatchSnapshot();
   });

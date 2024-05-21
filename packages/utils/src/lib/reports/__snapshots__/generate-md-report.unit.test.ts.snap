@@ -19,9 +19,7 @@ exports[`auditDetails > should render complete details section 1`] = `
 "<details>
 <summary>🟩 <b>190ms</b> (score: 99)</summary>
 
-#### Additional Information
-
-|Class Names|element|
+|Class Names|Element|
 |:--:|:--:|
 |.btn, .icon|button|
 |.badge, .badge-icon|div|
@@ -105,8 +103,6 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 <details>
 <summary>🟨 <b>2,7 s</b> (score: 67)</summary>
-
-#### Additional Information
 
 |Phase|% of LCP|Timing|
 |:--:|:--|--:|

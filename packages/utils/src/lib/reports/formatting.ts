@@ -1,38 +1,25 @@
 import { AuditReport, Table } from '@code-pushup/models';
-import {
-  Hierarchy,
-  NEW_LINE,
-  SPACE,
-  headline,
-  lines,
-  link,
-  section,
-  tableMd,
-} from './md';
+import { Hierarchy, NEW_LINE, SPACE, md } from '../text-formats';
+
+const { headline, lines, link, section, table } = md;
 
 export function tableSection(
-  table: Table | undefined,
-  options?:
-    | {
-        heading?: string;
-        level?: Hierarchy | 0;
-      }
-    | string,
+  tableData: Table,
+  options?: {
+    level?: Hierarchy | 0;
+  },
 ) {
-  if (table == null) {
+  if (tableData.rows.length === 0) {
     return '';
   }
-  if (table.rows.length === 0) {
-    return '';
-  }
-  const { heading, level = 4 } =
-    typeof options === 'string'
-      ? { heading: options, level: 0 }
-      : options ?? {};
+  const { level = 4 } = options ?? {};
   // if hierarchy is 0 do not apply heading styles
   const render = (h: string, l: Hierarchy | 0) =>
-    l === 0 ? heading : headline(h, l);
-  return lines(heading ? render(heading, level) : false, tableMd(table));
+    l === 0 ? h : headline(h, l);
+  return lines(
+    tableData.title && render(tableData.title, level),
+    table(tableData),
+  );
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type

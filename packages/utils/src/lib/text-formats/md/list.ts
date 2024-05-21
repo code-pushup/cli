@@ -1,4 +1,4 @@
-import { TAB } from './constants';
+import { TAB } from '../constants';
 
 export type Order = 'unordered' | 'checkbox';
 
