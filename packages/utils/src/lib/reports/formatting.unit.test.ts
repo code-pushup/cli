@@ -7,6 +7,7 @@ describe('tableSection', () => {
     expect(
       tableSection(
         {
+          title: 'LCP Breakdown',
           columns: [
             { key: 'phase', label: 'Phase' },
             { key: 'percentageLcp', label: '% of LCP', align: 'left' },
@@ -35,7 +36,7 @@ describe('tableSection', () => {
             },
           ],
         },
-        { heading: 'LCP Breakdown', level: 3 },
+        { level: 3 },
       ),
     ).toMatchSnapshot();
   });
