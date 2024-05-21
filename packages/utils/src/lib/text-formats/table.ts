@@ -99,10 +99,9 @@ export function getColumnAlignmentForIndex(
   }
 }
 
-export function getColumnAlignments({
-  rows,
-  columns = [],
-}: Table): TableAlignment[] {
+export function getColumnAlignments(tableData: Table): TableAlignment[] {
+  const { rows, columns = [] } = tableData;
+
   // this is caught by the table schema in @code-pushup/models
   if (rows.at(0) == null) {
     throw new Error('first row can`t be undefined.');
@@ -115,8 +114,21 @@ export function getColumnAlignments({
     );
   }
 
-  const firstObject = rows.at(0) as Record<string, unknown>;
-  return Object.keys(firstObject).map((key, idx) =>
-    getColumnAlignmentForKeyAndIndex(key, idx, columns as TableColumnObject[]),
-  );
+  if (columns.length > 0) {
+    return columns.map((column, idx) => {
+      return typeof column === 'string'
+        ? column
+        : getColumnAlignmentForKeyAndIndex(
+            column.key,
+            idx,
+            columns as TableColumnObject[],
+          );
+    });
+  }
+
+  // eslint-disable-next-line functional/immutable-data
+  const biggersRow = rows
+    .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
+    .pop();
+  return Object.keys(biggersRow ?? {}).map(_ => 'center');
 }

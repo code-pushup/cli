@@ -129,7 +129,7 @@ describe('getColumnAlignmentForIndex', () => {
 });
 
 describe('getColumnAlignments', () => {
-  it('return center align for primitive rows without heading definitions', () => {
+  it('return center alignments for primitive rows without heading definitions', () => {
     expect(getColumnAlignments({ rows: [[1, 2, 3]] })).toStrictEqual([
       'center',
       'center',
@@ -137,13 +137,13 @@ describe('getColumnAlignments', () => {
     ]);
   });
 
-  it('return align for primitive rows and heading definitions', () => {
+  it('return alignments for primitive rows and heading definitions', () => {
     expect(
       getColumnAlignments({ rows: [[1, 2, 3]], columns: ['left'] }),
     ).toStrictEqual(['left', 'center', 'center']);
   });
 
-  it('return center align for object rows without heading definitions', () => {
+  it('return center alignments for object rows without heading definitions', () => {
     expect(
       getColumnAlignments({
         rows: [
@@ -155,7 +155,7 @@ describe('getColumnAlignments', () => {
     ).toStrictEqual(['center', 'center']);
   });
 
-  it('return accept align for object rows and heading definitions', () => {
+  it('return accept alignments for object rows and heading definitions', () => {
     expect(
       getColumnAlignments({
         rows: [
@@ -166,6 +166,23 @@ describe('getColumnAlignments', () => {
         columns: [{ key: 'value', align: 'left' }],
       }),
     ).toStrictEqual(['left', 'center']);
+  });
+
+  it('return alignments for given headings and incomplete row data', () => {
+    expect(
+      getColumnAlignments({
+        rows: [{ value: 1 }],
+        columns: [{ key: 'value', align: 'left' }],
+      }),
+    ).toStrictEqual(['left', 'center']);
+  });
+
+  it('return alignments for biggest row if columns are missing', () => {
+    expect(
+      getColumnAlignments({
+        rows: [{ value: 1 }, { value: 1, prop2: 42 }],
+      }),
+    ).toStrictEqual(['center', 'center']);
   });
 
   it('throws for a undefined row', () => {
