@@ -1,5 +1,5 @@
 import { Table } from '@code-pushup/models';
-import { tableHtml } from './table';
+import { table } from './table';
 
 describe('tableHtml', () => {
   it('should create a complete table', () => {
@@ -11,6 +11,6 @@ describe('tableHtml', () => {
       ],
       rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
     };
-    expect(tableHtml(data)).toMatchSnapshot();
+    expect(table(data)).toMatchSnapshot();
   });
 });

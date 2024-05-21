@@ -1,4 +1,4 @@
-import { NEW_LINE } from '../md';
+import { NEW_LINE } from '../constants';
 
 /**
  * <details {open}>

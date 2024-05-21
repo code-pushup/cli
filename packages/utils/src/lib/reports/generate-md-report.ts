@@ -1,5 +1,6 @@
 import { AuditReport, Issue, Report, Table } from '@code-pushup/models';
 import { formatDate, formatDuration } from '../formatting';
+import { SPACE, html, md } from '../text-formats';
 import {
   FOOTER_PREFIX,
   README_LINK,
@@ -11,9 +12,6 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
-import { details } from './html/details';
-import { style as htmlFontStyle } from './html/font-style';
-import { SPACE, h1, h2, h3, lines, link, section, style } from './md';
 import { ScoredReport } from './types';
 import {
   formatReportScore,
@@ -22,12 +20,15 @@ import {
   severityMarker,
 } from './utils';
 
+const { h1, h2, h3, lines, link, section, code: codeMd } = md;
+const { bold: boldHtml, details } = html;
+
 export function auditDetailsAuditValue({
   score,
   value,
   displayValue,
 }: AuditReport) {
-  return `${scoreMarker(score, 'square')} ${htmlFontStyle(
+  return `${scoreMarker(score, 'square')} ${boldHtml(
     String(displayValue ?? value),
   )} (score: ${formatReportScore(score)})`;
 }
@@ -159,7 +160,7 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>): Table {
       }) => ({
         plugin: pluginTitle,
         audits: audits.length.toString(),
-        version: style(pluginVersion || '', ['c']),
+        version: codeMd(pluginVersion || ''),
         duration: formatDuration(pluginDuration),
       }),
     ),
@@ -205,7 +206,7 @@ export function reportMetaData({
     rows: [
       {
         commit: commitInfo,
-        version: style(version || '', ['c']),
+        version: codeMd(version || ''),
         duration: formatDuration(duration),
         plugins: plugins.length,
         categories: categories.length,

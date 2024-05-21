@@ -15,9 +15,11 @@ import {
   readJsonFile,
   readTextFile,
 } from '../file-system';
+import { md } from '../text-formats';
 import { SCORE_COLOR_RANGE } from './constants';
-import { image, style } from './md';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+
+const { image, bold: boldMd } = md;
 
 export function formatReportScore(score: number): string {
   return Math.round(score * 100).toString();
@@ -29,7 +31,7 @@ export function formatScoreWithColor(
 ): string {
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
-    : style(formatReportScore(score));
+    : boldMd(formatReportScore(score));
   return `${scoreMarker(score)} ${styledNumber}`;
 }
 

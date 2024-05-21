@@ -5,10 +5,8 @@ import {
   TableColumnObject,
 } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
+import { html, md } from '../text-formats';
 import { objectToEntries } from '../transform';
-import { details } from './html/details';
-import { h1, h2, lines, link, style, tableMd } from './md';
-import { section } from './md/section';
 import { DiffOutcome } from './types';
 import {
   colorByScoreDiff,
@@ -17,6 +15,18 @@ import {
   getDiffMarker,
   scoreMarker,
 } from './utils';
+
+const {
+  h1,
+  h2,
+  lines,
+  link,
+  bold: boldMd,
+  italic: italicMd,
+  table,
+  section,
+} = md;
+const { details } = html;
 
 // to prevent exceeding Markdown comment character limit
 const MAX_ROWS = 100;
@@ -32,12 +42,12 @@ export function generateMdReportsDiff(diff: ReportsDiff): string {
 
 function formatDiffHeaderSection(diff: ReportsDiff): string {
   const outcomeTexts: Record<DiffOutcome, string> = {
-    positive: `🥳 Code PushUp report has ${style('improved')}`,
-    negative: `😟 Code PushUp report has ${style('regressed')}`,
-    mixed: `🤨 Code PushUp report has both ${style(
+    positive: `🥳 Code PushUp report has ${boldMd('improved')}`,
+    negative: `😟 Code PushUp report has ${boldMd('regressed')}`,
+    mixed: `🤨 Code PushUp report has both ${boldMd(
       'improvements and regressions',
     )}`,
-    unchanged: `😐 Code PushUp report is ${style('unchanged')}`,
+    unchanged: `😐 Code PushUp report is ${boldMd('unchanged')}`,
   };
   const outcome = mergeDiffOutcomes(
     changesToDiffOutcomes([
@@ -77,7 +87,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
   return lines(
     h2('🏷️ Categories'),
     categoriesCount > 0 &&
-      tableMd({
+      table({
         columns: hasChanges ? columns : columns.slice(0, 2),
         rows: [
           ...sortChanges(changed).map(category => ({
@@ -91,8 +101,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           ...added.map(category => ({
             category: formatTitle(category),
             after: formatScoreWithColor(category.score),
-            before: style('n/a (\\*)', ['i']),
-            change: style('n/a (\\*)', ['i']),
+            before: italicMd('n/a (\\*)'),
+            change: italicMd('n/a (\\*)'),
           })),
           ...unchanged.map(category => ({
             category: formatTitle(category),
@@ -104,7 +114,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
           hasChanges ? row : { category: row.category, after: row.after },
         ),
       }),
-    added.length > 0 && section(style('(\\*) New category.', ['i'])),
+    added.length > 0 && section(italicMd('(\\*) New category.')),
   );
 }
 
@@ -147,7 +157,7 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
       rows: sortChanges(diff.audits.changed).map(audit => ({
         plugin: formatTitle(audit.plugin),
         audit: formatTitle(audit),
-        after: `${scoreMarker(audit.scores.after, 'square')} ${style(
+        after: `${scoreMarker(audit.scores.after, 'square')} ${boldMd(
           audit.displayValues.after || audit.values.after.toString(),
         )}`,
         before: `${scoreMarker(audit.scores.before, 'square')} ${
@@ -162,23 +172,22 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
 function formatGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
   token: T,
   { changed, unchanged }: ReportsDiff[`${T}s`],
-  table: Table,
+  tableData: Table,
 ): string {
   return changed.length === 0
     ? summarizeUnchanged(token, { changed, unchanged })
     : details(
         summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
         lines(
-          tableMd({
-            ...table,
-            rows: table.rows.slice(0, MAX_ROWS) as never, // use never to avoid typing problem
+          table({
+            ...tableData,
+            rows: tableData.rows.slice(0, MAX_ROWS) as never, // use never to avoid typing problem
           }),
           changed.length > MAX_ROWS &&
-            style(
+            italicMd(
               `Only the ${MAX_ROWS} most affected ${pluralize(
                 token,
               )} are listed above for brevity.`,
-              ['i'],
             ),
           unchanged.length > 0 &&
             summarizeUnchanged(token, { changed, unchanged }),
