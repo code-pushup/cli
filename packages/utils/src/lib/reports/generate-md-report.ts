@@ -51,6 +51,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     return '';
   }
   const detailsTableData = {
+    title: 'Issues',
     columns: issuesTableHeadings,
     rows: issues.map(
       ({ severity: severityVal, message, source: sourceVal }: Issue) => {
@@ -73,7 +74,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     ),
   };
 
-  return tableSection(detailsTableData, { heading: 'Issues' });
+  return tableSection(detailsTableData);
 }
 
 export function auditDetails(audit: AuditReport) {
@@ -85,10 +86,7 @@ export function auditDetails(audit: AuditReport) {
     return section(detailsValue);
   }
 
-  const tableSectionContent =
-    table == null
-      ? ''
-      : tableSection(table, { heading: 'Additional Information' });
+  const tableSectionContent = table == null ? '' : tableSection(table);
   const issuesSectionContent =
     issues.length > 0 ? auditDetailsIssues(issues) : '';
 

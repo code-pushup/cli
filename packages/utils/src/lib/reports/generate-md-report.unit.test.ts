@@ -257,6 +257,7 @@ describe('auditDetails', () => {
       displayValue: '190ms',
       details: {
         table: {
+          title: 'Elements',
           rows: [
             {
               element: 'button',
@@ -269,7 +270,7 @@ describe('auditDetails', () => {
       },
     } as AuditReport);
     expect(md).toMatch('<details>');
-    expect(md).toMatch('#### Additional Information');
+    expect(md).toMatch('#### Elements');
     expect(md).toMatch('|button|');
     expect(md).toMatch('|div|');
     expect(md).not.toMatch('#### Issues');
@@ -364,7 +365,6 @@ describe('auditsSection', () => {
     } as unknown as ScoredReport);
     expect(md).toMatch('#### Issues');
     expect(md).toMatch('|Severity|Message|Source file|Line(s)|');
-    expect(md).toMatch('#### Additional Information');
     expect(md).toMatch('|value|');
   });
 

@@ -4,28 +4,22 @@ import { Hierarchy, NEW_LINE, SPACE, md } from '../text-formats';
 const { headline, lines, link, section, table } = md;
 
 export function tableSection(
-  tableData: Table | undefined,
-  options?:
-    | {
-        heading?: string;
-        level?: Hierarchy | 0;
-      }
-    | string,
-): string {
-  if (tableData == null) {
-    return '';
-  }
+  tableData: Table,
+  options?: {
+    level?: Hierarchy | 0;
+  },
+) {
   if (tableData.rows.length === 0) {
     return '';
   }
-  const { heading, level = 4 } =
-    typeof options === 'string'
-      ? { heading: options, level: 0 }
-      : options ?? {};
+  const { level = 4 } = options ?? {};
   // if hierarchy is 0 do not apply heading styles
   const render = (h: string, l: Hierarchy | 0) =>
-    l === 0 ? heading : headline(h, l);
-  return lines(heading ? render(heading, level) : false, table(tableData));
+    l === 0 ? h : headline(h, l);
+  return lines(
+    tableData.title && render(tableData.title, level),
+    table(tableData),
+  );
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
