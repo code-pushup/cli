@@ -21,7 +21,7 @@ describe('parseOpportunityDetails', () => {
       },
     } satisfies Details.Opportunity);
 
-    expect(outputs).toBeUndefined()
+    expect(outputs).toBeUndefined();
   });
 
   it('should format bytes', () => {
