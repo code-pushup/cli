@@ -1,47 +1,52 @@
-import type {FormattedIcu} from "lighthouse";
-import Details from "lighthouse/types/lhr/audit-details";
-import {AuditDetails, TableAlignment, TableRow, tableSchema} from "@code-pushup/models";
-import {formatBytes, formatDuration, normalizeTable, ui} from "@code-pushup/utils";
-import {Result} from "lighthouse/types/lhr/audit-result";
-import chalk from "chalk";
-import {PLUGIN_SLUG} from "../constants";
-import {parseOpportunityDetails} from "./opportunity.type";
-import {parseType} from "./types";
+import chalk from 'chalk';
+import type { FormattedIcu } from 'lighthouse';
+import type Details from 'lighthouse/types/lhr/audit-details';
+import { Result } from 'lighthouse/types/lhr/audit-result';
+import { AuditDetails, Table, tableSchema } from '@code-pushup/models';
+import { ui } from '@code-pushup/utils';
+import { PLUGIN_SLUG } from '../constants';
+import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
+import { parseTableToAuditDetailsTable } from './table.type';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,
 ): AuditDetails {
-  const {type} = details ?? {};
+  if (details == null) {
+    return {};
+  } else {
+    const { type } = details;
 
-  if (type === 'opportunity') {
-    return parseOpportunityDetails(details as Details.Opportunity);
-  }
+    let rawTable: Table | undefined = undefined;
+    switch (type) {
+      case 'opportunity':
+        rawTable = parseOpportunityToAuditDetailsTable(
+          details as Details.Opportunity,
+        );
+        break;
+      case 'table':
+        rawTable = parseTableToAuditDetailsTable(details as Details.Table);
+        break;
+      default:
+        rawTable = undefined;
+    }
 
-  if (type === 'table' as any) {
-    const {headings, items} = details as Details.Table;
-    if (items.length == 0) {
+    if (rawTable == null) {
       return {};
     }
-    const result = tableSchema().safeParse(normalizeTable({
-      headings: headings.map(({key, label}) => ({
-        key: key ?? '',
-        label: typeof label === 'string' ? label : undefined,
-      })),
-      rows: items.map((row, rowIxd) => {
-        return Object.fromEntries(Object.entries(row).filter(i => Boolean(i.at(1))).map(([key, value]) => ([key, parseType(value as Record<string, any>, headings?.at(rowIxd))])))
-      })
-    }));
-
+    const result = tableSchema().safeParse(rawTable);
     if (result.success) {
       return {
-        table: result.data
-      }
-    } else {
-      throw new Error(`Parsing details ${chalk.bold('table')} failed: \n${result.error.toString()}`);
+        table: result.data,
+      };
     }
+    throw new Error(
+      `Parsing details ${chalk.bold(
+        type,
+      )} failed: \nRaw data:\n ${JSON.stringify(
+        rawTable,
+      )}\n${result.error.toString()}`,
+    );
   }
-
-  return {};
 }
 
 // @TODO implement all details
@@ -55,15 +60,15 @@ export const unsupportedDetailTypes = new Set([
 
 export function logUnsupportedDetails(
   lhrAudits: Result[],
-  {displayCount = 3}: { displayCount?: number } = {},
+  { displayCount = 3 }: { displayCount?: number } = {},
 ) {
   const slugsWithDetailParsingErrors = [
     ...new Set(
       lhrAudits
-        .filter(({details}) =>
+        .filter(({ details }) =>
           unsupportedDetailTypes.has(details?.type as string),
         )
-        .map(({details}) => details?.type),
+        .map(({ details }) => details?.type),
     ),
   ];
   if (slugsWithDetailParsingErrors.length > 0) {

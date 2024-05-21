@@ -47,13 +47,17 @@ describe('MD table', () => {
       columns: [
         { key: 'date', label: 'Date of Action', align: 'right' },
         { key: 'time', label: 'Time of Action', align: 'left' },
-        { key: 'action', label: 'Action', align: 'center' },
+        { key: 'action', label: 'Action' },
       ],
-      rows: [{ date: '2025.01.01', time: '00:00:00', action: 'add item' }],
+      rows: [
+        { date: '2025.01.01', time: '00:00:00', action: 'add item' },
+        { date: '2025.01.02' },
+      ],
     };
     const result = table(data);
     expect(result).toMatch('|Date of Action|Time of Action|Action|');
     expect(result).toMatch('|--:|:--|:--:|');
     expect(result).toMatch('|2025.01.01|00:00:00|add item|');
+    expect(result).toMatch('|2025.01.02|||');
   });
 });

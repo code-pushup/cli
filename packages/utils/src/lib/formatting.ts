@@ -51,7 +51,7 @@ export function pluralizeToken(token: string, times: number): string {
 
 export function formatDuration(duration: number): string {
   if (duration < 1000) {
-    return `${duration} ms`;
+    return `${duration.toFixed(3)} ms`;
   }
   return `${(duration / 1000).toFixed(2)} s`;
 }

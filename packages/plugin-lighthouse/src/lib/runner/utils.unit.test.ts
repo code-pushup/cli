@@ -1,15 +1,15 @@
 import debug from 'debug';
-import {type Budget} from 'lighthouse';
+import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
-import {Result} from 'lighthouse/types/lhr/audit-result';
-import {vol} from 'memfs';
-import {join} from 'node:path';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {auditOutputsSchema, CoreConfig} from '@code-pushup/models';
-import {getLogMessages, MEMFS_VOLUME} from '@code-pushup/test-utils';
-import {ui} from '@code-pushup/utils';
-import {getBudgets, getConfig, setLogLevel, toAuditOutputs,} from './utils';
-import {unsupportedDetailTypes} from "./details/details";
+import { Result } from 'lighthouse/types/lhr/audit-result';
+import { vol } from 'memfs';
+import { join } from 'node:path';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
+import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
+import { unsupportedDetailTypes } from './details/details';
+import { getBudgets, getConfig, setLogLevel, toAuditOutputs } from './utils';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {

@@ -1,24 +1,24 @@
 import chalk from 'chalk';
-import type {Budget, Config} from 'lighthouse';
+import type { Budget, Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
-import {Result} from 'lighthouse/types/lhr/audit-result';
+import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
-import {AuditOutput, AuditOutputs,} from '@code-pushup/models';
-import {importEsmModule, readJsonFile, ui,} from '@code-pushup/utils';
-import type {LighthouseOptions} from '../types';
-import {LighthouseCliFlags} from './types';
-import {logUnsupportedDetails, toAuditDetails} from "./details/details";
+import { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
+import type { LighthouseOptions } from '../types';
+import { logUnsupportedDetails, toAuditDetails } from './details/details';
+import { LighthouseCliFlags } from './types';
 
 // @TODO fix https://github.com/code-pushup/cli/issues/612
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,
-  flags: LighthouseOptions = {skipAudits: []},
+  flags: LighthouseOptions = { skipAudits: [] },
 ): AuditOutputs {
   const toSkip = new Set(flags.skipAudits ?? []);
-  return auditOutputs.filter(({slug}) => {
+  return auditOutputs.filter(({ slug }) => {
     const doSkip = toSkip.has(slug);
     if (doSkip) {
       ui().logger.info(
@@ -35,19 +35,19 @@ export function normalizeAuditOutputs(
 
 export function toAuditOutputs(
   lhrAudits: Result[],
-  {verbose = false}: { verbose?: boolean } = {},
+  { verbose = false }: { verbose?: boolean } = {},
 ): AuditOutputs {
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
   return lhrAudits.map(
     ({
-       id: slug,
-       score,
-       numericValue: value = 0, // not every audit has a numericValue
-       details,
-       displayValue,
-     }: Result) => {
+      id: slug,
+      score,
+      numericValue: value = 0, // not every audit has a numericValue
+      details,
+      displayValue,
+    }: Result) => {
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 1, // score can be null
@@ -62,7 +62,11 @@ export function toAuditOutputs(
             details: toAuditDetails(details),
           };
         } catch (e) {
-          throw new Error(`\nAudit ${chalk.bold(slug)} failed parsing details: \n${(e as Error).message}`)
+          throw new Error(
+            `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
+              (e as Error).message
+            }`,
+          );
         }
       }
 
@@ -72,9 +76,9 @@ export function toAuditOutputs(
 }
 
 export function setLogLevel({
-                              verbose,
-                              quiet,
-                            }: {
+  verbose,
+  quiet,
+}: {
   verbose?: boolean;
   quiet?: boolean;
 } = {}) {
@@ -95,14 +99,14 @@ export type ConfigOptions = Partial<
 export async function getConfig(
   options: ConfigOptions = {},
 ): Promise<Config | undefined> {
-  const {configPath: filepath, preset} = options;
+  const { configPath: filepath, preset } = options;
 
   if (filepath != null) {
     if (filepath.endsWith('.json')) {
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importEsmModule<Config>({filepath});
+      return importEsmModule<Config>({ filepath });
     } else {
       ui().logger.info(`Format of file ${filepath} not supported`);
     }

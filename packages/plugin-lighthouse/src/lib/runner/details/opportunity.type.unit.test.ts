@@ -1,84 +1,105 @@
-import {describe, expect, it} from "vitest";
-import Details from "lighthouse/types/lhr/audit-details";
-import {parseOpportunityDetails} from "./opportunity.type";
+import type Details from 'lighthouse/types/lhr/audit-details';
+import { describe, expect, it } from 'vitest';
+import type { Table } from '@code-pushup/models';
+import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
 
-describe.skip('parseOpportunityDetails', () => {
-
+describe('parseOpportunityDetails', () => {
   it('should omit empty opportunities', () => {
-    const outputs = parseOpportunityDetails({
-        type: "opportunity",
-        headings: [],
-        items: [],
-        overallSavingsMs: 0
-    } as Details.Opportunity);
+    const outputs = parseOpportunityToAuditDetailsTable({
+      type: 'opportunity',
+      headings: [],
+      items: [],
+      overallSavingsMs: 0,
+      overallSavingsBytes: 0,
+      sortedBy: ['wastedBytes'],
+      debugData: {
+        type: 'debugdata',
+        metricSavings: {
+          FCP: 0,
+          LCP: 0,
+        },
+      },
+    } satisfies Details.Opportunity);
 
-    expect(outputs).toEqual({});
+    expect(outputs).toBeUndefined()
   });
 
   it('should format bytes', () => {
-    const outputs = parseOpportunityDetails({
+    const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
-      headings: [{key: 'totalBytes'}, {key: 'wastedBytes'}],
-      items: [{
-        node: {type: 'node'},
-        totalBytes: 78235,
-        wastedBytes: 75110,
-      } as unknown as Details.OpportunityItem]
-    } as Details.Opportunity);
+      headings: [
+        { key: 'totalBytes' },
+        { key: 'wastedBytes' },
+      ] as Details.TableColumnHeading[],
+      items: [
+        {
+          totalBytes: 78235,
+          wastedBytes: 75110,
+          url: 'xyz',
+        },
+      ],
+    });
 
-    expect(outputs?.table?.rows.at(0)).toEqual(expect.objectContaining({
-          totalBytes: '76.4 kB',
-          wastedBytes: '73.35 kB'
-    }));
+    expect(outputs?.rows.at(0)).toEqual(
+      expect.objectContaining({
+        totalBytes: '76.4 kB',
+        wastedBytes: '73.35 kB',
+      }),
+    );
   });
 
   it('should format percentage', () => {
-    const outputs = parseOpportunityDetails({
+    const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
-      headings: [{key: 'wastedPercent'}],
-      items: [{
-        node: {type: 'node'},
-        wastedPercent: 96.00504879698522,
-      } as unknown as Details.OpportunityItem]
+      headings: [{ key: 'wastedPercent' }],
+      items: [
+        {
+          wastedPercent: 96.005_048_796_985_22,
+        } as unknown as Details.OpportunityItem,
+      ],
     } as Details.Opportunity);
 
-    expect(outputs?.table?.rows.at(0)).toEqual(expect.objectContaining({
-      wastedPercent: '96.01 %',
-    }));
+    expect(outputs?.rows.at(0)).toEqual(
+      expect.objectContaining({
+        wastedPercent: '96.01 %',
+      }),
+    );
   });
 
   it('should format node', () => {
-    const outputs = parseOpportunityDetails({
+    const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
-      headings: [{key: 'node'}],
-      items: [{
-        node: {type: 'node', selector: 'h1'},
-        wastedPercent: 96.00504879698522,
-      } as unknown as Details.OpportunityItem]
+      headings: [{ key: 'node', valueType: 'node' }],
+      items: [
+        {
+          node: { type: 'node', selector: 'h1' },
+        } as unknown as Details.OpportunityItem,
+      ],
     } as Details.Opportunity);
 
-    expect(outputs?.table?.rows.at(0)).toEqual(expect.objectContaining({
-      node: 'h1',
-    }));
+    expect(outputs?.rows.at(0)).toEqual(
+      expect.objectContaining({
+        node: 'h1',
+      }),
+    );
   });
 
   it('should accept empty node', () => {
-    const outputs = parseOpportunityDetails({
+    const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
-      headings: [{key: 'node'}],
-      items: [{
-        node: undefined,
-        wastedPercent: 96.00504879698522,
-      } as unknown as Details.OpportunityItem]
+      headings: [{ key: 'node', valueType: 'node' }],
+      items: [
+        {
+          node: undefined,
+        } as unknown as Details.OpportunityItem,
+      ],
     } as Details.Opportunity);
 
-    expect(outputs?.table?.rows.at(0)).toEqual(expect.objectContaining({
-      node: undefined,
-    }));
+    expect(outputs?.rows).toEqual([{ node: '' }]);
   });
 
   it('should render complete details of type opportunity', () => {
-    const outputs = parseOpportunityDetails({
+    const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
       headings: [
         {
@@ -123,9 +144,9 @@ describe.skip('parseOpportunityDetails', () => {
             nodeLabel: 'Code suggestion',
           },
           url: 'https://codepushup.dev/assets/code-suggestion.webp',
-          totalBytes: 78235,
-          wastedBytes: 75110,
-          wastedPercent: 96.00504879698522,
+          totalBytes: 78_235,
+          wastedBytes: 75_110,
+          wastedPercent: 96.005_048_796_985_22,
         },
         {
           node: {
@@ -147,13 +168,13 @@ describe.skip('parseOpportunityDetails', () => {
             nodeLabel: 'Category detail',
           },
           url: 'https://codepushup.dev/assets/category-detail.webp',
-          totalBytes: 53596,
-          wastedBytes: 49890,
-          wastedPercent: 93.08450581900296,
+          totalBytes: 53_596,
+          wastedBytes: 49_890,
+          wastedPercent: 93.084_505_819_002_96,
         },
       ],
-      overallSavingsMs: 1750,
-      overallSavingsBytes: 333817,
+      overallSavingsMs: 1_750,
+      overallSavingsBytes: 333_817,
       sortedBy: ['wastedBytes'],
       debugData: {
         type: 'debugdata',
@@ -165,41 +186,42 @@ describe.skip('parseOpportunityDetails', () => {
     } satisfies Details.Opportunity);
 
     expect(outputs).toStrictEqual({
-      table: {
-        headings: [
-          {
-            key: 'node',
-            label: '',
-          },
-          {
-            key: 'url',
-            label: 'URL',
-          },
-          {
-            key: 'totalBytes',
-            label: 'Resource Size',
-          },
-          {
-            key: 'wastedBytes',
-            label: 'Potential Savings',
-          },
-        ],
-        alignment: ['l', 'c', 'l', 'l'],
-        rows: [
-          {
-            node: 'div.feature > cp-window-frame.window > div.body > img.product-screen',
-            url: 'https://codepushup.dev/assets/code-suggestion.webp',
-            totalBytes: '76.4 kB',
-            wastedBytes: '73.35 kB',
-          },
-          {
-            node: 'div.feature > cp-window-frame.window > div.body > img.product-screen',
-            url: 'https://codepushup.dev/assets/category-detail.webp',
-            totalBytes: '52.34 kB',
-            wastedBytes: '48.72 kB',
-          },
-        ],
-      },
-    });
+      columns: [
+        {
+          key: 'node',
+          label: '',
+          align: 'left',
+        },
+        {
+          key: 'url',
+          label: 'URL',
+          align: 'left',
+        },
+        {
+          key: 'totalBytes',
+          label: 'Resource Size',
+          align: 'left',
+        },
+        {
+          key: 'wastedBytes',
+          label: 'Potential Savings',
+          align: 'left',
+        },
+      ],
+      rows: [
+        {
+          node: 'div.feature > cp-window-frame.window > div.body > img.product-screen',
+          url: '<a href="https://codepushup.dev/assets/code-suggestion.webp">https://codepushup.dev/assets/code-suggestion.webp</a>',
+          totalBytes: '76.4 kB',
+          wastedBytes: '73.35 kB',
+        },
+        {
+          node: 'div.feature > cp-window-frame.window > div.body > img.product-screen',
+          url: '<a href="https://codepushup.dev/assets/category-detail.webp">https://codepushup.dev/assets/category-detail.webp</a>',
+          totalBytes: '52.34 kB',
+          wastedBytes: '48.72 kB',
+        },
+      ],
+    } satisfies Table);
   });
-})
+});

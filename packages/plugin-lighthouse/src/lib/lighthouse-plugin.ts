@@ -1,6 +1,6 @@
 import type { PluginConfig } from '@code-pushup/models';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { name, version } from '../../package.json';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { normalizeFlags } from './normalize-flags';
 import {
   LIGHTHOUSE_GROUPS,

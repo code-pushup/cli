@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import {Result} from 'lighthouse/types/lhr/audit-result';
-import {describe, expect, it} from 'vitest';
-import {getLogMessages} from '@code-pushup/test-utils';
-import {ui} from '@code-pushup/utils';
-import {logUnsupportedDetails, toAuditDetails} from "../details/details";
+import { Result } from 'lighthouse/types/lhr/audit-result';
+import { describe, expect, it } from 'vitest';
+import { getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
+import { logUnsupportedDetails, toAuditDetails } from '../details/details';
 
 describe.skip('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
@@ -41,7 +41,6 @@ describe.skip('logUnsupportedDetails', () => {
 });
 
 describe.skip('toAuditDetails', () => {
-
   it('should render audit details of type table', () => {
     const outputs = toAuditDetails({
       type: 'table',
@@ -177,5 +176,4 @@ describe.skip('toAuditDetails', () => {
 
     expect(outputs).toStrictEqual({});
   });
-
 });
