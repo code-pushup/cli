@@ -8,4 +8,5 @@ export {
   eslintConfigFromNxProjectAndDeps,
   eslintConfigFromNxProjects,
   eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProject,
 } from './lib/nx';
