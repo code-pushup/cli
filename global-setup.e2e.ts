@@ -9,12 +9,14 @@ export async function setup() {
   const registry = await startLocalRegistry();
   // we can only install packages released by nx, see nx.json release.projects globs
   try {
-    execSync(`npm install -D @code-pushup/cli@e2e --registry=${registry}`);
     execSync(
-      `npm install -D @code-pushup/eslint-plugin@e2e --registry=${registry}`,
+      `npm install -D @code-pushup/cli@e2e --force --registry=${registry}`,
     );
     execSync(
-      `npm install -D @code-pushup/coverage-plugin@e2e --registry=${registry}`,
+      `npm install -D @code-pushup/eslint-plugin@e2e --force --registry=${registry}`,
+    );
+    execSync(
+      `npm install -D @code-pushup/coverage-plugin@e2e --force --registry=${registry}`,
     );
     await setupTestFolder('tmp/e2e');
   } catch (e) {
