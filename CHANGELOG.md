@@ -1,3 +1,15 @@
+## 0.43.0 (2024-05-22)
+
+### 🚀 Features
+
+- **plugin-eslint:** rename eslintConfigFromNxProjects to eslintConfigFromAllNxProjects ([068b3359](https://github.com/code-pushup/cli/commit/068b3359))
+- **plugin-eslint:** rename eslintConfigFromNxProject to eslintConfigFromNxProjectAndDeps ([efbb72ae](https://github.com/code-pushup/cli/commit/efbb72ae))
+- **plugin-eslint:** add eslintConfigFromNxProject helper that doesn't include nx project deps ([0706bdaf](https://github.com/code-pushup/cli/commit/0706bdaf))
+
+### ❤️ Thank You
+
+- Vojtech Masek @vmasek
+
 ## 0.42.1 (2024-05-22)
 
 This was a version bump only, there were no code changes.
