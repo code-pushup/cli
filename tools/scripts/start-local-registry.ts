@@ -2,8 +2,9 @@
  * This script starts a local registry for e2e testing purposes.
  * It is meant to be called in jest's globalSetup.
  */
-import { execFileSync, execSync, spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { join } from 'node:path';
+import { releasePublish, releaseVersion } from 'nx/release';
 
 export default async () => {
   // local registry target to run
@@ -29,43 +30,26 @@ export default async () => {
   }
   global.stopLocalRegistry = stop;
   global.registry = registry;
-
   try {
     const version = execSync('git describe --tags --abbrev=0')
       .toString()
       .trim();
 
-    execFileSync(
-      'npx',
-      [
-        'nx',
-        'run-many',
-        '--targets',
-        'publish',
-        '--ver',
-        version.substring(1),
-        '--tag',
-        'e2e',
-      ],
-      { env: process.env, stdio: 'inherit', shell: true },
-    );
+    await releaseVersion({
+      specifier: version.substring(1),
+      stageChanges: false,
+      gitCommit: false,
+      gitTag: false,
+      firstRelease: true,
+      generatorOptionsOverrides: {
+        skipLockFileUpdate: true,
+      },
+    });
 
-    // left commented out for reference
-    // await releaseVersion({
-    //   specifier: version.substring(1),
-    //   stageChanges: false,
-    //   gitCommit: false,
-    //   gitTag: false,
-    //   firstRelease: true,
-    //   generatorOptionsOverrides: {
-    //     skipLockFileUpdate: true,
-    //   },
-    // });
-
-    // await releasePublish({
-    //   tag: 'e2e',
-    //   registry,
-    // });
+    await releasePublish({
+      tag: 'e2e',
+      registry,
+    });
     return registry;
   } catch (e) {
     console.error(e);
