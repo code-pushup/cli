@@ -7,4 +7,5 @@ export type { ESLintPluginConfig } from './lib/config';
 export {
   eslintConfigFromNxProject,
   eslintConfigFromNxProjects,
+  eslintConfigFromAllNxProjects,
 } from './lib/nx';

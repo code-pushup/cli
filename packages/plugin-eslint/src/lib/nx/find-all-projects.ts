@@ -9,21 +9,27 @@ import { nxProjectsToConfig } from './projects-to-config';
  *
  * @example
  * import eslintPlugin, {
- *   eslintConfigFromNxProjects,
+ *   eslintConfigFromAllNxProjects,
  * } from '@code-pushup/eslint-plugin';
  *
  * export default {
  *   plugins: [
  *     await eslintPlugin(
- *       await eslintConfigFromNxProjects()
+ *       await eslintConfigFromAllNxProjects()
  *     )
  *   ]
  * }
  *
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
-export async function eslintConfigFromNxProjects(): Promise<ESLintTarget[]> {
+export async function eslintConfigFromAllNxProjects(): Promise<ESLintTarget[]> {
   const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
   return nxProjectsToConfig(projectGraph);
 }
+
+/**
+ * @deprecated
+ * Helper is renamed, please use `eslintConfigFromAllNxProjects` function instead.
+ */
+export const eslintConfigFromNxProjects = eslintConfigFromAllNxProjects;

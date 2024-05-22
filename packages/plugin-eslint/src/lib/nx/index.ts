@@ -1,2 +1,5 @@
-export { eslintConfigFromNxProjects } from './find-all-projects';
+export {
+  eslintConfigFromNxProjects,
+  eslintConfigFromAllNxProjects,
+} from './find-all-projects';
 export { eslintConfigFromNxProject } from './find-project-with-deps';
