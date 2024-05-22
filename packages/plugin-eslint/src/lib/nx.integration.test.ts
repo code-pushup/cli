@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
 import { type ESLintTarget } from './config';
-import { eslintConfigFromNxProject, eslintConfigFromNxProjects } from './nx';
+import { eslintConfigFromAllNxProjects, eslintConfigFromNxProject } from './nx';
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -33,7 +33,7 @@ describe('Nx helpers', () => {
 
   describe('create config from all Nx projects', () => {
     it('should include eslintrc and patterns of each project', async () => {
-      await expect(eslintConfigFromNxProjects()).resolves.toEqual([
+      await expect(eslintConfigFromAllNxProjects()).resolves.toEqual([
         {
           eslintrc: './packages/cli/.eslintrc.json',
           patterns: [

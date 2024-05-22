@@ -5,8 +5,8 @@ import { findAllDependencies } from './traverse-graph';
 /**
  * Accepts a target Nx projects, finds projects it depends on, and converts lint configurations to Code PushUp ESLint plugin parameters.
  *
- * Use when you wish to include a targetted subset of your Nx monorepo in your Code PushUp project.
- * If you prefer to include all Nx projects, refer to {@link eslintConfigFromNxProjects} instead.
+ * Use when you wish to include a targeted subset of your Nx monorepo in your Code PushUp project.
+ * If you prefer to include all Nx projects, refer to {@link eslintConfigFromAllNxProjects} instead.
  *
  * @example
  * import eslintPlugin, {
