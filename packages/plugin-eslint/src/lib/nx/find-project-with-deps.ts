@@ -10,7 +10,7 @@ import { findAllDependencies } from './traverse-graph';
  *
  * @example
  * import eslintPlugin, {
- *   eslintConfigFromNxProject,
+ *   eslintConfigFromNxProjectAndDeps,
  * } from '@code-pushup/eslint-plugin';
  *
  * const projectName = 'backoffice'; // <-- name from project.json
@@ -18,7 +18,7 @@ import { findAllDependencies } from './traverse-graph';
  * export default {
  *   plugins: [
  *     await eslintPlugin(
- *       await eslintConfigFromNxProject(projectName)
+ *       await eslintConfigFromNxProjectAndDeps(projectName)
  *     )
  *   ]
  * }
@@ -26,7 +26,7 @@ import { findAllDependencies } from './traverse-graph';
  * @param projectName Nx project serving as main entry point
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
-export async function eslintConfigFromNxProject(
+export async function eslintConfigFromNxProjectAndDeps(
   projectName: string,
 ): Promise<ESLintTarget[]> {
   const { createProjectGraphAsync } = await import('@nx/devkit');

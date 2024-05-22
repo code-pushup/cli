@@ -3,7 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
 import { type ESLintTarget } from './config';
-import { eslintConfigFromAllNxProjects, eslintConfigFromNxProject } from './nx';
+import {
+  eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProjectAndDeps,
+} from './nx';
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -109,7 +112,7 @@ describe('Nx helpers', () => {
     ])(
       'project %j - expected configurations for projects %j',
       async (project, expectedProjects) => {
-        const targets = await eslintConfigFromNxProject(project);
+        const targets = await eslintConfigFromNxProjectAndDeps(project);
 
         expect(targets).toEqual(
           expectedProjects.map(

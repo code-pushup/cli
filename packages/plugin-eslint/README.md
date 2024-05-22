@@ -72,15 +72,15 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      };
      ```
 
-   - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProject` helper and pass in in your project name:
+   - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProjectAndDeps` helper and pass in in your project name:
 
      ```js
-     import eslintPlugin, { eslintConfigFromNxProject } from '@code-pushup/eslint-plugin';
+     import eslintPlugin, { eslintConfigFromNxProjectAndDeps } from '@code-pushup/eslint-plugin';
 
      export default {
        plugins: [
          // ...
-         await eslintPlugin(await eslintConfigFromNxProject('<PROJECT-NAME>')),
+         await eslintPlugin(await eslintConfigFromNxProjectAndDeps('<PROJECT-NAME>')),
        ],
      };
      ```
