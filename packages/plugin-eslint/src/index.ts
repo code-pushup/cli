@@ -6,6 +6,7 @@ export type { ESLintPluginConfig } from './lib/config';
 
 export {
   eslintConfigFromNxProjectAndDeps,
+  // eslint-disable-next-line deprecation/deprecation
   eslintConfigFromNxProjects,
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
