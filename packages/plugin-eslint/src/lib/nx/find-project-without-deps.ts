@@ -2,11 +2,11 @@ import type { ESLintTarget } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 
 /**
- * Accepts a target Nx projects, converts lint configurations to Code PushUp ESLint plugin parameters.
+ * Accepts a target Nx project, converts its lint configuration to Code PushUp ESLint plugin parameters.
  *
- * Use when you wish to include a targeted subset of your Nx monorepo in your Code PushUp project.
- * If you prefer to include all Nx projects, refer to {@link eslintConfigFromAllNxProjects} instead,
- * if you'd like to auto include all dependencies of the provided target project use {@link eslintConfigFromNxProjectAndDeps} instead.
+ * Use when you wish to only have a single Nx project as your Code PushUp project, without any other dependencies.
+ * If you prefer to include all Nx projects, refer to {@link eslintConfigFromAllNxProjects} instead.
+ * If you'd like to auto include all dependencies of the provided target project use {@link eslintConfigFromNxProjectAndDeps} instead.
  *
  * @example
  * import eslintPlugin, {
@@ -23,17 +23,22 @@ import { nxProjectsToConfig } from './projects-to-config';
  *   ]
  * }
  *
- * @param projectName Nx project serving as main entry point
+ * @param projectName Nx project name
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
 export async function eslintConfigFromNxProject(
   projectName: string,
-): Promise<ESLintTarget[]> {
+): Promise<ESLintTarget> {
   const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
 
-  return nxProjectsToConfig(
+  const [project] = nxProjectsToConfig(
     projectGraph,
     project => !!project.name && project.name === projectName,
   );
+  
+  if (!project) {
+    throw new Error(`Couldn't find Nx project named "${projectName}"`);
+  }
+  return project;
 }
