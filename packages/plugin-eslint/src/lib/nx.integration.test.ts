@@ -7,6 +7,10 @@ import {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProjectAndDeps,
 } from './nx';
+import { eslintConfigFromNxProject } from './nx/find-project-without-deps';
+
+const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
+type Project = (typeof ALL_PROJECTS)[number];
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -101,9 +105,6 @@ describe('Nx helpers', () => {
      *   utils ◄──────┘
      */
 
-    const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
-    type Project = (typeof ALL_PROJECTS)[number];
-
     it.each<[Project, Project[]]>([
       ['cli', ['cli', 'core', 'utils']],
       ['core', ['core', 'utils']],
@@ -122,6 +123,36 @@ describe('Nx helpers', () => {
             }),
           ),
         );
+      },
+    );
+  });
+
+  describe('create config from target Nx project without its dependencies', () => {
+    /*
+     * Project graph:
+     *
+     *   cli
+     *    │
+     *    │
+     *    ▼
+     *   core
+     *    │        nx-plugin
+     *    │           │
+     *    ▼           │
+     *   utils ◄──────┘
+     */
+
+    it.each<[Project]>([['cli'], ['core'], ['utils']])(
+      'project %j - expected configurations for projects %j',
+      async project => {
+        const targets = await eslintConfigFromNxProject(project);
+
+        expect(targets).toEqual([
+          {
+            eslintrc: `./packages/${project}/.eslintrc.json`,
+            patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
+          },
+        ]);
       },
     );
   });
