@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AuditReport, Issue } from '@code-pushup/models';
+import { NEW_LINE } from '../text-formats/constants';
 import { tableSection } from './formatting';
 import {
   aboutSection,
@@ -9,7 +10,6 @@ import {
   auditsSection,
   generateMdReport,
 } from './generate-md-report';
-import { NEW_LINE } from './md';
 import { ScoredReport } from './types';
 
 const baseScoredReport = {
@@ -169,7 +169,7 @@ describe('tableSection', () => {
   it('should render complete section', () => {
     expect(
       tableSection({
-        headings: [
+        columns: [
           { key: 'phase', label: 'Phase' },
           { key: 'percentageLcp', label: '% of LCP' },
           { key: 'timing', label: 'Timing' },
@@ -257,6 +257,7 @@ describe('auditDetails', () => {
       displayValue: '190ms',
       details: {
         table: {
+          title: 'Elements',
           rows: [
             {
               element: 'button',
@@ -269,7 +270,7 @@ describe('auditDetails', () => {
       },
     } as AuditReport);
     expect(md).toMatch('<details>');
-    expect(md).toMatch('#### Additional Information');
+    expect(md).toMatch('#### Elements');
     expect(md).toMatch('|button|');
     expect(md).toMatch('|div|');
     expect(md).not.toMatch('#### Issues');
@@ -285,7 +286,7 @@ describe('auditDetails', () => {
         displayValue: '190ms',
         details: {
           table: {
-            headings: [
+            columns: [
               { key: 'classNames', label: 'Class Names' },
               { key: 'element' },
             ],
@@ -364,7 +365,6 @@ describe('auditsSection', () => {
     } as unknown as ScoredReport);
     expect(md).toMatch('#### Issues');
     expect(md).toMatch('|Severity|Message|Source file|Line(s)|');
-    expect(md).toMatch('#### Additional Information');
     expect(md).toMatch('|value|');
   });
 
@@ -560,10 +560,14 @@ describe('generateMdReport', () => {
                 docsUrl: 'https://web.dev/lcp',
                 details: {
                   table: {
-                    headings: [
+                    columns: [
                       { key: 'phase', label: 'Phase' },
-                      { key: 'percentageLcp', label: '% of LCP' },
-                      { key: 'timing', label: 'Timing' },
+                      {
+                        key: 'percentageLcp',
+                        label: '% of LCP',
+                        align: 'left',
+                      },
+                      { key: 'timing', label: 'Timing', align: 'right' },
                     ],
                     rows: [
                       {
@@ -587,7 +591,6 @@ describe('generateMdReport', () => {
                         timing: '140 ms',
                       },
                     ],
-                    alignment: ['c', 'l', 'r'],
                   },
                 },
               },

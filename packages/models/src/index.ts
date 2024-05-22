@@ -1,3 +1,8 @@
+export {
+  PrimitiveValue,
+  primitiveValueSchema,
+} from './lib/implementation/schemas';
+
 export { Audit, auditSchema } from './lib/audit';
 export {
   AuditDetails,
@@ -36,10 +41,14 @@ export { exists } from './lib/implementation/utils';
 export {
   TableAlignment,
   tableAlignmentSchema,
-  TableHeading,
-  tableHeadingSchema,
-  TableRow,
-  tableRowSchema,
+  TableRowPrimitive,
+  tableRowPrimitiveSchema,
+  TableRowObject,
+  tableRowObjectSchema,
+  TableColumnPrimitive,
+  tableColumnPrimitiveSchema,
+  TableColumnObject,
+  tableColumnObjectSchema,
   Table,
   tableSchema,
 } from './lib/table';

@@ -1,3 +1,4 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
 import { z } from 'zod';
 import {
@@ -77,7 +78,9 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin('https://codepushup.dev/'),
+    await lighthousePlugin('https://codepushup.dev/', {
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+    }),
   ],
 
   categories: [

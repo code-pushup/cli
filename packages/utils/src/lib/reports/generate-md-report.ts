@@ -1,23 +1,17 @@
 import { AuditReport, Issue, Report, Table } from '@code-pushup/models';
 import { formatDate, formatDuration } from '../formatting';
+import { SPACE, html, md } from '../text-formats';
 import {
   FOOTER_PREFIX,
   README_LINK,
   issuesTableHeadings,
-  pluginMetaTableAlignment,
-  pluginMetaTableHeaders,
   reportHeadlineText,
-  reportMetaTableAlignment,
-  reportMetaTableHeaders,
 } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
-import { details } from './html/details';
-import { style as htmlFontStyle } from './html/font-style';
-import { SPACE, h1, h2, h3, lines, link, section, style } from './md';
 import { ScoredReport } from './types';
 import {
   formatReportScore,
@@ -26,12 +20,15 @@ import {
   severityMarker,
 } from './utils';
 
+const { h1, h2, h3, lines, link, section, code: codeMd } = md;
+const { bold: boldHtml, details } = html;
+
 export function auditDetailsAuditValue({
   score,
   value,
   displayValue,
 }: AuditReport) {
-  return `${scoreMarker(score, 'square')} ${htmlFontStyle(
+  return `${scoreMarker(score, 'square')} ${boldHtml(
     String(displayValue ?? value),
   )} (score: ${formatReportScore(score)})`;
 }
@@ -54,7 +51,8 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     return '';
   }
   const detailsTableData = {
-    headings: issuesTableHeadings,
+    title: 'Issues',
+    columns: issuesTableHeadings,
     rows: issues.map(
       ({ severity: severityVal, message, source: sourceVal }: Issue) => {
         const severity = `${severityMarker(severityVal)} <i>${severityVal}</i>`;
@@ -76,7 +74,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
     ),
   };
 
-  return tableSection(detailsTableData, { heading: 'Issues' });
+  return tableSection(detailsTableData);
 }
 
 export function auditDetails(audit: AuditReport) {
@@ -88,10 +86,7 @@ export function auditDetails(audit: AuditReport) {
     return section(detailsValue);
   }
 
-  const tableSectionContent =
-    table == null
-      ? ''
-      : tableSection(table, { heading: 'Additional Information' });
+  const tableSectionContent = table == null ? '' : tableSection(table);
   const issuesSectionContent =
     issues.length > 0 ? auditDetailsIssues(issues) : '';
 
@@ -123,8 +118,8 @@ export function aboutSection(
   report: Omit<ScoredReport, 'packageName'>,
 ): string {
   const { date, plugins } = report;
-  const reportMetaTable = reportMetaData(report);
-  const pluginMetaTable = reportPluginMeta({ plugins });
+  const reportMetaTable: Table = reportMetaData(report);
+  const pluginMetaTable: Table = reportPluginMeta({ plugins });
   return lines(
     h2('About'),
     section(
@@ -137,9 +132,23 @@ export function aboutSection(
   );
 }
 
-export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
+export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>): Table {
   return {
-    headings: pluginMetaTableHeaders,
+    columns: [
+      {
+        key: 'plugin',
+        align: 'left',
+      },
+      {
+        key: 'audits',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+    ],
     rows: plugins.map(
       ({
         title: pluginTitle,
@@ -149,11 +158,10 @@ export function reportPluginMeta({ plugins }: Pick<Report, 'plugins'>) {
       }) => ({
         plugin: pluginTitle,
         audits: audits.length.toString(),
-        version: style(pluginVersion || '', ['c']),
+        version: codeMd(pluginVersion || ''),
         duration: formatDuration(pluginDuration),
       }),
     ),
-    alignment: pluginMetaTableAlignment,
   };
 }
 
@@ -172,11 +180,31 @@ export function reportMetaData({
     : 'N/A';
 
   return {
-    headings: reportMetaTableHeaders,
+    columns: [
+      {
+        key: 'commit',
+        align: 'left',
+      },
+      {
+        key: 'version',
+      },
+      {
+        key: 'duration',
+      },
+      {
+        key: 'plugins',
+      },
+      {
+        key: 'categories',
+      },
+      {
+        key: 'audits',
+      },
+    ],
     rows: [
       {
         commit: commitInfo,
-        version: style(version || '', ['c']),
+        version: codeMd(version || ''),
         duration: formatDuration(duration),
         plugins: plugins.length,
         categories: categories.length,
@@ -185,6 +213,5 @@ export function reportMetaData({
           .toString(),
       },
     ],
-    alignment: reportMetaTableAlignment,
   };
 }

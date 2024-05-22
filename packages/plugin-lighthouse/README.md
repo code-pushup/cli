@@ -147,6 +147,18 @@ For a complete list the [official documentation of CLI flags](https://github.com
 > - `list-trace-categories` - Prints a list of all required trace categories and exits.
 > - `view` - Open HTML report in your browser
 
+## Chrome Flags for Tooling
+
+We recommend using Chrome flags for more stable runs in a tooling environment.
+The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package provides a set of flags dedicated to tooling that they also documented very well.
+
+> ```ts
+> // code-pushup.config.ts
+> import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
+> ...
+> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: DEFAULT_FLAGS });
+> ```
+
 ## Config
 
 The plugin accepts a third optional argument, `config`.
