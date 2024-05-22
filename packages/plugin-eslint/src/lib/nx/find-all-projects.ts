@@ -5,7 +5,7 @@ import { nxProjectsToConfig } from './projects-to-config';
  * Finds all Nx projects in workspace and converts their lint configurations to Code PushUp ESLint plugin parameters.
  *
  * Use when you wish to automatically include every Nx project in a single Code PushUp project.
- * If you prefer to only include a subset of your Nx monorepo, refer to {@link eslintConfigFromNxProject} instead.
+ * If you prefer to only include a subset of your Nx monorepo, refer to {@link eslintConfigFromNxProjectAndDeps} instead.
  *
  * @example
  * import eslintPlugin, {
