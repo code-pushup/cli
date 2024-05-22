@@ -33,7 +33,6 @@ export default defineConfig({
     },
     coverage: {
       reporter: ['lcov', 'text'],
-      provider: 'v8',
       reportsDirectory: '../../coverage/react-todos-app',
       include: ['src/**/*.{js,jsx}'],
     },

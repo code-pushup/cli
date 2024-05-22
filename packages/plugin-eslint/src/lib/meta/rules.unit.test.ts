@@ -16,11 +16,11 @@ describe('listRules', () => {
 
   let cwdSpy: MockInstance<[], string>;
 
-  beforeAll(() => {
+  beforeEach(() => {
     cwdSpy = vi.spyOn(process, 'cwd');
   });
 
-  afterAll(() => {
+  afterEach(() => {
     cwdSpy.mockRestore();
   });
 
@@ -31,7 +31,7 @@ describe('listRules', () => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeEach(() => {
       cwdSpy.mockReturnValue(appRootDir);
     });
 
@@ -94,7 +94,7 @@ describe('listRules', () => {
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeEach(() => {
       cwdSpy.mockReturnValue(nxRootDir);
     });
 

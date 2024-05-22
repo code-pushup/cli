@@ -119,3 +119,16 @@ The following optional folders can be present in a project root;
 - `mocks` - test fixtures and utilities specific for a given project
 - `docs` - files related to documentation
 - `tooling` - tooling related code
+
+## Release
+
+Versioning follows [semantic versioning](https://semver.org/) guidelines and use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) to determine the next version.
+
+Releases are managed via [Nx release CLI](https://nx.dev/features/manage-releases), which is configured in [nx.json](./nx.json) to
+
+- sync versions across projects based on Git tags (`nx release version`)
+- generate changelog based on commit messages (`nx release changelog`)
+- generate GitHub release notes (`nx release changelog`)
+- build and publish packages to NPM (`nx release publish`)
+
+Changes are automatically released to GitHub and released to NPM via [CI/CD pipeline](./.github/workflows/release.yml) when merged to the main branch.

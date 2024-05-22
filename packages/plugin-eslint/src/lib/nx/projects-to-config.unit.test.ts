@@ -4,7 +4,7 @@ import type {
   ProjectGraphProjectNode,
 } from '@nx/devkit';
 import { vol } from 'memfs';
-import type { MockInstance } from 'vitest';
+import { setWorkspaceRoot } from 'nx/src/utils/workspace-root';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ESLintPluginConfig, ESLintTarget } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
@@ -47,14 +47,9 @@ describe('nxProjectsToConfig', () => {
     ),
   });
 
-  let cwdSpy: MockInstance<[], string>;
-
-  beforeAll(() => {
-    cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);
-  });
-
-  afterAll(() => {
-    cwdSpy.mockRestore();
+  beforeAll(async () => {
+    // set Nx workspace root to actual process.cwd(), instead of memfs volume from spy
+    setWorkspaceRoot((await import('node:process')).cwd());
   });
 
   it('should include all projects by default', async () => {
