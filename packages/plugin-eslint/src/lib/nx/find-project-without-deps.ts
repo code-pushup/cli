@@ -32,13 +32,14 @@ export async function eslintConfigFromNxProject(
   const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
 
-  const [project] = nxProjectsToConfig(
+  const [project] = await nxProjectsToConfig(
     projectGraph,
-    project => !!project.name && project.name === projectName,
+    ({ name }) => !!name && name === projectName,
   );
-  
+
   if (!project) {
     throw new Error(`Couldn't find Nx project named "${projectName}"`);
   }
+
   return project;
 }

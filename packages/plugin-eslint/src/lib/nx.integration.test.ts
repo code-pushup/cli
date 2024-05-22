@@ -147,12 +147,10 @@ describe('Nx helpers', () => {
       async project => {
         const targets = await eslintConfigFromNxProject(project);
 
-        expect(targets).toEqual([
-          {
-            eslintrc: `./packages/${project}/.eslintrc.json`,
-            patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
-          },
-        ]);
+        expect(targets).toEqual({
+          eslintrc: `./packages/${project}/.eslintrc.json`,
+          patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
+        });
       },
     );
   });
