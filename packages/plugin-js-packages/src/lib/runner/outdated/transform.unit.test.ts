@@ -166,6 +166,7 @@ describe('outdatedResultToAuditOutput', () => {
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
+      details: { issues: [] },
     });
   });
 
@@ -188,6 +189,7 @@ describe('outdatedResultToAuditOutput', () => {
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
+      details: { issues: [] },
     });
   });
 

@@ -1,5 +1,5 @@
 import { ReleaseType, clean, diff, neq } from 'semver';
-import type { Issue } from '@code-pushup/models';
+import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
 import { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
@@ -10,7 +10,7 @@ export function outdatedResultToAuditOutput(
   result: OutdatedResult,
   packageManager: PackageManagerId,
   depGroup: DependencyGroup,
-) {
+): AuditOutput {
   const relevantDependencies: OutdatedResult = result.filter(
     dep => dep.type === dependencyGroupToLong[depGroup],
   );
@@ -51,7 +51,7 @@ export function outdatedResultToAuditOutput(
     ),
     value: outdatedDependencies.length,
     displayValue: outdatedToDisplayValue(outdatedStats),
-    ...(issues.length > 0 && { details: { issues } }),
+    details: { issues },
   };
 }
 
