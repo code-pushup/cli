@@ -1,3 +1,14 @@
+## 0.43.1 (2024-05-23)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** always include issues array, even if empty ([bd7c5631](https://github.com/code-pushup/cli/commit/bd7c5631))
+- **plugin-js-packages:** always include issues array, even if empty ([748eb64a](https://github.com/code-pushup/cli/commit/748eb64a))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.43.0 (2024-05-22)
 
 ### 🚀 Features
