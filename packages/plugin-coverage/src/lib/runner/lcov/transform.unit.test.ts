@@ -304,6 +304,7 @@ describe('lcovCoverageToAudit', () => {
       score: 1,
       value: 100,
       displayValue: '100 %',
+      details: { issues: [] },
     });
   });
 
@@ -318,6 +319,7 @@ describe('lcovCoverageToAudit', () => {
       score: 1,
       value: 100,
       displayValue: '100 %',
+      details: { issues: [] },
     });
   });
 

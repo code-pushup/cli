@@ -112,6 +112,8 @@ export function lcovCoverageToAuditOutput(
     score: toNumberPrecision(coverage, MAX_DECIMAL_PLACES),
     value: roundedIntValue,
     displayValue: `${roundedIntValue} %`,
-    ...(stat.issues.length > 0 && { details: { issues: stat.issues } }),
+    details: {
+      issues: stat.issues,
+    },
   };
 }
