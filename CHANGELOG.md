@@ -1,3 +1,13 @@
+## 0.44.0 (2024-05-23)
+
+### 🚀 Features
+
+- **core:** include audit table in portal upload ([2b4f3e15](https://github.com/code-pushup/cli/commit/2b4f3e15))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.43.1 (2024-05-23)
 
 ### 🩹 Fixes
