@@ -100,7 +100,6 @@ export const DEFAULT_CLI_FLAGS = {
   onlyAudits: [],
   skipAudits: [],
   onlyCategories: [],
-  budgets: [],
   output: ['json'],
   outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
 } satisfies Partial<CliFlags>;

@@ -119,6 +119,8 @@ export const positiveIntSchema = z.number().int().positive();
 
 export const nonnegativeIntSchema = z.number().int().nonnegative();
 
+export const nonnegativeFloatSchema = z.number().nonnegative();
+
 export function packageVersionSchema<TRequired extends boolean>(options?: {
   versionDescription?: string;
   required?: TRequired;
@@ -140,9 +142,11 @@ export function packageVersionSchema<TRequired extends boolean>(options?: {
 }
 
 /** Schema for a weight */
-export const weightSchema = nonnegativeIntSchema.describe(
-  'Coefficient for the given score (use weight 0 if only for display)',
-);
+export const weightSchema = z
+  .union([nonnegativeIntSchema, nonnegativeFloatSchema])
+  .describe(
+    'Coefficient for the given score (use weight 0 if only for display)',
+  );
 
 export function weightedRefSchema(
   description: string,

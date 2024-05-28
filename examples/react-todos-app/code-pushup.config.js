@@ -37,7 +37,7 @@ export default {
         // best-practices category
         'deprecations',
         // seo category
-        'hreflang'
+        'hreflang',
       ],
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
