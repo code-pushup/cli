@@ -1,3 +1,13 @@
+## 0.44.2 (2024-05-28)
+
+### 🚀 Features
+
+- **plugin-eslint:** support implicit configs ([f89037ad](https://github.com/code-pushup/cli/commit/f89037ad))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.44.1 (2024-05-23)
 
 This was a version bump only, there were no code changes.
