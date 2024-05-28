@@ -1,3 +1,54 @@
+## 0.44.2 (2024-05-28)
+
+### 🚀 Features
+
+- **plugin-eslint:** support implicit configs ([f89037ad](https://github.com/code-pushup/cli/commit/f89037ad))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.44.1 (2024-05-23)
+
+This was a version bump only, there were no code changes.
+
+## 0.44.0 (2024-05-23)
+
+### 🚀 Features
+
+- **core:** include audit table in portal upload ([2b4f3e15](https://github.com/code-pushup/cli/commit/2b4f3e15))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.43.1 (2024-05-23)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** always include issues array, even if empty ([bd7c5631](https://github.com/code-pushup/cli/commit/bd7c5631))
+- **plugin-js-packages:** always include issues array, even if empty ([748eb64a](https://github.com/code-pushup/cli/commit/748eb64a))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.43.0 (2024-05-22)
+
+### 🚀 Features
+
+- **plugin-eslint:** rename eslintConfigFromNxProjects to eslintConfigFromAllNxProjects ([068b3359](https://github.com/code-pushup/cli/commit/068b3359))
+- **plugin-eslint:** rename eslintConfigFromNxProject to eslintConfigFromNxProjectAndDeps ([efbb72ae](https://github.com/code-pushup/cli/commit/efbb72ae))
+- **plugin-eslint:** add eslintConfigFromNxProject helper that doesn't include nx project deps ([0706bdaf](https://github.com/code-pushup/cli/commit/0706bdaf))
+
+### ❤️ Thank You
+
+- Vojtech Masek @vmasek
+
+## 0.42.1 (2024-05-22)
+
+This was a version bump only, there were no code changes.
+
 ## 0.42.0 (2024-05-21)
 
 This was a version bump only, there were no code changes.

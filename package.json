@@ -47,7 +47,7 @@
     "node": ">=18.16"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.6.1",
+    "@code-pushup/portal-client": "^0.7.0",
     "@isaacs/cliui": "^8.0.2",
     "@poppinss/cliui": "^6.4.0",
     "@swc/helpers": "0.5.3",

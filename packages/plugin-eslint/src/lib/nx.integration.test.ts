@@ -3,7 +3,14 @@ import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
 import { type ESLintTarget } from './config';
-import { eslintConfigFromNxProject, eslintConfigFromNxProjects } from './nx';
+import {
+  eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProjectAndDeps,
+} from './nx';
+import { eslintConfigFromNxProject } from './nx/find-project-without-deps';
+
+const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
+type Project = (typeof ALL_PROJECTS)[number];
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -33,9 +40,8 @@ describe('Nx helpers', () => {
 
   describe('create config from all Nx projects', () => {
     it('should include eslintrc and patterns of each project', async () => {
-      await expect(eslintConfigFromNxProjects()).resolves.toEqual([
+      await expect(eslintConfigFromAllNxProjects()).resolves.toEqual([
         {
-          eslintrc: './packages/cli/.eslintrc.json',
           patterns: [
             'packages/cli/**/*.ts',
             'packages/cli/package.json',
@@ -46,7 +52,6 @@ describe('Nx helpers', () => {
           ],
         },
         {
-          eslintrc: './packages/core/.eslintrc.json',
           patterns: [
             'packages/core/**/*.ts',
             'packages/core/package.json',
@@ -57,7 +62,6 @@ describe('Nx helpers', () => {
           ],
         },
         {
-          eslintrc: './packages/nx-plugin/.eslintrc.json',
           patterns: [
             'packages/nx-plugin/**/*.ts',
             'packages/nx-plugin/package.json',
@@ -69,7 +73,6 @@ describe('Nx helpers', () => {
           ],
         },
         {
-          eslintrc: './packages/utils/.eslintrc.json',
           patterns: [
             'packages/utils/**/*.ts',
             'packages/utils/package.json',
@@ -98,9 +101,6 @@ describe('Nx helpers', () => {
      *   utils ◄──────┘
      */
 
-    const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
-    type Project = (typeof ALL_PROJECTS)[number];
-
     it.each<[Project, Project[]]>([
       ['cli', ['cli', 'core', 'utils']],
       ['core', ['core', 'utils']],
@@ -109,16 +109,42 @@ describe('Nx helpers', () => {
     ])(
       'project %j - expected configurations for projects %j',
       async (project, expectedProjects) => {
-        const targets = await eslintConfigFromNxProject(project);
+        const targets = await eslintConfigFromNxProjectAndDeps(project);
 
         expect(targets).toEqual(
           expectedProjects.map(
             (p): ESLintTarget => ({
-              eslintrc: `./packages/${p}/.eslintrc.json`,
               patterns: expect.arrayContaining([`packages/${p}/**/*.ts`]),
             }),
           ),
         );
+      },
+    );
+  });
+
+  describe('create config from target Nx project without its dependencies', () => {
+    /*
+     * Project graph:
+     *
+     *   cli
+     *    │
+     *    │
+     *    ▼
+     *   core
+     *    │        nx-plugin
+     *    │           │
+     *    ▼           │
+     *   utils ◄──────┘
+     */
+
+    it.each<[Project]>([['cli'], ['core'], ['utils']])(
+      'project %j - expected configurations for projects %j',
+      async project => {
+        const targets = await eslintConfigFromNxProject(project);
+
+        expect(targets).toEqual({
+          patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
+        });
       },
     );
   });

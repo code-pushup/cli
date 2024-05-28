@@ -33,6 +33,7 @@ describe('auditResultToAuditOutput', () => {
       score: 1,
       value: 0,
       displayValue: '0 vulnerabilities',
+      details: { issues: [] },
     });
   });
 

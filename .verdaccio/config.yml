@@ -8,14 +8,23 @@ uplinks:
     maxage: 60m
 
 packages:
-  '**':
-    # give all users (including non-authenticated users) full access
-    # because it is a local registry
+  # exceptions for external @code-pushup packages
+  '@code-pushup/portal-client':
+    access: $all
+    proxy: npmjs
+  '@code-pushup/eslint-config':
+    access: $all
+    proxy: npmjs
+
+  # allow publishing local packages
+  '@code-pushup/*':
     access: $all
     publish: $all
     unpublish: $all
 
-    # if package is not available locally, proxy requests to npm registry
+  # proxy other packages to official NPM registry
+  '**':
+    access: $all
     proxy: npmjs
 
 # log settings

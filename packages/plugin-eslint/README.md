@@ -43,7 +43,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
 4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
+   Pass in the glob patterns for which files you wish to target (relative to `process.cwd()`).
 
    ```js
    import eslintPlugin from '@code-pushup/eslint-plugin';
@@ -52,35 +52,35 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      // ...
      plugins: [
        // ...
-       await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
+       await eslintPlugin(['src/**/*.js']),
      ],
    };
    ```
 
    If you're using an Nx monorepo, additional helper functions are provided to simplify your configuration:
 
-   - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromNxProjects` helper:
+   - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromAllNxProjects` helper:
 
      ```js
-     import eslintPlugin, { eslintConfigFromNxProjects } from '@code-pushup/eslint-plugin';
+     import eslintPlugin, { eslintConfigFromAllNxProjects } from '@code-pushup/eslint-plugin';
 
      export default {
        plugins: [
          // ...
-         await eslintPlugin(await eslintConfigFromNxProjects()),
+         await eslintPlugin(await eslintConfigFromAllNxProjects()),
        ],
      };
      ```
 
-   - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProject` helper and pass in in your project name:
+   - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProjectAndDeps` helper and pass in in your project name:
 
      ```js
-     import eslintPlugin, { eslintConfigFromNxProject } from '@code-pushup/eslint-plugin';
+     import eslintPlugin, { eslintConfigFromNxProjectAndDeps } from '@code-pushup/eslint-plugin';
 
      export default {
        plugins: [
          // ...
-         await eslintPlugin(await eslintConfigFromNxProject('<PROJECT-NAME>')),
+         await eslintPlugin(await eslintConfigFromNxProjectAndDeps('<PROJECT-NAME>')),
        ],
      };
      ```

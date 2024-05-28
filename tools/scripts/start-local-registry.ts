@@ -16,6 +16,12 @@ export default async () => {
     verbose: true,
   });
 
+  // find latest version
+  const version = execSync('git describe --tags --abbrev=0')
+    .toString()
+    .trim()
+    .replace(/^v/, '');
+
   // is is also possible to use nx release to publish the packages to the local registry
   execFileSync(
     'npx',
@@ -25,7 +31,7 @@ export default async () => {
       '--targets',
       'publish',
       '--ver',
-      '1.0.0',
+      version,
       '--tag',
       'e2e',
     ],

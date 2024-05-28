@@ -12,7 +12,7 @@ import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
 import eslintPlugin, {
-  eslintConfigFromNxProjects,
+  eslintConfigFromAllNxProjects,
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import {
@@ -46,7 +46,7 @@ const config: CoreConfig = {
     }),
 
   plugins: [
-    await eslintPlugin(await eslintConfigFromNxProjects()),
+    await eslintPlugin(await eslintConfigFromAllNxProjects()),
 
     await coveragePlugin({
       coverageToolCommand: {
