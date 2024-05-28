@@ -96,7 +96,6 @@ describe('lint', () => {
     await lint(config);
     expect(ESLint).toHaveBeenCalledWith<ConstructorParameters<typeof ESLint>>({
       overrideConfigFile: '.eslintrc.js',
-      useEslintrc: false,
       errorOnUnmatchedPattern: false,
     });
 
@@ -108,7 +107,6 @@ describe('lint', () => {
       args: [
         'eslint',
         '--config=.eslintrc.js',
-        '--no-eslintrc',
         '--no-error-on-unmatched-pattern',
         '--format=json',
         expect.stringContaining('**/*.js'), // wraps in quotes on Unix
