@@ -105,12 +105,6 @@ const config: CoreConfig = {
       refs: [lighthouseGroupRef('seo')],
     },
     {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
-    },
-    {
       slug: 'bug-prevention',
       title: 'Bug prevention',
       description: 'Lint rules that find **potential bugs** in your code.',
