@@ -49,9 +49,9 @@ export function pluralizeToken(token: string, times: number): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 
-export function formatDuration(duration: number): string {
+export function formatDuration(duration: number, granularity = 0): string {
   if (duration < 1000) {
-    return `${duration.toFixed(3)} ms`;
+    return `${granularity ? duration.toFixed(granularity) : duration} ms`;
   }
   return `${(duration / 1000).toFixed(2)} s`;
 }

@@ -3,7 +3,7 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { logUnsupportedDetails, toAuditDetails } from '../details/details';
+import { logUnsupportedDetails, toAuditDetails } from './details';
 
 describe.skip('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
@@ -94,7 +94,7 @@ describe.skip('toAuditDetails', () => {
     });
   });
 
-  it.skip('should render audit details of type debugdata', () => {
+  it('should render audit details of type debugdata', () => {
     const outputs = toAuditDetails({
       type: 'debugdata',
       items: [

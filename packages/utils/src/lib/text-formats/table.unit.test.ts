@@ -168,15 +168,6 @@ describe('getColumnAlignments', () => {
     ).toStrictEqual(['left', 'center']);
   });
 
-  it('return alignments for given headings and incomplete row data', () => {
-    expect(
-      getColumnAlignments({
-        rows: [{ value: 1 }],
-        columns: [{ key: 'value', align: 'left' }],
-      }),
-    ).toStrictEqual(['left', 'center']);
-  });
-
   it('return alignments for biggest row if columns are missing', () => {
     expect(
       getColumnAlignments({

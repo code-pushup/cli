@@ -158,25 +158,25 @@ describe('parseTableToAuditDetails', () => {
           resourceType: 'total',
           label: 'Total',
           requestCount: 14,
-          transferSize: 441023,
+          transferSize: 441_023,
         },
         {
           resourceType: 'image',
           label: 'Image',
           requestCount: 9,
-          transferSize: 357829,
+          transferSize: 357_829,
         },
         {
           resourceType: 'font',
           label: 'Font',
           requestCount: 2,
-          transferSize: 41206,
+          transferSize: 41_206,
         },
         {
           resourceType: 'script',
           label: 'Script',
           requestCount: 1,
-          transferSize: 38076,
+          transferSize: 38_076,
         },
         {
           resourceType: 'document',
@@ -206,7 +206,7 @@ describe('parseTableToAuditDetails', () => {
           resourceType: 'third-party',
           label: 'Third-party',
           requestCount: 2,
-          transferSize: 41206,
+          transferSize: 41_206,
         },
       ],
     } as Details.Table);

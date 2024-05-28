@@ -61,10 +61,10 @@ export function toAuditOutputs(
             ...auditOutput,
             details: toAuditDetails(details),
           };
-        } catch (e) {
+        } catch (error) {
           throw new Error(
             `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
-              (e as Error).message
+              (error as Error).message
             }`,
           );
         }

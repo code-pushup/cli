@@ -5,7 +5,6 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditDetails, Table, tableSchema } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants';
-import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
 import { parseTableToAuditDetailsTable } from './table.type';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
@@ -16,13 +15,8 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
   } else {
     const { type } = details;
 
-    let rawTable: Table | undefined = undefined;
+    let rawTable: Table | undefined;
     switch (type) {
-      case 'opportunity':
-        rawTable = parseOpportunityToAuditDetailsTable(
-          details as Details.Opportunity,
-        );
-        break;
       case 'table':
         rawTable = parseTableToAuditDetailsTable(details as Details.Table);
         break;
@@ -51,6 +45,7 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
 
 // @TODO implement all details
 export const unsupportedDetailTypes = new Set([
+  'opportunity',
   'debugdata',
   'treemap-data',
   'screenshot',
