@@ -43,7 +43,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
 4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass in the glob patterns for which files you wish to target (relative to `process.cwd()`).
+   Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
 
    ```js
    import eslintPlugin from '@code-pushup/eslint-plugin';
@@ -52,7 +52,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      // ...
      plugins: [
        // ...
-       await eslintPlugin(['src/**/*.js']),
+       await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
      ],
    };
    ```

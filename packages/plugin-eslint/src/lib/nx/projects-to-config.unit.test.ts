@@ -68,12 +68,15 @@ describe('nxProjectsToConfig', () => {
 
     expect(config).toEqual<ESLintPluginConfig>([
       {
+        eslintrc: './apps/client/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/client/**/*.ts']),
       },
       {
+        eslintrc: './apps/server/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
       {
+        eslintrc: './libs/models/.eslintrc.json',
         patterns: expect.arrayContaining(['libs/models/**/*.ts']),
       },
     ]);
@@ -105,6 +108,7 @@ describe('nxProjectsToConfig', () => {
 
     expect(config).toEqual<ESLintPluginConfig>([
       {
+        eslintrc: './libs/models/.eslintrc.json',
         patterns: expect.arrayContaining(['libs/models/**/*.ts']),
       },
     ]);
@@ -146,9 +150,11 @@ describe('nxProjectsToConfig', () => {
 
     expect(config).toEqual<ESLintPluginConfig>([
       {
+        eslintrc: './apps/client/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/client/**/*.ts']),
       },
       {
+        eslintrc: './apps/server/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
     ]);
@@ -212,12 +218,14 @@ describe('nxProjectsToConfig', () => {
 
     await expect(nxProjectsToConfig(projectGraph)).resolves.toEqual([
       {
+        eslintrc: './apps/client/.eslintrc.json',
         patterns: expect.arrayContaining([
           'apps/client/**/*.ts',
           'apps/client/**/*.html',
         ]),
       },
       {
+        eslintrc: './apps/server/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
     ] satisfies ESLintPluginConfig);
