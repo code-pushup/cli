@@ -3,6 +3,8 @@ import { DependencyGroup, PackageManagerId } from '../config';
 import { AuditResult } from '../runner/audit/types';
 import { OutdatedResult } from '../runner/outdated/types';
 
+export type AuditResults = Partial<Record<DependencyGroup, AuditResult>>;
+
 export type PackageManager = {
   slug: PackageManagerId;
   name: string;
@@ -18,9 +20,7 @@ export type PackageManager = {
     ignoreExitCode?: boolean; // non-zero exit code will throw by default
     supportedDepGroups?: DependencyGroup[]; // all are supported by default
     unifyResult: (output: string) => AuditResult;
-    postProcessResult?: (
-      result: Record<DependencyGroup, AuditResult>,
-    ) => Record<DependencyGroup, AuditResult>;
+    postProcessResult?: (result: AuditResults) => AuditResults;
   };
   outdated: {
     commandArgs: string[];

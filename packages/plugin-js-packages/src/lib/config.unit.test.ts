@@ -14,6 +14,7 @@ describe('jsPackagesPluginConfigSchema', () => {
         auditLevelMapping: { moderate: 'error' },
         checks: ['audit'],
         packageManager: 'yarn-classic',
+        dependencyGroups: ['prod'],
       } satisfies JSPackagesPluginConfig),
     ).not.toThrow();
   });
@@ -33,6 +34,7 @@ describe('jsPackagesPluginConfigSchema', () => {
     expect(config).toEqual<FinalJSPackagesPluginConfig>({
       checks: ['audit', 'outdated'],
       packageManager: 'npm',
+      dependencyGroups: ['prod', 'dev'],
       auditLevelMapping: {
         critical: 'error',
         high: 'error',
@@ -48,6 +50,15 @@ describe('jsPackagesPluginConfigSchema', () => {
       jsPackagesPluginConfigSchema.parse({
         packageManager: 'yarn-classic',
         checks: [],
+      }),
+    ).toThrow('too_small');
+  });
+
+  it('should throw for no passed dependency group', () => {
+    expect(() =>
+      jsPackagesPluginConfigSchema.parse({
+        packageManager: 'yarn-classic',
+        dependencyGroups: [],
       }),
     ).toThrow('too_small');
   });
