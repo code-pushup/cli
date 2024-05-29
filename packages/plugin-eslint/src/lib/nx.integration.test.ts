@@ -42,6 +42,7 @@ describe('Nx helpers', () => {
     it('should include eslintrc and patterns of each project', async () => {
       await expect(eslintConfigFromAllNxProjects()).resolves.toEqual([
         {
+          eslintrc: './packages/cli/.eslintrc.json',
           patterns: [
             'packages/cli/**/*.ts',
             'packages/cli/package.json',
@@ -52,6 +53,7 @@ describe('Nx helpers', () => {
           ],
         },
         {
+          eslintrc: './packages/core/.eslintrc.json',
           patterns: [
             'packages/core/**/*.ts',
             'packages/core/package.json',
@@ -62,6 +64,7 @@ describe('Nx helpers', () => {
           ],
         },
         {
+          eslintrc: './packages/nx-plugin/.eslintrc.json',
           patterns: [
             'packages/nx-plugin/**/*.ts',
             'packages/nx-plugin/package.json',
@@ -73,6 +76,7 @@ describe('Nx helpers', () => {
           ],
         },
         {
+          eslintrc: './packages/utils/.eslintrc.json',
           patterns: [
             'packages/utils/**/*.ts',
             'packages/utils/package.json',
@@ -114,6 +118,7 @@ describe('Nx helpers', () => {
         expect(targets).toEqual(
           expectedProjects.map(
             (p): ESLintTarget => ({
+              eslintrc: `./packages/${p}/.eslintrc.json`,
               patterns: expect.arrayContaining([`packages/${p}/**/*.ts`]),
             }),
           ),
@@ -143,6 +148,7 @@ describe('Nx helpers', () => {
         const targets = await eslintConfigFromNxProject(project);
 
         expect(targets).toEqual({
+          eslintrc: `./packages/${project}/.eslintrc.json`,
           patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
         });
       },

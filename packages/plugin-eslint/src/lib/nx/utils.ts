@@ -35,5 +35,5 @@ export function getEslintConfig(
   const options = project.targets?.['lint']?.options as
     | { eslintConfig?: string }
     | undefined;
-  return options?.eslintConfig;
+  return options?.eslintConfig ?? `./${project.root}/.eslintrc.json`;
 }
