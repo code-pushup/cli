@@ -1,8 +1,8 @@
 {
   "name": "@code-pushup/utils",
-  "version": "0.44.2",
+  "version": "0.44.3",
   "dependencies": {
-    "@code-pushup/models": "0.44.2",
+    "@code-pushup/models": "0.44.3",
     "bundle-require": "^4.0.1",
     "esbuild": "^0.19.2",
     "chalk": "^5.3.0",

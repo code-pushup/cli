@@ -1,3 +1,13 @@
+## 0.44.3 (2024-05-29)
+
+### 🩹 Fixes
+
+- **plugin-eslint:** revert to explicit config file in nx helper ([ecd82642](https://github.com/code-pushup/cli/commit/ecd82642))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.44.2 (2024-05-28)
 
 ### 🚀 Features
