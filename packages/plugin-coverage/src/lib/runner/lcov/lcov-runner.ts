@@ -3,6 +3,7 @@ import type { LCOVRecord } from 'parse-lcov';
 import { AuditOutputs } from '@code-pushup/models';
 import { exists, readTextFile, toUnixNewlines } from '@code-pushup/utils';
 import { CoverageResult, CoverageType } from '../../config';
+import { mergeLcovResults } from './merge-lcov';
 import { parseLcov } from './parse-lcov';
 import {
   lcovCoverageToAuditOutput,
@@ -26,9 +27,12 @@ export async function lcovResultsToAuditOutputs(
   // Parse lcov files
   const lcovResults = await parseLcovFiles(results);
 
+  // Merge multiple coverage reports for the same file
+  const mergedResults = mergeLcovResults(lcovResults);
+
   // Calculate code coverage from all coverage results
   const totalCoverageStats = getTotalCoverageFromLcovRecords(
-    lcovResults,
+    mergedResults,
     coverageTypes,
   );
 

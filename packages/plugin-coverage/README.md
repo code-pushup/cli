@@ -7,6 +7,7 @@
 🧪 **Code PushUp plugin for tracking code coverage.** ☂️
 
 This plugin allows you to measure and track code coverage on your project.
+It accepts the LCOV coverage format and merges coverage results from any test suites provided.
 
 Measured coverage types are mapped to Code PushUp audits in the following way
 
