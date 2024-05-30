@@ -15,6 +15,7 @@ describe('jsPackagesPluginConfigSchema', () => {
         checks: ['audit'],
         packageManager: 'yarn-classic',
         dependencyGroups: ['prod'],
+        packageJsonPath: './ui-app/package.json',
       } satisfies JSPackagesPluginConfig),
     ).not.toThrow();
   });
@@ -35,6 +36,7 @@ describe('jsPackagesPluginConfigSchema', () => {
       checks: ['audit', 'outdated'],
       packageManager: 'npm',
       dependencyGroups: ['prod', 'dev'],
+      packageJsonPath: 'package.json',
       auditLevelMapping: {
         critical: 'error',
         high: 'error',

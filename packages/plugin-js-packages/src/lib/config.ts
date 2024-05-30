@@ -63,6 +63,10 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .default(defaultAuditLevelMapping)
     .transform(fillAuditLevelMapping),
+  packageJsonPath: z
+    .string()
+    .describe('File path to package.json. Defaults to current folder.')
+    .default('package.json'),
 });
 
 export type JSPackagesPluginConfig = z.input<

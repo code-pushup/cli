@@ -21,6 +21,7 @@ import { auditResultToAuditOutput } from './audit/transform';
 import { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
+import { getTotalDependencies } from './utils';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -41,15 +42,16 @@ export async function executeRunner(): Promise<void> {
     packageManager,
     checks,
     auditLevelMapping,
+    packageJsonPath,
     dependencyGroups: depGroups,
   } = await readJsonFile<FinalJSPackagesPluginConfig>(PLUGIN_CONFIG_PATH);
 
   const auditResults = checks.includes('audit')
-    ? await processAudit(packageManager, auditLevelMapping, depGroups)
+    ? await processAudit(packageManager, depGroups, auditLevelMapping)
     : [];
 
   const outdatedResults = checks.includes('outdated')
-    ? await processOutdated(packageManager, depGroups)
+    ? await processOutdated(packageManager, depGroups, packageJsonPath)
     : [];
   const checkResults = [...auditResults, ...outdatedResults];
 
@@ -60,6 +62,7 @@ export async function executeRunner(): Promise<void> {
 async function processOutdated(
   id: PackageManagerId,
   depGroups: DependencyGroup[],
+  packageJsonPath: string,
 ) {
   const pm = packageManagers[id];
   const { stdout } = await executeProcess({
@@ -69,16 +72,23 @@ async function processOutdated(
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
+  const depTotals = await getTotalDependencies(packageJsonPath);
+
   const normalizedResult = pm.outdated.unifyResult(stdout);
   return depGroups.map(depGroup =>
-    outdatedResultToAuditOutput(normalizedResult, id, depGroup),
+    outdatedResultToAuditOutput(
+      normalizedResult,
+      id,
+      depGroup,
+      depTotals[depGroup],
+    ),
   );
 }
 
 async function processAudit(
   id: PackageManagerId,
-  auditLevelMapping: AuditSeverity,
   depGroups: DependencyGroup[],
+  auditLevelMapping: AuditSeverity,
 ) {
   const pm = packageManagers[id];
   const supportedAuditDepGroups =

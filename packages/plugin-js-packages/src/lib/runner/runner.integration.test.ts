@@ -13,6 +13,7 @@ describe('createRunnerConfig', () => {
       checks: ['audit'],
       auditLevelMapping: defaultAuditLevelMapping,
       dependencyGroups: ['prod', 'dev'],
+      packageJsonPath: 'package.json',
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
@@ -28,6 +29,7 @@ describe('createRunnerConfig', () => {
       checks: ['outdated'],
       dependencyGroups: ['prod', 'dev'],
       auditLevelMapping: { ...defaultAuditLevelMapping, moderate: 'error' },
+      packageJsonPath: 'package.json',
     };
     await createRunnerConfig('executeRunner.ts', pluginConfig);
     const config = await readJsonFile<FinalJSPackagesPluginConfig>(
