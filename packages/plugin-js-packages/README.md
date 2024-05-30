@@ -113,6 +113,7 @@ The plugin accepts the following parameters:
 - `packageManager`: The package manager you are using. Supported values: `npm`, `yarn-classic` (v1), `yarn-modern` (v2+), `pnpm`.
 - (optional) `checks`: Array of checks to be run. Supported commands: `audit`, `outdated`. Both are configured by default.
 - (optional) `dependencyGroups`: Array of dependency groups to be checked. `prod` and `dev` are configured by default. `optional` are opt-in.
+- (optional) `packageJsonPath`: File path to `package.json`. Defaults to current folder. Multiple `package.json` files are currently not supported.
 - (optional) `auditLevelMapping`: If you wish to set a custom level of issue severity based on audit vulnerability level, you may do so here. Any omitted values will be filled in by defaults. Audit levels are: `critical`, `high`, `moderate`, `low` and `info`. Issue severities are: `error`, `warn` and `info`. By default the mapping is as follows: `critical` and `high` → `error`; `moderate` and `low` → `warning`; `info` → `info`.
 
 ### Audits and group
