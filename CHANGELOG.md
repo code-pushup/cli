@@ -1,3 +1,13 @@
+## 0.44.5 (2024-05-30)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** merge multiple results for a file ([#688](https://github.com/code-pushup/cli/pull/688))
+
+### ❤️ Thank You
+
+- Katka Pilátová
+
 ## 0.44.3 (2024-05-29)
 
 ### 🩹 Fixes

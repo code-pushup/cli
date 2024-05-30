@@ -1,9 +1,9 @@
 {
   "name": "@code-pushup/js-packages-plugin",
-  "version": "0.44.3",
+  "version": "0.44.5",
   "dependencies": {
-    "@code-pushup/models": "0.44.3",
-    "@code-pushup/utils": "0.44.3",
+    "@code-pushup/models": "0.44.5",
+    "@code-pushup/utils": "0.44.5",
     "semver": "^7.6.0",
     "zod": "^3.22.4"
   }
