@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  nonnegativeIntSchema,
+  nonnegativeNumberSchema,
   scoreSchema,
   slugSchema,
 } from './implementation/schemas';
@@ -9,7 +9,7 @@ import { issueSchema } from './issue';
 import { tableSchema } from './table';
 
 export const auditValueSchema =
-  nonnegativeIntSchema.describe('Raw numeric value');
+  nonnegativeNumberSchema.describe('Raw numeric value');
 export const auditDisplayValueSchema = z
   .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
   .optional();
