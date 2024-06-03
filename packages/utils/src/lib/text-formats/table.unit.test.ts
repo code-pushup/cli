@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TableRowObject } from '@code-pushup/models';
+import { Table, TableRowObject } from '@code-pushup/models';
 import {
   columnsToStringArray,
   getColumnAlignmentForIndex,
@@ -7,6 +7,73 @@ import {
   getColumnAlignments,
   rowToStringArray,
 } from './table';
+
+describe('rowToStringArray', () => {
+  it('should throw if data shape is incorrect', () => {
+    expect(() =>
+      rowToStringArray({
+        columns: [{ key: 'prop' }],
+        rows: [[1, 2, 3]],
+      } as unknown as Table),
+    ).toThrow('Column can`t be object when rows are primitive values');
+  });
+
+  it('should transform row of primitive values row to a string array', () => {
+    expect(
+      rowToStringArray({
+        rows: [
+          [1, 2, 3],
+          ['a', 'b', 'c'],
+        ],
+      }),
+    ).toStrictEqual([
+      ['1', '2', '3'],
+      ['a', 'b', 'c'],
+    ]);
+  });
+
+  it('should transform row of object row to a string array', () => {
+    expect(
+      rowToStringArray({
+        rows: [
+          {
+            prop1: 1,
+            prop2: 2,
+            prop3: 3,
+          },
+          {
+            prop1: 'a',
+            prop2: 'b',
+            prop3: 'c',
+          },
+        ],
+      }),
+    ).toStrictEqual([
+      ['1', '2', '3'],
+      ['a', 'b', 'c'],
+    ]);
+  });
+
+  it('should transform row of object row defined by headings to a string array', () => {
+    expect(
+      rowToStringArray({
+        rows: [
+          {
+            prop1: 1,
+            prop2: 2,
+            prop3: 3,
+          },
+          {
+            prop1: 'a',
+            prop2: 'b',
+            prop3: 'c',
+          },
+        ],
+        columns: [{ key: 'prop2' }],
+      }),
+    ).toStrictEqual([['2'], ['b']]);
+  });
+});
 
 describe('columnToStringArray', () => {
   it('should index primitive rows', () => {
@@ -50,43 +117,6 @@ describe('columnToStringArray', () => {
         rows: [{ slug: 'my-slug', value: 'my value' }],
       }),
     ).toStrictEqual(['Value']);
-  });
-});
-
-describe('rowToStringArray', () => {
-  it('turns row of primitive values row to a string array', () => {
-    expect(rowToStringArray({ rows: [[1, 2, 3]] })).toStrictEqual([
-      ['1', '2', '3'],
-    ]);
-  });
-
-  it('turns row of object row to a string array', () => {
-    expect(
-      rowToStringArray({
-        rows: [
-          {
-            prop1: 1,
-            prop2: 2,
-            prop3: 3,
-          },
-        ],
-      }),
-    ).toStrictEqual([['1', '2', '3']]);
-  });
-
-  it('turns row of object row defined by headings to a string array', () => {
-    expect(
-      rowToStringArray({
-        rows: [
-          {
-            prop1: 1,
-            prop2: 2,
-            prop3: 3,
-          },
-        ],
-        columns: [{ key: 'prop2' }],
-      }),
-    ).toStrictEqual([['2']]);
   });
 });
 
@@ -163,7 +193,7 @@ describe('getColumnAlignments', () => {
           { value: 2, name: 'second' },
           { value: 3, name: 'third' },
         ],
-        columns: [{ key: 'value', align: 'left' }],
+        columns: [{ key: 'value', align: 'left' }, { key: 'name' }],
       }),
     ).toStrictEqual(['left', 'center']);
   });

@@ -129,7 +129,6 @@ export async function getConfig(
 
 export async function getBudgets(budgetPath?: string): Promise<Budget[]> {
   if (budgetPath) {
-    /** @type {Array<LH.Budget>} */
     return await readJsonFile<Budget[]>(
       path.resolve(process.cwd(), budgetPath),
     );

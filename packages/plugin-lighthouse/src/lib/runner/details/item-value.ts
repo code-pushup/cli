@@ -24,6 +24,7 @@ export function trimSlice(item?: PrimitiveItemValue, sliceEnd = 0) {
   return sliceEnd > 0 ? str.slice(0, sliceEnd) : str;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function formatTableItemPropertyValue(
   itemValue?: Details.ItemValue,
   itemValueFormat?: Details.ItemValueType,

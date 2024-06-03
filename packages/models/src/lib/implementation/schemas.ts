@@ -7,7 +7,12 @@ import {
 } from './limits';
 import { filenameRegex, slugRegex } from './utils';
 
-export const primitiveValueSchema = z.union([z.string(), z.number()]);
+export const primitiveValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.null(),
+]);
 export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
 
 /**

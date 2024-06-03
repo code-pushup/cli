@@ -5,7 +5,7 @@ import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { logUnsupportedDetails, toAuditDetails } from './details';
 
-describe.skip('logUnsupportedDetails', () => {
+describe('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
     logUnsupportedDetails([
       { details: { type: 'screenshot' } },
@@ -34,13 +34,13 @@ describe.skip('logUnsupportedDetails', () => {
       `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${chalk.bold(
-        'filmstrip, screenshot, treemap-data',
-      )} and 1 more.`,
+        'filmstrip, screenshot, opportunity',
+      )} and 3 more.`,
     );
   });
 });
 
-describe.skip('toAuditDetails', () => {
+describe('toAuditDetails', () => {
   it('should render audit details of type table', () => {
     const outputs = toAuditDetails({
       type: 'table',
@@ -70,24 +70,26 @@ describe.skip('toAuditDetails', () => {
 
     expect(outputs).toStrictEqual({
       table: {
-        headings: [
+        columns: [
           {
             key: 'name',
             label: 'Name',
+            align: 'left',
           },
           {
             key: 'duration',
             label: 'Duration',
+            align: 'left',
           },
         ],
         rows: [
           {
             name: 'Zone',
-            duration: 0.634,
+            duration: '0.634 ms',
           },
           {
             name: 'Zone:ZoneAwarePromise',
-            duration: 0.783,
+            duration: '0.783 ms',
           },
         ],
       },
@@ -106,15 +108,7 @@ describe.skip('toAuditDetails', () => {
 
     // @TODO add check that cliui.logger is called. Resolve TODO after PR #487 is merged.
 
-    expect(outputs).toStrictEqual({
-      table: {
-        rows: [
-          {
-            cumulativeLayoutShiftMainFrame: 0.000_350_978_852_728_593_95,
-          },
-        ],
-      },
-    });
+    expect(outputs).toStrictEqual({});
   });
 
   it('should inform that filmstrip detail type is not supported yet', () => {

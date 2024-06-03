@@ -1,10 +1,5 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
-import {
-  Table,
-  TableAlignment,
-  TableColumnObject,
-  TableRowObject,
-} from '@code-pushup/models';
+import { Table, TableColumnObject, TableRowObject } from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value';
 
 // import {parseItemValue} from "./item-value";
@@ -30,7 +25,7 @@ export function parseTableColumns(
   return rawHeadings.map(({ key, label }) => ({
     key: key ?? '',
     label: typeof label === 'string' ? label : undefined,
-    align: 'left' as TableAlignment,
+    align: 'left',
   }));
 }
 

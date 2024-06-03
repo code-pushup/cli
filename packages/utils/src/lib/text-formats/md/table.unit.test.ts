@@ -2,7 +2,12 @@ import { Table } from '@code-pushup/models';
 import { table } from './table';
 
 describe('MD table', () => {
-  it('should create a table with center alignment by default', () => {
+  it('should throw for empty data', () => {
+    const data: Table = { rows: [] };
+    expect(() => table(data)).toThrow("Data can't be empty");
+  });
+
+  it('should have a default alignment of "center"', () => {
     const data: Table = { rows: [[1, 2]] };
     const result = table(data);
     expect(result).toMatch('|:--:|:--:|');
@@ -15,11 +20,6 @@ describe('MD table', () => {
     };
     const result = table(data);
     expect(result).toMatch('|:--|:--:|--:|');
-  });
-
-  it('should throw for empty data', () => {
-    const data: Table = { rows: [] };
-    expect(() => table(data)).toThrow("Data can't be empty");
   });
 
   it('should create a table from primitive values', () => {
@@ -35,11 +35,15 @@ describe('MD table', () => {
         { key: 'col1', label: 'Header 1' },
         { key: 'col2', label: 'Header 2' },
       ],
-      rows: [{ col1: '11', col2: '12' }],
+      rows: [
+        { col1: '1a', col2: '2a' },
+        { col1: '1b', col2: '2b' },
+      ],
     };
     const result = table(data);
     expect(result).toMatch('|Header 1|Header 2|');
-    expect(result).toMatch('|11|12|');
+    expect(result).toMatch('|1a|2a|');
+    expect(result).toMatch('|1b|2b|');
   });
 
   it('should create a complete table', () => {

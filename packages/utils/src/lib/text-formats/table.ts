@@ -25,18 +25,23 @@ export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
 
     // columns [] || column = 'center'
     if (columns.length === 0 || typeof columns.at(0) === 'string') {
-      return Object.values(objectRow).map(String);
+      return Object.values(objectRow).map(value =>
+        value == null ? '' : String(value),
+      );
     }
 
     // column = {key: 'prop1'}
     return (columns as TableColumnObject[]).map(({ key }): string =>
-      String(objectRow[key]),
+      objectRow[key] == null ? '' : String(objectRow[key]),
     );
   });
 }
 
 // Determine effective columns based on the input rows and optional columns parameter
-export function columnsToStringArray({ rows, columns = [] }: Table): string[] {
+export function columnsToStringArray({
+  rows,
+  columns = [],
+}: Pick<Table, 'columns' | 'rows'>): string[] {
   const firstRow = rows.at(0);
   const primitiveRows = Array.isArray(firstRow);
 
@@ -46,7 +51,7 @@ export function columnsToStringArray({ rows, columns = [] }: Table): string[] {
 
   if (columns.length === 0) {
     if (Array.isArray(firstRow)) {
-      return (firstRow as unknown[]).map((_, idx) => String(idx));
+      return firstRow.map((_, idx) => String(idx));
     }
     return Object.keys(firstRow as object);
   }
@@ -114,21 +119,20 @@ export function getColumnAlignments(tableData: Table): TableAlignment[] {
     );
   }
 
+  const biggersRow = [...rows]
+    .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
+    .at(-1);
   if (columns.length > 0) {
-    return columns.map((column, idx) => {
-      return typeof column === 'string'
+    return columns.map((column, idx) =>
+      typeof column === 'string'
         ? column
         : getColumnAlignmentForKeyAndIndex(
             column.key,
             idx,
             columns as TableColumnObject[],
-          );
-    });
+          ),
+    );
   }
 
-  // eslint-disable-next-line functional/immutable-data
-  const biggersRow = rows
-    .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
-    .pop();
   return Object.keys(biggersRow ?? {}).map(_ => 'center');
 }

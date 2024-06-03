@@ -15,24 +15,20 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
   } else {
     const { type } = details;
 
-    let rawTable: Table | undefined;
-    switch (type) {
-      case 'table':
-        rawTable = parseTableToAuditDetailsTable(details as Details.Table);
-        break;
-      default:
-        rawTable = undefined;
-    }
-
-    if (rawTable == null) {
+    if (type !== 'table') {
       return {};
     }
+    const rawTable: Table | undefined = parseTableToAuditDetailsTable(
+      details as Details.Table,
+    );
+
     const result = tableSchema().safeParse(rawTable);
     if (result.success) {
       return {
         table: result.data,
       };
     }
+
     throw new Error(
       `Parsing details ${chalk.bold(
         type,
