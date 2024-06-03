@@ -130,7 +130,7 @@ _Object containing the following properties:_
 | Property          | Description                                                        | Type                                                              |
 | :---------------- | :----------------------------------------------------------------- | :---------------------------------------------------------------- |
 | **`slug`** (\*)   | Slug of an audit or group (depending on `type`)                    | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
-| **`weight`** (\*) | Weight used to calculate score                                     | `number` (_int, ≥0_)                                              |
+| **`weight`** (\*) | Weight used to calculate score                                     | `number` (_≥0_)                                                   |
 | **`type`** (\*)   | Discriminant for reference kind, affects where `slug` is looked up | `'audit' \| 'group'`                                              |
 | **`plugin`** (\*) | Plugin slug (plugin should contain referenced audit or group)      | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 
@@ -207,7 +207,7 @@ _Object containing the following properties:_
 | Property          | Description                                                     | Type                                                              |
 | :---------------- | :-------------------------------------------------------------- | :---------------------------------------------------------------- |
 | **`slug`** (\*)   | Reference slug to a group within this plugin (e.g. 'max-lines') | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
-| **`weight`** (\*) | Weight used to calculate score                                  | `number` (_int, ≥0_)                                              |
+| **`weight`** (\*) | Weight used to calculate score                                  | `number` (_≥0_)                                                   |
 
 _(\*) Required._
 
