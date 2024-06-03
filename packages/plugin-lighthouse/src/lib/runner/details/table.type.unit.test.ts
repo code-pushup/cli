@@ -11,7 +11,7 @@ describe('parseTableToAuditDetails', () => {
       items: [],
     } as Details.Table);
 
-    expect(outputs).toBeUndefined();
+    expect(outputs).toStrictEqual({ rows: [] });
   });
 
   it('should render complete details of type table', () => {

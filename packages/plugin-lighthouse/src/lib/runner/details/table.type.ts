@@ -4,13 +4,11 @@ import { formatTableItemPropertyValue } from './item-value';
 
 // import {parseItemValue} from "./item-value";
 
-export function parseTableToAuditDetailsTable(
-  details: Details.Table,
-): Table | undefined {
+export function parseTableToAuditDetailsTable(details: Details.Table): Table {
   const { headings: rawHeadings, items } = details;
 
   if (items.length === 0) {
-    return undefined;
+    return { rows: [] };
   }
 
   return {
