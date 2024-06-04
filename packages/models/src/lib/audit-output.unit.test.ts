@@ -87,6 +87,16 @@ describe('auditOutputSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept a decimal value', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'first-meaningful-paint',
+        score: 1,
+        value: 883.4785,
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
   it('should throw for a negative value', () => {
     expect(() =>
       auditOutputSchema.parse({
