@@ -108,7 +108,7 @@ describe('toAuditDetails', () => {
 
     // @TODO add check that cliui.logger is called. Resolve TODO after PR #487 is merged.
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toBeUndefined();
   });
 
   it('should inform that filmstrip detail type is not supported yet', () => {
@@ -124,7 +124,7 @@ describe('toAuditDetails', () => {
       ],
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toBeUndefined();
   });
 
   it('should inform that screenshot detail type is not supported yet', () => {
@@ -135,7 +135,7 @@ describe('toAuditDetails', () => {
       data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//2Q==',
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toBeUndefined();
   });
 
   it('should inform that treemap-data detail type is not supported yet', () => {
@@ -144,7 +144,7 @@ describe('toAuditDetails', () => {
       nodes: [],
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toBeUndefined();
   });
 
   it('should inform that criticalrequestchain detail type is not supported yet', () => {
@@ -168,6 +168,6 @@ describe('toAuditDetails', () => {
       },
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toBeUndefined();
   });
 });

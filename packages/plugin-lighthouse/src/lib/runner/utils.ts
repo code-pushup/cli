@@ -6,7 +6,7 @@ import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import path from 'node:path';
-import { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import { AuditDetails, AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
@@ -56,11 +56,11 @@ export function toAuditOutputs(
       };
 
       if (details != null) {
+        // eslint-disable-next-line functional/no-let
+        let parsedDetails: AuditDetails | undefined;
+
         try {
-          return {
-            ...auditOutput,
-            details: toAuditDetails(details),
-          };
+          parsedDetails = toAuditDetails(details);
         } catch (error) {
           throw new Error(
             `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
@@ -68,6 +68,11 @@ export function toAuditOutputs(
             }`,
           );
         }
+
+        return {
+          ...auditOutput,
+          ...(parsedDetails ? { details: toAuditDetails(details) } : {}),
+        };
       }
 
       return auditOutput;

@@ -9,19 +9,21 @@ import { parseTableToAuditDetailsTable } from './table.type';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,
-): AuditDetails {
+): AuditDetails | undefined {
   if (details == null) {
-    return {};
-  } else {
-    const { type } = details;
+    return undefined;
+  }
 
-    if (type !== 'table') {
-      return {};
-    }
-    const rawTable: Table | undefined = parseTableToAuditDetailsTable(
-      details as Details.Table,
-    );
+  const { type } = details;
 
+  if (type !== 'table') {
+    return undefined;
+  }
+  const rawTable: Table | undefined = parseTableToAuditDetailsTable(
+    details as Details.Table,
+  );
+
+  if (rawTable != null) {
     const result = tableSchema().safeParse(rawTable);
     if (result.success) {
       return {
@@ -37,6 +39,8 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
       )}\n${result.error.toString()}`,
     );
   }
+
+  return undefined;
 }
 
 // @TODO implement all details
