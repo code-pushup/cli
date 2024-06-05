@@ -1,18 +1,24 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { CoverageResult } from '../config';
 import {
   JestCoverageConfig,
   VitestCoverageConfig,
-  getCoveragePathForTarget,
+  getCoveragePathForJest,
+  getCoveragePathForVitest,
+  getCoveragePathsForTarget,
 } from './coverage-paths';
 
 vi.mock('bundle-require', () => ({
   bundleRequire: vi.fn().mockImplementation((options: { filepath: string }) => {
-    const config = options.filepath.split('.')[0];
     const VITEST_VALID: VitestCoverageConfig = {
       test: {
-        coverage: { reporter: ['lcov'], reportsDirectory: 'coverage/cli' },
+        coverage: {
+          reporter: ['lcov'],
+          reportsDirectory: join('coverage', 'cli'),
+        },
       },
     };
 
@@ -20,9 +26,18 @@ vi.mock('bundle-require', () => ({
       test: { coverage: { reporter: ['lcov'] } },
     };
 
+    const VITEST_NO_LCOV: VitestCoverageConfig = {
+      test: {
+        coverage: {
+          reporter: ['json'],
+          reportsDirectory: 'coverage',
+        },
+      },
+    };
+
     const JEST_VALID: JestCoverageConfig = {
       coverageReporters: ['lcov'],
-      coverageDirectory: 'coverage/core',
+      coverageDirectory: join('coverage', 'core'),
     };
 
     const JEST_NO_DIR: JestCoverageConfig = {
@@ -31,23 +46,30 @@ vi.mock('bundle-require', () => ({
 
     const JEST_NO_LCOV: JestCoverageConfig = {
       coverageReporters: ['json'],
-      coverageDirectory: 'coverage/utils',
+      coverageDirectory: 'coverage',
     };
 
-    return {
-      mod: {
-        default:
-          config === 'vitest-valid'
-            ? VITEST_VALID
-            : config === 'jest-valid'
-            ? JEST_VALID
-            : config === 'vitest-no-dir'
-            ? VITEST_NO_DIR
-            : config === 'jest-no-dir'
-            ? JEST_NO_DIR
-            : JEST_NO_LCOV,
-      },
-    };
+    const wrapReturnValue = (
+      value: VitestCoverageConfig | JestCoverageConfig,
+    ) => ({ mod: { default: value } });
+
+    const config = options.filepath.split('.')[0];
+    switch (config) {
+      case 'vitest-valid':
+        return wrapReturnValue(VITEST_VALID);
+      case 'vitest-no-lcov':
+        return wrapReturnValue(VITEST_NO_LCOV);
+      case 'vitest-no-dir':
+        return wrapReturnValue(VITEST_NO_DIR);
+      case 'jest-valid':
+        return wrapReturnValue(JEST_VALID);
+      case 'jest-no-lcov':
+        return wrapReturnValue(JEST_NO_LCOV);
+      case 'jest-no-dir':
+        return wrapReturnValue(JEST_NO_DIR);
+      default:
+        return wrapReturnValue({});
+    }
   }),
 }));
 
@@ -58,9 +80,62 @@ describe('getCoveragePathForTarget', () => {
         // values come from bundle-require mock above
         'vitest-valid.config.unit.ts': '',
         'jest-valid.config.unit.ts': '',
+      },
+      MEMFS_VOLUME,
+    );
+  });
+
+  it('should fetch Vitest coverage paths', async () => {
+    await expect(
+      getCoveragePathsForTarget(
+        {
+          executor: '@nx/vite:test',
+          options: { config: 'vitest-valid.config.unit.ts' },
+        },
+        join('packages', 'cli'),
+        'unit-test in cli',
+      ),
+    ).resolves.toEqual({
+      pathToProject: join('packages', 'cli'),
+      resultsPath: join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
+    });
+  });
+
+  it('should fetch Jest coverage paths', async () => {
+    await expect(
+      getCoveragePathsForTarget(
+        {
+          executor: '@nx/jest:jest',
+          options: { config: 'jest-valid.config.unit.ts' },
+        },
+        join('packages', 'core'),
+        'unit-test in core',
+      ),
+    ).resolves.toBe(join('packages', 'core', 'coverage', 'core', 'lcov.info'));
+  });
+
+  it('should throw for unsupported executor (only vitest and jest are supported)', async () => {
+    await expect(() =>
+      getCoveragePathsForTarget(
+        {
+          executor: '@nx/cypress',
+          options: { config: 'cypress.config.ts' },
+        },
+        join('apps', 'ui'),
+        'component-test in ui',
+      ),
+    ).rejects.toThrow('Unsupported executor @nx/cypress.');
+  });
+});
+
+describe('getCoveragePathForVitest', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        // values come from bundle-require mock above
+        'vitest-valid.config.unit.ts': '',
         'vitest-no-dir.config.integration.ts': '',
-        'jest-no-dir.config.integration.ts': '',
-        'jest-no-lcov.config.integration.ts': '',
+        'vitest-no-lcov.config.integration.ts': '',
       },
       MEMFS_VOLUME,
     );
@@ -68,83 +143,82 @@ describe('getCoveragePathForTarget', () => {
 
   it('should fetch Vitest reportsDirectory', async () => {
     await expect(
-      getCoveragePathForTarget(
-        'unit-test',
-        {
-          executor: '@nx/vite:test',
-          options: { config: 'vitest-valid.config.unit.ts' },
-        },
-        'cli',
+      getCoveragePathForVitest(
+        'vitest-valid.config.unit.ts',
+        join('packages', 'cli'),
+        'unit-test in cli',
       ),
-    ).resolves.toBe('coverage/cli');
+    ).resolves.toEqual({
+      pathToProject: join('packages', 'cli'),
+      resultsPath: join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
+    } satisfies CoverageResult);
   });
 
-  it('should fetch Jest coverageDirectory', async () => {
-    await expect(
-      getCoveragePathForTarget(
-        'unit-test',
-        {
-          executor: '@nx/jest:jest',
-          options: { config: 'jest-valid.config.unit.ts' },
-        },
-        'core',
-      ),
-    ).resolves.toBe('coverage/core');
-  });
-
-  it('should throw when reportsDirectory is not set in vitest config', async () => {
+  it('should throw when reportsDirectory is not set in Vitest config', async () => {
     await expect(() =>
-      getCoveragePathForTarget(
-        'integration-test',
-        {
-          executor: '@nx/vite:test',
-          options: { config: 'vitest-no-dir.config.integration.ts' },
-        },
-        'cli',
+      getCoveragePathForVitest(
+        'vitest-no-dir.config.integration.ts',
+        'packages',
+        'integration-test in cli',
       ),
     ).rejects.toThrow(
       /configuration .* does not include coverage path .* Add the path under coverage > reportsDirectory/,
     );
   });
 
-  it('should throw when reportsDirectory is not set in jest config', async () => {
+  it('should throw when Vitest config does not include lcov reporter', async () => {
     await expect(() =>
-      getCoveragePathForTarget(
-        'integration-test',
-        {
-          executor: '@nx/jest:jest',
-          options: { config: 'jest-no-dir.config.integration.ts' },
-        },
-        'core',
+      getCoveragePathForVitest(
+        'vitest-no-lcov.config.integration.ts',
+        'packages',
+        'integration-test in core',
+      ),
+    ).rejects.toThrow(/configuration .* does not include LCOV report format/);
+  });
+});
+
+describe('getCoveragePathForJest', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        // values come from bundle-require mock above
+        'jest-valid.config.unit.ts': '',
+        'jest-no-dir.config.integration.ts': '',
+        'jest-no-lcov.config.integration.ts': '',
+      },
+      MEMFS_VOLUME,
+    );
+  });
+
+  it('should fetch Jest coverageDirectory', async () => {
+    await expect(
+      getCoveragePathForJest(
+        'jest-valid.config.unit.ts',
+        join('packages', 'cli'),
+        'unit-test in core',
+      ),
+    ).resolves.toBe(join('packages', 'cli', 'coverage', 'core', 'lcov.info'));
+  });
+
+  it('should throw when reportsDirectory is not set in Jest config', async () => {
+    await expect(() =>
+      getCoveragePathForJest(
+        'jest-no-dir.config.integration.ts',
+        'packages',
+        'integration-test in core',
       ),
     ).rejects.toThrow(
       /configuration .* does not include coverage path .* Add the path under coverageDirectory/,
     );
   });
 
-  it('should throw when config does not include lcov reporter', async () => {
+  it('should throw when Jest config does not include lcov reporter', async () => {
     await expect(() =>
-      getCoveragePathForTarget(
-        'integration-test',
-        {
-          executor: '@nx/jest:jest',
-          options: { config: 'jest-no-lcov.config.integration.ts' },
-        },
-        'core',
+      getCoveragePathForJest(
+        'jest-no-lcov.config.integration.ts',
+        'packages',
+        'integration-test in core',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
-  });
-
-  it('should throw for unsupported executor (only vitest and jest are supported)', async () => {
-    await expect(() =>
-      getCoveragePathForTarget(
-        'component-test',
-        {
-          executor: '@nx/cypress',
-          options: { config: 'cypress.config.ts' },
-        },
-        'ui',
-      ),
-    ).rejects.toThrow('Unsupported executor @nx/cypress.');
   });
 });
