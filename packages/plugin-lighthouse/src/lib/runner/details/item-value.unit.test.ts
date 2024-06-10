@@ -290,7 +290,7 @@ describe('formatTableItemPropertyValue', () => {
   it('should format value based on itemValueFormat "numeric" as int if float has only 0 post comma', () => {
     expect(
       formatTableItemPropertyValue(
-        { type: 'numeric', value: 42.0 } as Details.ItemValue,
+        { type: 'numeric', value: Number('42.0') } as Details.ItemValue,
         'numeric',
       ),
     ).toBe('42');
@@ -306,7 +306,6 @@ describe('formatTableItemPropertyValue', () => {
   });
 
   it('should format value based on itemValueFormat "multi"', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     expect(() =>
       formatTableItemPropertyValue(
         { type: 'numeric', value: 42 } as Details.ItemValue,
@@ -316,7 +315,6 @@ describe('formatTableItemPropertyValue', () => {
   });
 
   it('should format value based on itemValueFormat "thumbnail"', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     expect(() =>
       formatTableItemPropertyValue(
         { type: 'numeric', value: 42 } as Details.ItemValue,

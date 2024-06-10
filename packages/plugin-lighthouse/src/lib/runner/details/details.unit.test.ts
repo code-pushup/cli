@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { FormattedIcu } from 'lighthouse';
-import Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
+import type { FormattedIcu } from 'lighthouse';
+import type Details from 'lighthouse/types/lhr/audit-details';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
@@ -21,6 +21,7 @@ describe('logUnsupportedDetails', () => {
       )}`,
     );
   });
+
   it('should log only 3 details of unsupported entries', () => {
     logUnsupportedDetails([
       { details: { type: 'table' } },
