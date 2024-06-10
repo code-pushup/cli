@@ -1,10 +1,17 @@
 import type { ReleaseType } from 'semver';
 
 export type PackageVersion = Record<ReleaseType, number>;
-export type DependencyGroupLong =
-  | 'dependencies'
-  | 'devDependencies'
-  | 'optionalDependencies';
+export const dependencyGroupLong = [
+  'dependencies',
+  'devDependencies',
+  'optionalDependencies',
+] as const;
+export type DependencyGroupLong = (typeof dependencyGroupLong)[number];
+
+type PackageJsonDependencies = Record<string, string>;
+export type PackageJson = Partial<
+  Record<DependencyGroupLong, PackageJsonDependencies>
+>;
 
 // Unified Outdated result type
 export type OutdatedDependency = {

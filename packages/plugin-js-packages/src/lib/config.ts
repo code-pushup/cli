@@ -3,6 +3,7 @@ import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
 import { defaultAuditLevelMapping } from './constants';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
+const dependencyGroupSchema = z.enum(dependencyGroups);
 export type DependencyGroup = (typeof dependencyGroups)[number];
 
 const packageCommandSchema = z.enum(['audit', 'outdated']);
@@ -51,6 +52,10 @@ export const jsPackagesPluginConfigSchema = z.object({
   packageManager: packageManagerIdSchema.describe(
     'Package manager to be used.',
   ),
+  dependencyGroups: z
+    .array(dependencyGroupSchema)
+    .min(1)
+    .default(['prod', 'dev']),
   auditLevelMapping: z
     .record(packageAuditLevelSchema, issueSeveritySchema, {
       description:
@@ -58,6 +63,10 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .default(defaultAuditLevelMapping)
     .transform(fillAuditLevelMapping),
+  packageJsonPath: z
+    .string()
+    .describe('File path to package.json. Defaults to current folder.')
+    .default('package.json'),
 });
 
 export type JSPackagesPluginConfig = z.input<

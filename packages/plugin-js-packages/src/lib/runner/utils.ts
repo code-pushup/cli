@@ -1,4 +1,12 @@
+import {
+  objectFromEntries,
+  objectToKeys,
+  readJsonFile,
+} from '@code-pushup/utils';
+import { dependencyGroups } from '../config';
+import { dependencyGroupToLong } from '../constants';
 import { AuditResult, Vulnerability } from './audit/types';
+import { PackageJson } from './outdated/types';
 
 export function filterAuditResult(
   result: AuditResult,
@@ -39,4 +47,14 @@ export function filterAuditResult(
     vulnerabilities: uniqueResult.vulnerabilities,
     summary: uniqueResult.summary,
   };
+}
+
+export async function getTotalDependencies(packageJsonPath: string) {
+  const packageJson = await readJsonFile<PackageJson>(packageJsonPath);
+  return objectFromEntries(
+    dependencyGroups.map(depGroup => {
+      const deps = packageJson[dependencyGroupToLong[depGroup]];
+      return [depGroup, deps == null ? 0 : objectToKeys(deps).length];
+    }),
+  );
 }

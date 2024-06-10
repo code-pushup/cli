@@ -29,7 +29,9 @@ export function getLintFilePatterns(project: ProjectConfiguration): string[] {
     : toArray(options.lintFilePatterns);
 }
 
-export function getEslintConfig(project: ProjectConfiguration): string {
+export function getEslintConfig(
+  project: ProjectConfiguration,
+): string | undefined {
   const options = project.targets?.['lint']?.options as
     | { eslintConfig?: string }
     | undefined;

@@ -26,8 +26,8 @@ function executeLint({
       command: 'npx',
       args: [
         'eslint',
-        `--config=${configPath}`,
-        '--no-eslintrc',
+        ...(configPath ? [`--config=${configPath}`] : []),
+        ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
         '--no-error-on-unmatched-pattern',
         '--format=json',
         ...toArray(patterns).map(pattern =>
@@ -77,9 +77,9 @@ function loadRuleOptionsPerFile(
 
 async function withConfig<T>(
   eslintrc: ESLintTarget['eslintrc'],
-  fn: (configPath: string) => Promise<T>,
+  fn: (configPath: string | undefined) => Promise<T>,
 ): Promise<T> {
-  if (typeof eslintrc === 'string') {
+  if (typeof eslintrc !== 'object') {
     return fn(eslintrc);
   }
 
