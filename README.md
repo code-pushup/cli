@@ -18,6 +18,8 @@
 |                              📊 Getting Started                              |                           🌐 Portal Integration                            |                          🛠️ CI Automation                          |
 | :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :----------------------------------------------------------------: |
 | **[How to setup](./packages/cli/README.md#getting-started)** a basic project | Sort, filter **[your goals](./packages/cli/README.md#portal-integration)** | Updates **[on every PR](./packages/cli/README.md#-ci-automation)** |
+| <a href="#getting-started"><img alt="Getting started cover image" title="Getting started with code-pushup" src="./packages/cli/docs/images/getting-started-cover.png" max-height="200" width="auto"></a> | <a href="#portal-integration"><img alt="Portal integration cover image" title="Inetegrate code-pushup portal" src="./packages/cli/docs/images/portal-cover.png" max-height="200" width="auto"></a> | <a href="#-ci-automation"><img alt="CI Automation cover" title="CI automation guide" src="./packages/cli/docs/images/cli-cover.png" max-height="200" width="auto"></a> |
+
 
 ---
 
