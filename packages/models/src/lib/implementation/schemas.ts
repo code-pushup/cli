@@ -7,13 +7,13 @@ import {
 } from './limits';
 import { filenameRegex, slugRegex } from './utils';
 
-export const primitiveValueSchema = z.union([
+export const tableCellValueSchema = z.union([
   z.string(),
   z.number(),
   z.boolean(),
   z.null(),
 ]);
-export type PrimitiveValue = z.infer<typeof primitiveValueSchema>;
+export type PrimitiveValue = z.infer<typeof tableCellValueSchema>;
 
 /**
  * Schema for execution meta date

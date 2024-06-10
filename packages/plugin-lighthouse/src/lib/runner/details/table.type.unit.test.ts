@@ -1,19 +1,14 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
 import { Table } from '@code-pushup/models';
-import { parseTableToAuditDetailsTable } from './table.type';
+import {
+  parseTableColumns,
+  parseTableEntry,
+  parseTableRow,
+  parseTableToAuditDetailsTable,
+} from './table.type';
 
 describe('parseTableToAuditDetails', () => {
-  it('should omit empty table', () => {
-    const outputs = parseTableToAuditDetailsTable({
-      type: 'table',
-      headings: [],
-      items: [],
-    } as Details.Table);
-
-    expect(outputs).toBeUndefined();
-  });
-
   it('should render complete details of type table', () => {
     const outputs = parseTableToAuditDetailsTable({
       type: 'table',
@@ -131,6 +126,16 @@ describe('parseTableToAuditDetails', () => {
         },
       ],
     } satisfies Table);
+  });
+
+  it('should omit empty table', () => {
+    const outputs = parseTableToAuditDetailsTable({
+      type: 'table',
+      headings: [],
+      items: [],
+    } as Details.Table);
+
+    expect(outputs).toBeUndefined();
   });
 
   it('should accept rows with primitive values', () => {
@@ -277,5 +282,97 @@ describe('parseTableToAuditDetails', () => {
         },
       ],
     } satisfies Table);
+  });
+});
+
+describe('parseTableColumns', () => {
+  it('should return for empty columns', () => {
+    const outputs = parseTableColumns([]);
+    expect(outputs).toStrictEqual([]);
+  });
+
+  it('should fall back to empty string if key property is missing', () => {
+    const outputs = parseTableColumns([
+      {
+        keyy: 'prop',
+        label: 'PROP',
+      } as unknown as Details.TableColumnHeading,
+    ]);
+
+    expect(outputs).toEqual([expect.objectContaining({ key: '' })]);
+  });
+
+  it('should fall back to undefined if label property is missing', () => {
+    const outputs = parseTableColumns([
+      {
+        key: 'prop',
+        labellll: 'PROP',
+      } as unknown as Details.TableColumnHeading,
+    ]);
+
+    expect(outputs).toEqual([expect.objectContaining({ label: undefined })]);
+  });
+
+  it('should fill align with "left"', () => {
+    const outputs = parseTableColumns([
+      {
+        key: 'prop',
+        label: 'PROP',
+      } as Details.TableColumnHeading,
+    ]);
+
+    expect(outputs).toEqual([expect.objectContaining({ align: 'left' })]);
+  });
+
+  it('should accept columns', () => {
+    const outputs = parseTableColumns([
+      {
+        key: 'prop',
+        label: 'PROP',
+      } as Details.TableColumnHeading,
+    ]);
+
+    expect(outputs).toStrictEqual([
+      {
+        align: 'left',
+        key: 'prop',
+        label: 'PROP',
+      },
+    ]);
+  });
+});
+
+describe('parseTableRow', () => {
+  it('should accept rows with primitive values', () => {
+    const outputs = parseTableRow({ value: 12 }, []);
+
+    expect(outputs).toEqual({});
+  });
+
+  it('should filter keys by headings', () => {
+    const outputs = parseTableRow({ value: 12, tralala: '42' }, [
+      { key: 'tralala' },
+    ] as Details.TableColumnHeading[]);
+
+    expect(outputs).toEqual({ tralala: '42' });
+  });
+
+  it('should render complete details of type table', () => {
+    const outputs = parseTableRow({ value: 12 }, []);
+    expect(outputs).toEqual({});
+  });
+});
+
+describe('parseTableEntry', () => {
+  it('should forward nullish values', () => {
+    const outputs = parseTableEntry(['prop1', undefined]);
+
+    expect(outputs).toStrictEqual(['prop1', undefined]);
+  });
+
+  it('should forward non nullish values', () => {
+    const outputs = parseTableEntry(['prop1', 42]);
+
+    expect(outputs).toStrictEqual(['prop1', 42]);
   });
 });

@@ -71,7 +71,7 @@ export function toAuditOutputs(
 
         return {
           ...auditOutput,
-          ...(parsedDetails ? { details: toAuditDetails(details) } : {}),
+          ...(parsedDetails ? { details: parsedDetails } : {}),
         };
       }
 

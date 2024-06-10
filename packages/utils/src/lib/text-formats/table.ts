@@ -23,7 +23,7 @@ export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
     // row = { prop1: '100 ms', prop2: '200 ms' }
     const objectRow = row;
 
-    // columns [] || column = 'center'
+    // columns [] || column.at(0) = 'center'
     if (columns.length === 0 || typeof columns.at(0) === 'string') {
       return Object.values(objectRow).map(value =>
         value == null ? '' : String(value),
@@ -119,7 +119,7 @@ export function getColumnAlignments(tableData: Table): TableAlignment[] {
     );
   }
 
-  const biggersRow = [...rows]
+  const biggestRow = [...rows]
     .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
     .at(-1);
   if (columns.length > 0) {
@@ -134,5 +134,5 @@ export function getColumnAlignments(tableData: Table): TableAlignment[] {
     );
   }
 
-  return Object.keys(biggersRow ?? {}).map(_ => 'center');
+  return Object.keys(biggestRow ?? {}).map(_ => 'center');
 }

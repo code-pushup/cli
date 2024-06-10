@@ -1,6 +1,6 @@
 export {
   PrimitiveValue,
-  primitiveValueSchema,
+  tableCellValueSchema,
 } from './lib/implementation/schemas';
 
 export { Audit, auditSchema } from './lib/audit';

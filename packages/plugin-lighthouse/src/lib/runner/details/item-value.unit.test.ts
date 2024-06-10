@@ -1,11 +1,24 @@
+import Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
 import {
+  ItemValueFormatNotSupportedError,
   SimpleItemValue,
   formatTableItemPropertyValue,
   parseNodeValue,
   parseSimpleItemValue,
   parseTableItemPropertyValue,
+  trimSlice,
 } from './item-value';
+
+describe('trimSlice', () => {
+  it('should trim spaces from strings', () => {
+    expect(trimSlice('a        ')).toBe('a');
+  });
+
+  it('should slice end of string by N characters', () => {
+    expect(trimSlice('12345', 3)).toBe('123');
+  });
+});
 
 describe('parseNodeValue', () => {
   it('should parse selector of node', () => {
@@ -156,23 +169,159 @@ describe('parseTableItemPropertyValue', () => {
 });
 
 describe('formatTableItemPropertyValue', () => {
-  it('should parse undefined', () => {
+  it('should format undefined to empty string', () => {
     expect(formatTableItemPropertyValue(undefined)).toBe('');
   });
 
-  it('should parse primitive string value without extra type format', () => {
+  it('should format primitive string value without extra type format', () => {
     expect(formatTableItemPropertyValue('42   ')).toBe('42');
   });
 
-  it('should parse primitive number', () => {
+  it('should format primitive number', () => {
     expect(formatTableItemPropertyValue(42.213_123_123)).toBe(42.213_123_123);
   });
 
-  it('should parse primitive number value have no floating numbers if all are zeros', () => {
+  it('should format primitive number value have no floating numbers if all are zeros', () => {
     expect(formatTableItemPropertyValue(42)).toBe(42);
   });
 
-  it('should parse primitive boolean value', () => {
+  it('should format primitive boolean value', () => {
     expect(formatTableItemPropertyValue(false)).toBe(false);
+  });
+
+  it('should forward non primitive value directly if no format is provided', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'debugdata', value: '42' },
+        undefined,
+      ),
+    ).toStrictEqual({ type: 'debugdata', value: '42' });
+  });
+
+  it('should format value based on itemValueFormat "bytes"', () => {
+    expect(formatTableItemPropertyValue('100000', 'numeric')).toBe('100000');
+  });
+
+  it('should format value based on itemValueFormat "code"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'code', value: '<body><h1>Code Pushup</h1></body>' },
+        'code',
+      ),
+    ).toBe('<code><body><h1>Code Pushup</h1></body></code>');
+  });
+
+  it('should format value based on itemValueFormat "link"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        {
+          type: 'link',
+          url: 'https://code-pushup.dev',
+          text: 'code-pushup.dev',
+        },
+        'link',
+      ),
+    ).toBe('<a href="https://code-pushup.dev">code-pushup.dev</a>');
+  });
+
+  it('should format value based on itemValueFormat "url"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'url', value: 'https://code-pushup.dev' },
+        'url',
+      ),
+    ).toBe('<a href="https://code-pushup.dev">https://code-pushup.dev</a>');
+  });
+
+  it('should format value based on itemValueFormat "timespanMs"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 2142 },
+        'timespanMs',
+      ),
+    ).toBe('2.14 s');
+  });
+
+  it('should format value based on itemValueFormat "ms"', () => {
+    expect(
+      formatTableItemPropertyValue({ type: 'numeric', value: 2142 }, 'ms'),
+    ).toBe('2.14 s');
+  });
+
+  it('should format value based on itemValueFormat "node"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'node', selector: 'h1 > span' },
+        'node',
+      ),
+    ).toBe('h1 > span');
+  });
+
+  it('should format value based on itemValueFormat "source-location"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        {
+          type: 'source-location',
+          url: 'https://code-pushup.dev',
+        } as Details.ItemValue,
+        'source-location',
+      ),
+    ).toBe('https://code-pushup.dev');
+  });
+
+  it('should format value based on itemValueFormat "numeric" as int', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42 } as Details.ItemValue,
+        'numeric',
+      ),
+    ).toBe('42');
+  });
+
+  it('should format value based on itemValueFormat "numeric" as float', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42.1 } as Details.ItemValue,
+        'numeric',
+      ),
+    ).toBe('42.100');
+  });
+
+  it('should format value based on itemValueFormat "numeric" as int if float has only 0 post comma', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42.0 } as Details.ItemValue,
+        'numeric',
+      ),
+    ).toBe('42');
+  });
+
+  it('should format value based on itemValueFormat "text"', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42 } as Details.ItemValue,
+        'text',
+      ),
+    ).toBe('42');
+  });
+
+  it('should format value based on itemValueFormat "multi"', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    expect(() =>
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42 } as Details.ItemValue,
+        'multi',
+      ),
+    ).toThrow(new ItemValueFormatNotSupportedError('multi').message);
+  });
+
+  it('should format value based on itemValueFormat "thumbnail"', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    expect(() =>
+      formatTableItemPropertyValue(
+        { type: 'numeric', value: 42 } as Details.ItemValue,
+        'thumbnail',
+      ),
+    ).toThrow(new ItemValueFormatNotSupportedError('thumbnail').message);
   });
 });

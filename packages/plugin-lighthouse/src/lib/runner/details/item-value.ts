@@ -2,11 +2,6 @@ import type { IcuMessage } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
 
-export function parseNodeValue(node?: Details.NodeValue): string {
-  const { selector = '' } = node ?? {};
-  return selector;
-}
-
 export type PrimitiveItemValue = string | number | boolean;
 export type ObjectItemValue = Exclude<
   Details.ItemValue,
@@ -19,9 +14,20 @@ export type SimpleItemValue =
     >
   | PrimitiveItemValue;
 
-export function trimSlice(item?: PrimitiveItemValue, sliceEnd = 0) {
+export function trimSlice(item?: PrimitiveItemValue, maxLenght = 0) {
   const str = String(item).trim();
-  return sliceEnd > 0 ? str.slice(0, sliceEnd) : str;
+  return maxLenght > 0 ? str.slice(0, maxLenght) : str;
+}
+
+export function parseNodeValue(node?: Details.NodeValue): string {
+  const { selector = '' } = node ?? {};
+  return selector;
+}
+
+export class ItemValueFormatNotSupportedError extends Error {
+  constructor(itemValueFormat: Details.ItemValueType) {
+    super(`Type format: ${itemValueFormat} not implemented.`);
+  }
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -83,12 +89,25 @@ export function formatTableItemPropertyValue(
       return trimSlice(parseTableItemPropertyValue(itemValue) as string, 500);
     case 'multi': // @TODO
     case 'thumbnail': // @TODO
-      return `Type format: ${itemValueFormat} not implemented.`;
+      throw new ItemValueFormatNotSupportedError(itemValueFormat);
     // case undefined:
     // return parseTableItemPropertyValue(itemValue) as string;
     default:
       return itemValue;
   }
+}
+
+export function parseSimpleItemValue(
+  item: SimpleItemValue,
+): PrimitiveItemValue {
+  if (typeof item === 'object') {
+    const value = item.value;
+    if (typeof value === 'object') {
+      return value.formattedDefault;
+    }
+    return value;
+  }
+  return item;
 }
 
 export function parseTableItemPropertyValue(
@@ -130,17 +149,4 @@ export function parseTableItemPropertyValue(
   }
   // IcuMessage
   return parseSimpleItemValue(objectValue as SimpleItemValue);
-}
-
-export function parseSimpleItemValue(
-  item: SimpleItemValue,
-): PrimitiveItemValue {
-  if (typeof item === 'object') {
-    const value = item.value;
-    if (typeof value === 'object') {
-      return value.formattedDefault;
-    }
-    return value;
-  }
-  return item;
 }

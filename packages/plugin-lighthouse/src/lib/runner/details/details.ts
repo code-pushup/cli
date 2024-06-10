@@ -19,6 +19,7 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
   if (type !== 'table') {
     return undefined;
   }
+
   const rawTable: Table | undefined = parseTableToAuditDetailsTable(
     details as Details.Table,
   );

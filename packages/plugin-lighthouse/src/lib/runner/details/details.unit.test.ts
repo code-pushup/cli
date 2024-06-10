@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import { FormattedIcu } from 'lighthouse';
+import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
@@ -41,6 +43,24 @@ describe('logUnsupportedDetails', () => {
 });
 
 describe('toAuditDetails', () => {
+  it('should return undefined for missing details', () => {
+    const outputs = toAuditDetails(undefined);
+    expect(outputs).toBeUndefined();
+  });
+
+  it('should return undefined for unsupported type', () => {
+    const outputs = toAuditDetails({ type: 'debugdata' });
+    expect(outputs).toBeUndefined();
+  });
+
+  it('should return undefined for supported type with empty table', () => {
+    const outputs = toAuditDetails({
+      type: 'table',
+      items: [],
+    } as unknown as FormattedIcu<Details>);
+    expect(outputs).toBeUndefined();
+  });
+
   it('should render audit details of type table', () => {
     const outputs = toAuditDetails({
       type: 'table',
@@ -96,7 +116,7 @@ describe('toAuditDetails', () => {
     });
   });
 
-  it('should render audit details of type debugdata', () => {
+  it('should inform that debugdata detail type is not supported yet', () => {
     const outputs = toAuditDetails({
       type: 'debugdata',
       items: [

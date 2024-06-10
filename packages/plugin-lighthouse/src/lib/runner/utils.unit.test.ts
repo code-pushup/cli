@@ -5,11 +5,21 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
+import {
+  AuditOutput,
+  CoreConfig,
+  auditOutputsSchema,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { unsupportedDetailTypes } from './details/details';
-import { getBudgets, getConfig, setLogLevel, toAuditOutputs } from './utils';
+import {
+  getBudgets,
+  getConfig,
+  normalizeAuditOutputs,
+  setLogLevel,
+  toAuditOutputs,
+} from './utils';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -34,6 +44,31 @@ vi.mock('bundle-require', async () => {
         };
       }),
   };
+});
+
+describe('normalizeAuditOutputs', () => {
+  it('should filter audits listed under skipAudits', () => {
+    expect(
+      normalizeAuditOutputs(
+        [
+          { slug: 'largest-contentful-paint' } as AuditOutput,
+          { slug: 'cumulative-layout-shifts' } as AuditOutput,
+        ],
+        { skipAudits: ['largest-contentful-paint'] },
+      ),
+    ).toStrictEqual([{ slug: 'cumulative-layout-shifts' }]);
+  });
+  it('should NOT filter audits if no skipAudits are listed', () => {
+    expect(
+      normalizeAuditOutputs([
+        { slug: 'largest-contentful-paint' } as AuditOutput,
+        { slug: 'cumulative-layout-shifts' } as AuditOutput,
+      ]),
+    ).toStrictEqual([
+      { slug: 'largest-contentful-paint' },
+      { slug: 'cumulative-layout-shifts' },
+    ]);
+  });
 });
 
 describe('toAuditOutputs', () => {

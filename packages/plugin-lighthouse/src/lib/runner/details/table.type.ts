@@ -2,8 +2,6 @@ import type Details from 'lighthouse/types/lhr/audit-details';
 import { Table, TableColumnObject, TableRowObject } from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value';
 
-// import {parseItemValue} from "./item-value";
-
 export function parseTableToAuditDetailsTable(
   details: Details.Table,
 ): Table | undefined {
