@@ -22,7 +22,12 @@ import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 const { image, bold: boldMd } = md;
 
 export function formatReportScore(score: number): string {
-  return Math.round(score * 100).toString();
+  const scaledScore = score * 100;
+  const roundedScore = Math.round(scaledScore);
+
+  return roundedScore === 100 && score !== 1
+    ? Math.floor(scaledScore).toString()
+    : roundedScore.toString();
 }
 
 export function formatScoreWithColor(
