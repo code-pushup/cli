@@ -11,6 +11,9 @@
 
 <h2 align="center">🔎🔬Code quality integrations for any tool📉🔍</h2>
 
+<div style="width: 50%; display: flex;">asdfsaf</div>
+<div style="width: 50%; display: flex;">asfafasdf</div>
+
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
