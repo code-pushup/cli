@@ -9,7 +9,7 @@
 
 <h1 align="center"> Just Follow the Score </h1>
 
-<h2 align="center">🔎🔬Cost-effective codebase management for your every team member📉🔍</h2>
+<h2 align="center">🔎🔬Code quality integrations for any tool📉🔍</h2>
 
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
@@ -139,7 +139,7 @@ Watch improve, share reports
 
 </table>
 
-Want to support us?
+<h2>Want to support us?</h2>
 
 <ul>
 <li><a href="./CONTRIBUTING.md">Contribute</a></li>
