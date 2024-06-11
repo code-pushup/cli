@@ -7,11 +7,35 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-<h1 align="center">🔎🔬 **Any quality metric for your software project.** 📉🔍</h1>
+<h1 align="center">🔎🔬 Just follow the score 📉🔍</h1>
 
-1. ⚙️ **Configure what you want to track using your favourite tools.**
-2. 🤖 **Integrate it in your CI.**
-3. 🌈 **Visualize reports in a beautiful dashboard.**
+<h2 align="center">Cost-effective codebase management for your every team member</h2>
+
+<table>
+<tr>
+<td>
+<h3>Getting code quality right is hard. Especially the scores and KPI’s.</h3>
+<ul>
+<li>
+<b>Slow release cycles</b> can be caused by bad testing strategies or QA processes
+</li>
+<li>
+<b>Technical debt</b>, makes it hard to ship new features fast and increases maintenance
+</li>
+<li>
+<b>Incomplete or missing tracking</b> due to a mix of portals and custom tools is costly and unreliable
+</li>
+</ul>
+</td>
+<td>
+<img src="packages/cli/docs/images/code-pushup-logo.png" width="474" height="300">
+</td>
+</tr>
+</table>
+
+<a href="https://code-pushup.dev/enterprise-support">Get enterprise support</a>
+
+<h2>Integrating code quality is like phone chargers. Everyone has a different plug</h2>
 
 ---
 
