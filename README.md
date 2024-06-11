@@ -11,7 +11,7 @@
 
 <h2 align="center">🔎🔬Cost-effective codebase management for your every team member📉🔍</h2>
 
-<table>
+<table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
 <h3>Code quality tools are like phone chargers. Everyone has a different plug.</h3>
@@ -37,7 +37,7 @@
 
 <h2>Standards for code quality that integrates any tool</h2>
 
-<table>
+<table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
 <h3>Automated CI Integration</h3>
@@ -124,7 +124,7 @@ Watch improve, share reports
 </li>
 </ol>
 
-<table>
+<table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
 <img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="474" height="600">
