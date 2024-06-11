@@ -35,7 +35,7 @@
 
 <a href="https://code-pushup.dev/enterprise-support">Get enterprise support</a>
 
-<h2>Integrating code quality is like phone chargers. Everyone has a different plug</h2>
+<h2>Code quality tools are like phone chargers, every brand has a different plug.</h2>
 
 ---
 
