@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import { createRunnerFunction } from './runner';
 import { LighthouseCliFlags } from './types';
-import { getBudgets, getConfig, setLogLevel } from './utils';
+import { getConfig, setLogLevel } from './utils';
 
 // used for createRunnerMocking
 vi.mock('./utils', async () => {
@@ -93,43 +93,6 @@ describe('createRunnerFunction', () => {
     } as LighthouseCliFlags)(undefined);
     expect(getConfig).toHaveBeenCalledWith(
       expect.objectContaining({ configPath: 'lh-config.js' }),
-    );
-  });
-
-  it('should derive budgets from the budgets object directly', async () => {
-    await createRunnerFunction('https://localhost:8080', {
-      budgets: [{ path: '*/xyz/' }],
-    } as LighthouseCliFlags)(undefined);
-    expect(getBudgets).not.toHaveBeenCalled();
-    expect(runLighthouse).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({ budgets: [{ path: '*/xyz/' }] }),
-      undefined,
-    );
-  });
-
-  it('should call getBudgets if budgetPath is given', async () => {
-    await createRunnerFunction('https://localhost:8080', {
-      budgetPath: 'lh-budgets.js',
-    } as LighthouseCliFlags)(undefined);
-    expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
-    expect(runLighthouse).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({ budgets: [{ path: 'lh-budgets.js' }] }),
-      undefined,
-    );
-  });
-
-  it('should prefer budgetPath over budgets if both are given', async () => {
-    await createRunnerFunction('https://localhost:8080', {
-      budgetPath: 'lh-budgets.js',
-      budgets: [{ path: '*/xyz/' }],
-    } as LighthouseCliFlags)(undefined);
-    expect(getBudgets).toHaveBeenCalledWith('lh-budgets.js');
-    expect(runLighthouse).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({ budgets: [{ path: 'lh-budgets.js' }] }),
-      undefined,
     );
   });
 

@@ -6,7 +6,6 @@ import { ensureDirectoryExists } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import { LighthouseCliFlags } from './types';
 import {
-  getBudgets,
   getConfig,
   normalizeAuditOutputs,
   setLogLevel,
@@ -21,8 +20,6 @@ export function createRunnerFunction(
     const {
       configPath,
       preset,
-      budgetPath,
-      budgets,
       outputPath,
       ...parsedFlags
     }: Partial<LighthouseCliFlags> = flags;
@@ -30,15 +27,13 @@ export function createRunnerFunction(
     setLogLevel(parsedFlags);
 
     const config = await getConfig({ configPath, preset });
-    const budgetsJson = budgetPath ? await getBudgets(budgetPath) : budgets;
-    if (outputPath != null) {
+    if (outputPath) {
       await ensureDirectoryExists(dirname(outputPath));
     }
 
     const enrichedFlags = {
       ...parsedFlags,
       outputPath,
-      budgets: budgetsJson,
     };
 
     const runnerResult: unknown = await runLighthouse(
