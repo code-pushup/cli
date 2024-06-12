@@ -12,6 +12,7 @@ export const tableCellValueSchema = z.union([
   z.number(),
   z.boolean(),
   z.null(),
+  z.undefined(),
 ]);
 export type PrimitiveValue = z.infer<typeof tableCellValueSchema>;
 

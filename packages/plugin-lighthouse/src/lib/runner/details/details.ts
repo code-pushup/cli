@@ -37,6 +37,8 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
         type,
       )} failed: \nRaw data:\n ${JSON.stringify(
         rawTable,
+        null,
+        2,
       )}\n${result.error.toString()}`,
     );
   }
