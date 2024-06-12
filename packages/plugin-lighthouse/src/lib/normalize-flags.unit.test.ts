@@ -57,7 +57,6 @@ describe('normalizeFlags', () => {
     onlyAudits: [],
     skipAudits: [],
     onlyCategories: [],
-    budgets: [],
     output: ['json'],
     outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
@@ -78,7 +77,6 @@ describe('normalizeFlags', () => {
   it('should refine entries', () => {
     expect(
       normalizeFlags({
-        budgets: undefined,
         onlyAudits: 'largest-contentful-paint',
         skipAudits: 'is-on-https',
         chromeFlags: '--headless=shell',
@@ -86,7 +84,6 @@ describe('normalizeFlags', () => {
       }),
     ).toEqual(
       expect.objectContaining({
-        budgets: [],
         onlyAudits: ['largest-contentful-paint'],
         skipAudits: ['is-on-https'],
         chromeFlags: ['--headless=shell'],

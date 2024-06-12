@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import debug from 'debug';
-import { type Budget } from 'lighthouse';
 import log from 'lighthouse-logger';
 import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
@@ -11,7 +10,6 @@ import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
-  getBudgets,
   getConfig,
   logUnsupportedDetails,
   setLogLevel,
@@ -413,39 +411,6 @@ describe('getConfig', () => {
     ).resolves.toBeUndefined();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
       'Format of file wrong.not not supported',
-    );
-  });
-});
-
-describe('getBudgets', () => {
-  it('should return and empty array if no path is specified', async () => {
-    await expect(getBudgets()).resolves.toStrictEqual([]);
-  });
-
-  it('should load budgets from specified path', async () => {
-    const budgets: Budget[] = [
-      {
-        path: '*',
-        resourceCounts: [
-          {
-            budget: 3,
-            resourceType: 'media',
-          },
-        ],
-      },
-    ];
-    vol.fromJSON(
-      {
-        'lh-budgets.json': JSON.stringify(budgets, null, 2),
-      },
-      MEMFS_VOLUME,
-    );
-    await expect(getBudgets('lh-budgets.json')).resolves.toEqual(budgets);
-  });
-
-  it('should throw if path is specified wrong', async () => {
-    await expect(getBudgets('wrong.xyz')).rejects.toThrow(
-      'ENOENT: no such file or directory',
     );
   });
 });
