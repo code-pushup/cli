@@ -1,6 +1,39 @@
+import { vol } from 'memfs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { DependencyGroup } from '../config';
 import { AuditResult, Vulnerability } from './audit/types';
-import { filterAuditResult } from './utils';
+import { PackageJson } from './outdated/types';
+import { filterAuditResult, getTotalDependencies } from './utils';
+
+describe('getTotalDependencies', () => {
+  beforeEach(() => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({
+          dependencies: { '@code-pushup/eslint-config': '1.0.0' },
+          devDependencies: {
+            cypress: '13.10.0',
+            vite: '5.1.4',
+            vitest: '1.3.1',
+          },
+        } satisfies PackageJson),
+      },
+      MEMFS_VOLUME,
+    );
+  });
+
+  it('should return correct number of dependencies', async () => {
+    await expect(
+      getTotalDependencies(join(MEMFS_VOLUME, 'package.json')),
+    ).resolves.toStrictEqual({
+      prod: 1,
+      dev: 3,
+      optional: 0,
+    } satisfies Record<DependencyGroup, number>);
+  });
+});
 
 describe('filterAuditResult', () => {
   describe('filtering out NPM production vulnerabilities', () => {

@@ -8,3 +8,5 @@ export const PLUGIN_CONFIG_PATH = join(
   WORKDIR,
   'plugin-config.json',
 );
+
+export const INVALID_FUNCTION_NAME = '(empty-report)';

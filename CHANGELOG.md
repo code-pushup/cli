@@ -1,3 +1,27 @@
+## 0.45.0 (2024-06-03)
+
+This was a version bump only, there were no code changes.
+
+## 0.44.5 (2024-05-30)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** merge multiple results for a file ([#688](https://github.com/code-pushup/cli/pull/688))
+
+### ❤️ Thank You
+
+- Katka Pilátová
+
+## 0.44.3 (2024-05-29)
+
+### 🩹 Fixes
+
+- **plugin-eslint:** revert to explicit config file in nx helper ([ecd82642](https://github.com/code-pushup/cli/commit/ecd82642))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.44.2 (2024-05-28)
 
 ### 🚀 Features

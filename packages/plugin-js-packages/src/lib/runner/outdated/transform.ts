@@ -10,6 +10,7 @@ export function outdatedResultToAuditOutput(
   result: OutdatedResult,
   packageManager: PackageManagerId,
   depGroup: DependencyGroup,
+  totalDeps: number,
 ): AuditOutput {
   const relevantDependencies: OutdatedResult = result.filter(
     dep => dep.type === dependencyGroupToLong[depGroup],
@@ -45,10 +46,7 @@ export function outdatedResultToAuditOutput(
 
   return {
     slug: `${packageManager}-outdated-${depGroup}`,
-    score: calculateOutdatedScore(
-      outdatedStats.major,
-      relevantDependencies.length,
-    ),
+    score: calculateOutdatedScore(outdatedStats.major, totalDeps),
     value: outdatedDependencies.length,
     displayValue: outdatedToDisplayValue(outdatedStats),
     details: { issues },

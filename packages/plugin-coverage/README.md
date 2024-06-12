@@ -7,6 +7,7 @@
 🧪 **Code PushUp plugin for tracking code coverage.** ☂️
 
 This plugin allows you to measure and track code coverage on your project.
+It accepts the LCOV coverage format and merges coverage results from any test suites provided.
 
 Measured coverage types are mapped to Code PushUp audits in the following way
 
@@ -213,7 +214,11 @@ For instance, the following can be an audit output for line coverage.
 }
 ```
 
-### Providing coverage results in Nx monorepo
+### Coverage results alteration
+
+At the moment, the LCOV results include `(empty-report)` functions with missing coverage. These point to various imports or exports, not actual functions. For that reason, they are omitted from the results.
+
+## Providing coverage results in Nx monorepo
 
 As a part of the plugin, there is a `getNxCoveragePaths` helper for setting up paths to coverage results if you are using Nx. The helper accepts all relevant targets (e.g. `test` or `unit-test`) and searches for a coverage path option.
 Jest and Vitest configuration options are currently supported:

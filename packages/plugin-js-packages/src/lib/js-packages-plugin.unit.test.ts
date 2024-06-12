@@ -55,23 +55,50 @@ describe('jsPackagesPlugin', () => {
     );
   });
 
-  it('should create an audit for each dependency group', async () => {
+  it('should create an audit for default dependency groups', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'yarn-classic', checks: ['audit'] }),
+      jsPackagesPlugin({
+        packageManager: 'yarn-classic',
+        checks: ['audit'],
+      }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         audits: [
           expect.objectContaining({ slug: 'yarn-classic-audit-prod' }),
           expect.objectContaining({ slug: 'yarn-classic-audit-dev' }),
+        ],
+        groups: [
+          expect.objectContaining<Partial<Group>>({
+            slug: 'yarn-classic-audit',
+            refs: [
+              { slug: 'yarn-classic-audit-prod', weight: 80 },
+              { slug: 'yarn-classic-audit-dev', weight: 15 },
+            ],
+          }),
+        ],
+      }),
+    );
+  });
+
+  it('should create an audit for selected dependency groups', async () => {
+    await expect(
+      jsPackagesPlugin({
+        packageManager: 'yarn-classic',
+        checks: ['audit'],
+        dependencyGroups: ['prod', 'optional'],
+      }),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        audits: [
+          expect.objectContaining({ slug: 'yarn-classic-audit-prod' }),
           expect.objectContaining({ slug: 'yarn-classic-audit-optional' }),
         ],
         groups: [
           expect.objectContaining<Partial<Group>>({
             slug: 'yarn-classic-audit',
             refs: [
-              { slug: 'yarn-classic-audit-prod', weight: 3 },
-              { slug: 'yarn-classic-audit-dev', weight: 1 },
-              { slug: 'yarn-classic-audit-optional', weight: 1 },
+              { slug: 'yarn-classic-audit-prod', weight: 80 },
+              { slug: 'yarn-classic-audit-optional', weight: 5 },
             ],
           }),
         ],
@@ -82,20 +109,18 @@ describe('jsPackagesPlugin', () => {
   // Note: Yarn v2 does not support audit for optional dependencies
   it('should omit unsupported dependency groups', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'yarn-modern', checks: ['audit'] }),
+      jsPackagesPlugin({
+        packageManager: 'yarn-modern',
+        checks: ['audit'],
+        dependencyGroups: ['prod', 'optional'],
+      }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
-        audits: [
-          expect.objectContaining({ slug: 'yarn-modern-audit-prod' }),
-          expect.objectContaining({ slug: 'yarn-modern-audit-dev' }),
-        ],
+        audits: [expect.objectContaining({ slug: 'yarn-modern-audit-prod' })],
         groups: [
           expect.objectContaining<Partial<Group>>({
             slug: 'yarn-modern-audit',
-            refs: [
-              { slug: 'yarn-modern-audit-prod', weight: 3 },
-              { slug: 'yarn-modern-audit-dev', weight: 1 },
-            ],
+            refs: [{ slug: 'yarn-modern-audit-prod', weight: 80 }],
           }),
         ],
       }),
