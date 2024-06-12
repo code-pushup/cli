@@ -7,13 +7,9 @@ import {
 } from './limits';
 import { filenameRegex, slugRegex } from './utils';
 
-export const tableCellValueSchema = z.union([
-  z.string(),
-  z.number(),
-  z.boolean(),
-  z.null(),
-  z.undefined(),
-]);
+export const tableCellValueSchema = z
+  .union([z.string(), z.number(), z.boolean(), z.null()])
+  .default(null);
 export type PrimitiveValue = z.infer<typeof tableCellValueSchema>;
 
 /**
