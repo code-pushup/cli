@@ -47,9 +47,6 @@
 Seamlessly integration into any CI pipeline with full control. Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc.
 Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>! 
 </td>
-<td>
-<img src="./packages/cli/docs/images/getting-started-cover.png" width="474" height="300">
-</td>
 </tr>
 
 <tr>
@@ -59,9 +56,6 @@ Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>!
 <a href="./packages/cli#readme">📦 @code-pushup/cli</a>- <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal.
 <a href="./packages/cli/README.md#getting-started">Get started in no time</a>
 
-</td>
-<td>
-<img src="./packages/cli/docs/images/cli-cover.png" width="474" height="300">
 </td>
 </tr>
 
@@ -83,9 +77,6 @@ web performance and best practices from <b>Lighthouse</b>
 </li>
 </ul>
 </td>
-<td>
-<img src="./packages/cli/docs/images/cli-run-stdout-example.png" width="474" height="300">
-</td>
 </tr>
 
 <tr>
@@ -97,9 +88,6 @@ web performance and best practices from <b>Lighthouse</b>
 <a href="./packages/models#readme">📦 @code-pushup/models</a> <b>schemas and types</b> for data models (useful for custom plugins or other integrations
 <a href="./packages/utils#readme">📦 @code-pushup/utils</a> - various <b>utilities</b> (useful for custom plugins or other integrations)
 
-</td>
-<td>
-<img src="./packages/cli/docs/images/portal-cover.png" width="474" height="300">
 </td>
 </tr>
 
