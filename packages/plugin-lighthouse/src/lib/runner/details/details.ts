@@ -20,9 +20,7 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
     return undefined;
   }
 
-  const rawTable: Table | undefined = parseTableToAuditDetailsTable(
-    details as Details.Table,
-  );
+  const rawTable: Table | undefined = parseTableToAuditDetailsTable(details);
 
   if (rawTable != null) {
     const result = tableSchema().safeParse(rawTable);
