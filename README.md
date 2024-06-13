@@ -11,78 +11,58 @@
 
 <h2 align="center">🔎🔬Code quality integrations for any tool📉🔍</h2>
 
-<div style="width: 50%; display: flex;">asdfsaf</div>
-<div style="width: 50%; display: flex;">asfafasdf</div>
-
-<table cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
 <h3>Code quality tools are like phone chargers. Everyone has a different plug.</h3>
-<ul>
-<li>
-<b>Incomplete or missing tracking</b> due to a mix of portals and custom tools is costly and unreliable
-</li>
-<li>
-<b>No Standards</b> in data and processes leads to flaky, self-maintained zombies
-</li>
-<li>
-<b>Results are spread</b> over multiple places and need manual steps
-</li>
-</ul>
-</td>
-<td>
-<img src="packages/cli/docs/images/code-pushup-logo.png" width="474" height="300">
-</td>
-</tr>
-</table>
 
-<a href="https://code-pushup.dev/enterprise-support">Get enterprise support</a>
+ * **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
+ * **No Standards** in data and processes leads to flaky, self-maintained zombies
+ * **Results are spread** over multiple places and need manual steps
+
+[Get enterprise support](https://code-pushup.dev/enterprise-support)
 
 <h2>Standards for code quality that integrates any tool</h2>
 
 
 <h3>Automated CI Integration</h3>
 
- * Seamlessly integration into any CI pipeline with full control.
- * Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc.
- * Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>!
+ * **Seamless integration** into any CI pipeline with full control.
+ * Our tool **works on all platforms** like GitHub, Gitlab, Bitbucket etc.
+ * Get updates [on every PR](./packages/cli/README.md#-ci-automation)!
 
 ---
 
 <h3>Zero config setup</h3>
 
- * <a href="./packages/cli#readme">📦 @code-pushup/cli</a>
-   * <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal.
-   * <a href="./packages/cli/README.md#getting-started">Get started in no time!</a>
+ * [📦 @code-pushup/cli](./packages/cli#readme)
+   * **CLI** for **collecting** audit results and **uploading** report to portal.
+   * [Get started in no time!](./packages/cli/README.md#getting-started)
 
 ---
 
 <h3>Officially supported plugins </h3>
 
- * <a href="./packages/plugin-eslint#readm">🧩 @code-pushup/eslint-plugin</a>
-   * Static analysis using <b>ESLint</b> rules
- * <a href="./packages/plugin-coverage#readm">🧩 @code-pushup/coverage-plugin</a>
-   * <b>Test Coverage</b> analysis
- * <a href="./packages/plugin-js-packages#readm">🧩 @code-pushup/js-packages-plugin</a>
-   * Package audit on <b>Security</b> and <b>Outdates</b>
- * <a href="./packages/plugin-lighthouse#readm">🧩 @code-pushup/lighthouse-plugin</a>
-   * web performance and best practices from <b>Lighthouse</b>
+ * 🧩 [@code-pushup/eslint-plugin](./packages/plugin-eslint#readme)
+   * Static analysis using **ESLint** rules
+ * 🧩 [@code-pushup/coverage-plugin](./packages/plugin-coverage#readme)
+   * **Test Coverage** analysis
+ * 🧩 [@code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme)
+   * Package audit on **Security** and **Outdates**
+ * 🧩 [@code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme)
+   * web performance and best practices from **Lighthouse**
 
 ---
 
 <h3>Custom Plugins</h3>
 
- * <a href="./packages/cli/README.md#getting-started">🛠️ Integrate your own metric with custom plugins</a> 
+ * 🛠️ [Integrate your own metric with custom plugins](./packages/cli/README.md#getting-started) 
    * Example plugins repo
    * Docs
- * <a href="./packages/models#readme">📦 @code-pushup/models</a>
-   * <b>schemas and types</b> for data models (useful for custom plugins or other integrations
- * <a href="./packages/utils#readme">📦 @code-pushup/utils</a>
-   * various <b>utilities</b> (useful for custom plugins or other integrations)
+ * 📦 [@code-pushup/models](./packages/models#readme)
+   * **schemas and types** for data models (useful for custom plugins or other integrations
+ * 📦 [@code-pushup/utils](./packages/utils#readme)
+   * various **utilities** (useful for custom plugins or other integrations)
 
 
 <h2>How It Works!</h2>
-<img src="./packages/cli/docs/images/code-pushup-logo.png" width="600" height="150">
 
 <ol>
 <li>
