@@ -55,11 +55,11 @@ export function toAuditOutputs(
       };
 
       if (details != null) {
-        // eslint-disable-next-line functional/no-let
-        let parsedDetails: AuditDetails | undefined;
-
         try {
-          parsedDetails = toAuditDetails(details);
+          const parsedDetails = toAuditDetails(details);
+          return parsedDetails
+            ? { ...auditOutput, details: parsedDetails }
+            : auditOutput;
         } catch (error) {
           throw new Error(
             `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
@@ -67,11 +67,6 @@ export function toAuditOutputs(
             }`,
           );
         }
-
-        return {
-          ...auditOutput,
-          ...(parsedDetails ? { details: parsedDetails } : {}),
-        };
       }
 
       return auditOutput;
