@@ -41,33 +41,45 @@
 <h2>Standards for code quality that integrates any tool</h2>
 
 
-| <h3>Automated CI Integration</h3> | <h3>Zero config setup</h3> |
-| --------------------------------- | -------------------------- |
-| Seamlessly integration into any CI pipeline with full control. Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc. | <a href="./packages/cli#readme">📦 @code-pushup/cli</a>- <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal. |
-| Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>! | <a href="./packages/cli/README.md#getting-started">Get started in no time</a>
+<h3>Automated CI Integration</h3>
+
+ * Seamlessly integration into any CI pipeline with full control.
+ * Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc.
+ * Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>!
+
+---
+
+<h3>Zero config setup</h3>
+
+ * <a href="./packages/cli#readme">📦 @code-pushup/cli</a>
+   * <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal.
+   * <a href="./packages/cli/README.md#getting-started">Get started in no time!</a>
+
+---
 
 <h3>Officially supported plugins </h3>
-<ul>
-<li><a href="./packages/plugin-eslint#readm">🧩 @code-pushup/eslint-plugin</a><br/>
-Static analysis using <b>ESLint</b> rules
-</li>
-<li><a href="./packages/plugin-coverage#readm">🧩 @code-pushup/coverage-plugin</a><br/>
-<b>Test Coverage</b> analysis
-</li>
-<li><a href="./packages/plugin-js-packages#readm">🧩 @code-pushup/js-packages-plugin</a><br/>
-Package audit on <b>Security</b> and <b>Outdates</b>
-</li>
-<li><a href="./packages/plugin-lighthouse#readm">🧩 @code-pushup/lighthouse-plugin</a><br/>
-web performance and best practices from <b>Lighthouse</b>
-</li>
-</ul>
+
+ * <a href="./packages/plugin-eslint#readm">🧩 @code-pushup/eslint-plugin</a>
+   * Static analysis using <b>ESLint</b> rules
+ * <a href="./packages/plugin-coverage#readm">🧩 @code-pushup/coverage-plugin</a>
+   * <b>Test Coverage</b> analysis
+ * <a href="./packages/plugin-js-packages#readm">🧩 @code-pushup/js-packages-plugin</a>
+   * Package audit on <b>Security</b> and <b>Outdates</b>
+ * <a href="./packages/plugin-lighthouse#readm">🧩 @code-pushup/lighthouse-plugin</a>
+   * web performance and best practices from <b>Lighthouse</b>
+
+---
 
 <h3>Custom Plugins</h3>
-<a href="./packages/cli/README.md#getting-started">Integrate your own metric with custom plugins</a> 
-- Example plugins repo
-- Docs
-<a href="./packages/models#readme">📦 @code-pushup/models</a> <b>schemas and types</b> for data models (useful for custom plugins or other integrations
-<a href="./packages/utils#readme">📦 @code-pushup/utils</a> - various <b>utilities</b> (useful for custom plugins or other integrations)
+
+ * <a href="./packages/cli/README.md#getting-started">🛠️ Integrate your own metric with custom plugins</a> 
+   * Example plugins repo
+   * Docs
+ * <a href="./packages/models#readme">📦 @code-pushup/models</a>
+   * <b>schemas and types</b> for data models (useful for custom plugins or other integrations
+ * <a href="./packages/utils#readme">📦 @code-pushup/utils</a>
+   * various <b>utilities</b> (useful for custom plugins or other integrations)
+
 
 <h2>How It Works!</h2>
 <img src="./packages/cli/docs/images/code-pushup-logo.png" width="600" height="150">
