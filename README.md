@@ -40,27 +40,15 @@
 
 <h2>Standards for code quality that integrates any tool</h2>
 
-<table cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
 <h3>Automated CI Integration</h3>
 Seamlessly integration into any CI pipeline with full control. Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc.
 Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>! 
-</td>
-</tr>
 
-<tr>
-<td>
 <h3>Zero config setup</h3>
 
 <a href="./packages/cli#readme">📦 @code-pushup/cli</a>- <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal.
 <a href="./packages/cli/README.md#getting-started">Get started in no time</a>
 
-</td>
-</tr>
-
-<tr>
-<td>
 <h3>Officially supported plugins </h3>
 <ul>
 <li><a href="./packages/plugin-eslint#readm">🧩 @code-pushup/eslint-plugin</a><br/>
@@ -76,22 +64,13 @@ Package audit on <b>Security</b> and <b>Outdates</b>
 web performance and best practices from <b>Lighthouse</b>
 </li>
 </ul>
-</td>
-</tr>
 
-<tr>
-<td>
 <h3>Custom Plugins</h3>
 <a href="./packages/cli/README.md#getting-started">Integrate your own metric with custom plugins</a> 
 - Example plugins repo
 - Docs
 <a href="./packages/models#readme">📦 @code-pushup/models</a> <b>schemas and types</b> for data models (useful for custom plugins or other integrations
 <a href="./packages/utils#readme">📦 @code-pushup/utils</a> - various <b>utilities</b> (useful for custom plugins or other integrations)
-
-</td>
-</tr>
-
-</table>
 
 <h2>How It Works!</h2>
 <img src="./packages/cli/docs/images/code-pushup-logo.png" width="600" height="150">
