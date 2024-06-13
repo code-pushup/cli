@@ -56,6 +56,7 @@ describe('normalizeAuditOutputs', () => {
       ),
     ).toStrictEqual([{ slug: 'cumulative-layout-shifts' }]);
   });
+
   it('should NOT filter audits if no skipAudits are listed', () => {
     expect(
       normalizeAuditOutputs([
