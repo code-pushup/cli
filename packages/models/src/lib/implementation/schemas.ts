@@ -10,7 +10,7 @@ import { filenameRegex, slugRegex } from './utils';
 export const tableCellValueSchema = z
   .union([z.string(), z.number(), z.boolean(), z.null()])
   .default(null);
-export type PrimitiveValue = z.infer<typeof tableCellValueSchema>;
+export type TableCellValue = z.infer<typeof tableCellValueSchema>;
 
 /**
  * Schema for execution meta date
