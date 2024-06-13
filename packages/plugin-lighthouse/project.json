@@ -36,6 +36,12 @@
       "options": {
         "config": "packages/plugin-lighthouse/vite.config.integration.ts"
       }
+    },
+    "code-pushup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli --no-progress --config=packages/plugin-lighthouse/code-pushup.config.ts --upload.project cli-plugin-lighthouse --persist.filename plugin-lighthouse-report"
+      }
     }
   },
   "tags": ["scope:plugin", "type:feature"]

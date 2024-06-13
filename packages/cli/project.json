@@ -58,6 +58,12 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
+    },
+    "code-pushup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli --no-progress --config=packages/cli/code-pushup.config.ts --upload.project cli-cli --persist.filename cli-report"
+      }
     }
   },
   "tags": ["scope:core", "type:app"]

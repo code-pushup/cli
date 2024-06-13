@@ -41,6 +41,12 @@
       "options": {
         "config": "packages/plugin-eslint/vite.config.integration.ts"
       }
+    },
+    "code-pushup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli --no-progress --config=packages/plugin-eslint/code-pushup.config.ts --upload.project cli-plugin-eslint --persist.filename plugin-eslint-report"
+      }
     }
   },
   "tags": ["scope:plugin", "type:feature"]

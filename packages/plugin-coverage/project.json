@@ -41,6 +41,12 @@
     "publish": {
       "command": "node tools/scripts/publish.mjs plugin-coverage {args.ver} {args.tag}",
       "dependsOn": ["build"]
+    },
+    "code-pushup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli --no-progress --config=packages/plugin-coverage/code-pushup.config.ts --upload.project cli-plugin-coverage --persist.filename plugin-coverage-report"
+      }
     }
   },
   "tags": ["scope:plugin", "type:feature"]

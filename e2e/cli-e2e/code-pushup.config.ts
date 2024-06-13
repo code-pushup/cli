@@ -1,0 +1,55 @@
+import 'dotenv/config';
+import { join } from 'path';
+import { z } from 'zod';
+import type { CoreConfig } from '@code-pushup/models';
+import eslintPlugin, {
+  eslintConfigFromNxProject,
+} from '../../dist/packages/plugin-eslint';
+import jsPackagesPlugin from '../../dist/packages/plugin-js-packages';
+
+// load upload configuration from environment
+const envSchema = z
+  .object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().min(1),
+  })
+  .partial();
+const env = await envSchema.parseAsync(process.env);
+
+const config: CoreConfig = {
+  ...(env.CP_SERVER &&
+    env.CP_API_KEY &&
+    env.CP_ORGANIZATION &&
+    env.CP_PROJECT && {
+      upload: {
+        server: env.CP_SERVER,
+        apiKey: env.CP_API_KEY,
+        organization: env.CP_ORGANIZATION,
+        project: env.CP_PROJECT,
+      },
+    }),
+
+  plugins: [await eslintPlugin(await eslintConfigFromNxProject('cli-e2e'))],
+
+  categories: [
+    {
+      slug: 'bug-prevention',
+      title: 'Bug prevention',
+      description: 'Lint rules that find **potential bugs** in your code.',
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+    },
+    {
+      slug: 'code-style',
+      title: 'Code style',
+      description:
+        'Lint rules that promote **good practices** and consistency in your code.',
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+      ],
+    },
+  ],
+};
+
+export default config;
