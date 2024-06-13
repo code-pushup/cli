@@ -14,9 +14,9 @@ export type SimpleItemValue =
     >
   | PrimitiveItemValue;
 
-export function trimSlice(item?: PrimitiveItemValue, maxLenght = 0) {
+export function trimSlice(item?: PrimitiveItemValue, maxLength = 0) {
   const str = String(item).trim();
-  return maxLenght > 0 ? str.slice(0, maxLenght) : str;
+  return maxLength > 0 ? str.slice(0, maxLength) : str;
 }
 
 export function parseNodeValue(node?: Details.NodeValue): string {
