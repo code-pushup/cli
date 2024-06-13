@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { PrimitiveValue, tableCellValueSchema, weightSchema } from './schemas';
+import { TableCellValue, tableCellValueSchema, weightSchema } from './schemas';
 
 describe('primitiveValueSchema', () => {
   it('should accept a valid union', () => {
-    const value: PrimitiveValue = 'test';
+    const value: TableCellValue = 'test';
     expect(() => tableCellValueSchema.parse(value)).not.toThrow();
   });
 

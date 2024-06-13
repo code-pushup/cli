@@ -1,5 +1,5 @@
 export {
-  PrimitiveValue,
+  TableCellValue,
   tableCellValueSchema,
 } from './lib/implementation/schemas';
 

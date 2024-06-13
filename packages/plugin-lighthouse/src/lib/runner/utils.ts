@@ -5,7 +5,7 @@ import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditDetails, AuditOutput, AuditOutputs } from '@code-pushup/models';
+import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';

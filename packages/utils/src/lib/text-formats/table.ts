@@ -1,7 +1,7 @@
 import {
-  PrimitiveValue,
   Table,
   TableAlignment,
+  TableCellValue,
   TableColumnObject,
   TableColumnPrimitive,
 } from '@code-pushup/models';
@@ -113,7 +113,7 @@ export function getColumnAlignments(tableData: Table): TableAlignment[] {
   }
 
   if (Array.isArray(rows.at(0))) {
-    const firstPrimitiveRow = rows.at(0) as PrimitiveValue[];
+    const firstPrimitiveRow = rows.at(0) as TableCellValue[];
     return Array.from({ length: firstPrimitiveRow.length }).map((_, idx) =>
       getColumnAlignmentForIndex(idx, columns as TableColumnPrimitive[]),
     );
