@@ -42,7 +42,7 @@
 
 
 | <h3>Automated CI Integration</h3> | <h3>Zero config setup</h3> |
-------------------------------------------------------------------
+| --------------------------------- | -------------------------- |
 | Seamlessly integration into any CI pipeline with full control. Our tool works on all platforms like GitHub, Gitlab, Bitbucket etc. | <a href="./packages/cli#readme">📦 @code-pushup/cli</a>- <b>CLI</b> for <b>collecting</b> audit results and <b>uploading</b> report to portal. |
 | Get updates <a href="./packages/cli/README.md#-ci-automation">on every PR</a>! | <a href="./packages/cli/README.md#getting-started">Get started in no time</a>
 
