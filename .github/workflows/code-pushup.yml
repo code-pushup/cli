@@ -35,3 +35,5 @@ jobs:
         uses: code-pushup/github-action@v0
         with:
           bin: npx nx code-pushup --
+      - name: Run Code PushUp per project
+        run: npx nx run-many -t code-pushup --exclude plugin-js-packages,cli-source --parallel 1
