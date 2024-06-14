@@ -1,6 +1,13 @@
+import chalk from 'chalk';
 import type { IcuMessage } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { formatBytes, formatDuration, html } from '@code-pushup/utils';
+import {
+  formatBytes,
+  formatDuration,
+  html,
+  truncateText,
+  ui,
+} from '@code-pushup/utils';
 
 export type PrimitiveItemValue = string | number | boolean;
 export type ObjectItemValue = Exclude<
@@ -57,6 +64,7 @@ export function formatTableItemPropertyValue(
 
   const parsedItemValue = parseTableItemPropertyValue(itemValue);
 
+  /* eslint-disable no-magic-numbers */
   switch (itemValueFormat) {
     case 'bytes':
       return formatBytes(Number(parsedItemValue));
@@ -74,27 +82,26 @@ export function formatTableItemPropertyValue(
     case 'node':
       return parseNodeValue(itemValue as Details.NodeValue);
     case 'source-location':
-      // eslint-disable-next-line no-magic-numbers
-      return trimSlice((itemValue as Details.SourceLocationValue).url, 200);
+      return truncateText(parsedItemValue as string, 200);
     case 'numeric':
-      const num = Number(parseTableItemPropertyValue(itemValue));
-      // eslint-disable-next-line no-magic-numbers
+      const num = Number(parsedItemValue);
       if (num.toFixed(3).toString().endsWith('.000')) {
-        return trimSlice(num);
+        return String(num);
       }
-      // eslint-disable-next-line no-magic-numbers
-      return trimSlice(num.toFixed(3));
+      return String(num.toFixed(3));
     case 'text':
-      // eslint-disable-next-line no-magic-numbers
-      return trimSlice(parseTableItemPropertyValue(itemValue) as string, 500);
+      return truncateText(parsedItemValue as string, 500);
     case 'multi': // @TODO
     case 'thumbnail': // @TODO
       throw new ItemValueFormatNotSupportedError(itemValueFormat);
-    // case undefined:
-    // return parseTableItemPropertyValue(itemValue) as string;
-    default:
+    case null:
+      return '';
+    case undefined:
       return itemValue;
+    default:
+      return parsedItemValue as string;
   }
+  /* eslint-enable no-magic-numbers */
 }
 
 export function parseSimpleItemValue(
@@ -110,6 +117,7 @@ export function parseSimpleItemValue(
   return item;
 }
 
+// @TODO extract Link type from logic
 export function parseTableItemPropertyValue(
   itemValue?: Details.ItemValue,
 ): PrimitiveItemValue | Details.LinkValue {
@@ -143,9 +151,18 @@ export function parseTableItemPropertyValue(
       const { url } = objectValue;
       return String(url);
     case 'subitems':
-      return `${type}`; // @TODO
+      // @TODO log verbose first, then implement data type
+      ui().logger.info(
+        `Value type ${chalk.bold('subitems')} is not implemented`,
+      );
+      return '';
     case 'debugdata':
-      return `${type}`; // @TODO
+      // @TODO log verbose first, then implement data type
+      ui().logger.info(
+        `Value type ${chalk.bold('debugdata')} is not implemented`,
+        { silent: true },
+      );
+      return '';
   }
   // IcuMessage
   return parseSimpleItemValue(objectValue as SimpleItemValue);

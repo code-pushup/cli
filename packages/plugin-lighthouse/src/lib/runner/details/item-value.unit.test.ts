@@ -1,5 +1,8 @@
+import chalk from 'chalk';
 import Details from 'lighthouse/types/lhr/audit-details';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { getLogMessages } from '@code-pushup/test-utils';
+import { ui } from '@code-pushup/utils';
 import {
   ItemValueFormatNotSupportedError,
   SimpleItemValue,
@@ -7,18 +10,7 @@ import {
   parseNodeValue,
   parseSimpleItemValue,
   parseTableItemPropertyValue,
-  trimSlice,
 } from './item-value';
-
-describe('trimSlice', () => {
-  it('should trim spaces from strings', () => {
-    expect(trimSlice('a        ')).toBe('a');
-  });
-
-  it('should slice end of string by N characters', () => {
-    expect(trimSlice('12345', 3)).toBe('123');
-  });
-});
 
 describe('parseNodeValue', () => {
   it('should parse selector of node', () => {
@@ -59,6 +51,10 @@ describe('parseSimpleItemValue', () => {
 });
 
 describe('parseTableItemPropertyValue', () => {
+  beforeAll(() => {
+    ui().switchMode('raw');
+  });
+
   it('should parse undefined', () => {
     expect(parseTableItemPropertyValue(undefined)).toBe('');
   });
@@ -129,7 +125,7 @@ describe('parseTableItemPropertyValue', () => {
     ).toBe('Legible text');
   });
 
-  it('should parse value item subitems', () => {
+  it('should parse value item subitems to empty string and log implemented', () => {
     expect(
       parseTableItemPropertyValue({
         type: 'subitems',
@@ -150,12 +146,17 @@ describe('parseTableItemPropertyValue', () => {
           },
         ],
       }),
-    ).toBe('subitems');
+    ).toBe('');
+
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] Value type ${chalk.bold('subitems')} is not implemented`,
+    );
   });
 
-  it('should parse value item debugdata', () => {
-    expect(parseTableItemPropertyValue({ type: 'debugdata' })).toBe(
-      'debugdata',
+  it('should parse value item debugdata to empty string and log implemented', () => {
+    expect(parseTableItemPropertyValue({ type: 'debugdata' })).toBe('');
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] Value type ${chalk.bold('debugdata')} is not implemented`,
     );
   });
 
@@ -169,6 +170,21 @@ describe('parseTableItemPropertyValue', () => {
 });
 
 describe('formatTableItemPropertyValue', () => {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  const stringOfLength = (length: number, postfix = ''): string => {
+    const maxLength = length - postfix.length;
+    let result = '';
+    // eslint-disable-next-line functional/no-loop-statements
+    for (let i = 0; i < maxLength; i++) {
+      result += alphabet.at((alphabet.length - 1) % i);
+    }
+
+    if (postfix) {
+      result += postfix;
+    }
+
+    return result;
+  };
   it('should format undefined to empty string', () => {
     expect(formatTableItemPropertyValue(undefined)).toBe('');
   });
@@ -269,6 +285,19 @@ describe('formatTableItemPropertyValue', () => {
     ).toBe('https://code-pushup.dev');
   });
 
+  it('should format value based on itemValueFormat "source-location" to a length of 200 and add "..."', () => {
+    const formattedStr = formatTableItemPropertyValue(
+      {
+        type: 'source-location',
+        url: stringOfLength(210, 'https://code-pushup.dev'),
+      } as Details.ItemValue,
+      'source-location',
+    ) as string;
+
+    expect(formattedStr.length).toBeLessThanOrEqual(200);
+    expect(formattedStr.slice(-3)).toBe('...');
+  });
+
   it('should format value based on itemValueFormat "numeric" as int', () => {
     expect(
       formatTableItemPropertyValue(
@@ -299,10 +328,26 @@ describe('formatTableItemPropertyValue', () => {
   it('should format value based on itemValueFormat "text"', () => {
     expect(
       formatTableItemPropertyValue(
-        { type: 'numeric', value: 42 } as Details.ItemValue,
+        {
+          type: 'url',
+          value: 'https://github.com/code-pushup/cli/blob/main/README.md',
+        } as Details.ItemValue,
         'text',
       ),
-    ).toBe('42');
+    ).toBe('https://github.com/code-pushup/cli/blob/main/README.md');
+  });
+
+  it('should format value based on itemValueFormat "text" to a length of 500 and add "..."', () => {
+    const formattedStr = formatTableItemPropertyValue(
+      {
+        type: 'url',
+        value: stringOfLength(510, 'https://github.com/'),
+      } as Details.ItemValue,
+      'text',
+    ) as string;
+
+    expect(formattedStr.length).toBeLessThanOrEqual(500);
+    expect(formattedStr.slice(-3)).toBe('...');
   });
 
   it('should format value based on itemValueFormat "multi"', () => {
