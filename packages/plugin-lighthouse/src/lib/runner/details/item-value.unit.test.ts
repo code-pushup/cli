@@ -4,7 +4,6 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
-  ItemValueFormatNotSupportedError,
   SimpleItemValue,
   formatTableItemPropertyValue,
   parseNodeValue,

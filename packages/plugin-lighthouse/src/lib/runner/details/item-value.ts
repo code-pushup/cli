@@ -31,12 +31,6 @@ export function parseNodeValue(node?: Details.NodeValue): string {
   return selector;
 }
 
-export class ItemValueFormatNotSupportedError extends Error {
-  constructor(itemValueFormat: Details.ItemValueType) {
-    super(`Type format: ${itemValueFormat} not implemented.`);
-  }
-}
-
 // eslint-disable-next-line max-lines-per-function
 export function formatTableItemPropertyValue(
   itemValue?: Details.ItemValue,
