@@ -10,9 +10,9 @@ import { CoreConfig, auditOutputsSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
+  determineAndSetLogLevel,
   getConfig,
   logUnsupportedDetails,
-  setLogLevel,
   toAuditOutputs,
   unsupportedDetailTypes,
 } from './utils';
@@ -415,7 +415,7 @@ describe('getConfig', () => {
   });
 });
 
-describe('setLogLevel', () => {
+describe('determineAndSetLogLevel', () => {
   const debugLib = debug as { enabled: (flag: string) => boolean };
   beforeEach(() => {
     log.setLevel('info');
@@ -439,30 +439,32 @@ describe('setLogLevel', () => {
    *    debug.enable('LH:*, -LH:*:verbose');
    */
 
-  it('should set log level to info if no options are given', () => {
-    setLogLevel();
+  it('should set log level to info and return "info" as level if no options are given', () => {
+    expect(determineAndSetLogLevel()).toBe('info');
     expect(log.isVerbose()).toBe(false);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
-  it('should set log level to verbose', () => {
-    setLogLevel({ verbose: true });
+  it('should set log level to verbose and return "verbose" as level', () => {
+    expect(determineAndSetLogLevel({ verbose: true })).toBe('verbose');
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
-  it('should set log level to quiet', () => {
-    setLogLevel({ quiet: true });
+  it('should set log level to quiet and return "silent" as level', () => {
+    expect(determineAndSetLogLevel({ quiet: true })).toBe('silent');
     expect(log.isVerbose()).toBe(false);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('-LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
-  it('should set log level to verbose if verbose and quiet are given', () => {
-    setLogLevel({ verbose: true, quiet: true });
+  it('should set log level to verbose if verbose and quiet are given and return "verbose" as level', () => {
+    expect(determineAndSetLogLevel({ verbose: true, quiet: true })).toBe(
+      'verbose',
+    );
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
