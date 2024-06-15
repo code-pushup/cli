@@ -17,10 +17,8 @@
  * **No Standards** in data and processes leads to flaky, self-maintained zombies
  * **Results are spread** over multiple places and need manual steps
 
-[Get enterprise support](https://code-pushup.dev/enterprise-support)
 
 <h2>Standards for code quality that integrates any tool</h2>
-
 
 <h3>Automated CI Integration</h3>
 
@@ -60,7 +58,7 @@
    * **schemas and types** for data models (useful for custom plugins or other integrations
  * 📦 [@code-pushup/utils](./packages/utils#readme)
    * various **utilities** (useful for custom plugins or other integrations)
-
+<!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
 
 <h2>How It Works!</h2>
 
@@ -86,12 +84,12 @@ Watch improve, share reports
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="474" height="600">
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png"> 
 </td>
 <td>
 <h2>Just follow the score</h2>
 <h3>See regressions - Report scores - On every PR</h3>
-<a href="./packages/cli/README.md#getting-started">Try our paid features</a>
+<!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
 
 </td>
 </tr>
