@@ -185,6 +185,11 @@ describe('formatTableItemPropertyValue', () => {
 
     return result;
   };
+
+  beforeAll(() => {
+    ui().switchMode('raw');
+  });
+
   it('should format undefined to empty string', () => {
     expect(formatTableItemPropertyValue(undefined)).toBe('');
   });
@@ -351,20 +356,29 @@ describe('formatTableItemPropertyValue', () => {
   });
 
   it('should format value based on itemValueFormat "multi"', () => {
-    expect(() =>
+    expect(
       formatTableItemPropertyValue(
         { type: 'numeric', value: 42 } as Details.ItemValue,
         'multi',
       ),
-    ).toThrow(new ItemValueFormatNotSupportedError('multi').message);
+    ).toBe('');
+
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] Format type ${chalk.bold('multi')} is not implemented`,
+    );
   });
 
   it('should format value based on itemValueFormat "thumbnail"', () => {
-    expect(() =>
+    expect(
       formatTableItemPropertyValue(
         { type: 'numeric', value: 42 } as Details.ItemValue,
         'thumbnail',
       ),
-    ).toThrow(new ItemValueFormatNotSupportedError('thumbnail').message);
+    ).toBe('');
+    expect(getLogMessages(ui().logger).at(0)).toBe(
+      `[ blue(info) ] Format type ${chalk.bold(
+        'thumbnail',
+      )} is not implemented`,
+    );
   });
 });

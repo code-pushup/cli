@@ -82,7 +82,7 @@ export function formatTableItemPropertyValue(
     case 'node':
       return parseNodeValue(itemValue as Details.NodeValue);
     case 'source-location':
-      return truncateText(parsedItemValue as string, 200);
+      return truncateText(String(parsedItemValue), 200);
     case 'numeric':
       const num = Number(parsedItemValue);
       if (num.toFixed(3).toString().endsWith('.000')) {
@@ -90,16 +90,22 @@ export function formatTableItemPropertyValue(
       }
       return String(num.toFixed(3));
     case 'text':
-      return truncateText(parsedItemValue as string, 500);
+      return truncateText(String(parsedItemValue), 500);
     case 'multi': // @TODO
+      // @TODO log verbose first, then implement data type
+      ui().logger.info(`Format type ${chalk.bold('multi')} is not implemented`);
+      return '';
     case 'thumbnail': // @TODO
-      throw new ItemValueFormatNotSupportedError(itemValueFormat);
+      // @TODO log verbose first, then implement data type
+      ui().logger.info(
+        `Format type ${chalk.bold('thumbnail')} is not implemented`,
+      );
+      return '';
     case null:
       return '';
     case undefined:
-      return itemValue;
     default:
-      return parsedItemValue as string;
+      return itemValue;
   }
   /* eslint-enable no-magic-numbers */
 }
