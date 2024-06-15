@@ -80,6 +80,7 @@ const config: CoreConfig = {
 
     await lighthousePlugin('https://codepushup.dev/', {
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+      verbose: true,
     }),
   ],
 
