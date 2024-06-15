@@ -97,7 +97,6 @@ export function formatTableItemPropertyValue(
       return '';
     case null:
       return '';
-    case undefined:
     default:
       return itemValue;
   }
