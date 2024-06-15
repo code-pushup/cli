@@ -13,52 +13,51 @@
 
 <h3>Code quality tools are like phone chargers. Everyone has a different plug.</h3>
 
- * **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
- * **No Standards** in data and processes leads to flaky, self-maintained zombies
- * **Results are spread** over multiple places and need manual steps
-
+- **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
+- **No Standards** in data and processes leads to flaky, self-maintained zombies
+- **Results are spread** over multiple places and need manual steps
 
 <h2>Standards for code quality that integrates any tool</h2>
 
 <h3>Automated CI Integration</h3>
 
- * **Seamless integration** into any CI pipeline with full control.
- * Our tool **works on all platforms** like GitHub, Gitlab, Bitbucket etc.
- * Get updates [on every PR](./packages/cli/README.md#-ci-automation)!
+- **Seamless integration** into any CI pipeline with full control.
+- Our tool **works on all platforms** like GitHub, Gitlab, Bitbucket etc.
+- Get updates [on every PR](./packages/cli/README.md#-ci-automation)!
 
 ---
 
 <h3>Zero config setup</h3>
 
- * [📦 @code-pushup/cli](./packages/cli#readme)
-   * **CLI** for **collecting** audit results and **uploading** report to portal.
-   * [Get started in no time!](./packages/cli/README.md#getting-started)
+- [📦 @code-pushup/cli](./packages/cli#readme)
+  - **CLI** for **collecting** audit results and **uploading** report to portal.
+  - [Get started in no time!](./packages/cli/README.md#getting-started)
 
 ---
 
 <h3>Officially supported plugins </h3>
 
- * 🧩 [@code-pushup/eslint-plugin](./packages/plugin-eslint#readme)
-   * Static analysis using **ESLint** rules
- * 🧩 [@code-pushup/coverage-plugin](./packages/plugin-coverage#readme)
-   * **Test Coverage** analysis
- * 🧩 [@code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme)
-   * Package audit on **Security** and **Outdates**
- * 🧩 [@code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme)
-   * web performance and best practices from **Lighthouse**
+- 🧩 [@code-pushup/eslint-plugin](./packages/plugin-eslint#readme)
+  - Static analysis using **ESLint** rules
+- 🧩 [@code-pushup/coverage-plugin](./packages/plugin-coverage#readme)
+  - **Test Coverage** analysis
+- 🧩 [@code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme)
+  - Package audit on **Security** and **Outdates**
+- 🧩 [@code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme)
+  - web performance and best practices from **Lighthouse**
 
 ---
 
 <h3>Custom Plugins</h3>
 
- * 🛠️ [Integrate your own metric with custom plugins](./packages/cli/README.md#getting-started) 
-   * Example plugins repo
-   * Docs
- * 📦 [@code-pushup/models](./packages/models#readme)
-   * **schemas and types** for data models (useful for custom plugins or other integrations
- * 📦 [@code-pushup/utils](./packages/utils#readme)
-   * various **utilities** (useful for custom plugins or other integrations)
-<!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
+- 🛠️ [Integrate your own metric with custom plugins](./packages/cli/README.md#getting-started)
+  - Example plugins repo
+  - Docs
+- 📦 [@code-pushup/models](./packages/models#readme)
+  - **schemas and types** for data models (useful for custom plugins or other integrations
+- 📦 [@code-pushup/utils](./packages/utils#readme)
+  - various **utilities** (useful for custom plugins or other integrations)
+  <!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
 
 <h2>How It Works!</h2>
 
