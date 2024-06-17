@@ -17,7 +17,7 @@ describe('createRunnerConfig', () => {
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
-      args: ['executeRunner.ts'],
+      args: ['"executeRunner.ts"'],
       outputFile: expect.stringContaining('runner-output.json'),
     });
   });
