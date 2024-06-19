@@ -1,3 +1,19 @@
+## 0.46.0 (2024-06-19)
+
+### 🚀 Features
+
+- **cli:** forward plugins and categories if onlyPlugins is invalid ([1a6c6fa8](https://github.com/code-pushup/cli/commit/1a6c6fa8))
+- **plugin-lighthouse:** add logLevel to lighthouse runner flags ([120b3160](https://github.com/code-pushup/cli/commit/120b3160))
+
+### 🩹 Fixes
+
+- **plugin-coverage:** support newer nx versions ([9e416852](https://github.com/code-pushup/cli/commit/9e416852))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+
 ## 0.45.1 (2024-06-17)
 
 ### 🚀 Features
