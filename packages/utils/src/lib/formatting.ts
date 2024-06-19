@@ -101,8 +101,7 @@ export function truncateText(
         ellipsis +
         text.slice(-halfMaxChars).trim()
       );
-    // case 'end':
-    default:
+    case 'end':
       return text.slice(0, maxLength).trim() + ellipsis;
   }
 }
