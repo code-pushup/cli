@@ -8,6 +8,7 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
+import { PLUGIN_SLUG } from './constants';
 import { toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
 
