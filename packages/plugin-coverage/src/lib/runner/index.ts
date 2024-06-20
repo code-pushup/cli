@@ -6,6 +6,7 @@ import {
   ProcessError,
   ensureDirectoryExists,
   executeProcess,
+  filePathToCliArg,
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
@@ -60,7 +61,7 @@ export async function createRunnerConfig(
 
   return {
     command: 'node',
-    args: [scriptPath],
+    args: [filePathToCliArg(scriptPath)],
     outputFile: RUNNER_OUTPUT_PATH,
     ...(threshold != null && {
       outputTransform: outputs =>
