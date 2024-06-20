@@ -1,4 +1,4 @@
-# Code PushUp CLI
+# Code PushUp CLI - Just Follow the Score
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -7,9 +7,7 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-<h1 align="center"> Just Follow the Score </h1>
-
-<h2 align="center">🔎🔬Code quality integrations for any tool📉🔍</h2>
+<h1 align="center">🔎🔬Code quality integrations for any tool📉🔍</h1>
 
 <h3>Code quality tools are like phone chargers. Everyone has a different plug.</h3>
 
@@ -99,5 +97,5 @@ Watch improve, share reports
 
 <ul>
 <li><a href="./CONTRIBUTING.md">Contribute</a></li>
-<li><a href="">Sponsor</a></li>
+<!-- link when sponsorships are ready <li><a href="">Sponsor</a></li> -->
 </ul>
