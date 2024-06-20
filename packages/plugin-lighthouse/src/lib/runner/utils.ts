@@ -101,21 +101,32 @@ export function logUnsupportedDetails(
   }
 }
 
-export function setLogLevel({
+export type LighthouseLogLevel =
+  | 'verbose'
+  | 'error'
+  | 'info'
+  | 'silent'
+  | 'warn'
+  | undefined;
+export function determineAndSetLogLevel({
   verbose,
   quiet,
 }: {
   verbose?: boolean;
   quiet?: boolean;
-} = {}) {
+} = {}): LighthouseLogLevel {
+  // eslint-disable-next-line functional/no-let
+  let logLevel: LighthouseLogLevel = 'info';
   // set logging preferences
   if (verbose) {
-    log.setLevel('verbose');
+    logLevel = 'verbose';
   } else if (quiet) {
-    log.setLevel('silent');
-  } else {
-    log.setLevel('info');
+    logLevel = 'silent';
   }
+
+  log.setLevel(logLevel);
+
+  return logLevel;
 }
 
 export type ConfigOptions = Partial<

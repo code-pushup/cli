@@ -5,17 +5,22 @@ import { expect, vi } from 'vitest';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import { createRunnerFunction } from './runner';
 import { LighthouseCliFlags } from './types';
-import { getConfig, setLogLevel } from './utils';
+import { determineAndSetLogLevel, getConfig } from './utils';
 
 // used for createRunnerMocking
 vi.mock('./utils', async () => {
   // Import the actual 'lighthouse' module
   const actual = await vi.importActual('./utils');
 
+  const actualDetermineAndSetLogLevel = actual['determineAndSetLogLevel'] as (
+    s: string,
+  ) => string;
   // Return the mocked module, merging the actual module with overridden parts
   return {
     ...actual,
-    setLogLevel: vi.fn(),
+    determineAndSetLogLevel: vi
+      .fn()
+      .mockImplementation(actualDetermineAndSetLogLevel),
     getBudgets: vi.fn().mockImplementation((path: string) => [{ path }]),
     getConfig: vi.fn(),
   };
@@ -72,17 +77,17 @@ describe('createRunnerFunction', () => {
 
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8080',
-      DEFAULT_CLI_FLAGS,
+      { ...DEFAULT_CLI_FLAGS, logLevel: 'silent' },
       undefined,
     );
   });
 
-  it('should call setLogLevel with given verbose and quiet flags', async () => {
+  it('should call determineAndSetLogLevel with given verbose and quiet flags', async () => {
     await createRunnerFunction('https://localhost:8080', {
       verbose: true,
       quiet: true,
     } as LighthouseCliFlags)(undefined);
-    expect(setLogLevel).toHaveBeenCalledWith(
+    expect(determineAndSetLogLevel).toHaveBeenCalledWith(
       expect.objectContaining({ verbose: true, quiet: true }),
     );
   });

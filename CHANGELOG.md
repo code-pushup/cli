@@ -1,3 +1,38 @@
+## 0.46.0 (2024-06-19)
+
+### 🚀 Features
+
+- **cli:** forward plugins and categories if onlyPlugins is invalid ([1a6c6fa8](https://github.com/code-pushup/cli/commit/1a6c6fa8))
+- **plugin-lighthouse:** add logLevel to lighthouse runner flags ([120b3160](https://github.com/code-pushup/cli/commit/120b3160))
+
+### 🩹 Fixes
+
+- **plugin-coverage:** support newer nx versions ([9e416852](https://github.com/code-pushup/cli/commit/9e416852))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+
+## 0.45.1 (2024-06-17)
+
+### 🚀 Features
+
+- **models:** allow non-integer weights in refs ([016e011f](https://github.com/code-pushup/cli/commit/016e011f))
+- **models:** allow non-integer audit values ([1db88e39](https://github.com/code-pushup/cli/commit/1db88e39))
+- **plugin-js-packages:** support multiple package.json and auto search ([df87ff9b](https://github.com/code-pushup/cli/commit/df87ff9b))
+
+### 🩹 Fixes
+
+- round down report scores to avoid misleading perfect results ([#700](https://github.com/code-pushup/cli/pull/700))
+- wrap paths in quotes in case of spaces ([a3c0314d](https://github.com/code-pushup/cli/commit/a3c0314d))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Katerina Pilatova
+- Matěj Chalk
+
 ## 0.45.0 (2024-06-03)
 
 This was a version bump only, there were no code changes.

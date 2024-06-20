@@ -4,6 +4,7 @@ import type { RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   executeProcess,
+  filePathToCliArg,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
   objectFromEntries,
@@ -34,7 +35,7 @@ export async function createRunnerConfig(
 
   return {
     command: 'node',
-    args: [scriptPath],
+    args: [filePathToCliArg(scriptPath)],
     outputFile: RUNNER_OUTPUT_PATH,
   };
 }
