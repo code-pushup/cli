@@ -1,7 +1,7 @@
 import {
-  PrimitiveValue,
   Table,
   TableAlignment,
+  TableCellValue,
   TableColumnObject,
   TableColumnPrimitive,
 } from '@code-pushup/models';
@@ -23,20 +23,25 @@ export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
     // row = { prop1: '100 ms', prop2: '200 ms' }
     const objectRow = row;
 
-    // columns [] || column = 'center'
+    // columns [] || column.at(0) = 'center'
     if (columns.length === 0 || typeof columns.at(0) === 'string') {
-      return Object.values(objectRow).map(String);
+      return Object.values(objectRow).map(value =>
+        value == null ? '' : String(value),
+      );
     }
 
     // column = {key: 'prop1'}
     return (columns as TableColumnObject[]).map(({ key }): string =>
-      String(objectRow[key]),
+      objectRow[key] == null ? '' : String(objectRow[key]),
     );
   });
 }
 
 // Determine effective columns based on the input rows and optional columns parameter
-export function columnsToStringArray({ rows, columns = [] }: Table): string[] {
+export function columnsToStringArray({
+  rows,
+  columns = [],
+}: Pick<Table, 'columns' | 'rows'>): string[] {
   const firstRow = rows.at(0);
   const primitiveRows = Array.isArray(firstRow);
 
@@ -46,7 +51,7 @@ export function columnsToStringArray({ rows, columns = [] }: Table): string[] {
 
   if (columns.length === 0) {
     if (Array.isArray(firstRow)) {
-      return (firstRow as unknown[]).map((_, idx) => String(idx));
+      return firstRow.map((_, idx) => String(idx));
     }
     return Object.keys(firstRow as object);
   }
@@ -99,24 +104,35 @@ export function getColumnAlignmentForIndex(
   }
 }
 
-export function getColumnAlignments({
-  rows,
-  columns = [],
-}: Table): TableAlignment[] {
+export function getColumnAlignments(tableData: Table): TableAlignment[] {
+  const { rows, columns = [] } = tableData;
+
   // this is caught by the table schema in @code-pushup/models
   if (rows.at(0) == null) {
     throw new Error('first row can`t be undefined.');
   }
 
   if (Array.isArray(rows.at(0))) {
-    const firstPrimitiveRow = rows.at(0) as PrimitiveValue[];
+    const firstPrimitiveRow = rows.at(0) as TableCellValue[];
     return Array.from({ length: firstPrimitiveRow.length }).map((_, idx) =>
       getColumnAlignmentForIndex(idx, columns as TableColumnPrimitive[]),
     );
   }
 
-  const firstObject = rows.at(0) as Record<string, unknown>;
-  return Object.keys(firstObject).map((key, idx) =>
-    getColumnAlignmentForKeyAndIndex(key, idx, columns as TableColumnObject[]),
-  );
+  const biggestRow = [...rows]
+    .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
+    .at(-1);
+  if (columns.length > 0) {
+    return columns.map((column, idx) =>
+      typeof column === 'string'
+        ? column
+        : getColumnAlignmentForKeyAndIndex(
+            column.key,
+            idx,
+            columns as TableColumnObject[],
+          ),
+    );
+  }
+
+  return Object.keys(biggestRow ?? {}).map(_ => 'center');
 }

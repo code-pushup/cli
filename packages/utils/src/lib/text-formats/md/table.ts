@@ -3,7 +3,7 @@ import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
-} from '../../table';
+} from '../table';
 import { lines, section } from './section';
 
 const alignString = new Map<TableAlignment, string>([
