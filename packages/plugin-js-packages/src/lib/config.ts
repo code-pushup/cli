@@ -17,6 +17,18 @@ const packageManagerIdSchema = z.enum([
 ]);
 export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 
+const packageJsonPathSchema = z
+  .union([
+    z.array(z.string()).min(1),
+    z.object({ autoSearch: z.literal(true) }),
+  ])
+  .describe(
+    'File paths to package.json. Looks only at root package.json by default',
+  )
+  .default(['package.json']);
+
+export type PackageJsonPaths = z.infer<typeof packageJsonPathSchema>;
+
 export const packageAuditLevels = [
   'critical',
   'high',
@@ -63,10 +75,7 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .default(defaultAuditLevelMapping)
     .transform(fillAuditLevelMapping),
-  packageJsonPath: z
-    .string()
-    .describe('File path to package.json. Defaults to current folder.')
-    .default('package.json'),
+  packageJsonPaths: packageJsonPathSchema,
 });
 
 export type JSPackagesPluginConfig = z.input<

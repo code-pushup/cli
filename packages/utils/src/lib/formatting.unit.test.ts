@@ -97,19 +97,55 @@ describe('formatDate', () => {
 });
 
 describe('truncateText', () => {
-  it('should replace overflowing text with ellipsis', () => {
+  it('should replace overflowing text with ellipsis at the end', () => {
     expect(truncateText('All work and no play makes Jack a dull boy', 32)).toBe(
       'All work and no play makes Ja...',
     );
   });
 
-  it('should produce truncated text which fits within limit', () => {
+  it('should leave text unchanged when within character limit passed as number', () => {
+    expect(truncateText("Here's Johnny!", 32)).toBe("Here's Johnny!");
+  });
+
+  it('should produce truncated text which fits within limit passed as number', () => {
     expect(
       truncateText('All work and no play makes Jack a dull boy', 32).length,
     ).toBeLessThanOrEqual(32);
   });
 
-  it('should leave text unchanged when within character limit', () => {
-    expect(truncateText("Here's Johnny!", 32)).toBe("Here's Johnny!");
+  it('should leave text unchanged when within character limit passed as options', () => {
+    expect(truncateText("Here's Johnny!", { maxChars: 32 })).toBe(
+      "Here's Johnny!",
+    );
+  });
+
+  it('should produce truncated text with ellipsis at the start', () => {
+    expect(
+      truncateText('Yesterday cloudy day.', {
+        maxChars: 10,
+        position: 'start',
+      }),
+    ).toBe('...dy day.');
+  });
+
+  it('should produce truncated text with ellipsis at the middle', () => {
+    expect(
+      truncateText('Horrendous amounts of lint issues are present Tony!', {
+        maxChars: 10,
+        position: 'middle',
+      }),
+    ).toBe('Hor...ny!');
+  });
+
+  it('should produce truncated text with ellipsis at the end', () => {
+    expect(truncateText("I'm Johnny!", { maxChars: 10, position: 'end' })).toBe(
+      "I'm Joh...",
+    );
+  });
+
+  it('should produce truncated text with custom ellipsis', () => {
+    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '*' })).toBe(
+      "I'm Johnn*",
+    );
   });
 });

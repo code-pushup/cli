@@ -80,6 +80,7 @@ const config: CoreConfig = {
 
     await lighthousePlugin('https://codepushup.dev/', {
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+      verbose: true,
     }),
   ],
 
@@ -103,12 +104,6 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
-    {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'bug-prevention',

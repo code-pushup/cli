@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
+  filePathToCliArg,
   pluginWorkDir,
   readJsonFile,
 } from '@code-pushup/utils';
@@ -60,7 +61,7 @@ export async function createRunnerConfig(
 
   return {
     command: 'node',
-    args: [scriptPath],
+    args: [filePathToCliArg(scriptPath)],
     outputFile: RUNNER_OUTPUT_PATH,
   };
 }

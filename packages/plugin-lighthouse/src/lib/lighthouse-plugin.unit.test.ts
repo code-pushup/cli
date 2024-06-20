@@ -9,7 +9,12 @@ describe('lighthousePlugin-config-object', () => {
 
     const { audits, groups } = pluginConfig;
     expect(audits.length).toBeGreaterThan(100);
-    expect(groups).toHaveLength(5);
+    expect(groups).toStrictEqual([
+      expect.objectContaining({ slug: 'performance' }),
+      expect.objectContaining({ slug: 'accessibility' }),
+      expect.objectContaining({ slug: 'best-practices' }),
+      expect.objectContaining({ slug: 'seo' }),
+    ]);
   });
 
   it('should filter audits by onlyAudits string "first-contentful-paint"', () => {

@@ -45,7 +45,6 @@ describe('logUnsupportedFlagsInUse', () => {
 describe('normalizeFlags', () => {
   const normalizedDefaults = {
     verbose: false,
-    quiet: false,
     saveAssets: false,
     // needed to pass CI on linux and windows (locally it works without headless too)
     chromeFlags: ['--headless=shell'],
@@ -54,10 +53,10 @@ describe('normalizeFlags', () => {
     view: false,
     channel: 'cli',
     // custom overwrites in favour of the plugin
+    quiet: true,
     onlyAudits: [],
     skipAudits: [],
     onlyCategories: [],
-    budgets: [],
     output: ['json'],
     outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
@@ -78,7 +77,6 @@ describe('normalizeFlags', () => {
   it('should refine entries', () => {
     expect(
       normalizeFlags({
-        budgets: undefined,
         onlyAudits: 'largest-contentful-paint',
         skipAudits: 'is-on-https',
         chromeFlags: '--headless=shell',
@@ -86,7 +84,6 @@ describe('normalizeFlags', () => {
       }),
     ).toEqual(
       expect.objectContaining({
-        budgets: [],
         onlyAudits: ['largest-contentful-paint'],
         skipAudits: ['is-on-https'],
         chromeFlags: ['--headless=shell'],

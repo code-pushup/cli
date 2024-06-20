@@ -7,6 +7,7 @@ import {
   FileResult,
   crawlFileSystem,
   ensureDirectoryExists,
+  filePathToCliArg,
   findLineNumberInText,
   logMultipleFileResults,
 } from './file-system';
@@ -137,5 +138,13 @@ describe('findLineNumberInText', () => {
 
   it('should return null if pattern not in content', () => {
     expect(findLineNumberInText(``, 'x')).toBeNull();
+  });
+});
+
+describe('filePathToCliArg', () => {
+  it('should wrap path in quotes', () => {
+    expect(filePathToCliArg('My Project/index.js')).toBe(
+      '"My Project/index.js"',
+    );
   });
 });

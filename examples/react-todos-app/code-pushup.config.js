@@ -38,8 +38,6 @@ export default {
         'deprecations',
         // seo category
         'hreflang',
-        // pwa category
-        'installable-manifest',
       ],
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
@@ -64,12 +62,6 @@ export default {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
-    {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'code-coverage',

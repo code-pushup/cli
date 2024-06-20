@@ -1,11 +1,10 @@
 import chalk from 'chalk';
-import type { Budget, Config } from 'lighthouse';
+import type { Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import path from 'node:path';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
@@ -102,21 +101,32 @@ export function logUnsupportedDetails(
   }
 }
 
-export function setLogLevel({
+export type LighthouseLogLevel =
+  | 'verbose'
+  | 'error'
+  | 'info'
+  | 'silent'
+  | 'warn'
+  | undefined;
+export function determineAndSetLogLevel({
   verbose,
   quiet,
 }: {
   verbose?: boolean;
   quiet?: boolean;
-} = {}) {
+} = {}): LighthouseLogLevel {
+  // eslint-disable-next-line functional/no-let
+  let logLevel: LighthouseLogLevel = 'info';
   // set logging preferences
   if (verbose) {
-    log.setLevel('verbose');
+    logLevel = 'verbose';
   } else if (quiet) {
-    log.setLevel('silent');
-  } else {
-    log.setLevel('info');
+    logLevel = 'silent';
   }
+
+  log.setLevel(logLevel);
+
+  return logLevel;
 }
 
 export type ConfigOptions = Partial<
@@ -147,19 +157,9 @@ export async function getConfig(
         return experimentalConfig as Config;
       default:
         // as preset is a string literal the default case here is normally caught by TS and not possible to happen. Now in reality it can happen and preset could be a string not included in the literal.
-        // Therefore we have to use `as string` is used. Otherwise, it will consider preset as type never
+        // Therefore, we have to use `as string`. Otherwise, it will consider preset as type never
         ui().logger.info(`Preset "${preset as string}" is not supported`);
     }
   }
   return undefined;
-}
-
-export async function getBudgets(budgetPath?: string): Promise<Budget[]> {
-  if (budgetPath) {
-    /** @type {Array<LH.Budget>} */
-    return await readJsonFile<Budget[]>(
-      path.resolve(process.cwd(), budgetPath),
-    );
-  }
-  return [] as Budget[];
 }

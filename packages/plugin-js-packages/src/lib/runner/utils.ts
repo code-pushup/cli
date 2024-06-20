@@ -1,12 +1,17 @@
+import { sep } from 'node:path';
 import {
+  crawlFileSystem,
   objectFromEntries,
   objectToKeys,
   readJsonFile,
 } from '@code-pushup/utils';
-import { dependencyGroups } from '../config';
-import { dependencyGroupToLong } from '../constants';
 import { AuditResult, Vulnerability } from './audit/types';
-import { PackageJson } from './outdated/types';
+import {
+  DependencyGroupLong,
+  DependencyTotals,
+  PackageJson,
+  dependencyGroupLong,
+} from './outdated/types';
 
 export function filterAuditResult(
   result: AuditResult,
@@ -49,12 +54,45 @@ export function filterAuditResult(
   };
 }
 
-export async function getTotalDependencies(packageJsonPath: string) {
-  const packageJson = await readJsonFile<PackageJson>(packageJsonPath);
+// TODO: use .gitignore
+export async function findAllPackageJson(): Promise<string[]> {
+  return (
+    await crawlFileSystem({
+      directory: '.',
+      pattern: /(^|[\\/])package\.json$/,
+    })
+  ).filter(
+    path =>
+      !path.startsWith(`node_modules${sep}`) &&
+      !path.includes(`${sep}node_modules${sep}`) &&
+      !path.startsWith(`.nx${sep}`),
+  );
+}
+
+export async function getTotalDependencies(
+  packageJsonPaths: string[],
+): Promise<DependencyTotals> {
+  const parsedDeps = await Promise.all(
+    packageJsonPaths.map(readJsonFile<PackageJson>),
+  );
+
+  const mergedDeps = parsedDeps.reduce<Record<DependencyGroupLong, string[]>>(
+    (acc, depMapper) =>
+      objectFromEntries(
+        dependencyGroupLong.map(group => {
+          const deps = depMapper[group];
+          return [
+            group,
+            [...acc[group], ...(deps == null ? [] : objectToKeys(deps))],
+          ];
+        }),
+      ),
+    { dependencies: [], devDependencies: [], optionalDependencies: [] },
+  );
   return objectFromEntries(
-    dependencyGroups.map(depGroup => {
-      const deps = packageJson[dependencyGroupToLong[depGroup]];
-      return [depGroup, deps == null ? 0 : objectToKeys(deps).length];
-    }),
+    objectToKeys(mergedDeps).map(deps => [
+      deps,
+      new Set(mergedDeps[deps]).size,
+    ]),
   );
 }
