@@ -1,6 +1,6 @@
 # Code PushUp - Just Follow the Score <✓>
 
-**🔎🔬Code quality integrations for any tool📉🔍**
+**🔎🔬 Code quality integrations for any tool 📉🔍**
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -9,15 +9,17 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-### Code quality tools are like phone chargers. Everyone has a different plug. 🔌
+## 🌟 Why Choose Code PushUp?
+
+### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
 
 - **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable 💸
 - **No Standards** in data and processes leads to flaky, unmaintained zombies 🧟
 - **Results are spread** over multiple places and need manual steps 📂
 
-## Standards for code quality that integrates any tool 🛠️
+## 🛠️ Standards for Code Quality that Integrates Any Tool
 
-### Automated CI Integration 🚀
+### 🚀 Automated CI Integration
 
 - **Seamless integration** into any CI pipeline with full control. ⚙️
 - Our tool **works on all platforms** like GitHub, Gitlab, etc. 🌐
@@ -26,16 +28,16 @@
 
 ---
 
-### Flexible config setup ⚡
+### ⚡ Flexible Config Setup
 
-- **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** report to portal.
+- **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** reports to the portal.
 - **[📦 Core Logic](./packages/core#readme)** to craft your **custom tooling**.
 
 [Get started in no time!](./packages/cli/README.md#getting-started) ⏱️
 
 ---
 
-### Officially supported plugins 🔌
+### 🔌 Officially Supported Plugins
 
 |                                                                |                                                     |                                                        |
 | -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
@@ -46,17 +48,17 @@
 
 ---
 
-### Custom Plugins 🔧
+### 🔧 Custom Plugins
 
 - 🛠️ [Integrate your own metric with custom plugins](./packages/cli/docs/custom-plugins.md) 📚
-  <!-- - Example plugins repo 📂 -->
 - 📦 [@code-pushup/models](./packages/models#readme)
   - **Schemas and types** for data models (useful for custom plugins or other integrations) 📊
 - 📦 [@code-pushup/utils](./packages/utils#readme)
   - Various **utilities** (useful for custom plugins or other integrations) 🔨
-  <!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
 
-## How It Works! 📝
+---
+
+## 📝 How It Works!
 
 1. **Configure**  
    Pick from a set of supported packages or include your own ideas. 🧩
@@ -68,7 +70,9 @@
    Guard regressions and track improvements with every code change. 🔍
 
 4. **Wing it!**  
-   Watch improvement, share reports 📈
+   Watch improvements, share reports 📈
+
+---
 
 <table>
 <tr>
@@ -83,7 +87,7 @@
 </tr>
 </table>
 
-## Want to support us? 💖
+## 💖 Want to support us?
 
 - Read how to contribute to the codebase. See: [CONTRIBUTING.md](./CONTRIBUTING.md) 🤝
 <!-- link when sponsorships are ready [Sponsor](./CONTRIBUTING.md) -->
