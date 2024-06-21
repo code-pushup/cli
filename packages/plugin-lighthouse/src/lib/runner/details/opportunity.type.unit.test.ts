@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { Table } from '@code-pushup/models';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
 
-describe.skip('parseOpportunityDetails', () => {
+describe('parseOpportunityDetails', () => {
   it('should omit empty opportunities', () => {
     const outputs = parseOpportunityToAuditDetailsTable({
       type: 'opportunity',
@@ -95,7 +95,7 @@ describe.skip('parseOpportunityDetails', () => {
       ],
     } as Details.Opportunity);
 
-    expect(outputs?.rows).toEqual([{ node: undefined }]);
+    expect(outputs?.rows).toEqual([{ node: null }]);
   });
 
   it('should render complete details of type opportunity', () => {
@@ -186,10 +186,10 @@ describe.skip('parseOpportunityDetails', () => {
     } satisfies Details.Opportunity);
 
     expect(outputs).toStrictEqual({
+      title: 'Opportunity',
       columns: [
         {
           key: 'node',
-          label: '',
           align: 'left',
         },
         {

@@ -39,6 +39,7 @@ export function toAuditOutputs(
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
+
   return lhrAudits.map(
     ({
       id: slug,
@@ -57,7 +58,7 @@ export function toAuditOutputs(
       if (details != null) {
         try {
           const parsedDetails = toAuditDetails(details);
-          return parsedDetails
+          return Object.keys(parsedDetails).length > 0
             ? { ...auditOutput, details: parsedDetails }
             : auditOutput;
         } catch (error) {
@@ -73,16 +74,6 @@ export function toAuditOutputs(
     },
   );
 }
-
-export const unsupportedDetailTypes = new Set([
-  'opportunity',
-  'table',
-  'treemap-data',
-  'screenshot',
-  'filmstrip',
-  'debugdata',
-  'criticalrequestchain',
-]);
 
 export type LighthouseLogLevel =
   | 'verbose'

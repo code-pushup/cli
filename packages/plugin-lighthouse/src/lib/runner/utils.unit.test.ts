@@ -132,8 +132,12 @@ describe('toAuditOutputs', () => {
       types.map(
         type =>
           ({
-            details: { type },
-          } as Result),
+            id: 'cumulative-layout-shift',
+            details: { type, headings: [], items: [] },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result),
       ),
     );
     expect(getLogMessages(ui().logger)).toHaveLength(0);
@@ -145,8 +149,12 @@ describe('toAuditOutputs', () => {
       types.map(
         type =>
           ({
-            details: { type },
-          } as Result),
+            id: 'cumulative-layout-shift',
+            details: { type, headings: [], items: [] },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result),
       ),
       { verbose: true },
     );
