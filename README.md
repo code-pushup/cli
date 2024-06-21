@@ -1,4 +1,6 @@
-# Code PushUp CLI - Just Follow the Score
+# Code PushUp - Just Follow the Score <✓>
+
+**🔎🔬Code quality integrations for any tool📉🔍**
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -7,12 +9,10 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-<h1 align="center">🔎🔬Code quality integrations for any tool📉🔍</h1>
-
 ### Code quality tools are like phone chargers. Everyone has a different plug.
 
 - **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
-- **No Standards** in data and processes leads to flaky, self-maintained zombies
+- **No Standards** in data and processes leads to flaky, unmaintained zombies
 - **Results are spread** over multiple places and need manual steps
 
 ## Standards for code quality that integrates any tool
@@ -20,8 +20,8 @@
 ### Automated CI Integration
 
 - **Seamless integration** into any CI pipeline with full control.
-- Our tool **works on all platforms** like GitHub, Gitlab, Bitbucket etc.
-- Get updates [on every PR](./packages/cli/README.md#-ci-automation)!
+- Our tool **works on all platforms** like GitHub, Gitlab, etc.
+- Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)!
 
 ---
 
