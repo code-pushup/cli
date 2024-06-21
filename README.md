@@ -9,15 +9,15 @@
 
 <h1 align="center">🔎🔬Code quality integrations for any tool📉🔍</h1>
 
-<h3>Code quality tools are like phone chargers. Everyone has a different plug.</h3>
+### Code quality tools are like phone chargers. Everyone has a different plug.
 
 - **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
 - **No Standards** in data and processes leads to flaky, self-maintained zombies
 - **Results are spread** over multiple places and need manual steps
 
-<h2>Standards for code quality that integrates any tool</h2>
+## Standards for code quality that integrates any tool
 
-<h3>Automated CI Integration</h3>
+### Automated CI Integration
 
 - **Seamless integration** into any CI pipeline with full control.
 - Our tool **works on all platforms** like GitHub, Gitlab, Bitbucket etc.
@@ -57,45 +57,35 @@
   - various **utilities** (useful for custom plugins or other integrations)
   <!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
 
-<h2>How It Works!</h2>
+## How It Works!
 
-<ol>
-<li>
-<b>Configure</b><br/>
-Pick form a set of supported packages or include your own ideas.
-</li>
-<li>
-<b>Integrate</b><br/>
-Use our integration guide and packages to setup CI integration in minutes.
-</li>
-<li>
-<b>Observe</b><br/>
-Guard regressions and track improvements with every code change.
-</li>
-<li>
-<b>Wing it!</b><br/>
-Watch improve, share reports
-</li>
-</ol>
+1. **Configure**  
+   Pick from a set of supported packages or include your own ideas.
 
-<table cellpadding="0" cellspacing="0" border="0">
+2. **Integrate**  
+   Use our integration guide and packages to set up CI integration in minutes.
+
+3. **Observe**  
+   Guard regressions and track improvements with every code change.
+
+4. **Wing it!**  
+   Watch improvement, share reports
+
+<table>
 <tr>
 <td>
 <img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png"> 
 </td>
 <td>
-<h2>Just follow the score</h2>
-<h3>See regressions - Report scores - On every PR</h3>
+## Just follow the score
+### See regressions - Report scores - On every PR
 <!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
-
 </td>
 </tr>
-
 </table>
 
-<h2>Want to support us?</h2>
+## Want to support us?
 
-<ul>
-<li><a href="./CONTRIBUTING.md">Contribute</a></li>
 <!-- link when sponsorships are ready <li><a href="">Sponsor</a></li> -->
-</ul>
+
+- <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a></li>
