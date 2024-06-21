@@ -8,7 +8,7 @@ import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
-import { PLUGIN_SLUG } from './constants';
+import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
 
 // @TODO fix https://github.com/code-pushup/cli/issues/612
@@ -37,7 +37,6 @@ export function toAuditOutputs(
   { verbose = false }: { verbose?: boolean } = {},
 ): AuditOutputs {
   if (verbose) {
-    // @TODO implement all details
     logUnsupportedDetails(lhrAudits);
   }
   return lhrAudits.map(
@@ -55,9 +54,19 @@ export function toAuditOutputs(
         displayValue,
       };
 
-      if (details == null) {
-        // @TODO implement details
-        return auditOutput;
+      if (details != null) {
+        try {
+          const parsedDetails = toAuditDetails(details);
+          return parsedDetails
+            ? { ...auditOutput, details: parsedDetails }
+            : auditOutput;
+        } catch (error) {
+          throw new Error(
+            `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
+              (error as Error).message
+            }`,
+          );
+        }
       }
 
       return auditOutput;
@@ -75,47 +84,32 @@ export const unsupportedDetailTypes = new Set([
   'criticalrequestchain',
 ]);
 
-export function logUnsupportedDetails(
-  lhrAudits: Result[],
-  { displayCount = 3 }: { displayCount?: number } = {},
-) {
-  const slugsWithDetailParsingErrors = [
-    ...new Set(
-      lhrAudits
-        .filter(({ details }) =>
-          unsupportedDetailTypes.has(details?.type as string),
-        )
-        .map(({ details }) => details?.type),
-    ),
-  ];
-  if (slugsWithDetailParsingErrors.length > 0) {
-    const postFix = (count: number) =>
-      count > displayCount ? ` and ${count - displayCount} more.` : '';
-    ui().logger.debug(
-      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
-        PLUGIN_SLUG,
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
-        slugsWithDetailParsingErrors.slice(0, displayCount).join(', '),
-      )}${postFix(slugsWithDetailParsingErrors.length)}`,
-    );
-  }
-}
-
-export function setLogLevel({
+export type LighthouseLogLevel =
+  | 'verbose'
+  | 'error'
+  | 'info'
+  | 'silent'
+  | 'warn'
+  | undefined;
+export function determineAndSetLogLevel({
   verbose,
   quiet,
 }: {
   verbose?: boolean;
   quiet?: boolean;
-} = {}) {
+} = {}): LighthouseLogLevel {
+  // eslint-disable-next-line functional/no-let
+  let logLevel: LighthouseLogLevel = 'info';
   // set logging preferences
   if (verbose) {
-    log.setLevel('verbose');
+    logLevel = 'verbose';
   } else if (quiet) {
-    log.setLevel('silent');
-  } else {
-    log.setLevel('info');
+    logLevel = 'silent';
   }
+
+  log.setLevel(logLevel);
+
+  return logLevel;
 }
 
 export type ConfigOptions = Partial<
@@ -127,7 +121,7 @@ export async function getConfig(
 ): Promise<Config | undefined> {
   const { configPath: filepath, preset } = options;
 
-  if (typeof filepath === 'string') {
+  if (filepath != null) {
     if (filepath.endsWith('.json')) {
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);

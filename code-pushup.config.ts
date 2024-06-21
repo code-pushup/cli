@@ -78,12 +78,10 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin(
-      'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
-      {
-        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-      },
-    ),
+    await lighthousePlugin('https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/', {
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+      verbose: true,
+    }),
   ],
 
   categories: [

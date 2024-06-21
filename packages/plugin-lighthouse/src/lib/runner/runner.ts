@@ -6,9 +6,9 @@ import { ensureDirectoryExists } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import { LighthouseCliFlags } from './types';
 import {
+  determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
-  setLogLevel,
   toAuditOutputs,
 } from './utils';
 
@@ -24,7 +24,7 @@ export function createRunnerFunction(
       ...parsedFlags
     }: Partial<LighthouseCliFlags> = flags;
 
-    setLogLevel(parsedFlags);
+    const logLevel = determineAndSetLogLevel(parsedFlags);
 
     const config = await getConfig({ configPath, preset });
     if (outputPath) {
@@ -33,6 +33,7 @@ export function createRunnerFunction(
 
     const enrichedFlags = {
       ...parsedFlags,
+      logLevel,
       outputPath,
     };
 

@@ -2,7 +2,12 @@ import type { ESLint, Linter } from 'eslint';
 import { rm, writeFile } from 'node:fs/promises';
 import { platform } from 'node:os';
 import { join } from 'node:path';
-import { distinct, executeProcess, toArray } from '@code-pushup/utils';
+import {
+  distinct,
+  executeProcess,
+  filePathToCliArg,
+  toArray,
+} from '@code-pushup/utils';
 import type { ESLintTarget } from '../config';
 import { setupESLint } from '../setup';
 import type { LinterOutput, RuleOptionsPerFile } from './types';
@@ -26,7 +31,7 @@ function executeLint({
       command: 'npx',
       args: [
         'eslint',
-        ...(configPath ? [`--config=${configPath}`] : []),
+        ...(configPath ? [`--config=${filePathToCliArg(configPath)}`] : []),
         ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
         '--no-error-on-unmatched-pattern',
         '--format=json',

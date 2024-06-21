@@ -139,3 +139,8 @@ export function findLineNumberInText(
   const lineNumber = lines.findIndex(line => line.includes(pattern)) + 1; // +1 because line numbers are 1-based
   return lineNumber === 0 ? null : lineNumber; // If the package isn't found, return null
 }
+
+export function filePathToCliArg(path: string): string {
+  // needs to be escaped if spaces included
+  return `"${path}"`;
+}
