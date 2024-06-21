@@ -1,8 +1,8 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Table, TableRowObject } from '@code-pushup/models';
+import { Table, TableRowObject, tableSchema } from '@code-pushup/models';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
-import { formatTableItemPropertyValue } from './item-value';
 import { parseTableColumns, parseTableEntry } from './table.type';
+import { LighthouseAuditDetailsParsingError } from './utils';
 
 export function parseOpportunityToAuditDetailsTable(
   details: Details.Opportunity,
@@ -13,10 +13,20 @@ export function parseOpportunityToAuditDetailsTable(
     return undefined;
   }
 
-  return {
+  const parsedTable = {
     columns: parseTableColumns(rawHeadings),
     rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
   };
+
+  const tableResult = tableSchema().safeParse(parsedTable);
+  if (tableResult.success) {
+    return tableResult.data;
+  }
+  throw new LighthouseAuditDetailsParsingError(
+    'opportunity',
+    parsedTable,
+    tableResult.error.toString(),
+  );
 }
 
 export function parseOpportunityItemToTableRow(
