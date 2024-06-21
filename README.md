@@ -77,8 +77,8 @@
 <img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png"> 
 </td>
 <td>
-## Just follow the score
-### See regressions - Report scores - On every PR
+<h2>Just follow the score</h2>
+<h3>See regressions - Report scores - On every PR</h3>
 <!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
 </td>
 </tr>
