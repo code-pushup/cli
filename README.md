@@ -25,7 +25,7 @@
 
 ---
 
-<h3>Zero config setup</h3>
+### Zero config setup
 
 - [📦 @code-pushup/cli](./packages/cli#readme)
   - **CLI** for **collecting** audit results and **uploading** report to portal.
@@ -33,7 +33,7 @@
 
 ---
 
-<h3>Officially supported plugins </h3>
+### Officially supported plugins
 
 - 🧩 [@code-pushup/eslint-plugin](./packages/plugin-eslint#readme)
   - Static analysis using **ESLint** rules
@@ -46,7 +46,7 @@
 
 ---
 
-<h3>Custom Plugins</h3>
+### Custom Plugins
 
 - 🛠️ [Integrate your own metric with custom plugins](./packages/cli/README.md#getting-started)
   - Example plugins repo
