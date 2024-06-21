@@ -1,6 +1,12 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Table, TableColumnObject, TableRowObject } from '@code-pushup/models';
+import {
+  Table,
+  TableColumnObject,
+  TableRowObject,
+  tableSchema,
+} from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value';
+import { LighthouseAuditDetailsParsingError } from './utils';
 
 export function parseTableToAuditDetailsTable(
   details: Details.Table,
@@ -11,10 +17,20 @@ export function parseTableToAuditDetailsTable(
     return undefined;
   }
 
-  return {
+  const parsedTable = {
     columns: parseTableColumns(rawHeadings),
     rows: items.map(row => parseTableRow(row, rawHeadings)),
   };
+
+  const tableResult = tableSchema().safeParse(parsedTable);
+  if (tableResult.success) {
+    return tableResult.data;
+  }
+  throw new LighthouseAuditDetailsParsingError(
+    'table',
+    parsedTable,
+    tableResult.error.toString(),
+  );
 }
 
 export function parseTableColumns(

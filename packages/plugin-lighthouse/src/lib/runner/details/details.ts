@@ -2,46 +2,28 @@ import chalk from 'chalk';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditDetails, Table, tableSchema } from '@code-pushup/models';
+import { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants';
 import { parseTableToAuditDetailsTable } from './table.type';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,
-): AuditDetails | undefined {
+): AuditDetails {
   if (details == null) {
-    return undefined;
+    return {};
   }
 
   const { type } = details;
 
-  if (type !== 'table') {
-    return undefined;
+  switch (type) {
+    case 'table':
+      const rawTable: Table | undefined =
+        parseTableToAuditDetailsTable(details);
+      return rawTable ? { table: rawTable } : {};
+    default:
+      return {};
   }
-
-  const rawTable: Table | undefined = parseTableToAuditDetailsTable(details);
-
-  if (rawTable != null) {
-    const result = tableSchema().safeParse(rawTable);
-    if (result.success) {
-      return {
-        table: result.data,
-      };
-    }
-
-    throw new Error(
-      `Parsing details ${chalk.bold(
-        type,
-      )} failed: \nRaw data:\n ${JSON.stringify(
-        rawTable,
-        null,
-        2,
-      )}\n${result.error.toString()}`,
-    );
-  }
-
-  return undefined;
 }
 
 // @TODO implement all details
