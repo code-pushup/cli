@@ -23,6 +23,7 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'prod',
+        10,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
@@ -61,10 +62,11 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'prod',
+        5,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
-      score: 0.5,
+      score: 0.8,
       value: 1,
       displayValue: '1 major outdated package version',
       details: {
@@ -110,10 +112,11 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'prod',
+        10,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-prod',
-      score: 0.75,
+      score: 0.9,
       value: 4,
       displayValue: '4 outdated package versions (1 major, 1 minor, 2 patch)',
       details: {
@@ -160,12 +163,14 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'optional',
+        1,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-optional',
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
+      details: { issues: [] },
     });
   });
 
@@ -182,12 +187,14 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'optional',
+        1,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-optional',
       score: 1,
       value: 0,
       displayValue: 'all dependencies are up to date',
+      details: { issues: [] },
     });
   });
 
@@ -222,6 +229,7 @@ describe('outdatedResultToAuditOutput', () => {
         ],
         'npm',
         'dev',
+        1,
       ),
     ).toEqual<AuditOutput>({
       slug: 'npm-outdated-dev',

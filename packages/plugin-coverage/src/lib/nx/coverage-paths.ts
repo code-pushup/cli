@@ -31,20 +31,16 @@ export async function getNxCoveragePaths(
       return await Promise.all(
         relevantNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
           const targetConfig = data.targets?.[target] as TargetConfiguration;
-          const coveragePath = await getCoveragePathForTarget(
-            target,
+          const coveragePaths = await getCoveragePathsForTarget(
             targetConfig,
-            name,
+            data.root,
+            `${target} in ${name}`,
           );
-          const rootToReportsDir = join(data.root, coveragePath);
 
           if (verbose) {
             ui().logger.info(`- ${name}: ${target}`);
           }
-          return {
-            pathToProject: data.root,
-            resultsPath: join(rootToReportsDir, 'lcov.info'),
-          };
+          return coveragePaths;
         }),
       );
     }),
@@ -78,58 +74,79 @@ export type JestCoverageConfig = {
   coverageReporters?: string[];
 };
 
-export async function getCoveragePathForTarget(
-  target: string,
+export async function getCoveragePathsForTarget(
   targetConfig: TargetConfiguration,
-  projectName: string,
-): Promise<string> {
+  pathToRoot: string,
+  targetContext: string,
+): Promise<CoverageResult> {
   const { config } = targetConfig.options as { config: string };
 
   if (targetConfig.executor?.includes('@nx/vite')) {
-    const testConfig = await importEsmModule<VitestCoverageConfig>({
-      filepath: config,
-    });
-
-    const reportsDirectory = testConfig.test.coverage?.reportsDirectory;
-    const reporter = testConfig.test.coverage?.reporter;
-
-    if (reportsDirectory == null) {
-      throw new Error(
-        `Vitest coverage configuration at ${config} does not include coverage path for target ${target} in ${projectName}. Add the path under coverage > reportsDirectory.`,
-      );
-    }
-
-    if (!reporter?.includes('lcov')) {
-      throw new Error(
-        `Vitest coverage configuration at ${config} does not include LCOV report format for target ${target} in ${projectName}. Add 'lcov' format under coverage > reporter.`,
-      );
-    }
-
-    return reportsDirectory;
+    return await getCoveragePathForVitest(config, pathToRoot, targetContext);
   }
 
   if (targetConfig.executor?.includes('@nx/jest')) {
-    const testConfig = await importEsmModule<JestCoverageConfig>({
-      filepath: config,
-    });
-
-    const coverageDirectory = testConfig.coverageDirectory;
-
-    if (coverageDirectory == null) {
-      throw new Error(
-        `Jest coverage configuration at ${config} does not include coverage path for target ${target} in ${projectName}. Add the path under coverageDirectory.`,
-      );
-    }
-
-    if (!testConfig.coverageReporters?.includes('lcov')) {
-      throw new Error(
-        `Jest coverage configuration at ${config} does not include LCOV report format for target ${target} in ${projectName}. Add 'lcov' format under coverageReporters.`,
-      );
-    }
-    return coverageDirectory;
+    return await getCoveragePathForJest(config, pathToRoot, targetContext);
   }
 
   throw new Error(
     `Unsupported executor ${targetConfig.executor}. @nx/vite and @nx/jest are currently supported.`,
   );
+}
+
+export async function getCoveragePathForVitest(
+  pathToConfig: string,
+  pathToRoot: string,
+  context: string,
+) {
+  const vitestConfig = await importEsmModule<VitestCoverageConfig>({
+    filepath: pathToConfig,
+    format: 'esm',
+  });
+
+  const reportsDirectory = vitestConfig.test.coverage?.reportsDirectory;
+  const reporter = vitestConfig.test.coverage?.reporter;
+
+  if (reportsDirectory == null) {
+    throw new Error(
+      `Vitest coverage configuration at ${pathToConfig} does not include coverage path for target ${context}. Add the path under coverage > reportsDirectory.`,
+    );
+  }
+
+  if (!reporter?.includes('lcov')) {
+    throw new Error(
+      `Vitest coverage configuration at ${pathToConfig} does not include LCOV report format for target ${context}. Add 'lcov' format under coverage > reporter.`,
+    );
+  }
+
+  return {
+    pathToProject: pathToRoot,
+    resultsPath: join(pathToRoot, reportsDirectory, 'lcov.info'),
+  };
+}
+
+export async function getCoveragePathForJest(
+  pathToConfig: string,
+  pathToRoot: string,
+  context: string,
+) {
+  const testConfig = await importEsmModule<JestCoverageConfig>({
+    filepath: pathToConfig,
+    format: 'cjs',
+  });
+
+  const coverageDirectory = testConfig.coverageDirectory;
+
+  if (coverageDirectory == null) {
+    throw new Error(
+      `Jest coverage configuration at ${pathToConfig} does not include coverage path for target ${context}. Add the path under coverageDirectory.`,
+    );
+  }
+
+  if (!testConfig.coverageReporters?.includes('lcov')) {
+    throw new Error(
+      `Jest coverage configuration at ${pathToConfig} does not include LCOV report format for target ${context}. Add 'lcov' format under coverageReporters.`,
+    );
+  }
+  return join(pathToRoot, coverageDirectory, 'lcov.info');
 }

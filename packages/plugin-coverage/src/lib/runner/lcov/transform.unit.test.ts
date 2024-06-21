@@ -1,6 +1,7 @@
 import { LCOVRecord } from 'parse-lcov';
 import { describe, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
+import { INVALID_FUNCTION_NAME } from '../constants';
 import {
   lcovCoverageToAuditOutput,
   lcovReportToBranchStat,
@@ -91,6 +92,26 @@ describe('lcovReportToFunctionStat', () => {
         ],
       }),
     );
+  });
+
+  it('should skip a record of uncovered invalid function called (empty-report)', () => {
+    expect(
+      lcovReportToFunctionStat({
+        ...lcovRecordMock,
+        functions: {
+          hit: 1,
+          found: 2,
+          details: [
+            { line: 1, name: INVALID_FUNCTION_NAME, hit: 0 },
+            { line: 5, name: 'transform', hit: 4 },
+          ],
+        },
+      }),
+    ).toStrictEqual<LCOVStat>({
+      totalFound: 1,
+      totalHit: 1,
+      issues: [],
+    });
   });
 });
 
@@ -304,6 +325,7 @@ describe('lcovCoverageToAudit', () => {
       score: 1,
       value: 100,
       displayValue: '100 %',
+      details: { issues: [] },
     });
   });
 
@@ -318,6 +340,7 @@ describe('lcovCoverageToAudit', () => {
       score: 1,
       value: 100,
       displayValue: '100 %',
+      details: { issues: [] },
     });
   });
 

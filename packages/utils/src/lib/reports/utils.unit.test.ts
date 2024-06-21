@@ -35,7 +35,7 @@ describe('formatReportScore', () => {
     [0.123, '12'],
     [0.99, '99'],
     [0.994, '99'],
-    [0.995, '100'],
+    [0.995, '99'],
     [1, '100'],
   ] satisfies readonly [number, string][])(
     "should format a score of %d as '%s'",

@@ -7,17 +7,23 @@ import {
   IssueSeverity as PortalIssueSeverity,
   IssueSourceType as PortalIssueSourceType,
   type PluginReport as PortalPlugin,
+  type AuditReportTable as PortalTable,
+  TableAlignment as PortalTableAlignment,
+  type AuditReportTableCell as PortalTableCell,
+  type AuditReportTableColumn as PortalTableColumn,
   type SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
-import {
+import type {
   AuditReport,
   CategoryConfig,
   CategoryRef,
-  type Group,
+  Group,
   Issue,
   IssueSeverity,
   PluginReport,
   Report,
+  Table,
+  TableAlignment,
 } from '@code-pushup/models';
 
 export function reportToGQL(
@@ -69,7 +75,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     displayValue: formattedValue,
     details,
   } = audit;
-  const { issues /*, table */ } = details ?? {};
+  const { issues, table } = details ?? {};
   return {
     slug,
     title,
@@ -81,8 +87,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     ...(details && {
       details: {
         ...(issues && { issues: issues.map(issueToGQL) }),
-        // @TODO add when https://github.com/code-pushup/cli/issues/530 is implemented
-        // ...(table ? {table} : {}),
+        ...(table && { tables: [tableToGQL(table)] }),
       },
     }),
   };
@@ -100,6 +105,32 @@ export function issueToGQL(issue: Issue): PortalIssue {
       sourceEndLine: issue.source.position?.endLine,
       sourceEndColumn: issue.source.position?.endColumn,
     }),
+  };
+}
+
+export function tableToGQL(table: Table): PortalTable {
+  return {
+    ...(table.title && { title: table.title }),
+    ...(table.columns?.length && {
+      columns: table.columns.map(
+        (column): PortalTableColumn =>
+          typeof column === 'string'
+            ? { alignment: tableAlignmentToGQL(column) }
+            : {
+                key: column.key,
+                label: column.label,
+                alignment: column.align && tableAlignmentToGQL(column.align),
+              },
+      ),
+    }),
+    rows: table.rows.map((row): PortalTableCell[] =>
+      Array.isArray(row)
+        ? row.map(content => ({ content: content?.toString() ?? '' }))
+        : Object.entries(row).map(([key, content]) => ({
+            key,
+            content: content?.toString() ?? '',
+          })),
+    ),
   };
 }
 
@@ -137,5 +168,16 @@ function issueSeverityToGQL(severity: IssueSeverity): PortalIssueSeverity {
       return PortalIssueSeverity.Error;
     case 'warning':
       return PortalIssueSeverity.Warning;
+  }
+}
+
+function tableAlignmentToGQL(alignment: TableAlignment): PortalTableAlignment {
+  switch (alignment) {
+    case 'left':
+      return PortalTableAlignment.Left;
+    case 'center':
+      return PortalTableAlignment.Center;
+    case 'right':
+      return PortalTableAlignment.Right;
   }
 }

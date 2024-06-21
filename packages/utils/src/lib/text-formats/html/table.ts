@@ -1,6 +1,6 @@
 import { Table } from '@code-pushup/models';
-import { columnsToStringArray, rowToStringArray } from '../../table';
 import { NEW_LINE } from '../constants';
+import { columnsToStringArray, rowToStringArray } from '../table';
 
 function wrap(elem: string, content: string): string {
   return `<${elem}>${content}</${elem}>${NEW_LINE}`;

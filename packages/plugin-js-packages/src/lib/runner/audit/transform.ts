@@ -25,7 +25,7 @@ export function auditResultToAuditOutput(
     score: calculateAuditScore(result.summary),
     value: result.summary.total,
     displayValue: summaryToDisplayValue(result.summary),
-    ...(issues.length > 0 && { details: { issues } }),
+    details: { issues },
   };
 }
 

@@ -3,6 +3,45 @@ import { NEW_LINE } from '../text-formats/constants';
 import { metaDescription, tableSection } from './formatting';
 
 describe('tableSection', () => {
+  it('should accept a title', () => {
+    const sectionContent = tableSection({
+      title: 'LCP Breakdown',
+      rows: [[1]],
+    });
+    expect(sectionContent).toMatch('#### LCP Breakdown\n\n');
+  });
+
+  it('should accept a title level', () => {
+    const sectionContent = tableSection(
+      {
+        title: 'LCP Breakdown',
+        rows: [[1]],
+      },
+      { level: 3 },
+    );
+    expect(sectionContent).toMatch('### LCP Breakdown\n\n');
+  });
+
+  it('should not add heading format and additional new line if level value is 0', () => {
+    const sectionContent = tableSection(
+      {
+        title: 'LCP Breakdown',
+        rows: [[1]],
+      },
+      { level: 0 },
+    );
+    expect(sectionContent).toMatch('LCP Breakdown\n');
+  });
+
+  it('should return empty string for a table with empty rows', () => {
+    expect(
+      tableSection({
+        title: 'LCP Breakdown',
+        rows: [],
+      }),
+    ).toMatch('');
+  });
+
   it('should render complete section', () => {
     expect(
       tableSection(

@@ -12,7 +12,7 @@ import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
 import eslintPlugin, {
-  eslintConfigFromNxProjects,
+  eslintConfigFromAllNxProjects,
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import {
@@ -46,7 +46,7 @@ const config: CoreConfig = {
     }),
 
   plugins: [
-    await eslintPlugin(await eslintConfigFromNxProjects()),
+    await eslintPlugin(await eslintConfigFromAllNxProjects()),
 
     await coveragePlugin({
       coverageToolCommand: {
@@ -80,6 +80,7 @@ const config: CoreConfig = {
 
     await lighthousePlugin('https://codepushup.dev/', {
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+      verbose: true,
     }),
   ],
 
@@ -103,12 +104,6 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
-    {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'bug-prevention',

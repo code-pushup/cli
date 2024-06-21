@@ -1,8 +1,8 @@
+import { objectToKeys } from '@code-pushup/utils';
 import { DependencyGroup } from '../../config';
-import { AuditResult } from '../../runner/audit/types';
 import { filterAuditResult } from '../../runner/utils';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { PackageManager } from '../types';
+import { AuditResults, PackageManager } from '../types';
 import { npmToAuditResult } from './audit-result';
 import { npmToOutdatedResult } from './outdated-result';
 
@@ -30,11 +30,23 @@ export const npmPackageManager: PackageManager = {
     ],
     unifyResult: npmToAuditResult,
     // prod dependencies need to be filtered out manually since v10
-    postProcessResult: (results: Record<DependencyGroup, AuditResult>) => ({
-      prod: results.prod,
-      dev: filterAuditResult(results.dev, 'name', results.prod),
-      optional: filterAuditResult(results.optional, 'name', results.prod),
-    }),
+    postProcessResult: (results: AuditResults) => {
+      const depGroups = objectToKeys(results);
+      const devFilter =
+        results.dev && results.prod
+          ? filterAuditResult(results.dev, 'name', results.prod)
+          : results.dev;
+      const optionalFilter =
+        results.optional && results.prod
+          ? filterAuditResult(results.optional, 'name', results.prod)
+          : results.optional;
+
+      return {
+        ...(depGroups.includes('prod') && { prod: results.prod }),
+        ...(depGroups.includes('dev') && { dev: devFilter }),
+        ...(depGroups.includes('optional') && { optional: optionalFilter }),
+      };
+    },
   },
   outdated: {
     commandArgs: [...COMMON_OUTDATED_ARGS, '--long'],

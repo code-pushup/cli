@@ -3,6 +3,7 @@ import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
 import { defaultAuditLevelMapping } from './constants';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
+const dependencyGroupSchema = z.enum(dependencyGroups);
 export type DependencyGroup = (typeof dependencyGroups)[number];
 
 const packageCommandSchema = z.enum(['audit', 'outdated']);
@@ -15,6 +16,18 @@ const packageManagerIdSchema = z.enum([
   'pnpm',
 ]);
 export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
+
+const packageJsonPathSchema = z
+  .union([
+    z.array(z.string()).min(1),
+    z.object({ autoSearch: z.literal(true) }),
+  ])
+  .describe(
+    'File paths to package.json. Looks only at root package.json by default',
+  )
+  .default(['package.json']);
+
+export type PackageJsonPaths = z.infer<typeof packageJsonPathSchema>;
 
 export const packageAuditLevels = [
   'critical',
@@ -51,6 +64,10 @@ export const jsPackagesPluginConfigSchema = z.object({
   packageManager: packageManagerIdSchema.describe(
     'Package manager to be used.',
   ),
+  dependencyGroups: z
+    .array(dependencyGroupSchema)
+    .min(1)
+    .default(['prod', 'dev']),
   auditLevelMapping: z
     .record(packageAuditLevelSchema, issueSeveritySchema, {
       description:
@@ -58,6 +75,7 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .default(defaultAuditLevelMapping)
     .transform(fillAuditLevelMapping),
+  packageJsonPaths: packageJsonPathSchema,
 });
 
 export type JSPackagesPluginConfig = z.input<
