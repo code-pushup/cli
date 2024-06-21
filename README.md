@@ -21,28 +21,28 @@
 
 - **Seamless integration** into any CI pipeline with full control.
 - Our tool **works on all platforms** like GitHub, Gitlab, etc.
+- Even custom tooling can be created over the 📦 [@code-pushup/core](./packages/core#readme) package
 - Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)!
 
 ---
 
-### Zero config setup
+### Flexible config setup
 
-- [📦 @code-pushup/cli](./packages/cli#readme)
-  - **CLI** for **collecting** audit results and **uploading** report to portal.
-  - [Get started in no time!](./packages/cli/README.md#getting-started)
+- **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** report to portal.
+- **[📦 Core Logic](./packages/core#readme)** to craft your **custom tooling**.
+
+[Get started in no time!](./packages/cli/README.md#getting-started)
 
 ---
 
 ### Officially supported plugins
 
-- 🧩 [@code-pushup/eslint-plugin](./packages/plugin-eslint#readme)
-  - Static analysis using **ESLint** rules
-- 🧩 [@code-pushup/coverage-plugin](./packages/plugin-coverage#readme)
-  - **Test Coverage** analysis
-- 🧩 [@code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme)
-  - Package audit on **Security** and **Outdates**
-- 🧩 [@code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme)
-  - Web performance and best practices from **Lighthouse**
+|                                                                |                                                     |                                                        |
+| -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
+| <img width="50" src="docs/images/plugin-eslint.icon.png">      | [Eslint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules                 |
+| <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Coverage](./packages/plugin-coverage#readme)       | **Test Coverage** analysis                             |
+| <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Package audit on **Security** and **Outdates**         |
+| <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Web performance and best practices from **Lighthouse** |
 
 ---
 
@@ -74,7 +74,7 @@
 <table>
 <tr>
 <td>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png"> 
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="150px" height="192px"> 
 </td>
 <td>
 <h2>Just follow the score</h2>
@@ -86,6 +86,6 @@
 
 ## Want to support us?
 
-<!-- link when sponsorships are ready <li><a href="">Sponsor</a></li> -->
+<!-- link when sponsorships are ready [Sponsor](./CONTRIBUTING.md) -->
 
-- <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+- Read how to contribute to the codebase. See: [CONTRIBUTING.md](./CONTRIBUTING.md)
