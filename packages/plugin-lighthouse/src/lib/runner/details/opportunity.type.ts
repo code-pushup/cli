@@ -13,7 +13,8 @@ export function parseOpportunityToAuditDetailsTable(
     return undefined;
   }
 
-  const parsedTable = {
+  const parsedTable: Table = {
+    title: 'Opportunity',
     columns: parseTableColumns(rawHeadings),
     rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
   };

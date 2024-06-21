@@ -17,15 +17,27 @@ export function parseTableToAuditDetailsTable(
     return undefined;
   }
 
-  const parsedTable = {
-    columns: parseTableColumns(rawHeadings),
-    rows: items.map(row => parseTableRow(row, rawHeadings)),
-  };
+  // eslint-disable-next-line functional/no-let
+  let parsedTable: Table;
+  try {
+    parsedTable = {
+      title: 'Table',
+      columns: parseTableColumns(rawHeadings),
+      rows: items.map(row => parseTableRow(row, rawHeadings)),
+    };
+  } catch (error) {
+    throw new LighthouseAuditDetailsParsingError(
+      'table',
+      { items, headings: rawHeadings },
+      (error as Error).message.toString(),
+    );
+  }
 
   const tableResult = tableSchema().safeParse(parsedTable);
   if (tableResult.success) {
     return tableResult.data;
   }
+
   throw new LighthouseAuditDetailsParsingError(
     'table',
     parsedTable,
@@ -38,7 +50,7 @@ export function parseTableColumns(
 ): TableColumnObject[] {
   return rawHeadings.map(({ key, label }) => ({
     key: key ?? '',
-    label: typeof label === 'string' ? label : undefined,
+    ...(typeof label === 'string' && label.length > 0 ? { label } : {}),
     align: 'left',
   }));
 }
