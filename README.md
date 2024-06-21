@@ -9,33 +9,33 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-### Code quality tools are like phone chargers. Everyone has a different plug.
+### Code quality tools are like phone chargers. Everyone has a different plug. 🔌
 
-- **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable
-- **No Standards** in data and processes leads to flaky, unmaintained zombies
-- **Results are spread** over multiple places and need manual steps
+- **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable 💸
+- **No Standards** in data and processes leads to flaky, unmaintained zombies 🧟
+- **Results are spread** over multiple places and need manual steps 📂
 
-## Standards for code quality that integrates any tool
+## Standards for code quality that integrates any tool 🛠️
 
-### Automated CI Integration
+### Automated CI Integration 🚀
 
-- **Seamless integration** into any CI pipeline with full control.
-- Our tool **works on all platforms** like GitHub, Gitlab, etc.
+- **Seamless integration** into any CI pipeline with full control. ⚙️
+- Our tool **works on all platforms** like GitHub, Gitlab, etc. 🌐
 - Even custom tooling can be created over the 📦 [@code-pushup/core](./packages/core#readme) package
-- Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)!
+- Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)! 🔄
 
 ---
 
-### Flexible config setup
+### Flexible config setup ⚡
 
 - **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** report to portal.
 - **[📦 Core Logic](./packages/core#readme)** to craft your **custom tooling**.
 
-[Get started in no time!](./packages/cli/README.md#getting-started)
+[Get started in no time!](./packages/cli/README.md#getting-started) ⏱️
 
 ---
 
-### Officially supported plugins
+### Officially supported plugins 🔌
 
 |                                                                |                                                     |                                                        |
 | -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
@@ -46,30 +46,29 @@
 
 ---
 
-### Custom Plugins
+### Custom Plugins 🔧
 
-- 🛠️ [Integrate your own metric with custom plugins](./packages/cli/README.md#getting-started)
-  - Example plugins repo
-  - Docs
+- 🛠️ [Integrate your own metric with custom plugins](./packages/cli/docs/custom-plugins.md) 📚
+  <!-- - Example plugins repo 📂 -->
 - 📦 [@code-pushup/models](./packages/models#readme)
-  - **schemas and types** for data models (useful for custom plugins or other integrations
+  - **Schemas and types** for data models (useful for custom plugins or other integrations) 📊
 - 📦 [@code-pushup/utils](./packages/utils#readme)
-  - various **utilities** (useful for custom plugins or other integrations)
+  - Various **utilities** (useful for custom plugins or other integrations) 🔨
   <!-- [Get enterprise support](https://code-pushup.dev/enterprise-support) -->
 
-## How It Works!
+## How It Works! 📝
 
 1. **Configure**  
-   Pick from a set of supported packages or include your own ideas.
+   Pick from a set of supported packages or include your own ideas. 🧩
 
 2. **Integrate**  
-   Use our integration guide and packages to set up CI integration in minutes.
+   Use our integration guide and packages to set up CI integration in minutes. ⏱️
 
 3. **Observe**  
-   Guard regressions and track improvements with every code change.
+   Guard regressions and track improvements with every code change. 🔍
 
 4. **Wing it!**  
-   Watch improvement, share reports
+   Watch improvement, share reports 📈
 
 <table>
 <tr>
@@ -84,8 +83,7 @@
 </tr>
 </table>
 
-## Want to support us?
+## Want to support us? 💖
 
+- Read how to contribute to the codebase. See: [CONTRIBUTING.md](./CONTRIBUTING.md) 🤝
 <!-- link when sponsorships are ready [Sponsor](./CONTRIBUTING.md) -->
-
-- Read how to contribute to the codebase. See: [CONTRIBUTING.md](./CONTRIBUTING.md)
