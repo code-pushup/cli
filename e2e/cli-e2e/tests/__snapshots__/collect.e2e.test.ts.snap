@@ -1798,6 +1798,7 @@ exports[`CLI collect > should run Lighthouse plugin that runs lighthouse CLI and
         },
       ],
       "icon": "lighthouse",
+      "packageName": "@code-pushup/lighthouse-plugin",
       "slug": "lighthouse",
       "title": "Lighthouse",
     },

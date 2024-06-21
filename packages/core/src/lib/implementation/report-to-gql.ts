@@ -125,10 +125,10 @@ export function tableToGQL(table: Table): PortalTable {
     }),
     rows: table.rows.map((row): PortalTableCell[] =>
       Array.isArray(row)
-        ? row.map(content => ({ content: content.toString() }))
+        ? row.map(content => ({ content: content?.toString() ?? '' }))
         : Object.entries(row).map(([key, content]) => ({
             key,
-            content: content.toString(),
+            content: content?.toString() ?? '',
           })),
     ),
   };
