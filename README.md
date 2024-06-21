@@ -42,7 +42,7 @@
 - 🧩 [@code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme)
   - Package audit on **Security** and **Outdates**
 - 🧩 [@code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme)
-  - web performance and best practices from **Lighthouse**
+  - Web performance and best practices from **Lighthouse**
 
 ---
 
