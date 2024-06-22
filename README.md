@@ -1,6 +1,6 @@
-# Code PushUp - Just Follow the Score <✓>
+# Code PushUp CLI
 
-**🔎🔬 Code quality integrations for any tool 📉🔍**
+**Just Follow the Score <✓>**
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -9,31 +9,25 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-## 🌟 Why Choose Code PushUp?
-
-### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
+#### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
 
 - **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable 💸
 - **No Standards** in data and processes leads to flaky, unmaintained zombies 🧟
 - **Results are spread** over multiple places and need manual steps 📂
 
-## 🛠️ Standards for Code Quality that Integrates Any Tool
-
-### 🚀 Automated CI Integration
-
-- **Seamless integration** into any CI pipeline with full control. ⚙️
-- Our tool **works on all platforms** like GitHub, Gitlab, etc. 🌐
-- Even custom tooling can be created over the 📦 [@code-pushup/core](./packages/core#readme) package
-- Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)! 🔄
-
 ---
 
-### ⚡ Flexible Config Setup
+## 🔎🔬 Code quality integrations for any tool 📉🔍
 
-- **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** reports to the portal.
-- **[📦 Core Logic](./packages/core#readme)** to craft your **custom tooling**.
+| [🚀 Get started](./packages/cli/README.md#getting-started)️                                                                                                                                            | 🤖 Automated CI Integration                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a href="#getting-started"><img alt="Getting started cover image" title="Getting started with code-pushup" src="packages/cli/docs/images/getting-started-cover.png" max-height="200" width="auto"></a> | <a href="#-ci-automation"><img alt="CI Automation cover" title="CI automation guide" src="docs/images/gh-action.png" max-height="200" width="auto"></a>                                                                                         |
+| <ul><li>**[Set up th 📦 CLI](./packages/cli#readme)** to **collect** audit results and **upload** reports.</li><li>[Get started in no time!](./packages/cli/README.md#getting-started) ⏱️</li></ul>    | <ul><li>Use our <a href="https://github.com/code-pushup/github-action">🤖 GitHub Action</a> for integrating into your CI workflows.</li><li>**The [📦 Core package](./packages/core#readme)** helps to craft your **custom tooling**.</li></ul> |
 
-[Get started in no time!](./packages/cli/README.md#getting-started) ⏱️
+| 📈 [Portal](https://code-pushup.dev#portal)️                                                                                                                                                                                               | 🔌 [Custom plugins](./packages/cli/docs/custom-plugins.md)                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a href="#portal-integration"><img alt="Portal integration cover image" title="Inetegrate code-pushup portal" src="packages/cli/docs/images/portal-cover.png" max-height="200" width="auto"></a>                                           | <a href="#custom-plugins"><img alt="Custom plugins" title="Create custom code-pushup plugins" src="docs/images/code-pushup-custom-plugins.png" max-height="200" width="auto"></a> |
+| <ul><li><a href="https://code-pushup.dev#portal">Our portal</a> provides historical data and a slick UI</li><li>The <a href="https://www.npmjs.com/package/@code-pushup/portal-client">portal-client</a> helps to upload reports</li></ul> |                                                                                                                                                                                   |
 
 ---
 
@@ -45,16 +39,6 @@
 | <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Coverage](./packages/plugin-coverage#readme)       | **Test Coverage** analysis                             |
 | <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Package audit on **Security** and **Outdates**         |
 | <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Web performance and best practices from **Lighthouse** |
-
----
-
-### 🔧 Custom Plugins
-
-- 🛠️ [Integrate your own metric with custom plugins](./packages/cli/docs/custom-plugins.md) 📚
-- 📦 [@code-pushup/models](./packages/models#readme)
-  - **Schemas and types** for data models (useful for custom plugins or other integrations) 📊
-- 📦 [@code-pushup/utils](./packages/utils#readme)
-  - Various **utilities** (useful for custom plugins or other integrations) 🔨
 
 ---
 
@@ -77,7 +61,7 @@
 <table>
 <tr>
 <td>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="150px" height="192px"> 
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="150" height="192"> 
 </td>
 <td>
 <h2>Just follow the score</h2>
