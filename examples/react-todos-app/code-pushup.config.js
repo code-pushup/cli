@@ -78,6 +78,7 @@ export default {
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
+      isBinary: true,
       refs: [
         eslintAuditRef('no-cond-assign', 1),
         eslintAuditRef('no-const-assign', 1),
@@ -97,7 +98,6 @@ export default {
         eslintAuditRef('react-hooks-exhaustive-deps', 2),
       ],
     },
-
     {
       slug: 'code-style',
       title: 'Code style',
