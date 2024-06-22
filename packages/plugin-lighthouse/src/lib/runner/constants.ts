@@ -9,11 +9,11 @@ import { join } from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
 import { LIGHTHOUSE_OUTPUT_PATH } from '../constants';
 
-const { audits, categories } = defaultConfig;
+const { audits = [], categories = {} } = defaultConfig;
 
 // internal intermediate variable to derive the relevant audits
 const allRawLighthouseAudits = await Promise.all(
-  (audits ?? []).map(loadLighthouseAudit),
+  (audits as Config.AuditJson[]).map(loadLighthouseAudit),
 );
 
 export const PLUGIN_SLUG = 'lighthouse';
@@ -35,21 +35,21 @@ export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
 const navigationAuditSlugs = new Set(
   LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
 );
-export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
-  ([id, category]) => ({
-    slug: id,
-    title: getMetaString(category.title),
-    ...(category.description && {
-      description: getMetaString(category.description),
-    }),
-    refs: category.auditRefs
-      .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
-      .map(ref => ({
-        slug: ref.id,
-        weight: ref.weight,
-      })),
+export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(
+  categories as Record<string, Config.CategoryJson>,
+).map(([id, category]) => ({
+  slug: id,
+  title: getMetaString(category.title),
+  ...(category.description && {
+    description: getMetaString(category.description),
   }),
-);
+  refs: category.auditRefs
+    .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
+    .map(ref => ({
+      slug: ref.id,
+      weight: ref.weight,
+    })),
+}));
 
 function getMetaString(value: string | IcuMessage): string {
   if (typeof value === 'string') {

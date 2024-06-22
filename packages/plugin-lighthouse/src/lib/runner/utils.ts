@@ -32,6 +32,14 @@ export function normalizeAuditOutputs(
   });
 }
 
+export class LighthouseAuditParsingError extends Error {
+  constructor(slug: string, error: Error) {
+    super(
+      `\nAudit ${chalk.bold(slug)} failed parsing details: \n${error.message}`,
+    );
+  }
+}
+
 export function toAuditOutputs(
   lhrAudits: Result[],
   { verbose = false }: { verbose?: boolean } = {},
@@ -62,11 +70,7 @@ export function toAuditOutputs(
             ? { ...auditOutput, details: parsedDetails }
             : auditOutput;
         } catch (error) {
-          throw new Error(
-            `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
-              (error as Error).message
-            }`,
-          );
+          throw new LighthouseAuditParsingError(slug, error as Error);
         }
       }
 

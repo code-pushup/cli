@@ -380,4 +380,13 @@ describe('formatTableItemPropertyValue', () => {
       )} is not implemented`,
     );
   });
+
+  it('should not format value based on itemValueFormat type that is unsupported', () => {
+    expect(
+      formatTableItemPropertyValue(
+        { type: 'unsupported' as any, value: 43 },
+        'unsupported' as Details.ItemValueType,
+      ),
+    ).toStrictEqual({ type: 'unsupported', value: 43 });
+  });
 });

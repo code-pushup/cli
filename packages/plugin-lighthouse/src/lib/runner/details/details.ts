@@ -25,9 +25,8 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
       const opportunity: Table | undefined =
         parseOpportunityToAuditDetailsTable(details);
       return opportunity ? { table: opportunity } : {};
-    default:
-      return {};
   }
+  return {};
 }
 
 // @TODO implement all details

@@ -1,7 +1,11 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Table, TableRowObject, tableSchema } from '@code-pushup/models';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
-import { parseTableColumns, parseTableEntry } from './table.type';
+import {
+  parseTableColumns,
+  parseTableEntry,
+  parseTableRow,
+} from './table.type';
 import { LighthouseAuditDetailsParsingError } from './utils';
 
 export function parseOpportunityToAuditDetailsTable(
@@ -13,21 +17,19 @@ export function parseOpportunityToAuditDetailsTable(
     return undefined;
   }
 
-  const parsedTable: Table = {
-    title: 'Opportunity',
-    columns: parseTableColumns(rawHeadings),
-    rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
-  };
-
-  const tableResult = tableSchema().safeParse(parsedTable);
-  if (tableResult.success) {
-    return tableResult.data;
+  try {
+    return tableSchema().parse({
+      title: 'Opportunity',
+      columns: parseTableColumns(rawHeadings),
+      rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
+    });
+  } catch (error) {
+    throw new LighthouseAuditDetailsParsingError(
+      'opportunity',
+      { items, headings: rawHeadings },
+      (error as Error).message.toString(),
+    );
   }
-  throw new LighthouseAuditDetailsParsingError(
-    'opportunity',
-    parsedTable,
-    tableResult.error.toString(),
-  );
 }
 
 export function parseOpportunityItemToTableRow(

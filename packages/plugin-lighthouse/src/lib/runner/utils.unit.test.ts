@@ -1,5 +1,7 @@
+import chalk from 'chalk';
 import debug from 'debug';
 import log from 'lighthouse-logger';
+import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
@@ -12,7 +14,10 @@ import {
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { unsupportedDetailTypes } from './details/details';
+import { parseTableToAuditDetailsTable } from './details/table.type';
+import { LighthouseAuditDetailsParsingError } from './details/utils';
 import {
+  LighthouseAuditParsingError,
   determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
@@ -126,6 +131,33 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should not parse given audit details', () => {
+    expect(
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: [{ key: 'number' }],
+              items: [{ number: 42 }],
+            },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result,
+        ],
+        { verbose: true },
+      ).at(0)?.details,
+    ).toStrictEqual({
+      table: {
+        columns: [{ key: 'number', align: 'left' }],
+        rows: [{ number: 42 }],
+        title: 'Table',
+      },
+    });
+  });
+
   it('should NOT inform for unsupported details if verbose is NOT given', () => {
     const types = [...unsupportedDetailTypes];
     toAuditOutputs(
@@ -159,6 +191,50 @@ describe('toAuditOutputs', () => {
       { verbose: true },
     );
     expect(getLogMessages(ui().logger)).toHaveLength(1);
+  });
+
+  it('should not parse empty audit details', () => {
+    expect(
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: [],
+              items: [],
+            },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result,
+        ],
+        { verbose: true },
+      ).at(0)?.details,
+    ).toBeUndefined();
+  });
+
+  it('should throw for invalid audits', () => {
+    expect(() =>
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: ['left'] as unknown as Details.TableColumnHeading[],
+              items: [undefined] as unknown as Details.TableItem[],
+            },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result,
+        ],
+        { verbose: true },
+      ),
+    ).toThrowError(
+      `Audit ${chalk.bold('cumulative-layout-shift')} failed parsing details:`,
+    );
   });
 });
 
