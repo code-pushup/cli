@@ -97,7 +97,6 @@ export default {
         eslintAuditRef('react-hooks-exhaustive-deps', 2),
       ],
     },
-    
     {
       slug: 'code-style',
       title: 'Code style',
