@@ -14,10 +14,7 @@ import {
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { unsupportedDetailTypes } from './details/details';
-import { parseTableToAuditDetailsTable } from './details/table.type';
-import { LighthouseAuditDetailsParsingError } from './details/utils';
 import {
-  LighthouseAuditParsingError,
   determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
@@ -232,7 +229,7 @@ describe('toAuditOutputs', () => {
         ],
         { verbose: true },
       ),
-    ).toThrowError(
+    ).toThrow(
       `Audit ${chalk.bold('cumulative-layout-shift')} failed parsing details:`,
     );
   });
