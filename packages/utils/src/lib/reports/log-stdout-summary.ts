@@ -4,13 +4,16 @@ import { ui } from '../logging';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
-  SCORE_COLOR_RANGE,
   TERMINAL_WIDTH,
   reportHeadlineText,
   reportRawOverviewTableHeaders,
 } from './constants';
 import { ScoredReport } from './types';
-import { countCategoryAudits, formatReportScore } from './utils';
+import {
+  applyScoreColor,
+  applyTargetScoreIcon,
+  countCategoryAudits,
+} from './utils';
 
 function log(msg = ''): void {
   ui().logger.log(msg);
@@ -65,13 +68,21 @@ function logPlugins(report: ScoredReport): void {
   });
 }
 
-function logCategories({ categories, plugins }: ScoredReport): void {
+export function logCategories({ categories, plugins }: ScoredReport): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
-  const rows = categories.map(({ title, score, refs }) => [
-    title,
-    applyScoreColor({ score }),
-    countCategoryAudits(refs, plugins),
-  ]);
+
+  const rows = categories.map(({ title, score, refs, isBinary }) => {
+    return [
+      title,
+      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+      applyTargetScoreIcon(
+        score,
+        applyScoreColor({ score }),
+        isBinary === true ? 1 : undefined,
+      ),
+      countCategoryAudits(refs, plugins),
+    ];
+  });
   const table = ui().table();
   // eslint-disable-next-line no-magic-numbers
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
@@ -94,19 +105,4 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   log();
   table.render();
   log();
-}
-
-function applyScoreColor({ score, text }: { score: number; text?: string }) {
-  const formattedScore = text ?? formatReportScore(score);
-  const style = text ? chalk : chalk.bold;
-
-  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return style.green(formattedScore);
-  }
-
-  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return style.yellow(formattedScore);
-  }
-
-  return style.red(formattedScore);
 }

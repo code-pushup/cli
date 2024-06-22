@@ -75,8 +75,8 @@ exports[`generateMdReport > should render complete md report 1`] = `
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
 |[Performance](#performance)|🟡 **61**|2|
-|[SEO](#seo)|🟢 **100**|1|
-|[PWA](#pwa)|🔴 **0**|1|
+|[SEO](#seo)|✅🟢 **100**|1|
+|[PWA](#pwa)|❌🔴 **0**|1|
 
 ## 🏷 Categories
 

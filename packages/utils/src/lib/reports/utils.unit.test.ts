@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
@@ -7,6 +8,8 @@ import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   MARKERS,
   MarkerShape,
+  applyScoreColor,
+  applyTargetScoreIcon,
   calcDuration,
   colorByScoreDiff,
   compareAudits,
@@ -661,5 +664,53 @@ describe('severityMarker', () => {
     ['ℹ️', '' as IssueSeverity],
   ])('should return icon %s for severity %s', (icon, severity) => {
     expect(severityMarker(severity)).toBe(icon);
+  });
+});
+
+describe('applyScoreColor', () => {
+  it.each<['red' | 'yellow' | 'green', number]>([
+    ['red', 0],
+    ['red', SCORE_COLOR_RANGE.YELLOW_MIN - 0.1],
+    ['yellow', SCORE_COLOR_RANGE.YELLOW_MIN],
+    ['yellow', SCORE_COLOR_RANGE.GREEN_MIN - 0.1],
+    ['green', SCORE_COLOR_RANGE.GREEN_MIN],
+    ['green', 1],
+  ])('should return text with color %s for score %s', (methodName, score) => {
+    const style = {
+      red: vi.fn() as any,
+      yellow: vi.fn() as any,
+      green: vi.fn() as any,
+    };
+    applyScoreColor({ score, text: '●' }, style);
+    expect(style[methodName]).toHaveBeenCalledWith('●');
+  });
+
+  it.each<['red' | 'yellow' | 'green', number]>([
+    ['red', 0],
+    ['red', SCORE_COLOR_RANGE.YELLOW_MIN - 0.1],
+    ['yellow', SCORE_COLOR_RANGE.YELLOW_MIN],
+    ['yellow', SCORE_COLOR_RANGE.GREEN_MIN - 0.1],
+    ['green', SCORE_COLOR_RANGE.GREEN_MIN],
+    ['green', 1],
+  ])('should return score with color %s for score %s', (methodName, score) => {
+    const style = {
+      red: vi.fn() as any,
+      yellow: vi.fn() as any,
+      green: vi.fn() as any,
+    };
+    applyScoreColor({ score }, style);
+    expect(style[methodName]).toHaveBeenCalledWith((score * 100).toString());
+  });
+});
+
+describe('applyTargetScoreIcon', () => {
+  it('should add target score icon "✅" for passed score', () => {
+    expect(applyTargetScoreIcon(0.42, '42', 0.4)).toBe('✅42');
+  });
+  it('should add target score icon "❌" for failed score', () => {
+    expect(applyTargetScoreIcon(0.42, '42', 0.5)).toBe('❌42');
+  });
+  it('should not add target score icons is targetScore', () => {
+    expect(applyTargetScoreIcon(0.42, '42')).toBe('42');
   });
 });

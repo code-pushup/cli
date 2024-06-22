@@ -424,6 +424,7 @@ exports[`CLI collect > should run ESLint plugin and create report.json 1`] = `
 {
   "categories": [
     {
+      "isBinary": true,
       "refs": [
         {
           "plugin": "eslint",

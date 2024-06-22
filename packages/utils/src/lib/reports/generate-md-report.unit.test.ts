@@ -716,6 +716,7 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
+            isBinary: true,
             refs: [
               {
                 slug: 'is-crawlable',

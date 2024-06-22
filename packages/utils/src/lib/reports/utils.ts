@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+import type { ChalkInstance } from 'chalk';
 import { join } from 'node:path';
 import {
   AuditReport,
@@ -332,4 +334,42 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   return 0;
+}
+
+export function applyScoreColor(
+  {
+    score,
+    text,
+  }: {
+    score: number | string;
+    text?: string;
+  },
+  style: Pick<ChalkInstance, 'red' | 'yellow' | 'green'> = chalk,
+) {
+  const scoreAsNumber = Number(score);
+  const formattedScore = text ?? formatReportScore(scoreAsNumber);
+
+  if (scoreAsNumber >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return style.green(formattedScore);
+  }
+
+  if (scoreAsNumber >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return style.yellow(formattedScore);
+  }
+
+  return style.red(formattedScore);
+}
+
+export function applyTargetScoreIcon(
+  score: number,
+  formattedScore: string,
+  targetScore?: number,
+): string {
+  if (targetScore != null) {
+    if (score >= targetScore) {
+      return `✅${formattedScore}`;
+    }
+    return `❌${formattedScore}`;
+  }
+  return formattedScore.toString();
 }

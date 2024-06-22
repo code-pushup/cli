@@ -5,6 +5,7 @@ import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import { ScoredGroup, ScoredReport } from './types';
 import {
+  applyTargetScoreIcon,
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
@@ -22,12 +23,15 @@ export function categoriesOverviewSection(
   if (categories.length > 0 && plugins.length > 0) {
     const tableContent: Table = {
       columns: reportOverviewTableHeaders,
-      rows: categories.map(({ title, refs, score }) => ({
+      rows: categories.map(({ title, refs, score, isBinary }) => ({
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
-        score: `${scoreMarker(score)}${SPACE}${boldMd(
-          formatReportScore(score),
-        )}`,
+        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+        score: `${applyTargetScoreIcon(
+          score,
+          scoreMarker(score),
+          isBinary === true ? 1 : undefined,
+        )}${SPACE}${boldMd(formatReportScore(score))}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
     };

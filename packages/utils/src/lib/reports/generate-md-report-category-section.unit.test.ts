@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { reportMock } from '@code-pushup/test-utils';
+import { generateMdReport, scoreReport, sortReport } from '@code-pushup/utils';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
@@ -49,6 +51,28 @@ describe('categoriesOverviewSection', () => {
             title: 'Typescript',
             score: 0.14,
             refs: [{ slug: 'no-any', type: 'audit' }],
+          },
+        ],
+      } as ScoredReport),
+    ).toMatchSnapshot();
+  });
+
+  it('should render targetScore icon "✅" if score passes', () => {
+    expect(
+      categoriesOverviewSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit' }],
           },
         ],
       } as ScoredReport),
