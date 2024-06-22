@@ -9,11 +9,7 @@ import {
   reportRawOverviewTableHeaders,
 } from './constants';
 import { ScoredReport } from './types';
-import {
-  applyScoreColor,
-  applyTargetScoreIcon,
-  countCategoryAudits,
-} from './utils';
+import { applyScoreColor, countCategoryAudits, targetScoreIcon } from './utils';
 
 function log(msg = ''): void {
   ui().logger.log(msg);
@@ -75,11 +71,10 @@ export function logCategories({ categories, plugins }: ScoredReport): void {
     return [
       title,
       // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-      applyTargetScoreIcon(
+      `${targetScoreIcon(
         score,
-        applyScoreColor({ score }),
         isBinary === true ? 1 : undefined,
-      ),
+      )}${applyScoreColor({ score })}`,
       countCategoryAudits(refs, plugins),
     ];
   });

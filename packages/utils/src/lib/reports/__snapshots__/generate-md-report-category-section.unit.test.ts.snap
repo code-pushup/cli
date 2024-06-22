@@ -29,10 +29,10 @@ exports[`categoriesOverviewSection > should render complete categories table 1`]
 "
 `;
 
-exports[`categoriesOverviewSection > should render targetScore icon "✅" if score passes 1`] = `
+exports[`categoriesOverviewSection > should render targetScore icon "❌" if score fails 1`] = `
 "|🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Bug Prevention](#bug-prevention)|❌🟢 **98**|1|
+|[Bug Prevention](#bug-prevention)|🟢 **98**❌|1|
 "
 `;
 

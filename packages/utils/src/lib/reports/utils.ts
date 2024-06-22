@@ -360,16 +360,12 @@ export function applyScoreColor(
   return style.red(formattedScore);
 }
 
-export function applyTargetScoreIcon(
-  score: number,
-  formattedScore: string,
-  targetScore?: number,
-): string {
+export function targetScoreIcon(score: number, targetScore?: number): string {
   if (targetScore != null) {
     if (score >= targetScore) {
-      return `✅${formattedScore}`;
+      return `✅`;
     }
-    return `❌${formattedScore}`;
+    return `❌`;
   }
-  return formattedScore.toString();
+  return '';
 }

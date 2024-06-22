@@ -9,7 +9,6 @@ import {
   MARKERS,
   MarkerShape,
   applyScoreColor,
-  applyTargetScoreIcon,
   calcDuration,
   colorByScoreDiff,
   compareAudits,
@@ -27,6 +26,7 @@ import {
   loadReport,
   scoreMarker,
   severityMarker,
+  targetScoreIcon,
 } from './utils';
 
 describe('formatReportScore', () => {
@@ -703,14 +703,14 @@ describe('applyScoreColor', () => {
   });
 });
 
-describe('applyTargetScoreIcon', () => {
-  it('should add target score icon "✅" for passed score', () => {
-    expect(applyTargetScoreIcon(0.42, '42', 0.4)).toBe('✅42');
+describe('targetScoreIcon', () => {
+  it('should return target score icon "✅" for passed score', () => {
+    expect(targetScoreIcon(0.42, 0.4)).toBe('✅');
   });
-  it('should add target score icon "❌" for failed score', () => {
-    expect(applyTargetScoreIcon(0.42, '42', 0.5)).toBe('❌42');
+  it('should return target score icon "❌" for failed score', () => {
+    expect(targetScoreIcon(0.42, 0.5)).toBe('❌');
   });
-  it('should not add target score icons is targetScore', () => {
-    expect(applyTargetScoreIcon(0.42, '42')).toBe('42');
+  it('should return no target score icon if no targetScore is provided', () => {
+    expect(targetScoreIcon(0.42)).toBe('');
   });
 });

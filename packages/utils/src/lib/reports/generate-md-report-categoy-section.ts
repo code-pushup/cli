@@ -5,13 +5,13 @@ import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
 import { ScoredGroup, ScoredReport } from './types';
 import {
-  applyTargetScoreIcon,
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
   getSortableAuditByRef,
   getSortableGroupByRef,
   scoreMarker,
+  targetScoreIcon,
 } from './utils';
 
 const { link, section, h2, lines, li, bold: boldMd, h3, indentation } = md;
@@ -27,11 +27,9 @@ export function categoriesOverviewSection(
         // The heading "ID" is inferred from the heading text in Markdown.
         category: link(`#${slugify(title)}`, title),
         // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-        score: `${applyTargetScoreIcon(
-          score,
-          scoreMarker(score),
-          isBinary === true ? 1 : undefined,
-        )}${SPACE}${boldMd(formatReportScore(score))}`,
+        score: `${scoreMarker(score)}${SPACE}${boldMd(
+          formatReportScore(score),
+        )}${targetScoreIcon(score, isBinary === true ? 1 : undefined)}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
     };
