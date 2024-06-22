@@ -17,14 +17,12 @@ export function parseTableToAuditDetailsTable(
     return undefined;
   }
 
-  // eslint-disable-next-line functional/no-let
-  let parsedTable: Table;
   try {
-    parsedTable = {
+    return tableSchema().parse({
       title: 'Table',
       columns: parseTableColumns(rawHeadings),
       rows: items.map(row => parseTableRow(row, rawHeadings)),
-    };
+    });
   } catch (error) {
     throw new LighthouseAuditDetailsParsingError(
       'table',
@@ -32,17 +30,6 @@ export function parseTableToAuditDetailsTable(
       (error as Error).message.toString(),
     );
   }
-
-  const tableResult = tableSchema().safeParse(parsedTable);
-  if (tableResult.success) {
-    return tableResult.data;
-  }
-
-  throw new LighthouseAuditDetailsParsingError(
-    'table',
-    parsedTable,
-    tableResult.error.toString(),
-  );
 }
 
 export function parseTableColumns(

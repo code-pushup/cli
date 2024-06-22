@@ -95,12 +95,10 @@ export function formatTableItemPropertyValue(
         `Format type ${chalk.bold('thumbnail')} is not implemented`,
       );
       return '';
-    case null:
-      return '';
-    default:
-      return itemValue;
   }
   /* eslint-enable no-magic-numbers */
+
+  return itemValue;
 }
 
 export function parseSimpleItemValue(

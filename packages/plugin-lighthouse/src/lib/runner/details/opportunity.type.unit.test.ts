@@ -2,6 +2,8 @@ import type Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
 import type { Table } from '@code-pushup/models';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
+import { parseTableToAuditDetailsTable } from './table.type';
+import { LighthouseAuditDetailsParsingError } from './utils';
 
 describe('parseOpportunityDetails', () => {
   it('should omit empty opportunities', () => {
@@ -122,6 +124,11 @@ describe('parseOpportunityDetails', () => {
           valueType: 'bytes',
           label: 'Potential Savings',
         },
+        {
+          key: 'wastedMs',
+          valueType: 'ms',
+          label: 'Potential Savings',
+        },
       ],
       items: [
         {
@@ -146,6 +153,7 @@ describe('parseOpportunityDetails', () => {
           url: 'https://codepushup.dev/assets/code-suggestion.webp',
           totalBytes: 78_235,
           wastedBytes: 75_110,
+          wastedMs: 742,
           wastedPercent: 96.005_048_796_985_22,
         },
         {
@@ -170,6 +178,7 @@ describe('parseOpportunityDetails', () => {
           url: 'https://codepushup.dev/assets/category-detail.webp',
           totalBytes: 53_596,
           wastedBytes: 49_890,
+          wastedMs: 942,
           wastedPercent: 93.084_505_819_002_96,
         },
       ],
@@ -207,6 +216,11 @@ describe('parseOpportunityDetails', () => {
           label: 'Potential Savings',
           align: 'left',
         },
+        {
+          key: 'wastedMs',
+          label: 'Potential Savings',
+          align: 'left',
+        },
       ],
       rows: [
         {
@@ -214,14 +228,37 @@ describe('parseOpportunityDetails', () => {
           url: '<a href="https://codepushup.dev/assets/code-suggestion.webp">https://codepushup.dev/assets/code-suggestion.webp</a>',
           totalBytes: '76.4 kB',
           wastedBytes: '73.35 kB',
+          wastedMs: '742 ms',
         },
         {
           node: 'div.feature > cp-window-frame.window > div.body > img.product-screen',
           url: '<a href="https://codepushup.dev/assets/category-detail.webp">https://codepushup.dev/assets/category-detail.webp</a>',
           totalBytes: '52.34 kB',
           wastedBytes: '48.72 kB',
+          wastedMs: '942 ms',
         },
       ],
     } satisfies Table);
+  });
+
+  it('should throw for invalid opportunity', () => {
+    const headings = ['left'];
+    const items = [undefined];
+    const rawTable: Details.Opportunity = {
+      type: 'opportunity',
+      headings: headings as unknown as Details.TableColumnHeading[],
+      items: items as unknown as Details.OpportunityItem[],
+    };
+
+    expect(() => parseOpportunityToAuditDetailsTable(rawTable)).toThrow(
+      new LighthouseAuditDetailsParsingError(
+        'opportunity',
+        {
+          items: [null],
+          headings,
+        },
+        'Cannot convert undefined or null to object',
+      ),
+    );
   });
 });
