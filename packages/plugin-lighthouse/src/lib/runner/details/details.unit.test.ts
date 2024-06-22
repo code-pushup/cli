@@ -118,6 +118,16 @@ describe('toAuditDetails', () => {
     });
   });
 
+  it('should not render audit details of type table that is empty', () => {
+    const outputs = toAuditDetails({
+      type: 'table',
+      headings: [],
+      items: [],
+    });
+
+    expect(outputs).toStrictEqual({});
+  });
+
   it('should render audit details of type opportunity', () => {
     const outputs = toAuditDetails({
       type: 'opportunity',
@@ -245,6 +255,16 @@ describe('toAuditDetails', () => {
         ],
       },
     });
+  });
+
+  it('should not render audit details of type opportunity that is empty', () => {
+    const outputs = toAuditDetails({
+      type: 'opportunity',
+      headings: [],
+      items: [],
+    } satisfies Details.Opportunity);
+
+    expect(outputs).toStrictEqual({});
   });
 
   it('should inform that debugdata detail type is not supported yet', () => {
