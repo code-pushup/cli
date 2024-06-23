@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { primitiveValueSchema } from './implementation/schemas';
+import { tableCellValueSchema } from './implementation/schemas';
 
 export const tableAlignmentSchema = z.enum(['left', 'center', 'right'], {
   description: 'Cell alignment',
@@ -16,12 +16,12 @@ export const tableColumnObjectSchema = z.object({
 });
 export type TableColumnObject = z.infer<typeof tableColumnObjectSchema>;
 
-export const tableRowObjectSchema = z.record(primitiveValueSchema, {
+export const tableRowObjectSchema = z.record(tableCellValueSchema, {
   description: 'Object row',
 });
 export type TableRowObject = z.infer<typeof tableRowObjectSchema>;
 
-export const tableRowPrimitiveSchema = z.array(primitiveValueSchema, {
+export const tableRowPrimitiveSchema = z.array(tableCellValueSchema, {
   description: 'Primitive row',
 });
 export type TableRowPrimitive = z.infer<typeof tableRowPrimitiveSchema>;

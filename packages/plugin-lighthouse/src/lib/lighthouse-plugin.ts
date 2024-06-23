@@ -1,4 +1,5 @@
 import type { PluginConfig } from '@code-pushup/models';
+import { name, version } from '../../package.json';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { normalizeFlags } from './normalize-flags';
 import {
@@ -28,6 +29,8 @@ export function lighthousePlugin(
 
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
+    packageName: name,
+    version,
     title: 'Lighthouse',
     icon: 'lighthouse',
     audits,

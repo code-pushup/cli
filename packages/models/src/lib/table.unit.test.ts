@@ -74,8 +74,15 @@ describe('tableRowObjectSchema', () => {
     expect(() => tableRowObjectSchema.parse(row)).not.toThrow();
   });
 
-  it('should throw for a invalid object', () => {
+  it('should default undefined object values to null', () => {
     const row = { prop: undefined };
+    expect(tableRowObjectSchema.parse(row)).toStrictEqual({
+      prop: null,
+    });
+  });
+
+  it('should throw for a invalid object', () => {
+    const row = { prop: [] };
     expect(() => tableRowObjectSchema.parse(row)).toThrow('invalid_union');
   });
 });

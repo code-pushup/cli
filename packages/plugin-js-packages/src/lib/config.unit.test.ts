@@ -15,7 +15,7 @@ describe('jsPackagesPluginConfigSchema', () => {
         checks: ['audit'],
         packageManager: 'yarn-classic',
         dependencyGroups: ['prod'],
-        packageJsonPath: './ui-app/package.json',
+        packageJsonPaths: ['./ui-app/package.json', './ui-e2e/package.json'],
       } satisfies JSPackagesPluginConfig),
     ).not.toThrow();
   });
@@ -36,7 +36,7 @@ describe('jsPackagesPluginConfigSchema', () => {
       checks: ['audit', 'outdated'],
       packageManager: 'npm',
       dependencyGroups: ['prod', 'dev'],
-      packageJsonPath: 'package.json',
+      packageJsonPaths: ['package.json'],
       auditLevelMapping: {
         critical: 'error',
         high: 'error',
@@ -45,6 +45,15 @@ describe('jsPackagesPluginConfigSchema', () => {
         info: 'info',
       },
     });
+  });
+
+  it('should accept auto search for package.json files', () => {
+    expect(() =>
+      jsPackagesPluginConfigSchema.parse({
+        packageManager: 'yarn-classic',
+        packageJsonPaths: { autoSearch: true },
+      } satisfies JSPackagesPluginConfig),
+    ).not.toThrow();
   });
 
   it('should throw for no passed commands', () => {

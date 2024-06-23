@@ -45,7 +45,6 @@ describe('logUnsupportedFlagsInUse', () => {
 describe('normalizeFlags', () => {
   const normalizedDefaults = {
     verbose: false,
-    quiet: false,
     saveAssets: false,
     // needed to pass CI on linux and windows (locally it works without headless too)
     chromeFlags: ['--headless=shell'],
@@ -54,6 +53,7 @@ describe('normalizeFlags', () => {
     view: false,
     channel: 'cli',
     // custom overwrites in favour of the plugin
+    quiet: true,
     onlyAudits: [],
     skipAudits: [],
     onlyCategories: [],

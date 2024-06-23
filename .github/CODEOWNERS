@@ -1,17 +1,11 @@
-# Testing
-*.test.ts @Tlacenka
-/e2e/ @Tlacenka
-/testing/ @Tlacenka
-vite.config*.ts @Tlacenka
-
 # Mocks
-mocks/ @Tlacenka
 /examples/react-todos-app/ @matejchalk
 /testing/test-utils/src/lib/utils/dynamic-mocks/ @matejchalk
 
 # Plugins
 /packages/plugin-eslint/ @matejchalk
-/packages/plugin-coverage/ @Tlacenka
-/packages/plugin-js-packages/ @Tlacenka
+/packages/plugin-coverage/ @matejchalk
+/packages/plugin-js-packages/ @matejchalk
 /packages/plugin-lighthouse/ @BioPhoton
+/packages/nx-plugin/ @BioPhoton
 /examples/plugins/ @BioPhoton

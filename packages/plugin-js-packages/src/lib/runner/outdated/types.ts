@@ -12,6 +12,7 @@ type PackageJsonDependencies = Record<string, string>;
 export type PackageJson = Partial<
   Record<DependencyGroupLong, PackageJsonDependencies>
 >;
+export type DependencyTotals = Record<DependencyGroupLong, number>;
 
 // Unified Outdated result type
 export type OutdatedDependency = {

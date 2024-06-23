@@ -106,7 +106,7 @@ describe('lint', () => {
       command: 'npx',
       args: [
         'eslint',
-        '--config=.eslintrc.js',
+        '--config=".eslintrc.js"',
         '--no-error-on-unmatched-pattern',
         '--format=json',
         expect.stringContaining('**/*.js'), // wraps in quotes on Unix
