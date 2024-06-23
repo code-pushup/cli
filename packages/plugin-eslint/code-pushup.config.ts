@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { join } from 'path';
 import { z } from 'zod';
 import type { CoreConfig } from '@code-pushup/models';
-import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin, {
   eslintConfigFromNxProject,
 } from '../../dist/packages/plugin-eslint';
@@ -37,24 +36,6 @@ const config: CoreConfig = {
     await jsPackagesPlugin({
       packageManager: 'npm',
       packageJsonPath: join('packages', 'plugin-eslint', 'package.json'),
-    }),
-    await coveragePlugin({
-      coverageToolCommand: {
-        command: 'npx',
-        args: [
-          'nx',
-          'run-many',
-          '--project plugin-eslint',
-          '-t',
-          'unit-test',
-          'integration-test',
-          '--coverage.enabled',
-          '--skipNxCache',
-        ],
-      },
-      reports: ['unit-tests', 'integration-tests'].map(target =>
-        join('coverage', 'plugin-eslint', target, 'lcov.info'),
-      ),
     }),
   ],
 
@@ -96,19 +77,6 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'js-packages',
           slug: 'npm-outdated',
-          weight: 1,
-        },
-      ],
-    },
-    {
-      slug: 'code-coverage',
-      title: 'Code coverage',
-      description: 'Measures how much of your code is **covered by tests**.',
-      refs: [
-        {
-          type: 'group',
-          plugin: 'coverage',
-          slug: 'coverage',
           weight: 1,
         },
       ],
