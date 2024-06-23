@@ -9,11 +9,18 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-#### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
+---
 
-- **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable 💸
-- **No Standards** in data and processes leads to flaky, unmaintained zombies 🧟
-- **Results are spread** over multiple places and need manual steps 📂
+### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
+
+_Common problems of code quality tools:_
+
+- **Missing CI integration** and a lack of good reporting leads to regressions 🧟
+- **No Standards** make it impossible to maintain different metrics in a comparable way 🧑‍🦯
+- **Excessive manual steps** are needed to present the data to higher management 📈
+- High quality solutions are **not open source**.
+
+_We want to change that!_
 
 ---
 
