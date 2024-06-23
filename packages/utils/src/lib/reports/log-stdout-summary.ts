@@ -64,20 +64,20 @@ function logPlugins(report: ScoredReport): void {
   });
 }
 
+const passIcon = chalk.bold(chalk.green('✓'));
+const failIcon = chalk.bold(chalk.red('✗'));
 export function logCategories({ categories, plugins }: ScoredReport): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
 
-  const rows = categories.map(({ title, score, refs, isBinary }) => {
-    return [
-      title,
-      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-      `${targetScoreIcon(
-        score,
-        isBinary === true ? 1 : undefined,
-      )}${applyScoreColor({ score })}`,
-      countCategoryAudits(refs, plugins),
-    ];
-  });
+  const rows = categories.map(({ title, score, refs, isBinary }) => [
+    title,
+    // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+    `${targetScoreIcon(score, isBinary === true ? 1 : undefined, {
+      passIcon,
+      failIcon,
+    })}${applyScoreColor({ score })}`,
+    countCategoryAudits(refs, plugins),
+  ]);
   const table = ui().table();
   // eslint-disable-next-line no-magic-numbers
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);

@@ -3,13 +3,12 @@ import { slugify } from '../formatting';
 import { SPACE, md } from '../text-formats';
 import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
 import { metaDescription, tableSection } from './formatting';
+import { getSortableAuditByRef, getSortableGroupByRef } from './sorting';
 import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
-  getSortableAuditByRef,
-  getSortableGroupByRef,
   scoreMarker,
   targetScoreIcon,
 } from './utils';
@@ -47,7 +46,12 @@ export function categoriesDetailsSection(
     const categoryTitle = h3(category.title);
     const categoryScore = `${scoreMarker(
       category.score,
-    )}${SPACE}Score:  ${boldMd(formatReportScore(category.score))}`;
+    )}${SPACE}Score:  ${boldMd(
+      formatReportScore(category.score),
+    )}${targetScoreIcon(
+      category.score,
+      category.isBinary === true ? 1 : undefined,
+    )}`;
 
     const categoryMDItems = category.refs.map(ref => {
       // Add group details

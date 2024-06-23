@@ -1,6 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { reportMock } from '@code-pushup/test-utils';
-import { generateMdReport, scoreReport, sortReport } from '@code-pushup/utils';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
@@ -159,7 +157,7 @@ describe('categoryGroupItem', () => {
   });
 });
 
-describe('categoriesDetails', () => {
+describe('categoriesDetailsSection', () => {
   it('should render complete categories details', () => {
     expect(
       categoriesDetailsSection({
@@ -189,7 +187,8 @@ describe('categoriesDetails', () => {
           {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
-            score: 0.98,
+            score: 1,
+            isBinary: true,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
           {
@@ -208,7 +207,54 @@ describe('categoriesDetails', () => {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
+            isBinary: true,
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport),
+    ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "❌" when isBinary is failing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 0, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport),
+    ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "✅" when isBinary is passing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 1, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 1,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
       } as ScoredReport),

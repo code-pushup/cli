@@ -89,12 +89,12 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 ### SEO
 
-🟢 Score:  **100**
+🟢 Score:  **100**✅
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
 
 ### PWA
 
-🔴 Score:  **0**
+🔴 Score:  **0**❌
 - 🟩 [Splash Screen](#splash-screen-lighthouse) (_Lighthouse_) - **1**
 
 ## 🛡️ Audits

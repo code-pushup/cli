@@ -24,7 +24,7 @@ describe('logCategories', () => {
     ui().switchMode('raw');
   });
 
-  it('should list categories', async () => {
+  it('should list categories', () => {
     const categories: ScoredReport['categories'] = [
       {
         slug: 'performance',
@@ -67,7 +67,7 @@ describe('logCategories', () => {
     expect(output).toContain('1');
   });
 
-  it('should list categories with failed isBinary', async () => {
+  it('should list categories with failed isBinary', () => {
     const categories: ScoredReport['categories'] = [
       {
         slug: 'performance',
@@ -111,7 +111,7 @@ describe('logCategories', () => {
     expect(output).toContain('1');
   });
 
-  it('should list categories with passed isBinary', async () => {
+  it('should list categories with passed isBinary', () => {
     const categories: ScoredReport['categories'] = [
       {
         slug: 'performance',

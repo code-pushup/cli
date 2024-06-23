@@ -1,5 +1,5 @@
-import chalk from 'chalk';
-import type { ChalkInstance } from 'chalk';
+// eslint-disable-next-line unicorn/import-style
+import chalk, { type ChalkInstance } from 'chalk';
 import { join } from 'node:path';
 import {
   AuditReport,
@@ -150,78 +150,6 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getSortableAuditByRef(
-  { slug, weight, plugin }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport {
-  const auditPlugin = plugins.find(p => p.slug === plugin);
-  if (!auditPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-  const audit = auditPlugin.audits.find(
-    ({ slug: auditSlug }) => auditSlug === slug,
-  );
-  if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
-  }
-  return {
-    ...audit,
-    weight,
-    plugin,
-  };
-}
-
-export function getSortableGroupByRef(
-  { plugin, slug, weight }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableGroup {
-  const groupPlugin = plugins.find(p => p.slug === plugin);
-  if (!groupPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-
-  const group = groupPlugin.groups?.find(
-    ({ slug: groupSlug }) => groupSlug === slug,
-  );
-  if (!group) {
-    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
-  }
-
-  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
-  const sortedAuditRefs = [...group.refs].sort((a, b) => {
-    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
-    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
-    return aIndex - bIndex;
-  });
-
-  return {
-    ...group,
-    refs: sortedAuditRefs,
-    plugin,
-    weight,
-  };
-}
-
-export function getSortedGroupAudits(
-  group: Group,
-  plugin: string,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport[] {
-  return group.refs
-    .map(ref =>
-      getSortableAuditByRef(
-        {
-          plugin,
-          slug: ref.slug,
-          weight: ref.weight,
-          type: 'audit',
-        },
-        plugins,
-      ),
-    )
-    .sort(compareCategoryAuditsAndGroups);
-}
-
 export function compareCategoryAuditsAndGroups(
   a: SortableAuditReport | SortableGroup,
   b: SortableAuditReport | SortableGroup,
@@ -344,28 +272,36 @@ export function applyScoreColor(
     score: number | string;
     text?: string;
   },
-  style: Pick<ChalkInstance, 'red' | 'yellow' | 'green'> = chalk,
+  style: Pick<ChalkInstance, 'red' | 'yellow' | 'green' | 'bold'> = chalk,
 ) {
   const scoreAsNumber = Number(score);
   const formattedScore = text ?? formatReportScore(scoreAsNumber);
 
   if (scoreAsNumber >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return style.green(formattedScore);
+    return style.bold(style.green(formattedScore));
   }
 
   if (scoreAsNumber >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return style.yellow(formattedScore);
+    return style.bold(style.yellow(formattedScore));
   }
 
-  return style.red(formattedScore);
+  return style.bold(style.red(formattedScore));
 }
 
-export function targetScoreIcon(score: number, targetScore?: number): string {
+export function targetScoreIcon(
+  score: number,
+  targetScore?: number,
+  options: {
+    passIcon?: string;
+    failIcon?: string;
+  } = {},
+): string {
   if (targetScore != null) {
+    const { passIcon = '✅', failIcon = '❌' } = options; // ✅✓ ❌✗
     if (score >= targetScore) {
-      return `✅`;
+      return passIcon;
     }
-    return `❌`;
+    return failIcon;
   }
   return '';
 }
