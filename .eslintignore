@@ -1,3 +1,4 @@
 node_modules
 **/*.mock.*
 **/mocks/fixtures/**
+**/code-pushup.config.ts
