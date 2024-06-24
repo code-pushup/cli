@@ -80,8 +80,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
 
   const columns: TableColumnObject[] = [
     { key: 'category', label: '🏷️ Category', align: 'left' },
-    { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'before', label: '⭐ Previous score' },
+    { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
     { key: 'change', label: '🔄 Score change' },
   ];
   return lines(
@@ -128,8 +128,8 @@ function formatDiffGroupsSection(diff: ReportsDiff): string {
       columns: [
         { key: 'plugin', label: '🔌 Plugin', align: 'left' },
         { key: 'group', label: '🗃️ Group', align: 'left' },
-        { key: 'after', label: '⭐ Current score' },
         { key: 'before', label: '⭐ Previous score' },
+        { key: 'after', label: '⭐ Current score' },
         { key: 'change', label: '🔄 Score change' },
       ],
       rows: sortChanges(diff.groups.changed).map(group => ({
@@ -150,8 +150,8 @@ function formatDiffAuditsSection(diff: ReportsDiff): string {
       columns: [
         { key: 'plugin', label: '🔌 Plugin', align: 'left' },
         { key: 'audit', label: '🛡️ Audit', align: 'left' },
-        { key: 'after', label: '📏 Current value' },
         { key: 'before', label: '📏 Previous value' },
+        { key: 'after', label: '📏 Current value' },
         { key: 'change', label: '🔄 Value change' },
       ],
       rows: sortChanges(diff.audits.changed).map(audit => ({
