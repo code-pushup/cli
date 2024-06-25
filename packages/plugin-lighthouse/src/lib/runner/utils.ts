@@ -50,7 +50,7 @@ export function toAuditOutputs(
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 1, // score can be null
-        value: Number.parseInt(value.toString(), 10),
+        value,
         displayValue,
       };
 

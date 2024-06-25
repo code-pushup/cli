@@ -91,7 +91,7 @@ describe('toAuditOutputs', () => {
     ).not.toThrow();
   });
 
-  it('should parse valid lhr float value to integer', () => {
+  it('should copy lhr numericValue to audit value as float', () => {
     expect(
       toAuditOutputs([
         {
@@ -106,7 +106,7 @@ describe('toAuditOutputs', () => {
           displayValue: '2.8 s',
         },
       ]),
-    ).toStrictEqual([expect.objectContaining({ value: 2838 })]);
+    ).toStrictEqual([expect.objectContaining({ value: 2838.974 })]);
   });
 
   it('should convert null score to 1', () => {
