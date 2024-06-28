@@ -44,13 +44,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/utils/vite.config.unit.ts"
+        "configFile": "packages/utils/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/utils/vite.config.integration.ts"
+        "configFile": "packages/utils/vite.config.integration.ts"
       }
     }
   },
