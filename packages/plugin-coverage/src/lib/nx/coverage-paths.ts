@@ -7,7 +7,7 @@ import type {
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import chalk from 'chalk';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { importEsmModule, ui } from '@code-pushup/utils';
 import { CoverageResult } from '../config';
 
@@ -149,6 +149,9 @@ export async function getCoveragePathForVitest(
     );
   }
 
+  if (isAbsolute(reportsDirectory)) {
+    return join(reportsDirectory, 'lcov.info');
+  }
   return {
     pathToProject: project.root,
     resultsPath: join(project.root, reportsDirectory, 'lcov.info'),
@@ -183,6 +186,10 @@ export async function getCoveragePathForJest(
     throw new Error(
       `Jest coverage configuration at ${jestConfig} does not include LCOV report format for target ${target} in ${project.name}. Add 'lcov' format under coverageReporters.`,
     );
+  }
+
+  if (isAbsolute(coverageDirectory)) {
+    return join(coverageDirectory, 'lcov.info');
   }
   return join(project.root, coverageDirectory, 'lcov.info');
 }
