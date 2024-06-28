@@ -51,6 +51,11 @@ vi.mock('bundle-require', () => ({
       coverageDirectory: 'coverage',
     };
 
+    const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
+      preset: '../../jest.preset.ts',
+      coverageDirectory: 'coverage',
+    };
+
     const wrapReturnValue = (
       value: VitestCoverageConfig | JestCoverageConfig,
     ) => ({ mod: { default: value } });
@@ -69,6 +74,8 @@ vi.mock('bundle-require', () => ({
         return wrapReturnValue(JEST_NO_LCOV);
       case 'jest-no-dir':
         return wrapReturnValue(JEST_NO_DIR);
+      case 'jest-preset':
+        return wrapReturnValue(JEST_PRESET);
       default:
         return wrapReturnValue({});
     }
@@ -325,6 +332,29 @@ describe('getCoveragePathForJest', () => {
         'integration-test',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
+  });
+
+  it('should not throw if lcov reporter in both project.json and jest config', async () => {
+    await expect(
+      getCoveragePathForJest(
+        {
+          jestConfig: 'jest-valid.config.integration.ts',
+          coverageReporters: ['lcov'],
+        },
+        { name: 'core', root: join('packages', 'core') },
+        'integration-test',
+      ),
+    ).resolves.toBeTypeOf('string');
+  });
+
+  it('should not throw regarding missing lcov reporter if jest config uses preset', async () => {
+    await expect(
+      getCoveragePathForJest(
+        { jestConfig: 'jest-preset.config.ts' },
+        { name: 'core', root: join('packages', 'core') },
+        'test',
+      ),
+    ).resolves.toBeTypeOf('string');
   });
 
   it('should handle absolute path in coverageDirectory', async () => {
