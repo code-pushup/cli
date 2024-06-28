@@ -75,24 +75,13 @@ export function logMultipleFileResults(
   );
 }
 
-export class NoExportError extends Error {
-  constructor(filepath: string) {
-    super(`No default export found in ${filepath}`);
-  }
-}
+export async function importModule<T = unknown>(options: Options): Promise<T> {
+  const { mod } = await bundleRequire<object>(options);
 
-export async function importEsmModule<T = unknown>(
-  options: Options,
-): Promise<T> {
-  const { mod } = await bundleRequire<object>({
-    format: 'esm',
-    ...options,
-  });
-
-  if (!('default' in mod)) {
-    throw new NoExportError(options.filepath);
+  if (typeof mod === 'object' && 'default' in mod) {
+    return mod.default as T;
   }
-  return mod.default as T;
+  return mod as T;
 }
 
 export function pluginWorkDir(slug: string): string {

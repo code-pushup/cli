@@ -17,7 +17,7 @@ export {
   fileExists,
   filePathToCliArg,
   findLineNumberInText,
-  importEsmModule,
+  importModule,
   logMultipleFileResults,
   pluginWorkDir,
   readJsonFile,

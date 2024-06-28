@@ -8,7 +8,7 @@ import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import chalk from 'chalk';
 import { isAbsolute, join } from 'node:path';
-import { importEsmModule, ui } from '@code-pushup/utils';
+import { importModule, ui } from '@code-pushup/utils';
 import { CoverageResult } from '../config';
 
 /**
@@ -128,7 +128,7 @@ export async function getCoveragePathForVitest(
     );
   }
 
-  const vitestConfig = await importEsmModule<VitestCoverageConfig>({
+  const vitestConfig = await importModule<VitestCoverageConfig>({
     filepath: config,
     format: 'esm',
   });
@@ -165,9 +165,8 @@ export async function getCoveragePathForJest(
 ) {
   const { jestConfig } = options;
 
-  const testConfig = await importEsmModule<JestCoverageConfig>({
+  const testConfig = await importModule<JestCoverageConfig>({
     filepath: jestConfig,
-    format: 'cjs',
   });
   const { coverageDirectory, coverageReporters } = {
     ...testConfig,
