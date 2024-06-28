@@ -32,13 +32,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/models/vite.config.unit.ts"
+        "configFile": "packages/models/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/models/vite.config.integration.ts"
+        "configFile": "packages/models/vite.config.integration.ts"
       }
     },
     "generate-docs": {
