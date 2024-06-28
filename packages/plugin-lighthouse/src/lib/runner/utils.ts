@@ -6,7 +6,7 @@ import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
-import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
+import { importModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
@@ -126,7 +126,7 @@ export async function getConfig(
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importEsmModule<Config>({ filepath });
+      return importModule<Config>({ filepath, format: 'esm' });
     } else {
       ui().logger.info(`Format of file ${filepath} not supported`);
     }
