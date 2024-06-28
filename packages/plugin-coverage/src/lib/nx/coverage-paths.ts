@@ -165,16 +165,14 @@ export async function getCoveragePathForJest(
 ) {
   const { jestConfig } = options;
 
-  const { coverageDirectory, coverageReporters } =
-    options.coverageDirectory && options.coverageReporters
-      ? options // skip import if both overrides available
-      : {
-          ...(await importEsmModule<JestCoverageConfig>({
-            filepath: jestConfig,
-            format: 'cjs',
-          })),
-          ...options,
-        };
+  const testConfig = await importEsmModule<JestCoverageConfig>({
+    filepath: jestConfig,
+    format: 'cjs',
+  });
+  const { coverageDirectory, coverageReporters } = {
+    ...testConfig,
+    ...options,
+  };
 
   if (coverageDirectory == null) {
     throw new Error(
@@ -182,7 +180,7 @@ export async function getCoveragePathForJest(
     );
   }
 
-  if (!coverageReporters?.includes('lcov')) {
+  if (!coverageReporters?.includes('lcov') && !('preset' in testConfig)) {
     throw new Error(
       `Jest coverage configuration at ${jestConfig} does not include LCOV report format for target ${target} in ${project.name}. Add 'lcov' format under coverageReporters.`,
     );
