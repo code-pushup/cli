@@ -219,6 +219,21 @@ describe('getCoveragePathForVitest', () => {
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
   });
+
+  it('should handle absolute path in reportsDirectory', async () => {
+    await expect(
+      getCoveragePathForVitest(
+        {
+          configFile: 'vitest-valid.config.unit.ts',
+          reportsDirectory: join(process.cwd(), 'coverage', 'packages', 'cli'),
+        },
+        { name: 'cli', root: join('packages', 'cli') },
+        'unit-test',
+      ),
+    ).resolves.toBe(
+      join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
+    );
+  });
 });
 
 describe('getCoveragePathForJest', () => {
@@ -310,5 +325,20 @@ describe('getCoveragePathForJest', () => {
         'integration-test',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
+  });
+
+  it('should handle absolute path in coverageDirectory', async () => {
+    await expect(
+      getCoveragePathForJest(
+        {
+          jestConfig: 'jest-valid.config.unit.ts',
+          coverageDirectory: join(process.cwd(), 'coverage', 'packages', 'cli'),
+        },
+        { name: 'cli', root: join('packages', 'cli') },
+        'unit-test',
+      ),
+    ).resolves.toBe(
+      join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
+    );
   });
 });
