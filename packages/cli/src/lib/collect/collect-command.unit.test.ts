@@ -103,4 +103,30 @@ describe('collect-command', () => {
       }),
     );
   });
+
+  it('should call collect only for the not skipped plugins', async () => {
+    await yargsCli(
+      [
+        'collect',
+        '--config=/test/code-pushup.config.ts',
+        '--skipPlugins=cypress',
+      ],
+      {
+        ...DEFAULT_CLI_CONFIGURATION,
+        commands: [yargsCollectCommandObject()],
+      },
+    ).parseAsync();
+
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: '/test/code-pushup.config.ts',
+        plugins: [expect.objectContaining({ slug: 'vitest' })],
+      }),
+    );
+  });
 });

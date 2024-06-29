@@ -11,6 +11,7 @@ import {
 } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
+import { yargsSkipPluginsOptionsDefinition } from '../implementation/skip-plugins.options';
 import { HistoryCliOptions } from './history.model';
 import { yargsHistoryOptionsDefinition } from './history.options';
 import { normalizeHashOptions } from './utils';
@@ -65,6 +66,7 @@ export function yargsHistoryCommandObject() {
       yargs.options({
         ...yargsHistoryOptionsDefinition(),
         ...yargsOnlyPluginsOptionsDefinition(),
+        ...yargsSkipPluginsOptionsDefinition(),
       });
       yargs.group(
         Object.keys(yargsHistoryOptionsDefinition()),
