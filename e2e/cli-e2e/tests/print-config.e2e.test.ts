@@ -56,6 +56,7 @@ describe('print-config', () => {
             expect.objectContaining({ slug: 'code-coverage' }),
           ],
           onlyPlugins: [],
+          skipPlugins: [],
         }),
       );
     },

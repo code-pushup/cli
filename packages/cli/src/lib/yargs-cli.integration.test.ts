@@ -10,6 +10,8 @@ import {
 import { GeneralCliOptions } from './implementation/global.model';
 import { OnlyPluginsOptions } from './implementation/only-plugins.model';
 import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
+import { SkipPluginsOptions } from './implementation/skip-plugins.model';
+import { yargsSkipPluginsOptionsDefinition } from './implementation/skip-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
@@ -28,6 +30,14 @@ describe('yargsCli', () => {
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
     expect(parsedArgv.onlyPlugins).toEqual([]);
+  });
+
+  it('should parse an empty array as a default skipPlugins option', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & SkipPluginsOptions>(
+      [],
+      { options: { ...options, ...yargsSkipPluginsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv.skipPlugins).toEqual([]);
   });
 
   it('should parse a single boolean negated argument', async () => {
@@ -84,7 +94,8 @@ describe('yargsCli', () => {
       GeneralCliOptions &
         PersistConfigCliOptions &
         UploadConfigCliOptions &
-        OnlyPluginsOptions
+        OnlyPluginsOptions &
+        SkipPluginsOptions
     >(
       [
         '--verbose',
@@ -97,6 +108,8 @@ describe('yargsCli', () => {
         '--upload.apiKey=some-api-key',
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
+        '--skipPlugins=lighthouse',
+        '--skipPlugins=eslint',
       ],
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
@@ -118,6 +131,7 @@ describe('yargsCli', () => {
           apiKey: 'some-api-key',
         }),
         onlyPlugins: ['lighthouse', 'eslint'],
+        skipPlugins: ['lighthouse', 'eslint'],
       }),
     );
   });
