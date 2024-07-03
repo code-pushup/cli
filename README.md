@@ -13,12 +13,13 @@
 
 ### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
 
-_Common problems of code quality tools:_
+_Common problems with keeping track of technical quality:_
 
-- **Missing CI integration** and a lack of good reporting leads to regressions 🧟
-- **No Standards** make it impossible to maintain different metrics in a comparable way 🧑‍🦯
-- **Excessive manual steps** are needed to present the data to higher management 📈
-- High quality solutions are **not open source**.
+- **When tech debt is invisible**, it's difficult to plan much-needed maintenance efforts 🔧
+- **Individual tools** measure different metrics, **inability to combine** them leads to  
+  a lack of comprehensive overview 🧑‍🦯
+- Open-source tools typically used for failing checks in CI, which **can't measure incremental improvements** due to arbitrary pass/fail thresholds 🤖
+- Off-the-shelf solutions tend to be opinionated and **hard to customize**, so may not fit your specific needs 🧱
 
 _We want to change that!_
 
