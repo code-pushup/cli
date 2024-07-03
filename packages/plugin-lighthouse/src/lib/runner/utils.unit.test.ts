@@ -179,11 +179,11 @@ describe('toAuditOutputs', () => {
         type =>
           ({
             id: 'cumulative-layout-shift',
-            details: { type, headings: [], items: [] },
+            details: { type, headings: [], items: [] } as Details,
             score: 0,
             numericValue: 0,
             displayValue: '0 ms',
-          } as unknown as Result),
+          } as Result),
       ),
       { verbose: true },
     );
