@@ -60,7 +60,7 @@ _We want to change that!_
 3. **[Observe](https://code-pushup.dev#portal)**  
    Guard regressions and track improvements with every code change. 🔍
 
-4. **Wing it!**  
+4. **Relax!**  
    Watch improvements, share reports 📈
 
 ---
