@@ -15,9 +15,9 @@
 
 _Common problems with keeping track of technical quality:_
 
-- **When tech debt is invisible**, it's difficult to plan much-needed maintenance efforts 🔧
-- **Individual tools** measure different metrics, **inability to combine** them leads to  
-  a lack of comprehensive overview 🧑‍🦯
+- When **tech debt is invisible**, it's difficult to plan much-needed maintenance efforts 🔧
+- Individual tools measure different metrics, inability to combine them leads to  
+  a **lack of comprehensive overview** 🧑‍🦯
 - Open-source tools typically used for failing checks in CI, which **can't measure incremental improvements** due to arbitrary pass/fail thresholds 🤖
 - Off-the-shelf solutions tend to be opinionated and **hard to customize**, so may not fit your specific needs 🧱
 
