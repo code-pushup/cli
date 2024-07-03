@@ -1,15 +1,15 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.35.0",
+  "version": "0.46.0",
   "dependencies": {
-    "@code-pushup/models": "0.35.0",
-    "@code-pushup/utils": "0.35.0",
+    "@code-pushup/models": "0.46.0",
+    "@code-pushup/utils": "0.46.0",
     "parse-lcov": "^1.0.4",
     "chalk": "^5.3.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@nx/devkit": "^17.0.0"
+    "@nx/devkit": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@nx/devkit": {

@@ -1,8 +1,9 @@
 import { join } from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import { AuditOutputs } from '@code-pushup/models';
-import { exists, readTextFile, toUnixNewlines } from '@code-pushup/utils';
+import { exists, readTextFile, toUnixNewlines, ui } from '@code-pushup/utils';
 import { CoverageResult, CoverageType } from '../../config';
+import { mergeLcovResults } from './merge-lcov';
 import { parseLcov } from './parse-lcov';
 import {
   lcovCoverageToAuditOutput,
@@ -26,9 +27,12 @@ export async function lcovResultsToAuditOutputs(
   // Parse lcov files
   const lcovResults = await parseLcovFiles(results);
 
+  // Merge multiple coverage reports for the same file
+  const mergedResults = mergeLcovResults(lcovResults);
+
   // Calculate code coverage from all coverage results
   const totalCoverageStats = getTotalCoverageFromLcovRecords(
-    lcovResults,
+    mergedResults,
     coverageTypes,
   );
 
@@ -48,7 +52,7 @@ export async function lcovResultsToAuditOutputs(
  * @param results Paths to LCOV results
  * @returns Array of parsed LCOVRecords.
  */
-async function parseLcovFiles(
+export async function parseLcovFiles(
   results: CoverageResult[],
 ): Promise<LCOVRecord[]> {
   const parsedResults = await Promise.all(
@@ -56,6 +60,11 @@ async function parseLcovFiles(
       const resultsPath =
         typeof result === 'string' ? result : result.resultsPath;
       const lcovFileContent = await readTextFile(resultsPath);
+      if (lcovFileContent.trim() === '') {
+        ui().logger.warning(
+          `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
+        );
+      }
       const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
       return parsedRecords.map<LCOVRecord>(record => ({
         ...record,

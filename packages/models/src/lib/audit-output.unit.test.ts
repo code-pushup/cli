@@ -18,7 +18,7 @@ describe('auditOutputSchema', () => {
     ).not.toThrow();
   });
 
-  it('should accept a valid audit output with details', () => {
+  it('should accept a valid audit output with details issues', () => {
     expect(() =>
       auditOutputSchema.parse({
         slug: 'speed-index',
@@ -33,6 +33,66 @@ describe('auditOutputSchema', () => {
             },
           ],
         },
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
+  it('should accept a valid audit output with details table', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'largest-contentful-paint',
+        score: 0.83,
+        value: 3090,
+        displayValue: '3.1 s',
+        details: {
+          table: {
+            rows: [
+              {
+                selector:
+                  '#title-card-3-1 > div.ptrack-content > a > div > img',
+                html: '<img class="boxart-image boxart-image-in-padded-container" src="https://my.images/P93zeAjL9blBKk5xKz.jpg?r=942" alt="How to change your mind">',
+              },
+            ],
+          },
+        },
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
+  it('should accept a valid audit output with details table and issues', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'speed-index',
+        score: 0.3,
+        value: 4500,
+        displayValue: '4.5 s',
+        details: {
+          issues: [
+            {
+              message: 'The progress chart was blocked for 4 seconds.',
+              severity: 'info',
+            },
+          ],
+          table: {
+            rows: [
+              {
+                selector:
+                  '#title-card-3-1 > div.ptrack-content > a > div > img',
+                html: '<img class="boxart-image boxart-image-in-padded-container" src="https://my.images/P93zeAjL9blBKk5xKz.jpg?r=942" alt="How to change your mind">',
+              },
+            ],
+          },
+        },
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
+  it('should accept a decimal value', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'first-meaningful-paint',
+        score: 1,
+        value: 883.4785,
       } satisfies AuditOutput),
     ).not.toThrow();
   });

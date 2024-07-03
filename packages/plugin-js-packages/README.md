@@ -22,7 +22,21 @@ It supports the following package managers:
 
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
-2. Insert plugin configuration with your package manager. By default, both `audit` and `outdated` checks will be run. The result should look as follows:
+2. Install as a dev dependency with your package manager:
+
+   ```sh
+   npm install --save-dev @code-pushup/js-packages-plugin
+   ```
+
+   ```sh
+   yarn add --dev @code-pushup/js-packages-plugin
+   ```
+
+   ```sh
+   pnpm add --save-dev @code-pushup/js-packages-plugin
+   ```
+
+3. Insert plugin configuration with your package manager. By default, both `audit` and `outdated` checks will be run. The result should look as follows:
 
    ```js
    import jsPackagesPlugin from '@code-pushup/js-packages-plugin';
@@ -45,12 +59,12 @@ It supports the following package managers:
      // ...
      plugins: [
        // ...
-       await jsPackagesPlugin({ packageManager: ['yarn'], checks: ['audit'] }),
+       await jsPackagesPlugin({ packageManager: ['yarn-classic'], checks: ['audit'], dependencyGroups: ['prod'] }),
      ],
    };
    ```
 
-3. (Optional) Reference individual audits or the provided plugin groups which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+4. (Optional) Reference individual audits or the provided plugin groups which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    💡 Assign weights based on what influence each command should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
@@ -88,7 +102,7 @@ It supports the following package managers:
    };
    ```
 
-4. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
 ## Plugin architecture
 
@@ -98,11 +112,13 @@ The plugin accepts the following parameters:
 
 - `packageManager`: The package manager you are using. Supported values: `npm`, `yarn-classic` (v1), `yarn-modern` (v2+), `pnpm`.
 - (optional) `checks`: Array of checks to be run. Supported commands: `audit`, `outdated`. Both are configured by default.
+- (optional) `dependencyGroups`: Array of dependency groups to be checked. `prod` and `dev` are configured by default. `optional` are opt-in.
+- (optional) `packageJsonPaths`: File path(s) to `package.json`. Root `package.json` is used by default. Multiple `package.json` paths may be passed. If `{ autoSearch: true }` is provided, all `package.json` files in the repository are searched.
 - (optional) `auditLevelMapping`: If you wish to set a custom level of issue severity based on audit vulnerability level, you may do so here. Any omitted values will be filled in by defaults. Audit levels are: `critical`, `high`, `moderate`, `low` and `info`. Issue severities are: `error`, `warn` and `info`. By default the mapping is as follows: `critical` and `high` → `error`; `moderate` and `low` → `warning`; `info` → `info`.
 
 ### Audits and group
 
-This plugin provides a group per check for a convenient declaration in your config. Each group contains audits for all supported groups of dependencies (`prod`, `dev` and `optional`).
+This plugin provides a group per check for a convenient declaration in your config. Each group contains audits for all selected groups of dependencies that are supported (`prod`, `dev` or `optional`).
 
 ```ts
      // ...
@@ -130,7 +146,7 @@ This plugin provides a group per check for a convenient declaration in your conf
      ],
 ```
 
-Each dependency group has its own audit. If you want to check only a subset of dependencies (e.g. run audit and outdated for production dependencies) or assign different weights to them, you can do so in the following way:
+Each dependency group has its own audit. If you want to assign different weights to the audits or record different dependency groups for different checks (the bigger set needs to be included in the plugin configuration), you can do so in the following way:
 
 ```ts
      // ...

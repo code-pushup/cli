@@ -18,8 +18,14 @@ export async function addToProjectGenerator(
 
   const { root, targets } = projectConfiguration;
 
-  if (tree.exists(join(root, 'code-pushup.config.ts'))) {
-    ui().logger.info('Code PushUp already configured for this project');
+  const supportedFormats = ['ts', 'mjs', 'js'];
+  const firstExistingFormat = supportedFormats.find(ext =>
+    tree.exists(join(root, `code-pushup.config.${ext}`)),
+  );
+  if (firstExistingFormat) {
+    logger.warn(
+      `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
+    );
     return;
   }
 

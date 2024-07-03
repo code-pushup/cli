@@ -25,7 +25,7 @@ export function auditResultToAuditOutput(
     score: calculateAuditScore(result.summary),
     value: result.summary.total,
     displayValue: summaryToDisplayValue(result.summary),
-    ...(issues.length > 0 && { details: { issues } }),
+    details: { issues },
   };
 }
 
@@ -75,7 +75,8 @@ export function vulnerabilitiesToIssues(
         ? '**all** versions'
         : `versions **${detail.versionRange}**`;
     const directDependency =
-      typeof detail.directDependency === 'string'
+      typeof detail.directDependency === 'string' &&
+      detail.directDependency !== ''
         ? `\`${detail.directDependency}\``
         : '';
     const depHierarchy =

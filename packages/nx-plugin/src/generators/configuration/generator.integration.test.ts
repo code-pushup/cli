@@ -42,5 +42,31 @@ describe('init generator', () => {
         )}`,
       },
     });
+    expect(
+      tree.read('test-app/code-pushup.config.ts')?.toString(),
+    ).toMatchSnapshot();
+  });
+
+  it('should skip code-pushup.config.ts generation if config fin in ts, mjs or js format already exists', async () => {
+    tree.write(join('code-pushup.config.js'), 'export default {}');
+    await configurationGenerator(tree, { project: testProjectName });
+
+    const projectConfiguration = readProjectConfiguration(
+      tree,
+      testProjectName,
+    );
+
+    expect(tree.exists('code-pushup.config.ts')).toBe(false);
+
+    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
+      executor: 'nx:run-commands',
+      options: {
+        command: `code-pushup autorun --no-progress --config=${join(
+          './',
+          projectConfiguration.root,
+          'code-pushup.config.ts',
+        )}`,
+      },
+    });
   });
 });

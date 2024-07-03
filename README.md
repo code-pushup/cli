@@ -1,4 +1,6 @@
-# Code PushUp CLI
+# Code PushUp - Just Follow the Score <✓>
+
+**🔎🔬 Code quality integrations for any tool 📉🔍**
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -7,30 +9,88 @@
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
 
-🔎🔬 **Quality metrics for your software project.** 📉🔍
+## 🌟 Why Choose Code PushUp?
 
-1. ⚙️ **Configure what you want to track using your favourite tools.**
-2. 🤖 **Integrate it in your CI.**
-3. 🌈 **Visualize reports in a beautiful dashboard.**
+### Common problems with keeping track of technical quality
+
+- **When tech debt is invisible**, it's difficult to plan much-needed maintenance efforts 🔧
+- **Individual tools** measure different metrics, **inability to combine** them leads to a lack of comprehensive overview 🧑‍🦯
+- Open-source tools typically used for failing checks in CI, which **can't measure incremental improvements** due to arbitrary pass/fail thresholds 🤖
+- Off-the-shelf solutions tend to be opinionated and **hard to customize**, so may not fit your specific needs 🧱
+
+_We want to change that!_
+
+## 🛠️ Standards for Code Quality that Integrates Any Tool
+
+### 🚀 Automated CI Integration
+
+- **Seamless integration** into any CI pipeline with full control. ⚙️
+- Our tool **works on all platforms** like GitHub, Gitlab, etc. 🌐
+- Even custom tooling can be created over the 📦 [@code-pushup/core](./packages/core#readme) package
+- Get updates [on every PR](https://github.com/marketplace/actions/code-pushup)! 🔄
 
 ---
 
-|                              📊 Getting Started                              |                           🌐 Portal Integration                            |                          🛠️ CI Automation                          |
-| :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :----------------------------------------------------------------: |
-| **[How to setup](./packages/cli/README.md#getting-started)** a basic project | Sort, filter **[your goals](./packages/cli/README.md#portal-integration)** | Updates **[on every PR](./packages/cli/README.md#-ci-automation)** |
+### ⚡ Flexible Config Setup
+
+- **[📦 CLI](./packages/cli#readme)** for **collecting** audit results and **uploading** reports to the portal.
+- **[📦 Core Logic](./packages/core#readme)** to craft your **custom tooling**.
+
+[Get started in no time!](./packages/cli/README.md#getting-started) ⏱️
 
 ---
 
-This monorepo contains code for open-source Code PushUp NPM packages:
+### 🔌 Officially Supported Plugins
 
-- [📦 @code-pushup/cli](./packages/cli#readme) - **CLI** for **collecting** audit results and **uploading** report to portal
-- [📦 @code-pushup/core](./packages/core#readme) - implementation of **core business logic** (useful for custom integrations)
-- [📦 @code-pushup/models](./packages/models#readme) - **schemas and types** for data models (useful for custom plugins or other integrations)
-- [📦 @code-pushup/utils](./packages/utils#readme) - various **utilities** (useful for custom plugins or other integrations)
-- plugins:
-  - [🧩 @code-pushup/eslint-plugin](./packages/plugin-eslint#readme) - static analysis using **ESLint** rules
-  - [🧩 @code-pushup/coverage-plugin](./packages/plugin-coverage#readme) - code coverage analysis
-  - [🧩 @code-pushup/js-packages-plugin](./packages/plugin-js-packages#readme) - package audit and outdated dependencies
-  - [🧩 @code-pushup/lighthouse-plugin](./packages/plugin-lighthouse#readme) - web performance and best practices from **Lighthouse**
+|                                                                |                                                     |                                                        |
+| -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
+| <img width="50" src="docs/images/plugin-eslint.icon.png">      | [Eslint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules                 |
+| <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Coverage](./packages/plugin-coverage#readme)       | **Test Coverage** analysis                             |
+| <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Package audit on **Security** and **Outdates**         |
+| <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Web performance and best practices from **Lighthouse** |
 
-If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+---
+
+### 🔧 Custom Plugins
+
+- 🛠️ [Integrate your own metric with custom plugins](./packages/cli/docs/custom-plugins.md) 📚
+- 📦 [@code-pushup/models](./packages/models#readme)
+  - **Schemas and types** for data models (useful for custom plugins or other integrations) 📊
+- 📦 [@code-pushup/utils](./packages/utils#readme)
+  - Various **utilities** (useful for custom plugins or other integrations) 🔨
+
+---
+
+## 📝 How It Works!
+
+1. **Configure**  
+   Pick from a set of supported packages or include your own ideas. 🧩
+
+2. **Integrate**  
+   Use our integration guide and packages to set up CI integration in minutes. ⏱️
+
+3. **Observe**  
+   Guard regressions and track improvements with every code change. 🔍
+
+4. **Wing it!**  
+   Watch improvements, share reports 📈
+
+---
+
+<table>
+<tr>
+<td>
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="150px" height="192px"> 
+</td>
+<td>
+<h2>Just follow the score</h2>
+<h3>See regressions - Report scores - On every PR</h3>
+<!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
+</td>
+</tr>
+</table>
+
+## 💖 Want to support us?
+
+- Read how to contribute to the codebase. See: [CONTRIBUTING.md](./CONTRIBUTING.md) 🤝
+<!-- link when sponsorships are ready [Sponsor](./CONTRIBUTING.md) -->

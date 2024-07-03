@@ -1,34 +1,43 @@
-import { Issue } from '@code-pushup/models';
-import { pluralize } from '@code-pushup/utils';
+import { ReleaseType, clean, diff, neq } from 'semver';
+import type { AuditOutput, Issue } from '@code-pushup/models';
+import { objectFromEntries, pluralize } from '@code-pushup/utils';
 import { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
-import { outdatedSeverity } from './constants';
-import {
-  OutdatedResult,
-  PackageVersion,
-  VersionType,
-  versionType,
-} from './types';
+import { RELEASE_TYPES, outdatedSeverity } from './constants';
+import { OutdatedResult } from './types';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,
   packageManager: PackageManagerId,
   depGroup: DependencyGroup,
-) {
+  totalDeps: number,
+): AuditOutput {
   const relevantDependencies: OutdatedResult = result.filter(
     dep => dep.type === dependencyGroupToLong[depGroup],
   );
-  const outdatedDependencies = relevantDependencies.filter(
-    dep => dep.current !== dep.latest,
+
+  const validDependencies = relevantDependencies
+    .map(dep => ({
+      ...dep,
+      current: clean(dep.current),
+      latest: clean(dep.latest),
+    }))
+    .filter(
+      (dep): dep is OutdatedResult[number] =>
+        dep.current != null && dep.latest != null,
+    );
+
+  const outdatedDependencies = validDependencies.filter(dep =>
+    neq(dep.current, dep.latest),
   );
 
-  const outdatedStats = outdatedDependencies.reduce(
-    (acc, dep) => {
-      const outdatedLevel = getOutdatedLevel(dep.current, dep.latest);
-      return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
-    },
-    { major: 0, minor: 0, patch: 0 },
-  );
+  const outdatedStats = outdatedDependencies.reduce((acc, dep) => {
+    const outdatedLevel = diff(dep.current, dep.latest);
+    if (outdatedLevel == null) {
+      return acc;
+    }
+    return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
+  }, objectFromEntries(RELEASE_TYPES.map(versionType => [versionType, 0])));
 
   const issues =
     outdatedDependencies.length === 0
@@ -37,13 +46,10 @@ export function outdatedResultToAuditOutput(
 
   return {
     slug: `${packageManager}-outdated-${depGroup}`,
-    score: calculateOutdatedScore(
-      outdatedStats.major,
-      relevantDependencies.length,
-    ),
+    score: calculateOutdatedScore(outdatedStats.major, totalDeps),
     value: outdatedDependencies.length,
     displayValue: outdatedToDisplayValue(outdatedStats),
-    ...(issues.length > 0 && { details: { issues } }),
+    details: { issues },
   };
 }
 
@@ -54,12 +60,12 @@ export function calculateOutdatedScore(
   return totalDeps > 0 ? (totalDeps - majorOutdated) / totalDeps : 1;
 }
 
-export function outdatedToDisplayValue(stats: Record<VersionType, number>) {
-  const total = stats.major + stats.minor + stats.patch;
+export function outdatedToDisplayValue(stats: Record<ReleaseType, number>) {
+  const total = Object.values(stats).reduce((acc, value) => acc + value, 0);
 
-  const versionBreakdown = versionType
-    .map(version => (stats[version] > 0 ? `${stats[version]} ${version}` : ''))
-    .filter(text => text !== '');
+  const versionBreakdown = RELEASE_TYPES.map(version =>
+    stats[version] > 0 ? `${stats[version]} ${version}` : '',
+  ).filter(text => text !== '');
 
   if (versionBreakdown.length === 0) {
     return 'all dependencies are up to date';
@@ -80,7 +86,8 @@ export function outdatedToDisplayValue(stats: Record<VersionType, number>) {
 export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
   return dependencies.map<Issue>(dep => {
     const { name, current, latest, url } = dep;
-    const outdatedLevel = getOutdatedLevel(current, latest);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const outdatedLevel = diff(current, latest)!;
     const packageReference =
       url == null ? `\`${name}\`` : `[\`${name}\`](${url})`;
 
@@ -89,36 +96,4 @@ export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
       severity: outdatedSeverity[outdatedLevel],
     };
   });
-}
-
-export function getOutdatedLevel(
-  currentFullVersion: string,
-  latestFullVersion: string,
-): VersionType {
-  const current = splitPackageVersion(currentFullVersion);
-  const latest = splitPackageVersion(latestFullVersion);
-
-  if (current.major < latest.major) {
-    return 'major';
-  }
-
-  if (current.minor < latest.minor) {
-    return 'minor';
-  }
-
-  if (current.patch < latest.patch) {
-    return 'patch';
-  }
-
-  throw new Error('Package is not outdated.');
-}
-
-export function splitPackageVersion(fullVersion: string): PackageVersion {
-  const [major, minor, patch] = fullVersion.split('.').map(Number);
-
-  if (major == null || minor == null || patch == null) {
-    throw new Error(`Invalid version description ${fullVersion}`);
-  }
-
-  return { major, minor, patch };
 }

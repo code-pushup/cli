@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tableHtml > should create a complete table 1`] = `
+"<table>
+<tr>
+<th>Date of Action</th>
+<th>Time of Action</th>
+<th>Action</th>
+</tr>
+<tr>
+<td>2025.01.01</td>
+<td>00:00:00</td>
+<td>add item</td>
+</tr>
+</table>
+"
+`;

@@ -1,4 +1,3 @@
-export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
 export {
@@ -16,6 +15,7 @@ export {
   directoryExists,
   ensureDirectoryExists,
   fileExists,
+  filePathToCliArg,
   findLineNumberInText,
   importEsmModule,
   logMultipleFileResults,
@@ -38,13 +38,19 @@ export {
 } from './lib/formatting';
 export {
   formatGitPath,
-  getCurrentBranchOrTag,
-  guardAgainstLocalChanges,
   getGitRoot,
-  getLatestCommit,
+  guardAgainstLocalChanges,
   safeCheckout,
   toGitPath,
-} from './lib/git';
+} from './lib/git/git';
+export {
+  LogResult,
+  getCurrentBranchOrTag,
+  getHashFromTag,
+  getHashes,
+  getLatestCommit,
+  getSemverTags,
+} from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
   isPromiseFulfilledResult,
@@ -78,6 +84,8 @@ export {
   compareIssueSeverity,
   loadReport,
 } from './lib/reports/utils';
+export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
+export * from './lib/text-formats';
 export {
   CliArgsObject,
   apostrophize,
@@ -97,4 +105,5 @@ export {
   toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
+export { ExcludeNullFromPropertyTypes } from './lib/types';
 export { verboseUtils } from './lib/verbose-utils';

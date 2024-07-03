@@ -1,8 +1,8 @@
+import { objectToKeys } from '@code-pushup/utils';
 import { DependencyGroup } from '../../config';
-import { AuditResult } from '../../runner/audit/types';
 import { filterAuditResult } from '../../runner/utils';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { PackageManager } from '../types';
+import { AuditResults, PackageManager } from '../types';
 import { pnpmToAuditResult } from './audit-result';
 import { pnpmToOutdatedResult } from './outdated-result';
 
@@ -30,15 +30,23 @@ export const pnpmPackageManager: PackageManager = {
     ignoreExitCode: true,
     unifyResult: pnpmToAuditResult,
     // optional dependencies don't have an exclusive option so they need duplicates filtered out
-    postProcessResult: (results: Record<DependencyGroup, AuditResult>) => ({
-      prod: results.prod,
-      dev: results.dev,
-      optional: filterAuditResult(
-        filterAuditResult(results.optional, 'id', results.prod),
-        'id',
-        results.dev,
-      ),
-    }),
+    postProcessResult: (results: AuditResults) => {
+      const depGroups = objectToKeys(results);
+      const prodFilter =
+        results.optional && results.prod
+          ? filterAuditResult(results.optional, 'id', results.prod)
+          : results.optional;
+      const devFilter =
+        prodFilter && results.dev
+          ? filterAuditResult(prodFilter, 'id', results.dev)
+          : results.optional;
+
+      return {
+        ...(depGroups.includes('prod') && { prod: results.prod }),
+        ...(depGroups.includes('dev') && { dev: results.dev }),
+        ...(results.optional && { optional: devFilter }),
+      };
+    },
   },
   outdated: {
     commandArgs: COMMON_OUTDATED_ARGS,

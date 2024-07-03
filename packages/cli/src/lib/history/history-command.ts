@@ -1,14 +1,63 @@
 import chalk from 'chalk';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { HistoryOptions, getHashes, history } from '@code-pushup/core';
-import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
+import { CommandModule } from 'yargs';
+import { HistoryOptions, history } from '@code-pushup/core';
+import {
+  LogResult,
+  getCurrentBranchOrTag,
+  getHashes,
+  getSemverTags,
+  safeCheckout,
+  ui,
+} from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
 import { HistoryCliOptions } from './history.model';
 import { yargsHistoryOptionsDefinition } from './history.options';
+import { normalizeHashOptions } from './utils';
+
+const command = 'history';
+async function handler(args: unknown) {
+  ui().logger.info(chalk.bold(CLI_NAME));
+  ui().logger.info(chalk.gray(`Run ${command}`));
+
+  const currentBranch = await getCurrentBranchOrTag();
+  const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &
+    HistoryOptions;
+  const {
+    targetBranch,
+    from,
+    to,
+    maxCount,
+    onlySemverTags,
+    ...historyOptions
+  } = await normalizeHashOptions({
+    ...opt,
+    targetBranch: rawTargetBranch ?? currentBranch,
+  });
+
+  const filterOptions = { targetBranch, from, to, maxCount };
+  const results: LogResult[] = onlySemverTags
+    ? await getSemverTags(filterOptions)
+    : await getHashes(filterOptions);
+
+  try {
+    // run history logic
+    const reports = await history(
+      {
+        targetBranch,
+        ...historyOptions,
+      },
+      results.map(({ hash }) => hash),
+    );
+
+    ui().logger.log(`Reports: ${reports.length}`);
+  } finally {
+    // go back to initial branch
+    await safeCheckout(currentBranch);
+  }
+}
 
 export function yargsHistoryCommandObject() {
-  const command = 'history';
   return {
     command,
     describe: 'Collect reports for commit history',
@@ -23,38 +72,6 @@ export function yargsHistoryCommandObject() {
       );
       return yargs;
     },
-    handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.info(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}`));
-
-      const currentBranch = await getCurrentBranchOrTag();
-      const {
-        targetBranch = currentBranch,
-        forceCleanStatus,
-        maxCount,
-        from,
-        to,
-        ...restOptions
-      } = args as unknown as HistoryCliOptions & HistoryOptions;
-
-      // determine history to walk
-      const commits: string[] = await getHashes({ maxCount, from, to });
-      try {
-        // run history logic
-        const reports = await history(
-          {
-            ...restOptions,
-            targetBranch,
-            forceCleanStatus,
-          },
-          commits,
-        );
-
-        ui().logger.log(`Reports: ${reports.length}`);
-      } finally {
-        // go back to initial branch
-        await safeCheckout(currentBranch);
-      }
-    },
+    handler,
   } satisfies CommandModule;
 }

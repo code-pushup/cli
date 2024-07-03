@@ -1,30 +1,10 @@
 import { ESLint, Linter } from 'eslint';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { executeProcess } from '@code-pushup/utils';
 import { ESLintPluginConfig } from '../config';
 import { lint } from './lint';
 
 class MockESLint {
-  lintFiles = vi.fn().mockResolvedValue([
-    {
-      filePath: `${process.cwd()}/src/app/app.component.ts`,
-      messages: [
-        { ruleId: 'max-lines' },
-        { ruleId: '@typescript-eslint/no-explicit-any' },
-        { ruleId: '@typescript-eslint/no-explicit-any' },
-      ],
-    },
-    {
-      filePath: `${process.cwd()}/src/app/app.component.spec.ts`,
-      messages: [
-        { ruleId: 'max-lines' },
-        { ruleId: '@typescript-eslint/no-explicit-any' },
-      ],
-    },
-    {
-      filePath: `${process.cwd()}/src/app/pages/settings.component.ts`,
-      messages: [{ ruleId: 'max-lines' }],
-    },
-  ] as ESLint.LintResult[]);
-
   calculateConfigForFile = vi.fn().mockImplementation(
     (path: string) =>
       ({
@@ -49,6 +29,41 @@ vi.mock('eslint', () => ({
     return eslint;
   }),
 }));
+
+vi.mock('@code-pushup/utils', async () => {
+  const utils = await vi.importActual('@code-pushup/utils');
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const testUtils: { MEMFS_VOLUME: string } = await vi.importActual(
+    '@code-pushup/test-utils',
+  );
+  const cwd = testUtils.MEMFS_VOLUME;
+  return {
+    ...utils,
+    executeProcess: vi.fn().mockResolvedValue({
+      stdout: JSON.stringify([
+        {
+          filePath: `${cwd}/src/app/app.component.ts`,
+          messages: [
+            { ruleId: 'max-lines' },
+            { ruleId: '@typescript-eslint/no-explicit-any' },
+            { ruleId: '@typescript-eslint/no-explicit-any' },
+          ],
+        },
+        {
+          filePath: `${cwd}/src/app/app.component.spec.ts`,
+          messages: [
+            { ruleId: 'max-lines' },
+            { ruleId: '@typescript-eslint/no-explicit-any' },
+          ],
+        },
+        {
+          filePath: `${cwd}/src/app/pages/settings.component.ts`,
+          messages: [{ ruleId: 'max-lines' }],
+        },
+      ] as ESLint.LintResult[]),
+    }),
+  };
+});
 
 describe('lint', () => {
   const config: ESLintPluginConfig = {
@@ -77,15 +92,29 @@ describe('lint', () => {
     });
   });
 
-  it('should correctly use ESLint Node API', async () => {
+  it('should correctly use ESLint CLI and Node API', async () => {
     await lint(config);
     expect(ESLint).toHaveBeenCalledWith<ConstructorParameters<typeof ESLint>>({
       overrideConfigFile: '.eslintrc.js',
-      useEslintrc: false,
       errorOnUnmatchedPattern: false,
     });
-    expect(eslint.lintFiles).toHaveBeenCalledTimes(1);
-    expect(eslint.lintFiles).toHaveBeenCalledWith(['**/*.js']);
+
+    expect(executeProcess).toHaveBeenCalledTimes(1);
+    expect(executeProcess).toHaveBeenCalledWith<
+      Parameters<typeof executeProcess>
+    >({
+      command: 'npx',
+      args: [
+        'eslint',
+        '--config=".eslintrc.js"',
+        '--no-error-on-unmatched-pattern',
+        '--format=json',
+        expect.stringContaining('**/*.js'), // wraps in quotes on Unix
+      ],
+      ignoreExitCode: true,
+      cwd: MEMFS_VOLUME,
+    });
+
     expect(eslint.calculateConfigForFile).toHaveBeenCalledTimes(3);
     expect(eslint.calculateConfigForFile).toHaveBeenCalledWith(
       `${process.cwd()}/src/app/app.component.ts`,

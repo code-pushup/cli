@@ -49,9 +49,9 @@ export function pluralizeToken(token: string, times: number): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 
-export function formatDuration(duration: number): string {
+export function formatDuration(duration: number, granularity = 0): string {
   if (duration < 1000) {
-    return `${duration} ms`;
+    return `${granularity ? duration.toFixed(granularity) : duration} ms`;
   }
   return `${(duration / 1000).toFixed(2)} s`;
 }
@@ -71,12 +71,39 @@ export function formatDate(date: Date): string {
     .replace(/\u202F/g, ' '); // see https://github.com/nodejs/node/issues/45171
 }
 
-export function truncateText(text: string, maxChars: number): string {
+export function truncateText(
+  text: string,
+  options:
+    | number
+    | {
+        maxChars: number;
+        position?: 'start' | 'middle' | 'end';
+        ellipsis?: string;
+      },
+): string {
+  const {
+    maxChars,
+    position = 'end',
+    ellipsis = '...',
+  } = typeof options === 'number' ? { maxChars: options } : options;
   if (text.length <= maxChars) {
     return text;
   }
-  const ellipsis = '...';
-  return text.slice(0, maxChars - ellipsis.length) + ellipsis;
+
+  const maxLength = maxChars - ellipsis.length;
+  switch (position) {
+    case 'start':
+      return ellipsis + text.slice(-maxLength).trim();
+    case 'middle':
+      const halfMaxChars = Math.floor(maxLength / 2);
+      return (
+        text.slice(0, halfMaxChars).trim() +
+        ellipsis +
+        text.slice(-halfMaxChars).trim()
+      );
+    case 'end':
+      return text.slice(0, maxLength).trim() + ellipsis;
+  }
 }
 
 export function truncateTitle(text: string): string {

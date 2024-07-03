@@ -1,16 +1,17 @@
-import type { ESLintPluginConfig } from '../config';
+import type { ESLintTarget } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 import { findAllDependencies } from './traverse-graph';
 
 /**
  * Accepts a target Nx projects, finds projects it depends on, and converts lint configurations to Code PushUp ESLint plugin parameters.
  *
- * Use when you wish to include a targetted subset of your Nx monorepo in your Code PushUp project.
- * If you prefer to include all Nx projects, refer to {@link eslintConfigFromNxProjects} instead.
+ * Use when you wish to include a targeted subset of your Nx monorepo in your Code PushUp project.
+ * If you prefer to include all Nx projects, refer to {@link eslintConfigFromAllNxProjects} instead.
+ * if you'd like to skip dependencies of the provided target project use {@link eslintConfigFromNxProject} instead.
  *
  * @example
  * import eslintPlugin, {
- *   eslintConfigFromNxProject,
+ *   eslintConfigFromNxProjectAndDeps,
  * } from '@code-pushup/eslint-plugin';
  *
  * const projectName = 'backoffice'; // <-- name from project.json
@@ -18,7 +19,7 @@ import { findAllDependencies } from './traverse-graph';
  * export default {
  *   plugins: [
  *     await eslintPlugin(
- *       await eslintConfigFromNxProject(projectName)
+ *       await eslintConfigFromNxProjectAndDeps(projectName)
  *     )
  *   ]
  * }
@@ -26,9 +27,9 @@ import { findAllDependencies } from './traverse-graph';
  * @param projectName Nx project serving as main entry point
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
-export async function eslintConfigFromNxProject(
+export async function eslintConfigFromNxProjectAndDeps(
   projectName: string,
-): Promise<ESLintPluginConfig> {
+): Promise<ESLintTarget[]> {
   const { createProjectGraphAsync } = await import('@nx/devkit');
   const projectGraph = await createProjectGraphAsync({ exitOnError: false });
 

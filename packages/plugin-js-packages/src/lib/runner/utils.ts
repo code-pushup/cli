@@ -1,4 +1,17 @@
+import { sep } from 'node:path';
+import {
+  crawlFileSystem,
+  objectFromEntries,
+  objectToKeys,
+  readJsonFile,
+} from '@code-pushup/utils';
 import { AuditResult, Vulnerability } from './audit/types';
+import {
+  DependencyGroupLong,
+  DependencyTotals,
+  PackageJson,
+  dependencyGroupLong,
+} from './outdated/types';
 
 export function filterAuditResult(
   result: AuditResult,
@@ -39,4 +52,47 @@ export function filterAuditResult(
     vulnerabilities: uniqueResult.vulnerabilities,
     summary: uniqueResult.summary,
   };
+}
+
+// TODO: use .gitignore
+export async function findAllPackageJson(): Promise<string[]> {
+  return (
+    await crawlFileSystem({
+      directory: '.',
+      pattern: /(^|[\\/])package\.json$/,
+    })
+  ).filter(
+    path =>
+      !path.startsWith(`node_modules${sep}`) &&
+      !path.includes(`${sep}node_modules${sep}`) &&
+      !path.startsWith(`.nx${sep}`),
+  );
+}
+
+export async function getTotalDependencies(
+  packageJsonPaths: string[],
+): Promise<DependencyTotals> {
+  const parsedDeps = await Promise.all(
+    packageJsonPaths.map(readJsonFile<PackageJson>),
+  );
+
+  const mergedDeps = parsedDeps.reduce<Record<DependencyGroupLong, string[]>>(
+    (acc, depMapper) =>
+      objectFromEntries(
+        dependencyGroupLong.map(group => {
+          const deps = depMapper[group];
+          return [
+            group,
+            [...acc[group], ...(deps == null ? [] : objectToKeys(deps))],
+          ];
+        }),
+      ),
+    { dependencies: [], devDependencies: [], optionalDependencies: [] },
+  );
+  return objectFromEntries(
+    objectToKeys(mergedDeps).map(deps => [
+      deps,
+      new Set(mergedDeps[deps]).size,
+    ]),
+  );
 }

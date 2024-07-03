@@ -51,6 +51,8 @@
 📖 Project documentation:
   - changed-files:
       - any-glob-to-any-file: '**/*.md'
+      # FIXME: this labels everything instead of just ignoring .md snapshots
+      # - all-globs-to-all-files: '!**/__snapshots__/**'
 
 🛠️ tooling:
   - changed-files:

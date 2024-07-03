@@ -3,11 +3,10 @@ import type {
   ProjectGraphDependency,
   ProjectGraphProjectNode,
 } from '@nx/devkit';
-import type { ESLint } from 'eslint';
 import { vol } from 'memfs';
 import type { MockInstance } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { ESLintPluginConfig } from '../config';
+import type { ESLintPluginConfig, ESLintTarget } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 
 describe('nxProjectsToConfig', () => {
@@ -28,6 +27,7 @@ describe('nxProjectsToConfig', () => {
                 },
               },
             },
+            sourceRoot: `${node.data.root}/src`,
             ...node.data,
           },
         },
@@ -65,20 +65,19 @@ describe('nxProjectsToConfig', () => {
     ]);
 
     const config = await nxProjectsToConfig(projectGraph);
-    const { overrides } = config.eslintrc as ESLint.ConfigData;
 
-    expect(overrides).toEqual([
+    expect(config).toEqual<ESLintPluginConfig>([
       {
-        files: ['apps/client/**/*.ts'],
-        extends: './apps/client/.eslintrc.json',
+        eslintrc: './apps/client/.eslintrc.json',
+        patterns: expect.arrayContaining(['apps/client/**/*.ts']),
       },
       {
-        files: ['apps/server/**/*.ts'],
-        extends: './apps/server/.eslintrc.json',
+        eslintrc: './apps/server/.eslintrc.json',
+        patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
       {
-        files: ['libs/models/**/*.ts'],
-        extends: './libs/models/.eslintrc.json',
+        eslintrc: './libs/models/.eslintrc.json',
+        patterns: expect.arrayContaining(['libs/models/**/*.ts']),
       },
     ]);
   });
@@ -107,11 +106,10 @@ describe('nxProjectsToConfig', () => {
       project => project.projectType === 'library',
     );
 
-    const { overrides } = config.eslintrc as ESLint.ConfigData;
-    expect(overrides).toEqual([
+    expect(config).toEqual<ESLintPluginConfig>([
       {
-        files: ['libs/models/**/*.ts'],
-        extends: './libs/models/.eslintrc.json',
+        eslintrc: './libs/models/.eslintrc.json',
+        patterns: expect.arrayContaining(['libs/models/**/*.ts']),
       },
     ]);
   });
@@ -150,15 +148,14 @@ describe('nxProjectsToConfig', () => {
 
     const config = await nxProjectsToConfig(projectGraph);
 
-    const { overrides } = config.eslintrc as ESLint.ConfigData;
-    expect(overrides).toEqual([
+    expect(config).toEqual<ESLintPluginConfig>([
       {
-        files: ['apps/client/**/*.ts'],
-        extends: './apps/client/.eslintrc.json',
+        eslintrc: './apps/client/.eslintrc.json',
+        patterns: expect.arrayContaining(['apps/client/**/*.ts']),
       },
       {
-        files: ['apps/server/**/*.ts'],
-        extends: './apps/server/.eslintrc.json',
+        eslintrc: './apps/server/.eslintrc.json',
+        patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
     ]);
   });
@@ -167,7 +164,7 @@ describe('nxProjectsToConfig', () => {
     vol.fromJSON(
       {
         'apps/client/code-pushup.eslintrc.json':
-          '{ "extends": "@code-pushup" }',
+          '{ "eslintrc": "@code-pushup" }',
       },
       MEMFS_VOLUME,
     );
@@ -177,10 +174,9 @@ describe('nxProjectsToConfig', () => {
 
     const config = await nxProjectsToConfig(projectGraph);
 
-    const { overrides } = config.eslintrc as ESLint.ConfigData;
-    expect(overrides).toEqual([
-      expect.objectContaining({
-        extends: './apps/client/code-pushup.eslintrc.json',
+    expect(config).toEqual([
+      expect.objectContaining<Partial<ESLintTarget>>({
+        eslintrc: './apps/client/code-pushup.eslintrc.json',
       }),
     ]);
   });
@@ -220,25 +216,18 @@ describe('nxProjectsToConfig', () => {
       },
     ]);
 
-    await expect(nxProjectsToConfig(projectGraph)).resolves.toEqual({
-      eslintrc: {
-        root: true,
-        overrides: [
-          {
-            files: ['apps/client/**/*.ts', 'apps/client/**/*.html'],
-            extends: './apps/client/.eslintrc.json',
-          },
-          {
-            files: ['apps/server/**/*.ts'],
-            extends: './apps/server/.eslintrc.json',
-          },
-        ],
+    await expect(nxProjectsToConfig(projectGraph)).resolves.toEqual([
+      {
+        eslintrc: './apps/client/.eslintrc.json',
+        patterns: expect.arrayContaining([
+          'apps/client/**/*.ts',
+          'apps/client/**/*.html',
+        ]),
       },
-      patterns: expect.arrayContaining([
-        'apps/client/**/*.ts',
-        'apps/client/**/*.html',
-        'apps/server/**/*.ts',
-      ]),
-    } satisfies ESLintPluginConfig);
+      {
+        eslintrc: './apps/server/.eslintrc.json',
+        patterns: expect.arrayContaining(['apps/server/**/*.ts']),
+      },
+    ] satisfies ESLintPluginConfig);
   });
 });

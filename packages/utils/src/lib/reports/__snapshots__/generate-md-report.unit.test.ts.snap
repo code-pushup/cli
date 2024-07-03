@@ -1,0 +1,192 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`aboutSection > should return full about section 1`] = `
+"## About
+
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.
+
+|Plugin|Audits|Version|Duration|
+|:--|:--:|:--:|:--:|
+|Lighthouse|3|\`1.1.1\`|42 ms|
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|ci: update action (535b8e9e557336618a764f3fa45609d224a62837)|\`v1.0.0\`|4.20 s|1|3|3|
+"
+`;
+
+exports[`auditDetails > should render complete details section 1`] = `
+"<details>
+<summary>🟩 <b>190ms</b> (score: 99)</summary>
+
+|Class Names|Element|
+|:--:|:--:|
+|.btn, .icon|button|
+|.badge, .badge-icon|div|
+
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|🚨 <i>error</i>|Use design system components instead of classes|<code>list.component.ts</code>|400-200|
+|🚨 <i>error</i>|File size is 20KB too big|<code>list.component.ts</code>||
+
+
+</details>
+"
+`;
+
+exports[`auditDetailsIssues > should render complete section 1`] = `
+"#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|ℹ️ <i>info</i>|File \`index.js\` is 56Kb.|<code>index.js</code>||
+|⚠️ <i>warning</i>|Package license is has to be "MIT"|<code>package.json</code>|4|
+|🚨 <i>error</i>|no unused vars|<code>index.js</code>|400-200|
+"
+`;
+
+exports[`auditsSection > should render complete audit section 1`] = `
+"## 🛡️ Audits
+
+### No any (Eslint)
+
+🟩 <b>0</b> (score: 100)
+
+No unsafe any assignment
+
+### No let (Eslint)
+
+🟥 <b>5 errors</b> (score: 0)
+
+### Largest contentful paint (Lighthouse)
+
+🟨 <b>0</b> (score: 60)
+
+No unsafe any assignment [📖 Docs](https://web.dev/lcp)
+
+"
+`;
+
+exports[`generateMdReport > should render complete md report 1`] = `
+"# Code PushUp Report
+
+|🏷 Category|⭐ Score|🛡 Audits|
+|:--|:--:|:--:|
+|[Performance](#performance)|🟡 **61**|2|
+|[SEO](#seo)|🟢 **100**|1|
+|[PWA](#pwa)|🔴 **0**|1|
+
+## 🏷 Categories
+
+### Performance
+
+🟡 Score:  **61**
+- 🔴 Performance Group (_Lighthouse_)
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
+  - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
+
+### SEO
+
+🟢 Score:  **100**
+- 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
+
+### PWA
+
+🔴 Score:  **0**
+- 🟩 [Splash Screen](#splash-screen-lighthouse) (_Lighthouse_) - **1**
+
+## 🛡️ Audits
+
+### Largest Contentful Paint (Lighthouse)
+
+<details>
+<summary>🟨 <b>2,7 s</b> (score: 67)</summary>
+
+|Phase|% of LCP|Timing|
+|:--:|:--|--:|
+|TTFB|27%|620 ms|
+|Load Delay|25%|580 ms|
+|Load Time|41%|940 ms|
+|Render Delay|6%|140 ms|
+
+
+</details>
+
+This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/) [📖 Docs](https://web.dev/lcp)
+
+### Splash Screen (Lighthouse)
+
+🟩 <b>1</b> (score: 100)
+
+### Fast Images (Lighthouse)
+
+🟩 <b>1</b> (score: 97)
+
+### Website is crawlable (Lighthouse)
+
+🟥 <b>0</b> (score: 0)
+
+Search engines are unable to include your pages in search results if they don't have permission to crawl them. [Learn more about crawler directives](https://developer.chrome.com/docs/lighthouse/seo/is-crawlable/).
+
+### No explicit any (Eslint)
+
+<details>
+<summary>🟥 <b>63 errors</b> (score: 0)</summary>
+
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|ℹ️ <i>info</i>|File \`index.js\` is 56Kb.|<code>index.js</code>||
+|⚠️ <i>warning</i>|Package license is has to be "MIT"|<code>package.json</code>|4|
+|🚨 <i>error</i>|no unused vars|<code>index.js</code>|400-200|
+
+
+</details>
+
+The any type in TypeScript is a dangerous "escape hatch" from the type system. Using any disables many type checking rules and is generally best used only as a last resort or when prototyping code. This rule reports on explicit uses of the any keyword as a type annotation.
+
+Preferable alternatives to any include:
+
+If the type is known, describing it in an interface or type
+If the type is not known, using the safer unknown type
+TypeScript's --noImplicitAny compiler option prevents an implied any, but doesn't prevent any from being explicitly used the way this rule does.
+
+\`\`\`ts
+.eslintrc.cjs
+module.exports = {
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error"
+  }
+};
+\`\`\`
+ [📖 Docs](https://typescript-eslint.io/rules/no-explicit-any/)
+
+
+## About
+
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Apr 17, 2024, 12:37 PM UTC.
+
+|Plugin|Audits|Version|Duration|
+|:--|:--:|:--:|:--:|
+|Lighthouse|4|\`1.0.1.beta-1\`|17.97 s|
+|Eslint|1|\`3.71.8\`|17.97 s|
+
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|ci: update action (535b8e9e557336618a764f3fa45609d224a62837)|\`v1.0.0\`|42.36 s|2|3|5|
+
+Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)"
+`;
+
+exports[`tableSection > should render complete section 1`] = `
+"|Phase|% of LCP|Timing|
+|:--:|:--:|:--:|
+|TTFB|27%|620 ms|
+|Load Delay|25%|580 ms|
+|Load Time|41%|940 ms|
+|Render Delay|6%|140 ms|
+"
+`;

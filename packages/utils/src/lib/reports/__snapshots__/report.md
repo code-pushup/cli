@@ -19,12 +19,10 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
   - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
   - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
   - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
-
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
-- 🟢 Maximum lines limitation (_ESLint_)
+- 🟡 Maximum lines limitation (_ESLint_)
   - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
   - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
-
 
 ### Bug prevention
 
@@ -63,7 +61,6 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 - 🟩 [Require or disallow "Yoda" conditions](#require-or-disallow-yoda-conditions-eslint) (_ESLint_) - **passed**
 - 🟩 [Require using arrow functions for callbacks](#require-using-arrow-functions-for-callbacks-eslint) (_ESLint_) - **passed**
 
-
 ## 🛡️ Audits
 
 ### Disallow missing props validation in a React component definition (ESLint)
@@ -71,10 +68,19 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 <details>
 <summary>🟥 <b>6 warnings</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'onCreate' is missing in props validation</td><td><code>src/components/CreateTodo.jsx</code></td><td>15</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setQuery' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>10</td></tr><tr><td>⚠️ <i>warning</i></td><td>'setHideComplete' is missing in props validation</td><td><code>src/components/TodoFilter.jsx</code></td><td>18</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'todos.map' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>6</td></tr><tr><td>⚠️ <i>warning</i></td><td>'onEdit' is missing in props validation</td><td><code>src/components/TodoList.jsx</code></td><td>13</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|'onCreate' is missing in props validation|<code>src/components/CreateTodo.jsx</code>|15|
+|⚠️ <i>warning</i>|'setQuery' is missing in props validation|<code>src/components/TodoFilter.jsx</code>|10|
+|⚠️ <i>warning</i>|'setHideComplete' is missing in props validation|<code>src/components/TodoFilter.jsx</code>|18|
+|⚠️ <i>warning</i>|'todos' is missing in props validation|<code>src/components/TodoList.jsx</code>|6|
+|⚠️ <i>warning</i>|'todos.map' is missing in props validation|<code>src/components/TodoList.jsx</code>|6|
+|⚠️ <i>warning</i>|'onEdit' is missing in props validation|<code>src/components/TodoList.jsx</code>|13|
+
 
 </details>
-
 
 ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/prop-types.md)
 
@@ -83,10 +89,16 @@ ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>11</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>29</td></tr><tr><td>⚠️ <i>warning</i></td><td>'data' is already declared in the upper scope on line 5 column 10.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|11|
+|⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|29|
+|⚠️ <i>warning</i>|'data' is already declared in the upper scope on line 5 column 10.|<code>src/hooks/useTodos.js</code>|41|
+
 
 </details>
-
 
 ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-shadow)
 
@@ -95,10 +107,16 @@ ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-s
 <details>
 <summary>🟥 <b>3 warnings</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>19</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>32</td></tr><tr><td>⚠️ <i>warning</i></td><td>Expected property shorthand.</td><td><code>src/hooks/useTodos.js</code></td><td>33</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|Expected property shorthand.|<code>src/hooks/useTodos.js</code>|19|
+|⚠️ <i>warning</i>|Expected property shorthand.|<code>src/hooks/useTodos.js</code>|32|
+|⚠️ <i>warning</i>|Expected property shorthand.|<code>src/hooks/useTodos.js</code>|33|
+
 
 </details>
-
 
 ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rules/object-shorthand)
 
@@ -107,10 +125,15 @@ ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rul
 <details>
 <summary>🟥 <b>2 warnings</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>17</td></tr><tr><td>⚠️ <i>warning</i></td><td>React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?</td><td><code>src/hooks/useTodos.js</code></td><td>40</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?|<code>src/hooks/useTodos.js</code>|17|
+|⚠️ <i>warning</i>|React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies?|<code>src/hooks/useTodos.js</code>|40|
+
 
 </details>
-
 
 ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://github.com/facebook/react/issues/14920)
 
@@ -119,10 +142,14 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Missing "key" prop for element in iterator</td><td><code>src/components/TodoList.jsx</code></td><td>7-28</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|Missing "key" prop for element in iterator|<code>src/components/TodoList.jsx</code>|7-28|
+
 
 </details>
-
 
 ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md)
 
@@ -131,10 +158,14 @@ ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'loading' is assigned a value but never used.</td><td><code>src/App.jsx</code></td><td>8</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|'loading' is assigned a value but never used.|<code>src/App.jsx</code>|8|
+
 
 </details>
-
 
 ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules/no-unused-vars)
 
@@ -143,10 +174,14 @@ ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Arrow function has too many lines (71). Maximum allowed is 50.</td><td><code>src/hooks/useTodos.js</code></td><td>3-73</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|Arrow function has too many lines (71). Maximum allowed is 50.|<code>src/hooks/useTodos.js</code>|3-73|
+
 
 </details>
-
 
 ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/latest/rules/max-lines-per-function)
 
@@ -155,10 +190,14 @@ ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/late
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>'root' is never reassigned. Use 'const' instead.</td><td><code>src/index.jsx</code></td><td>5</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|'root' is never reassigned. Use 'const' instead.|<code>src/index.jsx</code>|5|
+
 
 </details>
-
 
 ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-const)
 
@@ -167,10 +206,14 @@ ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/p
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.</td><td><code>src/components/TodoFilter.jsx</code></td><td>3-25</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.|<code>src/components/TodoFilter.jsx</code>|3-25|
+
 
 </details>
-
 
 ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rules/arrow-body-style)
 
@@ -179,10 +222,14 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 <details>
 <summary>🟥 <b>1 warning</b> (score: 0)</summary>
 
-<h4>Issues</h4><table><tr><th>Severity</th><th>Message</th><th>Source file</th><th>Line(s)</th></tr><tr><td>⚠️ <i>warning</i></td><td>Expected '===' and instead saw '=='.</td><td><code>src/hooks/useTodos.js</code></td><td>41</td></tr></table>
+#### Issues
+
+|Severity|Message|Source file|Line(s)|
+|:--:|:--:|:--:|:--:|
+|⚠️ <i>warning</i>|Expected '===' and instead saw '=='.|<code>src/hooks/useTodos.js</code>|41|
+
 
 </details>
-
 
 ESLint rule **eqeqeq**. [📖 Docs](https://eslint.org/docs/latest/rules/eqeqeq)
 
@@ -439,20 +486,17 @@ Cumulative Layout Shift measures the movement of visible elements within the vie
 Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [📖 Docs](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/)
 
 
-
 ## About
 
-Report was created by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme) on Wed, Sep 15, 2021, 12:00 AM UTC.
-
-|Commit|Version|Duration|Plugins|Categories|Audits|
-|:--|:--:|:--:|:--:|:--:|:--:|
-|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|3|52|
-
-The following plugins were run:
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Oct 18, 2023, 7:49 AM UTC.
 
 |Plugin|Audits|Version|Duration|
 |:--|:--:|:--:|:--:|
 |ESLint|47|`0.1.0`|368 ms|
 |Lighthouse|5|`0.1.0`|1.23 s|
 
-Made with ❤ by [Code PushUp](https://github.com/flowup/quality-metrics-cli#readme)
+|Commit|Version|Duration|Plugins|Categories|Audits|
+|:--|:--:|:--:|:--:|:--:|:--:|
+|Minor fixes (abcdef0123456789abcdef0123456789abcdef01)|`0.0.1`|1.65 s|2|3|52|
+
+Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)

@@ -49,6 +49,27 @@ describe('onlyPluginsMiddleware', () => {
   });
 
   it('should filter categories for slug "p1"', () => {
+    const originalCategories = [
+      {
+        slug: 'c1',
+        refs: [
+          { plugin: 'p1', slug: 'a1-p1' },
+          { plugin: 'p2', slug: 'a2-p1' },
+        ],
+      },
+      { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
+    ] as CategoryConfig[];
+    const originalPlugins = [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[];
+    const { categories, plugins } = onlyPluginsMiddleware({
+      onlyPlugins: ['wrong-slug'],
+      plugins: originalPlugins,
+      categories: originalCategories,
+    });
+    expect(categories).toBe(originalCategories);
+    expect(plugins).toBe(originalPlugins);
+  });
+
+  it('should forward plugins and categories for a slug not present in plugins', () => {
     const { categories } = onlyPluginsMiddleware({
       onlyPlugins: ['p1'],
       plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],

@@ -39,12 +39,12 @@ export function deepClone<T>(obj: T): T {
 
 export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
   const itemCount = items.length;
-  // early exit for empty items
+  // early exit for empty rows
   if (!itemCount) {
     return 1;
   }
   const filterCount = items.filter(filterFn).length;
-  // if no items result from the filter fn we forward return 1 as factor
+  // if no rows result from the filter fn we forward return 1 as factor
   return filterCount === 0 ? 1 : (itemCount - filterCount) / itemCount;
 }
 
@@ -168,4 +168,5 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
+
 /* eslint-enable no-magic-numbers */

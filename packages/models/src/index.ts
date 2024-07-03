@@ -1,3 +1,8 @@
+export {
+  TableCellValue,
+  tableCellValueSchema,
+} from './lib/implementation/schemas';
+
 export { Audit, auditSchema } from './lib/audit';
 export {
   AuditDetails,
@@ -33,6 +38,20 @@ export {
 } from './lib/implementation/limits';
 export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
+export {
+  TableAlignment,
+  tableAlignmentSchema,
+  TableRowPrimitive,
+  tableRowPrimitiveSchema,
+  TableRowObject,
+  tableRowObjectSchema,
+  TableColumnPrimitive,
+  tableColumnPrimitiveSchema,
+  TableColumnObject,
+  tableColumnObjectSchema,
+  Table,
+  tableSchema,
+} from './lib/table';
 export {
   Issue,
   IssueSeverity,

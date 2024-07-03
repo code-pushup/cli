@@ -15,12 +15,19 @@ import {
   readJsonFile,
   readTextFile,
 } from '../file-system';
+import { md } from '../text-formats';
 import { SCORE_COLOR_RANGE } from './constants';
-import { image, style } from './md';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
+const { image, bold: boldMd } = md;
+
 export function formatReportScore(score: number): string {
-  return Math.round(score * 100).toString();
+  const scaledScore = score * 100;
+  const roundedScore = Math.round(scaledScore);
+
+  return roundedScore === 100 && score !== 1
+    ? Math.floor(scaledScore).toString()
+    : roundedScore.toString();
 }
 
 export function formatScoreWithColor(
@@ -29,28 +36,36 @@ export function formatScoreWithColor(
 ): string {
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
-    : style(formatReportScore(score));
-  return `${getRoundScoreMarker(score)} ${styledNumber}`;
+    : boldMd(formatReportScore(score));
+  return `${scoreMarker(score)} ${styledNumber}`;
 }
 
-export function getRoundScoreMarker(score: number): string {
-  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return '🟢';
-  }
-  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return '🟡';
-  }
-  return '🔴';
-}
+export type MarkerShape = 'circle' | 'square';
+export type ScoreColors = 'red' | 'yellow' | 'green';
+export const MARKERS: Record<MarkerShape, Record<ScoreColors, string>> = {
+  circle: {
+    red: '🔴',
+    yellow: '🟡',
+    green: '🟢',
+  },
+  square: {
+    red: '🟥',
+    yellow: '🟨',
+    green: '🟩',
+  },
+};
 
-export function getSquaredScoreMarker(score: number): string {
+export function scoreMarker(
+  score: number,
+  markerType: MarkerShape = 'circle',
+): string {
   if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return '🟩';
+    return MARKERS[markerType].green;
   }
   if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return '🟨';
+    return MARKERS[markerType].yellow;
   }
-  return '🟥';
+  return MARKERS[markerType].red;
 }
 
 export function getDiffMarker(diff: number): string {
@@ -82,9 +97,7 @@ export function formatDiffNumber(diff: number): string {
   return `${sign}${number}`;
 }
 
-export function getSeverityIcon(
-  severity: 'info' | 'warning' | 'error',
-): string {
+export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
   if (severity === 'error') {
     return '🚨';
   }

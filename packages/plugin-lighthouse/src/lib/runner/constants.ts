@@ -88,7 +88,6 @@ export const DEFAULT_CLI_FLAGS = {
   // default values extracted from
   // https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80
   verbose: false,
-  quiet: false,
   saveAssets: false,
   // needed to pass CI on linux and windows (locally it works without headless too)
   chromeFlags: ['--headless=shell'],
@@ -97,10 +96,11 @@ export const DEFAULT_CLI_FLAGS = {
   view: false,
   channel: 'cli',
   // custom overwrites in favour of the plugin
+  // hide logs by default
+  quiet: true,
   onlyAudits: [],
   skipAudits: [],
   onlyCategories: [],
-  budgets: [],
   output: ['json'],
   outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
 } satisfies Partial<CliFlags>;

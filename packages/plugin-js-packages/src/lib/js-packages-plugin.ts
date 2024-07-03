@@ -36,6 +36,7 @@ export async function jsPackagesPlugin(
 ): Promise<PluginConfig> {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
   const checks = [...new Set(jsPackagesPluginConfig.checks)];
+  const depGroups = [...new Set(jsPackagesPluginConfig.dependencyGroups)];
   const id = jsPackagesPluginConfig.packageManager;
   const pm = packageManagers[id];
 
@@ -53,23 +54,31 @@ export async function jsPackagesPlugin(
     docsUrl: pm.docs.homepage,
     packageName: name,
     version,
-    audits: createAudits(id, checks),
-    groups: createGroups(id, checks),
+    audits: createAudits(id, checks, depGroups),
+    groups: createGroups(id, checks, depGroups),
     runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
   };
 }
 
-function createGroups(id: PackageManagerId, checks: PackageCommand[]): Group[] {
+function createGroups(
+  id: PackageManagerId,
+  checks: PackageCommand[],
+  depGroups: DependencyGroup[],
+): Group[] {
   const pm = packageManagers[id];
   const supportedAuditDepGroups =
     pm.audit.supportedDepGroups ?? dependencyGroups;
+  const compatibleAuditDepGroups = depGroups.filter(group =>
+    supportedAuditDepGroups.includes(group),
+  );
+
   const groups: Record<PackageCommand, Group> = {
     audit: {
       slug: `${pm.slug}-audit`,
       title: `${pm.name} audit`,
       description: `Group containing ${pm.name} vulnerabilities.`,
       docsUrl: pm.docs.audit,
-      refs: supportedAuditDepGroups.map(depGroup => ({
+      refs: compatibleAuditDepGroups.map(depGroup => ({
         slug: `${pm.slug}-audit-${depGroup}`,
         weight: dependencyGroupWeights[depGroup],
       })),
@@ -79,7 +88,7 @@ function createGroups(id: PackageManagerId, checks: PackageCommand[]): Group[] {
       title: `${pm.name} outdated dependencies`,
       description: `Group containing outdated ${pm.name} dependencies.`,
       docsUrl: pm.docs.outdated,
-      refs: dependencyGroups.map(depGroup => ({
+      refs: depGroups.map(depGroup => ({
         slug: `${pm.slug}-outdated-${depGroup}`,
         weight: dependencyGroupWeights[depGroup],
       })),
@@ -89,15 +98,22 @@ function createGroups(id: PackageManagerId, checks: PackageCommand[]): Group[] {
   return checks.map(check => groups[check]);
 }
 
-function createAudits(id: PackageManagerId, checks: PackageCommand[]): Audit[] {
+function createAudits(
+  id: PackageManagerId,
+  checks: PackageCommand[],
+  depGroups: DependencyGroup[],
+): Audit[] {
   const { slug } = packageManagers[id];
   return checks.flatMap(check => {
-    const supportedDepGroups =
-      check === 'audit'
-        ? packageManagers[id].audit.supportedDepGroups ?? dependencyGroups
-        : dependencyGroups;
+    const supportedAuditDepGroups =
+      packageManagers[id].audit.supportedDepGroups ?? dependencyGroups;
 
-    return supportedDepGroups.map(depGroup => ({
+    const compatibleDepGroups =
+      check === 'audit'
+        ? depGroups.filter(group => supportedAuditDepGroups.includes(group))
+        : depGroups;
+
+    return compatibleDepGroups.map(depGroup => ({
       slug: `${slug}-${check}-${depGroup}`,
       title: getAuditTitle(slug, check, depGroup),
       description: getAuditDescription(check, depGroup),

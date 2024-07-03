@@ -1,6 +1,6 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { lcovResultsToAuditOutputs } from './lcov-runner';
 
@@ -28,6 +28,27 @@ describe('lcovResultsToAuditOutputs', () => {
         },
       ],
       ['branch', 'function', 'line'],
+    );
+    expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
+  });
+
+  it('should correctly merge all lines for coverage', async () => {
+    const results = await lcovResultsToAuditOutputs(
+      [
+        {
+          resultsPath: join(
+            fileURLToPath(dirname(import.meta.url)),
+            '..',
+            '..',
+            '..',
+            '..',
+            'mocks',
+            'no-coverage-lcov.info',
+          ),
+          pathToProject: 'packages/cli',
+        },
+      ],
+      ['line'],
     );
     expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
   });

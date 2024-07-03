@@ -1,3 +1,4 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
 import { z } from 'zod';
 import {
@@ -11,7 +12,7 @@ import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
 import eslintPlugin, {
-  eslintConfigFromNxProjects,
+  eslintConfigFromAllNxProjects,
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import {
@@ -45,7 +46,7 @@ const config: CoreConfig = {
     }),
 
   plugins: [
-    await eslintPlugin(await eslintConfigFromNxProjects()),
+    await eslintPlugin(await eslintConfigFromAllNxProjects()),
 
     await coveragePlugin({
       coverageToolCommand: {
@@ -77,7 +78,13 @@ const config: CoreConfig = {
       type: 'module',
     }),
 
-    await lighthousePlugin('https://codepushup.dev/'),
+    await lighthousePlugin(
+      'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
+      {
+        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+        verbose: true,
+      },
+    ),
   ],
 
   categories: [
@@ -100,12 +107,6 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
-    {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'bug-prevention',

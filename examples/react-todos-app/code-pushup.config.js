@@ -1,7 +1,7 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 import lighthousePlugin, {
-  lighthouseAuditRef,
   lighthouseGroupRef,
 } from '../../dist/packages/plugin-lighthouse';
 
@@ -38,9 +38,8 @@ export default {
         'deprecations',
         // seo category
         'hreflang',
-        // pwa category
-        'installable-manifest',
       ],
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
   ],
   categories: [
@@ -63,12 +62,6 @@ export default {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
-    {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [lighthouseGroupRef('pwa')],
     },
     {
       slug: 'code-coverage',

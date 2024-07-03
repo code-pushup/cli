@@ -1,21 +1,25 @@
 import { z } from 'zod';
 import {
-  nonnegativeIntSchema,
+  nonnegativeNumberSchema,
   scoreSchema,
   slugSchema,
 } from './implementation/schemas';
 import { errorItems, hasDuplicateStrings } from './implementation/utils';
 import { issueSchema } from './issue';
+import { tableSchema } from './table';
 
 export const auditValueSchema =
-  nonnegativeIntSchema.describe('Raw numeric value');
+  nonnegativeNumberSchema.describe('Raw numeric value');
 export const auditDisplayValueSchema = z
   .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
   .optional();
 
 export const auditDetailsSchema = z.object(
   {
-    issues: z.array(issueSchema, { description: 'List of findings' }),
+    issues: z
+      .array(issueSchema, { description: 'List of findings' })
+      .optional(),
+    table: tableSchema('Table of related findings').optional(),
   },
   { description: 'Detailed information' },
 );

@@ -450,7 +450,7 @@ We will extend the file-size example from above to calculate the score based on 
 
 Let's extend the options object with a `budget` property and use it in the runner config:
 
-**file-size plugin form section [RunnerFunction](#RunnerFunction)**
+**file-size plugin from section [RunnerFunction](#RunnerFunction)**
 
 ```typescript
 // file-size.plugin.ts
@@ -504,15 +504,13 @@ async function runnerFunction(options: Options): Promise<AuditOutputs> {
   // assert file size information with budget
   const issues = data.map(({ file, size }) => assertFileSizeInfo(file, size, options.budget));
 
-  // add details if issues given
-  if (issues.length) {
-    fileSizeAuditOutput = {
-      ...fileSizeAuditOutput,
-      details: {
-        issues,
-      },
-    };
-  }
+  // add issues to details
+  fileSizeAuditOutput = {
+    ...fileSizeAuditOutput,
+    details: {
+      issues,
+    },
+  };
 
   return [fileSizeAuditOutput];
 }
@@ -585,7 +583,7 @@ The `report.md` file should contain a similar content like the following:
 ## Groups
 
 As an optional property a plugin can maintain `groups` as an array of [`Group`s](@TODO).
-While [categories](#plugins-and-categories) can score audits across plugins, groups are only targeting audits within a plugin.
+While [categories](#categories) can score audits across plugins, groups are only targeting audits within a plugin.
 For simple plugins this is not needed but it is beneficial in bigger plugins as audit groups also simplify the configuration.
 
 An audit group maintains:
