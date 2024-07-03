@@ -1,6 +1,6 @@
 # Code PushUp CLI
 
-**Just Follow the Score <✓>**
+**Comprehensive tech quality monitoring <✓>**
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
