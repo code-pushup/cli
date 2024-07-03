@@ -54,7 +54,7 @@ _We want to change that!_
 1. **[Configure](./packages/cli/README.md#getting-started)**  
    Pick from a set of supported packages or include your own ideas. 🧩
 
-2. **[Integrate](https://github.com/code-pushup/github-action)**  
+2. **[Integrate](https://github.com/marketplace/actions/code-pushup)**  
    Use our integration guide and packages to set up CI integration in minutes. ⏱️
 
 3. **[Observe](https://code-pushup.dev#portal)**  
