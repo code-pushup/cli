@@ -11,11 +11,14 @@
 
 ## 🌟 Why Choose Code PushUp?
 
-### 🔌 Code quality tools are like phone chargers. Everyone has a different plug.
+### Common problems with keeping track of technical quality
 
-- **Incomplete or missing tracking** due to a mix of portals and custom tools is costly and unreliable 💸
-- **No Standards** in data and processes leads to flaky, unmaintained zombies 🧟
-- **Results are spread** over multiple places and need manual steps 📂
+- **When tech debt is invisible**, it's difficult to plan much-needed maintenance efforts 🔧
+- **Individual tools** measure different metrics, **inability to combine** them leads to a lack of comprehensive overview 🧑‍🦯
+- Open-source tools typically used for failing checks in CI, which **can't measure incremental improvements** due to arbitrary pass/fail thresholds 🤖
+- Off-the-shelf solutions tend to be opinionated and **hard to customize**, so may not fit your specific needs 🧱
+
+_We want to change that!_
 
 ## 🛠️ Standards for Code Quality that Integrates Any Tool
 
