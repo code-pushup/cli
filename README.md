@@ -69,11 +69,11 @@ _We want to change that!_
 <table>
 <tr>
 <td>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="130px"> 
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="730"> 
 </td>
 <td>
-<h2>Just follow the score</h2>
-<h3>See regressions - Report scores - On every PR</h3>
+<h2>Comprehensive tech quality monitoring <✓></h2>
+<h3>Monitor regressions - Quantify tech debt</h3>
 <!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
 </td>
 </tr>
