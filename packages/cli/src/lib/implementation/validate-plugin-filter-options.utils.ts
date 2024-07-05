@@ -2,7 +2,8 @@ import chalk from 'chalk';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
-export function validateSkipPluginsOption(
+export function validatePluginFilterOption(
+  filterOption: 'onlyPlugins' | 'skipPlugins',
   {
     plugins,
     categories,
@@ -11,20 +12,27 @@ export function validateSkipPluginsOption(
     categories: CategoryConfig[];
   },
   {
-    skipPlugins = [],
+    pluginsToFilter = [],
     verbose = false,
-  }: { skipPlugins?: string[]; verbose?: boolean } = {},
+  }: { pluginsToFilter?: string[]; verbose?: boolean } = {},
 ): void {
-  const skipPluginsSet = new Set(skipPlugins);
-  const missingPlugins = skipPlugins.filter(
+  const pluginsToFilterSet = new Set(pluginsToFilter);
+  const missingPlugins = pluginsToFilter.filter(
     plugin => !plugins.some(({ slug }) => slug === plugin),
   );
+
+  const isSkipOption = filterOption === 'skipPlugins';
+
+  const filterFunction = (plugin: string) =>
+    isSkipOption
+      ? pluginsToFilterSet.has(plugin)
+      : !pluginsToFilterSet.has(plugin);
 
   if (missingPlugins.length > 0 && verbose) {
     ui().logger.info(
       `${chalk.yellow(
         '⚠',
-      )} The --skipPlugin argument references plugins with "${missingPlugins.join(
+      )} The --${filterOption} argument references plugins with "${missingPlugins.join(
         '", "',
       )}" slugs, but no such plugins are present in the configuration. Expected one of the following plugin slugs: "${plugins
         .map(({ slug }) => slug)
@@ -34,10 +42,10 @@ export function validateSkipPluginsOption(
 
   if (categories.length > 0) {
     const removedCategorieSlugs = filterItemRefsBy(categories, ({ plugin }) =>
-      skipPluginsSet.has(plugin),
+      filterFunction(plugin),
     ).map(({ slug }) => slug);
     ui().logger.info(
-      `The --skipPlugin argument removed categories with "${removedCategorieSlugs.join(
+      `The --${filterOption} argument removed categories with "${removedCategorieSlugs.join(
         '", "',
       )}" slugs.
     `,

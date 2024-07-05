@@ -1,6 +1,6 @@
 import { filterItemRefsBy } from '@code-pushup/utils';
 import { SkipPluginsOptions } from './skip-plugins.model';
-import { validateSkipPluginsOption } from './skip-plugins.utils';
+import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';
 
 export function skipPluginsMiddleware<T extends SkipPluginsOptions>(
   originalProcessArgs: T,
@@ -11,9 +11,10 @@ export function skipPluginsMiddleware<T extends SkipPluginsOptions>(
   if (originalSkipPlugins && originalSkipPlugins.length > 0) {
     const { verbose, plugins, skipPlugins = [] } = originalProcessArgs;
 
-    validateSkipPluginsOption(
+    validatePluginFilterOption(
+      'skipPlugins',
       { plugins, categories },
-      { skipPlugins, verbose },
+      { pluginsToFilter: skipPlugins, verbose },
     );
 
     const validSkipPlugins = skipPlugins.filter(sP =>
