@@ -39,7 +39,7 @@ describe('skipPluginsMiddleware', () => {
     });
   });
 
-  it('should filter plugins plugins for slug "p1"', () => {
+  it('should filter plugins for slug "p1"', () => {
     const { plugins } = skipPluginsMiddleware({
       skipPlugins: ['p1'],
       plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
