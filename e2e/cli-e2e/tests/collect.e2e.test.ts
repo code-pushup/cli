@@ -89,7 +89,7 @@ describe('CLI collect', () => {
         '--no-progress',
         `--config=${configPath}`,
         '--persist.outputDir=tmp/e2e',
-        '--skipPlugins=eslint, lighthouse',
+        '--onlyPlugins=coverage',
       ],
     });
 
@@ -121,7 +121,7 @@ describe('CLI collect', () => {
   it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
-      args: ['collect', '--no-progress', '--skipPlugins=eslint,coverage'],
+      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
       cwd: 'examples/react-todos-app',
     });
 
