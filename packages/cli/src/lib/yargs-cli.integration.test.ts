@@ -108,8 +108,7 @@ describe('yargsCli', () => {
         '--upload.apiKey=some-api-key',
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
-        '--skipPlugins=lighthouse',
-        '--skipPlugins=eslint',
+        '--skipPlugins=coverage,eslint',
       ],
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
@@ -131,7 +130,7 @@ describe('yargsCli', () => {
           apiKey: 'some-api-key',
         }),
         onlyPlugins: ['lighthouse', 'eslint'],
-        skipPlugins: ['lighthouse', 'eslint'],
+        skipPlugins: ['coverage', 'eslint'],
       }),
     );
   });
