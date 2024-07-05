@@ -40,6 +40,25 @@ describe('yargsCli', () => {
     expect(parsedArgv.skipPlugins).toEqual([]);
   });
 
+  it('should parse the overrides of skipPlugins and onlyPlugins even with different formats', async () => {
+    const parsedArgv = await yargsCli<
+      GeneralCliOptions & OnlyPluginsOptions & SkipPluginsOptions
+    >(
+      [
+        '--onlyPlugins=lighthouse',
+        '--onlyPlugins=eslint',
+        '--skipPlugins=coverage,eslint',
+      ],
+      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv).toEqual(
+      expect.objectContaining({
+        onlyPlugins: ['lighthouse', 'eslint'],
+        skipPlugins: ['coverage', 'eslint'],
+      }),
+    );
+  });
+
   it('should parse a single boolean negated argument', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions>(['--no-progress'], {
       options,
@@ -108,7 +127,8 @@ describe('yargsCli', () => {
         '--upload.apiKey=some-api-key',
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
-        '--skipPlugins=coverage,eslint',
+        '--skipPlugins=coverage',
+        '--skipPlugins=eslint',
       ],
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
