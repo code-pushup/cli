@@ -21,6 +21,8 @@ describe('print-config', () => {
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
+          '--onlyPlugins=coverage',
+          '--skipPlugins=eslint',
         ],
       });
 
@@ -55,8 +57,8 @@ describe('print-config', () => {
             expect.objectContaining({ slug: 'code-style' }),
             expect.objectContaining({ slug: 'code-coverage' }),
           ],
-          onlyPlugins: [],
-          skipPlugins: [],
+          onlyPlugins: ['coverage'],
+          skipPlugins: ['eslint'],
         }),
       );
     },
