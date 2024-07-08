@@ -1,7 +1,7 @@
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { ExecutorContext } from 'nx/src/config/misc-interfaces';
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { persistConfig } from '../internal/config';
 import { getConfigOptions, runAutorunExecutor } from './executor';

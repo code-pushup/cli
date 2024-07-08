@@ -26,7 +26,7 @@ export async function persistConfig(
   const { workspaceRoot, projectConfig } = context;
   const persistCfgSchema = await persistConfigSchema();
 
-  const { name: projectName = '', root: projectRoot = '' } =
+  const { name: projectName = 'ppppppppppp', root: projectRoot = '' } =
     projectConfig ?? {};
 
   const {
@@ -35,13 +35,13 @@ export async function persistConfig(
       resolve(projectRoot, workspaceRoot),
       '.code-pushup',
       projectName,
-    ), // always in root .code-pushup/<project>,
-    filename = `${projectName}-report.json`,
+    ), // always in <root>/.code-pushup/<project-name>,
+    filename = `${projectName}-report`,
   } = options;
   return persistCfgSchema.parse({
     format,
     outputDir,
-    filename,
+    filename: `report`,
   });
 }
 
