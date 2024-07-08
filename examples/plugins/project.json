@@ -49,12 +49,6 @@
         }
       ]
     },
-    "cp--autorun": {
-      "executor": "@code-pushup/nx-plugin:autorun",
-      "options": {
-        "projectPrefix": "zz"
-      }
-    },
     "run-print-config": {
       "command": "npx dist/packages/cli print-config --config=examples/plugins/code-pushup.config.ts",
       "dependsOn": [
