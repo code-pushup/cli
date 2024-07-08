@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
-import { reportMock } from '@code-pushup/test-utils';
+import { reportMock, removeColorCodes } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { logStdoutSummary } from './log-stdout-summary';
 import { scoreReport } from './scoring';
