@@ -9,7 +9,8 @@ import {
   normalizeContext,
 } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
-import autorunExecutorOptionsSchema, {
+import {
+  autorunExecutorOptionsSchema,
   AutorunCommandExecutorOptions,
 } from './schema';
 

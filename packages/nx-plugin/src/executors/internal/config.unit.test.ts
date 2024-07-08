@@ -58,7 +58,7 @@ describe('globalConfig', () => {
   });
 
   it('should exclude other options', () => {
-    expect(globalConfig({ test: 42 } as {})).toEqual({
+    expect(globalConfig({ test: 42 } as unknown as { verbose: boolean })).toEqual({
       progress: false,
       verbose: false,
     });

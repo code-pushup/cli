@@ -30,7 +30,7 @@ export async function parseEnv(
         case 'CP_PROJECT':
           return ['project', value];
         case 'CP_TIMEOUT':
-          return value == null ? [] : ['timeout', Number(value)];
+          return ['timeout', Number(value)];
         default:
           return [];
       }

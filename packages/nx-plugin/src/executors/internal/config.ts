@@ -30,16 +30,14 @@ export async function persistConfig(
     projectConfig ?? {};
 
   const {
-    format,
-    outputDir,
+    format = ['json'], // * - For all formats use `--persist.format=md,json`
+    outputDir = join(resolve(projectRoot, workspaceRoot), '.code-pushup', projectName), // always in root .code-pushup/<project>,
     filename = `${projectName}-report.json`,
   } = options;
   return persistCfgSchema.parse({
-    format: format ?? ['json'], // * - For all formats use `--persist.format=md,json`
-    outputDir:
-      outputDir ??
-      join(resolve(projectRoot, workspaceRoot), '.code-pushup', projectName), // always in root .code-pushup/<project>,
-    filename: filename ?? 'project-specific file name',
+    format,
+    outputDir,
+    filename
   });
 }
 
