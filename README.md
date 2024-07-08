@@ -1,6 +1,10 @@
-# Code PushUp CLI
+<h1 align="center">Code PushUp CLI</h1>
+<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/logo.png" width="985">
+<h2 align="center">Comprehensive tech quality monitoring</h2>
+<!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
+<p align="center">Monitor regressions - Quantify tech debt</p>
 
-**Comprehensive tech quality monitoring <✓>**
+---
 
 [![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
@@ -65,19 +69,6 @@ _We want to change that!_
    Watch improvements, share reports 📈
 
 ---
-
-<table>
-<tr>
-<td>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/code-pushup-logo.png" width="730"> 
-</td>
-<td>
-<h2>Comprehensive tech quality monitoring <✓></h2>
-<h3>Monitor regressions - Quantify tech debt</h3>
-<!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
-</td>
-</tr>
-</table>
 
 ## 💖 Want to support us?
 
