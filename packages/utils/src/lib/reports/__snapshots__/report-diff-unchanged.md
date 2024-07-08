@@ -4,11 +4,11 @@
 
 ## 🏷️ Categories
 
-|🏷️ Category|⭐ Previous score|
+|🏷️ Category|⭐ Score|
 |:--|:--:|
-|Performance||
-|Bug prevention||
-|Code style||
+|Performance|🟢 92|
+|Bug prevention|🟡 68|
+|Code style|🟡 54|
 
 ## 🗃️ Groups
 

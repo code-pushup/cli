@@ -80,8 +80,8 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
 
   const columns: TableColumnObject[] = [
     { key: 'category', label: '🏷️ Category', align: 'left' },
-    { key: 'before', label: '⭐ Previous score' },
-    { key: 'after', label: hasChanges ? '⭐ Current score' : '⭐ Score' },
+    { key: 'before', label: hasChanges ? '⭐ Previous score' : '⭐ Score' },
+    { key: 'after', label: '⭐ Current score' },
     { key: 'change', label: '🔄 Score change' },
   ];
   return lines(
@@ -111,7 +111,7 @@ function formatDiffCategoriesSection(diff: ReportsDiff): string {
             change: '–',
           })),
         ].map(row =>
-          hasChanges ? row : { category: row.category, after: row.after },
+          hasChanges ? row : { category: row.category, before: row.before },
         ),
       }),
     added.length > 0 && section(italicMd('(\\*) New category.')),
