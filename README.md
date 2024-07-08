@@ -39,7 +39,7 @@ _We want to change that!_
 
 ---
 
-### 🔌 Officially Supported Plugins
+### 🔌 Officially supported plugins
 
 |                                                                |                                                     |                                                                                    |
 | -------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -50,7 +50,7 @@ _We want to change that!_
 
 ---
 
-## 📝 How It Works!
+## 📝 How it works
 
 1. **[Configure](./packages/cli/README.md#getting-started)**  
    Pick from a set of supported packages or include your own ideas. 🧩
