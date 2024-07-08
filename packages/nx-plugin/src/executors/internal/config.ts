@@ -31,13 +31,17 @@ export async function persistConfig(
 
   const {
     format = ['json'], // * - For all formats use `--persist.format=md,json`
-    outputDir = join(resolve(projectRoot, workspaceRoot), '.code-pushup', projectName), // always in root .code-pushup/<project>,
+    outputDir = join(
+      resolve(projectRoot, workspaceRoot),
+      '.code-pushup',
+      projectName,
+    ), // always in root .code-pushup/<project>,
     filename = `${projectName}-report.json`,
   } = options;
   return persistCfgSchema.parse({
     format,
     outputDir,
-    filename
+    filename,
   });
 }
 

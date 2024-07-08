@@ -1,5 +1,5 @@
-import {describe, expect, it} from "vitest";
-import {objectToCliArgs} from "./cli";
+import { describe, expect, it } from 'vitest';
+import { objectToCliArgs } from './cli';
 
 describe('objectToCliArgs', () => {
   it('should handle the "_" argument as script', () => {
@@ -53,6 +53,8 @@ describe('objectToCliArgs', () => {
   });
 
   it('should throw error for unsupported type', () => {
-    expect(() => objectToCliArgs({param: Symbol('')})).toThrow('Unsupported type');
+    expect(() => objectToCliArgs({ param: Symbol('') })).toThrow(
+      'Unsupported type',
+    );
   });
 });
