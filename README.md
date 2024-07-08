@@ -41,12 +41,12 @@ _We want to change that!_
 
 ### 🔌 Officially Supported Plugins
 
-|                                                                |                                                     |                                                        |
-| -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------ |
-| <img width="50" src="docs/images/plugin-eslint.icon.png">      | [Eslint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules                 |
-| <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Coverage](./packages/plugin-coverage#readme)       | **Test Coverage** analysis                             |
-| <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Package audit on **Security** and **Outdates**         |
-| <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Web performance and best practices from **Lighthouse** |
+|                                                                |                                                     |                                                                                    |
+| -------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| <img width="50" src="docs/images/plugin-eslint.icon.png">      | [ESLint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules.                                            |
+| <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Code Coverage](./packages/plugin-coverage#readme)  | Collects code **coverage** from your tests.                                        |
+| <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Checks 3rd party packages for known **vulnerabilities** and **outdated** versions. |
+| <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Measures web performance and best practices with **Lighthouse**.                   |
 
 ---
 
