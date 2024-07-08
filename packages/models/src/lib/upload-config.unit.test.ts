@@ -13,6 +13,16 @@ describe('uploadConfigSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept configuration options', () => {
+    expect(() =>
+      uploadConfigSchema({ optional: { apiKey: true, timeout: true } }).parse({
+        organization: 'code-pushup',
+        project: 'cli',
+        server: 'https://cli-server.dev:3800/',
+      }),
+    ).not.toThrow();
+  });
+
   it('should throw for an invalid server URL', () => {
     expect(() =>
       uploadConfigSchema().parse({
