@@ -4,7 +4,7 @@ import { ExecutorContext } from 'nx/src/config/misc-interfaces';
 import { expect } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { persistConfig } from '../internal/config';
-import executor, { getConfigOptions } from './executor';
+import { getConfigOptions, runAutorunExecutor } from './executor';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
@@ -41,9 +41,9 @@ const context = {
   },
 } as unknown as ExecutorContext;
 
-describe('Autorun Executor', () => {
+describe('runAutorunExecutor', () => {
   it('should consider the context argument', async () => {
-    const output = await executor({}, context);
+    const output = await runAutorunExecutor({}, context);
     expect(output.success).toBe(true);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
@@ -53,7 +53,7 @@ describe('Autorun Executor', () => {
   });
 
   it('should process dryRun option', async () => {
-    const output = await executor({ dryRun: true }, context);
+    const output = await runAutorunExecutor({ dryRun: true }, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(`libs/${projectName}`);
     // eslint-disable-next-line n/no-sync
@@ -71,7 +71,7 @@ describe('Autorun Executor', () => {
         organization: 'code-pushup',
       },
     };
-    const output = await executor(cfg, context);
+    const output = await runAutorunExecutor(cfg, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(`afas57g8h9uj03iqwkeaclsd`);
     // eslint-disable-next-line n/no-sync

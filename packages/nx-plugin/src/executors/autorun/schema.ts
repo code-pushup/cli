@@ -17,8 +17,8 @@ export async function autorunExecutorOptionsSchema() {
   });
   return z
     .object({
-      upload: uploadSchema.optional(),
-      persist: (await persistConfigSchema()).optional(),
+      upload: (uploadSchema as any).optional(),
+      persist: await persistConfigSchema(),
     })
     .merge(baseExecutorSchema)
     .merge(executorOptionsUploadOnlySchema);
@@ -27,4 +27,3 @@ export async function autorunExecutorOptionsSchema() {
 export type AutorunCommandExecutorOptions = Partial<
   z.infer<Awaited<ReturnType<typeof autorunExecutorOptionsSchema>>>
 >;
-export default autorunExecutorOptionsSchema;

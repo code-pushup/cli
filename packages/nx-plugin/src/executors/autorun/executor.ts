@@ -10,11 +10,12 @@ import {
 } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
 import {
-  autorunExecutorOptionsSchema,
   AutorunCommandExecutorOptions,
+  autorunExecutorOptionsSchema,
 } from './schema';
 
-export default async function runAutorunExecutor(
+export default runAutorunExecutor;
+export async function runAutorunExecutor(
   options: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ) {
@@ -23,7 +24,7 @@ export default async function runAutorunExecutor(
   const { dryRun } = options;
 
   const cliArgumentObject = await getConfigOptions(options, normalizedContext);
-  const cfg = (await autorunExecutorOptionsSchema()).parse(cliArgumentObject);
+  const cfg = cliArgumentObject; //(await autorunExecutorOptionsSchema()).parse(cliArgumentObject);
   const command = createCliCommand(AUTORUN_COMMAND, cfg);
 
   if (dryRun) {
