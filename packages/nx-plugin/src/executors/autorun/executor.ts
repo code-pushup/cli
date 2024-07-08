@@ -2,34 +2,28 @@ import { logger } from '@nx/devkit';
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { ExecutorContext } from 'nx/src/config/misc-interfaces';
-import {
-  globalConfig,
-  persistConfig,
-  uploadConfig,
-} from '../../internal/config';
 import { createCliCommand } from '../internal/cli';
-import { normalizeContext } from '../internal/context';
+import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
+import {
+  NormalizedExecutorContext,
+  normalizeContext,
+} from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
-import { AutorunCommandExecutorOptions } from './schema';
+import autorunExecutorOptionsSchema, {
+  AutorunCommandExecutorOptions,
+} from './schema';
 
-export default async function runExecutor(
+export default async function runAutorunExecutor(
   options: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ) {
   const normalizedContext = normalizeContext(context);
 
-  const { projectPrefix, dryRun, ...cliOptions } = options;
+  const { dryRun } = options;
 
-  const cliArgumentObject = {
-    ...globalConfig(cliOptions),
-    persist: persistConfig(cliOptions.persist ?? {}, normalizedContext),
-    upload: await uploadConfig(
-      { projectPrefix, ...cliOptions.upload },
-      normalizedContext,
-    ),
-  };
-
-  const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
+  const cliArgumentObject = await getConfigOptions(options, normalizedContext);
+  const cfg = (await autorunExecutorOptionsSchema()).parse(cliArgumentObject);
+  const command = createCliCommand(AUTORUN_COMMAND, cfg);
 
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
@@ -41,5 +35,20 @@ export default async function runExecutor(
   return {
     success: true,
     command,
+  };
+}
+
+export async function getConfigOptions(
+  options: AutorunCommandExecutorOptions,
+  normalizedContext: NormalizedExecutorContext,
+) {
+  const { projectPrefix, ...cliOptions } = options;
+  return {
+    ...globalConfig(cliOptions),
+    persist: await persistConfig(cliOptions.persist ?? {}, normalizedContext),
+    upload: await uploadConfig(
+      { projectPrefix, ...cliOptions.upload },
+      normalizedContext,
+    ),
   };
 }

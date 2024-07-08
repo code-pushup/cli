@@ -1,84 +1,59 @@
 import { join, resolve } from 'node:path';
-import { z } from 'zod';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { ExecutorOnlyOptions } from '../executors/autorun/types';
-import { BaseNormalizedExecutorContext } from './types';
+import { persistConfigSchema, uploadConfigSchema } from '../../internal/schema';
+import { BaseNormalizedExecutorContext } from '../../internal/types';
+import { AutorunExecutorOnlyOptions } from '../autorun/types';
+import { parseEnv } from './env';
 
 export type GlobalOptions = { verbose: boolean; progress: boolean };
 
 export function globalConfig(
   options: Partial<GlobalOptions> = {},
 ): Required<GlobalOptions> {
+  const { verbose = false, progress = false } = options;
   return {
     // For better debugging use `--verbose --no-progress`
-    verbose: false,
-    progress: false,
-    ...options,
+    verbose,
+    progress,
   };
 }
 
 export type ExecutorPersistConfig = PersistConfig & { projectPrefix: string };
-export function persistConfig(
+export async function persistConfig(
   options: Partial<ExecutorPersistConfig>,
   context: BaseNormalizedExecutorContext,
-): PersistConfig {
+): Promise<PersistConfig> {
   const { workspaceRoot, projectConfig } = context;
+  const persistCfgSchema = await persistConfigSchema();
 
   const { name: projectName = '', root: projectRoot = '' } =
     projectConfig ?? {};
-  const { format, outputDir, filename } = options;
-  return {
-    format: format ?? ['md', 'json'], // * - For all formats use `--persist.format=md,json`
+
+  const {
+    format,
+    outputDir,
+    filename = `${projectName}-report.json`,
+  } = options;
+  return persistCfgSchema.parse({
+    format: format ?? ['json'], // * - For all formats use `--persist.format=md,json`
     outputDir:
       outputDir ??
       join(resolve(projectRoot, workspaceRoot), '.code-pushup', projectName), // always in root .code-pushup/<project>,
-    filename,
-  };
-}
-
-// load upload configuration from environment
-const envSchema = z
-  .object({
-    CP_SERVER: z.string().url(),
-    CP_API_KEY: z.string().min(1),
-    CP_ORGANIZATION: z.string().min(1),
-    CP_PROJECT: z.string().min(1),
-    CP_TIMEOUT: z.number().optional(),
-  })
-  .partial();
-type UploadEnvVars = z.infer<typeof envSchema>;
-
-async function parseEnv(env: unknown = {}): Promise<UploadConfig> {
-  const upload: UploadEnvVars = await envSchema.parseAsync(env);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Object.fromEntries(
-    Object.entries(upload).map(([envKey, value]) => {
-      switch (envKey) {
-        case 'CP_SERVER':
-          return ['server', value];
-        case 'CP_API_KEY':
-          return ['apiKey', value];
-        case 'CP_ORGANIZATION':
-          return ['organization', value];
-        case 'CP_PROJECT':
-          return ['project', value];
-        case 'CP_TIMEOUT':
-          return ['timeout', value];
-        default:
-          return [];
-      }
-    }),
-  );
+    filename: filename ?? 'project-specific file name',
+  });
 }
 
 export type ExecutorUploadConfig = UploadConfig &
-  Pick<ExecutorOnlyOptions, 'projectPrefix'>;
+  Partial<Pick<AutorunExecutorOnlyOptions, 'projectPrefix'>>;
 
 export async function uploadConfig(
   options: Partial<ExecutorUploadConfig>,
   context: BaseNormalizedExecutorContext,
 ): Promise<UploadConfig> {
   const { projectConfig, workspaceRoot } = context;
+  const uploadCfgSchema = (await uploadConfigSchema()) as {
+    parse: (...args: unknown[]) => UploadConfig;
+  };
 
   const { name: projectName } = projectConfig ?? {};
 
@@ -86,17 +61,17 @@ export async function uploadConfig(
     options;
   const applyPrefix = workspaceRoot === '.';
   const prefix = projectPrefix ? `${projectPrefix}-` : '';
-  return {
-    ...(await parseEnv(process.env)),
+  return uploadCfgSchema.parse({
     ...(projectName
       ? {
           project: applyPrefix ? `${prefix}${projectName}` : projectName, // provide correct project
         }
       : {}),
+    ...(await parseEnv(process.env)),
     ...Object.fromEntries(
       Object.entries({ server, apiKey, organization, project, timeout }).filter(
         ([_, v]) => v !== undefined,
       ),
     ),
-  };
+  });
 }

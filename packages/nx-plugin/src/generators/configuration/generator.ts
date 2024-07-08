@@ -5,55 +5,66 @@ import {
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { ui } from '@code-pushup/utils';
-import { AddToProjectGeneratorSchema } from './schema';
+import { join } from 'node:path';
+import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { ConfigurationGeneratorOptions } from './schema';
 
-export async function addToProjectGenerator(
+export async function configurationGenerator(
   tree: Tree,
-  options: AddToProjectGeneratorSchema,
+  options: ConfigurationGeneratorOptions,
 ) {
   const projectConfiguration = readProjectConfiguration(tree, options.project);
 
-  const { root, targets } = projectConfiguration;
+  generateCodePushupConfig(tree, projectConfiguration, options);
 
+  addTargetToProject(tree, projectConfiguration, options);
+
+  await formatFiles(tree);
+}
+
+export function addTargetToProject(
+  tree: Tree,
+  projectConfiguration: ProjectConfiguration,
+  options: ConfigurationGeneratorOptions,
+) {
+  const { targets } = projectConfiguration;
+  const { targetName, project, skipTarget } = options;
+
+  if (skipTarget) {
+    return void 0;
+  }
+
+  const codePushupTargetConfig = {
+    executor: '@code-pushup/nx-plugin:autorun',
+  };
+
+  updateProjectConfiguration(tree, project, {
+    ...projectConfiguration,
+    targets: {
+      ...targets,
+      [targetName ?? DEFAULT_TARGET_NAME]: codePushupTargetConfig,
+    },
+  });
+}
+
+export function generateCodePushupConfig(
+  tree: Tree,
+  projectConfiguration: ProjectConfiguration,
+  options: ConfigurationGeneratorOptions,
+) {
+  const { root } = projectConfiguration;
   const supportedFormats = ['ts', 'mjs', 'js'];
   const firstExistingFormat = supportedFormats.find(ext =>
     tree.exists(join(root, `code-pushup.config.${ext}`)),
   );
   if (firstExistingFormat) {
-    logger.warn(
+    console.warn(
       `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
     );
-    return;
+  } else {
+    generateFiles(tree, join(__dirname, 'files'), root, options);
   }
-
-  generateFiles(
-    tree,
-    join(fileURLToPath(dirname(import.meta.url)), 'files'),
-    root,
-    options,
-  );
-
-  updateProjectConfiguration(tree, options.project, {
-    ...projectConfiguration,
-    targets: {
-      ...targets,
-      'code-pushup': {
-        executor: 'nx:run-commands',
-        options: {
-          command: `code-pushup autorun --no-progress --config=${join(
-            './',
-            root,
-            'code-pushup.config.ts',
-          )}`,
-        },
-      },
-    },
-  });
-
-  await formatFiles(tree);
 }
 
-export default addToProjectGenerator;
+export default configurationGenerator;

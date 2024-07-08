@@ -4,7 +4,7 @@ import { UploadConfig, uploadConfigSchema } from './upload-config';
 describe('uploadConfigSchema', () => {
   it('should accept a valid upload configuration', () => {
     expect(() =>
-      uploadConfigSchema.parse({
+      uploadConfigSchema().parse({
         apiKey: 'API-K3Y',
         organization: 'code-pushup',
         project: 'cli',
@@ -15,7 +15,7 @@ describe('uploadConfigSchema', () => {
 
   it('should throw for an invalid server URL', () => {
     expect(() =>
-      uploadConfigSchema.parse({
+      uploadConfigSchema().parse({
         apiKey: 'API-K3Y',
         organization: 'code-pushup',
         project: 'cli',
@@ -26,7 +26,7 @@ describe('uploadConfigSchema', () => {
 
   it('should throw for a PascalCase organization name', () => {
     expect(() =>
-      uploadConfigSchema.parse({
+      uploadConfigSchema().parse({
         apiKey: 'API-K3Y',
         organization: 'CodePushUp',
         project: 'cli',
@@ -37,7 +37,7 @@ describe('uploadConfigSchema', () => {
 
   it('should throw for a project with uppercase letters', () => {
     expect(() =>
-      uploadConfigSchema.parse({
+      uploadConfigSchema().parse({
         apiKey: 'API-K3Y',
         organization: 'code-pushup',
         project: 'Code-PushUp-CLI',

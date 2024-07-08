@@ -1,4 +1,4 @@
-import { CliArgsObject } from '@code-pushup/utils';
+import type { CliArgsObject } from '@code-pushup/utils';
 
 export function createCliCommand(
   command: string,
@@ -8,7 +8,7 @@ export function createCliCommand(
 }
 
 type ArgumentValue = number | string | boolean | string[];
-// @TODO import from @code-pushup/utils
+// @TODO import from @code-pushup/utils => get rid of poppins for cjs support
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
@@ -51,6 +51,10 @@ export function objectToCliArgs<
 
     if (typeof value === 'boolean') {
       return [`${prefix}${value ? '' : 'no-'}${key}`];
+    }
+
+    if (value === undefined) {
+      return [];
     }
 
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);

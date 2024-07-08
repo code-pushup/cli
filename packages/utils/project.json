@@ -52,6 +52,9 @@
       "options": {
         "config": "packages/utils/vite.config.integration.ts"
       }
+    },
+    "code-pushup": {
+      "executor": "@code-pushup/nx-plugin:autorun"
     }
   },
   "tags": ["scope:shared", "type:util"]

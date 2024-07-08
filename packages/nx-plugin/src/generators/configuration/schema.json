@@ -1,7 +1,8 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "$id": "AddToProject",
-  "title": "",
+  "$id": "AddConfigurationToProject",
+  "title": "Add CodePushup configuration to a project",
+  "description": "Add CodePushup configuration to a project",
   "type": "object",
   "properties": {
     "project": {
@@ -13,6 +14,23 @@
         "$source": "argv",
         "index": 0
       }
+    },
+    "targetName": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-prompt": "Which name should the target get? default is code-pushup.",
+      "x-dropdown": "targetName",
+      "default": "code-pushup"
+    },
+    "skipTarget": {
+      "type": "boolean",
+      "description": "Skip adding the target to project.json.",
+      "$default": "false"
+    },
+    "skipConfig": {
+      "type": "boolean",
+      "description": "Skip adding the code-pushup.config.ts to the project root.",
+      "$default": "false"
     }
   },
   "required": ["project"]

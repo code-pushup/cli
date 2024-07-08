@@ -37,7 +37,9 @@ export async function coreConfigMiddleware<
   const upload =
     rcUpload == null && cliUpload == null
       ? undefined
-      : uploadConfigSchema.parse({
+      : (
+          uploadConfigSchema() as { parse: (...args: unknown[]) => unknown }
+        ).parse({
           ...rcUpload,
           ...cliUpload,
         });

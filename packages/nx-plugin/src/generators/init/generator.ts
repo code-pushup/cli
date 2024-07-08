@@ -16,7 +16,7 @@ import {
   cpModelVersion,
   cpNxPluginVersion,
   cpUtilsVersion,
-} from '../../utils/versions';
+} from '../../internal/versions';
 import { InitGeneratorSchema } from './schema';
 
 const nxPluginPackageName = '@code-pushup/nx-plugin';

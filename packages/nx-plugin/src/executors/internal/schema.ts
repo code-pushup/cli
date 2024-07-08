@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { globalCliOptionsSchema } from '../../internal/schema';
 
 const globalExecutorOnlySchema = z.object({
   dryRun: z
@@ -6,18 +7,15 @@ const globalExecutorOnlySchema = z.object({
     .describe("Don't execute, just print the produced command")
     .optional(),
 });
-const globalCliOptionsSchema = z.object({
-  progress: z.boolean().describe('show progress').optional(),
-  verbose: z.boolean().describe('additional information').optional(),
-});
 
-// @TODO add RunCommandOptions
+// @TODO add RunCommandOptions e.g. ???
 export const baseExecutorSchema = globalCliOptionsSchema.merge(
   globalExecutorOnlySchema,
 );
+
 export type GlobalCommandExecutor = z.infer<typeof baseExecutorSchema>;
 
-export const uploadOnlySchema = z.object({
+export const executorOptionsUploadOnlySchema = z.object({
   projectPrefix: z
     .string()
     .describe(
@@ -25,4 +23,6 @@ export const uploadOnlySchema = z.object({
     )
     .optional(),
 });
-export type ExecutorUploadOptions = z.infer<typeof uploadOnlySchema>;
+export type ExecutorOptionsUploadOnly = z.infer<
+  typeof executorOptionsUploadOnlySchema
+>;

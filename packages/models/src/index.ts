@@ -102,4 +102,8 @@ export {
   runnerConfigSchema,
   runnerFunctionSchema,
 } from './lib/runner-config';
-export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
+export {
+  UploadConfig,
+  uploadConfigSchema,
+  UploadSchemaConfig,
+} from './lib/upload-config';
