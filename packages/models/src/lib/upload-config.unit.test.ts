@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UploadConfig, uploadConfigSchema } from './upload-config';
+import { uploadConfigSchema } from './upload-config';
 
 describe('uploadConfigSchema', () => {
   it('should accept a valid upload configuration', () => {
@@ -9,7 +9,7 @@ describe('uploadConfigSchema', () => {
         organization: 'code-pushup',
         project: 'cli',
         server: 'https://cli-server.dev:3800/',
-      } satisfies UploadConfig),
+      }),
     ).not.toThrow();
   });
 
@@ -20,7 +20,7 @@ describe('uploadConfigSchema', () => {
         organization: 'code-pushup',
         project: 'cli',
         server: '-invalid-/url',
-      } satisfies UploadConfig),
+      }),
     ).toThrow('Invalid url');
   });
 
@@ -31,7 +31,7 @@ describe('uploadConfigSchema', () => {
         organization: 'CodePushUp',
         project: 'cli',
         server: '-invalid-/url',
-      } satisfies UploadConfig),
+      }),
     ).toThrow('slug has to follow the pattern');
   });
 
@@ -42,7 +42,7 @@ describe('uploadConfigSchema', () => {
         organization: 'code-pushup',
         project: 'Code-PushUp-CLI',
         server: '-invalid-/url',
-      } satisfies UploadConfig),
+      }),
     ).toThrow('slug has to follow the pattern');
   });
 });

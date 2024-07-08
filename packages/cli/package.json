@@ -3,7 +3,7 @@
   "version": "0.47.0",
   "license": "MIT",
   "bin": {
-    "code-pushup": "bin.js"
+    "code-pushup": "index.js"
   },
   "dependencies": {
     "@code-pushup/models": "0.47.0",
