@@ -11,7 +11,7 @@
       }
     },
     "code-pushup": {
-      "command": "npx dist/packages/cli",
+      "executor": "@code-pushup/nx-plugin:autorun",
       "dependsOn": [
         {
           "projects": [
@@ -26,12 +26,6 @@
           "target": "build"
         }
       ]
-    },
-    "cp--autorun": {
-      "executor": "@code-pushup/nx-plugin:autorun",
-      "options": {
-        "projectPrefix": "zz"
-      }
     }
   }
 }
