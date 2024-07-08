@@ -1,5 +1,7 @@
+import chalk from 'chalk';
 import debug from 'debug';
 import log from 'lighthouse-logger';
+import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
@@ -91,7 +93,7 @@ describe('toAuditOutputs', () => {
     ).not.toThrow();
   });
 
-  it('should parse valid lhr float value to integer', () => {
+  it('should copy lhr numericValue to audit value as float', () => {
     expect(
       toAuditOutputs([
         {
@@ -106,7 +108,7 @@ describe('toAuditOutputs', () => {
           displayValue: '2.8 s',
         },
       ]),
-    ).toStrictEqual([expect.objectContaining({ value: 2838 })]);
+    ).toStrictEqual([expect.objectContaining({ value: 2838.974 })]);
   });
 
   it('should convert null score to 1', () => {
@@ -126,13 +128,44 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should not parse given audit details', () => {
+    expect(
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: [{ key: 'number' }] as Details.TableColumnHeading[],
+              items: [{ number: 42 }],
+            } as Details,
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as Result,
+        ],
+        { verbose: true },
+      ).at(0)?.details,
+    ).toStrictEqual({
+      table: {
+        columns: [{ key: 'number', align: 'left' }],
+        rows: [{ number: 42 }],
+        title: 'Table',
+      },
+    });
+  });
+
   it('should NOT inform for unsupported details if verbose is NOT given', () => {
     const types = [...unsupportedDetailTypes];
     toAuditOutputs(
       types.map(
         type =>
           ({
-            details: { type },
+            id: 'cumulative-layout-shift',
+            details: { type, headings: [], items: [] } as Details,
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
           } as Result),
       ),
     );
@@ -145,12 +178,60 @@ describe('toAuditOutputs', () => {
       types.map(
         type =>
           ({
-            details: { type },
+            id: 'cumulative-layout-shift',
+            details: { type, headings: [], items: [] } as Details,
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
           } as Result),
       ),
       { verbose: true },
     );
     expect(getLogMessages(ui().logger)).toHaveLength(1);
+  });
+
+  it('should not parse empty audit details', () => {
+    expect(
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: [],
+              items: [],
+            } as Details,
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as Result,
+        ],
+        { verbose: true },
+      ).at(0)?.details,
+    ).toBeUndefined();
+  });
+
+  it('should throw for invalid audits', () => {
+    expect(() =>
+      toAuditOutputs(
+        [
+          {
+            id: 'cumulative-layout-shift',
+            details: {
+              type: 'table',
+              headings: ['left'] as unknown as Details.TableColumnHeading[],
+              items: [undefined] as unknown as Details.TableItem[],
+            },
+            score: 0,
+            numericValue: 0,
+            displayValue: '0 ms',
+          } as unknown as Result,
+        ],
+        { verbose: true },
+      ),
+    ).toThrow(
+      `Audit ${chalk.bold('cumulative-layout-shift')} failed parsing details:`,
+    );
   });
 });
 

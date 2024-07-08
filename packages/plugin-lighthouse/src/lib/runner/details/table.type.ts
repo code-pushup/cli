@@ -1,6 +1,12 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Table, TableColumnObject, TableRowObject } from '@code-pushup/models';
+import {
+  Table,
+  TableColumnObject,
+  TableRowObject,
+  tableSchema,
+} from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value';
+import { LighthouseAuditDetailsParsingError } from './utils';
 
 export function parseTableToAuditDetailsTable(
   details: Details.Table,
@@ -11,10 +17,19 @@ export function parseTableToAuditDetailsTable(
     return undefined;
   }
 
-  return {
-    columns: parseTableColumns(rawHeadings),
-    rows: items.map(row => parseTableRow(row, rawHeadings)),
-  };
+  try {
+    return tableSchema().parse({
+      title: 'Table',
+      columns: parseTableColumns(rawHeadings),
+      rows: items.map(row => parseTableRow(row, rawHeadings)),
+    });
+  } catch (error) {
+    throw new LighthouseAuditDetailsParsingError(
+      'table',
+      { items, headings: rawHeadings },
+      (error as Error).message.toString(),
+    );
+  }
 }
 
 export function parseTableColumns(
@@ -22,7 +37,7 @@ export function parseTableColumns(
 ): TableColumnObject[] {
   return rawHeadings.map(({ key, label }) => ({
     key: key ?? '',
-    label: typeof label === 'string' ? label : undefined,
+    ...(typeof label === 'string' && label.length > 0 ? { label } : {}),
     align: 'left',
   }));
 }

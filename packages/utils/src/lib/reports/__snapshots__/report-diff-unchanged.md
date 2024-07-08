@@ -6,9 +6,9 @@
 
 |🏷️ Category|⭐ Score|
 |:--|:--:|
-|Performance|🟢 **92**|
-|Bug prevention|🟡 **68**|
-|Code style|🟡 **54**|
+|Performance|🟢 92|
+|Bug prevention|🟡 68|
+|Code style|🟡 54|
 
 ## 🗃️ Groups
 

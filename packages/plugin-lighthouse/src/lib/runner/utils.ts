@@ -6,7 +6,7 @@ import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
-import { importEsmModule, readJsonFile, ui } from '@code-pushup/utils';
+import { importModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
@@ -32,6 +32,14 @@ export function normalizeAuditOutputs(
   });
 }
 
+export class LighthouseAuditParsingError extends Error {
+  constructor(slug: string, error: Error) {
+    super(
+      `\nAudit ${chalk.bold(slug)} failed parsing details: \n${error.message}`,
+    );
+  }
+}
+
 export function toAuditOutputs(
   lhrAudits: Result[],
   { verbose = false }: { verbose?: boolean } = {},
@@ -39,6 +47,7 @@ export function toAuditOutputs(
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
+
   return lhrAudits.map(
     ({
       id: slug,
@@ -50,22 +59,18 @@ export function toAuditOutputs(
       const auditOutput: AuditOutput = {
         slug,
         score: score ?? 1, // score can be null
-        value: Number.parseInt(value.toString(), 10),
+        value,
         displayValue,
       };
 
       if (details != null) {
         try {
           const parsedDetails = toAuditDetails(details);
-          return parsedDetails
+          return Object.keys(parsedDetails).length > 0
             ? { ...auditOutput, details: parsedDetails }
             : auditOutput;
         } catch (error) {
-          throw new Error(
-            `\nAudit ${chalk.bold(slug)} failed parsing details: \n${
-              (error as Error).message
-            }`,
-          );
+          throw new LighthouseAuditParsingError(slug, error as Error);
         }
       }
 
@@ -73,16 +78,6 @@ export function toAuditOutputs(
     },
   );
 }
-
-export const unsupportedDetailTypes = new Set([
-  'opportunity',
-  'table',
-  'treemap-data',
-  'screenshot',
-  'filmstrip',
-  'debugdata',
-  'criticalrequestchain',
-]);
 
 export type LighthouseLogLevel =
   | 'verbose'
@@ -126,7 +121,7 @@ export async function getConfig(
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importEsmModule<Config>({ filepath });
+      return importModule<Config>({ filepath, format: 'esm' });
     } else {
       ui().logger.info(`Format of file ${filepath} not supported`);
     }

@@ -2,51 +2,35 @@ import chalk from 'chalk';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditDetails, Table, tableSchema } from '@code-pushup/models';
+import { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants';
+import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
 import { parseTableToAuditDetailsTable } from './table.type';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,
-): AuditDetails | undefined {
+): AuditDetails {
   if (details == null) {
-    return undefined;
+    return {};
   }
 
   const { type } = details;
 
-  if (type !== 'table') {
-    return undefined;
+  switch (type) {
+    case 'table':
+      const table: Table | undefined = parseTableToAuditDetailsTable(details);
+      return table ? { table } : {};
+    case 'opportunity':
+      const opportunity: Table | undefined =
+        parseOpportunityToAuditDetailsTable(details);
+      return opportunity ? { table: opportunity } : {};
   }
-
-  const rawTable: Table | undefined = parseTableToAuditDetailsTable(details);
-
-  if (rawTable != null) {
-    const result = tableSchema().safeParse(rawTable);
-    if (result.success) {
-      return {
-        table: result.data,
-      };
-    }
-
-    throw new Error(
-      `Parsing details ${chalk.bold(
-        type,
-      )} failed: \nRaw data:\n ${JSON.stringify(
-        rawTable,
-        null,
-        2,
-      )}\n${result.error.toString()}`,
-    );
-  }
-
-  return undefined;
+  return {};
 }
 
 // @TODO implement all details
 export const unsupportedDetailTypes = new Set([
-  'opportunity',
   'debugdata',
   'treemap-data',
   'screenshot',
