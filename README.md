@@ -1,8 +1,8 @@
 <h1 align="center">Code PushUp CLI</h1>
-<img alt="Code-Pushup Logo" src="./packages/cli/docs/images/logo.png" width="985">
+<p align="center"><img alt="Code-Pushup Logo" src="./packages/cli/docs/images/logo.png" width="500" /></p>
 <h2 align="center">Comprehensive tech quality monitoring</h2>
 <!-- link when web landing is ready <a href="./packages/cli/README.md#getting-started">Try our paid features</a> -->
-<p align="center">Monitor regressions - Quantify tech debt</p>
+<p align="center">Quantify tech debt &mdash; Track incremental improvements &mdash; Monitor regressions</p>
 
 ---
 
