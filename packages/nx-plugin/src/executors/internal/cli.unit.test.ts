@@ -52,6 +52,12 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual(['--format="json"', '--format="md"']);
   });
 
+  it('should handle objects', () => {
+    const params = { format: { json: 'simple' } };
+    const result = objectToCliArgs(params);
+    expect(result).toStrictEqual(['--format.json="simple"']);
+  });
+
   it('should throw error for unsupported type', () => {
     expect(() => objectToCliArgs({ param: Symbol('') })).toThrow(
       'Unsupported type',

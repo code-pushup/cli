@@ -37,7 +37,7 @@ export function objectToCliArgs<
 
     if (typeof value === 'object') {
       return Object.entries(value as Record<string, unknown>).map(
-        ([k, v]) => `${key}.${k}="${v?.toString()}"`,
+        ([k, v]) => `${prefix}${key}.${k}="${v?.toString()}"`,
       );
     }
 
