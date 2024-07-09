@@ -1,3 +1,4 @@
+import { normalize } from 'node:path';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
@@ -144,7 +145,7 @@ describe('persistConfig', () => {
       ),
     ).toEqual(
       expect.objectContaining({
-        outputDir,
+        outputDir: normalize(outputDir),
       }),
     );
   });

@@ -1,3 +1,4 @@
+import { normalize } from 'node:path';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { autorunExecutorOnlyConfig, getExecutorOptions } from './utils';
 
@@ -78,7 +79,7 @@ describe('getExecutorOptions', () => {
       persist: {
         filename: 'from-options-report',
         format: ['json'],
-        outputDir: `root/.code-pushup/${projectName}`,
+        outputDir: normalize(`root/.code-pushup/${projectName}`),
       },
       upload: {
         // apiKey: "cp_57ba713d0803d41b2ea48aacf3a11c227fe0c7d0276870ab4fe79f4cdefcdb3c",

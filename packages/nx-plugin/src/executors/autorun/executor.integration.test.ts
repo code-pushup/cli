@@ -1,5 +1,6 @@
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
+import { normalize } from 'node:path';
 import { ExecutorContext } from 'nx/src/config/misc-interfaces';
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
@@ -127,7 +128,7 @@ describe('getExecutorOptions', () => {
       persist: {
         filename: 'my-name-report',
         format: ['json'],
-        outputDir: 'root/.code-pushup/my-app',
+        outputDir: normalize('root/.code-pushup/my-app'),
       },
       upload: {
         server: 'https://new-portal.code-pushup.dev',
