@@ -12,7 +12,11 @@
     },
     "code-pushup": {
       "options": {
-        "verbose": false
+        "persist": {
+          "format": ["json"],
+          "filename": "code-pushup",
+          "outputDir": ".code-pushup"
+        }
       }
     }
   }
