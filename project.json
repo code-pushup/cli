@@ -12,10 +12,7 @@
     },
     "code-pushup": {
       "options": {
-        "verbose": false,
-        "upload": {
-          "project": "cli"
-        }
+        "verbose": false
       }
     }
   }

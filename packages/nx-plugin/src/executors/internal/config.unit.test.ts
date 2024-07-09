@@ -36,25 +36,28 @@ describe('parseEnv', () => {
 });
 
 describe('globalConfig', () => {
-  it('should parse all global options', () => {
-    expect(globalConfig({ progress: true, verbose: true })).toEqual({
-      progress: true,
-      verbose: true,
-    });
+  it('should provide default global verbose options', () => {
+    expect(globalConfig({})).toEqual(
+      expect.objectContaining({ verbose: false }),
+    );
   });
 
-  it('should parse partial global options', () => {
-    expect(globalConfig({ progress: true })).toEqual({
-      progress: true,
-      verbose: false,
-    });
+  it('should parse global verbose options', () => {
+    expect(globalConfig({ verbose: true })).toEqual(
+      expect.objectContaining({ verbose: true }),
+    );
   });
 
-  it('should parse global empty options to default values', () => {
-    expect(globalConfig({})).toEqual({
-      progress: false,
-      verbose: false,
-    });
+  it('should provide default global progress options', () => {
+    expect(globalConfig({})).toEqual(
+      expect.objectContaining({ progress: false }),
+    );
+  });
+
+  it('should parse global progress options', () => {
+    expect(globalConfig({ progress: true })).toEqual(
+      expect.objectContaining({ progress: true }),
+    );
   });
 
   it('should exclude other options', () => {
@@ -68,8 +71,8 @@ describe('globalConfig', () => {
 });
 
 describe('persistConfig', () => {
-  it('should provide default persist format options of ["json"]', async () => {
-    await expect(
+  it('should provide default persist format options of ["json"]', () => {
+    expect(
       persistConfig(
         {},
         {
@@ -80,11 +83,11 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(expect.objectContaining({ format: ['json'] }));
+    ).toEqual(expect.objectContaining({ format: ['json'] }));
   });
 
-  it('should parse given persist format option', async () => {
-    await expect(
+  it('should parse given persist format option', () => {
+    expect(
       persistConfig(
         {
           format: ['md'],
@@ -97,35 +100,36 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
         format: ['md'],
       }),
     );
   });
 
-  it('should provide default outputDir options', async () => {
-    await expect(
+  it('should provide default outputDir options', () => {
+    const projectName = 'my-app';
+    expect(
       persistConfig(
         {},
         {
-          workspaceRoot: 'workspaceRoot',
+          workspaceRoot: '/test/root/workspace-root',
           projectConfig: {
-            name: 'my-app',
-            root: 'root',
+            name: projectName,
+            root: 'packages/project-root',
           },
         },
       ),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
-        outputDir: '/test/root/workspaceRoot/.code-pushup/my-app',
+        outputDir: `packages/project-root/.code-pushup/${projectName}`,
       }),
     );
   });
 
-  it('should parse given outputDir options', async () => {
+  it('should parse given outputDir options', () => {
     const outputDir = '../dist/packages/test-folder';
-    await expect(
+    expect(
       persistConfig(
         {
           outputDir,
@@ -138,16 +142,16 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
         outputDir,
       }),
     );
   });
 
-  it('should provide default filename options', async () => {
+  it('should provide default filename options', () => {
     const projectName = 'my-app';
-    await expect(
+    expect(
       persistConfig(
         {},
         {
@@ -158,14 +162,12 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({ filename: `${projectName}-report` }),
-    );
+    ).toEqual(expect.objectContaining({ filename: `${projectName}-report` }));
   });
 
-  it('should provide default persist filename as <project-name>-report', async () => {
+  it('should provide default persist filename as [project-name]-report', () => {
     const projectName = 'my-app';
-    await expect(
+    expect(
       persistConfig(
         {},
         {
@@ -176,13 +178,16 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({ filename: `${projectName}-report` }),
-    );
+    ).toEqual(expect.objectContaining({ filename: `${projectName}-report` }));
   });
 });
 
 describe('uploadConfig', () => {
+  const baseUploadConfig = {
+    server: 'https://base-portal.code.pushup.dev',
+    apiKey: 'apiKey',
+    organization: 'organization',
+  };
   const oldEnv = process.env;
   beforeEach(() => {
     // eslint-disable-next-line functional/immutable-data
@@ -194,26 +199,99 @@ describe('uploadConfig', () => {
     process.env = oldEnv;
   });
 
-  it('should parse empty project options to project-name', async () => {
+  it('should provide default upload project options as project name', async () => {
+    const projectName = 'my-app';
+    await expect(
+      uploadConfig(baseUploadConfig, {
+        workspaceRoot: 'workspace-root',
+        projectConfig: {
+          name: projectName,
+          root: 'root',
+        },
+      }),
+    ).resolves.toEqual(expect.objectContaining({ project: projectName }));
+  });
+
+  it('should parse upload project options', async () => {
+    const projectName = 'utils';
     await expect(
       uploadConfig(
         {
-          server: 'https://new1-portal.code.pushup.dev',
-          apiKey: 'apiKey',
-          organization: 'organization',
+          ...baseUploadConfig,
+          project: 'cli-utils',
         },
         {
-          workspaceRoot: 'workspaceRoot',
+          workspaceRoot: 'workspace-root',
           projectConfig: {
-            name: 'my-app',
+            name: projectName,
             root: 'root',
           },
         },
       ),
-    ).resolves.toEqual(expect.objectContaining({ project: 'my-app' }));
+    ).resolves.toEqual(expect.objectContaining({ project: 'cli-utils' }));
   });
 
-  it('should parse process.env option', async () => {
+  it('should parse upload server options', async () => {
+    await expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          server: 'https://new1-portal.code.pushup.dev',
+        },
+        {
+          workspaceRoot: 'workspace-root',
+          projectConfig: {
+            name: 'utils',
+            root: 'root',
+          },
+        },
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        server: 'https://new1-portal.code.pushup.dev',
+      }),
+    );
+  });
+
+  it('should parse upload organization options', async () => {
+    await expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          organization: 'code-pushup-v2',
+        },
+        {
+          workspaceRoot: 'workspace-root',
+          projectConfig: {
+            name: 'utils',
+            root: 'root',
+          },
+        },
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({ organization: 'code-pushup-v2' }),
+    );
+  });
+
+  it('should parse upload apiKey options', async () => {
+    await expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          apiKey: '123456789',
+        },
+        {
+          workspaceRoot: 'workspace-root',
+          projectConfig: {
+            name: 'utils',
+            root: 'root',
+          },
+        },
+      ),
+    ).resolves.toEqual(expect.objectContaining({ apiKey: '123456789' }));
+  });
+
+  it('should parse process.env options', async () => {
     // eslint-disable-next-line functional/immutable-data
     process.env = ENV;
 
@@ -228,6 +306,14 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(expect.objectContaining({ server: ENV.CP_SERVER }));
+    ).resolves.toEqual(
+      expect.objectContaining({
+        server: ENV.CP_SERVER,
+        apiKey: ENV.CP_API_KEY,
+        organization: ENV.CP_ORGANIZATION,
+        project: ENV.CP_PROJECT,
+        timeout: ENV.CP_TIMEOUT,
+      }),
+    );
   });
 });

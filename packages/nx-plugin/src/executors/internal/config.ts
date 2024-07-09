@@ -1,8 +1,8 @@
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { AutorunExecutorOnlyOptions } from '../autorun/types';
-import { BaseNormalizedExecutorContext } from '../internal/types';
 import { parseEnv } from './env';
+import { BaseNormalizedExecutorContext } from './types';
 
 export type GlobalOptions = { verbose: boolean; progress: boolean };
 
@@ -19,36 +19,26 @@ export function globalConfig(
 
 export type ExecutorPersistConfig = PersistConfig & { projectPrefix: string };
 
-export async function persistConfig(
+export function persistConfig(
   options: Partial<ExecutorPersistConfig>,
   context: BaseNormalizedExecutorContext,
-): Promise<PersistConfig> {
-  const { workspaceRoot, projectConfig } = context;
+): PersistConfig {
+  const { projectConfig } = context;
 
   const { name: projectName = '', root: projectRoot = '' } =
     projectConfig ?? {};
-  const applyPrefix = workspaceRoot === '.';
-
   const {
     format = ['json'], // * - For all formats use `--persist.format=md,json`
-    outputDir = join(
-      resolve(projectRoot, workspaceRoot),
-      '.code-pushup',
-      projectName,
-    ), // always in <root>/.code-pushup/<project-name>,
+    outputDir = join(projectRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename: filenameOptions,
-    projectPrefix,
   } = options;
 
-  const prefix = projectPrefix ? `${projectPrefix}-` : '';
   const postfix = '-report';
-  const filename = `${prefix}${
-    applyPrefix ? projectPrefix : slugify(filenameOptions ?? projectName)
-  }${postfix}`;
+  const filename = `${slugify(filenameOptions ?? projectName)}${postfix}`;
   return {
     format,
     outputDir,
-    filename: filename, // provide correct project,
+    filename,
   };
 }
 

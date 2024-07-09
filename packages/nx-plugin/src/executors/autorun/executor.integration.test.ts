@@ -4,7 +4,8 @@ import { ExecutorContext } from 'nx/src/config/misc-interfaces';
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { persistConfig } from '../internal/config';
-import { getExecutorOptions, runAutorunExecutor } from './executor';
+import { runAutorunExecutor } from './executor';
+import { getExecutorOptions } from './utils';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');

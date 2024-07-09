@@ -53,10 +53,10 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["json", "yaml", "md"]
+            "enum": ["json", "md"]
           },
           "description": "Format to save the configuration in (default is `json`)",
-          "default": ["md"]
+          "default": ["json"]
         }
       }
     },
