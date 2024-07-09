@@ -68,7 +68,7 @@ describe('globalConfig', () => {
 });
 
 describe('persistConfig', () => {
-  it('should parse empty format options to "json"', async () => {
+  it('should provide default persist format options of ["json"]', async () => {
     await expect(
       persistConfig(
         {},
@@ -83,7 +83,28 @@ describe('persistConfig', () => {
     ).resolves.toEqual(expect.objectContaining({ format: ['json'] }));
   });
 
-  it('should parse empty outputDir options to project root', async () => {
+  it('should parse given persist format option', async () => {
+    await expect(
+      persistConfig(
+        {
+          format: ['md'],
+        },
+        {
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'name',
+            root: 'root',
+          },
+        },
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        format: ['md'],
+      }),
+    );
+  });
+
+  it('should provide default outputDir options', async () => {
     await expect(
       persistConfig(
         {},
@@ -102,10 +123,13 @@ describe('persistConfig', () => {
     );
   });
 
-  it('should parse empty filename options to project name + report name', async () => {
+  it('should parse given outputDir options', async () => {
+    const outputDir = '../dist/packages/test-folder';
     await expect(
       persistConfig(
-        {},
+        {
+          outputDir,
+        },
         {
           workspaceRoot: 'workspaceRoot',
           projectConfig: {
@@ -115,31 +139,46 @@ describe('persistConfig', () => {
         },
       ),
     ).resolves.toEqual(
-      expect.objectContaining({ filename: 'my-app-report.json' }),
+      expect.objectContaining({
+        outputDir,
+      }),
     );
   });
 
-  it('should parse given persist options', async () => {
+  it('should provide default filename options', async () => {
+    const projectName = 'my-app';
     await expect(
       persistConfig(
-        {
-          format: ['md'],
-          outputDir: 'outputDir',
-          filename: 'filename',
-        },
+        {},
         {
           workspaceRoot: 'workspaceRoot',
           projectConfig: {
-            name: 'name',
+            name: projectName,
             root: 'root',
           },
         },
       ),
-    ).resolves.toEqual({
-      format: ['md'],
-      outputDir: 'outputDir',
-      filename: 'filename',
-    });
+    ).resolves.toEqual(
+      expect.objectContaining({ filename: `${projectName}-report` }),
+    );
+  });
+
+  it('should provide default persist filename as <project-name>-report', async () => {
+    const projectName = 'my-app';
+    await expect(
+      persistConfig(
+        {},
+        {
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: projectName,
+            root: 'root',
+          },
+        },
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({ filename: `${projectName}-report` }),
+    );
   });
 });
 

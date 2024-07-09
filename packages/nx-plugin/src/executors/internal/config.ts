@@ -10,10 +10,10 @@ export function globalConfig(
   options: Partial<Record<string, unknown>>,
 ): Required<GlobalOptions> {
   // For better debugging use `--verbose --no-progress` as default
-  const { verbose = true, progress = false } = options;
+  const { verbose, progress } = options;
   return {
-    verbose: verbose ? true : false,
-    progress: progress ? true : false,
+    verbose: !!verbose,
+    progress: !!progress,
   };
 }
 

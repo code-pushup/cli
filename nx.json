@@ -36,7 +36,6 @@
       "dependsOn": [
         {
           "projects": [
-            "cli",
             "nx-plugin",
             "plugin-eslint",
             "plugin-coverage",

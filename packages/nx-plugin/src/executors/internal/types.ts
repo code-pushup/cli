@@ -4,7 +4,11 @@ export type GeneralExecutorOnlyOptions = {
   dryRun?: boolean;
 };
 
-export type PersistExecutorOptions = {
+export type CollectExecutorOnlyOptions = {
+  onlyPlugins?: [];
+};
+
+export type PersistExecutorOnlyOptions = {
   projectPrefix?: string;
 };
 

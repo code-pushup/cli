@@ -4,7 +4,7 @@ import { ExecutorContext } from 'nx/src/config/misc-interfaces';
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { persistConfig } from '../internal/config';
-import { getConfigOptions, runAutorunExecutor } from './executor';
+import { getExecutorOptions, runAutorunExecutor } from './executor';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
@@ -92,7 +92,7 @@ describe('getConfigOptions', () => {
     },
   };
   it('should consider the context argument', async () => {
-    await getConfigOptions(
+    await getExecutorOptions(
       {
         persist: { filename: 'my-report' },
         upload: {
