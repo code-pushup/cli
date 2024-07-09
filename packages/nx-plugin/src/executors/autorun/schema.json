@@ -1,4 +1,96 @@
 {
-  "$ref": "../../internal/schema.definitions.json#/definitions/CoreConfig",
-  "$schema": "http://json-schema.org/schema"
+  "$schema": "http://json-schema.org/schema",
+  "$id": "AutorunExecutorOptions",
+  "title": "Add CodePushup configuration to a project",
+  "description": "Add CodePushup configuration to a project",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-prompt": "Which project should configure Code Pushup?",
+      "x-dropdown": "projects",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Print the commands that would be run, but don't actually run them"
+    },
+    "verbose": {
+      "type": "boolean",
+      "description": "Print additional logs"
+    },
+    "progress": {
+      "type": "boolean",
+      "description": "Print additional logs"
+    },
+    "onlyPlugins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Only run the specified plugins"
+    },
+    "projectPrefix": {
+      "type": "string",
+      "description": "Prefix for project name (default is ``)"
+    },
+    "persist": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "description": "Filename to save the configuration to (default is `.codepushup.json`)"
+        },
+        "outDir": {
+          "type": "string",
+          "description": "Directory to save the configuration to (default is `.`)"
+        },
+        "format": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["json", "yaml", "md"]
+          },
+          "description": "Format to save the configuration in (default is `json`)",
+          "default": ["md"]
+        }
+      }
+    },
+    "upload": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of deployed portal API"
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "API key with write access to portal (use `process.env` for security)"
+        },
+        "organization": {
+          "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
+          "maxLength": 128,
+          "description": "Organization slug from Code PushUp portal"
+        },
+        "project": {
+          "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
+          "maxLength": 128,
+          "description": "Project slug from Code PushUp portal"
+        },
+        "timeout": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "Request timeout in minutes (default is 5)"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
 }

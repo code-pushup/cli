@@ -1,5 +1,5 @@
-import { ExecutorOnlyOptions } from '../internal/types';
+import { GeneralExecutorOnlyOptions } from '../internal/types';
 
 export type AutorunExecutorOnlyOptions = {
   projectPrefix: string;
-} & ExecutorOnlyOptions;
+} & GeneralExecutorOnlyOptions;

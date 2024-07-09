@@ -18,7 +18,7 @@ export const unrefinedCoreConfigSchema = z.object({
   /** portal configuration for persisting results */
   persist: persistConfigSchema.optional(),
   /** portal configuration for uploading results */
-  upload: uploadConfigSchema().optional(),
+  upload: uploadConfigSchema.optional(),
   categories: categoriesSchema.optional(),
 });
 

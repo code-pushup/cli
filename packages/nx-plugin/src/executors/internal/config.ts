@@ -1,33 +1,33 @@
 import { join, resolve } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { persistConfigSchema, uploadConfigSchema } from '../../internal/schema';
-import { BaseNormalizedExecutorContext } from '../../internal/types';
 import { AutorunExecutorOnlyOptions } from '../autorun/types';
+import { BaseNormalizedExecutorContext } from '../internal/types';
 import { parseEnv } from './env';
 
 export type GlobalOptions = { verbose: boolean; progress: boolean };
 
 export function globalConfig(
-  options: Partial<GlobalOptions> = {},
+  options: Partial<Record<string, unknown>>,
 ): Required<GlobalOptions> {
-  const { verbose = false, progress = false } = options;
+  // For better debugging use `--verbose --no-progress` as default
+  const { verbose = true, progress = false } = options;
   return {
-    // For better debugging use `--verbose --no-progress`
-    verbose,
-    progress,
+    verbose: verbose ? true : false,
+    progress: progress ? true : false,
   };
 }
 
 export type ExecutorPersistConfig = PersistConfig & { projectPrefix: string };
+
 export async function persistConfig(
   options: Partial<ExecutorPersistConfig>,
   context: BaseNormalizedExecutorContext,
 ): Promise<PersistConfig> {
   const { workspaceRoot, projectConfig } = context;
-  const persistCfgSchema = await persistConfigSchema();
 
-  const { name: projectName = 'ppppppppppp', root: projectRoot = '' } =
+  const { name: projectName = '', root: projectRoot = '' } =
     projectConfig ?? {};
+  const applyPrefix = workspaceRoot === '.';
 
   const {
     format = ['json'], // * - For all formats use `--persist.format=md,json`
@@ -36,13 +36,20 @@ export async function persistConfig(
       '.code-pushup',
       projectName,
     ), // always in <root>/.code-pushup/<project-name>,
-    filename = `${projectName}-report`,
+    filename: filenameOptions,
+    projectPrefix,
   } = options;
-  return persistCfgSchema.parse({
+
+  const prefix = projectPrefix ? `${projectPrefix}-` : '';
+  const postfix = '-report';
+  const filename = `${prefix}${
+    applyPrefix ? projectPrefix : slugify(filenameOptions ?? projectName)
+  }${postfix}`;
+  return {
     format,
     outputDir,
-    filename: `report`,
-  });
+    filename: filename, // provide correct project,
+  };
 }
 
 export type ExecutorUploadConfig = UploadConfig &
@@ -51,19 +58,15 @@ export type ExecutorUploadConfig = UploadConfig &
 export async function uploadConfig(
   options: Partial<ExecutorUploadConfig>,
   context: BaseNormalizedExecutorContext,
-): Promise<UploadConfig> {
+): Promise<Partial<UploadConfig>> {
   const { projectConfig, workspaceRoot } = context;
-  const uploadCfgSchema = (await uploadConfigSchema()) as {
-    parse: (...args: unknown[]) => UploadConfig;
-  };
 
   const { name: projectName } = projectConfig ?? {};
-
   const { projectPrefix, server, apiKey, organization, project, timeout } =
     options;
   const applyPrefix = workspaceRoot === '.';
   const prefix = projectPrefix ? `${projectPrefix}-` : '';
-  return uploadCfgSchema.parse({
+  return {
     ...(projectName
       ? {
           project: applyPrefix ? `${prefix}${projectName}` : projectName, // provide correct project
@@ -75,5 +78,13 @@ export async function uploadConfig(
         ([_, v]) => v !== undefined,
       ),
     ),
-  });
+  };
+}
+
+export function slugify(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+|\//g, '-')
+    .replace(/[^a-z\d-]/g, '');
 }

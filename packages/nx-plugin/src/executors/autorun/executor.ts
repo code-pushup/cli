@@ -9,10 +9,7 @@ import {
   normalizeContext,
 } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
-import {
-  AutorunCommandExecutorOptions,
-  autorunExecutorOptionsSchema,
-} from './schema';
+import { AutorunCommandExecutorOptions } from './schema';
 
 export default runAutorunExecutor;
 export async function runAutorunExecutor(
@@ -24,8 +21,7 @@ export async function runAutorunExecutor(
   const { dryRun } = options;
 
   const cliArgumentObject = await getConfigOptions(options, normalizedContext);
-  const cfg = cliArgumentObject; //(await autorunExecutorOptionsSchema()).parse(cliArgumentObject);
-  const command = createCliCommand(AUTORUN_COMMAND, cfg);
+  const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
 
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
@@ -47,7 +43,10 @@ export async function getConfigOptions(
   const { projectPrefix, ...cliOptions } = options;
   return {
     ...globalConfig(cliOptions),
-    persist: await persistConfig(cliOptions.persist ?? {}, normalizedContext),
+    persist: await persistConfig(
+      { projectPrefix, ...cliOptions.persist },
+      normalizedContext,
+    ),
     upload: await uploadConfig(
       { projectPrefix, ...cliOptions.upload },
       normalizedContext,

@@ -11,21 +11,12 @@
       }
     },
     "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:autorun",
-      "dependsOn": [
-        {
-          "projects": [
-            "cli",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
-            "plugin-lighthouse",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
+      "options": {
+        "verbose": false,
+        "upload": {
+          "project": "cli"
         }
-      ]
+      }
     }
   }
 }

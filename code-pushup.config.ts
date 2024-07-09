@@ -1,6 +1,5 @@
 import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
-import { z } from 'zod';
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -21,30 +20,7 @@ import {
 } from './dist/packages/plugin-lighthouse';
 import type { CoreConfig } from './packages/models/src';
 
-// load upload configuration from environment
-const envSchema = z
-  .object({
-    CP_SERVER: z.string().url(),
-    CP_API_KEY: z.string().min(1),
-    CP_ORGANIZATION: z.string().min(1),
-    CP_PROJECT: z.string().min(1),
-  })
-  .partial();
-const env = await envSchema.parseAsync(process.env);
-
 const config: CoreConfig = {
-  ...(env.CP_SERVER &&
-    env.CP_API_KEY &&
-    env.CP_ORGANIZATION &&
-    env.CP_PROJECT && {
-      upload: {
-        server: env.CP_SERVER,
-        apiKey: env.CP_API_KEY,
-        organization: env.CP_ORGANIZATION,
-        project: env.CP_PROJECT,
-      },
-    }),
-
   plugins: [
     await eslintPlugin(await eslintConfigFromAllNxProjects()),
 
@@ -77,17 +53,18 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
-
+    /*
     await lighthousePlugin(
       'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
       {
         chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
         verbose: true,
       },
-    ),
+    ),*/
   ],
 
   categories: [
+    /*
     {
       slug: 'performance',
       title: 'Performance',
@@ -107,12 +84,14 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
+    },*/
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
       description: 'Lint rules that find **potential bugs** in your code.',
-      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+      refs: [
+        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1.0 },
+      ],
     },
     {
       slug: 'code-style',
@@ -120,7 +99,7 @@ const config: CoreConfig = {
       description:
         'Lint rules that promote **good practices** and consistency in your code.',
       refs: [
-        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1.0 },
       ],
     },
     {
@@ -132,7 +111,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'coverage',
           slug: 'coverage',
-          weight: 1,
+          weight: 1.0,
         },
       ],
     },
@@ -145,7 +124,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'js-packages',
           slug: 'npm-audit',
-          weight: 1,
+          weight: 1.0,
         },
       ],
     },
@@ -158,7 +137,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'js-packages',
           slug: 'npm-outdated',
-          weight: 1,
+          weight: 1.0,
         },
       ],
     },
