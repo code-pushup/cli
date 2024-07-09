@@ -11,7 +11,7 @@ import {
 export function mergeConfigs(
   config: CoreConfig,
   ...configs: Partial<CoreConfig>[]
-) {
+): Partial<CoreConfig> {
   return configs.reduce(
     (acc, obj) => ({
       ...acc,
@@ -27,7 +27,7 @@ export function mergeConfigs(
 function mergeCategories(
   a: CategoryConfig[] | undefined,
   b: CategoryConfig[] | undefined,
-) {
+): Pick<CoreConfig, 'categories'> {
   if (!a && !b) {
     return {};
   }
@@ -67,9 +67,9 @@ function mergeCategories(
 function mergePlugins(
   a: PluginConfig[] | undefined,
   b: PluginConfig[] | undefined,
-) {
+): Pick<CoreConfig, 'plugins'> {
   if (!a && !b) {
-    return {};
+    return { plugins: [] };
   }
 
   const mergedMap = new Map<string, PluginConfig>();
@@ -114,7 +114,7 @@ function mergePlugins(
 function mergeGroupRefsBySlugs<T extends GroupRef>(
   a: T[] | undefined,
   b: T[] | undefined,
-) {
+): T[] {
   const map = new Map<string, T>();
 
   const addToMap = (groups: T[]) => {
@@ -177,7 +177,7 @@ function mergeGroupsBySlugs<T extends Group>(
 function mergePersist(
   a: PersistConfig | undefined,
   b: PersistConfig | undefined,
-) {
+): Pick<CoreConfig, 'persist'> {
   if (!a && !b) {
     return {};
   }
@@ -216,7 +216,10 @@ function mergeBySlugs<T extends { slug: string }>(
   return [...map.values()];
 }
 
-function mergeUpload(a: UploadConfig | undefined, b: UploadConfig | undefined) {
+function mergeUpload(
+  a: UploadConfig | undefined,
+  b: UploadConfig | undefined,
+): Pick<CoreConfig, 'upload'> {
   if (!a && !b) {
     return {};
   }

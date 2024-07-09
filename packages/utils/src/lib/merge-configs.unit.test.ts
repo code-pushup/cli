@@ -192,7 +192,10 @@ describe('mergeObjects', () => {
         { upload: { timeout: 10_000 } } as CoreConfig,
         MOCK_UPLOAD_CONFIG,
       ),
-    ).toEqual({ upload: { ...MOCK_UPLOAD_CONFIG.upload, timeout: 10_000 } });
+    ).toEqual({
+      plugins: [],
+      upload: { ...MOCK_UPLOAD_CONFIG.upload, timeout: 10_000 },
+    });
   });
 
   it('should replace API key in upload config', () => {
@@ -201,6 +204,7 @@ describe('mergeObjects', () => {
         upload: { apiKey: 'my-new-api-key' },
       } as CoreConfig),
     ).toEqual({
+      plugins: [],
       upload: { ...MOCK_UPLOAD_CONFIG.upload, apiKey: 'my-new-api-key' },
     });
   });
