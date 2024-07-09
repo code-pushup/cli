@@ -21,17 +21,11 @@ export async function getExecutorOptions(
   options: Partial<AutorunCommandExecutorOptions>,
   normalizedContext: NormalizedExecutorContext,
 ): Promise<AutorunCommandExecutorOptions> {
-  const { projectPrefix, ...cliOptions } = options;
+  const { projectPrefix, persist, upload } = options;
   return {
-    ...globalConfig(cliOptions),
+    ...globalConfig(options),
     ...autorunExecutorOnlyConfig(options),
-    persist: persistConfig(
-      { projectPrefix, ...cliOptions.persist },
-      normalizedContext,
-    ),
-    upload: await uploadConfig(
-      { projectPrefix, ...cliOptions.upload },
-      normalizedContext,
-    ),
+    persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),
+    upload: await uploadConfig({ projectPrefix, ...upload }, normalizedContext),
   };
 }

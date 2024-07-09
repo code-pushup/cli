@@ -72,6 +72,9 @@
           "target": "build"
         }
       ]
+    },
+    "code-pushup": {
+      "executor": "../../dist/packages/nx-plugin:autorun"
     }
   },
   "tags": ["scope:internal", "type:app"]

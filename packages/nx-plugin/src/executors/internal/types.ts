@@ -5,7 +5,7 @@ export type GeneralExecutorOnlyOptions = {
 };
 
 export type CollectExecutorOnlyOptions = {
-  onlyPlugins?: [];
+  onlyPlugins?: string[];
 };
 
 export type PersistExecutorOnlyOptions = {

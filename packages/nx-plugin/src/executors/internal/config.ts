@@ -4,11 +4,11 @@ import { AutorunExecutorOnlyOptions } from '../autorun/types';
 import { parseEnv } from './env';
 import { BaseNormalizedExecutorContext } from './types';
 
-export type GlobalOptions = { verbose: boolean; progress: boolean };
+export type GlobalExecutorOptions = { verbose: boolean; progress: boolean };
 
 export function globalConfig(
   options: Partial<Record<string, unknown>>,
-): Required<GlobalOptions> {
+): Required<GlobalExecutorOptions> {
   // For better debugging use `--verbose --no-progress` as default
   const { verbose, progress } = options;
   return {
