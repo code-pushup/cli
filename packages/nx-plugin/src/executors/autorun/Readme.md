@@ -5,6 +5,7 @@
 ## Usage
 
 // project.json
+
 ```json
 {
   "name": "my-project",
@@ -19,6 +20,7 @@
 By default, the Nx plugin will derive the options from the executor config.
 
 The following things happen:
+
 - the format defaults to ['json']
 - the output directory defaults to `${projectRoot}/.code-pushup/${projectName}`
 - the config file defaults to `${projectRoot}/code-pushup.config.ts`
@@ -48,7 +50,7 @@ Show what will be executed without actually executing it:
 
 ## Options
 
-| Name              | type        | description                                            |
-|-------------------|-------------|--------------------------------------------------------|
-| **projectPrefix** | `string`    | prefix for upload.project                              |
-| CLI options       | -           | Persist and Upload options as defined in CoreConfig    |
+| Name              | type     | description                                         |
+| ----------------- | -------- | --------------------------------------------------- |
+| **projectPrefix** | `string` | prefix for upload.project                           |
+| CLI options       | -        | Persist and Upload options as defined in CoreConfig |
