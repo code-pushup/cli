@@ -73,10 +73,11 @@ describe('getExecutorOptions', () => {
       },
     );
     expect(executorOptions).toStrictEqual({
+      config: 'root/code-pushup.config.json',
       progress: false,
       verbose: false,
       persist: {
-        filename: 'from-options-report',
+        filename: 'from-options',
         format: ['json'],
         outputDir: expect.stringContaining(projectName),
       },

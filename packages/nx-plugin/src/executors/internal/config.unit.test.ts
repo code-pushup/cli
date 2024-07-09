@@ -37,35 +37,112 @@ describe('parseEnv', () => {
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
-    expect(globalConfig({})).toEqual(
-      expect.objectContaining({ verbose: false }),
-    );
+    expect(
+      globalConfig(
+        {},
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ verbose: false }));
   });
 
   it('should parse global verbose options', () => {
-    expect(globalConfig({ verbose: true })).toEqual(
-      expect.objectContaining({ verbose: true }),
-    );
+    expect(
+      globalConfig(
+        { verbose: true },
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ verbose: true }));
   });
 
   it('should provide default global progress options', () => {
-    expect(globalConfig({})).toEqual(
-      expect.objectContaining({ progress: false }),
-    );
+    expect(
+      globalConfig(
+        {},
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ progress: false }));
   });
 
   it('should parse global progress options', () => {
-    expect(globalConfig({ progress: true })).toEqual(
-      expect.objectContaining({ progress: true }),
+    expect(
+      globalConfig(
+        { progress: true },
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ progress: true }));
+  });
+
+  it('should provide default global config options', () => {
+    expect(
+      globalConfig(
+        {},
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        config: 'packages/project-root/code-pushup.config.json',
+      }),
     );
+  });
+
+  it('should parse global config options', () => {
+    expect(
+      globalConfig(
+        { config: 'my.config.ts' },
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
   });
 
   it('should exclude other options', () => {
     expect(
-      globalConfig({ test: 42 } as unknown as { verbose: boolean }),
+      globalConfig({ test: 42 } as unknown as { verbose: boolean }, {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
+        },
+      }),
     ).toEqual({
       progress: false,
       verbose: false,
+      config: 'packages/project-root/code-pushup.config.json',
     });
   });
 });
@@ -149,7 +226,7 @@ describe('persistConfig', () => {
     );
   });
 
-  it('should provide default filename options', () => {
+  it('should provide NO default persist filename', () => {
     const projectName = 'my-app';
     expect(
       persistConfig(
@@ -162,14 +239,16 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).toEqual(expect.objectContaining({ filename: `${projectName}-report` }));
+    ).toEqual(expect.not.objectContaining({ filename: expect.anything() }));
   });
 
-  it('should provide default persist filename as [project-name]-report', () => {
+  it('should parse given persist filename', () => {
     const projectName = 'my-app';
     expect(
       persistConfig(
-        {},
+        {
+          filename: 'my-name',
+        },
         {
           workspaceRoot: 'workspaceRoot',
           projectConfig: {
@@ -178,7 +257,7 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).toEqual(expect.objectContaining({ filename: `${projectName}-report` }));
+    ).toEqual(expect.objectContaining({ filename: 'my-name' }));
   });
 });
 

@@ -34,6 +34,10 @@
       },
       "description": "Only run the specified plugins"
     },
+    "config": {
+      "type": "string",
+      "description": "Path to the configuration file"
+    },
     "projectPrefix": {
       "type": "string",
       "description": "Prefix for project name (default is ``)"

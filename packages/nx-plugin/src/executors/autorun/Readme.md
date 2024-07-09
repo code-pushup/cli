@@ -22,7 +22,7 @@ By default, the Nx plugin will derive the options from the executor config.
 The following things happen:
 
 - the format defaults to ['json']
-- the output directory defaults to `${projectRoot}/.code-pushup/${projectName}`
+- the output directory defaults to `${workspaceRoot}/.code-pushup/${projectName}`
 - the config file defaults to `${projectRoot}/code-pushup.config.ts`
 
 - // autorun options in project.json

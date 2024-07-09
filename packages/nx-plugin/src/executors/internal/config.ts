@@ -4,16 +4,25 @@ import { AutorunExecutorOnlyOptions } from '../autorun/types';
 import { parseEnv } from './env';
 import { BaseNormalizedExecutorContext } from './types';
 
-export type GlobalExecutorOptions = { verbose: boolean; progress: boolean };
+export type GlobalExecutorOptions = {
+  verbose?: boolean;
+  progress?: boolean;
+  config?: string;
+};
 
 export function globalConfig(
-  options: Partial<Record<string, unknown>>,
+  options: Partial<GlobalExecutorOptions>,
+  context: BaseNormalizedExecutorContext,
 ): Required<GlobalExecutorOptions> {
+  const { projectConfig } = context ?? {};
+  const { root: projectRoot = '', name: projectName = '' } =
+    projectConfig ?? {};
   // For better debugging use `--verbose --no-progress` as default
-  const { verbose, progress } = options;
+  const { verbose, progress, config } = options;
   return {
     verbose: !!verbose,
     progress: !!progress,
+    config: config ?? join(projectRoot, 'code-pushup.config.json'),
   };
 }
 
@@ -22,7 +31,7 @@ export type ExecutorPersistConfig = PersistConfig & { projectPrefix: string };
 export function persistConfig(
   options: Partial<ExecutorPersistConfig>,
   context: BaseNormalizedExecutorContext,
-): PersistConfig {
+): Partial<PersistConfig> {
   const { projectConfig } = context;
 
   const { name: projectName = '', root: projectRoot = '' } =
@@ -33,12 +42,10 @@ export function persistConfig(
     filename: filenameOptions,
   } = options;
 
-  const postfix = '-report';
-  const filename = `${slugify(filenameOptions ?? projectName)}${postfix}`;
   return {
     format,
     outputDir,
-    filename,
+    ...(filenameOptions ? { filename: slugify(filenameOptions) } : {}),
   };
 }
 
