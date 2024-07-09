@@ -198,6 +198,13 @@ describe('mergeObjects', () => {
     });
   });
 
+  it('should append upload config to plugins configs', () => {
+    expect(mergeConfigs(MOCK_UPLOAD_CONFIG, MOCK_CONFIG_FULL_ESLINT)).toEqual({
+      ...MOCK_UPLOAD_CONFIG,
+      ...MOCK_CONFIG_FULL_ESLINT,
+    });
+  });
+
   it('should replace API key in upload config', () => {
     expect(
       mergeConfigs(MOCK_UPLOAD_CONFIG, {
