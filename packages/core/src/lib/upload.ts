@@ -14,6 +14,7 @@ export type UploadOptions = { upload?: UploadConfig } & {
 /**
  * Uploads collected audits to the portal
  * @param options
+ * @param uploadFn
  */
 export async function upload(
   options: UploadOptions,
