@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { toUnixPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
 
@@ -65,24 +64,19 @@ describe('globalConfig', () => {
   });
 
   it('should provide default global config options', () => {
-    expect(
-      globalConfig(
-        {},
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: 'my-app',
-            root: 'packages/project-root',
-          },
+    const { config } = globalConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
         },
-      ),
-    ).toStrictEqual(
-      expect.objectContaining({
-        config: expect.stringContaining(
-          toUnixPath('packages/project-root/code-pushup.config.json'),
-        ),
-      }),
+      },
     );
+    // to avoid problems with OS paths we write 2 lines to test the path
+    expect(config).toEqual(expect.stringContaining('project-root'));
+    expect(config).toEqual(expect.stringContaining('code-pushup.config.json'));
   });
 
   it('should parse global config options', () => {
