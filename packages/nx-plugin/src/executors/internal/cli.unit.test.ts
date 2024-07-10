@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { objectToCliArgs } from './cli';
+import { createCliCommand, objectToCliArgs } from './cli';
 
 describe('objectToCliArgs', () => {
   it('should handle the "_" argument as script', () => {
@@ -62,5 +62,12 @@ describe('objectToCliArgs', () => {
     expect(() => objectToCliArgs({ param: Symbol('') })).toThrow(
       'Unsupported type',
     );
+  });
+});
+
+describe('createCliCommand', () => {
+  it('should create command out of command name and an object for arguments', () => {
+    const result = createCliCommand('autorun', { verbose: true });
+    expect(result).toEqual('npx @code-pushup/cli autorun --verbose');
   });
 });
