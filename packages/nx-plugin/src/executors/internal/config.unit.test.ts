@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
+import {toUnixPath} from "@code-pushup/test-utils";
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -75,9 +76,9 @@ describe('globalConfig', () => {
           },
         },
       ),
-    ).toEqual(
+    ).toStrictEqual(
       expect.objectContaining({
-        config: 'packages/project-root/code-pushup.config.json',
+        config: expect.stringContaining(toUnixPath('packages/project-root/code-pushup.config.json')),
       }),
     );
   });
