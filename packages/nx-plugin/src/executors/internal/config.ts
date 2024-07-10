@@ -1,22 +1,19 @@
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { AutorunExecutorOnlyOptions } from '../autorun/types';
+import { slugify } from '../../internal/utils';
 import { parseEnv } from './env';
-import { BaseNormalizedExecutorContext } from './types';
-
-export type GlobalExecutorOptions = {
-  verbose?: boolean;
-  progress?: boolean;
-  config?: string;
-};
+import {
+  BaseNormalizedExecutorContext,
+  GlobalExecutorOptions,
+  ProjectExecutorOnlyOptions,
+} from './types';
 
 export function globalConfig(
   options: Partial<GlobalExecutorOptions>,
   context: BaseNormalizedExecutorContext,
 ): Required<GlobalExecutorOptions> {
-  const { projectConfig } = context ?? {};
-  const { root: projectRoot = '', name: projectName = '' } =
-    projectConfig ?? {};
+  const { projectConfig } = context;
+  const { root: projectRoot = '' } = projectConfig ?? {};
   // For better debugging use `--verbose --no-progress` as default
   const { verbose, progress, config } = options;
   return {
@@ -26,10 +23,8 @@ export function globalConfig(
   };
 }
 
-export type ExecutorPersistConfig = PersistConfig & { projectPrefix: string };
-
 export function persistConfig(
-  options: Partial<ExecutorPersistConfig>,
+  options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
   context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
   const { projectConfig } = context;
@@ -37,7 +32,7 @@ export function persistConfig(
   const { name: projectName = '', root: projectRoot = '' } =
     projectConfig ?? {};
   const {
-    format = ['json'], // * - For all formats use `--persist.format=md,json`
+    format = ['json'],
     outputDir = join(projectRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename: filenameOptions,
   } = options;
@@ -49,13 +44,10 @@ export function persistConfig(
   };
 }
 
-export type ExecutorUploadConfig = UploadConfig &
-  Partial<Pick<AutorunExecutorOnlyOptions, 'projectPrefix'>>;
-
-export async function uploadConfig(
-  options: Partial<ExecutorUploadConfig>,
+export function uploadConfig(
+  options: Partial<UploadConfig & ProjectExecutorOnlyOptions>,
   context: BaseNormalizedExecutorContext,
-): Promise<Partial<UploadConfig>> {
+): Partial<UploadConfig> {
   const { projectConfig, workspaceRoot } = context;
 
   const { name: projectName } = projectConfig ?? {};
@@ -69,19 +61,11 @@ export async function uploadConfig(
           project: applyPrefix ? `${prefix}${projectName}` : projectName, // provide correct project
         }
       : {}),
-    ...(await parseEnv(process.env)),
+    ...parseEnv(process.env),
     ...Object.fromEntries(
       Object.entries({ server, apiKey, organization, project, timeout }).filter(
         ([_, v]) => v !== undefined,
       ),
     ),
   };
-}
-
-export function slugify(text: string): string {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+|\//g, '-')
-    .replace(/[^a-z\d-]/g, '');
 }

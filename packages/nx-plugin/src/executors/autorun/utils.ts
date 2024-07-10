@@ -5,10 +5,9 @@ import {
   AutorunCommandExecutorOptions,
 } from './schema';
 
-export function autorunExecutorOnlyConfig(
+export function parseAutorunExecutorOnlyOptions(
   options: Partial<AutorunCommandExecutorOnlyOptions>,
 ): AutorunCommandExecutorOnlyOptions {
-  // For better debugging use `--verbose --no-progress` as default
   const { projectPrefix, dryRun, onlyPlugins } = options;
   return {
     ...(projectPrefix == null ? {} : { projectPrefix }),
@@ -17,15 +16,15 @@ export function autorunExecutorOnlyConfig(
   };
 }
 
-export async function getExecutorOptions(
+export function parseAutorunExecutorOptions(
   options: Partial<AutorunCommandExecutorOptions>,
   normalizedContext: NormalizedExecutorContext,
-): Promise<AutorunCommandExecutorOptions> {
+): AutorunCommandExecutorOptions {
   const { projectPrefix, persist, upload } = options;
   return {
+    ...parseAutorunExecutorOnlyOptions(options),
     ...globalConfig(options, normalizedContext),
-    ...autorunExecutorOnlyConfig(options),
     persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),
-    upload: await uploadConfig({ projectPrefix, ...upload }, normalizedContext),
+    upload: uploadConfig({ projectPrefix, ...upload }, normalizedContext),
   };
 }

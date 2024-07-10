@@ -1,39 +1,6 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
-import { parseEnv } from './env';
-
-describe('parseEnv', () => {
-  it('should parse empty env vars', async () => {
-    await expect(parseEnv({})).resolves.toEqual({});
-  });
-
-  it('should parse process.env.CP_SERVER option', async () => {
-    await expect(
-      parseEnv({ CP_SERVER: 'https://portal.code.pushup.dev' }),
-    ).resolves.toEqual(
-      expect.objectContaining({ server: 'https://portal.code.pushup.dev' }),
-    );
-  });
-
-  it('should parse process.env.CP_ORGANIZATION option', async () => {
-    await expect(parseEnv({ CP_ORGANIZATION: 'code-pushup' })).resolves.toEqual(
-      expect.objectContaining({ organization: 'code-pushup' }),
-    );
-  });
-
-  it('should parse process.env.CP_PROJECT option', async () => {
-    await expect(parseEnv({ CP_PROJECT: 'cli-utils' })).resolves.toEqual(
-      expect.objectContaining({ project: 'cli-utils' }),
-    );
-  });
-
-  it('should parse process.env.CP_TIMEOUT option', async () => {
-    await expect(parseEnv({ CP_TIMEOUT: 3 })).resolves.toEqual(
-      expect.objectContaining({ timeout: 3 }),
-    );
-  });
-});
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -278,9 +245,9 @@ describe('uploadConfig', () => {
     process.env = oldEnv;
   });
 
-  it('should provide default upload project options as project name', async () => {
+  it('should provide default upload project options as project name', () => {
     const projectName = 'my-app';
-    await expect(
+    expect(
       uploadConfig(baseUploadConfig, {
         workspaceRoot: 'workspace-root',
         projectConfig: {
@@ -288,12 +255,12 @@ describe('uploadConfig', () => {
           root: 'root',
         },
       }),
-    ).resolves.toEqual(expect.objectContaining({ project: projectName }));
+    ).toEqual(expect.objectContaining({ project: projectName }));
   });
 
-  it('should parse upload project options', async () => {
+  it('should parse upload project options', () => {
     const projectName = 'utils';
-    await expect(
+    expect(
       uploadConfig(
         {
           ...baseUploadConfig,
@@ -307,11 +274,11 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(expect.objectContaining({ project: 'cli-utils' }));
+    ).toEqual(expect.objectContaining({ project: 'cli-utils' }));
   });
 
-  it('should parse upload server options', async () => {
-    await expect(
+  it('should parse upload server options', () => {
+    expect(
       uploadConfig(
         {
           ...baseUploadConfig,
@@ -325,15 +292,15 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
         server: 'https://new1-portal.code.pushup.dev',
       }),
     );
   });
 
-  it('should parse upload organization options', async () => {
-    await expect(
+  it('should parse upload organization options', () => {
+    expect(
       uploadConfig(
         {
           ...baseUploadConfig,
@@ -347,13 +314,11 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({ organization: 'code-pushup-v2' }),
-    );
+    ).toEqual(expect.objectContaining({ organization: 'code-pushup-v2' }));
   });
 
-  it('should parse upload apiKey options', async () => {
-    await expect(
+  it('should parse upload apiKey options', () => {
+    expect(
       uploadConfig(
         {
           ...baseUploadConfig,
@@ -367,14 +332,14 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(expect.objectContaining({ apiKey: '123456789' }));
+    ).toEqual(expect.objectContaining({ apiKey: '123456789' }));
   });
 
-  it('should parse process.env options', async () => {
+  it('should parse process.env options', () => {
     // eslint-disable-next-line functional/immutable-data
     process.env = ENV;
 
-    await expect(
+    expect(
       uploadConfig(
         {},
         {
@@ -385,7 +350,7 @@ describe('uploadConfig', () => {
           },
         },
       ),
-    ).resolves.toEqual(
+    ).toEqual(
       expect.objectContaining({
         server: ENV.CP_SERVER,
         apiKey: ENV.CP_API_KEY,

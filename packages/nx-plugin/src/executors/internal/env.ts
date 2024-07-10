@@ -13,10 +13,8 @@ const envSchema = z
   .partial();
 type UploadEnvVars = z.infer<typeof envSchema>;
 
-export async function parseEnv(
-  env: unknown = {},
-): Promise<Partial<UploadConfig>> {
-  const upload: UploadEnvVars = await envSchema.parseAsync(env);
+export function parseEnv(env: unknown = {}): Partial<UploadConfig> {
+  const upload: UploadEnvVars = envSchema.parse(env);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.fromEntries(
     Object.entries(upload).map(([envKey, value]) => {

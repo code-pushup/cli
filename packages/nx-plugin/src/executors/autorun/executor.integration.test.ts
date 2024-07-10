@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
 import { runAutorunExecutor } from './executor';
-import { getExecutorOptions } from './utils';
+import { parseAutorunExecutorOptions } from './utils';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
@@ -93,7 +93,7 @@ describe('getExecutorOptions', () => {
     },
   };
   it('should call other functions with options', async () => {
-    const executorOptions = await getExecutorOptions(
+    const executorOptions = await parseAutorunExecutorOptions(
       {
         verbose: true,
         persist: { filename: 'my-name' },

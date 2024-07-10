@@ -1,40 +1,43 @@
 import { afterEach, beforeEach, expect } from 'vitest';
-import { autorunExecutorOnlyConfig, getExecutorOptions } from './utils';
+import {
+  parseAutorunExecutorOnlyOptions,
+  parseAutorunExecutorOptions,
+} from './utils';
 
 describe('autorunExecutorOnlyConfig', () => {
   it('should provide NO default projectPrefix', () => {
-    expect(autorunExecutorOnlyConfig({})).toStrictEqual(
+    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ projectPrefix: expect.anything() }),
     );
   });
 
   it('should process given projectPrefix', () => {
-    expect(autorunExecutorOnlyConfig({ projectPrefix: 'cli' })).toStrictEqual(
-      expect.objectContaining({ projectPrefix: 'cli' }),
-    );
+    expect(
+      parseAutorunExecutorOnlyOptions({ projectPrefix: 'cli' }),
+    ).toStrictEqual(expect.objectContaining({ projectPrefix: 'cli' }));
   });
 
   it('should provide NO default dryRun', () => {
-    expect(autorunExecutorOnlyConfig({})).toStrictEqual(
+    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ dryRun: expect.anything() }),
     );
   });
 
   it('should process given dryRun', () => {
-    expect(autorunExecutorOnlyConfig({ dryRun: false })).toStrictEqual(
+    expect(parseAutorunExecutorOnlyOptions({ dryRun: false })).toStrictEqual(
       expect.objectContaining({ dryRun: false }),
     );
   });
 
   it('should provide default onlyPlugins', () => {
-    expect(autorunExecutorOnlyConfig({})).toStrictEqual(
+    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ onlyPlugins: ['json'] }),
     );
   });
 
   it('should process given onlyPlugins', () => {
     expect(
-      autorunExecutorOnlyConfig({ onlyPlugins: ['md', 'json'] }),
+      parseAutorunExecutorOnlyOptions({ onlyPlugins: ['md', 'json'] }),
     ).toStrictEqual(expect.objectContaining({ onlyPlugins: ['md', 'json'] }));
   });
 });
@@ -51,13 +54,13 @@ describe('getExecutorOptions', () => {
     process.env = oldEnv;
   });
 
-  it('should leverage other config helper to assemble the executor config', async () => {
+  it('should leverage other config helper to assemble the executor config', () => {
     // eslint-disable-next-line functional/immutable-data
     process.env = {
       outputDir: 'from-env-vars',
     };
     const projectName = 'my-app';
-    const executorOptions = await getExecutorOptions(
+    const executorOptions = parseAutorunExecutorOptions(
       {
         persist: {
           filename: 'from-options',

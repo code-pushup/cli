@@ -1,14 +1,15 @@
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { GlobalExecutorOptions } from '../internal/config';
 import {
   CollectExecutorOnlyOptions,
   GeneralExecutorOnlyOptions,
-  PersistExecutorOnlyOptions,
+  GlobalExecutorOptions,
+  ProjectExecutorOnlyOptions,
 } from '../internal/types';
 
-export type AutorunCommandExecutorOnlyOptions = PersistExecutorOnlyOptions &
+export type AutorunCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
   CollectExecutorOnlyOptions &
   GeneralExecutorOnlyOptions;
+
 export type AutorunCommandExecutorOptions = Partial<
   {
     upload: Partial<UploadConfig>;

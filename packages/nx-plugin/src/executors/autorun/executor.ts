@@ -6,27 +6,35 @@ import { createCliCommand } from '../internal/cli';
 import { normalizeContext } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
 import { AutorunCommandExecutorOptions } from './schema';
-import { getExecutorOptions } from './utils';
+import { parseAutorunExecutorOptions } from './utils';
 
 export default runAutorunExecutor;
-export async function runAutorunExecutor(
+
+export function runAutorunExecutor(
   options: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ) {
   const normalizedContext = normalizeContext(context);
-
-  const { dryRun } = options;
-  const cliArgumentObject = await getExecutorOptions(
+  const cliArgumentObject = parseAutorunExecutorOptions(
     options,
     normalizedContext,
   );
   const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
 
+  const { dryRun } = options;
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
   } else {
-    // eslint-disable-next-line n/no-sync
-    execSync(command, context.cwd ? { cwd: context.cwd } : {});
+    try {
+      // eslint-disable-next-line n/no-sync
+      execSync(command, context.cwd ? { cwd: context.cwd } : {});
+    } catch (error) {
+      return {
+        success: false,
+        command,
+        error,
+      };
+    }
   }
 
   return {
