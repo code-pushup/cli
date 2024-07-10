@@ -2,53 +2,69 @@ import {
   Tree,
   formatFiles,
   generateFiles,
-  logger,
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
 import { join } from 'node:path';
-import { ConfigurationGeneratorSchema } from './schema';
+import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { ConfigurationGeneratorOptions } from './schema';
 
 export async function configurationGenerator(
   tree: Tree,
-  options: ConfigurationGeneratorSchema,
+  options: ConfigurationGeneratorOptions,
 ) {
   const projectConfiguration = readProjectConfiguration(tree, options.project);
 
-  const { root, targets } = projectConfiguration;
+  generateCodePushupConfig(tree, projectConfiguration, options);
 
+  addTargetToProject(tree, projectConfiguration, options);
+
+  await formatFiles(tree);
+}
+
+export function addTargetToProject(
+  tree: Tree,
+  projectConfiguration: ProjectConfiguration,
+  options: ConfigurationGeneratorOptions,
+) {
+  const { targets } = projectConfiguration;
+  const { targetName, project, skipTarget } = options;
+
+  if (skipTarget) {
+    return void 0;
+  }
+
+  const codePushupTargetConfig = {
+    executor: '@code-pushup/nx-plugin:autorun',
+  };
+
+  updateProjectConfiguration(tree, project, {
+    ...projectConfiguration,
+    targets: {
+      ...targets,
+      [targetName ?? DEFAULT_TARGET_NAME]: codePushupTargetConfig,
+    },
+  });
+}
+
+export function generateCodePushupConfig(
+  tree: Tree,
+  projectConfiguration: ProjectConfiguration,
+  options: ConfigurationGeneratorOptions,
+) {
+  const { root } = projectConfiguration;
   const supportedFormats = ['ts', 'mjs', 'js'];
   const firstExistingFormat = supportedFormats.find(ext =>
     tree.exists(join(root, `code-pushup.config.${ext}`)),
   );
   if (firstExistingFormat) {
-    logger.warn(
+    console.warn(
       `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
     );
-    return;
+  } else {
+    generateFiles(tree, join(__dirname, 'files'), root, options);
   }
-
-  generateFiles(tree, join(__dirname, 'files'), root, options);
-
-  // @TODO remove when implementing https://github.com/code-pushup/cli/issues/619
-  updateProjectConfiguration(tree, options.project, {
-    ...projectConfiguration,
-    targets: {
-      ...targets,
-      'code-pushup': {
-        executor: 'nx:run-commands',
-        options: {
-          command: `code-pushup autorun --no-progress --config=${join(
-            './',
-            root,
-            'code-pushup.config.ts',
-          )}`,
-        },
-      },
-    },
-  });
-
-  await formatFiles(tree);
 }
 
 export default configurationGenerator;
