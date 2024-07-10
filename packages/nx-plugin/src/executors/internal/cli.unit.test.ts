@@ -68,6 +68,6 @@ describe('objectToCliArgs', () => {
 describe('createCliCommand', () => {
   it('should create command out of command name and an object for arguments', () => {
     const result = createCliCommand('autorun', { verbose: true });
-    expect(result).toEqual('npx @code-pushup/cli autorun --verbose');
+    expect(result).toBe('npx @code-pushup/cli autorun --verbose');
   });
 });
