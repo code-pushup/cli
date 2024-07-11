@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
+import { toNormalizedPath, toUnixPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
+import { normalizeContext } from './context';
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -74,9 +76,11 @@ describe('globalConfig', () => {
         },
       },
     );
-    // to avoid problems with OS paths we write 2 lines to test the path
-    expect(config).toEqual(expect.stringContaining('project-root'));
-    expect(config).toEqual(expect.stringContaining('code-pushup.config.json'));
+    expect(toNormalizedPath(config)).toEqual(
+      expect.stringContaining(
+        toNormalizedPath('project-root/code-pushup.config.json'),
+      ),
+    );
   });
 
   it('should parse global config options', () => {
@@ -150,43 +154,39 @@ describe('persistConfig', () => {
 
   it('should provide default outputDir options', () => {
     const projectName = 'my-app';
-    expect(
-      persistConfig(
-        {},
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: projectName,
-            root: 'packages/project-root',
-          },
+    const { outputDir } = persistConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: projectName,
+          root: 'packages/project-root',
         },
+      },
+    );
+    expect(outputDir).toEqual(
+      expect.stringContaining(
+        toNormalizedPath(`packages/project-root/.code-pushup/${projectName}`),
       ),
-    ).toEqual(
-      expect.objectContaining({
-        outputDir: `packages/project-root/.code-pushup/${projectName}`,
-      }),
     );
   });
 
   it('should parse given outputDir options', () => {
     const outputDir = '../dist/packages/test-folder';
-    expect(
-      persistConfig(
-        {
-          outputDir,
+    const { outputDir: resultingOutDir } = persistConfig(
+      {
+        outputDir,
+      },
+      {
+        workspaceRoot: 'workspaceRoot',
+        projectConfig: {
+          name: 'my-app',
+          root: 'root',
         },
-        {
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
-      ),
-    ).toEqual(
-      expect.objectContaining({
-        outputDir: expect.stringContaining('test-folder'),
-      }),
+      },
+    );
+    expect(resultingOutDir).toEqual(
+      expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
     );
   });
 
