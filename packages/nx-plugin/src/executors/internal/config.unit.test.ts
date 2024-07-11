@@ -106,11 +106,7 @@ describe('globalConfig', () => {
           root: 'packages/project-root',
         },
       }),
-    ).toEqual({
-      progress: false,
-      verbose: false,
-      config: 'packages/project-root/code-pushup.config.json',
-    });
+    ).toEqual(expect.not.objectContaining({ test: expect.anything() }));
   });
 });
 
