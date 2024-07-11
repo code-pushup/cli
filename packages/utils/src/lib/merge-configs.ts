@@ -1,8 +1,6 @@
 import {
   CategoryConfig,
   CoreConfig,
-  Group,
-  GroupRef,
   PersistConfig,
   PluginConfig,
   UploadConfig,
@@ -45,7 +43,10 @@ function mergeCategories(
           ...existingObject,
           ...newObject,
 
-          refs: mergeBySlugs(existingObject?.refs, newObject.refs),
+          refs: mergeByUniqueCategoryRefCombination(
+            existingObject?.refs,
+            newObject.refs,
+          ),
         });
       } else {
         mergedMap.set(newObject.slug, newObject);
@@ -76,28 +77,7 @@ function mergePlugins(
 
   const addToMap = (plugins: PluginConfig[]) => {
     plugins.forEach(newObject => {
-      if (mergedMap.has(newObject.slug)) {
-        const existingObject: PluginConfig | undefined = mergedMap.get(
-          newObject.slug,
-        );
-
-        mergedMap.set(newObject.slug, {
-          ...existingObject,
-          ...newObject,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          ...(newObject.audits && {
-            audits: mergeBySlugs(existingObject?.audits, newObject.audits),
-          }),
-          ...((existingObject?.groups ?? newObject.groups) && {
-            groups: mergeGroupsBySlugs(
-              existingObject?.groups,
-              newObject.groups,
-            ),
-          }),
-        });
-      } else {
-        mergedMap.set(newObject.slug, newObject);
-      }
+      mergedMap.set(newObject.slug, newObject);
     });
   };
 
@@ -109,69 +89,6 @@ function mergePlugins(
   }
 
   return { plugins: [...mergedMap.values()] };
-}
-
-function mergeGroupRefsBySlugs<T extends GroupRef>(
-  a: T[] | undefined,
-  b: T[] | undefined,
-): T[] {
-  const map = new Map<string, T>();
-
-  const addToMap = (groups: T[]) => {
-    groups.forEach(group => {
-      if (map.has(group.slug)) {
-        map.set(group.slug, { ...map.get(group.slug), ...group });
-      } else {
-        map.set(group.slug, group);
-      }
-    });
-  };
-
-  // Add objects from both arrays to the map
-  if (a) {
-    addToMap(a);
-  }
-  if (b) {
-    addToMap(b);
-  }
-
-  return [...map.values()];
-}
-
-function mergeGroupsBySlugs<T extends Group>(
-  a: T[] | undefined,
-  b: T[] | undefined,
-) {
-  const map = new Map<string, T>();
-
-  const addToMap = (groups: T[]) => {
-    groups.forEach(newGroup => {
-      const existingGroup: Group | undefined = map.get(newGroup.slug);
-
-      if (map.has(newGroup.slug)) {
-        map.set(newGroup.slug, {
-          ...map.get(newGroup.slug),
-          ...newGroup,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          ...(newGroup.refs && {
-            refs: mergeGroupRefsBySlugs(existingGroup?.refs, newGroup.refs),
-          }),
-        });
-      } else {
-        map.set(newGroup.slug, newGroup);
-      }
-    });
-  };
-
-  // Add objects from both arrays to the map
-  if (a) {
-    addToMap(a);
-  }
-  if (b) {
-    addToMap(b);
-  }
-
-  return [...map.values()];
 }
 
 function mergePersist(
@@ -189,18 +106,21 @@ function mergePersist(
   }
 }
 
-function mergeBySlugs<T extends { slug: string }>(
-  a: T[] | undefined,
-  b: T[] | undefined,
-) {
+function mergeByUniqueCategoryRefCombination<
+  T extends { slug: string; type: string; plugin: string },
+>(a: T[] | undefined, b: T[] | undefined) {
   const map = new Map<string, T>();
 
   const addToMap = (refs: T[]) => {
     refs.forEach(ref => {
-      if (map.has(ref.slug)) {
-        map.set(ref.slug, { ...map.get(ref.slug), ...ref });
+      const uniqueIdentification = `${ref.type}:${ref.plugin}:${ref.slug}`;
+      if (map.has(uniqueIdentification)) {
+        map.set(uniqueIdentification, {
+          ...map.get(uniqueIdentification),
+          ...ref,
+        });
       } else {
-        map.set(ref.slug, ref);
+        map.set(uniqueIdentification, ref);
       }
     });
   };
