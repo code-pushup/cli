@@ -40,12 +40,12 @@ export function validatePluginFilterOption(
     );
   }
 
-  if (categories.length > 0) {
-    const removedCategorieSlugs = filterItemRefsBy(categories, ({ plugin }) =>
+  if (categories.length > 0 && verbose) {
+    const removedCategorySlugs = filterItemRefsBy(categories, ({ plugin }) =>
       filterFunction(plugin),
     ).map(({ slug }) => slug);
     ui().logger.info(
-      `The --${filterOption} argument removed categories with "${removedCategorieSlugs.join(
+      `The --${filterOption} argument removed categories with "${removedCategorySlugs.join(
         '", "',
       )}" slugs.
     `,

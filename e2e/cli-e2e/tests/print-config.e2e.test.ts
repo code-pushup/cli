@@ -14,7 +14,6 @@ describe('print-config', () => {
         command: 'code-pushup',
         args: [
           'print-config',
-          '--verbose',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
           '--tsconfig=tsconfig.base.json',
@@ -46,17 +45,12 @@ describe('print-config', () => {
             server: 'https://e2e.com/api',
           },
           plugins: [
-            expect.objectContaining({ slug: 'eslint', title: 'ESLint' }),
             expect.objectContaining({
               slug: 'coverage',
               title: 'Code coverage',
             }),
           ],
-          categories: [
-            expect.objectContaining({ slug: 'bug-prevention' }),
-            expect.objectContaining({ slug: 'code-style' }),
-            expect.objectContaining({ slug: 'code-coverage' }),
-          ],
+          categories: [expect.objectContaining({ slug: 'code-coverage' })],
           onlyPlugins: ['coverage'],
           skipPlugins: ['eslint'],
         }),
