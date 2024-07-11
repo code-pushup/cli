@@ -1,3 +1,3 @@
-export function toUnixPath(path: string): string {
+export function toNormalizedPath(path: string): string {
   return path.replace(/\\/g, '/');
 }
