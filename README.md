@@ -6,7 +6,7 @@
 
 ---
 
-[![version](https://img.shields.io/github/package-json/v/code-pushup/cli)](https://www.npmjs.com/package/%40code-pushup%2Fcli)
+[![version](https://img.shields.io/github/v/release/code-pushup/cli)](https://github.com/code-pushup/cli/releases/latest)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
 [![license](https://img.shields.io/github/license/code-pushup/cli)](https://opensource.org/licenses/MIT)
 [![commit activity](https://img.shields.io/github/commit-activity/m/code-pushup/cli)](https://github.com/code-pushup/cli/pulse/monthly)
