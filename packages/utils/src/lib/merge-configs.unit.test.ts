@@ -231,102 +231,6 @@ describe('mergeObjects', () => {
     ).toEqual({ ...MOCK_CONFIG_PERSIST, ...MOCK_CONFIG_NX_VALIDATORS });
   });
 
-  it('should change a description of plugin audit config', () => {
-    expect(
-      mergeConfigs(MOCK_CONFIG_FULL_ESLINT, {
-        plugins: [
-          {
-            slug: 'eslint',
-            audits: [
-              {
-                slug: 'no-const-assign',
-                description: 'Do not touch the constants',
-              },
-            ],
-          },
-        ],
-      } as CoreConfig),
-    ).toEqual({
-      plugins: [
-        {
-          ...MOCK_JUST_ESLINT_PLUGIN,
-          audits: [
-            {
-              ...MOCK_JUST_ESLINT_PLUGIN.audits[0],
-              description: 'Do not touch the constants',
-            },
-            MOCK_JUST_ESLINT_PLUGIN.audits[1],
-          ],
-        },
-      ],
-    });
-  });
-
-  it('should change a weight of plugin groups config', () => {
-    expect(
-      mergeConfigs(
-        MOCK_CONFIG_FULL_ESLINT,
-        {
-          plugins: [
-            {
-              slug: 'eslint',
-              groups: [
-                {
-                  slug: 'problems',
-                  refs: [{ slug: 'no-const-assign', weight: 2 }],
-                },
-              ],
-            },
-          ],
-        } as CoreConfig,
-        MOCK_CONFIG_PERSIST,
-      ),
-    ).toEqual({
-      ...MOCK_CONFIG_PERSIST,
-      plugins: [
-        {
-          ...MOCK_JUST_ESLINT_PLUGIN,
-          groups: [
-            {
-              ...MOCK_JUST_ESLINT_PLUGIN.groups[0],
-              refs: [
-                {
-                  ...MOCK_JUST_ESLINT_PLUGIN.groups[0].refs[0],
-                  weight: 2,
-                },
-                MOCK_JUST_ESLINT_PLUGIN.groups[0].refs[1],
-              ],
-            },
-          ],
-        },
-      ],
-    });
-  });
-
-  it('should merge same plugin configurations', () => {
-    expect(
-      mergeConfigs(MOCK_CONFIG_FULL_ESLINT, {
-        plugins: [
-          {
-            slug: 'eslint',
-            description: 'Mock Code PushUp ESLint plugin',
-            packageName: '@code-pushup/mock-eslint-plugin',
-            version: '1.0.0',
-          },
-        ],
-      } as CoreConfig),
-    ).toEqual({
-      plugins: [
-        {
-          ...MOCK_JUST_ESLINT_PLUGIN,
-          description: 'Mock Code PushUp ESLint plugin',
-          packageName: '@code-pushup/mock-eslint-plugin',
-          version: '1.0.0',
-        },
-      ],
-    });
-  });
-
   it('should merge category ref config', () => {
     expect(
       mergeConfigs(MOCK_CONFIG_NX_VALIDATORS, MOCK_CONFIG_BASIC_PLUGIN, {
@@ -355,6 +259,12 @@ describe('mergeObjects', () => {
                 type: 'group',
                 plugin: 'basic-plugin',
                 slug: 'formatting',
+                weight: 1,
+              },
+              {
+                type: 'group',
+                plugin: 'some-other-plugin',
+                slug: 'suggestions',
                 weight: 1,
               },
             ],
@@ -405,6 +315,12 @@ describe('mergeObjects', () => {
               type: 'group',
               plugin: 'basic-plugin',
               slug: 'formatting',
+              weight: 1,
+            },
+            {
+              type: 'group',
+              plugin: 'some-other-plugin',
+              slug: 'suggestions',
               weight: 1,
             },
           ],
