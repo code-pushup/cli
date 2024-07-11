@@ -184,7 +184,7 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(resultingOutDir).toEqual(
+    expect(toNormalizedPath(resultingOutDir)).toEqual(
       expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
     );
   });
