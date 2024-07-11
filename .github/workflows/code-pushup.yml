@@ -16,7 +16,7 @@ jobs:
   code-pushup:
     runs-on: ubuntu-latest
     name: Code PushUp
-    if: github.repository_owner == 'code-pushup'
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
       CP_SERVER: ${{ secrets.CP_SERVER }}
       CP_API_KEY: ${{ secrets.CP_API_KEY }}
