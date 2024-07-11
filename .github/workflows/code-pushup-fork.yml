@@ -1,9 +1,7 @@
-name: Code PushUp
+name: Code PushUp (fork)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  pull_request_target:
     branches: [main]
 
 env:
@@ -16,12 +14,7 @@ jobs:
   code-pushup:
     runs-on: ubuntu-latest
     name: Code PushUp
-    if: github.repository_owner == 'code-pushup'
-    env:
-      CP_SERVER: ${{ secrets.CP_SERVER }}
-      CP_API_KEY: ${{ secrets.CP_API_KEY }}
-      CP_ORGANIZATION: code-pushup
-      CP_PROJECT: cli
+    if: github.repository_owner != 'code-pushup'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
