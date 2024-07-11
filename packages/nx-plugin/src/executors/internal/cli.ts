@@ -32,11 +32,6 @@ export function objectToCliArgs<
     if (Array.isArray(value)) {
       return value.map(v => `${prefix}${key}="${v}"`);
     }
-    // "--*" arguments ==========
-
-    if (Array.isArray(value)) {
-      return value.map(v => `${prefix}${key}="${v}"`);
-    }
 
     if (typeof value === 'object') {
       return Object.entries(value as Record<string, unknown>).map(

@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { createCliCommand, objectToCliArgs } from './cli';
 
 describe('objectToCliArgs', () => {
+  it('should empty params', () => {
+    const result = objectToCliArgs();
+    expect(result).toEqual([]);
+  });
+
   it('should handle the "_" argument as script', () => {
     const params = { _: 'bin.js' };
     const result = objectToCliArgs(params);
@@ -56,6 +61,12 @@ describe('objectToCliArgs', () => {
     const params = { format: { json: 'simple' } };
     const result = objectToCliArgs(params);
     expect(result).toStrictEqual(['--format.json="simple"']);
+  });
+
+  it('should handle objects with undefined', () => {
+    const params = { format: undefined };
+    const result = objectToCliArgs(params);
+    expect(result).toStrictEqual([]);
   });
 
   it('should throw error for unsupported type', () => {
