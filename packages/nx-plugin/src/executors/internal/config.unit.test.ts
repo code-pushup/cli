@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import { toNormalizedPath, toUnixPath } from '@code-pushup/test-utils';
+import { toNormalizedPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
-import { normalizeContext } from './context';
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -164,7 +163,7 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(outputDir).toEqual(
+    expect(toNormalizedPath(outputDir)).toEqual(
       expect.stringContaining(
         toNormalizedPath(`packages/project-root/.code-pushup/${projectName}`),
       ),
