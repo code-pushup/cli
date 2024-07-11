@@ -97,6 +97,17 @@ describe('globalConfig', () => {
     ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
   });
 
+  it('should work with empty projectConfig', () => {
+    expect(
+      globalConfig(
+        {},
+        {
+          workspaceRoot: '/test/root/workspace-root',
+        },
+      ),
+    ).toEqual(expect.objectContaining({ config: 'code-pushup.config.json' }));
+  });
+
   it('should exclude other options', () => {
     expect(
       globalConfig({ test: 42 } as unknown as { verbose: boolean }, {
@@ -182,6 +193,19 @@ describe('persistConfig', () => {
     );
     expect(toNormalizedPath(resultingOutDir)).toEqual(
       expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
+    );
+  });
+
+  it('should work with empty projectConfig', () => {
+    const { outputDir } = persistConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+      },
+    );
+
+    expect(toNormalizedPath(outputDir)).toEqual(
+      expect.stringContaining(toNormalizedPath('.code-pushup')),
     );
   });
 
