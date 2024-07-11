@@ -1,5 +1,12 @@
 name: Code PushUp (fork)
 
+# separated from code-pushup.yml for security reasons
+# => requires permissions to create PR comment
+# => for PRs from forks, needs to run on `pull_request_target`, not `pull_request`
+# => `pull_request_target` is a security risk when secrets are being used
+# => secrets needed for code-pushup upload
+# => code-pushup for forks runs in separate workflow with no secrets access
+
 on:
   pull_request_target:
     branches: [main]
