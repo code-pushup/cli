@@ -5,7 +5,7 @@
 #### Init
 
 Install JS packages and register plugin.
-See [init docs](./src/generators/init/Readme.md) for details
+See [init docs](./src/generators/init/README.md) for details
 
 Examples:
 
@@ -15,7 +15,7 @@ Examples:
 #### Configuration
 
 Adds a `code-pushup` target to your `project.json`.
-See [configuration docs](./src/generators/configuration/Readme.md) for details
+See [configuration docs](./src/generators/configuration/README.md) for details
 
 Examples:
 
