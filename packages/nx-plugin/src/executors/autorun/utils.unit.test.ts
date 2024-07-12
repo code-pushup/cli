@@ -1,4 +1,5 @@
 import { MockInstance, expect, vi } from 'vitest';
+import { toNormalizedPath } from '@code-pushup/test-utils';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
@@ -70,17 +71,26 @@ describe('parseAutorunExecutorOptions', () => {
         },
       },
     );
-    expect(executorOptions).toStrictEqual({
-      config: 'root/code-pushup.config.ts',
-      progress: false,
-      verbose: false,
-      persist: {
-        filename: 'from-options',
-        outputDir: 'workspaceRoot/.code-pushup/my-app',
-      },
-      upload: {
-        project: projectName,
-      },
-    });
+    expect(toNormalizedPath(executorOptions.config)).toBe(
+      toNormalizedPath('root/code-pushup.config.ts'),
+    );
+    expect(executorOptions).toEqual(
+      expect.objectContaining({
+        progress: false,
+        verbose: false,
+        upload: { project: projectName },
+      }),
+    );
+    expect(executorOptions).toEqual(
+      expect.objectContaining({
+        persist: {
+          filename: 'from-options',
+          outputDir: 'workspaceRoot/.code-pushup/my-app',
+        },
+      }),
+    );
+    expect(toNormalizedPath(executorOptions?.persist?.outputDir)).toBe(
+      toNormalizedPath('workspaceRoot/.code-pushup/my-app'),
+    );
   });
 });
