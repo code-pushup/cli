@@ -11,11 +11,13 @@
       }
     },
     "code-pushup": {
+      "command": "npx dist/packages/cli",
       "options": {
         "persist": {
           "format": ["json"],
           "filename": "code-pushup",
-          "outputDir": ".code-pushup"
+          "outputDir": ".code-pushup",
+          "target": "build"
         }
       }
     }
