@@ -36,7 +36,7 @@ const context = {
     projects: {
       [projectName]: {
         name: projectName,
-        root: expect.stringContaining(projectName),
+        root: `libs/${projectName}`,
       },
     },
   },
@@ -48,7 +48,7 @@ describe('runAutorunExecutor', () => {
     expect(output.success).toBe(true);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
-      expect.stringContaining(`libs/${projectName}`),
+      expect.stringContaining(projectName),
       {},
     );
   });
