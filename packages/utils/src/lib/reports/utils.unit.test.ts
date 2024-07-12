@@ -439,6 +439,7 @@ describe('applyScoreColor', () => {
       red: vi.fn() as any,
       yellow: vi.fn() as any,
       green: vi.fn() as any,
+      bold: vi.fn() as any,
     };
     applyScoreColor({ score, text: '●' }, style);
     expect(style[methodName]).toHaveBeenCalledWith('●');
@@ -456,6 +457,7 @@ describe('applyScoreColor', () => {
       red: vi.fn() as any,
       yellow: vi.fn() as any,
       green: vi.fn() as any,
+      bold: vi.fn() as any,
     };
     applyScoreColor({ score }, style);
     expect(style[methodName]).toHaveBeenCalledWith((score * 100).toString());

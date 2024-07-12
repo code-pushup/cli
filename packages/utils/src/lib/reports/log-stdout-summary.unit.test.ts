@@ -104,8 +104,8 @@ describe('logCategories', () => {
 
     const output = logs.join('\n');
 
-    expect(output).not.toContain('✅');
-    expect(output).toContain('❌');
+    expect(output).not.toContain('✓');
+    expect(output).toContain('✗');
     expect(output).toContain('Performance');
     expect(output).toContain('42');
     expect(output).toContain('1');
@@ -148,8 +148,8 @@ describe('logCategories', () => {
 
     const output = logs.join('\n');
 
-    expect(output).toContain('✅');
-    expect(output).not.toContain('❌');
+    expect(output).toContain('✓');
+    expect(output).not.toContain('✗');
     expect(output).toContain('Performance');
     expect(output).toContain('100');
     expect(output).toContain('1');
