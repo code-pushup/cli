@@ -32,14 +32,14 @@ export function persistConfig(
   const { name: projectName = '', root: projectRoot = '' } =
     projectConfig ?? {};
   const {
-    format = ['json'],
+    format,
     outputDir = join(projectRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename: filenameOptions,
   } = options;
 
   return {
-    format,
     outputDir,
+    ...(format ? { format } : {}),
     ...(filenameOptions ? { filename: slugify(filenameOptions) } : {}),
   };
 }

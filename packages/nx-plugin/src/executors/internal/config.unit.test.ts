@@ -77,7 +77,7 @@ describe('globalConfig', () => {
     );
     expect(toNormalizedPath(config)).toEqual(
       expect.stringContaining(
-        toNormalizedPath('project-root/code-pushup.config.json'),
+        toNormalizedPath('project-root/code-pushup.config.ts'),
       ),
     );
   });
@@ -105,7 +105,7 @@ describe('globalConfig', () => {
           workspaceRoot: '/test/root/workspace-root',
         },
       ),
-    ).toEqual(expect.objectContaining({ config: 'code-pushup.config.json' }));
+    ).toEqual(expect.objectContaining({ config: 'code-pushup.config.ts' }));
   });
 
   it('should exclude other options', () => {
@@ -122,7 +122,7 @@ describe('globalConfig', () => {
 });
 
 describe('persistConfig', () => {
-  it('should provide default persist format options of ["json"]', () => {
+  it('should NOT provide default persist format options', () => {
     expect(
       persistConfig(
         {},
@@ -134,7 +134,7 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).toEqual(expect.objectContaining({ format: ['json'] }));
+    ).toEqual(expect.not.objectContaining({ format: expect.anything() }));
   });
 
   it('should parse given persist format option', () => {
