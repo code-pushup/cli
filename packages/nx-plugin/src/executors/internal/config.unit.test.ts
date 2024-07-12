@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect } from 'vitest';
+import { MockInstance, describe, expect } from 'vitest';
+import { toNormalizedPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
 
@@ -64,21 +65,20 @@ describe('globalConfig', () => {
   });
 
   it('should provide default global config options', () => {
-    expect(
-      globalConfig(
-        {},
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: 'my-app',
-            root: 'packages/project-root',
-          },
+    const { config } = globalConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
         },
+      },
+    );
+    expect(toNormalizedPath(config)).toEqual(
+      expect.stringContaining(
+        toNormalizedPath('project-root/code-pushup.config.ts'),
       ),
-    ).toEqual(
-      expect.objectContaining({
-        config: 'packages/project-root/code-pushup.config.json',
-      }),
     );
   });
 
@@ -97,6 +97,17 @@ describe('globalConfig', () => {
     ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
   });
 
+  it('should work with empty projectConfig', () => {
+    expect(
+      globalConfig(
+        {},
+        {
+          workspaceRoot: '/test/root/workspace-root',
+        },
+      ),
+    ).toEqual(expect.objectContaining({ config: 'code-pushup.config.ts' }));
+  });
+
   it('should exclude other options', () => {
     expect(
       globalConfig({ test: 42 } as unknown as { verbose: boolean }, {
@@ -106,16 +117,12 @@ describe('globalConfig', () => {
           root: 'packages/project-root',
         },
       }),
-    ).toEqual({
-      progress: false,
-      verbose: false,
-      config: 'packages/project-root/code-pushup.config.json',
-    });
+    ).toEqual(expect.not.objectContaining({ test: expect.anything() }));
   });
 });
 
 describe('persistConfig', () => {
-  it('should provide default persist format options of ["json"]', () => {
+  it('should NOT provide default persist format options', () => {
     expect(
       persistConfig(
         {},
@@ -127,7 +134,7 @@ describe('persistConfig', () => {
           },
         },
       ),
-    ).toEqual(expect.objectContaining({ format: ['json'] }));
+    ).toEqual(expect.not.objectContaining({ format: expect.anything() }));
   });
 
   it('should parse given persist format option', () => {
@@ -153,43 +160,54 @@ describe('persistConfig', () => {
 
   it('should provide default outputDir options', () => {
     const projectName = 'my-app';
-    expect(
-      persistConfig(
-        {},
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: projectName,
-            root: 'packages/project-root',
-          },
+    const { outputDir } = persistConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: projectName,
+          root: 'packages/project-root',
         },
+      },
+    );
+    expect(toNormalizedPath(outputDir)).toEqual(
+      expect.stringContaining(
+        toNormalizedPath(
+          `/test/root/workspace-root/.code-pushup/${projectName}`,
+        ),
       ),
-    ).toEqual(
-      expect.objectContaining({
-        outputDir: `packages/project-root/.code-pushup/${projectName}`,
-      }),
     );
   });
 
   it('should parse given outputDir options', () => {
     const outputDir = '../dist/packages/test-folder';
-    expect(
-      persistConfig(
-        {
-          outputDir,
+    const { outputDir: resultingOutDir } = persistConfig(
+      {
+        outputDir,
+      },
+      {
+        workspaceRoot: 'workspaceRoot',
+        projectConfig: {
+          name: 'my-app',
+          root: 'root',
         },
-        {
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
-      ),
-    ).toEqual(
-      expect.objectContaining({
-        outputDir: expect.stringContaining('test-folder'),
-      }),
+      },
+    );
+    expect(toNormalizedPath(resultingOutDir)).toEqual(
+      expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
+    );
+  });
+
+  it('should work with empty projectConfig', () => {
+    const { outputDir } = persistConfig(
+      {},
+      {
+        workspaceRoot: '/test/root/workspace-root',
+      },
+    );
+
+    expect(toNormalizedPath(outputDir)).toEqual(
+      expect.stringContaining(toNormalizedPath('.code-pushup')),
     );
   });
 
@@ -234,15 +252,13 @@ describe('uploadConfig', () => {
     apiKey: 'apiKey',
     organization: 'organization',
   };
-  const oldEnv = process.env;
-  beforeEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = {};
-  });
 
-  afterEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = oldEnv;
+  let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+  beforeAll(() => {
+    processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
+  });
+  afterAll(() => {
+    processEnvSpy.mockRestore();
   });
 
   it('should provide default upload project options as project name', () => {
@@ -336,9 +352,7 @@ describe('uploadConfig', () => {
   });
 
   it('should parse process.env options', () => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = ENV;
-
+    processEnvSpy.mockReturnValue(ENV);
     expect(
       uploadConfig(
         {},
@@ -356,8 +370,25 @@ describe('uploadConfig', () => {
         apiKey: ENV.CP_API_KEY,
         organization: ENV.CP_ORGANIZATION,
         project: ENV.CP_PROJECT,
-        timeout: ENV.CP_TIMEOUT,
+        timeout: Number(ENV.CP_TIMEOUT),
       }),
     );
+  });
+
+  it('should options overwrite process.env vars', () => {
+    expect(
+      uploadConfig(
+        {
+          project: 'my-app2',
+        },
+        {
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'my-app',
+            root: 'root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
   });
 });

@@ -1,5 +1,3 @@
-import type { CliArgsObject } from '@code-pushup/utils';
-
 export function createCliCommand(
   command: string,
   args: Record<string, unknown>,
@@ -8,6 +6,11 @@ export function createCliCommand(
 }
 
 type ArgumentValue = number | string | boolean | string[];
+export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
+  T extends never
+    ? // eslint-disable-next-line @typescript-eslint/naming-convention
+      Record<string, ArgumentValue | undefined> | { _: string }
+    : T;
 // @TODO import from @code-pushup/utils => get rid of poppins for cjs support
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function objectToCliArgs<
@@ -26,11 +29,6 @@ export function objectToCliArgs<
     }
     const prefix = key.length === 1 ? '-' : '--';
     // "-*" arguments (shorthands)
-    if (Array.isArray(value)) {
-      return value.map(v => `${prefix}${key}="${v}"`);
-    }
-    // "--*" arguments ==========
-
     if (Array.isArray(value)) {
       return value.map(v => `${prefix}${key}="${v}"`);
     }

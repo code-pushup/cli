@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { objectToCliArgs } from './cli';
+import { createCliCommand, objectToCliArgs } from './cli';
 
 describe('objectToCliArgs', () => {
+  it('should empty params', () => {
+    const result = objectToCliArgs();
+    expect(result).toEqual([]);
+  });
+
   it('should handle the "_" argument as script', () => {
     const params = { _: 'bin.js' };
     const result = objectToCliArgs(params);
@@ -58,9 +63,22 @@ describe('objectToCliArgs', () => {
     expect(result).toStrictEqual(['--format.json="simple"']);
   });
 
+  it('should handle objects with undefined', () => {
+    const params = { format: undefined };
+    const result = objectToCliArgs(params);
+    expect(result).toStrictEqual([]);
+  });
+
   it('should throw error for unsupported type', () => {
     expect(() => objectToCliArgs({ param: Symbol('') })).toThrow(
       'Unsupported type',
     );
+  });
+});
+
+describe('createCliCommand', () => {
+  it('should create command out of command name and an object for arguments', () => {
+    const result = createCliCommand('autorun', { verbose: true });
+    expect(result).toBe('npx @code-pushup/cli autorun --verbose');
   });
 });

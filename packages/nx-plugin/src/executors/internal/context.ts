@@ -4,6 +4,7 @@ import { BaseNormalizedExecutorContext } from './types';
 export type NormalizedExecutorContext = BaseNormalizedExecutorContext & {
   projectName: string;
 };
+
 export function normalizeContext(
   context: ExecutorContext,
 ): NormalizedExecutorContext {

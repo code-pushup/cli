@@ -25,8 +25,16 @@ describe('parseEnv', () => {
   });
 
   it('should parse process.env.CP_TIMEOUT option', () => {
-    expect(parseEnv({ CP_TIMEOUT: 3 })).toEqual(
+    expect(parseEnv({ CP_TIMEOUT: '3' })).toEqual(
       expect.objectContaining({ timeout: 3 }),
     );
+  });
+
+  it('should throw for process.env.CP_TIMEOUT option < 0', () => {
+    expect(() => parseEnv({ CP_TIMEOUT: '-1' })).toThrow('Invalid');
+  });
+
+  it('should throw for invalid URL in process.env.CP_SERVER option', () => {
+    expect(() => parseEnv({ CP_SERVER: 'httptpt' })).toThrow('Invalid url');
   });
 });

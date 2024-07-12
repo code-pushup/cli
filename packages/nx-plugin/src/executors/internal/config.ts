@@ -1,6 +1,5 @@
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { slugify } from '../../internal/utils';
 import { parseEnv } from './env';
 import {
   BaseNormalizedExecutorContext,
@@ -19,7 +18,7 @@ export function globalConfig(
   return {
     verbose: !!verbose,
     progress: !!progress,
-    config: config ?? join(projectRoot, 'code-pushup.config.json'),
+    config: config ?? join(projectRoot, 'code-pushup.config.ts'),
   };
 }
 
@@ -27,20 +26,19 @@ export function persistConfig(
   options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
   context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
-  const { projectConfig } = context;
+  const { projectConfig, workspaceRoot } = context;
 
-  const { name: projectName = '', root: projectRoot = '' } =
-    projectConfig ?? {};
+  const { name: projectName = '' } = projectConfig ?? {};
   const {
-    format = ['json'],
-    outputDir = join(projectRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
-    filename: filenameOptions,
+    format,
+    outputDir = join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
+    filename,
   } = options;
 
   return {
-    format,
     outputDir,
-    ...(filenameOptions ? { filename: slugify(filenameOptions) } : {}),
+    ...(format ? { format } : {}),
+    ...(filename ? { filename } : {}),
   };
 }
 
