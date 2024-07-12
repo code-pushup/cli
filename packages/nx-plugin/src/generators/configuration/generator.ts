@@ -32,7 +32,7 @@ export function addTargetToProject(
   const { targetName, project, skipTarget } = options;
 
   if (skipTarget) {
-    return void 0;
+    return;
   }
 
   const codePushupTargetConfig = {
