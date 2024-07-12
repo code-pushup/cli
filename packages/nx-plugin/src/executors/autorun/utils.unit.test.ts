@@ -81,14 +81,12 @@ describe('parseAutorunExecutorOptions', () => {
         upload: { project: projectName },
       }),
     );
-    expect(executorOptions).toEqual(
+    expect(executorOptions.persist).toEqual(
       expect.objectContaining({
-        persist: {
-          filename: 'from-options',
-          outputDir: 'workspaceRoot/.code-pushup/my-app',
-        },
+        filename: 'from-options',
       }),
     );
+
     expect(toNormalizedPath(executorOptions?.persist?.outputDir)).toBe(
       toNormalizedPath('workspaceRoot/.code-pushup/my-app'),
     );
