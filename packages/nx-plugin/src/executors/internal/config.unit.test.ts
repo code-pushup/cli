@@ -172,7 +172,9 @@ describe('persistConfig', () => {
     );
     expect(toNormalizedPath(outputDir)).toEqual(
       expect.stringContaining(
-        toNormalizedPath(`packages/project-root/.code-pushup/${projectName}`),
+        toNormalizedPath(
+          `/test/root/workspace-root/.code-pushup/${projectName}`,
+        ),
       ),
     );
   });
