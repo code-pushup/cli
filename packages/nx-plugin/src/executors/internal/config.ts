@@ -19,7 +19,7 @@ export function globalConfig(
   return {
     verbose: !!verbose,
     progress: !!progress,
-    config: config ?? join(projectRoot, 'code-pushup.config.json'),
+    config: config ?? join(projectRoot, 'code-pushup.config.ts'),
   };
 }
 

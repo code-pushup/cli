@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect } from 'vitest';
+import { MockInstance, describe, expect } from 'vitest';
 import { toNormalizedPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
@@ -250,15 +250,13 @@ describe('uploadConfig', () => {
     apiKey: 'apiKey',
     organization: 'organization',
   };
-  const oldEnv = process.env;
-  beforeEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = {};
-  });
 
-  afterEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = oldEnv;
+  let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+  beforeAll(() => {
+    processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
+  });
+  afterAll(() => {
+    processEnvSpy.mockRestore();
   });
 
   it('should provide default upload project options as project name', () => {
@@ -352,9 +350,7 @@ describe('uploadConfig', () => {
   });
 
   it('should parse process.env options', () => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = ENV;
-
+    processEnvSpy.mockReturnValue(ENV);
     expect(
       uploadConfig(
         {},
@@ -372,8 +368,25 @@ describe('uploadConfig', () => {
         apiKey: ENV.CP_API_KEY,
         organization: ENV.CP_ORGANIZATION,
         project: ENV.CP_PROJECT,
-        timeout: ENV.CP_TIMEOUT,
+        timeout: Number(ENV.CP_TIMEOUT),
       }),
     );
+  });
+
+  it('should options overwrite process.env vars', () => {
+    expect(
+      uploadConfig(
+        {
+          project: 'my-app2',
+        },
+        {
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'my-app',
+            root: 'root',
+          },
+        },
+      ),
+    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
   });
 });
