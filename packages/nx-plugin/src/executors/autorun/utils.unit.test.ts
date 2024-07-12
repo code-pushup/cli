@@ -87,7 +87,7 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(toNormalizedPath(executorOptions?.persist?.outputDir)).toBe(
+    expect(toNormalizedPath(executorOptions.persist?.outputDir)).toBe(
       toNormalizedPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
