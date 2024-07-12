@@ -1,5 +1,12 @@
-import { AuditReport, Table } from '@code-pushup/models';
+import * as path from 'path';
+import {
+  AuditReport,
+  Issue,
+  SourceFileLocation,
+  Table,
+} from '@code-pushup/models';
 import { Hierarchy, NEW_LINE, SPACE, md } from '../text-formats';
+import { MdReportOptions } from './generate-md-report';
 
 const { headline, lines, link, section, table } = md;
 
@@ -41,4 +48,58 @@ export function metaDescription({
     return section(description);
   }
   return '';
+}
+
+/**
+ * Link to local source for IDE
+ * @param source
+ * @param reportLocation
+ *
+ * @example
+ * linkToLocalSourceInIde({ file: '/src/index.ts'}, {outputDir: '/.code-pushup'}) // [/src/index.ts](../src/index.ts)
+ */
+export function linkToLocalSourceForIde(
+  source: SourceFileLocation,
+  options?: Pick<MdReportOptions, 'outputDir'>,
+): string {
+  const { file, position } = source;
+
+  const unixPath = file.replace(/\\/g, '/');
+
+  const { outputDir } = options ?? {};
+
+  // NOT linkable
+  if (!outputDir) {
+    return unixPath;
+  }
+
+  const relativePath = path.relative(outputDir, unixPath);
+  return link(formatFilePosition(relativePath, position), unixPath);
+}
+
+export function formatSourceLine(source: SourceFileLocation) {
+  const { startLine, endLine } = source?.position ?? {};
+  return `${startLine || ''}${
+    endLine && startLine !== endLine ? `-${endLine}` : ''
+  }`;
+}
+
+function formatFilePosition(
+  file: string,
+  position?: SourceFileLocation['position'],
+) {
+  if (!position) {
+    return file;
+  }
+  const { startLine, startColumn } = position;
+
+  if (!startLine) {
+    return file;
+  }
+
+  if (!startColumn) {
+    return `${file}:${startLine}`;
+  }
+
+  return `${file}:${startLine}:${startColumn}`;
 }

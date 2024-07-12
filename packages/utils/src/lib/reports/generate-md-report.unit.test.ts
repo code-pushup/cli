@@ -131,29 +131,35 @@ describe('auditDetailsIssues', () => {
 
   it('should include source file', () => {
     expect(
-      auditDetailsIssues([{ source: { file: 'index.js' } } as Issue]),
-    ).toMatch('<code>index.js</code>');
+      auditDetailsIssues([{ source: { file: '/index.js' } } as Issue]),
+    ).toMatch('<code>/index.js</code>');
   });
 
-  it('should include source position startLine', () => {
+  it('should include source file linked with position', () => {
     expect(
-      auditDetailsIssues([
-        {
-          source: {
-            position: {
-              startLine: 4,
+      auditDetailsIssues(
+        [
+          {
+            source: {
+              file: '/src/index.js',
+              position: {
+                startLine: 4,
+                startColumn: 7,
+              },
             },
-          },
-        } as Issue,
-      ]),
-    ).toMatch('|4|');
+          } as Issue,
+        ],
+        { outputDir: '/.code-pushup' },
+      ),
+    ).toMatch('<code>[/src/index.js](../src/index.js:4:7)</code>');
   });
 
-  it('should include source position startLine and endLine', () => {
+  it('should include formatted line information', () => {
     expect(
       auditDetailsIssues([
         {
           source: {
+            file: 'index.js',
             position: {
               startLine: 4,
               endLine: 7,
@@ -355,7 +361,7 @@ describe('auditsSection', () => {
           audits: [
             {
               details: {
-                issues: [{ source: {} }],
+                issues: [{ source: { file: 'index.js' } }],
                 table: { rows: [{ value: 42 }] },
               },
             },

@@ -45,7 +45,7 @@ export async function persistReport(
       case 'md':
         return {
           format: 'md',
-          content: generateMdReport(sortedScoredReport),
+          content: generateMdReport(sortedScoredReport, { outputDir }),
         };
     }
   });

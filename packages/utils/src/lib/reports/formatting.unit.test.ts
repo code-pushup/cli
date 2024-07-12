@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { NEW_LINE } from '../text-formats/constants';
-import { metaDescription, tableSection } from './formatting';
+import {
+  formatSourceLine,
+  linkToLocalSourceForIde,
+  metaDescription,
+  tableSection,
+} from './formatting';
 
 describe('tableSection', () => {
   it('should accept a title', () => {
@@ -121,6 +126,82 @@ describe('metaDescription', () => {
       }),
     ).toBe(
       `Audit to loading performance\`\`\`${NEW_LINE}${NEW_LINE}[📖 Docs](http://code-pushup.dev/audits/#lcp)${NEW_LINE}`,
+    );
+  });
+});
+
+describe('formatSourceLine', () => {
+  it('should return empty string for missing position', () => {
+    expect(formatSourceLine({ file: '/packages/utils/src/index.ts' })).toBe('');
+  });
+
+  it('should return line if present in position', () => {
+    expect(
+      formatSourceLine({
+        file: '/packages/utils/src/index.ts',
+        position: { startLine: 2 },
+      }),
+    ).toBe('2');
+  });
+
+  it('should return line range if present in position', () => {
+    expect(
+      formatSourceLine({
+        file: '/packages/utils/src/index.ts',
+        position: { startLine: 2, endLine: 3 },
+      }),
+    ).toBe('2-3');
+  });
+});
+
+describe('linkToLocalSourceForIde', () => {
+  it('should not wrap the given file with a link if the outputDirectory is undefined', () => {
+    expect(
+      linkToLocalSourceForIde({
+        file: '/packages/utils/src/index.ts',
+      }),
+    ).toBe(`/packages/utils/src/index.ts`);
+  });
+
+  it('should return link to file if given', () => {
+    expect(
+      linkToLocalSourceForIde(
+        {
+          file: '/packages/utils/src/index.ts',
+        },
+        { outputDir: '/.code-pushup' },
+      ),
+    ).toBe(`[/packages/utils/src/index.ts](../packages/utils/src/index.ts)`);
+  });
+
+  it('should return link to line if given', () => {
+    expect(
+      linkToLocalSourceForIde(
+        {
+          file: '/packages/utils/src/index.ts',
+          position: {
+            startLine: 2,
+          },
+        },
+        { outputDir: '/.code-pushup' },
+      ),
+    ).toBe(`[/packages/utils/src/index.ts](../packages/utils/src/index.ts:2)`);
+  });
+
+  it('should return link to column if given', () => {
+    expect(
+      linkToLocalSourceForIde(
+        {
+          file: '/packages/utils/src/index.ts',
+          position: {
+            startLine: 2,
+            startColumn: 1,
+          },
+        },
+        { outputDir: '/.code-pushup' },
+      ),
+    ).toBe(
+      `[/packages/utils/src/index.ts](../packages/utils/src/index.ts:2:1)`,
     );
   });
 });

@@ -1,4 +1,10 @@
-import { AuditReport, Issue, Report, Table } from '@code-pushup/models';
+import {
+  AuditReport,
+  Issue,
+  PersistConfig,
+  Report,
+  Table,
+} from '@code-pushup/models';
 import { formatDate, formatDuration } from '../formatting';
 import { SPACE, html, md } from '../text-formats';
 import {
@@ -7,7 +13,12 @@ import {
   issuesTableHeadings,
   reportHeadlineText,
 } from './constants';
-import { metaDescription, tableSection } from './formatting';
+import {
+  formatSourceLine,
+  linkToLocalSourceForIde,
+  metaDescription,
+  tableSection,
+} from './formatting';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
@@ -33,20 +44,27 @@ export function auditDetailsAuditValue({
   )} (score: ${formatReportScore(score)})`;
 }
 
-export function generateMdReport(report: ScoredReport): string {
+export type MdReportOptions = Pick<PersistConfig, 'outputDir'>;
+export function generateMdReport(
+  report: ScoredReport,
+  options?: MdReportOptions,
+): string {
   const printCategories = report.categories.length > 0;
 
   return lines(
     h1(reportHeadlineText),
     printCategories ? categoriesOverviewSection(report) : '',
     printCategories ? categoriesDetailsSection(report) : '',
-    auditsSection(report),
+    auditsSection(report, options),
     aboutSection(report),
     `${FOOTER_PREFIX}${SPACE}${link(README_LINK, 'Code PushUp')}`,
   );
 }
 
-export function auditDetailsIssues(issues: Issue[] = []) {
+export function auditDetailsIssues(
+  issues: Issue[] = [],
+  options?: MdReportOptions,
+) {
   if (issues.length === 0) {
     return '';
   }
@@ -61,15 +79,15 @@ export function auditDetailsIssues(issues: Issue[] = []) {
           return { severity, message, file: '', line: '' };
         }
         // TODO: implement file links, ticket #149
-        const file = `<code>${sourceVal.file}</code>`;
+        const file = `<code>${linkToLocalSourceForIde(
+          sourceVal,
+          options,
+        )}</code>`;
         if (!sourceVal.position) {
           return { severity, message, file, line: '' };
         }
-        const { startLine, endLine } = sourceVal.position;
-        const line = `${startLine || ''}${
-          endLine && startLine !== endLine ? `-${endLine}` : ''
-        }`;
-        return { severity, message, file, line };
+
+        return { severity, message, file, line: formatSourceLine(sourceVal) };
       },
     ),
   };
@@ -77,7 +95,7 @@ export function auditDetailsIssues(issues: Issue[] = []) {
   return tableSection(detailsTableData);
 }
 
-export function auditDetails(audit: AuditReport) {
+export function auditDetails(audit: AuditReport, options?: MdReportOptions) {
   const { table, issues = [] } = audit.details ?? {};
   const detailsValue = auditDetailsAuditValue(audit);
 
@@ -88,7 +106,7 @@ export function auditDetails(audit: AuditReport) {
 
   const tableSectionContent = table == null ? '' : tableSection(table);
   const issuesSectionContent =
-    issues.length > 0 ? auditDetailsIssues(issues) : '';
+    issues.length > 0 ? auditDetailsIssues(issues, options) : '';
 
   return details(
     detailsValue,
@@ -96,16 +114,17 @@ export function auditDetails(audit: AuditReport) {
   );
 }
 
-export function auditsSection({
-  plugins,
-}: Pick<ScoredReport, 'plugins'>): string {
+export function auditsSection(
+  { plugins }: Pick<ScoredReport, 'plugins'>,
+  options?: MdReportOptions,
+): string {
   const content = plugins.flatMap(({ slug, audits }) =>
     audits.flatMap(audit => {
       const auditTitle = `${audit.title}${SPACE}(${getPluginNameFromSlug(
         slug,
         plugins,
       )})`;
-      const detailsContent = auditDetails(audit);
+      const detailsContent = auditDetails(audit, options);
       const descriptionContent = metaDescription(audit);
       return [h3(auditTitle), detailsContent, descriptionContent];
     }),
