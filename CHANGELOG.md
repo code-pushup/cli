@@ -1,3 +1,25 @@
+## 0.47.0 (2024-07-01)
+
+### 🚀 Features
+
+- **plugin-coverage:** include decimals in coverage percentage used as audit value ([afeeb8e7](https://github.com/code-pushup/cli/commit/afeeb8e7))
+- **plugin-lighthouse:** add audit details to lighthouse plugin ([#684](https://github.com/code-pushup/cli/pull/684))
+- **plugin-lighthouse:** keep audit values as floats ([2627a879](https://github.com/code-pushup/cli/commit/2627a879))
+- **utils:** add options to truncateTest ([f3444d70](https://github.com/code-pushup/cli/commit/f3444d70))
+
+### 🩹 Fixes
+
+- **plugin-coverage:** correct jest/vitest config lookup + respect project.json overrides ([561ed3e3](https://github.com/code-pushup/cli/commit/561ed3e3))
+- **plugin-coverage:** handle absolute paths in jest/vitest coverage directories ([f997f860](https://github.com/code-pushup/cli/commit/f997f860))
+- **plugin-coverage:** skip lcov reporter validation if jest config uses preset ([f9718bdb](https://github.com/code-pushup/cli/commit/f9718bdb))
+- **plugin-coverage:** support non-cjs jest configs ([3fc351c2](https://github.com/code-pushup/cli/commit/3fc351c2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+- Michael Hladky @BioPhoton
+
 ## 0.46.0 (2024-06-19)
 
 ### 🚀 Features

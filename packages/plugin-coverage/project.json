@@ -29,13 +29,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/plugin-coverage/vite.config.unit.ts"
+        "configFile": "packages/plugin-coverage/vite.config.unit.ts"
       }
     },
     "integration-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "packages/plugin-coverage/vite.config.integration.ts"
+        "configFile": "packages/plugin-coverage/vite.config.integration.ts"
       }
     },
     "publish": {

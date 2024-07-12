@@ -7,6 +7,7 @@ import {
   parseTableRow,
   parseTableToAuditDetailsTable,
 } from './table.type';
+import { LighthouseAuditDetailsParsingError } from './utils';
 
 describe('parseTableToAuditDetails', () => {
   it('should render complete details of type table', () => {
@@ -92,6 +93,7 @@ describe('parseTableToAuditDetails', () => {
     } satisfies Details.Table);
 
     expect(outputs).toStrictEqual({
+      title: 'Table',
       columns: [
         {
           key: 'statistic',
@@ -217,6 +219,7 @@ describe('parseTableToAuditDetails', () => {
     } as Details.Table);
 
     expect(outputs).toEqual({
+      title: 'Table',
       columns: [
         {
           align: 'left',
@@ -283,6 +286,27 @@ describe('parseTableToAuditDetails', () => {
       ],
     } satisfies Table);
   });
+
+  it('should throw for invalid table', () => {
+    const headings = ['left'];
+    const items = [undefined];
+    const rawTable: Details.Table = {
+      type: 'table',
+      headings: headings as unknown as Details.TableColumnHeading[],
+      items: items as unknown as Details.TableItem[],
+    };
+
+    expect(() => parseTableToAuditDetailsTable(rawTable)).toThrow(
+      new LighthouseAuditDetailsParsingError(
+        'table',
+        {
+          items: [null],
+          headings,
+        },
+        'Cannot convert undefined or null to object',
+      ),
+    );
+  });
 });
 
 describe('parseTableColumns', () => {
@@ -302,15 +326,28 @@ describe('parseTableColumns', () => {
     expect(outputs).toEqual([expect.objectContaining({ key: '' })]);
   });
 
-  it('should fall back to undefined if label property is missing', () => {
+  it('should remove label property if undefined', () => {
     const outputs = parseTableColumns([
       {
         key: 'prop',
-        labellll: 'PROP',
       } as unknown as Details.TableColumnHeading,
     ]);
 
-    expect(outputs).toEqual([expect.objectContaining({ label: undefined })]);
+    expect(outputs).toEqual([
+      expect.not.objectContaining({ label: expect.anything() }),
+    ]);
+  });
+
+  it('should remove label property if empty string', () => {
+    const outputs = parseTableColumns([
+      {
+        key: 'prop',
+      } as unknown as Details.TableColumnHeading,
+    ]);
+
+    expect(outputs).toEqual([
+      expect.not.objectContaining({ label: expect.anything() }),
+    ]);
   });
 
   it('should fill align with "left"', () => {

@@ -17,7 +17,7 @@ export {
   fileExists,
   filePathToCliArg,
   findLineNumberInText,
-  importEsmModule,
+  importModule,
   logMultipleFileResults,
   pluginWorkDir,
   readJsonFile,
@@ -58,6 +58,7 @@ export {
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
 export { CliUi, Column, link, ui } from './lib/logging';
+export { mergeConfigs } from './lib/merge-configs';
 export { ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,

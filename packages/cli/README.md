@@ -198,9 +198,10 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
 | **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
 | **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
+| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.     |
 
 > [!NOTE]  
-> All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
+> All common options, except `--onlyPlugins` and `--skipPlugins`, can be specified in the configuration file as well.
 > CLI arguments take precedence over configuration file options.
 
 > [!NOTE]  

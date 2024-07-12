@@ -130,13 +130,13 @@ export function lcovCoverageToAuditOutput(
 ): AuditOutput {
   const coverage = calculateCoverage(stat.totalHit, stat.totalFound);
   const MAX_DECIMAL_PLACES = 4;
-  const roundedIntValue = toNumberPrecision(coverage * 100, 0);
+  const coveragePercentage = coverage * 100;
 
   return {
     slug: `${coverageType}-coverage`,
     score: toNumberPrecision(coverage, MAX_DECIMAL_PLACES),
-    value: roundedIntValue,
-    displayValue: `${roundedIntValue} %`,
+    value: coveragePercentage,
+    displayValue: `${toNumberPrecision(coveragePercentage, 1)} %`,
     details: {
       issues: stat.issues,
     },

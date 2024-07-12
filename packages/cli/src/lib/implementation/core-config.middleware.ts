@@ -9,12 +9,18 @@ import {
 import { CoreConfigCliOptions } from './core-config.model';
 import { GeneralCliOptions } from './global.model';
 import { OnlyPluginsOptions } from './only-plugins.model';
+import { SkipPluginsOptions } from './skip-plugins.model';
 
 export async function coreConfigMiddleware<
-  T extends GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions,
+  T extends GeneralCliOptions &
+    CoreConfigCliOptions &
+    OnlyPluginsOptions &
+    SkipPluginsOptions,
 >(
   processArgs: T,
-): Promise<GeneralCliOptions & CoreConfig & OnlyPluginsOptions> {
+): Promise<
+  GeneralCliOptions & CoreConfig & OnlyPluginsOptions & SkipPluginsOptions
+> {
   const {
     config,
     tsconfig,

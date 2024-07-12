@@ -41,7 +41,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "config": "examples/react-todos-app/vite.config.ts",
+        "configFile": "examples/react-todos-app/vite.config.ts",
         "reportsDirectory": "../../coverage/react-todos-app"
       }
     },

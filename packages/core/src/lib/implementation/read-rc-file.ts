@@ -5,7 +5,7 @@ import {
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';
-import { fileExists, importEsmModule } from '@code-pushup/utils';
+import { fileExists, importModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
@@ -25,7 +25,7 @@ export async function readRcByPath(
     throw new ConfigPathError(filepath);
   }
 
-  const cfg = await importEsmModule({ filepath, tsconfig });
+  const cfg = await importModule({ filepath, tsconfig, format: 'esm' });
 
   return coreConfigSchema.parse(cfg);
 }
