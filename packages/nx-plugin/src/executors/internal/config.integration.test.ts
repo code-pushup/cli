@@ -1,28 +1,27 @@
-import { describe, expect } from 'vitest';
+import { MockInstance, describe, expect } from 'vitest';
 import { ENV } from '../../../mock/fixtures/env';
 import { uploadConfig } from './config';
-import { parseEnv } from './env';
-
-vi.mock('./env', async () => {
-  const actual = await vi.importActual('./env');
-  return {
-    ...actual,
-    parseEnv: vi.fn(actual.parseEnv as typeof parseEnv),
-  };
-});
+import * as env from './env';
 
 describe('uploadConfig', () => {
+  let parseEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+  let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+
+  beforeAll(() => {
+    processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
+    parseEnvSpy = vi.spyOn(env, 'parseEnv');
+  });
+
+  afterAll(() => {
+    processEnvSpy.mockRestore();
+    parseEnvSpy.mockRestore();
+  });
+
   it('should call parseEnv function with values from process.env', () => {
-    const old = process.env;
-
-    // eslint-disable-next-line functional/immutable-data
-    process.env = ENV;
-
+    processEnvSpy.mockReturnValue(ENV);
     expect(
       uploadConfig(
-        {
-          server: 'https://portal.code.pushup.dev',
-        },
+        {},
         {
           workspaceRoot: 'workspaceRoot',
           projectConfig: {
@@ -40,10 +39,7 @@ describe('uploadConfig', () => {
       }),
     );
 
-    expect(parseEnv).toHaveBeenCalledTimes(1);
-    expect(parseEnv).toHaveBeenCalledWith(ENV);
-
-    // eslint-disable-next-line functional/immutable-data
-    process.env = old;
+    expect(parseEnvSpy).toHaveBeenCalledTimes(1);
+    expect(parseEnvSpy).toHaveBeenCalledWith(ENV);
   });
 });

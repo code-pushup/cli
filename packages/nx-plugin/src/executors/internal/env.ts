@@ -8,9 +8,10 @@ const envSchema = z
     CP_API_KEY: z.string().min(1).optional(),
     CP_ORGANIZATION: z.string().min(1).optional(),
     CP_PROJECT: z.string().min(1).optional(),
-    CP_TIMEOUT: z.number().optional(),
+    CP_TIMEOUT: z.string().regex(/^\d+$/).optional(),
   })
   .partial();
+
 type UploadEnvVars = z.infer<typeof envSchema>;
 
 export function parseEnv(env: unknown = {}): Partial<UploadConfig> {
@@ -28,7 +29,7 @@ export function parseEnv(env: unknown = {}): Partial<UploadConfig> {
         case 'CP_PROJECT':
           return ['project', value];
         case 'CP_TIMEOUT':
-          return ['timeout', Number(value)];
+          return Number(value) >= 0 ? ['timeout', Number(value)] : [];
         default:
           return [];
       }
