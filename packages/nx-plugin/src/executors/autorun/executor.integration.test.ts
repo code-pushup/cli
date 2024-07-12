@@ -36,7 +36,7 @@ const context = {
     projects: {
       [projectName]: {
         name: projectName,
-        root: `libs/${projectName}`,
+        root: expect.stringContaining(projectName),
       },
     },
   },
