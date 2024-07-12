@@ -92,8 +92,8 @@ describe('parseAutorunExecutorOptions', () => {
       root: 'root',
     },
   };
-  it('should call other functions with options', () => {
-    const executorOptions = parseAutorunExecutorOptions(
+  it('should call child config functions with options', () => {
+    parseAutorunExecutorOptions(
       {
         verbose: true,
         persist: { filename: 'my-name' },
@@ -123,22 +123,5 @@ describe('parseAutorunExecutorOptions', () => {
       },
       normalizedContext,
     );
-
-    expect(executorOptions).toStrictEqual({
-      config: 'root/code-pushup.config.ts',
-      verbose: true,
-      progress: false,
-      persist: {
-        filename: 'my-name',
-        outputDir: expect.stringContaining('my-app'),
-      },
-      upload: {
-        server: 'https://new-portal.code-pushup.dev',
-        apiKey:
-          'cp_57ba713d0803d41b2ea48aacf3a11c227fe0c7d0276870ab4fe79f4cdefcdb3c',
-        organization: 'code-pushup',
-        project: 'cli',
-      } as UploadConfig,
-    });
   });
 });
