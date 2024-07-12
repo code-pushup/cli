@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, expect } from 'vitest';
+import { MockInstance, expect, vi } from 'vitest';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
 } from './utils';
 
-describe('autorunExecutorOnlyConfig', () => {
+describe('parseAutorunExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
     expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ projectPrefix: expect.anything() }),
@@ -42,23 +42,18 @@ describe('autorunExecutorOnlyConfig', () => {
   });
 });
 
-describe('getExecutorOptions', () => {
-  const oldEnv = process.env;
-  beforeEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = {};
+describe('parseAutorunExecutorOptions', () => {
+  let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+  beforeAll(() => {
+    processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
   });
 
-  afterEach(() => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = oldEnv;
+  afterAll(() => {
+    processEnvSpy.mockRestore();
   });
 
   it('should leverage other config helper to assemble the executor config', () => {
-    // eslint-disable-next-line functional/immutable-data
-    process.env = {
-      outputDir: 'from-env-vars',
-    };
+    processEnvSpy.mockReturnValue({ outputDir: 'from-env-vars' });
     const projectName = 'my-app';
     const executorOptions = parseAutorunExecutorOptions(
       {
@@ -76,18 +71,14 @@ describe('getExecutorOptions', () => {
       },
     );
     expect(executorOptions).toStrictEqual({
-      config: 'root/code-pushup.config.json',
+      config: 'root/code-pushup.config.ts',
       progress: false,
       verbose: false,
       persist: {
         filename: 'from-options',
-        format: ['json'],
-        outputDir: expect.stringContaining(projectName),
+        outputDir: 'workspaceRoot/.code-pushup/my-app',
       },
       upload: {
-        // apiKey: "cp_57ba713d0803d41b2ea48aacf3a11c227fe0c7d0276870ab4fe79f4cdefcdb3c",
-        //  organization: "code-pushup",
-        // server: "https://new-portal.code-pushup.dev",
         project: projectName,
       },
     });

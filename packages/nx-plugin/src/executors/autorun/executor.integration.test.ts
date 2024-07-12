@@ -43,8 +43,8 @@ const context = {
 } as unknown as ExecutorContext;
 
 describe('runAutorunExecutor', () => {
-  it('should consider the context argument', async () => {
-    const output = await runAutorunExecutor({}, context);
+  it('should consider the context argument', () => {
+    const output = runAutorunExecutor({}, context);
     expect(output.success).toBe(true);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
@@ -53,15 +53,15 @@ describe('runAutorunExecutor', () => {
     );
   });
 
-  it('should process dryRun option', async () => {
-    const output = await runAutorunExecutor({ dryRun: true }, context);
+  it('should process dryRun option', () => {
+    const output = runAutorunExecutor({ dryRun: true }, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(`libs/${projectName}`);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(0);
   });
 
-  it('should consider given options', async () => {
+  it('should consider given options', () => {
     const cfg = {
       persist: { filename: 'filename' },
       upload: {
@@ -72,7 +72,7 @@ describe('runAutorunExecutor', () => {
         organization: 'code-pushup',
       },
     };
-    const output = await runAutorunExecutor(cfg, context);
+    const output = runAutorunExecutor(cfg, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(`afas57g8h9uj03iqwkeaclsd`);
     // eslint-disable-next-line n/no-sync
@@ -83,7 +83,7 @@ describe('runAutorunExecutor', () => {
   });
 });
 
-describe('getExecutorOptions', () => {
+describe('parseAutorunExecutorOptions', () => {
   const normalizedContext = {
     projectName: 'my-app',
     workspaceRoot: 'workspaceRoot',
@@ -92,8 +92,8 @@ describe('getExecutorOptions', () => {
       root: 'root',
     },
   };
-  it('should call other functions with options', async () => {
-    const executorOptions = await parseAutorunExecutorOptions(
+  it('should call other functions with options', () => {
+    const executorOptions = parseAutorunExecutorOptions(
       {
         verbose: true,
         persist: { filename: 'my-name' },
@@ -113,20 +113,23 @@ describe('getExecutorOptions', () => {
       },
       normalizedContext,
     );
-    expect(globalConfig).toHaveBeenCalledWith({
-      verbose: true,
-      persist: { filename: 'my-name' },
-      upload: {
-        server: 'https://new-portal.code-pushup.dev',
-      } as UploadConfig,
-    });
+    expect(globalConfig).toHaveBeenCalledWith(
+      {
+        verbose: true,
+        persist: { filename: 'my-name' },
+        upload: {
+          server: 'https://new-portal.code-pushup.dev',
+        } as UploadConfig,
+      },
+      normalizedContext,
+    );
 
     expect(executorOptions).toStrictEqual({
+      config: 'root/code-pushup.config.ts',
       verbose: true,
       progress: false,
       persist: {
-        filename: 'my-name-report',
-        format: ['json'],
+        filename: 'my-name',
         outputDir: expect.stringContaining('my-app'),
       },
       upload: {
