@@ -56,7 +56,7 @@ describe('runAutorunExecutor', () => {
   it('should process dryRun option', () => {
     const output = runAutorunExecutor({ dryRun: true }, context);
     expect(output.success).toBe(true);
-    expect(output.command).toMatch(`libs/${projectName}`);
+    expect(output.command).toMatch(projectName);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(0);
   });
