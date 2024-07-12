@@ -1,6 +1,6 @@
 import { describe, expect, vi } from 'vitest';
 import { CategoryConfig, PluginConfig } from '@code-pushup/models';
-import { onlyPluginsMiddleware } from './only-plugins.middleware';
+import { skipPluginsMiddleware } from './skip-plugins.middleware';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -13,10 +13,10 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
-describe('onlyPluginsMiddleware', () => {
+describe('skipPluginsMiddleware', () => {
   it('should fill undefined categories with empty array', () => {
     expect(
-      onlyPluginsMiddleware({
+      skipPluginsMiddleware({
         plugins: [{ slug: 'p1' } as PluginConfig],
       }),
     ).toStrictEqual({
@@ -27,7 +27,7 @@ describe('onlyPluginsMiddleware', () => {
 
   it('should forward equal values if not set', () => {
     expect(
-      onlyPluginsMiddleware({
+      skipPluginsMiddleware({
         plugins: [{ slug: 'p1' } as PluginConfig],
         categories: [
           { slug: 'c1', refs: [{ plugin: 'p1' }] } as CategoryConfig,
@@ -39,13 +39,13 @@ describe('onlyPluginsMiddleware', () => {
     });
   });
 
-  it('should filter plugins plugins for slug "p1"', () => {
-    const { plugins } = onlyPluginsMiddleware({
-      onlyPlugins: ['p1'],
+  it('should filter plugins for slug "p1"', () => {
+    const { plugins } = skipPluginsMiddleware({
+      skipPlugins: ['p1'],
       plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
       categories: [],
     });
-    expect(plugins).toStrictEqual([expect.objectContaining({ slug: 'p1' })]);
+    expect(plugins).toStrictEqual([expect.objectContaining({ slug: 'p2' })]);
   });
 
   it('should forward plugins and categories for a slug not present in plugins', () => {
@@ -60,8 +60,8 @@ describe('onlyPluginsMiddleware', () => {
       { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
     ] as CategoryConfig[];
     const originalPlugins = [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[];
-    const { categories, plugins } = onlyPluginsMiddleware({
-      onlyPlugins: ['wrong-slug'],
+    const { categories, plugins } = skipPluginsMiddleware({
+      skipPlugins: ['wrong-slug'],
       plugins: originalPlugins,
       categories: originalCategories,
     });
@@ -70,8 +70,8 @@ describe('onlyPluginsMiddleware', () => {
   });
 
   it('should filter categories for slug "p1"', () => {
-    const { categories } = onlyPluginsMiddleware({
-      onlyPlugins: ['p1'],
+    const { categories } = skipPluginsMiddleware({
+      skipPlugins: ['p1'],
       plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
       categories: [
         {
@@ -87,7 +87,11 @@ describe('onlyPluginsMiddleware', () => {
     expect(categories).toStrictEqual([
       expect.objectContaining({
         slug: 'c1',
-        refs: [{ plugin: 'p1', slug: 'a1-p1' }],
+        refs: [{ plugin: 'p2', slug: 'a2-p1' }],
+      }),
+      expect.objectContaining({
+        slug: 'c2',
+        refs: [{ plugin: 'p2', slug: 'a1-p2' }],
       }),
     ]);
   });

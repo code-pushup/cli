@@ -1,5 +1,6 @@
 import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
+import { z } from 'zod';
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
@@ -53,18 +54,17 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
-    /*
+
     await lighthousePlugin(
       'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
       {
         chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
         verbose: true,
       },
-    ),*/
+    ),
   ],
 
   categories: [
-    /*
     {
       slug: 'performance',
       title: 'Performance',
@@ -84,14 +84,12 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },*/
+    },
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
       description: 'Lint rules that find **potential bugs** in your code.',
-      refs: [
-        { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1.0 },
-      ],
+      refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
     },
     {
       slug: 'code-style',
@@ -99,7 +97,7 @@ const config: CoreConfig = {
       description:
         'Lint rules that promote **good practices** and consistency in your code.',
       refs: [
-        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1.0 },
+        { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
       ],
     },
     {
@@ -111,7 +109,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'coverage',
           slug: 'coverage',
-          weight: 1.0,
+          weight: 1,
         },
       ],
     },
@@ -124,7 +122,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'js-packages',
           slug: 'npm-audit',
-          weight: 1.0,
+          weight: 1,
         },
       ],
     },
@@ -137,7 +135,7 @@ const config: CoreConfig = {
           type: 'group',
           plugin: 'js-packages',
           slug: 'npm-outdated',
-          weight: 1.0,
+          weight: 1,
         },
       ],
     },
