@@ -34,7 +34,7 @@ describe('parseEnv', () => {
     expect(() => parseEnv({ CP_TIMEOUT: '-1' })).toThrow('Invalid');
   });
 
-  it('should throw for process.env.CP_SERVER option < 0', () => {
+  it('should throw for invalid URL in process.env.CP_SERVER option', () => {
     expect(() => parseEnv({ CP_SERVER: 'httptpt' })).toThrow('Invalid url');
   });
 });
