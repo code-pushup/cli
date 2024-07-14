@@ -5,7 +5,7 @@
     "@code-pushup/models": "0.47.0",
     "@code-pushup/utils": "0.47.0",
     "parse-lcov": "^1.0.4",
-    "chalk": "^5.3.0",
+    "picocolors": "^1.0.1",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
