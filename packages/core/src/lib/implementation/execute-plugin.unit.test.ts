@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { vol } from 'memfs';
+import pc from 'picocolors';
 import { describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
@@ -87,7 +87,7 @@ describe('executePlugin', () => {
         ],
       }),
     ).rejects.toThrow(
-      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+      `Audit metadata not present in plugin config. Missing slug: ${pc.bold(
         missingSlug,
       )}`,
     );
@@ -134,10 +134,9 @@ describe('executePlugins', () => {
         ] satisfies PluginConfig[],
         { progress: false },
       ),
-    ).rejects
-      .toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${chalk.bold(
+    ).rejects.toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${pc.bold(
       title,
-    )} (${chalk.bold(slug)}) produced the following error:
+    )} (${pc.bold(slug)}) produced the following error:
   - Audit output is invalid: [
   {
     "validation": "regex",
@@ -249,13 +248,13 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      `Error: - Plugin ${chalk.bold('plg1')} (${chalk.bold(
+      `Error: - Plugin ${pc.bold('plg1')} (${pc.bold(
         'plg1',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${pc.bold(
         'missing-audit-slug-a',
-      )}\nError: - Plugin ${chalk.bold('plg2')} (${chalk.bold(
+      )}\nError: - Plugin ${pc.bold('plg2')} (${pc.bold(
         'plg2',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${pc.bold(
         'missing-audit-slug-b',
       )}`,
     );

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 import {
   Audit,
   AuditOutput,
@@ -25,7 +25,7 @@ import { executeRunnerConfig, executeRunnerFunction } from './runner';
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+      `Audit metadata not present in plugin config. Missing slug: ${pc.bold(
         auditSlug,
       )}`,
     );
@@ -110,7 +110,7 @@ const wrapProgress = async (
   steps: number,
   progressBar: ProgressBar | null,
 ) => {
-  progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
+  progressBar?.updateTitle(`Executing ${pc.bold(pluginCfg.title)}`);
   try {
     const pluginReport = await executePlugin(pluginCfg);
     progressBar?.incrementInSteps(steps);
@@ -119,7 +119,7 @@ const wrapProgress = async (
     progressBar?.incrementInSteps(steps);
     throw new Error(
       error instanceof Error
-        ? `- Plugin ${chalk.bold(pluginCfg.title)} (${chalk.bold(
+        ? `- Plugin ${pc.bold(pluginCfg.title)} (${pc.bold(
             pluginCfg.slug,
           )}) produced the following error:\n  - ${error.message}`
         : String(error),
