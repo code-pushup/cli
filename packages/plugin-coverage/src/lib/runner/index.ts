@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import { writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
+import pc from 'picocolors';
 import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
 import {
   ProcessError,
@@ -26,13 +26,9 @@ export async function executeRunner(): Promise<void> {
       await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
-        ui().logger.error(
-          chalk.bold('stdout from failed coverage tool process:'),
-        );
+        ui().logger.error(pc.bold('stdout from failed coverage tool process:'));
         ui().logger.error(error.stdout);
-        ui().logger.error(
-          chalk.bold('stderr from failed coverage tool process:'),
-        );
+        ui().logger.error(pc.bold('stderr from failed coverage tool process:'));
         ui().logger.error(error.stderr);
       }
 
