@@ -1,7 +1,7 @@
 import { type Options, bundleRequire } from 'bundle-require';
-import chalk from 'chalk';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import pc from 'picocolors';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
 import { ui } from './logging';
@@ -61,11 +61,11 @@ export function logMultipleFileResults(
 ): void {
   const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
-    return `- ${chalk.bold(fileName)}${formattedSize}`;
+    const formattedSize = size ? ` (${pc.gray(formatBytes(size))})` : '';
+    return `- ${pc.bold(fileName)}${formattedSize}`;
   };
   const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${chalk.bold(result.reason)}`;
+    `- ${pc.bold(result.reason as string)}`;
 
   logMultipleResults<FileResult>(
     fileResults,

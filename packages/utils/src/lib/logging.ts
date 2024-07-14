@@ -1,6 +1,6 @@
 import isaacs_cliui from '@isaacs/cliui';
 import { cliui } from '@poppinss/cliui';
-import chalk from 'chalk';
+import pc from 'picocolors';
 import { TERMINAL_WIDTH } from './reports/constants';
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -48,5 +48,5 @@ export function logListItem(args: ArgumentsType<UI['div']>) {
 }
 
 export function link(text: string) {
-  return chalk.underline(chalk.blueBright(text));
+  return pc.underline(pc.blueBright(text));
 }
