@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 import { CommandModule } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
 import {
@@ -18,8 +18,8 @@ import { normalizeHashOptions } from './utils';
 
 const command = 'history';
 async function handler(args: unknown) {
-  ui().logger.info(chalk.bold(CLI_NAME));
-  ui().logger.info(chalk.gray(`Run ${command}`));
+  ui().logger.info(pc.bold(CLI_NAME));
+  ui().logger.info(pc.gray(`Run ${command}`));
 
   const currentBranch = await getCurrentBranchOrTag();
   const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &

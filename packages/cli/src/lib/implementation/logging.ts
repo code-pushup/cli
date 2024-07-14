@@ -1,9 +1,9 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 import { link, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   ui().logger.info(
-    chalk.gray(
+    pc.gray(
       `💡 Configure categories to see the scores in an overview table. See: ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
       )}`,
@@ -22,10 +22,10 @@ export function collectSuccessfulLog(): void {
 export function renderIntegratePortalHint(): void {
   ui()
     .sticker()
-    .add(chalk.bold(chalk.gray('💡 Integrate the portal')))
+    .add(pc.bold(pc.gray('💡 Integrate the portal')))
     .add('')
     .add(
-      `${chalk.gray('❯')} Upload a report to the server - ${chalk.gray(
+      `${pc.gray('❯')} Upload a report to the server - ${pc.gray(
         'npx code-pushup upload',
       )}`,
     )
@@ -35,12 +35,12 @@ export function renderIntegratePortalHint(): void {
       )}`,
     )
     .add(
-      `${chalk.gray('❯')} ${chalk.gray('Portal Integration')} - ${link(
+      `${pc.gray('❯')} ${pc.gray('Portal Integration')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
     .add(
-      `${chalk.gray('❯')} ${chalk.gray('Upload Command')} - ${link(
+      `${pc.gray('❯')} ${pc.gray('Upload Command')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
