@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { DEFAULT_CLI_FLAGS, LighthouseCliFlags } from './runner';
@@ -71,9 +71,9 @@ export function logUnsupportedFlagsInUse(
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
-      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `${pc.yellow('⚠')} Plugin ${pc.bold(
         LIGHTHOUSE_PLUGIN_SLUG,
-      )} used unsupported flags: ${chalk.bold(
+      )} used unsupported flags: ${pc.bold(
         unsupportedFlagsInUse.slice(0, displayCount).join(', '),
       )}${postFix(unsupportedFlagsInUse.length)}`,
     );

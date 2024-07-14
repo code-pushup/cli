@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
+import pc from 'picocolors';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
@@ -14,9 +14,9 @@ describe('logUnsupportedDetails', () => {
     ] as unknown as Result[]);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${pc.yellow('⚠')} Plugin ${pc.bold(
         'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
+      )} skipped parsing of unsupported audit details: ${pc.bold(
         'screenshot',
       )}`,
     );
@@ -34,9 +34,9 @@ describe('logUnsupportedDetails', () => {
     ] as unknown as Result[]);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${pc.yellow('⚠')} Plugin ${pc.bold(
         'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
+      )} skipped parsing of unsupported audit details: ${pc.bold(
         'filmstrip, screenshot, debugdata',
       )} and 2 more.`,
     );

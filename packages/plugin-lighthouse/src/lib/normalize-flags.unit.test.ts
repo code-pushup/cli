@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { join } from 'node:path';
+import pc from 'picocolors';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
@@ -13,9 +13,9 @@ describe('logUnsupportedFlagsInUse', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${pc.yellow('⚠')} Plugin ${pc.bold(
         'lighthouse',
-      )} used unsupported flags: ${chalk.bold('list-all-audits')}`,
+      )} used unsupported flags: ${pc.bold('list-all-audits')}`,
     );
   });
   it('should log only 3 details of unsupported entries', () => {
@@ -33,9 +33,9 @@ describe('logUnsupportedFlagsInUse', () => {
     } as unknown as LighthouseOptions);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${pc.yellow('⚠')} Plugin ${pc.bold(
         'lighthouse',
-      )} used unsupported flags: ${chalk.bold(
+      )} used unsupported flags: ${pc.bold(
         'list-all-audits, list-locales, list-trace-categories',
       )} and 3 more.`,
     );
