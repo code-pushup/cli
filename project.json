@@ -17,7 +17,6 @@
           "format": ["json"],
           "filename": "code-pushup",
           "outputDir": ".code-pushup",
-          "target": "build"
         }
       }
     }
