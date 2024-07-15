@@ -1,5 +1,5 @@
+import { bold } from 'ansis';
 import Details from 'lighthouse/types/lhr/audit-details';
-import pc from 'picocolors';
 
 export class LighthouseAuditDetailsParsingError extends Error {
   constructor(
@@ -8,7 +8,7 @@ export class LighthouseAuditDetailsParsingError extends Error {
     error: string,
   ) {
     super(
-      `Parsing lighthouse report details ${pc.bold(
+      `Parsing lighthouse report details ${bold(
         type,
       )} failed: \nRaw data:\n ${JSON.stringify(rawTable, null, 2)}\n${error}`,
     );

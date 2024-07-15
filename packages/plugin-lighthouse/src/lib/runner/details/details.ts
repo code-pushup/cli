@@ -1,7 +1,7 @@
+import { bold, yellow } from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import pc from 'picocolors';
 import { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants';
@@ -55,9 +55,9 @@ export function logUnsupportedDetails(
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
-      `${pc.yellow('⚠')} Plugin ${pc.bold(
+      `${yellow('⚠')} Plugin ${bold(
         PLUGIN_SLUG,
-      )} skipped parsing of unsupported audit details: ${pc.bold(
+      )} skipped parsing of unsupported audit details: ${bold(
         slugsWithDetailParsingErrors.slice(0, displayCount).join(', '),
       )}${postFix(slugsWithDetailParsingErrors.length)}`,
     );

@@ -1,10 +1,10 @@
+import { bold } from 'ansis';
 import type { Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import { Result } from 'lighthouse/types/lhr/audit-result';
-import pc from 'picocolors';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importModule, readJsonFile, ui } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
@@ -21,9 +21,9 @@ export function normalizeAuditOutputs(
     const doSkip = toSkip.has(slug);
     if (doSkip) {
       ui().logger.info(
-        `Audit ${pc.bold(
+        `Audit ${bold(
           slug,
-        )} was included in audit outputs of lighthouse but listed under ${pc.bold(
+        )} was included in audit outputs of lighthouse but listed under ${bold(
           'skipAudits',
         )}.`,
       );
@@ -34,9 +34,7 @@ export function normalizeAuditOutputs(
 
 export class LighthouseAuditParsingError extends Error {
   constructor(slug: string, error: Error) {
-    super(
-      `\nAudit ${pc.bold(slug)} failed parsing details: \n${error.message}`,
-    );
+    super(`\nAudit ${bold(slug)} failed parsing details: \n${error.message}`);
   }
 }
 

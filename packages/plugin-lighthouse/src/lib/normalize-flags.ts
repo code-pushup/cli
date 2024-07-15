@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import { bold, yellow } from 'ansis';
 import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
 import { DEFAULT_CLI_FLAGS, LighthouseCliFlags } from './runner';
@@ -71,9 +71,9 @@ export function logUnsupportedFlagsInUse(
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
-      `${pc.yellow('⚠')} Plugin ${pc.bold(
+      `${yellow('⚠')} Plugin ${bold(
         LIGHTHOUSE_PLUGIN_SLUG,
-      )} used unsupported flags: ${pc.bold(
+      )} used unsupported flags: ${bold(
         unsupportedFlagsInUse.slice(0, displayCount).join(', '),
       )}${postFix(unsupportedFlagsInUse.length)}`,
     );

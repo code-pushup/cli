@@ -1,10 +1,10 @@
+import { bold } from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
-import pc from 'picocolors';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AuditOutput,
@@ -230,7 +230,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${pc.bold('cumulative-layout-shift')} failed parsing details:`,
+      `Audit ${bold('cumulative-layout-shift')} failed parsing details:`,
     );
   });
 });
