@@ -1,3 +1,30 @@
+## 0.48.0 (2024-07-15)
+
+### 🚀 Features
+
+- implement skip-plugins option ([73695855](https://github.com/code-pushup/cli/commit/73695855))
+- add skipPlugin options to global configs ([64f45dab](https://github.com/code-pushup/cli/commit/64f45dab))
+- **nx-plugin:** add general executor logic ([3b5b9770](https://github.com/code-pushup/cli/commit/3b5b9770))
+- **plugin-lighthouse:** parse opportunity details from lighthouse report ([2e76d08c](https://github.com/code-pushup/cli/commit/2e76d08c))
+- **testing-utils:** add test helper for paths ([ccef3a1c](https://github.com/code-pushup/cli/commit/ccef3a1c))
+- **utils:** merge configs function ([ac67ea5c](https://github.com/code-pushup/cli/commit/ac67ea5c))
+- **utils:** add explicit types to merge config function and helpers ([e16c1c43](https://github.com/code-pushup/cli/commit/e16c1c43))
+- **utils:** export merge configs helper as public API ([2f8d78e4](https://github.com/code-pushup/cli/commit/2f8d78e4))
+
+### 🩹 Fixes
+
+- restore e2e tests ([9a2e45b9](https://github.com/code-pushup/cli/commit/9a2e45b9))
+- **nx-plugin:** fix lint ([d6161599](https://github.com/code-pushup/cli/commit/d6161599))
+- **nx-plugin:** fix test for windows ([4fed38cf](https://github.com/code-pushup/cli/commit/4fed38cf))
+- **utils:** unchanged categories table markdown content ([1df3ccb6](https://github.com/code-pushup/cli/commit/1df3ccb6))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+- Nacho Vazquez @NachoVazquez
+- Vojtech Masek @vmasek
+
 ## 0.47.0 (2024-07-01)
 
 ### 🚀 Features
