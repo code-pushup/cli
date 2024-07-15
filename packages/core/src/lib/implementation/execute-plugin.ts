@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import { bold } from 'ansis';
 import {
   Audit,
   AuditOutput,
@@ -25,7 +25,7 @@ import { executeRunnerConfig, executeRunnerFunction } from './runner';
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${pc.bold(
+      `Audit metadata not present in plugin config. Missing slug: ${bold(
         auditSlug,
       )}`,
     );
@@ -110,7 +110,7 @@ const wrapProgress = async (
   steps: number,
   progressBar: ProgressBar | null,
 ) => {
-  progressBar?.updateTitle(`Executing ${pc.bold(pluginCfg.title)}`);
+  progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
   try {
     const pluginReport = await executePlugin(pluginCfg);
     progressBar?.incrementInSteps(steps);
@@ -119,7 +119,7 @@ const wrapProgress = async (
     progressBar?.incrementInSteps(steps);
     throw new Error(
       error instanceof Error
-        ? `- Plugin ${pc.bold(pluginCfg.title)} (${pc.bold(
+        ? `- Plugin ${bold(pluginCfg.title)} (${bold(
             pluginCfg.slug,
           )}) produced the following error:\n  - ${error.message}`
         : String(error),

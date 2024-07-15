@@ -1,5 +1,5 @@
+import { bold } from 'ansis';
 import { vol } from 'memfs';
-import pc from 'picocolors';
 import { describe, expect, it } from 'vitest';
 import { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
@@ -87,7 +87,7 @@ describe('executePlugin', () => {
         ],
       }),
     ).rejects.toThrow(
-      `Audit metadata not present in plugin config. Missing slug: ${pc.bold(
+      `Audit metadata not present in plugin config. Missing slug: ${bold(
         missingSlug,
       )}`,
     );
@@ -134,9 +134,9 @@ describe('executePlugins', () => {
         ] satisfies PluginConfig[],
         { progress: false },
       ),
-    ).rejects.toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${pc.bold(
+    ).rejects.toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${bold(
       title,
-    )} (${pc.bold(slug)}) produced the following error:
+    )} (${bold(slug)}) produced the following error:
   - Audit output is invalid: [
   {
     "validation": "regex",
@@ -248,13 +248,13 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      `Error: - Plugin ${pc.bold('plg1')} (${pc.bold(
+      `Error: - Plugin ${bold('plg1')} (${bold(
         'plg1',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${pc.bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${bold(
         'missing-audit-slug-a',
-      )}\nError: - Plugin ${pc.bold('plg2')} (${pc.bold(
+      )}\nError: - Plugin ${bold('plg2')} (${bold(
         'plg2',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${pc.bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${bold(
         'missing-audit-slug-b',
       )}`,
     );
