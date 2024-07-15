@@ -11,14 +11,20 @@
       }
     },
     "code-pushup": {
-      "command": "npx dist/packages/cli",
-      "options": {
-        "persist": {
-          "format": ["json"],
-          "filename": "code-pushup",
-          "outputDir": ".code-pushup",
+      "dependsOn": [
+        {
+          "projects": [
+            "nx-plugin",
+            "plugin-eslint",
+            "plugin-coverage",
+            "plugin-js-packages",
+            "plugin-lighthouse",
+            "examples-plugins",
+            "react-todos-app"
+          ],
+          "target": "build"
         }
-      }
+      ]
     }
   }
 }

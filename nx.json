@@ -32,21 +32,7 @@
       "executor": "@code-pushup/nx-plugin:autorun",
       "options": {
         "projectPrefix": "cli"
-      },
-      "dependsOn": [
-        {
-          "projects": [
-            "nx-plugin",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
-            "plugin-lighthouse",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
-        }
-      ]
+      }
     },
     "@nx/vite:test": {
       "cache": true,
