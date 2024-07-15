@@ -51,7 +51,7 @@
         },
         "outDir": {
           "type": "string",
-          "description": "Directory to save the configuration to (default is `.`)"
+          "description": "Directory to save the configuration to (default is `.code-pushup`)"
         },
         "format": {
           "type": "array",
@@ -59,8 +59,7 @@
             "type": "string",
             "enum": ["json", "md"]
           },
-          "description": "Format to save the configuration in (default is `json`)",
-          "default": ["json"]
+          "description": "Format to save the report in (default is `json`)"
         }
       }
     },
