@@ -1,6 +1,6 @@
 import isaacs_cliui from '@isaacs/cliui';
 import { cliui } from '@poppinss/cliui';
-import { blueBright, underline } from 'ansis';
+import { underline } from 'ansis';
 import { TERMINAL_WIDTH } from './reports/constants';
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
