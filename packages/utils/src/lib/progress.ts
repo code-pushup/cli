@@ -1,19 +1,19 @@
+import { black, bold, gray, green } from 'ansis';
 import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
-import pc from 'picocolors';
 import { TERMINAL_WIDTH } from './reports/constants';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
 export const barStyles: StatusStyles = {
-  active: (s: string) => pc.green(s),
-  done: (s: string) => pc.gray(s),
-  idle: (s: string) => pc.gray(s),
+  active: (s: string) => green(s),
+  done: (s: string) => gray(s),
+  idle: (s: string) => gray(s),
 };
 
 export const messageStyles: StatusStyles = {
-  active: (s: string) => pc.black(s),
-  done: (s: string) => pc.green(pc.bold(s)),
-  idle: (s: string) => pc.gray(s),
+  active: (s: string) => black(s),
+  done: (s: string) => bold.green(s),
+  idle: (s: string) => gray(s),
 };
 
 export type ProgressBar = {
