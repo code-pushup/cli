@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import { bold, gray } from 'ansis';
 import { getProgressBar } from '../../../../dist/packages/utils/index.js';
 
 const _arg = (name, fallback = '') =>
@@ -27,8 +27,8 @@ const verbose = Boolean(_arg('verbose', false));
 (async () => {
   verbose &&
     console.info(
-      pc.gray(
-        `Start progress with duration: ${pc.bold(duration)}, steps: ${pc.bold(
+      gray(
+        `Start progress with duration: ${bold(duration)}, steps: ${bold(
           steps,
         )}`,
       ),
