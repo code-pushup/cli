@@ -6,8 +6,8 @@ import type {
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
+import { bold } from 'ansis';
 import { isAbsolute, join } from 'node:path';
-import pc from 'picocolors';
 import { importModule, ui } from '@code-pushup/utils';
 import { CoverageResult } from '../config';
 
@@ -21,7 +21,7 @@ export async function getNxCoveragePaths(
 ): Promise<CoverageResult[]> {
   if (verbose) {
     ui().logger.info(
-      pc.bold('💡 Gathering coverage from the following nx projects:'),
+      bold('💡 Gathering coverage from the following nx projects:'),
     );
   }
 
