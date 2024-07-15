@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import { yellow } from 'ansis';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
@@ -30,7 +30,7 @@ export function validatePluginFilterOption(
 
   if (missingPlugins.length > 0 && verbose) {
     ui().logger.info(
-      `${pc.yellow(
+      `${yellow(
         '⚠',
       )} The --${filterOption} argument references plugins with "${missingPlugins.join(
         '", "',

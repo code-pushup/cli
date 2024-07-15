@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import pc from 'picocolors';
+import { bold } from 'ansis';
 import yargs, {
   Argv,
   CommandModule,
@@ -64,7 +64,7 @@ export function yargsCli<T = unknown>(
 
   // usage message
   if (usageMessage) {
-    cli.usage(pc.bold(usageMessage));
+    cli.usage(bold(usageMessage));
   }
 
   // script name

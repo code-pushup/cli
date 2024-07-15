@@ -1,9 +1,9 @@
-import pc from 'picocolors';
+import { bold, gray } from 'ansis';
 import { link, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   ui().logger.info(
-    pc.gray(
+    gray(
       `💡 Configure categories to see the scores in an overview table. See: ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
       )}`,
@@ -22,10 +22,10 @@ export function collectSuccessfulLog(): void {
 export function renderIntegratePortalHint(): void {
   ui()
     .sticker()
-    .add(pc.bold(pc.gray('💡 Integrate the portal')))
+    .add(bold.gray('💡 Integrate the portal'))
     .add('')
     .add(
-      `${pc.gray('❯')} Upload a report to the server - ${pc.gray(
+      `${gray('❯')} Upload a report to the server - ${gray(
         'npx code-pushup upload',
       )}`,
     )
@@ -35,12 +35,12 @@ export function renderIntegratePortalHint(): void {
       )}`,
     )
     .add(
-      `${pc.gray('❯')} ${pc.gray('Portal Integration')} - ${link(
+      `${gray('❯')} ${gray('Portal Integration')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
     .add(
-      `${pc.gray('❯')} ${pc.gray('Upload Command')} - ${link(
+      `${gray('❯')} ${gray('Upload Command')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
