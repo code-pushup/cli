@@ -10,9 +10,9 @@ export function parseAutorunExecutorOnlyOptions(
 ): AutorunCommandExecutorOnlyOptions {
   const { projectPrefix, dryRun, onlyPlugins } = options;
   return {
-    ...(projectPrefix == null ? {} : { projectPrefix }),
-    ...(dryRun == null ? {} : { dryRun: dryRun }),
-    ...(onlyPlugins ? { onlyPlugins } : {}),
+    ...(projectPrefix && { projectPrefix }),
+    ...(dryRun != null && { dryRun: dryRun }),
+    ...(onlyPlugins && { onlyPlugins }),
   };
 }
 
