@@ -54,7 +54,6 @@ describe('parseAutorunExecutorOptions', () => {
   });
 
   it('should leverage other config helper to assemble the executor config', () => {
-    processEnvSpy.mockReturnValue({ outputDir: 'from-env-vars' });
     const projectName = 'my-app';
     const executorOptions = parseAutorunExecutorOptions(
       {
@@ -81,6 +80,9 @@ describe('parseAutorunExecutorOptions', () => {
         upload: { project: projectName },
       }),
     );
+
+    expect(processEnvSpy).toHaveBeenCalledTimes(1);
+
     expect(executorOptions.persist).toEqual(
       expect.objectContaining({
         filename: 'from-options',
