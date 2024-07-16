@@ -1,5 +1,5 @@
+import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
-import chalk from 'chalk';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { formatBytes } from './formatting';
@@ -61,11 +61,11 @@ export function logMultipleFileResults(
 ): void {
   const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${chalk.gray(formatBytes(size))})` : '';
-    return `- ${chalk.bold(fileName)}${formattedSize}`;
+    const formattedSize = size ? ` (${gray(formatBytes(size))})` : '';
+    return `- ${bold(fileName)}${formattedSize}`;
   };
   const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${chalk.bold(result.reason)}`;
+    `- ${bold(result.reason as string)}`;
 
   logMultipleResults<FileResult>(
     fileResults,

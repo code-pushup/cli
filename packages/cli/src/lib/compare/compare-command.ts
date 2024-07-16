@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, gray } from 'ansis';
 import { CommandModule } from 'yargs';
 import { compareReportFiles } from '@code-pushup/core';
 import { PersistConfig } from '@code-pushup/models';
@@ -14,8 +14,8 @@ export function yargsCompareCommandObject() {
     describe: 'Compare 2 report files and create a diff file',
     builder: yargsCompareOptionsDefinition(),
     handler: async (args: unknown) => {
-      ui().logger.log(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}...`));
+      ui().logger.log(bold(CLI_NAME));
+      ui().logger.info(gray(`Run ${command}...`));
 
       const options = args as CompareOptions & {
         persist: Required<PersistConfig>;
@@ -27,7 +27,7 @@ export function yargsCompareCommandObject() {
 
       ui().logger.info(
         `Reports diff written to ${outputPaths
-          .map(path => chalk.bold(path))
+          .map(path => bold(path))
           .join(' and ')}`,
       );
     },

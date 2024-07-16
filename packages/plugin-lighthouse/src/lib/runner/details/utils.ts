@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import Details from 'lighthouse/types/lhr/audit-details';
 
 export class LighthouseAuditDetailsParsingError extends Error {
@@ -8,7 +8,7 @@ export class LighthouseAuditDetailsParsingError extends Error {
     error: string,
   ) {
     super(
-      `Parsing lighthouse report details ${chalk.bold(
+      `Parsing lighthouse report details ${bold(
         type,
       )} failed: \nRaw data:\n ${JSON.stringify(rawTable, null, 2)}\n${error}`,
     );

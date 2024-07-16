@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, gray } from 'ansis';
 import { CommandModule } from 'yargs';
 import { HistoryOptions, history } from '@code-pushup/core';
 import {
@@ -18,8 +18,8 @@ import { normalizeHashOptions } from './utils';
 
 const command = 'history';
 async function handler(args: unknown) {
-  ui().logger.info(chalk.bold(CLI_NAME));
-  ui().logger.info(chalk.gray(`Run ${command}`));
+  ui().logger.info(bold(CLI_NAME));
+  ui().logger.info(gray(`Run ${command}`));
 
   const currentBranch = await getCurrentBranchOrTag();
   const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &
