@@ -75,10 +75,7 @@ const config: CoreConfig = {
 
     await lighthousePlugin(
       'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
-      {
-        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-        verbose: true,
-      },
+      { chromeFlags: DEFAULT_FLAGS.concat(['--headless']) },
     ),
   ],
 
