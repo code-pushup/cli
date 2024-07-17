@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, yellow } from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
@@ -55,9 +55,9 @@ export function logUnsupportedDetails(
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
-      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `${yellow('⚠')} Plugin ${bold(
         PLUGIN_SLUG,
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
+      )} skipped parsing of unsupported audit details: ${bold(
         slugsWithDetailParsingErrors.slice(0, displayCount).join(', '),
       )}${postFix(slugsWithDetailParsingErrors.length)}`,
     );

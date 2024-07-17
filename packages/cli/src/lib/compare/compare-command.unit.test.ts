@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import { compareReportFiles } from '@code-pushup/core';
 import {
   DEFAULT_PERSIST_FILENAME,
@@ -53,9 +53,9 @@ describe('compare-command', () => {
     ).parseAsync();
 
     expect(getLogMessages(ui().logger).at(-1)).toContain(
-      `Reports diff written to ${chalk.bold(
+      `Reports diff written to ${bold(
         '.code-pushup/report-diff.json',
-      )} and ${chalk.bold('.code-pushup/report-diff.md')}`,
+      )} and ${bold('.code-pushup/report-diff.md')}`,
     );
   });
 });

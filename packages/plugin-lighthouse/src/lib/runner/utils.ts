@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import type { Config } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
@@ -21,9 +21,9 @@ export function normalizeAuditOutputs(
     const doSkip = toSkip.has(slug);
     if (doSkip) {
       ui().logger.info(
-        `Audit ${chalk.bold(
+        `Audit ${bold(
           slug,
-        )} was included in audit outputs of lighthouse but listed under ${chalk.bold(
+        )} was included in audit outputs of lighthouse but listed under ${bold(
           'skipAudits',
         )}.`,
       );
@@ -34,9 +34,7 @@ export function normalizeAuditOutputs(
 
 export class LighthouseAuditParsingError extends Error {
   constructor(slug: string, error: Error) {
-    super(
-      `\nAudit ${chalk.bold(slug)} failed parsing details: \n${error.message}`,
-    );
+    super(`\nAudit ${bold(slug)} failed parsing details: \n${error.message}`);
   }
 }
 
