@@ -24,7 +24,12 @@
           ],
           "target": "build"
         }
-      ]
+      ],
+      "options": {
+        "upload": {
+          "outputDir": ".code-pushup"
+        }
+      }
     }
   }
 }
