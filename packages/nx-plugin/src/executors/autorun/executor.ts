@@ -37,11 +37,11 @@ export default function runAutorunExecutor(
       // eslint-disable-next-line n/no-sync
       execSync(command, context.cwd ? { cwd: context.cwd } : {});
     } catch (error) {
-      return {
+      return Promise.resolve({
         success: false,
         command,
         error,
-      };
+      });
     }
   }
 
