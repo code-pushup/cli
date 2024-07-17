@@ -27,6 +27,7 @@ export function persistConfig(
   context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
   const { projectConfig, workspaceRoot } = context;
+  console.log('persistConfigOptions: ', options);
 
   const { name: projectName = '' } = projectConfig ?? {};
   const {

@@ -54,12 +54,12 @@
           "description": "Directory to save the configuration to (default is `.code-pushup`)"
         },
         "format": {
-          "type": "array",
+          "type": "enum",
           "items": {
             "type": "string",
             "enum": ["json", "md"]
           },
-          "description": "Format to save the report in (default is `json`)"
+          "description": "Format to save the report in."
         }
       }
     },

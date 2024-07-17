@@ -14,21 +14,26 @@ export type ExecutorOutput = {
 };
 
 export default function runAutorunExecutor(
-  options: AutorunCommandExecutorOptions,
+  terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ) {
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
-    options,
+    terminalAndExecutorOptions,
     normalizedContext,
   );
+  // console.log('AutorunCommandExecutorOptions: ', terminalAndExecutorOptions);
+  // console.log('cliArgumentObject: ', cliArgumentObject);
+
   const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
 
-  const { dryRun } = options;
+  const { dryRun } = terminalAndExecutorOptions;
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
   } else {
     try {
+      logger.warn(`Execution of: ${command}`);
+
       // eslint-disable-next-line n/no-sync
       execSync(command, context.cwd ? { cwd: context.cwd } : {});
     } catch (error) {

@@ -26,9 +26,7 @@
         }
       ],
       "options": {
-        "upload": {
-          "outputDir": ".code-pushup"
-        }
+        "verbose": true
       }
     }
   }
