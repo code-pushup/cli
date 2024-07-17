@@ -1,3 +1,4 @@
+import { InlineText, md } from 'build-md';
 import { join } from 'node:path';
 import {
   AuditReport,
@@ -15,11 +16,8 @@ import {
   readJsonFile,
   readTextFile,
 } from '../file-system';
-import { md } from '../text-formats';
 import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
-
-const { image, bold: boldMd } = md;
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;
@@ -33,11 +31,11 @@ export function formatReportScore(score: number): string {
 export function formatScoreWithColor(
   score: number,
   options?: { skipBold?: boolean },
-): string {
+): InlineText {
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
-    : boldMd(formatReportScore(score));
-  return `${scoreMarker(score)} ${styledNumber}`;
+    : md.bold(formatReportScore(score));
+  return md`${scoreMarker(score)} ${styledNumber}`;
 }
 
 export type MarkerShape = 'circle' | 'square';
@@ -78,13 +76,13 @@ export function getDiffMarker(diff: number): string {
   return '';
 }
 
-export function colorByScoreDiff(text: string, diff: number): string {
+export function colorByScoreDiff(text: string, diff: number): InlineText {
   const color = diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray';
   return shieldsBadge(text, color);
 }
 
-export function shieldsBadge(text: string, color: string): string {
-  return image(
+export function shieldsBadge(text: string, color: string): InlineText {
+  return md.image(
     `https://img.shields.io/badge/${encodeURIComponent(text)}-${color}`,
     text,
   );
