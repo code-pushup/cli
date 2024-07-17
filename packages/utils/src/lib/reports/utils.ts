@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/import-style
 import ansis, { Ansis } from 'ansis';
 import { join } from 'node:path';
 import {
