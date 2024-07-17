@@ -2,9 +2,9 @@
 
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Performance](#performance)|🟢 **92**|8|
-|[Bug prevention](#bug-prevention)|🟡 **68**|16|
-|[Code style](#code-style)|🟡 **54**|13|
+|[Performance](#performance)|🟢 **92** |8|
+|[Bug prevention](#bug-prevention)|🟡 **68** |16|
+|[Code style](#code-style)|🟡 **54** |13|
 
 ## 🏷 Categories
 
@@ -12,7 +12,7 @@
 
 Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/performance)
 
-🟢 Score:  **92**
+🟢 Score:  **92** 
 - 🟢 Performance (_Lighthouse_)
   - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
@@ -26,7 +26,7 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 ### Bug prevention
 
-🟡 Score:  **68**
+🟡 Score:  **68** 
 - 🟥 [verifies the list of dependencies for Hooks like useEffect and similar](#verifies-the-list-of-dependencies-for-hooks-like-useeffect-and-similar-eslint) (_ESLint_) - **2 warnings**
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
 - 🟩 [enforces the Rules of Hooks](#enforces-the-rules-of-hooks-eslint) (_ESLint_) - **passed**
@@ -46,7 +46,7 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 ### Code style
 
-🟡 Score:  **54**
+🟡 Score:  **54** 
 - 🟥 [Require or disallow method and property shorthand syntax for object literals](#require-or-disallow-method-and-property-shorthand-syntax-for-object-literals-eslint) (_ESLint_) - **3 warnings**
 - 🟥 [Disallow unused variables](#disallow-unused-variables-eslint) (_ESLint_) - **1 warning**
 - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) (_ESLint_) - **1 warning**

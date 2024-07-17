@@ -74,27 +74,27 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 |🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Performance](#performance)|🟡 **61**|2|
-|[SEO](#seo)|🟢 **100**✅|1|
-|[PWA](#pwa)|🔴 **0**❌|1|
+|[Performance](#performance)|🟡 **61** |2|
+|[SEO](#seo)|🟢 **100** ✅|1|
+|[PWA](#pwa)|🔴 **0** ❌|1|
 
 ## 🏷 Categories
 
 ### Performance
 
-🟡 Score:  **61**
+🟡 Score:  **61** 
 - 🔴 Performance Group (_Lighthouse_)
   - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **2,7 s**
   - 🟩 [Fast Images](#fast-images-lighthouse) - **1**
 
 ### SEO
 
-🟢 Score:  **100**✅
+🟢 Score:  **100** ✅
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
 
 ### PWA
 
-🔴 Score:  **0**❌
+🔴 Score:  **0** ❌
 - 🟩 [Splash Screen](#splash-screen-lighthouse) (_Lighthouse_) - **1**
 
 ## 🛡️ Audits
