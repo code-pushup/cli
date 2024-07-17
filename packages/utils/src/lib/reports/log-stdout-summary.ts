@@ -1,4 +1,4 @@
-import { bold, cyan, cyanBright, green, red, yellow } from 'ansis';
+import { bold, cyan, cyanBright, green, red } from 'ansis';
 import { AuditReport } from '@code-pushup/models';
 import { ui } from '../logging';
 import {
