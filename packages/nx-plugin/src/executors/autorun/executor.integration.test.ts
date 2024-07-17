@@ -4,7 +4,7 @@ import { ExecutorContext } from 'nx/src/config/misc-interfaces';
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
-import { runAutorunExecutor } from './executor';
+import runAutorunExecutor from './executor';
 import { parseAutorunExecutorOptions } from './utils';
 
 vi.mock('node:child_process', async () => {
@@ -43,8 +43,8 @@ const context = {
 } as unknown as ExecutorContext;
 
 describe('runAutorunExecutor', () => {
-  it('should consider the context argument', () => {
-    const output = runAutorunExecutor({}, context);
+  it('should consider the context argument', async () => {
+    const output = await runAutorunExecutor({}, context);
     expect(output.success).toBe(true);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
@@ -53,15 +53,15 @@ describe('runAutorunExecutor', () => {
     );
   });
 
-  it('should process dryRun option', () => {
-    const output = runAutorunExecutor({ dryRun: true }, context);
+  it('should process dryRun option', async () => {
+    const output = await runAutorunExecutor({ dryRun: true }, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(projectName);
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(0);
   });
 
-  it('should consider given options', () => {
+  it('should consider given options', async () => {
     const cfg = {
       persist: { filename: 'filename' },
       upload: {
@@ -72,7 +72,7 @@ describe('runAutorunExecutor', () => {
         organization: 'code-pushup',
       },
     };
-    const output = runAutorunExecutor(cfg, context);
+    const output = await runAutorunExecutor(cfg, context);
     expect(output.success).toBe(true);
     expect(output.command).toMatch(`afas57g8h9uj03iqwkeaclsd`);
     // eslint-disable-next-line n/no-sync

@@ -1,13 +1,5 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
-import { z } from 'zod';
-import {
-  fileSizePlugin,
-  fileSizeRecommendedRefs,
-  packageJsonDocumentationGroupRef,
-  packageJsonPerformanceGroupRef,
-  packageJsonPlugin,
-} from './dist/examples/plugins';
+import { fileSizePlugin, packageJsonPlugin } from './dist/examples/plugins';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
@@ -15,10 +7,6 @@ import eslintPlugin, {
   eslintConfigFromAllNxProjects,
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import {
-  lighthouseGroupRef,
-  lighthousePlugin,
-} from './dist/packages/plugin-lighthouse';
 import type { CoreConfig } from './packages/models/src';
 
 const config: CoreConfig = {
@@ -54,16 +42,16 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
-
-    await lighthousePlugin(
-      'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
-      {
-        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-        verbose: true,
-      },
-    ),
+    /*
+        await lighthousePlugin(
+          'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
+          {
+            chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+            verbose: true,
+          },
+        ),*/
   ],
-
+  /*
   categories: [
     {
       slug: 'performance',
@@ -148,7 +136,7 @@ const config: CoreConfig = {
         packageJsonDocumentationGroupRef,
       ],
     },
-  ],
+  ],*/
 };
 
 export default config;
