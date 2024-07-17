@@ -1,3 +1,4 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
 import {
   fileSizePlugin,
