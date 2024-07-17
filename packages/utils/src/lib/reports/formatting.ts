@@ -1,44 +1,55 @@
+import { HeadingLevel, InlineText, MarkdownDocument, md } from 'build-md';
 import { AuditReport, Table } from '@code-pushup/models';
-import { Hierarchy, NEW_LINE, SPACE, md } from '../text-formats';
-
-const { headline, lines, link, section, table } = md;
+import { HIERARCHY } from '../text-formats';
+import {
+  columnsToStringArray,
+  getColumnAlignments,
+  rowToStringArray,
+} from '../text-formats/table';
 
 export function tableSection(
   tableData: Table,
   options?: {
-    level?: Hierarchy | 0;
+    level?: HeadingLevel;
   },
-) {
+): MarkdownDocument | null {
   if (tableData.rows.length === 0) {
-    return '';
+    return null;
   }
-  const { level = 4 } = options ?? {};
-  // if hierarchy is 0 do not apply heading styles
-  const render = (h: string, l: Hierarchy | 0) =>
-    l === 0 ? h : headline(h, l);
-  return lines(
-    tableData.title && render(tableData.title, level),
-    table(tableData),
+  const { level = HIERARCHY.level_4 } = options ?? {};
+  const columns = columnsToStringArray(tableData);
+  const alignments = getColumnAlignments(tableData);
+  const rows = rowToStringArray(tableData);
+  return new MarkdownDocument().heading(level, tableData.title).table(
+    columns.map((heading, i) => {
+      const alignment = alignments[i];
+      if (alignment) {
+        return { heading, alignment };
+      }
+      return heading;
+    }),
+    rows,
   );
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
-export function metaDescription({
-  docsUrl,
-  description,
-}: Pick<AuditReport, 'docsUrl' | 'description'>): string {
+export function metaDescription(
+  audit: Pick<AuditReport, 'docsUrl' | 'description'>,
+): InlineText {
+  const docsUrl = audit.docsUrl;
+  const description = audit.description?.trim();
   if (docsUrl) {
-    const docsLink = link(docsUrl, '📖 Docs');
+    const docsLink = md.link(docsUrl, '📖 Docs');
     if (!description) {
-      return section(docsLink);
+      return docsLink;
     }
-    const parsedDescription = description.toString().endsWith('```')
-      ? `${description}${NEW_LINE + NEW_LINE}`
-      : `${description}${SPACE}`;
-    return section(`${parsedDescription}${docsLink}`);
+    const parsedDescription = description.endsWith('```')
+      ? `${description}\n\n`
+      : `${description} `;
+    return md`${parsedDescription}${docsLink}`;
   }
   if (description && description.trim().length > 0) {
-    return section(description);
+    return description;
   }
   return '';
 }

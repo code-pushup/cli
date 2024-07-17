@@ -7,9 +7,8 @@
 <details>
 <summary>👎 <strong>1</strong> audit regressed</summary>
 
-|🔌 Plugin|🛡️ Audit|📏 Previous value|📏 Current value|🔄 Value change|
-|:--|:--|:--:|:--:|:--:|
-|NPM|Check for outdates NPM packages|🟩 1 package is out of date|🟨 **3 packages are out of date**|![↑ +200 %](https://img.shields.io/badge/%E2%86%91%20%2B200%E2%80%89%25-red)|
-
+| 🔌 Plugin | 🛡️ Audit                       |      📏 Previous value      |         📏 Current value          |                               🔄 Value change                                |
+| :-------- | :------------------------------ | :-------------------------: | :-------------------------------: | :--------------------------------------------------------------------------: |
+| NPM       | Check for outdates NPM packages | 🟩 1 package is out of date | 🟨 **3 packages are out of date** | ![↑ +200 %](https://img.shields.io/badge/%E2%86%91%20%2B200%E2%80%89%25-red) |
 
 </details>

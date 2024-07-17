@@ -47,11 +47,11 @@ describe('formatReportScore', () => {
 
 describe('formatScoreWithColor', () => {
   it('should include colored circle and value multiplied by 100 in bold', () => {
-    expect(formatScoreWithColor(1)).toBe('🟢 **100**');
+    expect(formatScoreWithColor(1).toString()).toBe('🟢 **100**');
   });
 
   it('should skip round value and optionally skip bold formatting', () => {
-    expect(formatScoreWithColor(0.123)).toBe('🔴 **12**');
+    expect(formatScoreWithColor(0.123).toString()).toBe('🔴 **12**');
   });
 });
 

@@ -4,10 +4,10 @@ import { ui } from '../logging';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
+  REPORT_HEADLINE_TEXT,
+  REPORT_RAW_OVERVIEW_TABLE_HEADERS,
   SCORE_COLOR_RANGE,
   TERMINAL_WIDTH,
-  reportHeadlineText,
-  reportRawOverviewTableHeaders,
 } from './constants';
 import { ScoredReport } from './types';
 import { countCategoryAudits, formatReportScore } from './utils';
@@ -31,7 +31,7 @@ export function logStdoutSummary(report: ScoredReport): void {
 
 function reportToHeaderSection(report: ScoredReport): string {
   const { packageName, version } = report;
-  return `${bold(reportHeadlineText)} - ${packageName}@${version}`;
+  return `${bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
 }
 
 function logPlugins(report: ScoredReport): void {
@@ -76,7 +76,7 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   // eslint-disable-next-line no-magic-numbers
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
   table.head(
-    reportRawOverviewTableHeaders.map((heading, idx) => ({
+    REPORT_RAW_OVERVIEW_TABLE_HEADERS.map((heading, idx) => ({
       content: cyan(heading),
       hAlign: hAlign(idx),
     })),
