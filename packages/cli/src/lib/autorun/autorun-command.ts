@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, gray } from 'ansis';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
   CollectOptions,
@@ -23,8 +23,8 @@ export function yargsAutorunCommandObject() {
     command,
     describe: 'Shortcut for running collect followed by upload',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.log(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}...`));
+      ui().logger.log(bold(CLI_NAME));
+      ui().logger.info(gray(`Run ${command}...`));
       const options = args as unknown as AutorunOptions;
 
       // we need to ensure `json` is part of the formats as we want to upload

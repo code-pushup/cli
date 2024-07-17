@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, cyan, cyanBright, green, red, yellow } from 'ansis';
 import { AuditReport } from '@code-pushup/models';
 import { ui } from '../logging';
 import {
@@ -30,7 +30,7 @@ export function logStdoutSummary(report: ScoredReport): void {
 
 function reportToHeaderSection(report: ScoredReport): string {
   const { packageName, version } = report;
-  return `${chalk.bold(reportHeadlineText)} - ${packageName}@${version}`;
+  return `${bold(reportHeadlineText)} - ${packageName}@${version}`;
 }
 
 function logPlugins(report: ScoredReport): void {
@@ -39,7 +39,7 @@ function logPlugins(report: ScoredReport): void {
   plugins.forEach(plugin => {
     const { title, audits } = plugin;
     log();
-    log(chalk.magentaBright.bold(`${title} audits`));
+    log(bold.magentaBright(`${title} audits`));
     log();
     audits.forEach((audit: AuditReport) => {
       ui().row([
@@ -54,7 +54,7 @@ function logPlugins(report: ScoredReport): void {
           padding: [0, 3, 0, 0],
         },
         {
-          text: chalk.cyanBright(audit.displayValue || `${audit.value}`),
+          text: cyanBright(audit.displayValue || `${audit.value}`),
           width: 10,
           padding: [0, 0, 0, 0],
         },
@@ -83,7 +83,7 @@ export function logCategories({ categories, plugins }: ScoredReport): void {
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
   table.head(
     reportRawOverviewTableHeaders.map((heading, idx) => ({
-      content: chalk.cyan(heading),
+      content: cyan(heading),
       hAlign: hAlign(idx),
     })),
   );
@@ -96,7 +96,7 @@ export function logCategories({ categories, plugins }: ScoredReport): void {
     ),
   );
 
-  log(chalk.magentaBright.bold('Categories'));
+  log(bold.magentaBright('Categories'));
   log();
   table.render();
   log();

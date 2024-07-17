@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, gray } from 'ansis';
 import { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { UploadOptions, upload } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
@@ -14,8 +14,8 @@ export function yargsUploadCommandObject() {
     command,
     describe: 'Upload report results to the portal',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.log(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}...`));
+      ui().logger.log(bold(CLI_NAME));
+      ui().logger.info(gray(`Run ${command}...`));
 
       const options = args as unknown as UploadOptions;
       if (options.upload == null) {

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
@@ -230,7 +230,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${chalk.bold('cumulative-layout-shift')} failed parsing details:`,
+      `Audit ${bold('cumulative-layout-shift')} failed parsing details:`,
     );
   });
 });
