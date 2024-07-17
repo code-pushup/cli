@@ -64,8 +64,8 @@ function logPlugins(report: ScoredReport): void {
   });
 }
 
-const passIcon = chalk.bold(chalk.green('✓'));
-const failIcon = chalk.bold(chalk.red('✗'));
+const passIcon = bold(green('✓'));
+const failIcon = bold(red('✗'));
 export function logCategories({ categories, plugins }: ScoredReport): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
 

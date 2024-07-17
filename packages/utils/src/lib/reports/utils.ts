@@ -1,5 +1,5 @@
 // eslint-disable-next-line unicorn/import-style
-import chalk, { type ChalkInstance } from 'chalk';
+import ansis, { Ansis } from 'ansis';
 import { join } from 'node:path';
 import {
   AuditReport,
@@ -264,28 +264,28 @@ export function compareIssues(a: Issue, b: Issue): number {
   return 0;
 }
 
+// @TODO rethink implementation
 export function applyScoreColor(
-  {
-    score,
-    text,
-  }: {
-    score: number | string;
-    text?: string;
-  },
-  style: Pick<ChalkInstance, 'red' | 'yellow' | 'green' | 'bold'> = chalk,
+  { score, text }: { score: number; text?: string },
+  style: Ansis = ansis,
 ) {
-  const scoreAsNumber = Number(score);
-  const formattedScore = text ?? formatReportScore(scoreAsNumber);
+  const formattedScore = text ?? formatReportScore(score);
 
-  if (scoreAsNumber >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return style.bold(style.green(formattedScore));
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return text
+      ? style.green(formattedScore)
+      : style.bold(style.green(formattedScore));
   }
 
-  if (scoreAsNumber >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return style.bold(style.yellow(formattedScore));
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return text
+      ? style.yellow(formattedScore)
+      : style.bold(style.yellow(formattedScore));
   }
 
-  return style.bold(style.red(formattedScore));
+  return text
+    ? style.red(formattedScore)
+    : style.bold(style.red(formattedScore));
 }
 
 export function targetScoreIcon(

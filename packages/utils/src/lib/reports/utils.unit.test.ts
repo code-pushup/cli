@@ -1,5 +1,6 @@
+import type { Ansis } from 'ansis';
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
+import { Mock, describe, expect, it } from 'vitest';
 import { AuditReport, Issue, IssueSeverity, Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
 import { SCORE_COLOR_RANGE } from './constants';
@@ -427,6 +428,19 @@ describe('severityMarker', () => {
 });
 
 describe('applyScoreColor', () => {
+  const ansisMock = {
+    red: vi.fn() as any,
+    yellow: vi.fn() as any,
+    green: vi.fn() as any,
+    bold: vi.fn() as any,
+  } as Ansis;
+
+  afterEach(() => {
+    Object.values(ansisMock).forEach((mock: Mock) => {
+      mock.mockRestore();
+    });
+  });
+
   it.each<['red' | 'yellow' | 'green', number]>([
     ['red', 0],
     ['red', SCORE_COLOR_RANGE.YELLOW_MIN - 0.1],
@@ -435,14 +449,8 @@ describe('applyScoreColor', () => {
     ['green', SCORE_COLOR_RANGE.GREEN_MIN],
     ['green', 1],
   ])('should return text with color %s for score %s', (methodName, score) => {
-    const style = {
-      red: vi.fn() as any,
-      yellow: vi.fn() as any,
-      green: vi.fn() as any,
-      bold: vi.fn() as any,
-    };
-    applyScoreColor({ score, text: '●' }, style);
-    expect(style[methodName]).toHaveBeenCalledWith('●');
+    applyScoreColor({ score, text: '●' }, ansisMock);
+    expect(ansisMock[methodName]).toHaveBeenCalledWith('●');
   });
 
   it.each<['red' | 'yellow' | 'green', number]>([
@@ -453,14 +461,10 @@ describe('applyScoreColor', () => {
     ['green', SCORE_COLOR_RANGE.GREEN_MIN],
     ['green', 1],
   ])('should return score with color %s for score %s', (methodName, score) => {
-    const style = {
-      red: vi.fn() as any,
-      yellow: vi.fn() as any,
-      green: vi.fn() as any,
-      bold: vi.fn() as any,
-    };
-    applyScoreColor({ score }, style);
-    expect(style[methodName]).toHaveBeenCalledWith((score * 100).toString());
+    applyScoreColor({ score }, ansisMock);
+    expect(ansisMock[methodName]).toHaveBeenCalledWith(
+      (score * 100).toString(),
+    );
   });
 });
 
