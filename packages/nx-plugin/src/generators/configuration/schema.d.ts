@@ -1,6 +1,7 @@
+import {DynamicTargetOptions} from "../../internal/types";
+
 export type ConfigurationGeneratorOptions = {
   project: string;
-  targetName?: string;
   skipTarget?: boolean;
   skipConfig?: boolean;
-};
+} & DynamicTargetOptions;
