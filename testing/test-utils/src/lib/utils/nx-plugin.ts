@@ -1,7 +1,6 @@
-import {CreateNodes, CreateNodesContext, CreateNodesResult} from '@nx/devkit';
-import {vol} from "memfs";
-import {MEMFS_VOLUME} from "@code-pushup/test-utils";
-
+import { CreateNodes, CreateNodesContext, CreateNodesResult } from '@nx/devkit';
+import { vol } from 'memfs';
+import { MEMFS_VOLUME } from '../constants';
 
 /**
  * Unit Testing helper for the createNodes function of a Nx plugin.
@@ -24,29 +23,25 @@ import {MEMFS_VOLUME} from "@code-pushup/test-utils";
  * @param createNodeOptions
  * @param mockData
  */
-export async function createFilesAndInvokeCreateNodesOnThem<T extends Record<string, unknown> | undefined>(
+export async function createFilesAndInvokeCreateNodesOnThem<
+  T extends Record<string, unknown> | undefined,
+>(
   createNodes: CreateNodes,
   context: CreateNodesContext,
   createNodeOptions: T,
   mockData: {
     matchingFilesData: Record<string, string>;
-  }
+  },
 ): Promise<CreateNodesResult> {
-  const { matchingFilesData} = mockData;
+  const { matchingFilesData } = mockData;
   vol.reset();
   vol.fromJSON(matchingFilesData, MEMFS_VOLUME);
 
   const results = await Promise.all(
-    Object.keys(matchingFilesData)
-      .map(file => createNodes[1](file, createNodeOptions, context)),
-  );
-  const aggregateProjects: CreateNodesResult = results.reduce(
-    (acc, {projects}) => ({...acc, ...projects}),
-    {},
+    Object.keys(matchingFilesData).map(file =>
+      createNodes[1](file, createNodeOptions, context),
+    ),
   );
 
-  return aggregateProjects;
+  return results.reduce((acc, { projects }) => ({ ...acc, ...projects }), {});
 }
-
-
-

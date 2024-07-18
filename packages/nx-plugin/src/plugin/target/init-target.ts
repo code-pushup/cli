@@ -4,7 +4,7 @@ import { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.i
 export function createInitTarget(
   projectName?: string,
 ): TargetConfiguration<RunCommandsOptions> {
-  const projectFlag =  projectName && ` --project=${projectName}`;
+  const projectFlag = projectName && ` --project=${projectName}`;
   return {
     command: `nx g nx-plugin:init${projectFlag ?? ''}`,
   };

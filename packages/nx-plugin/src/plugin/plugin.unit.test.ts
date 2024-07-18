@@ -1,10 +1,10 @@
-import {vol} from 'memfs';
-import {describe, expect} from 'vitest';
-import {CP_TARGET_NAME} from './constants';
-import {createNodes} from './plugin';
-import {CreateNodesContext} from "@nx/devkit";
-import {PROJECT_JSON_FILE_NAME} from "../internal/constants";
-import {createFilesAndInvokeCreateNodesOnThem} from "@code-pushup/test-utils";
+import { CreateNodesContext } from '@nx/devkit';
+import { vol } from 'memfs';
+import { describe, expect } from 'vitest';
+import { createFilesAndInvokeCreateNodesOnThem } from '@code-pushup/test-utils';
+import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
+import { CP_TARGET_NAME } from './constants';
+import { createNodes } from './plugin';
 
 describe('@code-pushup/nx-plugin/plugin', () => {
   let context: CreateNodesContext;
@@ -12,7 +12,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
   beforeEach(() => {
     context = {
       nxJsonConfiguration: {},
-      workspaceRoot: ''
+      workspaceRoot: '',
     };
   });
 
@@ -27,8 +27,12 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const {projects = {}} = await createFilesAndInvokeCreateNodesOnThem(
-      createNodes, context, {}, { matchingFilesData});
+    const projects = await createFilesAndInvokeCreateNodesOnThem(
+      createNodes,
+      context,
+      {},
+      { matchingFilesData },
+    );
 
     // project should have one target created
     const targets = projects[projectRoot]?.targets ?? {};
@@ -45,15 +49,18 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const {projects= {}} = await createFilesAndInvokeCreateNodesOnThem(
-      createNodes, context, {}, { matchingFilesData });
+    const projects = await createFilesAndInvokeCreateNodesOnThem(
+      createNodes,
+      context,
+      {},
+      { matchingFilesData },
+    );
 
     // project should have one target created
-    const targets = projects?.[projectRoot]?.targets ?? {};
+    const targets = projects[projectRoot]?.targets ?? {};
     expect(Object.keys(targets)).toHaveLength(1);
 
     // target should be the init target
     expect(targets[`${CP_TARGET_NAME}--init`]).toBeDefined();
   });
-
 });
