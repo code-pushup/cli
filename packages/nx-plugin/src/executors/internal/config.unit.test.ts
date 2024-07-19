@@ -1,5 +1,5 @@
 import { MockInstance, describe, expect } from 'vitest';
-import { toNormalizedPath } from '@code-pushup/test-utils';
+import { osAgnosticPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env';
 import { globalConfig, persistConfig, uploadConfig } from './config';
 
@@ -75,9 +75,9 @@ describe('globalConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(config)).toEqual(
+    expect(osAgnosticPath(config)).toEqual(
       expect.stringContaining(
-        toNormalizedPath('project-root/code-pushup.config.ts'),
+        osAgnosticPath('project-root/code-pushup.config.ts'),
       ),
     );
   });
@@ -170,11 +170,9 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(outputDir)).toEqual(
+    expect(osAgnosticPath(outputDir)).toEqual(
       expect.stringContaining(
-        toNormalizedPath(
-          `/test/root/workspace-root/.code-pushup/${projectName}`,
-        ),
+        osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
       ),
     );
   });
@@ -193,8 +191,8 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(resultingOutDir)).toEqual(
-      expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
+    expect(osAgnosticPath(resultingOutDir)).toEqual(
+      expect.stringContaining(osAgnosticPath('../dist/packages/test-folder')),
     );
   });
 
@@ -206,8 +204,8 @@ describe('persistConfig', () => {
       },
     );
 
-    expect(toNormalizedPath(outputDir)).toEqual(
-      expect.stringContaining(toNormalizedPath('.code-pushup')),
+    expect(osAgnosticPath(outputDir)).toEqual(
+      expect.stringContaining(osAgnosticPath('.code-pushup')),
     );
   });
 

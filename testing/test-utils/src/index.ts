@@ -5,7 +5,6 @@ export * from './lib/utils/logging';
 export * from './lib/utils/env';
 export * from './lib/utils/git';
 export * from './lib/utils/string';
-export * from './lib/utils/path';
 export * from './lib/utils/nx-plugin';
 
 // static mocks
