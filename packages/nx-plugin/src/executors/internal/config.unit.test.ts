@@ -75,7 +75,7 @@ describe('globalConfig', () => {
         },
       },
     );
-    expect(osAgnosticPath(config)).toEqual(
+    expect(osAgnosticPath(config)).toStrictEqual(
       expect.stringContaining(
         osAgnosticPath('project-root/code-pushup.config.ts'),
       ),
@@ -170,10 +170,8 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(osAgnosticPath(outputDir)).toEqual(
-      expect.stringContaining(
+    expect(osAgnosticPath(outputDir)).toBe(
         osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
-      ),
     );
   });
 
