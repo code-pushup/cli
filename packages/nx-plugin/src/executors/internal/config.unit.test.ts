@@ -171,7 +171,7 @@ describe('persistConfig', () => {
       },
     );
     expect(outputDir).toBe(
-        `/test/root/workspace-root/.code-pushup/${projectName}`,
+      `/test/root/workspace-root/.code-pushup/${projectName}`,
     );
   });
 
