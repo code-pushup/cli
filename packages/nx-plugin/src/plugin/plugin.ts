@@ -5,7 +5,7 @@ import { createTargets } from './target/targets';
 import { CreateNodesOptions } from './types';
 import { normalizedCreateNodesContext } from './utils';
 
-// name has to be "createNodes" to get picked up by nx
+// name has to be "createNodes" to get picked up by Nx
 export const createNodes: CreateNodes = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
