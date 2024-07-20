@@ -78,6 +78,8 @@ export function osAgnosticPath(filePath: string): string {
     return `${OS_AGNOSTIC_CWD}${osAgnosticPathWithoutCwd}`;
   }
 
+  // Notice: I kept the following conditions for documentation purposes
+
   // path is absolute (/my-folder/my-file.ts)
   if (osAgnosticPathWithoutCwd.startsWith(OS_AGNOSTIC_PATH_SEP)) {
     return osAgnosticPathWithoutCwd;
