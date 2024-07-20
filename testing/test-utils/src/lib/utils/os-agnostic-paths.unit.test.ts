@@ -13,9 +13,7 @@ describe('osAgnosticPath', () => {
   const cwdSpy: MockInstance<[], string> = vi.spyOn(process, 'cwd');
 
   it('should forward nullish paths on Linux/macOS and Windows', () => {
-    expect(
-      osAgnosticPath(undefined),
-    ).toBeUndefined();
+    expect(osAgnosticPath(undefined)).toBeUndefined();
   });
 
   describe('Unix-based systems (Linux/macOS)', () => {

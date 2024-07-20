@@ -44,8 +44,8 @@ export const OS_AGNOSTIC_CWD = `<CWD>`;
  *
  */
 export function osAgnosticPath(filePath?: string): string | undefined {
-  if(filePath == null) {
-    return filePath
+  if (filePath == null) {
+    return filePath;
   }
   // prepare the path for comparison
   // normalize path separators od cwd: "Users\\repo" => "Users/repo"
