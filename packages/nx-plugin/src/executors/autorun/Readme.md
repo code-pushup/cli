@@ -27,7 +27,7 @@ The following things happen:
 
 - // autorun options in project.json
 
-```json
+```jsonc
 {
   "name": "my-project",
   "targets": {
