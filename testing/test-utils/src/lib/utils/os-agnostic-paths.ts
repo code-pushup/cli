@@ -43,7 +43,10 @@ export const OS_AGNOSTIC_CWD = `<CWD>`;
  * Output: ../my-folder/my-file.ts
  *
  */
-export function osAgnosticPath(filePath: string): string {
+export function osAgnosticPath(filePath?: string): string | undefined {
+  if(filePath == null) {
+    return filePath
+  }
   // prepare the path for comparison
   // normalize path separators od cwd: "Users\\repo" => "Users/repo"
   const osAgnosticCwd = process
