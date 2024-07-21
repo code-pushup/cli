@@ -38,8 +38,8 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     const targets = projects[projectRoot]?.targets ?? {};
     expect(Object.keys(targets)).toHaveLength(1);
 
-    // target should be the init target
-    expect(targets[`${CP_TARGET_NAME}--init`]).toBeDefined();
+    // target should be the configuration target
+    expect(targets[`${CP_TARGET_NAME}--configuration`]).toBeDefined();
   });
 
   it('should normalize context and use it to create target on PACKAGE project', async () => {
@@ -60,7 +60,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     const targets = projects[projectRoot]?.targets ?? {};
     expect(Object.keys(targets)).toHaveLength(1);
 
-    // target should be the init target
-    expect(targets[`${CP_TARGET_NAME}--init`]).toBeDefined();
+    // target should be the configuration target
+    expect(targets[`${CP_TARGET_NAME}--configuration`]).toBeDefined();
   });
 });

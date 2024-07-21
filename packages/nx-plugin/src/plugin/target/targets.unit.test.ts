@@ -18,7 +18,7 @@ describe('createTargets', () => {
     await rm('x');
   });
 
-  it('should return init targets for project without code-pushup config', async () => {
+  it('should return configuration targets for project without code-pushup config', async () => {
     const projectName = 'plugin-my-plugin';
     await expect(
       createTargets({
@@ -29,13 +29,13 @@ describe('createTargets', () => {
         createOptions: {},
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [`${CP_TARGET_NAME}--init`]: {
-        command: `nx g nx-plugin:init --project=${projectName}`,
+      [`${CP_TARGET_NAME}--configuration`]: {
+        command: `nx g nx-plugin:configuration --project=${projectName}`,
       },
     });
   });
 
-  it('should return init targets for empty project without code-pushup config and consider targetName', async () => {
+  it('should return configuration targets for empty project without code-pushup config and consider targetName', async () => {
     const projectName = 'plugin-my-plugin';
     const targetName = 'cp';
     await expect(
@@ -49,13 +49,13 @@ describe('createTargets', () => {
         },
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [`${targetName}--init`]: {
-        command: `nx g nx-plugin:init --project=${projectName}`,
+      [`${targetName}--configuration`]: {
+        command: `nx g nx-plugin:configuration --project=${projectName}`,
       },
     });
   });
 
-  it('should NOT return init target if code-pushup config is given', async () => {
+  it('should NOT return configuration target if code-pushup config is given', async () => {
     const projectName = 'plugin-my-plugin';
     vol.fromJSON(
       {
