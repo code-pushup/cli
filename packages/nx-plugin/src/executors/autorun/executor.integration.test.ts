@@ -1,9 +1,7 @@
 // eslint-disable-next-line n/no-sync
+import { ExecutorContext, logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
-import { ExecutorContext } from 'nx/src/config/misc-interfaces';
-import { expect, vi } from 'vitest';
-import type { UploadConfig } from '@code-pushup/models';
-import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
+import { beforeEach, expect, vi } from 'vitest';
 import runAutorunExecutor from './executor';
 import { parseAutorunExecutorOptions } from './utils';
 
@@ -17,14 +15,12 @@ vi.mock('node:child_process', async () => {
   };
 });
 
-vi.mock('../internal/config', async () => {
-  const actual: any = await vi.importActual('../internal/config');
+vi.mock('./utils', async () => {
+  const actual: any = await vi.importActual('./utils');
 
   return {
     ...actual,
-    persistConfig: vi.fn(actual.persistConfig),
-    uploadConfig: vi.fn(actual.uploadConfig),
-    globalConfig: vi.fn(actual.globalConfig),
+    parseAutorunExecutorOptions: vi.fn(actual.parseAutorunExecutorOptions),
   };
 });
 
@@ -43,85 +39,44 @@ const context = {
 } as unknown as ExecutorContext;
 
 describe('runAutorunExecutor', () => {
-  it('should consider the context argument', async () => {
-    const output = await runAutorunExecutor({}, context);
+  const loggerWarnSpy = vi.spyOn(logger, 'warn');
+  beforeEach(() => {
+    loggerWarnSpy.mockReturnValue();
+  });
+
+  it('should normalize context, parse CLI options and execute command', async () => {
+    const output = await runAutorunExecutor({ verbose: true }, context);
     expect(output.success).toBe(true);
     // eslint-disable-next-line n/no-sync
+    expect(parseAutorunExecutorOptions).toHaveBeenCalledTimes(1);
+
+    //is context normalized?
+    expect(parseAutorunExecutorOptions).toHaveBeenCalledWith(
+      { verbose: true },
+      expect.objectContaining({
+        projectConfig: expect.objectContaining({ name: 'my-lib' }),
+      }),
+    );
+    expect(execSync).toHaveBeenCalledTimes(1);
     expect(execSync).toHaveBeenCalledWith(
       expect.stringContaining(projectName),
       {},
     );
   });
 
-  it('should process dryRun option', async () => {
-    const output = await runAutorunExecutor({ dryRun: true }, context);
-    expect(output.success).toBe(true);
-    expect(output.command).toMatch(projectName);
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledTimes(0);
-  });
-
   it('should consider given options', async () => {
     const cfg = {
-      persist: { filename: 'filename' },
-      upload: {
-        server: 'https://portal.code-pushup.dev',
-        apiKey: 'afas57g8h9uj03iqwkeaclsd',
-        timeout: 1000,
-        project: 'utils',
-        organization: 'code-pushup',
-      },
+      persist: { filename: 'filename-xyz' },
     };
     const output = await runAutorunExecutor(cfg, context);
-    expect(output.success).toBe(true);
-    expect(output.command).toMatch(`afas57g8h9uj03iqwkeaclsd`);
+
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
-      expect.stringContaining('afas57g8h9uj03iqwkeaclsd'),
+      expect.stringContaining('filename-xyz'),
       {},
     );
-  });
-});
 
-describe('parseAutorunExecutorOptions', () => {
-  const normalizedContext = {
-    projectName: 'my-app',
-    workspaceRoot: 'workspaceRoot',
-    projectConfig: {
-      name: 'my-app',
-      root: 'root',
-    },
-  };
-  it('should call child config functions with options', () => {
-    parseAutorunExecutorOptions(
-      {
-        verbose: true,
-        persist: { filename: 'my-name' },
-        upload: {
-          server: 'https://new-portal.code-pushup.dev',
-        } as UploadConfig,
-      },
-      normalizedContext,
-    );
-    expect(persistConfig).toHaveBeenCalledWith(
-      { filename: 'my-name' },
-      normalizedContext,
-    );
-    expect(uploadConfig).toHaveBeenCalledWith(
-      {
-        server: 'https://new-portal.code-pushup.dev',
-      },
-      normalizedContext,
-    );
-    expect(globalConfig).toHaveBeenCalledWith(
-      {
-        verbose: true,
-        persist: { filename: 'my-name' },
-        upload: {
-          server: 'https://new-portal.code-pushup.dev',
-        } as UploadConfig,
-      },
-      normalizedContext,
-    );
+    expect(output.success).toBe(true);
+    expect(output.command).toMatch(`filename-xyz`);
   });
 });

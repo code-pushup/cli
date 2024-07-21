@@ -24,18 +24,21 @@ export default function runAutorunExecutor(
   );
   // console.log('AutorunCommandExecutorOptions: ', terminalAndExecutorOptions);
   // console.log('cliArgumentObject: ', cliArgumentObject);
-
+  const { dryRun, verbose } = terminalAndExecutorOptions;
   const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
-
-  const { dryRun } = terminalAndExecutorOptions;
+  const commandOptions = context.cwd ? { cwd: context.cwd } : {};
+  if (verbose) {
+    logger.info(`CLI options: ${JSON.stringify(cliArgumentObject)}`);
+    logger.info(`Run ${AUTORUN_COMMAND} executor`);
+    logger.info(`Command: ${command}`);
+    logger.info(`Options: ${JSON.stringify(commandOptions, null, 2)}`);
+  }
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);
   } else {
     try {
-      logger.warn(`Execution of: ${command}`);
-
       // eslint-disable-next-line n/no-sync
-      execSync(command, context.cwd ? { cwd: context.cwd } : {});
+      execSync(command, commandOptions);
     } catch (error) {
       return Promise.resolve({
         success: false,
