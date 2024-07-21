@@ -1,5 +1,4 @@
 import { Options } from 'yargs';
-import { PersistConfig } from '@code-pushup/models';
 import {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
