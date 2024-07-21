@@ -1,8 +1,8 @@
-import {logger} from '@nx/devkit';
+import { logger } from '@nx/devkit';
 // eslint-disable-next-line n/no-sync
-import {execSync} from 'node:child_process';
-import {afterEach, beforeEach, expect, vi} from 'vitest';
-import {executorContext} from '@code-pushup/test-utils';
+import { execSync } from 'node:child_process';
+import { afterEach, beforeEach, expect, vi } from 'vitest';
+import { executorContext } from '@code-pushup/test-utils';
 import runAutorunExecutor from './executor';
 
 vi.mock('node:child_process', async () => {
@@ -26,11 +26,11 @@ describe('runAutorunExecutor', () => {
 
   beforeEach(() => {
     envSpy.mockReturnValue({});
-  })
+  });
   afterEach(() => {
     loggerWarnSpy.mockReset();
     loggerInfoSpy.mockReset();
-    envSpy.mockReset();
+    envSpy.mockReset().mockReturnValue({});
   });
 
   it('should call execSync with autorun command and return result', async () => {
@@ -62,7 +62,7 @@ describe('runAutorunExecutor', () => {
 
   it('should process executorOptions', async () => {
     const output = await runAutorunExecutor(
-      {persist: {filename: 'REPORT'}},
+      { persist: { filename: 'REPORT' } },
       executorContext(),
     );
     expect(output.success).toBe(true);
@@ -70,9 +70,9 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context, options and arguments', async () => {
-    envSpy.mockReturnValue({CP_PROJECT: 'CLI'});
+    envSpy.mockReturnValue({ CP_PROJECT: 'CLI' });
     const output = await runAutorunExecutor(
-      {persist: {filename: 'REPORT', format: ['md', 'json']}},
+      { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
     );
     expect(output.command).toMatch('--persist.filename="REPORT"');
@@ -82,8 +82,8 @@ describe('runAutorunExecutor', () => {
 
   it('should log information if verbose is set', async () => {
     const output = await runAutorunExecutor(
-      {verbose: true},
-      {...executorContext(), cwd: '<CWD>'},
+      { verbose: true },
+      { ...executorContext(), cwd: '<CWD>' },
     );
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
@@ -102,13 +102,13 @@ describe('runAutorunExecutor', () => {
     );
     expect(loggerInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        `Options: ${JSON.stringify({cwd: '<CWD>'}, null, 2)}`,
+        `Options: ${JSON.stringify({ cwd: '<CWD>' }, null, 2)}`,
       ),
     );
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({dryRun: true}, executorContext());
+    await runAutorunExecutor({ dryRun: true }, executorContext());
 
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
