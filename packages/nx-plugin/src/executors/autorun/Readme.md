@@ -13,7 +13,7 @@ For details on the CLI command read the [CLI autorun documentation](https://gith
 {
   "name": "my-project",
   "targets": {
-    "autorun": {
+    "code-pushup": {
       "executor": "@code-pushup/nx-plugin:autorun"
     }
   }
@@ -48,7 +48,7 @@ The following things happen:
 
 Show what will be executed without actually executing it:
 
-`nx run my-project:autorun --dryRun`
+`nx run my-project:code-pushup --dryRun`
 
 ## Options
 
