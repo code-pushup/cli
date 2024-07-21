@@ -1,7 +1,8 @@
 // eslint-disable-next-line n/no-sync
-import { ExecutorContext, logger } from '@nx/devkit';
+import { logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
-import { afterAll, expect, vi } from 'vitest';
+import { afterAll, afterEach, expect, vi } from 'vitest';
+import { executorContext } from '@code-pushup/test-utils';
 import runAutorunExecutor from './executor';
 
 vi.mock('node:child_process', async () => {
@@ -18,32 +19,17 @@ vi.mock('node:child_process', async () => {
   };
 });
 
-const context = (nameOrOpt: string | { projectName: string } = 'my-lib') => {
-  const { projectName } =
-    typeof nameOrOpt === 'string' ? { projectName: nameOrOpt } : nameOrOpt;
-  return {
-    projectName,
-    root: '.', // workspaceRoot
-    projectsConfigurations: {
-      projects: {
-        [projectName]: {
-          name: projectName,
-          root: `libs/${projectName}`,
-        },
-      },
-    },
-  } as unknown as ExecutorContext;
-};
-
 describe('runAutorunExecutor', () => {
   const loggerInfoSpy = vi.spyOn(logger, 'info');
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
-  afterAll(() => {
-    loggerInfoSpy.mockRestore();
-    loggerWarnSpy.mockRestore();
+
+  afterEach(() => {
+    loggerWarnSpy.mockReset();
+    loggerInfoSpy.mockReset();
   });
+
   it('should call execSync with autorun command and return result', async () => {
-    const output = await runAutorunExecutor({}, context());
+    const output = await runAutorunExecutor({}, executorContext());
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli autorun');
     // eslint-disable-next-line n/no-sync
@@ -57,7 +43,7 @@ describe('runAutorunExecutor', () => {
     const output = await runAutorunExecutor(
       {},
       {
-        ...context('utils'),
+        ...executorContext('utils'),
         cwd: 'cwd-form-context',
       },
     );
@@ -72,7 +58,7 @@ describe('runAutorunExecutor', () => {
   it('should process executorOptions', async () => {
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT' } },
-      context(),
+      executorContext(),
     );
     expect(output.success).toBe(true);
     expect(output.command).toMatch('--persist.filename="REPORT"');
@@ -81,7 +67,7 @@ describe('runAutorunExecutor', () => {
   it('should create command from context, options and arguments', async () => {
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
-      context('core'),
+      executorContext('core'),
     );
     expect(output.command).toMatch('--persist.filename="REPORT"');
     expect(output.command).toMatch('--persist.format="md,json"');
@@ -91,7 +77,7 @@ describe('runAutorunExecutor', () => {
   it('should log information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       { verbose: true },
-      { ...context(), cwd: '<CWD>' },
+      { ...executorContext(), cwd: '<CWD>' },
     );
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
@@ -116,7 +102,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, context());
+    await runAutorunExecutor({ dryRun: true }, executorContext());
     // eslint-disable-next-line n/no-sync
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);

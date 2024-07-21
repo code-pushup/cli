@@ -1,29 +1,22 @@
 // eslint-disable-next-line n/no-sync
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
-import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
+import { normalizedExecutorContext } from '../../../mock/utils/executor';
+import * as config from '../internal/config';
 import { parseAutorunExecutorOptions } from './utils';
 
-vi.mock('../internal/config', async () => {
-  const actual: any = await vi.importActual('../internal/config');
-
-  return {
-    ...actual,
-    persistConfig: vi.fn(actual.persistConfig),
-    uploadConfig: vi.fn(actual.uploadConfig),
-    globalConfig: vi.fn(actual.globalConfig),
-  };
-});
-
 describe('parseAutorunExecutorOptions', () => {
-  const normalizedContext = {
-    projectName: 'my-app',
-    workspaceRoot: 'workspaceRoot',
-    projectConfig: {
-      name: 'my-app',
-      root: 'root',
-    },
-  };
+  const persistConfigSpy = vi.spyOn(config, 'persistConfig');
+  const uploadConfigSpy = vi.spyOn(config, 'uploadConfig');
+  const globalConfigSpy = vi.spyOn(config, 'globalConfig');
+  const normalizedContext = normalizedExecutorContext();
+
+  afterEach(() => {
+    persistConfigSpy.mockReset();
+    uploadConfigSpy.mockReset();
+    globalConfigSpy.mockReset();
+  });
+
   it('should call child config functions with options', () => {
     parseAutorunExecutorOptions(
       {
@@ -35,17 +28,17 @@ describe('parseAutorunExecutorOptions', () => {
       },
       normalizedContext,
     );
-    expect(persistConfig).toHaveBeenCalledWith(
+    expect(persistConfigSpy).toHaveBeenCalledWith(
       { filename: 'my-name' },
       normalizedContext,
     );
-    expect(uploadConfig).toHaveBeenCalledWith(
+    expect(uploadConfigSpy).toHaveBeenCalledWith(
       {
         server: 'https://new-portal.code-pushup.dev',
       },
       normalizedContext,
     );
-    expect(globalConfig).toHaveBeenCalledWith(
+    expect(globalConfigSpy).toHaveBeenCalledWith(
       {
         verbose: true,
         persist: { filename: 'my-name' },
