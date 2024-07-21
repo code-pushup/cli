@@ -40,23 +40,23 @@
     },
     "projectPrefix": {
       "type": "string",
-      "description": "Prefix for project name (default is ``)"
+      "description": "Prefix for project name"
     },
     "persist": {
       "type": "object",
       "properties": {
         "filename": {
           "type": "string",
-          "description": "Filename to save the configuration to (default is `.codepushup.json`)"
+          "description": "Filename to save the configuration"
         },
         "outputDir": {
           "type": "string",
-          "description": "Directory to save the configuration to (default is `.code-pushup`)"
+          "description": "Directory to save the configuration"
         },
         "format": {
           "type": "array",
           "enum": ["json", "md"],
-          "description": "Format to save the report in."
+          "description": "Format to save the report in"
         }
       }
     },
@@ -87,7 +87,7 @@
         "timeout": {
           "type": "integer",
           "exclusiveMinimum": 0,
-          "description": "Request timeout in minutes (default is 5)"
+          "description": "Request timeout in minutes"
         }
       }
     }
