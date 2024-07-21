@@ -24,11 +24,10 @@ By default, the Nx plugin will derive the options from the executor config.
 
 The following things happen:
 
-- the format defaults to ['json']
 - the output directory defaults to `${workspaceRoot}/.code-pushup/${projectName}`
 - the config file defaults to `${projectRoot}/code-pushup.config.ts`
-
-- // autorun options in project.json
+- parses terminal arguments and forwards them to the CLI command (they override the executor config)
+- the CLI command is executed
 
 ```jsonc
 {
@@ -53,7 +52,9 @@ Show what will be executed without actually executing it:
 
 ## Options
 
-| Name              | type     | description                                         |
-| ----------------- | -------- | --------------------------------------------------- |
-| **projectPrefix** | `string` | prefix for upload.project                           |
-| CLI options       | -        | Persist and Upload options as defined in CoreConfig |
+| Name              | type      | description                                                        |
+| ----------------- | --------- | ------------------------------------------------------------------ |
+| **projectPrefix** | `string`  | prefix for upload.project on non root projects                     |
+| **dryRun**        | `boolean` | To debug the executor, dry run the command without real execution. |
+
+For all other options see the [CLI autorun documentation](../../cli/packages/cli/README.md#autorun-command).
