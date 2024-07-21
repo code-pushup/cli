@@ -475,6 +475,28 @@ describe('targetScoreIcon', () => {
   it('should return target score icon "❌" for failed score', () => {
     expect(targetScoreIcon(0.42, 0.5)).toBe('❌');
   });
+  it('should return prefixed target score icon if prefix is provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        prefix: '<',
+      }),
+    ).toBe('<✅');
+  });
+  it('should return prefixed target score icon if postfix is provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        postfix: '>',
+      }),
+    ).toBe('✅>');
+  });
+  it('should return pre and postfixed target score icon if both are provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        prefix: '<',
+        postfix: '>',
+      }),
+    ).toBe('<✅>');
+  });
   it('should return no target score icon if no targetScore is provided', () => {
     expect(targetScoreIcon(0.42)).toBe('');
   });

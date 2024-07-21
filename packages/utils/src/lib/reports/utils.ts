@@ -293,14 +293,21 @@ export function targetScoreIcon(
   options: {
     passIcon?: string;
     failIcon?: string;
+    prefix?: string;
+    postfix?: string;
   } = {},
 ): string {
   if (targetScore != null) {
-    const { passIcon = '✅', failIcon = '❌' } = options; // ✅✓ ❌✗
+    const {
+      passIcon = '✅',
+      failIcon = '❌',
+      prefix = '',
+      postfix = '',
+    } = options; // ✅✓ ❌✗
     if (score >= targetScore) {
-      return passIcon;
+      return `${prefix}${passIcon}${postfix}`;
     }
-    return failIcon;
+    return `${prefix}${failIcon}${postfix}`;
   }
   return '';
 }

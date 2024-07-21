@@ -28,7 +28,9 @@ export function categoriesOverviewSection(
         // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
         score: `${scoreMarker(score)}${SPACE}${boldMd(
           formatReportScore(score),
-        )} ${targetScoreIcon(score, isBinary === true ? 1 : undefined)}`,
+        )}${targetScoreIcon(score, isBinary === true ? 1 : undefined, {
+          prefix: ' ',
+        })}`,
         audits: countCategoryAudits(refs, plugins).toString(),
       })),
     };
@@ -48,9 +50,10 @@ export function categoriesDetailsSection(
       category.score,
     )}${SPACE}Score:  ${boldMd(
       formatReportScore(category.score),
-    )} ${targetScoreIcon(
+    )}${targetScoreIcon(
       category.score,
       category.isBinary === true ? 1 : undefined,
+      { prefix: ' ' },
     )}`;
 
     const categoryMDItems = category.refs.map(ref => {

@@ -75,7 +75,8 @@ export function logCategories({ categories, plugins }: ScoredReport): void {
     `${targetScoreIcon(score, isBinary === true ? 1 : undefined, {
       passIcon,
       failIcon,
-    })} ${applyScoreColor({ score })}`,
+      postfix: ' ',
+    })}${applyScoreColor({ score })}`,
     countCategoryAudits(refs, plugins),
   ]);
   const table = ui().table();

@@ -30,7 +30,7 @@ exports[`categoriesDetailsSection > should render complete categories details 1`
 
 ### Performance
 
-🟡 Score:  **74** 
+🟡 Score:  **74**
 - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) (_Lighthouse_) - **2905**
 
 ### Typescript
@@ -43,9 +43,9 @@ exports[`categoriesDetailsSection > should render complete categories details 1`
 exports[`categoriesOverviewSection > should render complete categories table 1`] = `
 "|🏷 Category|⭐ Score|🛡 Audits|
 |:--|:--:|:--:|
-|[Bug Prevention](#bug-prevention)|🟢 **98** |1|
-|[Performance](#performance)|🟡 **74** |1|
-|[Typescript](#typescript)|🔴 **14** |1|
+|[Bug Prevention](#bug-prevention)|🟢 **98**|1|
+|[Performance](#performance)|🟡 **74**|1|
+|[Typescript](#typescript)|🔴 **14**|1|
 "
 `;
 
