@@ -49,7 +49,7 @@
           "type": "string",
           "description": "Filename to save the configuration to (default is `.codepushup.json`)"
         },
-        "outDir": {
+        "outputDir": {
           "type": "string",
           "description": "Directory to save the configuration to (default is `.code-pushup`)"
         },
