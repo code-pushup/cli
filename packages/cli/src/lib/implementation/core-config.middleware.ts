@@ -4,6 +4,7 @@ import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
+  Format,
   uploadConfigSchema,
 } from '@code-pushup/models';
 import { CoreConfigCliOptions } from './core-config.model';
@@ -57,11 +58,17 @@ export async function coreConfigMiddleware<
         DEFAULT_PERSIST_OUTPUT_DIR,
       filename:
         cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
-      format: cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
+      format: normalizeFormats(
+        cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
+      ),
     },
     ...(upload != null && { upload }),
     categories: rcCategories ?? [],
     ...remainingRcConfig,
     ...remainingCliOptions,
   };
+}
+
+export function normalizeFormats(formats: string[]): Format[] {
+  return formats.flatMap(format => format.split(',') as Format[]);
 }
