@@ -1,5 +1,8 @@
 # Autorun Executor
 
+This executor is used to run the code-pushup CLI autorun command in a Nx workspace.
+For details on the CLI command read the [CLI autorun documentation](https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command).
+
 #### @code-pushup/nx-plugin:autorun
 
 ## Usage
