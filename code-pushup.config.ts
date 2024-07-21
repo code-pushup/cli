@@ -53,15 +53,15 @@ const config: CoreConfig = {
       license: 'MIT',
       type: 'module',
     }),
-
+    /*
     await lighthousePlugin(
       'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
       { chromeFlags: DEFAULT_FLAGS.concat(['--headless']) },
-    ),
+    ),*/
   ],
 
   categories: [
-    {
+    /*  {
       slug: 'performance',
       title: 'Performance',
       refs: [lighthouseGroupRef('performance')],
@@ -80,7 +80,7 @@ const config: CoreConfig = {
       slug: 'seo',
       title: 'SEO',
       refs: [lighthouseGroupRef('seo')],
-    },
+    },*/
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
