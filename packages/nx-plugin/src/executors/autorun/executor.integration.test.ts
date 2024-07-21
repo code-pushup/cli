@@ -7,7 +7,6 @@ import * as utils from './utils';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
-
   return {
     ...actual,
     // eslint-disable-next-line n/no-sync
@@ -29,17 +28,19 @@ describe('runAutorunExecutor', () => {
       executorContext('utils'),
     );
     expect(output.success).toBe(true);
-    // eslint-disable-next-line n/no-sync
+
     expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledTimes(1);
 
-    //is context normalized?
+    //is context normalized
     expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledWith(
       { verbose: true },
       expect.objectContaining({
         projectConfig: expect.objectContaining({ name: 'utils' }),
       }),
     );
+    // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {});
   });
 });

@@ -1,4 +1,3 @@
-// eslint-disable-next-line n/no-sync
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
 import { normalizedExecutorContext } from '../../../mock/utils/executor';

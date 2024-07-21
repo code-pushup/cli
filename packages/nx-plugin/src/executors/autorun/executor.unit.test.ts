@@ -1,7 +1,7 @@
-// eslint-disable-next-line n/no-sync
 import { logger } from '@nx/devkit';
+// eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
-import { afterAll, afterEach, expect, vi } from 'vitest';
+import { afterEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-utils';
 import runAutorunExecutor from './executor';
 
@@ -103,7 +103,7 @@ describe('runAutorunExecutor', () => {
 
   it('should log command if dryRun is set', async () => {
     await runAutorunExecutor({ dryRun: true }, executorContext());
-    // eslint-disable-next-line n/no-sync
+
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
