@@ -21,10 +21,13 @@ import {
 // to prevent exceeding Markdown comment character limit
 const MAX_ROWS = 100;
 
-export function generateMdReportsDiff(diff: ReportsDiff): string {
+export function generateMdReportsDiff(
+  diff: ReportsDiff,
+  portalUrl?: string,
+): string {
   return new MarkdownDocument()
     .$concat(
-      createDiffHeaderSection(diff),
+      createDiffHeaderSection(diff, portalUrl),
       createDiffCategoriesSection(diff),
       createDiffGroupsSection(diff),
       createDiffAuditsSection(diff),
@@ -32,7 +35,10 @@ export function generateMdReportsDiff(diff: ReportsDiff): string {
     .toString();
 }
 
-function createDiffHeaderSection(diff: ReportsDiff): MarkdownDocument {
+function createDiffHeaderSection(
+  diff: ReportsDiff,
+  portalUrl: string | undefined,
+): MarkdownDocument {
   const outcomeTexts = {
     positive: md`🥳 Code PushUp report has ${md.bold('improved')}`,
     negative: md`😟 Code PushUp report has ${md.bold('regressed')}`,
@@ -58,6 +64,10 @@ function createDiffHeaderSection(diff: ReportsDiff): MarkdownDocument {
       diff.commits
         ? md`${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
         : outcomeTexts[outcome],
+    )
+    .paragraph(
+      portalUrl &&
+        md.link(portalUrl, '🕵️ See full comparison in Code PushUp portal 🔍'),
     );
 }
 
