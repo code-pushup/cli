@@ -1,9 +1,5 @@
-import { Options } from 'yargs';
-import { PersistConfig } from '@code-pushup/models';
-import {
-  PersistConfigCliOptions,
-  UploadConfigCliOptions,
-} from './core-config.model';
+import {Options} from 'yargs';
+import {PersistConfigCliOptions, UploadConfigCliOptions,} from './core-config.model';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
   keyof (PersistConfigCliOptions & UploadConfigCliOptions),
