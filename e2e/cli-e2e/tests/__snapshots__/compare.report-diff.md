@@ -34,7 +34,7 @@
 |[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|[Require braces around arrow function bodies](https://eslint.org/docs/latest/rules/arrow-body-style)|🟥 1 warning|🟩 **passed**|![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green)|
 |[ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin)|[Require `const` declarations for variables that are never reassigned after declared](https://eslint.org/docs/latest/rules/prefer-const)|🟥 1 warning|🟩 **passed**|![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green)|
 
-44 other audits are unchanged.
+28 other audits are unchanged.
 
 
 </details>
