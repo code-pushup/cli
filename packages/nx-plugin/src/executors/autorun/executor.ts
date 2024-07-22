@@ -40,6 +40,7 @@ export default function runAutorunExecutor(
       // eslint-disable-next-line n/no-sync
       execSync(command, commandOptions);
     } catch (error) {
+      logger.error(error);
       return Promise.resolve({
         success: false,
         command,
