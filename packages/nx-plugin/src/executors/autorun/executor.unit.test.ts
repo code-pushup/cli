@@ -76,7 +76,9 @@ describe('runAutorunExecutor', () => {
       executorContext('core'),
     );
     expect(output.command).toMatch('--persist.filename="REPORT"');
-    expect(output.command).toMatch('--persist.format="md,json"');
+    expect(output.command).toMatch(
+      '--persist.format="md" --persist.format="json"',
+    );
     expect(output.command).toMatch('--upload.project="CLI"');
   });
 

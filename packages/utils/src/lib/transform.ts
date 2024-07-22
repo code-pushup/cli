@@ -91,6 +91,13 @@ export function objectToCliArgs<
       return value.map(v => `${prefix}${key}="${v}"`);
     }
 
+    if (typeof value === 'object') {
+      return Object.entries(value as Record<string, ArgumentValue>).flatMap(
+        // transform nested objects to the dot notation `key.subkey`
+        ([k, v]) => objectToCliArgs({ [`${key}.${k}`]: v }),
+      );
+    }
+
     if (typeof value === 'string') {
       return [`${prefix}${key}="${value}"`];
     }
