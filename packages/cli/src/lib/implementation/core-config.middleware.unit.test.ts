@@ -1,6 +1,9 @@
 import { describe, expect, vi } from 'vitest';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
-import { coreConfigMiddleware } from './core-config.middleware';
+import {
+  coreConfigMiddleware,
+  normalizeFormats,
+} from './core-config.middleware';
 import { CoreConfigCliOptions } from './core-config.model';
 import { GeneralCliOptions } from './global.model';
 import { OnlyPluginsOptions } from './only-plugins.model';
@@ -15,6 +18,24 @@ vi.mock('@code-pushup/core', async () => {
     readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
     autoloadRc: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
+});
+
+describe('normalizeFormats', () => {
+  it('should forward valid formats', () => {
+    expect(normalizeFormats(['json', 'md'])).toEqual(['json', 'md']);
+  });
+
+  it('should split comma separated strings', () => {
+    expect(normalizeFormats(['json,md'])).toEqual(['json', 'md']);
+  });
+
+  it('should accept empty formats', () => {
+    expect(normalizeFormats([])).toEqual([]);
+  });
+
+  it('should accept missing formats', () => {
+    expect(normalizeFormats()).toEqual([]);
+  });
 });
 
 describe('coreConfigMiddleware', () => {
