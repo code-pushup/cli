@@ -27,6 +27,7 @@ export function objectToCliArgs<
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return Array.isArray(value) ? value : [`${value}`];
     }
+
     const prefix = key.length === 1 ? '-' : '--';
     // "-*" arguments (shorthands)
     if (Array.isArray(value)) {
@@ -34,8 +35,8 @@ export function objectToCliArgs<
     }
 
     if (typeof value === 'object') {
-      return Object.entries(value as Record<string, unknown>).map(
-        ([k, v]) => `${prefix}${key}.${k}="${v?.toString()}"`,
+      return Object.entries(value as Record<string, unknown>).flatMap(
+        ([k, v]) => objectToCliArgs({ [`${key}.${k}`]: v }),
       );
     }
 

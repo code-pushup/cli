@@ -191,6 +191,15 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual(['--format="json"', '--format="md"']);
   });
 
+  it('should handle nested objects as arguments', () => {
+    const params = { persist: { format: ['json', 'md'] } };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual([
+      '--persist.format="json"',
+      '--persist.format="md"',
+    ]);
+  });
+
   it('should throw error for unsupported type', () => {
     const params = { unsupported: undefined as any };
     expect(() => objectToCliArgs(params)).toThrow('Unsupported type');

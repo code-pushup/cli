@@ -63,6 +63,15 @@ describe('objectToCliArgs', () => {
     expect(result).toStrictEqual(['--format.json="simple"']);
   });
 
+  it('should handle objects with array', () => {
+    const params = { persist: { format: ['json', 'md'] } };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual([
+      '--persist.format="json"',
+      '--persist.format="md"',
+    ]);
+  });
+
   it('should handle objects with undefined', () => {
     const params = { format: undefined };
     const result = objectToCliArgs(params);
