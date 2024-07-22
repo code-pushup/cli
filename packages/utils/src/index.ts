@@ -72,6 +72,7 @@ export {
 } from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
 export { generateMdReportsDiff } from './lib/reports/generate-md-reports-diff';
+export { loadReport } from './lib/reports/load-report';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
@@ -80,11 +81,7 @@ export {
   ScoredGroup,
   ScoredReport,
 } from './lib/reports/types';
-export {
-  calcDuration,
-  compareIssueSeverity,
-  loadReport,
-} from './lib/reports/utils';
+export { calcDuration, compareIssueSeverity } from './lib/reports/utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {

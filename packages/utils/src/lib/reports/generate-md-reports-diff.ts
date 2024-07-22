@@ -5,16 +5,15 @@ import {
   TableRow,
   md,
 } from 'build-md';
-import { AuditDiff, ReportsDiff } from '@code-pushup/models';
+import { ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { HIERARCHY } from '../text-formats';
 import { objectToEntries } from '../transform';
 import { DiffOutcome } from './types';
 import {
-  colorByScoreDiff,
-  formatDiffNumber,
+  formatScoreChange,
   formatScoreWithColor,
-  getDiffMarker,
+  formatValueChange,
   scoreMarker,
 } from './utils';
 
@@ -206,28 +205,6 @@ function createGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
         : ''
     }`,
   );
-}
-
-function formatScoreChange(diff: number): InlineText {
-  const marker = getDiffMarker(diff);
-  const text = formatDiffNumber(Math.round(diff * 1000) / 10); // round with max 1 decimal
-  return colorByScoreDiff(`${marker} ${text}`, diff);
-}
-
-function formatValueChange({
-  values,
-  scores,
-}: Pick<AuditDiff, 'values' | 'scores'>): InlineText {
-  const marker = getDiffMarker(values.diff);
-  const percentage =
-    values.before === 0
-      ? values.diff > 0
-        ? Number.POSITIVE_INFINITY
-        : Number.NEGATIVE_INFINITY
-      : Math.round((100 * values.diff) / values.before);
-  // eslint-disable-next-line no-irregular-whitespace
-  const text = `${formatDiffNumber(percentage)} %`;
-  return colorByScoreDiff(`${marker} ${text}`, scores.diff);
 }
 
 function summarizeUnchanged(
