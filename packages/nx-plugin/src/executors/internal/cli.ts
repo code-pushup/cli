@@ -36,6 +36,7 @@ export function objectToCliArgs<
 
     if (typeof value === 'object') {
       return Object.entries(value as Record<string, unknown>).flatMap(
+        // transform nested objects to the dot notation `key.subkey`
         ([k, v]) => objectToCliArgs({ [`${key}.${k}`]: v }),
       );
     }
