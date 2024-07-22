@@ -69,7 +69,7 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual([
       '--persist.format="json"',
       '--persist.format="md"',
-      '--persist.no-verbose',
+      '--no-persist.verbose',
     ]);
   });
 
