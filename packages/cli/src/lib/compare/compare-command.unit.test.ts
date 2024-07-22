@@ -43,6 +43,7 @@ describe('compare-command', () => {
         filename: DEFAULT_PERSIST_FILENAME,
         format: DEFAULT_PERSIST_FORMAT,
       },
+      expect.any(Object),
     );
   });
 
