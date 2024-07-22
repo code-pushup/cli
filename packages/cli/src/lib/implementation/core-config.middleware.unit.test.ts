@@ -28,6 +28,14 @@ describe('normalizeFormats', () => {
   it('should split comma separated strings', () => {
     expect(normalizeFormats(['json,md'])).toEqual(['json', 'md']);
   });
+
+  it('should accept empty formats', () => {
+    expect(normalizeFormats([])).toEqual([]);
+  });
+
+  it('should accept missing formats', () => {
+    expect(normalizeFormats()).toEqual([]);
+  });
 });
 
 describe('coreConfigMiddleware', () => {

@@ -12,11 +12,13 @@ import { GeneralCliOptions } from './global.model';
 import { OnlyPluginsOptions } from './only-plugins.model';
 import { SkipPluginsOptions } from './skip-plugins.model';
 
+export type CoreConfigMiddlewareOptions = GeneralCliOptions &
+  CoreConfigCliOptions &
+  OnlyPluginsOptions &
+  SkipPluginsOptions;
+
 export async function coreConfigMiddleware<
-  T extends GeneralCliOptions &
-    CoreConfigCliOptions &
-    OnlyPluginsOptions &
-    SkipPluginsOptions,
+  T extends CoreConfigMiddlewareOptions,
 >(
   processArgs: T,
 ): Promise<
@@ -29,7 +31,6 @@ export async function coreConfigMiddleware<
     upload: cliUpload,
     ...remainingCliOptions
   } = processArgs;
-
   // Search for possible configuration file extensions if path is not given
   const importedRc = config
     ? await readRcByPath(config, tsconfig)
@@ -40,7 +41,6 @@ export async function coreConfigMiddleware<
     categories: rcCategories,
     ...remainingRcConfig
   } = importedRc;
-
   const upload =
     rcUpload == null && cliUpload == null
       ? undefined
@@ -48,7 +48,6 @@ export async function coreConfigMiddleware<
           ...rcUpload,
           ...cliUpload,
         });
-
   return {
     ...(config != null && { config }),
     persist: {
@@ -69,6 +68,5 @@ export async function coreConfigMiddleware<
   };
 }
 
-export function normalizeFormats(formats: string[]): Format[] {
-  return formats.flatMap(format => format.split(',') as Format[]);
-}
+export const normalizeFormats = (formats?: string[]): Format[] =>
+  (formats ?? []).flatMap(format => format.split(',') as Format[]);
