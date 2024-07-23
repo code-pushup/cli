@@ -22,8 +22,6 @@ export default function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  // console.log('AutorunCommandExecutorOptions: ', terminalAndExecutorOptions);
-  // console.log('cliArgumentObject: ', cliArgumentObject);
   const { dryRun, verbose } = terminalAndExecutorOptions;
   const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
   const commandOptions = context.cwd ? { cwd: context.cwd } : {};
