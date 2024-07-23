@@ -95,7 +95,7 @@ export const coverageCategories = [
 
 export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
   plugins: [await jsPackagesPlugin({ packageManager: 'npm' })],
-  categories: jsPackagesCategories(),
+  categories: jsPackagesCategories,
 });
 
 export const lighthouseCoreConfig = async (
@@ -106,7 +106,7 @@ export const lighthouseCoreConfig = async (
       chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
   ],
-  categories: lighthouseCategories(),
+  categories: lighthouseCategories,
 });
 
 export const eslintCoreConfigNx = async (
@@ -119,5 +119,5 @@ export const eslintCoreConfigNx = async (
         : eslintConfigFromAllNxProjects()),
     ),
   ],
-  categories: eslintCategories(),
+  categories: eslintCategories,
 });

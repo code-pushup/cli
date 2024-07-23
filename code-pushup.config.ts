@@ -81,7 +81,7 @@ const config: CoreConfig = {
   ],
 
   categories: [
-    ...coverageCategories(),
+    ...coverageCategories,
     {
       slug: 'custom-checks',
       title: 'Custom checks',
