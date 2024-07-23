@@ -28,12 +28,6 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
-    "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:autorun",
-      "options": {
-        "projectPrefix": "cli"
-      }
-    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],

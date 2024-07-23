@@ -92,20 +92,12 @@ describe('runAutorunExecutor', () => {
 
     expect(output.command).toMatch('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(4);
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining('Run autorun executor'),
     );
     expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/CLI options: {[^}]*"verbose":true/),
-    );
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining('Command: npx @code-pushup/cli autorun'),
-    );
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Options: ${JSON.stringify({ cwd: '<CWD>' }, null, 2)}`,
-      ),
     );
   });
 

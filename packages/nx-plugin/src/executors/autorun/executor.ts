@@ -26,10 +26,8 @@ export default function runAutorunExecutor(
   const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
   const commandOptions = context.cwd ? { cwd: context.cwd } : {};
   if (verbose) {
-    logger.info(`CLI options: ${JSON.stringify(cliArgumentObject)}`);
     logger.info(`Run ${AUTORUN_COMMAND} executor`);
     logger.info(`Command: ${command}`);
-    logger.info(`Options: ${JSON.stringify(commandOptions, null, 2)}`);
   }
   if (dryRun) {
     logger.warn(`DryRun execution of: ${command}`);

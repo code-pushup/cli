@@ -46,9 +46,6 @@
       "cache": true,
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/packages/models/docs/models-reference.md"]
-    },
-    "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:autorun"
     }
   },
   "tags": ["scope:shared", "type:util"]
