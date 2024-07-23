@@ -36,7 +36,7 @@ The following things happen:
     "code-pushup": {
       "executor": "@code-pushup/nx-plugin:autorun",
       "options": {
-        "projectPrefix": "my-project",
+        "projectPrefix": "cli", // upload.project = cli-my-project
         "verbose": true,
         "progress": false
         // persist and upload options as defined in CoreConfig
