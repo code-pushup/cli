@@ -4,9 +4,9 @@ import type {
   AuditReport,
 } from '@code-pushup/models';
 
-export const AGNOSTIC_PATH_SEP_REGEX = /[/\\]/g;
-export const OS_AGNOSTIC_PATH_SEP = '/';
-export const OS_AGNOSTIC_CWD = `<CWD>`;
+const AGNOSTIC_PATH_SEP_REGEX = /[/\\]/g;
+const OS_AGNOSTIC_PATH_SEP = '/';
+const OS_AGNOSTIC_CWD = `<CWD>`;
 
 /**
  * Converts a given file path to an OS-agnostic path by replacing the current working directory with '<CWD>'
