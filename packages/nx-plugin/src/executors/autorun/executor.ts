@@ -1,6 +1,6 @@
 import { ExecutorContext, logger } from '@nx/devkit';
 // eslint-disable-next-line n/no-sync
-import { execSync } from 'node:child_process';
+import { exec, execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli';
 import { normalizeContext } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
@@ -37,6 +37,7 @@ export default function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${command}`);
   } else {
     try {
+      // @TODO use executeProcess instead of execSync -> non blocking, logs #761
       // eslint-disable-next-line n/no-sync
       execSync(command, commandOptions);
     } catch (error) {
