@@ -11,10 +11,11 @@
       }
     },
     "code-pushup": {
+      "command": "npx dist/packages/cli",
       "dependsOn": [
         {
           "projects": [
-            "nx-plugin",
+            "cli",
             "plugin-eslint",
             "plugin-coverage",
             "plugin-js-packages",
@@ -24,10 +25,7 @@
           ],
           "target": "build"
         }
-      ],
-      "options": {
-        "verbose": true
-      }
+      ]
     }
   }
 }
