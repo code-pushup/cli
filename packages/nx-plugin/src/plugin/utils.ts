@@ -12,10 +12,9 @@ export async function normalizedCreateNodesContext(
 
   const projectJson: ProjectConfiguration = JSON.parse(
     (await readFile(projectConfigurationFile)).toString(),
-  ) as ProjectConfiguration;
+  ) as ProjectConfiguration | undefined;
   return {
     ...context,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     projectJson: projectJson ?? {},
     projectRoot,
     createOptions,
