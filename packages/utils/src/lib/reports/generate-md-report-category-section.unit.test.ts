@@ -1,3 +1,4 @@
+import { InlineText, md } from 'build-md';
 import { describe, expect, it } from 'vitest';
 import {
   categoriesDetailsSection,
@@ -10,14 +11,6 @@ import { ScoredGroup, ScoredReport } from './types';
 // === Categories Overview Section
 
 describe('categoriesOverviewSection', () => {
-  it('should skip categories table if categories are empty', () => {
-    const md = categoriesOverviewSection({
-      plugins: [],
-      categories: [],
-    });
-    expect(md).toBe('');
-  });
-
   it('should render complete categories table', () => {
     expect(
       categoriesOverviewSection({
@@ -51,7 +44,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-any', type: 'audit' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -69,9 +62,9 @@ describe('categoryRef', () => {
           score: 1,
         },
         'lighthouse',
-      ),
+      ).toString(),
     ).toBe(
-      '- 🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**',
+      '🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**',
     );
   });
 
@@ -86,50 +79,56 @@ describe('categoryRef', () => {
           displayValue: '12 errors',
         },
         'lighthouse',
-      ),
+      ).toString(),
     ).toBe(
-      '- 🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**',
+      '🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**',
     );
   });
 });
 
 describe('categoryGroupItem', () => {
+  const printAsListItem = (text: InlineText) => md.list([text]).toString();
+
   it('should render partial category reference', () => {
     expect(
-      categoryGroupItem(
-        {
-          slug: 'bug-prevention',
-          title: 'Bug Prevention',
-          score: 0.9,
-        } as ScoredGroup,
-        [
-          { title: 'No let', slug: 'no-let', score: 0, value: 23 },
-          { title: 'No any', slug: 'no-any', score: 0.6, value: 91 },
-        ],
-        'Eslint',
+      printAsListItem(
+        categoryGroupItem(
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.9,
+          } as ScoredGroup,
+          [
+            { title: 'No let', slug: 'no-let', score: 0, value: 23 },
+            { title: 'No any', slug: 'no-any', score: 0.6, value: 91 },
+          ],
+          'Eslint',
+        ),
       ),
     ).toMatchSnapshot();
   });
 
   it('should render complete category reference', () => {
     expect(
-      categoryGroupItem(
-        {
-          slug: 'bug-prevention',
-          title: 'Bug Prevention',
-          score: 0.6,
-        } as ScoredGroup,
-        [
+      printAsListItem(
+        categoryGroupItem(
           {
-            title: 'No any',
-            slug: 'no-any',
-            score: 0,
-            value: 12,
-            displayValue: '12 errors',
-          },
-          { title: 'No let', slug: 'no-let', score: 1, value: 0 },
-        ],
-        'Eslint',
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.6,
+          } as ScoredGroup,
+          [
+            {
+              title: 'No any',
+              slug: 'no-any',
+              score: 0,
+              value: 12,
+              displayValue: '12 errors',
+            },
+            { title: 'No let', slug: 'no-let', score: 1, value: 0 },
+          ],
+          'Eslint',
+        ),
       ),
     ).toMatchSnapshot();
   });
@@ -187,7 +186,7 @@ describe('categoriesDetails', () => {
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });

@@ -1,25 +1,14 @@
-import { join } from 'node:path';
+import { InlineText, md } from 'build-md';
 import {
+  AuditDiff,
   AuditReport,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
-  Format,
   Group,
   Issue,
-  PersistConfig,
-  Report,
-  reportSchema,
 } from '@code-pushup/models';
-import {
-  ensureDirectoryExists,
-  readJsonFile,
-  readTextFile,
-} from '../file-system';
-import { md } from '../text-formats';
 import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
-
-const { image, bold: boldMd } = md;
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;
@@ -33,11 +22,11 @@ export function formatReportScore(score: number): string {
 export function formatScoreWithColor(
   score: number,
   options?: { skipBold?: boolean },
-): string {
+): InlineText {
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
-    : boldMd(formatReportScore(score));
-  return `${scoreMarker(score)} ${styledNumber}`;
+    : md.bold(formatReportScore(score));
+  return md`${scoreMarker(score)} ${styledNumber}`;
 }
 
 export type MarkerShape = 'circle' | 'square';
@@ -78,13 +67,13 @@ export function getDiffMarker(diff: number): string {
   return '';
 }
 
-export function colorByScoreDiff(text: string, diff: number): string {
+export function colorByScoreDiff(text: string, diff: number): InlineText {
   const color = diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray';
   return shieldsBadge(text, color);
 }
 
-export function shieldsBadge(text: string, color: string): string {
-  return image(
+export function shieldsBadge(text: string, color: string): InlineText {
+  return md.image(
     `https://img.shields.io/badge/${encodeURIComponent(text)}-${color}`,
     text,
   );
@@ -105,6 +94,28 @@ export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
     return '⚠️';
   }
   return 'ℹ️';
+}
+
+export function formatScoreChange(diff: number): InlineText {
+  const marker = getDiffMarker(diff);
+  const text = formatDiffNumber(Math.round(diff * 1000) / 10); // round with max 1 decimal
+  return colorByScoreDiff(`${marker} ${text}`, diff);
+}
+
+export function formatValueChange({
+  values,
+  scores,
+}: Pick<AuditDiff, 'values' | 'scores'>): InlineText {
+  const marker = getDiffMarker(values.diff);
+  const percentage =
+    values.before === 0
+      ? values.diff > 0
+        ? Number.POSITIVE_INFINITY
+        : Number.NEGATIVE_INFINITY
+      : Math.round((100 * values.diff) / values.before);
+  // eslint-disable-next-line no-irregular-whitespace
+  const text = `${formatDiffNumber(percentage)} %`;
+  return colorByScoreDiff(`${marker} ${text}`, scores.diff);
 }
 
 export function calcDuration(start: number, stop?: number): number {
@@ -261,26 +272,6 @@ export function compareIssueSeverity(
     error: 2,
   };
   return levels[severity1] - levels[severity2];
-}
-
-type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
-
-export async function loadReport<T extends Format>(
-  options: Required<Omit<PersistConfig, 'format'>> & {
-    format: T;
-  },
-): Promise<LoadedReportFormat<T>> {
-  const { outputDir, filename, format } = options;
-  await ensureDirectoryExists(outputDir);
-  const filePath = join(outputDir, `${filename}.${format}`);
-
-  if (format === 'json') {
-    const content = await readJsonFile(filePath);
-    return reportSchema.parse(content) as LoadedReportFormat<T>;
-  }
-
-  const text = await readTextFile(filePath);
-  return text as LoadedReportFormat<T>;
 }
 
 export function throwIsNotPresentError(

@@ -36,7 +36,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(targets)).resolves.toHaveLength(47);
+      await expect(listRules(targets)).resolves.toHaveLength(31);
     });
 
     it('should include explicitly set built-in rule', async () => {

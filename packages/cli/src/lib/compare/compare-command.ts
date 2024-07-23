@@ -1,10 +1,10 @@
 import { bold, gray } from 'ansis';
 import { CommandModule } from 'yargs';
 import { compareReportFiles } from '@code-pushup/core';
-import { PersistConfig } from '@code-pushup/models';
+import { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import type { CompareOptions } from '../implementation/compare.model';
+import { CompareOptions } from '../implementation/compare.model';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options';
 
 export function yargsCompareCommandObject() {
@@ -19,11 +19,16 @@ export function yargsCompareCommandObject() {
 
       const options = args as CompareOptions & {
         persist: Required<PersistConfig>;
+        upload?: UploadConfig;
       };
 
-      const { before, after, persist } = options;
+      const { before, after, persist, upload } = options;
 
-      const outputPaths = await compareReportFiles({ before, after }, persist);
+      const outputPaths = await compareReportFiles(
+        { before, after },
+        persist,
+        upload,
+      );
 
       ui().logger.info(
         `Reports diff written to ${outputPaths
