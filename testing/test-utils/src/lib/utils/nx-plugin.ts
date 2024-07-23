@@ -45,3 +45,14 @@ export async function createFilesAndInvokeCreateNodesOnThem<
 
   return results.reduce((acc, { projects }) => ({ ...acc, ...projects }), {});
 }
+
+export function createNodesContext(
+  options?: Partial<CreateNodesContext>,
+): CreateNodesContext {
+  const { workspaceRoot = process.cwd(), nxJsonConfiguration = {} } =
+    options ?? {};
+  return {
+    workspaceRoot,
+    nxJsonConfiguration: nxJsonConfiguration ?? {},
+  };
+}

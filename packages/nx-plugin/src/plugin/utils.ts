@@ -10,13 +10,20 @@ export async function normalizedCreateNodesContext(
 ): Promise<NormalizedCreateNodesContext> {
   const projectRoot = dirname(projectConfigurationFile);
 
-  const projectJson: ProjectConfiguration = JSON.parse(
-    (await readFile(projectConfigurationFile)).toString(),
-  ) as ProjectConfiguration | undefined;
-  return {
-    ...context,
-    projectJson: projectJson ?? {},
-    projectRoot,
-    createOptions,
-  };
+  try {
+    const projectJson = JSON.parse(
+      (await readFile(projectConfigurationFile)).toString(),
+    ) as ProjectConfiguration;
+
+    return {
+      ...context,
+      projectJson,
+      projectRoot,
+      createOptions,
+    };
+  } catch (error: unknown) {
+    throw new Error(
+      `Error parsing project.json file ${projectConfigurationFile}.`,
+    );
+  }
 }
