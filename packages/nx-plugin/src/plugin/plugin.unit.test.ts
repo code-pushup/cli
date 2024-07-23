@@ -1,7 +1,7 @@
 import { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { createFilesAndInvokeCreateNodesOnThem } from '@code-pushup/test-utils';
+import { createVirtualFilesAndInvokeCreateNodesOnThem } from '@code-pushup/test-utils';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { CP_TARGET_NAME } from './constants';
 import { createNodes } from './plugin';
@@ -27,7 +27,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const projects = await createFilesAndInvokeCreateNodesOnThem(
+    const projects = await createVirtualFilesAndInvokeCreateNodesOnThem(
       createNodes,
       context,
       {},
@@ -49,7 +49,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const projects = await createFilesAndInvokeCreateNodesOnThem(
+    const projects = await createVirtualFilesAndInvokeCreateNodesOnThem(
       createNodes,
       context,
       {},
