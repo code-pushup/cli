@@ -11,7 +11,7 @@ export function parseAutorunExecutorOnlyOptions(
   const { projectPrefix, dryRun, onlyPlugins } = options;
   return {
     ...(projectPrefix && { projectPrefix }),
-    ...(dryRun != null && { dryRun: dryRun }),
+    ...(dryRun != null && { dryRun }),
     ...(onlyPlugins && { onlyPlugins }),
   };
 }
