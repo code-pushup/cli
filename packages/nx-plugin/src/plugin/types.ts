@@ -5,8 +5,6 @@ export type CreateNodesOptions = DynamicTargetOptions;
 
 export type NormalizedCreateNodesContext = CreateNodesContext & {
   projectJson: ProjectConfiguration;
-} & {
   projectRoot: string;
-} & {
   createOptions: CreateNodesOptions;
 };
