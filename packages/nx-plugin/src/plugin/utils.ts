@@ -21,7 +21,7 @@ export async function normalizedCreateNodesContext(
       projectRoot,
       createOptions,
     };
-  } catch (error: unknown) {
+  } catch {
     throw new Error(
       `Error parsing project.json file ${projectConfigurationFile}.`,
     );

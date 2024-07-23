@@ -20,7 +20,7 @@ describe('osAgnosticPath', () => {
     const unixCwd = '/Users/jerry';
 
     beforeEach(() => {
-      cwdSpy.mockReturnValue(linuxmMacOSCWD);
+      cwdSpy.mockReturnValue(unixCwd);
     });
     afterEach(() => {
       cwdSpy.mockReset();
@@ -28,15 +28,13 @@ describe('osAgnosticPath', () => {
 
     it('should convert a path within the CWD to an OS-agnostic path on Linux/macOS', () => {
       expect(
-        osAgnosticPath(`${linuxmMacOSCWD}/.code-pushup/.code-pushup.config.ts`),
+        osAgnosticPath(`${unixCwd}/.code-pushup/.code-pushup.config.ts`),
       ).toBe('<CWD>/.code-pushup/.code-pushup.config.ts');
     });
 
     it('should return paths outside of CWD on Linux/macOS', () => {
       expect(
-        osAgnosticPath(
-          `${linuxmMacOSCWD}/../.code-pushup/.code-pushup.config.ts`,
-        ),
+        osAgnosticPath(`${unixCwd}/../.code-pushup/.code-pushup.config.ts`),
       ).toBe('../.code-pushup/.code-pushup.config.ts');
     });
 
