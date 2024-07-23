@@ -12,7 +12,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(
         createNodesContext({ workspaceRoot: MEMFS_VOLUME }),
         'project.json',
@@ -34,7 +34,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(
         createNodesContext(),
         'packages/utils/project.json',
@@ -56,7 +56,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(
         createNodesContext({
           nxJsonConfiguration: {
@@ -88,7 +88,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(createNodesContext(), 'project.json'),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -107,7 +107,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(createNodesContext(), 'project.json'),
     ).rejects.toThrow('Error parsing project.json file project.json.');
   });
@@ -122,7 +122,7 @@ describe('normalizedCreateNodesContext', () => {
       MEMFS_VOLUME,
     );
 
-    expect(
+    await expect(
       normalizedCreateNodesContext(createNodesContext(), 'project.json', {
         projectPrefix: 'cli',
       }),

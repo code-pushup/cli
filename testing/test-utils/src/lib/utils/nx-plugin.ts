@@ -53,6 +53,6 @@ export function createNodesContext(
     options ?? {};
   return {
     workspaceRoot,
-    nxJsonConfiguration: nxJsonConfiguration ?? {},
+    nxJsonConfiguration,
   };
 }
