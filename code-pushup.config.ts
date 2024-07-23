@@ -59,7 +59,7 @@ const config: CoreConfig = {
       reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
     }),
 
-    await jsPackagesPlugin({ packageManager: 'npm' }),
+    await jsPackagesPlugin(),
 
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',

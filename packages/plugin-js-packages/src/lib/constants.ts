@@ -1,6 +1,12 @@
 import { IssueSeverity } from '@code-pushup/models';
-import type { DependencyGroup, PackageAuditLevel } from './config';
+import type {
+  DependencyGroup,
+  PackageAuditLevel,
+  PackageManagerId,
+} from './config';
 import { DependencyGroupLong } from './runner/outdated/types';
+
+export const DEFAULT_PACKAGE_MANAGER: PackageManagerId = 'npm';
 
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,

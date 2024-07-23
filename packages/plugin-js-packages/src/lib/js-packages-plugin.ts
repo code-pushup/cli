@@ -13,6 +13,7 @@ import {
 import { dependencyDocs, dependencyGroupWeights } from './constants';
 import { packageManagers } from './package-managers';
 import { createRunnerConfig } from './runner';
+import { derivePackageManager } from './utils';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -32,13 +33,20 @@ import { createRunnerConfig } from './runner';
  */
 
 export async function jsPackagesPlugin(
-  config: JSPackagesPluginConfig,
+  config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
-  const checks = [...new Set(jsPackagesPluginConfig.checks)];
-  const depGroups = [...new Set(jsPackagesPluginConfig.dependencyGroups)];
-  const id = jsPackagesPluginConfig.packageManager;
-  const pm = packageManagers[id];
+  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(
+    config ?? {},
+  );
+  const {
+    packageManager = await derivePackageManager(),
+    dependencyGroups: dependencyGroupsCfg = [],
+    checks: checksCfg = [],
+    ...jsPackagesPluginConfigRest
+  } = jsPackagesPluginConfig;
+  const checks = [...new Set(checksCfg)];
+  const depGroups = [...new Set(dependencyGroupsCfg)];
+  const pm = packageManagers[packageManager];
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -54,9 +62,14 @@ export async function jsPackagesPlugin(
     docsUrl: pm.docs.homepage,
     packageName: name,
     version,
-    audits: createAudits(id, checks, depGroups),
-    groups: createGroups(id, checks, depGroups),
-    runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
+    audits: createAudits(packageManager, checks, depGroups),
+    groups: createGroups(packageManager, checks, depGroups),
+    runner: await createRunnerConfig(runnerScriptPath, {
+      ...jsPackagesPluginConfigRest,
+      checks,
+      packageManager,
+      dependencyGroups: depGroups,
+    }),
   };
 }
 

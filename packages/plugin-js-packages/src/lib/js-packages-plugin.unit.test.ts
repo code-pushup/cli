@@ -10,9 +10,24 @@ vi.mock('./runner/index.ts', () => ({
 }));
 
 describe('jsPackagesPlugin', () => {
-  it('should initialise a JS packages plugin', async () => {
+  it('should initialise a JS packages plugin without a given config for NPM', async () => {
+    await expect(jsPackagesPlugin()).resolves.toStrictEqual(
+      expect.objectContaining({
+        slug: 'js-packages',
+        title: 'JS Packages',
+        audits: expect.arrayContaining([
+          expect.objectContaining({ slug: 'npm-audit-prod' }),
+          expect.objectContaining({ slug: 'npm-audit-dev' }),
+          expect.objectContaining({ slug: 'npm-outdated-dev' }),
+        ]),
+        groups: expect.any(Array),
+      }),
+    );
+  });
+
+  it('should initialise a JS packages plugin with given checks', async () => {
     await expect(
-      jsPackagesPlugin({ packageManager: 'npm', checks: ['outdated'] }),
+      jsPackagesPlugin({ checks: ['outdated'] }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',

@@ -61,9 +61,9 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .min(1)
     .default(['audit', 'outdated']),
-  packageManager: packageManagerIdSchema.describe(
-    'Package manager to be used.',
-  ),
+  packageManager: packageManagerIdSchema
+    .describe('Package manager to be used.')
+    .optional(),
   dependencyGroups: z
     .array(dependencyGroupSchema)
     .min(1)
@@ -82,6 +82,6 @@ export type JSPackagesPluginConfig = z.input<
   typeof jsPackagesPluginConfigSchema
 >;
 
-export type FinalJSPackagesPluginConfig = z.infer<
-  typeof jsPackagesPluginConfigSchema
+export type FinalJSPackagesPluginConfig = Required<
+  z.infer<typeof jsPackagesPluginConfigSchema>
 >;
