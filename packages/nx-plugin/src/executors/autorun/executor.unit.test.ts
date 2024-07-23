@@ -34,7 +34,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should call execSync with autorun command and return result', async () => {
-    const output = await runAutorunExecutor({}, executorContext());
+    const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli autorun');
     // eslint-disable-next-line n/no-sync
@@ -63,7 +63,7 @@ describe('runAutorunExecutor', () => {
   it('should process executorOptions', async () => {
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT' } },
-      executorContext(),
+      executorContext('testing-utils'),
     );
     expect(output.success).toBe(true);
     expect(output.command).toMatch('--persist.filename="REPORT"');
@@ -85,7 +85,7 @@ describe('runAutorunExecutor', () => {
   it('should log information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       { verbose: true },
-      { ...executorContext(), cwd: '<CWD>' },
+      { ...executorContext('github-action'), cwd: '<CWD>' },
     );
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
@@ -110,7 +110,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, executorContext());
+    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);

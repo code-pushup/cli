@@ -1,7 +1,7 @@
 import { NormalizedExecutorContext } from '../../src/executors/internal/context';
 
 export function normalizedExecutorContext(
-  nameOrOpt: string | { projectName: string } = 'my-lib',
+  nameOrOpt: string | { projectName: string },
 ): NormalizedExecutorContext {
   const { projectName } =
     typeof nameOrOpt === 'string' ? { projectName: nameOrOpt } : nameOrOpt;

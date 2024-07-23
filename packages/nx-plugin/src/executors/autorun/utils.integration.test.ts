@@ -8,7 +8,7 @@ describe('parseAutorunExecutorOptions', () => {
   const persistConfigSpy = vi.spyOn(config, 'persistConfig');
   const uploadConfigSpy = vi.spyOn(config, 'uploadConfig');
   const globalConfigSpy = vi.spyOn(config, 'globalConfig');
-  const normalizedContext = normalizedExecutorContext();
+  const normalizedContext = normalizedExecutorContext('portal');
 
   afterEach(() => {
     persistConfigSpy.mockReset();
