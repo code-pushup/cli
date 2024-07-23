@@ -34,7 +34,6 @@ export async function createFilesAndInvokeCreateNodesOnThem<
   },
 ): Promise<CreateNodesResult> {
   const { matchingFilesData } = mockData;
-  vol.reset();
   vol.fromJSON(matchingFilesData, MEMFS_VOLUME);
 
   const results = await Promise.all(
