@@ -17,7 +17,7 @@ describe('osAgnosticPath', () => {
   });
 
   describe('Unix-based systems (Linux/macOS)', () => {
-    const linuxmMacOSCWD = '/Users/jerry';
+    const unixCwd = '/Users/jerry';
 
     beforeEach(() => {
       cwdSpy.mockReturnValue(linuxmMacOSCWD);
