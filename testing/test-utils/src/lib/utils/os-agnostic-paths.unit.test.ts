@@ -102,15 +102,15 @@ describe('osAgnosticPath', () => {
     });
 
     it('should handle paths with CWD shorthand "." correctly on Windows', () => {
-      expect(osAgnosticPath('./.code-pushup/.code-pushup.config.ts')).toBe(
+      expect(osAgnosticPath('.\\.code-pushup\\.code-pushup.config.ts')).toBe(
         './.code-pushup/.code-pushup.config.ts',
       );
     });
 
     it('should handle relative paths correctly on Windows', () => {
-      expect(osAgnosticPath('../../.code-pushup/.code-pushup.config.ts')).toBe(
-        '../../.code-pushup/.code-pushup.config.ts',
-      );
+      expect(
+        osAgnosticPath('..\\..\\.code-pushup\\.code-pushup.config.ts'),
+      ).toBe('../../.code-pushup/.code-pushup.config.ts');
     });
     it('should handle path segments correctly on Windows', () => {
       expect(osAgnosticPath('.code-pushup\\.code-pushup.config.ts')).toBe(
