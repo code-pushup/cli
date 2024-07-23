@@ -58,4 +58,17 @@ describe('generateMdReportsDiff', () => {
       generateMdReportsDiff(reportsDiffAddedPluginMock()),
     ).toMatchFileSnapshot('__snapshots__/report-diff-added.md');
   });
+
+  it('should format Markdown comment with link to portal', async () => {
+    const report = reportsDiffAltMock();
+    const shas = [
+      report.commits!.before.hash,
+      report.commits!.after.hash,
+    ] as const;
+    const portalUrl = `https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/${shas[0]}/${shas[1]}`;
+
+    await expect(generateMdReportsDiff(report, portalUrl)).toMatchFileSnapshot(
+      '__snapshots__/report-diff-with-portal-link.md',
+    );
+  });
 });

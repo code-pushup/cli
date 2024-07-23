@@ -2,6 +2,8 @@
 
 🤨 Code PushUp report has both **improvements and regressions** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
 
+[🕵️ See full comparison in Code PushUp portal 🔍](https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/abcdef0123456789abcdef0123456789abcdef01/0123456789abcdef0123456789abcdef01234567)
+
 ## 🏷️ Categories
 
 | 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |

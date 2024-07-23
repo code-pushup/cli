@@ -115,7 +115,9 @@ export function yargsCli<T = unknown>(
 function validatePersistFormat(persist: PersistConfig) {
   try {
     if (persist.format != null) {
-      persist.format.forEach(format => formatSchema.parse(format));
+      persist.format
+        .flatMap(format => format.split(','))
+        .forEach(format => formatSchema.parse(format));
     }
     return true;
   } catch {
