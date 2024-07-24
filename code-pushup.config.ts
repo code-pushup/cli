@@ -1,13 +1,9 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import 'dotenv/config';
-import { z } from 'zod';
+import {z} from 'zod';
 import {
   coverageCategories,
-  eslintCategories,
   eslintCoreConfigNx,
-  jsPackagesCategories,
   jsPackagesCoreConfig,
-  lighthouseCategories,
   lighthouseCoreConfig,
 } from './code-pushup.preset';
 import {
@@ -17,19 +13,9 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin, {
-  getNxCoveragePaths,
-} from './dist/packages/plugin-coverage';
-import eslintPlugin, {
-  eslintConfigFromAllNxProjects,
-} from './dist/packages/plugin-eslint';
-import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import {
-  lighthouseGroupRef,
-  lighthousePlugin,
-} from './dist/packages/plugin-lighthouse';
-import { mergeConfigs } from './dist/packages/utils';
-import type { CoreConfig } from './packages/models/src';
+import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
+import {mergeConfigs} from './dist/packages/utils';
+import type {CoreConfig} from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z.object({
@@ -96,9 +82,9 @@ const config: CoreConfig = {
 
 export default mergeConfigs(
   config,
-  jsPackagesCoreConfig(),
-  lighthouseCoreConfig(
+  await jsPackagesCoreConfig(),
+  await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
-  eslintCoreConfigNx(),
+  await eslintCoreConfigNx(),
 );

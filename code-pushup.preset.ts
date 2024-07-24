@@ -1,15 +1,11 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
-import eslintPlugin, {
-  eslintConfigFromAllNxProjects,
-  eslintConfigFromNxProject,
-} from './dist/packages/plugin-eslint';
+import {DEFAULT_FLAGS} from 'chrome-launcher/dist/flags.js';
+import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
+import eslintPlugin, {eslintConfigFromAllNxProjects, eslintConfigFromNxProject,} from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import lighthousePlugin, {
-  lighthouseGroupRef,
-} from './dist/packages/plugin-lighthouse';
-import type { CoreConfig } from './packages/models/src';
+import lighthousePlugin, {lighthouseGroupRef,} from './dist/packages/plugin-lighthouse';
+import type {CategoryConfig, CoreConfig} from './packages/models/src';
 
-export const jsPackagesCategories = [
+export const jsPackagesCategories: CategoryConfig[] = [
   {
     slug: 'security',
     title: 'Security',
@@ -38,7 +34,7 @@ export const jsPackagesCategories = [
   },
 ];
 
-export const lighthouseCategories = [
+export const lighthouseCategories: CategoryConfig[] = [
   {
     slug: 'performance',
     title: 'Performance',
@@ -61,7 +57,7 @@ export const lighthouseCategories = [
   },
 ];
 
-export const eslintCategories = [
+export const eslintCategories: CategoryConfig[] = [
   {
     slug: 'bug-prevention',
     title: 'Bug prevention',
@@ -77,7 +73,7 @@ export const eslintCategories = [
   },
 ];
 
-export const coverageCategories = [
+export const coverageCategories: CategoryConfig[] = [
   {
     slug: 'code-coverage',
     title: 'Code coverage',
@@ -93,31 +89,67 @@ export const coverageCategories = [
   },
 ];
 
-export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
-  plugins: [await jsPackagesPlugin({ packageManager: 'npm' })],
-  categories: jsPackagesCategories,
-});
+export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => {
+  return {
+    plugins: [await jsPackagesPlugin({ packageManager: 'npm' })],
+    categories: jsPackagesCategories,
+  };
+};
 
 export const lighthouseCoreConfig = async (
   url: string,
-): Promise<CoreConfig> => ({
-  plugins: [
-    await lighthousePlugin(url, {
-      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-    }),
-  ],
-  categories: lighthouseCategories,
-});
+): Promise<CoreConfig> => {
+  return {
+    plugins: [
+      await lighthousePlugin(url, {
+        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+      }),
+    ],
+    categories: lighthouseCategories,
+  };
+};
 
 export const eslintCoreConfigNx = async (
   projectName?: string,
-): Promise<CoreConfig> => ({
-  plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
-    ),
-  ],
-  categories: eslintCategories,
-});
+): Promise<CoreConfig> => {
+  return {
+    plugins: [
+      await eslintPlugin(
+        await (projectName
+          ? eslintConfigFromNxProject(projectName)
+          : eslintConfigFromAllNxProjects()),
+      ),
+    ],
+    categories: eslintCategories,
+  };
+};
+
+export const coverageCoreConfigNx = async (
+  projectName?: string,
+): Promise<CoreConfig> => {
+  const targetNames = ['unit-test', 'integration-test'];
+  const targetArgs = [
+    '-t',
+    'unit-test',
+    'integration-test',
+    '--coverage.enabled',
+    '--skipNxCache',
+  ];
+  const rootArgs = ['nx', 'run-many'];
+  return {
+    plugins: [
+      await coveragePlugin({
+        coverageToolCommand: {
+          command: 'npx',
+          args: [
+            'nx',
+            projectName ? `run --project ${projectName}` : 'run-many',
+            ...targetArgs,
+          ],
+        },
+        reports: await getNxCoveragePaths(targetNames),
+      }),
+    ],
+    categories: eslintCategories,
+  };
+};
