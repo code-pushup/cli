@@ -172,7 +172,7 @@ describe('mergeObjects', () => {
     });
   });
 
-  it('should merge add upload to config', () => {
+  it('should merge upload config properties', () => {
     expect(
       mergeConfigs(
         MOCK_CONFIG_PERSIST,
