@@ -67,7 +67,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-let', type: 'audit' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -234,7 +234,7 @@ describe('categoriesDetailsSection', () => {
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 
@@ -257,7 +257,7 @@ describe('categoriesDetailsSection', () => {
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });

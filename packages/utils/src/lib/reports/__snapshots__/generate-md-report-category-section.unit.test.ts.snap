@@ -1,8 +1,26 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`categoriesDetailsSection > should render categories details and add "✅" when isBinary is passing 1`] = `_MarkdownDocument {}`;
+exports[`categoriesDetailsSection > should render categories details and add "✅" when isBinary is passing 1`] = `
+"## 🏷 Categories
 
-exports[`categoriesDetailsSection > should render categories details and add "❌" when isBinary is failing 1`] = `_MarkdownDocument {}`;
+### Bug Prevention
+
+🟢 Score: **100** ✅
+
+- 🟩 [No let](#no-let-eslint) (_Eslint_) - **5**
+"
+`;
+
+exports[`categoriesDetailsSection > should render categories details and add "❌" when isBinary is failing 1`] = `
+"## 🏷 Categories
+
+### Bug Prevention
+
+🟢 Score: **98** ❌
+
+- 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
+"
+`;
 
 exports[`categoriesDetailsSection > should render complete categories details 1`] = `
 "## 🏷 Categories
@@ -36,7 +54,12 @@ exports[`categoriesOverviewSection > should render complete categories table 1`]
 "
 `;
 
-exports[`categoriesOverviewSection > should render targetScore icon "❌" if score fails 1`] = `_MarkdownDocument {}`;
+exports[`categoriesOverviewSection > should render targetScore icon "❌" if score fails 1`] = `
+"| 🏷 Category                       |   ⭐ Score   | 🛡 Audits |
+| :-------------------------------- | :---------: | :-------: |
+| [Bug Prevention](#bug-prevention) | 🟢 **98** ❌ |     1     |
+"
+`;
 
 exports[`categoryGroupItem > should render complete category reference 1`] = `
 "- 🟡 Bug Prevention (_Eslint_)
