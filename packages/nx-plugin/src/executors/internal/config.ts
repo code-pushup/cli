@@ -8,7 +8,7 @@ import {
 } from './types';
 
 export function globalConfig(
-  options: Partial<GlobalExecutorOptions>,
+  options: Partial<GlobalExecutorOptions & Record<string, unknown>>,
   context: BaseNormalizedExecutorContext,
 ): Required<GlobalExecutorOptions> {
   const { projectConfig } = context;
