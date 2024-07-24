@@ -23,7 +23,7 @@ import { MEMFS_VOLUME } from '../constants';
  * @param createNodeOptions
  * @param mockData
  */
-export async function createVirtualFilesAndInvokeCreateNodesOnThem<
+export async function invokeCreateNodesOnVirtualFiles<
   T extends Record<string, unknown> | undefined,
 >(
   createNodes: CreateNodes,
