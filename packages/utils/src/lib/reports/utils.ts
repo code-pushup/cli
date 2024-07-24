@@ -294,7 +294,7 @@ export function targetScoreIcon(
       failIcon = '❌',
       prefix = '',
       postfix = '',
-    } = options; // ✅✓ ❌✗
+    } = options;
     if (score >= targetScore) {
       return `${prefix}${passIcon}${postfix}`;
     }
