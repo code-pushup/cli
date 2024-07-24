@@ -110,13 +110,16 @@ describe('globalConfig', () => {
 
   it('should exclude other options', () => {
     expect(
-      globalConfig({ test: 42 } as unknown as { verbose: boolean }, {
-        workspaceRoot: '/test/root/workspace-root',
-        projectConfig: {
-          name: 'my-app',
-          root: 'packages/project-root',
+      globalConfig(
+        { test: 42, verbose: true },
+        {
+          workspaceRoot: '/test/root/workspace-root',
+          projectConfig: {
+            name: 'my-app',
+            root: 'packages/project-root',
+          },
         },
-      }),
+      ),
     ).toEqual(expect.not.objectContaining({ test: expect.anything() }));
   });
 });
