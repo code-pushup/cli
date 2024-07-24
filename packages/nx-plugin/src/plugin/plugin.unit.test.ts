@@ -49,7 +49,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const projects = await createVirtualFilesAndInvokeCreateNodesOnThem(
+    const projects = await invokeCreateNodesOnVirtualFiles(
       createNodes,
       context,
       {},
