@@ -1,9 +1,16 @@
-import {DEFAULT_FLAGS} from 'chrome-launcher/dist/flags.js';
-import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
-import eslintPlugin, {eslintConfigFromAllNxProjects, eslintConfigFromNxProject,} from './dist/packages/plugin-eslint';
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
+import coveragePlugin, {
+  getNxCoveragePaths,
+} from './dist/packages/plugin-coverage';
+import eslintPlugin, {
+  eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProject,
+} from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
-import lighthousePlugin, {lighthouseGroupRef,} from './dist/packages/plugin-lighthouse';
-import type {CategoryConfig, CoreConfig} from './packages/models/src';
+import lighthousePlugin, {
+  lighthouseGroupRef,
+} from './dist/packages/plugin-lighthouse';
+import type { CategoryConfig, CoreConfig } from './packages/models/src';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {

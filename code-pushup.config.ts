@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {z} from 'zod';
+import { z } from 'zod';
 import {
   coverageCategories,
   eslintCoreConfigNx,
@@ -13,9 +13,11 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin, {getNxCoveragePaths,} from './dist/packages/plugin-coverage';
-import {mergeConfigs} from './dist/packages/utils';
-import type {CoreConfig} from './packages/models/src';
+import coveragePlugin, {
+  getNxCoveragePaths,
+} from './dist/packages/plugin-coverage';
+import { mergeConfigs } from './dist/packages/utils';
+import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
 const envSchema = z.object({
