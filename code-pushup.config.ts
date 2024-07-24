@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import {
-  coverageCategories,
+  coverageCoreConfigNx,
   eslintCoreConfigNx,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
@@ -13,9 +13,6 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
 } from './dist/examples/plugins';
-import coveragePlugin, {
-  getNxCoveragePaths,
-} from './dist/packages/plugin-coverage';
 import { mergeConfigs } from './dist/packages/utils';
 import type { CoreConfig } from './packages/models/src';
 
@@ -39,22 +36,6 @@ const config: CoreConfig = {
   }),
 
   plugins: [
-    await coveragePlugin({
-      coverageToolCommand: {
-        command: 'npx',
-        args: [
-          'nx',
-          'run-many',
-          '-t',
-          'unit-test',
-          'integration-test',
-          '--coverage.enabled',
-          '--skipNxCache',
-        ],
-      },
-      reports: await getNxCoveragePaths(['unit-test', 'integration-test']),
-    }),
-
     fileSizePlugin({
       directory: './dist/examples/react-todos-app',
       pattern: /\.js$/,
@@ -69,7 +50,6 @@ const config: CoreConfig = {
   ],
 
   categories: [
-    ...coverageCategories,
     {
       slug: 'custom-checks',
       title: 'Custom checks',
@@ -84,6 +64,7 @@ const config: CoreConfig = {
 
 export default mergeConfigs(
   config,
+  await coverageCoreConfigNx(),
   await jsPackagesCoreConfig(),
   await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',

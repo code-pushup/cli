@@ -134,6 +134,9 @@ export const eslintCoreConfigNx = async (
 export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
+  if (projectName) {
+    throw new Error('coverageCoreConfigNx for single projects not implemented');
+  }
   const targetNames = ['unit-test', 'integration-test'];
   const targetArgs = [
     '-t',
@@ -142,7 +145,6 @@ export const coverageCoreConfigNx = async (
     '--coverage.enabled',
     '--skipNxCache',
   ];
-  const rootArgs = ['nx', 'run-many'];
   return {
     plugins: [
       await coveragePlugin({
@@ -157,6 +159,6 @@ export const coverageCoreConfigNx = async (
         reports: await getNxCoveragePaths(targetNames),
       }),
     ],
-    categories: eslintCategories,
+    categories: coverageCategories,
   };
 };
