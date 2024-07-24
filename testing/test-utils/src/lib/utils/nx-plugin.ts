@@ -1,4 +1,9 @@
-import { CreateNodes, CreateNodesContext, CreateNodesResult } from '@nx/devkit';
+import {
+  CreateNodes,
+  CreateNodesContext,
+  CreateNodesResult,
+  ProjectConfiguration,
+} from '@nx/devkit';
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '../constants';
 
@@ -32,7 +37,7 @@ export async function invokeCreateNodesOnVirtualFiles<
   mockData: {
     matchingFilesData: Record<string, string>;
   },
-): Promise<CreateNodesResult> {
+) {
   const { matchingFilesData } = mockData;
   vol.fromJSON(matchingFilesData, MEMFS_VOLUME);
 
@@ -42,7 +47,14 @@ export async function invokeCreateNodesOnVirtualFiles<
     ),
   );
 
-  return results.reduce((acc, { projects }) => ({ ...acc, ...projects }), {});
+  const createNodesResult: Pick<CreateNodesResult, 'projects'> = results.reduce(
+    (acc, { projects }) => ({ ...acc, ...projects }),
+    {},
+  );
+  return {
+    ...createNodesResult,
+    externalNodes: {},
+  } satisfies CreateNodesResult;
 }
 
 export function createNodesContext(
