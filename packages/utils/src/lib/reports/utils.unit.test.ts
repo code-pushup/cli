@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import type { Ansis } from 'ansis';
+import { Mock, describe, expect, it } from 'vitest';
 import { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants';
 import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   MARKERS,
   MarkerShape,
+  applyScoreColor,
   calcDuration,
   colorByScoreDiff,
   compareAudits,
@@ -16,11 +18,9 @@ import {
   formatReportScore,
   formatScoreWithColor,
   getPluginNameFromSlug,
-  getSortableAuditByRef,
-  getSortableGroupByRef,
-  getSortedGroupAudits,
   scoreMarker,
   severityMarker,
+  targetScoreIcon,
 } from './utils';
 
 describe('formatReportScore', () => {
@@ -94,243 +94,6 @@ describe('calcDuration', () => {
   it('should calculate the duration correctly if only start is given', () => {
     const start = performance.now();
     expect(calcDuration(start)).toBe(0);
-  });
-});
-
-describe('getSortableAuditByRef', () => {
-  it('should return a sortable audit', () => {
-    expect(
-      getSortableAuditByRef(
-        {
-          slug: 'function-coverage',
-          weight: 6,
-          plugin: 'coverage',
-          type: 'audit',
-        },
-        [
-          {
-            slug: 'coverage',
-            date: 'today',
-            duration: 0,
-            title: 'Coverage',
-            icon: 'folder-coverage-open',
-            audits: [
-              {
-                slug: 'function-coverage',
-                score: 1,
-                title: 'Function coverage',
-                value: 100,
-              },
-            ],
-            groups: [],
-          },
-        ],
-      ),
-    ).toStrictEqual<SortableAuditReport>({
-      slug: 'function-coverage',
-      title: 'Function coverage',
-      score: 1,
-      value: 100,
-      weight: 6,
-      plugin: 'coverage',
-    });
-  });
-
-  it('should throw for a non-existent audit', () => {
-    expect(() =>
-      getSortableAuditByRef(
-        {
-          slug: 'pancake-coverage',
-          weight: 2,
-          plugin: 'coverage',
-          type: 'audit',
-        },
-        [
-          {
-            slug: 'coverage',
-            date: 'today',
-            duration: 0,
-            title: 'Coverage',
-            icon: 'folder-coverage-open',
-            audits: [
-              {
-                slug: 'branch-coverage',
-                score: 0.5,
-                title: 'Branch coverage',
-                value: 50,
-              },
-            ],
-            groups: [],
-          },
-        ],
-      ),
-    ).toThrow('Audit pancake-coverage is not present in coverage');
-  });
-});
-
-describe('getSortableGroupByRef', () => {
-  it('should return a sortable group with sorted references', () => {
-    expect(
-      getSortableGroupByRef(
-        {
-          slug: 'code-coverage',
-          weight: 2,
-          plugin: 'coverage',
-          type: 'group',
-        },
-        [
-          {
-            slug: 'coverage',
-            date: 'today',
-            duration: 0,
-            title: 'Coverage',
-            icon: 'folder-coverage-open',
-            audits: [
-              {
-                slug: 'function-coverage',
-                score: 1,
-                title: 'Function coverage',
-                value: 100,
-              },
-              {
-                slug: 'branch-coverage',
-                score: 0.5,
-                title: 'Branch coverage',
-                value: 50,
-              },
-            ],
-            groups: [
-              {
-                slug: 'code-coverage',
-                title: 'Code coverage',
-                score: 0.66,
-                refs: [
-                  {
-                    slug: 'branch-coverage',
-                    weight: 1,
-                  },
-                  {
-                    slug: 'function-coverage',
-                    weight: 2,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      ),
-    ).toStrictEqual<SortableGroup>({
-      slug: 'code-coverage',
-      title: 'Code coverage',
-      score: 0.66,
-      refs: [
-        {
-          slug: 'function-coverage',
-          weight: 2,
-        },
-        {
-          slug: 'branch-coverage',
-          weight: 1,
-        },
-      ],
-      weight: 2,
-      plugin: 'coverage',
-    });
-  });
-
-  it('should throw for a non-existent group', () => {
-    expect(() =>
-      getSortableGroupByRef(
-        {
-          slug: 'test-coverage',
-          weight: 2,
-          plugin: 'coverage',
-          type: 'group',
-        },
-        [
-          {
-            slug: 'coverage',
-            date: 'today',
-            duration: 0,
-            title: 'Coverage',
-            icon: 'folder-coverage-open',
-            audits: [
-              {
-                slug: 'function-coverage',
-                score: 0.75,
-                title: 'Function coverage',
-                value: 75,
-              },
-            ],
-            groups: [],
-          },
-        ],
-      ),
-    ).toThrow('Group test-coverage is not present in coverage');
-  });
-});
-
-describe('getSortedGroupAudits', () => {
-  it('should return sorted group audits based on weight > score > value > title', () => {
-    expect(
-      getSortedGroupAudits(
-        {
-          slug: 'code-coverage',
-          title: 'Code coverage',
-          refs: [
-            { slug: 'branch-coverage', weight: 3 },
-            { slug: 'function-coverage', weight: 6 },
-            { slug: 'line-coverage', weight: 3 },
-          ],
-        },
-        'coverage',
-        [
-          {
-            slug: 'coverage',
-            date: 'today',
-            duration: 0,
-            title: 'Coverage',
-            icon: 'folder-coverage-open',
-            audits: [
-              {
-                slug: 'branch-coverage',
-                score: 0.75,
-                title: 'Branch coverage',
-                value: 75,
-              },
-              {
-                slug: 'function-coverage',
-                score: 1,
-                title: 'Function coverage',
-                value: 100,
-              },
-              {
-                slug: 'line-coverage',
-                score: 0.5,
-                title: 'Line coverage',
-                value: 50,
-              },
-            ],
-            groups: [],
-          },
-        ],
-      ),
-    ).toStrictEqual([
-      expect.objectContaining({
-        weight: 6,
-        slug: 'function-coverage',
-      }),
-      expect.objectContaining({
-        weight: 3,
-        score: 0.5,
-        slug: 'line-coverage',
-      }),
-      expect.objectContaining({
-        weight: 3,
-        score: 0.75,
-        slug: 'branch-coverage',
-      }),
-    ]);
   });
 });
 
@@ -599,5 +362,80 @@ describe('severityMarker', () => {
     ['ℹ️', '' as IssueSeverity],
   ])('should return icon %s for severity %s', (icon, severity) => {
     expect(severityMarker(severity)).toBe(icon);
+  });
+});
+
+describe('applyScoreColor', () => {
+  const ansisMock = {
+    red: vi.fn() as any,
+    yellow: vi.fn() as any,
+    green: vi.fn() as any,
+    bold: vi.fn() as any,
+  } as Ansis;
+
+  afterEach(() => {
+    Object.values(ansisMock).forEach((mock: Mock) => {
+      mock.mockRestore();
+    });
+  });
+
+  it.each<['red' | 'yellow' | 'green', number]>([
+    ['red', 0],
+    ['red', SCORE_COLOR_RANGE.YELLOW_MIN - 0.1],
+    ['yellow', SCORE_COLOR_RANGE.YELLOW_MIN],
+    ['yellow', SCORE_COLOR_RANGE.GREEN_MIN - 0.1],
+    ['green', SCORE_COLOR_RANGE.GREEN_MIN],
+    ['green', 1],
+  ])('should return text with color %s for score %s', (methodName, score) => {
+    applyScoreColor({ score, text: '●' }, ansisMock);
+    expect(ansisMock[methodName]).toHaveBeenCalledWith('●');
+  });
+
+  it.each<['red' | 'yellow' | 'green', number]>([
+    ['red', 0],
+    ['red', SCORE_COLOR_RANGE.YELLOW_MIN - 0.1],
+    ['yellow', SCORE_COLOR_RANGE.YELLOW_MIN],
+    ['yellow', SCORE_COLOR_RANGE.GREEN_MIN - 0.1],
+    ['green', SCORE_COLOR_RANGE.GREEN_MIN],
+    ['green', 1],
+  ])('should return score with color %s for score %s', (methodName, score) => {
+    applyScoreColor({ score }, ansisMock);
+    expect(ansisMock[methodName]).toHaveBeenCalledWith(
+      (score * 100).toString(),
+    );
+  });
+});
+
+describe('targetScoreIcon', () => {
+  it('should return target score icon "✅" for passed score', () => {
+    expect(targetScoreIcon(0.42, 0.4)).toBe('✅');
+  });
+  it('should return target score icon "❌" for failed score', () => {
+    expect(targetScoreIcon(0.42, 0.5)).toBe('❌');
+  });
+  it('should return prefixed target score icon if prefix is provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        prefix: '<',
+      }),
+    ).toBe('<✅');
+  });
+  it('should return prefixed target score icon if postfix is provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        postfix: '>',
+      }),
+    ).toBe('✅>');
+  });
+  it('should return pre and postfixed target score icon if both are provided', () => {
+    expect(
+      targetScoreIcon(0.42, 0.1, {
+        prefix: '<',
+        postfix: '>',
+      }),
+    ).toBe('<✅>');
+  });
+  it('should return no target score icon if no targetScore is provided', () => {
+    expect(targetScoreIcon(0.42)).toBe('');
   });
 });

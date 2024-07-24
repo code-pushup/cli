@@ -1,6 +1,7 @@
 import { InlineText, md } from 'build-md';
 import { describe, expect, it } from 'vitest';
 import {
+  binaryIconSuffix,
   categoriesDetailsSection,
   categoriesOverviewSection,
   categoryGroupItem,
@@ -42,6 +43,28 @@ describe('categoriesOverviewSection', () => {
             title: 'Typescript',
             score: 0.14,
             refs: [{ slug: 'no-any', type: 'audit' }],
+          },
+        ],
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+
+  it('should render targetScore icon "❌" if score fails', () => {
+    expect(
+      categoriesOverviewSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit' }],
           },
         ],
       } as ScoredReport).toString(),
@@ -134,7 +157,7 @@ describe('categoryGroupItem', () => {
   });
 });
 
-describe('categoriesDetails', () => {
+describe('categoriesDetailsSection', () => {
   it('should render complete categories details', () => {
     expect(
       categoriesDetailsSection({
@@ -164,7 +187,8 @@ describe('categoriesDetails', () => {
           {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
-            score: 0.98,
+            score: 1,
+            isBinary: true,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
           {
@@ -183,10 +207,71 @@ describe('categoriesDetails', () => {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
+            isBinary: true,
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
       } as ScoredReport).toString(),
     ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "❌" when isBinary is failing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 0, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "✅" when isBinary is passing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 1, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 1,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+});
+
+describe('binaryIconSuffix', () => {
+  it('should return passing binarySuffix if score is 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(1, true)).toBe(' ✅');
+  });
+
+  it('should return failing binarySuffix if score is < then 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(0, true)).toBe(' ❌');
+  });
+
+  it('should return NO binarySuffix if score is 1 and isBinary is false', () => {
+    expect(binaryIconSuffix(1, false)).toBe('');
   });
 });

@@ -101,13 +101,13 @@ describe('calculateScore', () => {
 
 describe('scoreReport', () => {
   it('should correctly score a valid report', () => {
-    /* 
+    /*
       The report mock has the following data:
       Test results
       -> Cypress E2E: score 0.5 | weight 2
       -> CyCT:        score 1   | weight 1
       => Overall score = 1.5/3 = 0.5
-      
+
       Bug prevention
       -> TypeScript ESLint group:      score 0.25 weight 8
         -> ts-eslint-typing            score 0    weight 3

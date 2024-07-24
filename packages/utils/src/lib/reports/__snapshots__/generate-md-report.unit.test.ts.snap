@@ -70,11 +70,11 @@ No unsafe any assignment [📖 Docs](https://web.dev/lcp)
 exports[`generateMdReport > should render complete md report 1`] = `
 "# Code PushUp Report
 
-| 🏷 Category                 |  ⭐ Score   | 🛡 Audits |
-| :-------------------------- | :--------: | :-------: |
-| [Performance](#performance) | 🟡 **61**  |     2     |
-| [SEO](#seo)                 | 🟢 **100** |     1     |
-| [PWA](#pwa)                 |  🔴 **0**  |     1     |
+| 🏷 Category                 |   ⭐ Score    | 🛡 Audits |
+| :-------------------------- | :----------: | :-------: |
+| [Performance](#performance) |  🟡 **61**   |     2     |
+| [SEO](#seo)                 | 🟢 **100** ✅ |     1     |
+| [PWA](#pwa)                 |  🔴 **0** ❌  |     1     |
 
 ## 🏷 Categories
 
@@ -88,13 +88,13 @@ exports[`generateMdReport > should render complete md report 1`] = `
 
 ### SEO
 
-🟢 Score: **100**
+🟢 Score: **100** ✅
 
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
 
 ### PWA
 
-🔴 Score: **0**
+🔴 Score: **0** ❌
 
 - 🟩 [Splash Screen](#splash-screen-lighthouse) (_Lighthouse_) - **1**
 

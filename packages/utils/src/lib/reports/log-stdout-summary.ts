@@ -1,4 +1,4 @@
-import { bold, cyan, cyanBright, green, red, yellow } from 'ansis';
+import { bold, cyan, cyanBright, green, red } from 'ansis';
 import { AuditReport } from '@code-pushup/models';
 import { ui } from '../logging';
 import {
@@ -6,11 +6,10 @@ import {
   FOOTER_PREFIX,
   REPORT_HEADLINE_TEXT,
   REPORT_RAW_OVERVIEW_TABLE_HEADERS,
-  SCORE_COLOR_RANGE,
   TERMINAL_WIDTH,
 } from './constants';
 import { ScoredReport } from './types';
-import { countCategoryAudits, formatReportScore } from './utils';
+import { applyScoreColor, countCategoryAudits, targetScoreIcon } from './utils';
 
 function log(msg = ''): void {
   ui().logger.log(msg);
@@ -65,11 +64,12 @@ function logPlugins(report: ScoredReport): void {
   });
 }
 
-function logCategories({ categories, plugins }: ScoredReport): void {
+export function logCategories({ categories, plugins }: ScoredReport): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
-  const rows = categories.map(({ title, score, refs }) => [
+
+  const rows = categories.map(({ title, score, refs, isBinary }) => [
     title,
-    applyScoreColor({ score }),
+    `${binaryIconPrefix(score, isBinary)}${applyScoreColor({ score })}`,
     countCategoryAudits(refs, plugins),
   ]);
   const table = ui().table();
@@ -96,16 +96,14 @@ function logCategories({ categories, plugins }: ScoredReport): void {
   log();
 }
 
-function applyScoreColor({ score, text }: { score: number; text?: string }) {
-  const formattedScore = text ?? formatReportScore(score);
-
-  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
-    return text ? green(formattedScore) : bold.green(formattedScore);
-  }
-
-  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
-    return text ? yellow(formattedScore) : bold.yellow(formattedScore);
-  }
-
-  return text ? red(formattedScore) : bold.red(formattedScore);
+// @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+export function binaryIconPrefix(
+  score: number,
+  isBinary: boolean | undefined,
+): string {
+  return targetScoreIcon(score, isBinary ? 1 : undefined, {
+    passIcon: bold(green('✓')),
+    failIcon: bold(red('✗')),
+    postfix: ' ',
+  });
 }
