@@ -29,9 +29,7 @@ export function categoriesOverviewSection(
       md.link(`#${slugify(title)}`, title),
       md`${scoreMarker(score)} ${md.bold(
         formatReportScore(score),
-      )}${targetScoreIcon(score, isBinary === true ? 1 : undefined, {
-        prefix: ' ',
-      })}`,
+      )}${binaryIconSuffix(score, isBinary)}`,
       countCategoryAudits(refs, plugins).toString(),
     ]),
   );
@@ -51,11 +49,7 @@ export function categoriesDetailsSection(
         .paragraph(
           md`${scoreMarker(category.score)} Score: ${md.bold(
             formatReportScore(category.score),
-          )}${targetScoreIcon(
-            category.score,
-            category.isBinary === true ? 1 : undefined,
-            { prefix: ' ' },
-          )}`,
+          )}${binaryIconSuffix(category.score, category.isBinary)}`,
         )
         .list(
           category.refs.map(ref => {
@@ -121,4 +115,12 @@ export function categoryGroupItem(
   );
 
   return md`${groupTitle}${auditsList}`;
+}
+
+export function binaryIconSuffix(
+  score: number,
+  isBinary: boolean | undefined,
+): string {
+  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
 }

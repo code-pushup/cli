@@ -1,6 +1,8 @@
+import { isBinary } from 'knip/dist/util/protocols';
 import { beforeAll, describe, expect, vi } from 'vitest';
+import { removeColorCodes } from '@code-pushup/test-utils';
 import { ui } from '../logging';
-import { logCategories } from './log-stdout-summary';
+import { binaryIconPrefix, logCategories } from './log-stdout-summary';
 import { ScoredReport } from './types';
 
 describe('logCategories', () => {
@@ -153,5 +155,19 @@ describe('logCategories', () => {
     expect(output).toContain('Performance');
     expect(output).toContain('100');
     expect(output).toContain('1');
+  });
+});
+
+describe('binaryIconPrefix', () => {
+  it('should return passing binaryPrefix if score is 1 and isBinary is true', () => {
+    expect(removeColorCodes(binaryIconPrefix(1, true))).toBe('✓ ');
+  });
+
+  it('should return failing binaryPrefix if score is < then 1 and isBinary is true', () => {
+    expect(removeColorCodes(binaryIconPrefix(0, true))).toBe('✗ ');
+  });
+
+  it('should return NO binaryPrefix if score is 1 and isBinary is false', () => {
+    expect(binaryIconPrefix(1, false)).toBe('');
   });
 });

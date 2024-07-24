@@ -1,6 +1,7 @@
 import { InlineText, md } from 'build-md';
 import { describe, expect, it } from 'vitest';
 import {
+  binaryIconSuffix,
   categoriesDetailsSection,
   categoriesOverviewSection,
   categoryGroupItem,
@@ -258,5 +259,19 @@ describe('categoriesDetailsSection', () => {
         ],
       } as ScoredReport),
     ).toMatchSnapshot();
+  });
+});
+
+describe('binaryIconSuffix', () => {
+  it('should return passing binarySuffix if score is 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(1, true)).toBe(' ✅');
+  });
+
+  it('should return failing binarySuffix if score is < then 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(0, true)).toBe(' ❌');
+  });
+
+  it('should return NO binarySuffix if score is 1 and isBinary is false', () => {
+    expect(binaryIconSuffix(1, false)).toBe('');
   });
 });

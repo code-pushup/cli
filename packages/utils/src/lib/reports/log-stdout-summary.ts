@@ -64,19 +64,12 @@ function logPlugins(report: ScoredReport): void {
   });
 }
 
-const passIcon = bold(green('✓'));
-const failIcon = bold(red('✗'));
 export function logCategories({ categories, plugins }: ScoredReport): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
 
   const rows = categories.map(({ title, score, refs, isBinary }) => [
     title,
-    // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-    `${targetScoreIcon(score, isBinary === true ? 1 : undefined, {
-      passIcon,
-      failIcon,
-      postfix: ' ',
-    })}${applyScoreColor({ score })}`,
+    `${binaryIconPrefix(score, isBinary)}${applyScoreColor({ score })}`,
     countCategoryAudits(refs, plugins),
   ]);
   const table = ui().table();
@@ -101,4 +94,16 @@ export function logCategories({ categories, plugins }: ScoredReport): void {
   log();
   table.render();
   log();
+}
+
+// @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+export function binaryIconPrefix(
+  score: number,
+  isBinary: boolean | undefined,
+): string {
+  return targetScoreIcon(score, isBinary ? 1 : undefined, {
+    passIcon: bold(green('✓')),
+    failIcon: bold(red('✗')),
+    postfix: ' ',
+  });
 }
