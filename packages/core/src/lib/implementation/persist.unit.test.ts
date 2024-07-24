@@ -83,7 +83,9 @@ describe('persistReport', () => {
 
     const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
     expect(mdReport).toContain('Code PushUp Report');
-    expect(mdReport).toContain('|🏷 Category|⭐ Score|🛡 Audits|');
+    expect(mdReport).toMatch(
+      /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
+    );
 
     const jsonReport: Report = JSON.parse(
       await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),

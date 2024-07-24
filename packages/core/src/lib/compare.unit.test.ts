@@ -1,5 +1,7 @@
 import { vol } from 'memfs';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { getPortalComparisonLink } from '@code-pushup/portal-client';
 import { Commit, Report, reportsDiffSchema } from '@code-pushup/models';
 import {
   COMMIT_ALT_MOCK,
@@ -13,6 +15,11 @@ import { Diff, fileExists, readJsonFile } from '@code-pushup/utils';
 import { compareReportFiles, compareReports } from './compare';
 
 describe('compareReportFiles', () => {
+  const commitShas = {
+    before: MINIMAL_REPORT_MOCK.commit!.hash,
+    after: REPORT_MOCK.commit!.hash,
+  };
+
   beforeEach(() => {
     vol.fromJSON(
       {
@@ -30,6 +37,7 @@ describe('compareReportFiles', () => {
         after: join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json'] },
+      undefined,
     );
 
     const reportsDiffPromise = readJsonFile(
@@ -48,6 +56,7 @@ describe('compareReportFiles', () => {
         after: join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+      undefined,
     );
 
     await expect(
@@ -56,6 +65,116 @@ describe('compareReportFiles', () => {
     await expect(
       fileExists(join(MEMFS_VOLUME, 'report-diff.md')),
     ).resolves.toBeTruthy();
+  });
+
+  it('should include portal link (fetched using upload config) in Markdown file', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+      {
+        server: 'https://api.code-pushup.dev/graphql',
+        apiKey: 'cp_XXXXX',
+        organization: 'dunder-mifflin',
+        project: 'website',
+      },
+    );
+
+    await expect(
+      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+    ).resolves.toContain(
+      `[🕵️ See full comparison in Code PushUp portal 🔍](https://code-pushup.example.com/portal/dunder-mifflin/website/comparison/${commitShas.before}/${commitShas.after})`,
+    );
+
+    expect(getPortalComparisonLink).toHaveBeenCalledWith<
+      Parameters<typeof getPortalComparisonLink>
+    >({
+      server: 'https://api.code-pushup.dev/graphql',
+      apiKey: 'cp_XXXXX',
+      parameters: {
+        organization: 'dunder-mifflin',
+        project: 'website',
+        before: commitShas.before,
+        after: commitShas.after,
+      },
+    });
+  });
+
+  it('should not include portal link in Markdown if upload config is missing', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+      undefined,
+    );
+
+    await expect(
+      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+    ).resolves.not.toContain(
+      '[🕵️ See full comparison in Code PushUp portal 🔍]',
+    );
+
+    expect(getPortalComparisonLink).not.toHaveBeenCalled();
+  });
+
+  it('should not include portal link in Markdown if report has no associated commits', async () => {
+    vol.fromJSON(
+      {
+        'source-report.json': JSON.stringify({
+          ...MINIMAL_REPORT_MOCK,
+          commit: null,
+        } satisfies Report),
+        'target-report.json': JSON.stringify(REPORT_MOCK),
+      },
+      MEMFS_VOLUME,
+    );
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+      {
+        server: 'https://api.code-pushup.dev/graphql',
+        apiKey: 'cp_XXXXX',
+        organization: 'dunder-mifflin',
+        project: 'website',
+      },
+    );
+
+    await expect(
+      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+    ).resolves.not.toContain(
+      '[🕵️ See full comparison in Code PushUp portal 🔍]',
+    );
+
+    expect(getPortalComparisonLink).not.toHaveBeenCalled();
+  });
+
+  it('should not fetch portal link if Markdown not included in formats', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json'] },
+      {
+        server: 'https://api.code-pushup.dev/graphql',
+        apiKey: 'cp_XXXXX',
+        organization: 'dunder-mifflin',
+        project: 'website',
+      },
+    );
+
+    expect(getPortalComparisonLink).not.toHaveBeenCalled();
+
+    await expect(
+      fileExists(join(MEMFS_VOLUME, 'report-diff.md')),
+    ).resolves.toBeFalsy();
   });
 });
 
