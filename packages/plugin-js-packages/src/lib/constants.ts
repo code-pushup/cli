@@ -6,7 +6,7 @@ import type {
 } from './config';
 import { DependencyGroupLong } from './runner/outdated/types';
 
-export const DEFAULT_PACKAGE_MANAGER: PackageManagerId = 'npm';
+export const FALLBACK_PACKAGE_MANAGER: PackageManagerId = 'npm';
 
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,

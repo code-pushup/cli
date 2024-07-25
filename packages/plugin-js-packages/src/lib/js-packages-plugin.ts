@@ -8,12 +8,11 @@ import {
   PackageCommand,
   PackageManagerId,
   dependencyGroups,
-  jsPackagesPluginConfigSchema,
 } from './config';
 import { dependencyDocs, dependencyGroupWeights } from './constants';
 import { packageManagers } from './package-managers';
 import { createRunnerConfig } from './runner';
-import { derivePackageManager } from './utils';
+import { normalizeConfig } from './utils';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -35,18 +34,8 @@ import { derivePackageManager } from './utils';
 export async function jsPackagesPlugin(
   config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(
-    config ?? {},
-  );
-  const {
-    packageManager = await derivePackageManager(),
-    dependencyGroups: dependencyGroupsCfg = [],
-    checks: checksCfg = [],
-    ...jsPackagesPluginConfigRest
-  } = jsPackagesPluginConfig;
-  const checks = [...new Set(checksCfg)];
-  const depGroups = [...new Set(dependencyGroupsCfg)];
-  const pm = packageManagers[packageManager];
+  const { packageManager, checks, depGroups, ...jsPackagesPluginConfigRest } =
+    await normalizeConfig(config);
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -56,18 +45,18 @@ export async function jsPackagesPlugin(
   return {
     slug: 'js-packages',
     title: 'JS Packages',
-    icon: pm.icon,
+    icon: packageManager.icon,
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: pm.docs.homepage,
+    docsUrl: packageManager.docs.homepage,
     packageName: name,
     version,
-    audits: createAudits(packageManager, checks, depGroups),
-    groups: createGroups(packageManager, checks, depGroups),
+    audits: createAudits(packageManager.slug, checks, depGroups),
+    groups: createGroups(packageManager.slug, checks, depGroups),
     runner: await createRunnerConfig(runnerScriptPath, {
       ...jsPackagesPluginConfigRest,
       checks,
-      packageManager,
+      packageManager: packageManager.slug,
       dependencyGroups: depGroups,
     }),
   };

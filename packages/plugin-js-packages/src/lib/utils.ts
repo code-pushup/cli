@@ -1,13 +1,72 @@
-import { ExecException } from 'child_process';
-import { exec } from 'node:child_process';
+import { ExecException, exec } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileExists } from '@code-pushup/utils';
-import { PackageManagerId } from './config';
-import { DEFAULT_PACKAGE_MANAGER } from './constants';
+import {
+  JSPackagesPluginConfig,
+  PackageManagerId,
+  jsPackagesPluginConfigSchema,
+} from './config';
+import { FALLBACK_PACKAGE_MANAGER } from './constants';
+import { packageManagers } from './package-managers';
+
+export async function normalizeConfig(config?: JSPackagesPluginConfig) {
+  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(
+    config ?? {},
+  );
+
+  const {
+    packageManager = await derivePackageManager(),
+    dependencyGroups: dependencyGroupsCfg = [],
+    checks: checksCfg = [],
+    ...jsPackagesPluginConfigRest
+  } = jsPackagesPluginConfig;
+  const checks = [...new Set(checksCfg)];
+  const depGroups = [...new Set(dependencyGroupsCfg)];
+  const pm = packageManagers[packageManager];
+
+  return {
+    ...jsPackagesPluginConfigRest,
+    packageManager: pm,
+    checks,
+    depGroups,
+  };
+}
+
+export async function derivePackageManagerInPackageJson(
+  currentDir = process.cwd(),
+) {
+  if (await fileExists(join(currentDir, 'package.json'))) {
+    const content = JSON.parse(
+      (await readFile(join('package.json'))).toString(),
+    ) as { packageManager?: string };
+    const { packageManager: packageManagerData = '' } = content;
+
+    const [manager = '', version = ''] = packageManagerData.split('@');
+
+    if (manager === 'npm') {
+      return manager;
+    }
+    if (manager === 'pnpm') {
+      return manager;
+    }
+    if (manager === 'yarn') {
+      const majorVersion = Number(version.split('.')[0]);
+      return majorVersion > 1 ? 'yarn-modern' : 'yarn-classic';
+    }
+  }
+}
 
 export async function derivePackageManager(
   currentDir = process.cwd(),
 ): Promise<PackageManagerId> {
+  const pkgManagerFromPackageJson = await derivePackageManagerInPackageJson(
+    currentDir,
+  );
+  if (pkgManagerFromPackageJson != null) {
+    return pkgManagerFromPackageJson;
+  }
+
   // Check for lock files
   if (await fileExists(join(currentDir, 'package-lock.json'))) {
     return 'npm';
@@ -15,7 +74,7 @@ export async function derivePackageManager(
     return 'pnpm';
   } else if (await fileExists(join(currentDir, 'yarn.lock'))) {
     const yarnVersion = await new Promise<string>((resolve, reject) => {
-      const { stdout } = exec(
+      exec(
         'yarn -v',
         (error: ExecException | null, stdout: string, stderr: string) => {
           if (error) {
@@ -35,5 +94,5 @@ export async function derivePackageManager(
     }
     return 'yarn-classic';
   }
-  return DEFAULT_PACKAGE_MANAGER;
+  return FALLBACK_PACKAGE_MANAGER;
 }
