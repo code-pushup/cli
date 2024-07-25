@@ -55,6 +55,7 @@ export async function derivePackageManagerInPackageJson(
       return majorVersion > 1 ? 'yarn-modern' : 'yarn-classic';
     }
   }
+  return false;
 }
 
 export async function derivePackageManager(
@@ -63,7 +64,7 @@ export async function derivePackageManager(
   const pkgManagerFromPackageJson = await derivePackageManagerInPackageJson(
     currentDir,
   );
-  if (pkgManagerFromPackageJson != null) {
+  if (pkgManagerFromPackageJson) {
     return pkgManagerFromPackageJson;
   }
 
