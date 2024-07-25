@@ -3,14 +3,14 @@ import { AuditReport } from '@code-pushup/models';
 import { slugify } from '../formatting';
 import { HIERARCHY } from '../text-formats';
 import { metaDescription } from './formatting';
+import { getSortableAuditByRef, getSortableGroupByRef } from './sorting';
 import { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
-  getSortableAuditByRef,
-  getSortableGroupByRef,
   scoreMarker,
+  targetScoreIcon,
 } from './utils';
 
 export function categoriesOverviewSection(
@@ -23,10 +23,13 @@ export function categoriesOverviewSection(
       { heading: '⭐ Score', alignment: 'center' },
       { heading: '🛡 Audits', alignment: 'center' },
     ],
-    categories.map(({ title, refs, score }) => [
+    categories.map(({ title, refs, score, isBinary }) => [
+      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
       // The heading "ID" is inferred from the heading text in Markdown.
       md.link(`#${slugify(title)}`, title),
-      md`${scoreMarker(score)} ${md.bold(formatReportScore(score))}`,
+      md`${scoreMarker(score)} ${md.bold(
+        formatReportScore(score),
+      )}${binaryIconSuffix(score, isBinary)}`,
       countCategoryAudits(refs, plugins).toString(),
     ]),
   );
@@ -46,7 +49,7 @@ export function categoriesDetailsSection(
         .paragraph(
           md`${scoreMarker(category.score)} Score: ${md.bold(
             formatReportScore(category.score),
-          )}`,
+          )}${binaryIconSuffix(category.score, category.isBinary)}`,
         )
         .list(
           category.refs.map(ref => {
@@ -112,4 +115,12 @@ export function categoryGroupItem(
   );
 
   return md`${groupTitle}${auditsList}`;
+}
+
+export function binaryIconSuffix(
+  score: number,
+  isBinary: boolean | undefined,
+): string {
+  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
 }

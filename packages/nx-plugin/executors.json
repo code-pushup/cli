@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "autorun": {
+      "implementation": "./src/executors/autorun/executor",
+      "schema": "./src/executors/autorun/schema.json",
+      "description": "CodePushup CLI autorun command executor. Executes the @code-pushup/cli autorun command See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command"
+    }
+  }
+}
