@@ -6,7 +6,7 @@ import { MEMFS_VOLUME } from '../constants';
  * Unit Testing helper for the createNodes function of a Nx plugin.
  * This function will create files over `memfs` from testCfg.matchingFilesData
  * and invoke the createNodes function on each of the files provided including potential createNodeOptions.
- * It will aggregate the results of each invocation and return the CreateNodesResult.
+ * It will aggregate the results of each invocation and return the projects from CreateNodesResult.
  *
  * @example
  * ```ts
