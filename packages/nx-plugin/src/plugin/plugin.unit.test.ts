@@ -27,19 +27,23 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const projects = await invokeCreateNodesOnVirtualFiles(
-      createNodes,
-      context,
-      {},
-      { matchingFilesData },
-    );
 
-    // project should have one target created
-    const targets = projects[projectRoot]?.targets ?? {};
-    expect(Object.keys(targets)).toHaveLength(1);
-
-    // target should be the configuration target
-    expect(targets[`${CP_TARGET_NAME}--configuration`]).toBeDefined();
+    await expect(
+      invokeCreateNodesOnVirtualFiles(
+        createNodes,
+        context,
+        {},
+        { matchingFilesData },
+      ),
+    ).resolves.toStrictEqual({
+      [projectRoot]: {
+        targets: {
+          [`${CP_TARGET_NAME}--configuration`]: {
+            command: `nx g nx-plugin:configuration --project=@org/empty-root`,
+          },
+        },
+      },
+    });
   });
 
   it('should normalize context and use it to create target on PACKAGE project', async () => {
@@ -49,18 +53,22 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         name: '@org/empty-root',
       })}`,
     };
-    const projects = await invokeCreateNodesOnVirtualFiles(
-      createNodes,
-      context,
-      {},
-      { matchingFilesData },
-    );
 
-    // project should have one target created
-    const targets = projects[projectRoot]?.targets ?? {};
-    expect(Object.keys(targets)).toHaveLength(1);
-
-    // target should be the configuration target
-    expect(targets[`${CP_TARGET_NAME}--configuration`]).toBeDefined();
+    await expect(
+      invokeCreateNodesOnVirtualFiles(
+        createNodes,
+        context,
+        {},
+        { matchingFilesData },
+      ),
+    ).resolves.toStrictEqual({
+      [projectRoot]: {
+        targets: {
+          [`${CP_TARGET_NAME}--configuration`]: {
+            command: `nx g nx-plugin:configuration --project=@org/empty-root`,
+          },
+        },
+      },
+    });
   });
 });
