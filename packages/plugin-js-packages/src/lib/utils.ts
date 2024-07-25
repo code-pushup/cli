@@ -7,7 +7,6 @@ import {
   PackageManagerId,
   jsPackagesPluginConfigSchema,
 } from './config';
-import { FALLBACK_PACKAGE_MANAGER } from './constants';
 import { packageManagers } from './package-managers';
 
 export async function normalizeConfig(config?: JSPackagesPluginConfig) {
@@ -16,14 +15,14 @@ export async function normalizeConfig(config?: JSPackagesPluginConfig) {
   );
 
   const {
-    packageManager = await derivePackageManager(),
+    packageManager,
     dependencyGroups: dependencyGroupsCfg = [],
     checks: checksCfg = [],
     ...jsPackagesPluginConfigRest
   } = jsPackagesPluginConfig;
   const checks = [...new Set(checksCfg)];
   const depGroups = [...new Set(dependencyGroupsCfg)];
-  const pm = packageManagers[packageManager];
+  const pm = packageManagers[packageManager ?? (await derivePackageManager())];
 
   return {
     ...jsPackagesPluginConfigRest,
@@ -104,5 +103,8 @@ export async function derivePackageManager(
       return yarnVersion;
     }
   }
-  return FALLBACK_PACKAGE_MANAGER;
+
+  throw new Error(
+    'Could not detect package manager. Please provide in in the js-packages plugin config.',
+  );
 }

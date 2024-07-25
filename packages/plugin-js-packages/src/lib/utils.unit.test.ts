@@ -20,7 +20,9 @@ vi.mock('child_process', async () => {
 
 describe('normalizeConfig', () => {
   it('should return checks object', async () => {
-    await expect(normalizeConfig()).resolves.toStrictEqual(
+    await expect(
+      normalizeConfig({ packageManager: 'npm' }),
+    ).resolves.toStrictEqual(
       expect.objectContaining({
         checks: ['audit', 'outdated'],
       }),
@@ -28,22 +30,18 @@ describe('normalizeConfig', () => {
   });
 
   it('should return depGroups object', async () => {
-    await expect(normalizeConfig()).resolves.toStrictEqual(
+    await expect(
+      normalizeConfig({ packageManager: 'npm' }),
+    ).resolves.toStrictEqual(
       expect.objectContaining({
         depGroups: ['prod', 'dev'],
       }),
     );
   });
 
-  it('should return npm packageManager object by default', async () => {
-    await expect(normalizeConfig()).resolves.toStrictEqual(
-      expect.objectContaining({
-        packageManager: expect.objectContaining({
-          slug: 'npm',
-          command: 'npm',
-          name: 'NPM',
-        }),
-      }),
+  it('should throw if no package manager is detected', async () => {
+    await expect(normalizeConfig()).rejects.toThrow(
+      'Could not detect package manager. Please provide in in the js-packages plugin config.',
     );
   });
 
@@ -286,7 +284,9 @@ describe('derivePackageManager', () => {
   });
 
   it('should fall back to npm if neither filesystem nor env shows hints', async () => {
-    await expect(derivePackageManager()).resolves.toBe('npm');
+    await expect(normalizeConfig()).rejects.toThrow(
+      'Could not detect package manager. Please provide in in the js-packages plugin config.',
+    );
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package-lock.json');
   });
 });
