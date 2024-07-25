@@ -33,6 +33,31 @@ export async function normalizeConfig(config?: JSPackagesPluginConfig) {
   };
 }
 
+export async function deriveYarnVersion() {
+  const yarnVersion = await new Promise<string>((resolve, reject) => {
+    exec(
+      'yarn -v',
+      (error: ExecException | null, stdout: string, stderr: string) => {
+        if (error) {
+          reject(error);
+        }
+        if (stderr) {
+          reject(stderr);
+        }
+
+        resolve(stdout.toString().trim().at(0) ?? '');
+      },
+    );
+  });
+
+  if (yarnVersion === '2' || yarnVersion === '3') {
+    return 'yarn-modern';
+  } else if(yarnVersion === '1'){
+    return 'yarn-classic';
+  }
+  return false
+}
+
 export async function derivePackageManagerInPackageJson(
   currentDir = process.cwd(),
 ) {
@@ -74,26 +99,10 @@ export async function derivePackageManager(
   } else if (await fileExists(join(currentDir, 'pnpm-lock.yaml'))) {
     return 'pnpm';
   } else if (await fileExists(join(currentDir, 'yarn.lock'))) {
-    const yarnVersion = await new Promise<string>((resolve, reject) => {
-      exec(
-        'yarn -v',
-        (error: ExecException | null, stdout: string, stderr: string) => {
-          if (error) {
-            reject(error);
-          }
-          if (stderr) {
-            reject(stderr);
-          }
-
-          resolve(stdout?.toString().trim().at(0) ?? '');
-        },
-      );
-    });
-
-    if (yarnVersion === '2' || yarnVersion === '3') {
-      return 'yarn-modern';
+   const yarnVersion = await deriveYarnVersion()
+    if (yarnVersion) {
+      return yarnVersion
     }
-    return 'yarn-classic';
   }
   return FALLBACK_PACKAGE_MANAGER;
 }

@@ -5,12 +5,12 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
   derivePackageManager,
-  derivePackageManagerInPackageJson,
+  derivePackageManagerInPackageJson, deriveYarnVersion,
   normalizeConfig,
 } from './utils';
 
-vi.mock('child_process', () => {
-  const actual = vi.importActual('child_process');
+vi.mock('child_process', async () => {
+  const actual = await vi.importActual('child_process');
   return {
     ...actual,
     exec: vi.fn(),
@@ -103,7 +103,50 @@ describe('normalizeConfig', () => {
   });
 });
 
-describe('derivePackageManagerInPackageJson', () => {
+describe('deriveYarnVersion', () => {
+  it('should return yarn-classic if and yarn v1 is installed', async () => {
+    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
+      fn(null, '1.22.19'),
+    );
+
+    await expect(deriveYarnVersion()).resolves.toBe('yarn-classic');
+    expect(exec).toHaveBeenCalledTimes(1);
+    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+  });
+
+  it('should return yarn-modern  if and yarn v3 is installed', async () => {
+    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
+      fn(null, '2.22.19'),
+    );
+
+    await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
+    expect(exec).toHaveBeenCalledTimes(1);
+    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+  });
+
+  it('should return yarn-modern  if and yarn v3 is installed', async () => {
+    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
+      fn(null, '3.22.19'),
+    );
+
+    await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
+    expect(exec).toHaveBeenCalledTimes(1);
+    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+  });
+
+  it('should return false if yarn is NOT installed', async () => {
+    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
+      fn(null, ''),
+    );
+
+    await expect(deriveYarnVersion()).resolves.toBe(false);
+    expect(exec).toHaveBeenCalledTimes(1);
+    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+  });
+
+})
+
+  describe('derivePackageManagerInPackageJson', () => {
   const fileExistsSpy = vi.spyOn(utils, 'fileExists');
 
   beforeEach(() => {
@@ -159,7 +202,7 @@ describe('derivePackageManagerInPackageJson', () => {
     expect(exec).toHaveBeenCalledTimes(0);
   });
 
-  it('should return yarn-modern if packageManager field in package.json is yarn v2', async () => {
+  it('should return yarn-modern if packageManager field in package.json is yarn v2 or v3', async () => {
     vol.fromJSON(
       {
         'package.json': JSON.stringify({
@@ -177,23 +220,6 @@ describe('derivePackageManagerInPackageJson', () => {
     expect(exec).toHaveBeenCalledTimes(0);
   });
 
-  it('should return yarn-modern if packageManager field in package.json is yarn v3', async () => {
-    vol.fromJSON(
-      {
-        'package.json': JSON.stringify({
-          packageManager:
-            'yarn@3.2.3+sha224.953c8233f7a92884eee2de69a1b92d1f2ec1655e66d08071ba9a02fa',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
-
-    await expect(derivePackageManagerInPackageJson()).resolves.toBe(
-      'yarn-modern',
-    );
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(exec).toHaveBeenCalledTimes(0);
-  });
 });
 
 describe('derivePackageManager', () => {
