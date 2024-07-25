@@ -10,7 +10,7 @@ import { MEMFS_VOLUME } from '../constants';
  *
  * @example
  * ```ts
- * const {projects = {}} = await createFilesAndInvokeCreateNodesOnThem(createNodes, context, undefined, { matchingFilesData});
+ * const projects = await createFilesAndInvokeCreateNodesOnThem(createNodes, context, undefined, { matchingFilesData});
  *  // project should have one target created
  *  const targets = projects[projectRoot]?.targets ?? {};
  *  expect(Object.keys(targets)).toHaveLength(1);
