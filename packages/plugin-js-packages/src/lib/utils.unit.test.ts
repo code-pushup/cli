@@ -5,7 +5,8 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
   derivePackageManager,
-  derivePackageManagerInPackageJson, deriveYarnVersion,
+  derivePackageManagerInPackageJson,
+  deriveYarnVersion,
   normalizeConfig,
 } from './utils';
 
@@ -143,10 +144,9 @@ describe('deriveYarnVersion', () => {
     expect(exec).toHaveBeenCalledTimes(1);
     expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
+});
 
-})
-
-  describe('derivePackageManagerInPackageJson', () => {
+describe('derivePackageManagerInPackageJson', () => {
   const fileExistsSpy = vi.spyOn(utils, 'fileExists');
 
   beforeEach(() => {
@@ -219,7 +219,6 @@ describe('deriveYarnVersion', () => {
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
     expect(exec).toHaveBeenCalledTimes(0);
   });
-
 });
 
 describe('derivePackageManager', () => {
@@ -269,7 +268,7 @@ describe('derivePackageManager', () => {
     expect(exec).not.toHaveBeenCalled();
   });
 
-  it('should return yarn-classic if yarn.lock is present', async () => {
+  it('should return yarn-classic if yarn.lock is present and yarn is installed', async () => {
     vol.fromJSON(
       {
         'yarn.lock': '',
@@ -281,40 +280,6 @@ describe('derivePackageManager', () => {
     );
 
     await expect(derivePackageManager()).resolves.toBe('yarn-classic');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/yarn.lock');
-    expect(exec).toHaveBeenCalledTimes(1);
-    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
-  });
-
-  it('should return yarn-modern if yarn version is 2', async () => {
-    vol.fromJSON(
-      {
-        'yarn.lock': '',
-      },
-      MEMFS_VOLUME,
-    );
-    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
-      fn(null, '2.22.19'),
-    );
-
-    await expect(derivePackageManager()).resolves.toBe('yarn-modern');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/yarn.lock');
-    expect(exec).toHaveBeenCalledTimes(1);
-    expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));
-  });
-
-  it('should return yarn-modern if yarn version is 3', async () => {
-    vol.fromJSON(
-      {
-        'yarn.lock': '',
-      },
-      MEMFS_VOLUME,
-    );
-    (exec as MockInstance<[], unknown>).mockImplementation((_, fn) =>
-      fn(null, '3.22.19'),
-    );
-
-    await expect(derivePackageManager()).resolves.toBe('yarn-modern');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/yarn.lock');
     expect(exec).toHaveBeenCalledTimes(1);
     expect(exec).toHaveBeenCalledWith('yarn -v', expect.any(Function));

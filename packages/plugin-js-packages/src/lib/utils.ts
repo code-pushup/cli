@@ -52,10 +52,10 @@ export async function deriveYarnVersion() {
 
   if (yarnVersion === '2' || yarnVersion === '3') {
     return 'yarn-modern';
-  } else if(yarnVersion === '1'){
+  } else if (yarnVersion === '1') {
     return 'yarn-classic';
   }
-  return false
+  return false;
 }
 
 export async function derivePackageManagerInPackageJson(
@@ -99,9 +99,9 @@ export async function derivePackageManager(
   } else if (await fileExists(join(currentDir, 'pnpm-lock.yaml'))) {
     return 'pnpm';
   } else if (await fileExists(join(currentDir, 'yarn.lock'))) {
-   const yarnVersion = await deriveYarnVersion()
+    const yarnVersion = await deriveYarnVersion();
     if (yarnVersion) {
-      return yarnVersion
+      return yarnVersion;
     }
   }
   return FALLBACK_PACKAGE_MANAGER;
