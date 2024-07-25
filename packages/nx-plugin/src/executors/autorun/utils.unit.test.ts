@@ -1,5 +1,5 @@
 import { MockInstance, expect, vi } from 'vitest';
-import { toNormalizedPath } from '@code-pushup/test-utils';
+import { osAgnosticPath } from '@code-pushup/test-utils';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
@@ -70,8 +70,8 @@ describe('parseAutorunExecutorOptions', () => {
         },
       },
     );
-    expect(toNormalizedPath(executorOptions.config)).toBe(
-      toNormalizedPath('root/code-pushup.config.ts'),
+    expect(osAgnosticPath(executorOptions.config)).toBe(
+      osAgnosticPath('root/code-pushup.config.ts'),
     );
     expect(executorOptions).toEqual(
       expect.objectContaining({
@@ -89,8 +89,8 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(toNormalizedPath(executorOptions.persist?.outputDir)).toBe(
-      toNormalizedPath('workspaceRoot/.code-pushup/my-app'),
+    expect(osAgnosticPath(executorOptions.persist?.outputDir)).toBe(
+      osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
 });
