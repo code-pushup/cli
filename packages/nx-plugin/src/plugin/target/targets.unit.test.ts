@@ -4,6 +4,7 @@ import { beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { CP_TARGET_NAME } from '../constants';
 import { NormalizedCreateNodesContext } from '../types';
+import { codePushupTarget } from './code-pushup-target';
 import { createTargets } from './targets';
 
 describe('createTargets', () => {
@@ -35,45 +36,67 @@ describe('createTargets', () => {
     });
   });
 
-  it('should return configuration targets for empty project without code-pushup config and consider targetName', async () => {
+  it('should return autorun target for project with code-pushup config', async () => {
+    vol.fromJSON(
+      {
+        'code-pushup.config.ts': '',
+      },
+      MEMFS_VOLUME,
+    );
     const projectName = 'plugin-my-plugin';
-    const targetName = 'cp';
     await expect(
       createTargets({
         projectRoot: '.',
         projectJson: {
           name: projectName,
         },
-        createOptions: {
-          targetName,
-        },
+        createOptions: {},
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [`${targetName}--configuration`]: {
-        command: `nx g nx-plugin:configuration --project=${projectName}`,
+      [`${CP_TARGET_NAME}--autorun`]: {
+        executor: '@code-pushup/nx-plugin:autorun',
       },
     });
   });
 
-  it('should NOT return configuration target if code-pushup config is given', async () => {
-    const projectName = 'plugin-my-plugin';
+  it('should return autorun target for project with code-pushup config and consider projectPrefix', async () => {
     vol.fromJSON(
       {
-        [`code-pushup.config.ts`]: `{}`,
+        'code-pushup.config.ts': '',
       },
       MEMFS_VOLUME,
     );
-    const targetName = 'cp';
+    const projectName = 'plugin-my-plugin';
     await expect(
-      createTargets({
-        projectRoot: '.',
-        projectJson: {
-          name: projectName,
+      createTargets(
+        {
+          projectRoot: '.',
+          projectJson: {
+            name: projectName,
+          },
+          createOptions: {},
+        } as NormalizedCreateNodesContext,
+        {
+          projectPrefix: 'cli',
         },
-        createOptions: {
-          targetName,
+      ),
+    ).resolves.toStrictEqual({
+      [`${CP_TARGET_NAME}--autorun`]: {
+        executor: '@code-pushup/nx-plugin:autorun',
+        options: {
+          projectPrefix: 'cli',
         },
-      } as NormalizedCreateNodesContext),
-    ).resolves.toStrictEqual({});
+      },
+    });
+  });
+});
+
+describe('codePushupTarget', () => {
+  it('should return autorun target', () => {
+    const target = codePushupTarget();
+
+    expect(target).toStrictEqual({
+      executor: '@code-pushup/nx-plugin:autorun',
+    });
   });
 });

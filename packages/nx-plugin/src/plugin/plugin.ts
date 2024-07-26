@@ -23,7 +23,10 @@ export const createNodes: CreateNodes = [
     return {
       projects: {
         [normalizedContext.projectRoot]: {
-          targets: await createTargets(normalizedContext),
+          targets: await createTargets(
+            normalizedContext,
+            parsedCreateNodesOptions,
+          ),
         },
       },
     };
