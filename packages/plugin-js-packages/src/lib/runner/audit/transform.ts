@@ -1,5 +1,6 @@
+import { md } from 'build-md';
 import type { AuditOutput, Issue } from '@code-pushup/models';
-import { apostrophize, objectToEntries } from '@code-pushup/utils';
+import { objectToEntries } from '@code-pushup/utils';
 import {
   AuditSeverity,
   DependencyGroup,
@@ -72,27 +73,29 @@ export function vulnerabilitiesToIssues(
   return vulnerabilities.map((detail): Issue => {
     const versionRange =
       detail.versionRange === '*'
-        ? '**all** versions'
-        : `versions **${detail.versionRange}**`;
+        ? md`${md.bold('all')} versions`
+        : md`versions ${md.bold(detail.versionRange)}`;
     const directDependency =
       typeof detail.directDependency === 'string' &&
       detail.directDependency !== ''
-        ? `\`${detail.directDependency}\``
+        ? md.code(detail.directDependency)
         : '';
-    const depHierarchy =
-      directDependency === ''
-        ? `\`${detail.name}\` dependency`
-        : `${apostrophize(directDependency)} dependency \`${detail.name}\``;
+    const depHierarchy = directDependency
+      ? md`${directDependency}'s dependency ${md.code(detail.name)}`
+      : md`${md.code(detail.name)} dependency`;
 
-    const vulnerabilitySummary = `has a **${detail.severity}** vulnerability in ${versionRange}.`;
+    const vulnerabilitySummary = md`has a ${md.bold(
+      detail.severity,
+    )} vulnerability in ${versionRange}.`;
     const fixInfo = detail.fixInformation ? ` ${detail.fixInformation}` : '';
     const additionalInfo =
       detail.title != null && detail.url != null
-        ? ` More information: [${detail.title}](${detail.url})`
+        ? md` More information: ${md.link(detail.url, detail.title)}`
         : '';
 
     return {
-      message: `${depHierarchy} ${vulnerabilitySummary}${fixInfo}${additionalInfo}`,
+      message:
+        md`${depHierarchy} ${vulnerabilitySummary}${fixInfo}${additionalInfo}`.toString(),
       severity: auditLevelMapping[detail.severity],
     };
   });
