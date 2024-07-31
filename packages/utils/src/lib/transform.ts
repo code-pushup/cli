@@ -139,15 +139,6 @@ export function capitalize<T extends string>(text: T): Capitalize<T> {
   )}` as Capitalize<T>;
 }
 
-export function apostrophize(text: string, upperCase?: boolean) {
-  const lastCharMatch = text.match(/(\w)\W*$/);
-  const lastChar = lastCharMatch?.[1] ?? '';
-
-  return `${text}'${
-    lastChar.toLocaleLowerCase() === 's' ? '' : upperCase ? 'S' : 's'
-  }`;
-}
-
 export function toNumberPrecision(
   value: number,
   decimalPlaces: number,

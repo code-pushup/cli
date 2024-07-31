@@ -86,7 +86,6 @@ export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {
   CliArgsObject,
-  apostrophize,
   capitalize,
   countOccurrences,
   distinct,
