@@ -1,3 +1,24 @@
+## 0.49.0 (2024-07-31)
+
+### 🚀 Features
+
+- replace chalk with ansis ([#750](https://github.com/code-pushup/cli/pull/750))
+- **core:** fetch portal comparison link if available when comparing reports ([a08978e8](https://github.com/code-pushup/cli/commit/a08978e8))
+- **nx-plugin:** add executor to nx-plugin ([#737](https://github.com/code-pushup/cli/pull/737))
+- **nx-plugin:** add crystal utils ([#754](https://github.com/code-pushup/cli/pull/754))
+- **utils:** add nested objects to cli args parsing ([#758](https://github.com/code-pushup/cli/pull/758))
+- **utils:** include optional link to portal in markdown comment ([04455aeb](https://github.com/code-pushup/cli/commit/04455aeb))
+
+### 🩹 Fixes
+
+- **utils:** add is binary icon ([#749](https://github.com/code-pushup/cli/pull/749))
+
+### ❤️ Thank You
+
+- Elderov Ali
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.48.0 (2024-07-15)
 
 ### 🚀 Features

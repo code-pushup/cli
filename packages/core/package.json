@@ -1,10 +1,10 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "license": "MIT",
   "dependencies": {
-    "@code-pushup/models": "0.48.0",
-    "@code-pushup/utils": "0.48.0",
+    "@code-pushup/models": "0.49.0",
+    "@code-pushup/utils": "0.49.0",
     "@code-pushup/portal-client": "^0.9.0",
     "ansis": "^3.3.0"
   },

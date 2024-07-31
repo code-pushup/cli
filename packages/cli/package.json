@@ -1,14 +1,14 @@
 {
   "name": "@code-pushup/cli",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "license": "MIT",
   "bin": {
     "code-pushup": "index.js"
   },
   "dependencies": {
-    "@code-pushup/models": "0.48.0",
-    "@code-pushup/core": "0.48.0",
-    "@code-pushup/utils": "0.48.0",
+    "@code-pushup/models": "0.49.0",
+    "@code-pushup/core": "0.49.0",
+    "@code-pushup/utils": "0.49.0",
     "yargs": "^17.7.2",
     "ansis": "^3.3.0",
     "simple-git": "^3.20.0"

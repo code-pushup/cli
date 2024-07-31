@@ -1,9 +1,9 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.48.0",
+  "version": "0.49.0",
   "dependencies": {
-    "@code-pushup/models": "0.48.0",
-    "@code-pushup/utils": "0.48.0",
+    "@code-pushup/models": "0.49.0",
+    "@code-pushup/utils": "0.49.0",
     "ansis": "^3.3.0",
     "parse-lcov": "^1.0.4",
     "zod": "^3.22.4"
