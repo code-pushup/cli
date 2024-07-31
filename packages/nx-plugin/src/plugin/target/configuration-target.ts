@@ -1,11 +1,17 @@
 import { TargetConfiguration } from '@nx/devkit';
 import { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
+import { PACKAGE_NAME } from '../../internal/constants';
 
+export type ConfigurationTargetOptions = {
+  projectName?: string;
+  bin?: string;
+};
 export function createConfigurationTarget(
-  projectName?: string,
+  options?: ConfigurationTargetOptions,
 ): TargetConfiguration<RunCommandsOptions> {
+  const { projectName, bin } = options ?? {};
   const projectFlag = projectName && ` --project=${projectName}`;
   return {
-    command: `nx g nx-plugin:configuration${projectFlag ?? ''}`,
+    command: `nx g ${bin ?? PACKAGE_NAME}:configuration${projectFlag ?? ''}`,
   };
 }

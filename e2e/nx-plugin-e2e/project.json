@@ -19,5 +19,5 @@
     }
   },
   "implicitDependencies": ["nx-plugin"],
-  "tags": ["scope:tooling", "type:e2e"]
+  "tags": ["scope:core", "type:e2e"]
 }

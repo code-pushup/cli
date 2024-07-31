@@ -4,13 +4,10 @@ import {
   readProjectConfiguration,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import {
-  addTargetToProject,
-  configurationGenerator,
-  generateCodePushupConfig,
-} from './generator';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
+import { generateCodePushupConfig } from './code-pushup-config';
+import { addTargetToProject, configurationGenerator } from './generator';
 
 describe('generateCodePushupConfig', () => {
   let tree: Tree;
@@ -23,60 +20,12 @@ describe('generateCodePushupConfig', () => {
   });
 
   it('should add code-pushup.config.ts to the project root', () => {
-    generateCodePushupConfig(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-      },
-    );
+    generateCodePushupConfig(tree, testProjectName);
 
     expect(tree.exists('test-app/code-pushup.config.ts')).toBe(true);
     expect(
       tree.read('test-app/code-pushup.config.ts')?.toString(),
     ).toMatchSnapshot();
-  });
-
-  it('should skip code-pushup.config.ts generation if config in ts, mjs or js format already exists', () => {
-    tree.write(join('code-pushup.config.js'), 'export default {}');
-
-    generateCodePushupConfig(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-      },
-    );
-
-    expect(tree.exists('code-pushup.config.ts')).toBe(false);
-  });
-
-  it('should skip code-pushup.config.ts generation if skipConfig is given', () => {
-    generateCodePushupConfig(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-        skipConfig: true,
-      },
-    );
-
-    expect(tree.exists('code-pushup.config.ts')).toBe(false);
   });
 });
 
@@ -113,8 +62,8 @@ describe('addTargetToProject', () => {
       testProjectName,
     );
 
-    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: `${PACKAGE_NAME}:autorun`,
     });
   });
 
@@ -139,11 +88,11 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.['cp']).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+      executor: `${PACKAGE_NAME}:autorun`,
     });
   });
 
-  it('should skip target creation if skipTarget is used', () => {
+  it('should use bin to generate a project target', () => {
     addTargetToProject(
       tree,
       {
@@ -154,7 +103,7 @@ describe('addTargetToProject', () => {
       },
       {
         project: testProjectName,
-        skipTarget: true,
+        bin: '../my-plugin',
       },
     );
 
@@ -162,7 +111,10 @@ describe('addTargetToProject', () => {
       tree,
       testProjectName,
     );
-    expect(projectConfiguration.targets).toBeUndefined();
+
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: '../my-plugin:autorun',
+    });
   });
 });
 
@@ -190,8 +142,21 @@ describe('configurationGenerator', () => {
       testProjectName,
     );
 
-    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: `${PACKAGE_NAME}:autorun`,
     });
+  });
+
+  it('should skip target creation if skipTarget is used', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+      skipTarget: true,
+    });
+
+    const projectConfiguration = readProjectConfiguration(
+      tree,
+      testProjectName,
+    );
+    expect(projectConfiguration.targets).toBeUndefined();
   });
 });

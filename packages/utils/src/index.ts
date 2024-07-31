@@ -102,5 +102,10 @@ export {
   toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
-export { ExcludeNullFromPropertyTypes } from './lib/types';
+export {
+  ExcludeNullFromPropertyTypes,
+  ExtractArrays,
+  ExtractArray,
+  ItemOrArray,
+} from './lib/types';
 export { verboseUtils } from './lib/verbose-utils';

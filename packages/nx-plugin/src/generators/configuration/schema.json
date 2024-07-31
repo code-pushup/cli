@@ -22,6 +22,10 @@
       "x-dropdown": "targetName",
       "default": "code-pushup"
     },
+    "bin": {
+      "type": "string",
+      "description": "path to bin"
+    },
     "skipTarget": {
       "type": "boolean",
       "description": "Skip adding the target to project.json.",

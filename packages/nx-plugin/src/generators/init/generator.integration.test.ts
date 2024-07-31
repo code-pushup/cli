@@ -1,6 +1,7 @@
 import { Tree, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { describe, expect, it } from 'vitest';
+import { PACKAGE_NAME } from '../../internal/constants';
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
 
@@ -13,7 +14,7 @@ const cpTargetName = 'code-pushup';
 const devDependencyNames = [
   '@code-pushup/cli',
   '@code-pushup/models',
-  '@code-pushup/nx-plugin',
+  PACKAGE_NAME,
   '@code-pushup/utils',
 ];
 

@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 import { rm } from 'node:fs/promises';
 import { beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { PACKAGE_NAME } from '../../internal/constants';
 import { CP_TARGET_NAME } from '../constants';
 import { NormalizedCreateNodesContext } from '../types';
 import { createTargets } from './targets';
@@ -30,7 +31,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${CP_TARGET_NAME}--configuration`]: {
-        command: `nx g nx-plugin:configuration --project=${projectName}`,
+        command: `nx g ${PACKAGE_NAME}:configuration --project=${projectName}`,
       },
     });
   });
@@ -50,7 +51,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${targetName}--configuration`]: {
-        command: `nx g nx-plugin:configuration --project=${projectName}`,
+        command: `nx g ${PACKAGE_NAME}:configuration --project=${projectName}`,
       },
     });
   });

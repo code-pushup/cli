@@ -6,7 +6,7 @@ import { createConfigurationTarget } from './configuration-target';
 export async function createTargets(
   normalizedContext: NormalizedCreateNodesContext,
 ) {
-  const { targetName = CP_TARGET_NAME } = normalizedContext.createOptions;
+  const { targetName = CP_TARGET_NAME, bin } = normalizedContext.createOptions;
   const rootFiles = await readdir(normalizedContext.projectRoot);
   return rootFiles.some(filename =>
     filename.match(/^code-pushup\.config.(\w*\.)*(ts|js|mjs)$/),
@@ -15,8 +15,9 @@ export async function createTargets(
       {}
     : // if NO code-pushup.config.*.(ts|js|mjs) is present return configuration target
       {
-        [`${targetName}--configuration`]: createConfigurationTarget(
-          normalizedContext.projectJson.name,
-        ),
+        [`${targetName}--configuration`]: createConfigurationTarget({
+          projectName: normalizedContext.projectJson.name,
+          bin,
+        }),
       };
 }
