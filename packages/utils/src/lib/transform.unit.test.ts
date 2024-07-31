@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  apostrophize,
   capitalize,
   countOccurrences,
   deepClone,
@@ -259,24 +258,6 @@ describe('capitalize', () => {
 
   it('should accept empty string', () => {
     expect(capitalize('')).toBe('');
-  });
-});
-
-describe('apostrophize', () => {
-  it("should add apostrophe and 's'", () => {
-    expect(apostrophize('cli')).toBe("cli's");
-  });
-
-  it("should add apostrophe without 's' for words ending with 's'", () => {
-    expect(apostrophize('yargs')).toBe("yargs'");
-  });
-
-  it("should add capital 'S' when upper case is defined", () => {
-    expect(apostrophize('WORLD', true)).toBe("WORLD'S");
-  });
-
-  it('should leave formatting if provided', () => {
-    expect(apostrophize('`git`')).toBe("`git`'s");
   });
 });
 
