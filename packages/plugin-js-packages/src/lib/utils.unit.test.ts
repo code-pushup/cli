@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import * as cp from 'node:child_process';
 import { MockInstance, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -9,6 +8,7 @@ import {
   deriveYarnVersion,
   normalizeConfig,
 } from './utils';
+import {ProcessConfig, ProcessResult} from "@code-pushup/utils";
 
 describe('normalizeConfig', () => {
   it('should return checks object', async () => {
@@ -95,62 +95,58 @@ describe('normalizeConfig', () => {
 });
 
 describe('deriveYarnVersion', () => {
-  const execSpy = vi.spyOn(cp, 'exec') as MockInstance<
-    [string, (error: Error | null, stdout: string, stderr?: string) => void]
-  >;
+  const executeProcessSpy = vi.spyOn(utils, 'executeProcess') as MockInstance<(c: ProcessConfig) => ProcessResult>;
 
   beforeEach(() => {
-    execSpy.mockClear();
+    executeProcessSpy.mockClear();
   });
   afterAll(() => {
-    execSpy.mockRestore();
+    executeProcessSpy.mockRestore();
   });
 
   it('should return yarn-classic if and yarn v1 is installed', async () => {
-    execSpy.mockImplementation((_, fn) => fn(null, '1.22.19'));
+    executeProcessSpy.mockImplementation((_, fn) => fn(null, '1.22.19'));
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-classic');
-    expect(execSpy).toHaveBeenCalledTimes(1);
-    expect(execSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
 
   it('should return yarn-modern  if and yarn v2 is installed', async () => {
-    execSpy.mockImplementation((_, fn) => fn(null, '2.22.19'));
+    executeProcessSpy.mockImplementation((_, fn) => fn(null, '2.22.19'));
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
-    expect(execSpy).toHaveBeenCalledTimes(1);
-    expect(execSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
 
   it('should return yarn-modern  if and yarn v3 is installed', async () => {
-    execSpy.mockImplementation((_, fn) => fn(null, '3.22.19'));
+    executeProcessSpy.mockImplementation((_, fn) => fn(null, '3.22.19'));
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
-    expect(execSpy).toHaveBeenCalledTimes(1);
-    expect(execSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
 
   it('should return false if yarn is NOT installed', async () => {
-    execSpy.mockImplementation((_, fn) => fn(null, ''));
+    executeProcessSpy.mockImplementation((_, fn) => fn(null, ''));
 
     await expect(deriveYarnVersion()).resolves.toBe(false);
-    expect(execSpy).toHaveBeenCalledTimes(1);
-    expect(execSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
 });
 
 describe('derivePackageManagerInPackageJson', () => {
   const fileExistsSpy = vi.spyOn(utils, 'fileExists');
-  const execSpy = vi.spyOn(cp, 'exec') as MockInstance<
-    [string, (error: Error | null, stdout: string, stderr?: string) => void]
-  >;
+  const executeProcessSpy = vi.spyOn(utils, 'executeProcess') as MockInstance<(c: ProcessConfig) => ProcessResult>;
 
   beforeEach(() => {
     fileExistsSpy.mockClear();
-    execSpy.mockClear();
+    executeProcessSpy.mockClear();
   });
   afterAll(() => {
-    execSpy.mockRestore();
+    executeProcessSpy.mockRestore();
   });
 
   it('should return npm if packageManager field in package.json is npm', async () => {
@@ -166,7 +162,7 @@ describe('derivePackageManagerInPackageJson', () => {
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('npm');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(execSpy).toHaveBeenCalledTimes(0);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should return pnpm if packageManager field in package.json is pnpm', async () => {
@@ -182,7 +178,7 @@ describe('derivePackageManagerInPackageJson', () => {
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('pnpm');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(execSpy).toHaveBeenCalledTimes(0);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should return yarn-classic if packageManager field in package.json is yarn v1', async () => {
@@ -200,7 +196,7 @@ describe('derivePackageManagerInPackageJson', () => {
       'yarn-classic',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(execSpy).toHaveBeenCalledTimes(0);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should return yarn-modern if packageManager field in package.json is yarn v2 or v3', async () => {
@@ -218,22 +214,20 @@ describe('derivePackageManagerInPackageJson', () => {
       'yarn-modern',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(execSpy).toHaveBeenCalledTimes(0);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 });
 
 describe('derivePackageManager', () => {
   const fileExistsSpy = vi.spyOn(utils, 'fileExists');
-  const execSpy = vi.spyOn(cp, 'exec') as MockInstance<
-    [string, (error: Error | null, stdout: string, stderr?: string) => void]
-  >;
+  const executeProcessSpy = vi.spyOn(utils, 'executeProcess') as MockInstance<(c: ProcessConfig) => ProcessResult>;
 
   beforeEach(() => {
     fileExistsSpy.mockClear();
-    execSpy.mockClear();
+    executeProcessSpy.mockClear();
   });
   afterAll(() => {
-    execSpy.mockRestore();
+    executeProcessSpy.mockRestore();
   });
 
   it('should return packageManager from field in package.json', async () => {
@@ -249,7 +243,7 @@ describe('derivePackageManager', () => {
 
     await expect(derivePackageManager()).resolves.toBe('pnpm');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
-    expect(execSpy).toHaveBeenCalledTimes(0);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should return npm if a package.jock.json is present', async () => {
@@ -261,7 +255,7 @@ describe('derivePackageManager', () => {
     );
     await expect(derivePackageManager()).resolves.toBe('npm');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/package-lock.json');
-    expect(execSpy).not.toHaveBeenCalled();
+    expect(executeProcessSpy).not.toHaveBeenCalled();
   });
 
   it('should return pnpm if pnpm-lock.yaml is present', async () => {
@@ -273,7 +267,7 @@ describe('derivePackageManager', () => {
     );
     await expect(derivePackageManager()).resolves.toBe('pnpm');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/pnpm-lock.yaml');
-    expect(execSpy).not.toHaveBeenCalled();
+    expect(executeProcessSpy).not.toHaveBeenCalled();
   });
 
   it('should return yarn-classic if yarn.lock is present and yarn is installed', async () => {
@@ -283,12 +277,12 @@ describe('derivePackageManager', () => {
       },
       MEMFS_VOLUME,
     );
-    execSpy.mockImplementation((_, fn) => fn(null, '1.22.19'));
+    executeProcessSpy.mockImplementation((_, fn) => fn(null, '1.22.19'));
 
     await expect(derivePackageManager()).resolves.toBe('yarn-classic');
     expect(fileExistsSpy).toHaveBeenCalledWith('/test/yarn.lock');
-    expect(execSpy).toHaveBeenCalledTimes(1);
-    expect(execSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith('yarn -v', expect.any(Function));
   });
 
   it('should fall back to npm if neither filesystem nor env shows hints', async () => {

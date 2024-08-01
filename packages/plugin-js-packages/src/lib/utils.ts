@@ -1,13 +1,8 @@
-import { ExecException, exec } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { fileExists } from '@code-pushup/utils';
-import {
-  JSPackagesPluginConfig,
-  PackageManagerId,
-  jsPackagesPluginConfigSchema,
-} from './config';
-import { packageManagers } from './package-managers';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {executeProcess, fileExists} from '@code-pushup/utils';
+import {JSPackagesPluginConfig, jsPackagesPluginConfigSchema, PackageManagerId,} from './config';
+import {packageManagers} from './package-managers';
 
 export async function normalizeConfig(config?: JSPackagesPluginConfig) {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(
@@ -33,20 +28,9 @@ export async function normalizeConfig(config?: JSPackagesPluginConfig) {
 }
 
 export async function deriveYarnVersion() {
-  const yarnVersion = await new Promise<string>((resolve, reject) => {
-    exec(
-      'yarn -v',
-      (error: ExecException | null, stdout: string, stderr: string) => {
-        if (error) {
-          reject(error);
-        }
-        if (stderr) {
-          reject(stderr);
-        }
-
-        resolve(stdout.toString().trim().at(0) ?? '');
-      },
-    );
+  const {stdout: yarnVersion} = await executeProcess({
+    command: 'yarn',
+    args: ['-v'],
   });
 
   if (yarnVersion === '2' || yarnVersion === '3') {
@@ -64,7 +48,7 @@ export async function derivePackageManagerInPackageJson(
     const content = JSON.parse(
       (await readFile(join('package.json'))).toString(),
     ) as { packageManager?: string };
-    const { packageManager: packageManagerData = '' } = content;
+    const {packageManager: packageManagerData = ''} = content;
 
     const [manager = '', version = ''] = packageManagerData.split('@');
 
