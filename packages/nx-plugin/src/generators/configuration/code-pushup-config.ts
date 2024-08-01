@@ -4,6 +4,8 @@ import { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { ItemOrArray } from '@code-pushup/utils';
 import { ExecutableCode } from './types';
 import {
+  formatArrayToJSArray,
+  formatArrayToLinesOfJsString,
   formatObjectToFormattedJsString,
   normalizeExecutableCode,
   normalizeItemOrArray,
@@ -53,15 +55,15 @@ export function generateCodePushupConfig(
 
     generateFiles(tree, join(__dirname, 'files'), root, {
       ...options,
-      fileImports: configFileImports,
+      fileImports: formatArrayToLinesOfJsString(configFileImports),
       persist: formatObjectToFormattedJsString(persist),
       upload: formatObjectToFormattedJsString(upload),
-      plugins: formatObjectToFormattedJsString(
+      plugins: formatArrayToJSArray(
         plugins.flatMap(({ codeStrings }) => codeStrings),
       ),
       categories:
         categories &&
-        formatObjectToFormattedJsString(
+        formatArrayToJSArray(
           categories.flatMap(({ codeStrings }) => codeStrings),
         ),
     });

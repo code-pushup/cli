@@ -1,12 +1,16 @@
 import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { afterEach, describe, expect, it } from 'vitest';
-import { formatObjectToFormattedJsString } from '@code-pushup/test-utils';
 import {
   DEFAULT_IMPORTS,
   generateCodePushupConfig,
 } from './code-pushup-config';
-import { normalizeExecutableCode } from './utils';
+import {
+  formatArrayToJSArray,
+  formatArrayToLinesOfJsString,
+  formatObjectToFormattedJsString,
+  normalizeExecutableCode,
+} from './utils';
 
 describe('generateCodePushupConfig options', () => {
   let tree: devKit.Tree;
@@ -30,18 +34,18 @@ describe('generateCodePushupConfig options', () => {
     });
 
     generateCodePushupConfig(tree, testProjectName, {
-      fileImports: ["import type { CoreConfig } from 'dist/packages/models;"],
+      fileImports: ["import type { CoreConfig } from 'dist/packages/models';"],
       persist: { filename: 'report-123' },
       upload: { apiKey: '123' },
       plugins: [
         {
-          fileImports: 'import * as myPlugin from "my-plugin";',
+          fileImports: "import * as myPlugin from 'my-plugin';",
           codeStrings: 'myPlugin({ timeout: 42})',
         },
       ],
       categories: [
         {
-          fileImports: 'import {myPluginCategory} from "my-plugin";',
+          fileImports: "import {myPluginCategory} from 'my-plugin';",
           codeStrings: 'myPluginCategory()',
         },
       ],
@@ -52,15 +56,15 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        fileImports: [
-          "import type { CoreConfig } from 'dist/packages/models;",
-          'import * as myPlugin from "my-plugin";',
-          'import {myPluginCategory} from "my-plugin";',
-        ],
+        fileImports: formatArrayToLinesOfJsString([
+          "import type { CoreConfig } from 'dist/packages/models';",
+          "import * as myPlugin from 'my-plugin';",
+          "import {myPluginCategory} from 'my-plugin';",
+        ]),
         persist: formatObjectToFormattedJsString({ filename: 'report-123' }),
         upload: formatObjectToFormattedJsString({ apiKey: '123' }),
-        plugins: formatObjectToFormattedJsString(['myPlugin({ timeout: 42})']),
-        categories: formatObjectToFormattedJsString(['myPluginCategory()']),
+        plugins: formatArrayToJSArray(['myPlugin({ timeout: 42})']),
+        categories: formatArrayToJSArray(['myPluginCategory()']),
       }),
     );
   });
@@ -98,9 +102,9 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       {
         categories: undefined,
-        fileImports: DEFAULT_IMPORTS,
+        fileImports: formatArrayToLinesOfJsString(DEFAULT_IMPORTS),
         persist: undefined,
-        plugins: '[]',
+        plugins: formatArrayToJSArray([]),
         upload: undefined,
       },
     );
@@ -117,9 +121,9 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        fileImports: [
+        fileImports: formatArrayToLinesOfJsString([
           "import type { CoreConfig } from '../../dist/packages/models';",
-        ],
+        ]),
       }),
     );
   });
@@ -184,11 +188,11 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        fileImports: [
+        fileImports: formatArrayToLinesOfJsString([
           ...DEFAULT_IMPORTS,
           'import * as myPlugin from "my-import";',
-        ],
-        plugins: formatObjectToFormattedJsString(['myPlugin({ timeout: 42})']),
+        ]),
+        plugins: formatArrayToJSArray(['myPlugin({ timeout: 42})']),
       }),
     );
   });
@@ -207,11 +211,11 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        fileImports: [
+        fileImports: formatArrayToLinesOfJsString([
           ...DEFAULT_IMPORTS,
           'import {defaultCategory} from "my-plugin";',
-        ],
-        categories: formatObjectToFormattedJsString(['defaultCategory()']),
+        ]),
+        categories: formatArrayToJSArray(['defaultCategory()']),
       }),
     );
   });

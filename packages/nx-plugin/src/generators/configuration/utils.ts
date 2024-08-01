@@ -42,3 +42,21 @@ export function formatObjectToFormattedJsString(
   // Remove double quotes around property names
   return jsonString.replace(/"(\w+)":/g, '$1:');
 }
+
+export function formatArrayToLinesOfJsString(
+  lines?: string[],
+  separator = '\n',
+) {
+  if (lines == null || lines.length === 0) {
+    return;
+  }
+  return `${lines.join(separator).replace('"', '')}`;
+}
+
+export function formatArrayToJSArray(lines?: string[]) {
+  if (lines == null) {
+    return;
+  }
+
+  return `[${formatArrayToLinesOfJsString(lines, ',\n') ?? ''}]`;
+}
