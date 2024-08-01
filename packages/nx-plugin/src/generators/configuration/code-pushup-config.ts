@@ -1,12 +1,17 @@
 import { Tree, generateFiles } from '@nx/devkit';
 import { join } from 'node:path';
 import { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { ExtractArrays, ItemOrArray } from '@code-pushup/utils';
+import { ItemOrArray } from '@code-pushup/utils';
+import { ExecutableCode } from './types';
+import {
+  formatObjectToFormattedJsString,
+  normalizeExecutableCode,
+  normalizeItemOrArray,
+} from './utils';
 
-export type ExecutableCode = {
-  fileImports: ItemOrArray<string>;
-  codeStrings: ItemOrArray<string>;
-};
+export const DEFAULT_IMPORTS = [
+  "import type { CoreConfig } from '@code-pushup/models;'",
+];
 
 export type GenerateCodePushupConfigOptions = {
   fileImports?: ItemOrArray<string>;
@@ -41,11 +46,9 @@ export function generateCodePushupConfig(
     const plugins = rawPlugins.map(normalizeExecutableCode);
     const categories = rawCategories?.map(normalizeExecutableCode);
     const configFileImports = [
-      normalizeItemOrArray(rawImports) ?? [
-        "import type { CoreConfig } from '@code-pushup/models'",
-      ],
-      ...plugins.map(({ fileImports }) => fileImports),
-      ...(categories ?? []).map(({ fileImports }) => fileImports),
+      ...(normalizeItemOrArray(rawImports) ?? DEFAULT_IMPORTS),
+      ...plugins.flatMap(({ fileImports }) => fileImports),
+      ...(categories ?? []).flatMap(({ fileImports }) => fileImports),
     ];
 
     generateFiles(tree, join(__dirname, 'files'), root, {
@@ -54,57 +57,13 @@ export function generateCodePushupConfig(
       persist: formatObjectToFormattedJsString(persist),
       upload: formatObjectToFormattedJsString(upload),
       plugins: formatObjectToFormattedJsString(
-        plugins.flatMap(({ codeStrings }) => codeStrings ?? []).filter(c => !c),
+        plugins.flatMap(({ codeStrings }) => codeStrings),
       ),
       categories:
         categories &&
         formatObjectToFormattedJsString(
-          categories
-            .flatMap(({ codeStrings }) => codeStrings ?? [])
-            .filter(c => !c),
+          categories.flatMap(({ codeStrings }) => codeStrings),
         ),
     });
   }
-}
-
-// Return a formatted JSON object with the same keys as the input object but remove the " for the properties
-export function formatObjectToFormattedJsString(
-  jsonObj?:
-    | {
-        [key: string]: unknown;
-      }
-    | Array<unknown>,
-): string | undefined {
-  if (!jsonObj) {
-    return;
-  }
-  // Convert JSON object to a string with indentation
-  const jsonString = JSON.stringify(jsonObj, null, 2);
-
-  // Remove double quotes around property names
-  return jsonString.replace(/"(\w+)":/g, '$1:');
-}
-
-function normalizeExecutableCode(
-  executableCode: ExecutableCode,
-): Partial<ExtractArrays<ExecutableCode>> {
-  const { fileImports: rawFileImports, codeStrings: rawCodeStrings } =
-    executableCode;
-
-  return {
-    fileImports: normalizeItemOrArray(rawFileImports) ?? [],
-    codeStrings: normalizeItemOrArray(rawCodeStrings) ?? [],
-  };
-}
-
-function normalizeItemOrArray<T>(
-  itemOrArray: T | T[] | undefined,
-): T[] | undefined {
-  if (itemOrArray == null) {
-    return undefined;
-  }
-  if (Array.isArray(itemOrArray)) {
-    return itemOrArray;
-  }
-  return [itemOrArray];
 }

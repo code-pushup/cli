@@ -1,6 +1,7 @@
 import {join, relative} from "node:path";
 import {executeProcess} from "@code-pushup/utils";
 
+// @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function distPluginPackage(cwd: string): string {
   return relative(join(process.cwd(), cwd), join(process.cwd(), "dist/packages/nx-plugin"));
 }

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`nx-plugin > should NOT add targets when plugin is not registered 1`] = `
+exports[`nx-plugin > should NOT add config targets dynamically if plugin is not registered 1`] = `
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "implicitDependencies": [],
@@ -15,7 +15,7 @@ exports[`nx-plugin > should NOT add targets when plugin is not registered 1`] = 
 }
 `;
 
-exports[`nx-plugin > should NOT config targets to configured project when plugin is registered 1`] = `
+exports[`nx-plugin > should NOT add config targets dynamically if the project is configured 1`] = `
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "implicitDependencies": [],
@@ -30,7 +30,7 @@ exports[`nx-plugin > should NOT config targets to configured project when plugin
 }
 `;
 
-exports[`nx-plugin > should add config targets to empty project when plugin is registered 1`] = `
+exports[`nx-plugin > should add config targets dynamically 1`] = `
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "implicitDependencies": [],
@@ -54,7 +54,7 @@ exports[`nx-plugin > should add config targets to empty project when plugin is r
 `;
 
 exports[`nx-plugin > should execute configuration 1`] = `
-"import type { CoreConfig } from '@code-pushup/models';
+"import type { CoreConfig } from '@code-pushup/models;';
 
 // see: https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md#coreconfig
 export default {

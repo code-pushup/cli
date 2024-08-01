@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateCodePushupConfig options > should create code-pushup.config.ts with options 1`] = `
+{
+  "options": {
+    "categories": "[
+  "myPluginCategory()"
+]",
+    "fileImports": [
+      "import type { CoreConfig } from 'dist/packages/models;",
+      "import * as myPlugin from "my-plugin";",
+      "import {myPluginCategory} from "my-plugin";",
+    ],
+    "persist": "{
+  filename: "report-123"
+}",
+    "plugins": "[
+  "myPlugin({ timeout: 42})"
+]",
+    "upload": "{
+  apiKey: "123"
+}",
+  },
+  "target": "test-app",
+}
+`;

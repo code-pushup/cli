@@ -46,7 +46,6 @@ describe('nx-plugin g init', () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
-    // if we don't dryRun we need verdaccio // npm ERR! 404 '@code-pushup/nx-plugin@0.29.0' is not in this registry
     const { code, stdout } = await executeInitGenerator(
       [project, '--dryRun'],
       cwd,
@@ -64,7 +63,6 @@ describe('nx-plugin g init', () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
-    // if we don't dryRun we need verdaccio // npm ERR! 404 '@code-pushup/nx-plugin@0.29.0' is not in this registry
     const { code, stdout } = await executeInitGenerator(
       [project, '--skipPackageJson', '--dryRun'],
       cwd,

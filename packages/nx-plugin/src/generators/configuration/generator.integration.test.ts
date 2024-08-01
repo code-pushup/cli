@@ -6,28 +6,7 @@ import {
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
-import { generateCodePushupConfig } from './code-pushup-config';
 import { addTargetToProject, configurationGenerator } from './generator';
-
-describe('generateCodePushupConfig', () => {
-  let tree: Tree;
-  const testProjectName = 'test-app';
-  beforeEach(() => {
-    tree = createTreeWithEmptyWorkspace();
-    addProjectConfiguration(tree, testProjectName, {
-      root: 'test-app',
-    });
-  });
-
-  it('should add code-pushup.config.ts to the project root', () => {
-    generateCodePushupConfig(tree, testProjectName);
-
-    expect(tree.exists('test-app/code-pushup.config.ts')).toBe(true);
-    expect(
-      tree.read('test-app/code-pushup.config.ts')?.toString(),
-    ).toMatchSnapshot();
-  });
-});
 
 describe('addTargetToProject', () => {
   let tree: Tree;

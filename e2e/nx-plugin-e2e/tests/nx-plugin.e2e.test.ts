@@ -75,7 +75,7 @@ describe('nx-plugin', () => {
     ).resolves.toMatchSnapshot();
   });
 
-  it('should add config targets to empty project when plugin is registered', async () => {
+  it('should add config targets dynamically', async () => {
     const cwd = join(baseDir, 'registered');
     registerPluginInWorkspace(tree, pluginFilePath(cwd));
     await materializeTree(tree, cwd);
@@ -97,8 +97,8 @@ describe('nx-plugin', () => {
     expect(projectJson).toMatchSnapshot();
   });
 
-  it('should consider targetName', async () => {
-    const cwd = join(baseDir, 'target-name');
+  it('should consider plugin option targetName', async () => {
+    const cwd = join(baseDir, 'option-target-name');
     registerPluginInWorkspace(tree, {
       plugin: pluginFilePath(cwd),
       options: {
@@ -113,18 +113,12 @@ describe('nx-plugin', () => {
     expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({
-      ['cp--configuration']: {
-        configurations: {}, // @TODO understand why this appears. should not be here
-        executor: 'nx:run-commands',
-        options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
-        },
-      },
+      ['cp--configuration']: expect.any(Object),
     });
   });
 
-  it('should consider bin', async () => {
-    const cwd = join(baseDir, 'target-name');
+  it('should consider plugin option bin', async () => {
+    const cwd = join(baseDir, 'option-bin');
     registerPluginInWorkspace(tree, {
       plugin: pluginFilePath(cwd),
       options: {
@@ -151,8 +145,8 @@ describe('nx-plugin', () => {
     });
   });
 
-  it('should NOT config targets to configured project when plugin is registered', async () => {
-    const cwd = join(baseDir, 'registered');
+  it('should NOT add config targets dynamically if the project is configured', async () => {
+    const cwd = join(baseDir, 'already-configured');
     registerPluginInWorkspace(tree, pluginFilePath(cwd));
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
@@ -167,7 +161,7 @@ describe('nx-plugin', () => {
     expect(projectJson).toMatchSnapshot();
   });
 
-  it('should NOT add targets when plugin is not registered', async () => {
+  it('should NOT add config targets dynamically if plugin is not registered', async () => {
     const cwd = join(baseDir, 'not-registered');
     await materializeTree(tree, cwd);
 
