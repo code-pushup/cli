@@ -20,7 +20,7 @@ function executeInitGenerator(args: string[], cwd: string = process.cwd()) {
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/nx-plugin-e2e/generators/configuration';
+  const baseDir = 'tmp/nx-plugin-e2e/generators/init';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -31,7 +31,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should inform about dry run', async () => {
-    const cwd = join(baseDir, 'configure');
+    const cwd = join(baseDir, 'dry-run');
     await materializeTree(tree, cwd);
 
     const { stderr } = await executeInitGenerator([project, '--dryRun'], cwd);
@@ -43,7 +43,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should update packages.json and configure nx.json', async () => {
-    const cwd = join(baseDir, 'configure');
+    const cwd = join(baseDir, 'nx-update');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeInitGenerator(
@@ -60,7 +60,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should skip packages.json update if --skipPackageJson is given', async () => {
-    const cwd = join(baseDir, 'configure');
+    const cwd = join(baseDir, 'skip-packages');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeInitGenerator(

@@ -1,7 +1,7 @@
 import { Tree, generateFiles } from '@nx/devkit';
 import { join } from 'node:path';
-import { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { ItemOrArray } from '@code-pushup/utils';
+import type { PersistConfig, UploadConfig } from '@code-pushup/models';
+import type { ItemOrArray } from '@code-pushup/utils';
 import { ExecutableCode } from './types';
 import {
   formatArrayToJSArray,

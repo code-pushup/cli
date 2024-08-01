@@ -24,7 +24,7 @@
     },
     "bin": {
       "type": "string",
-      "description": "path to bin"
+      "description": "Path to Code PushUp CLI"
     },
     "skipTarget": {
       "type": "boolean",
