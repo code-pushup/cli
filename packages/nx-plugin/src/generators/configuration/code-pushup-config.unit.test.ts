@@ -1,6 +1,7 @@
 import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { afterEach, describe, expect, it } from 'vitest';
+import { osAgnosticPath } from '@code-pushup/test-utils';
 import {
   DEFAULT_IMPORTS,
   generateCodePushupConfig,
@@ -78,7 +79,9 @@ describe('generateCodePushupConfig options', () => {
     generateCodePushupConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining('nx-plugin/src/generators/configuration/files'),
+      expect.stringContaining(
+        osAgnosticPath('nx-plugin/src/generators/configuration/files') ?? '',
+      ),
       expect.any(String),
       expect.any(Object),
     );
