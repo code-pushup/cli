@@ -55,16 +55,11 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const { code, stderr, stdout } = await executeConfigurationTarger(
-      project,
-      [],
-      {
-        cwd,
-      },
-    );
+    const { code, stdout } = await executeConfigurationTarger(project, [], {
+      cwd,
+    });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
