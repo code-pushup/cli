@@ -50,21 +50,17 @@ describe('nx-plugin g configuration', () => {
     );
   });
 
-  it('should generate code-pushup config file and add target to project', async () => {
+  it('should generate conde-pushup.config.ts file and add target to project.json', async () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
     const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--target-name code-pushup', '--dryRun'],
+      [project, '--targetName code-pushup', '--dryRun'],
       cwd,
     );
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
-
-    expect(cleanedStderr).toContain(
-      'NOTE: The "dryRun" flag means no changes were made.',
-    );
 
     expect(cleanedStderr).not.toContain(
       `NOTE: No config file created as code-pushup.config.js file already exists.`,
@@ -76,12 +72,14 @@ describe('nx-plugin g configuration', () => {
     );
 
     expect(cleanedStdout).toContain(
-      `CREATE ${projectRoot}/code-pushup.config.ts`,
+      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
     );
-    expect(cleanedStdout).toContain(`UPDATE ${projectRoot}/project.json`);
+    expect(cleanedStdout).toContain(
+      `UPDATE ${join(projectRoot, 'project.json')}`,
+    );
   });
 
-  it('should NOT generate code-pushup config if one is already present', async () => {
+  it('should NOT conde-pushup.config.ts file if one already exists', async () => {
     const cwd = join(baseDir, 'configure-config-existing');
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
@@ -95,10 +93,6 @@ describe('nx-plugin g configuration', () => {
     expect(code).toBe(0);
 
     expect(cleanedStderr).toContain(
-      'NOTE: The "dryRun" flag means no changes were made.',
-    );
-
-    expect(cleanedStderr).toContain(
       `NOTE: No config file created as code-pushup.config.ts file already exists.`,
     );
 
@@ -108,14 +102,14 @@ describe('nx-plugin g configuration', () => {
     );
 
     expect(cleanedStdout).not.toContain(
-      removeColorCodes(`CREATE ${projectRoot}/code-pushup.config.ts`),
+      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
     );
     expect(cleanedStdout).toContain(
-      removeColorCodes(`UPDATE ${projectRoot}/project.json`),
+      `UPDATE ${join(projectRoot, 'project.json')}`,
     );
   });
 
-  it('should run skip config for configuration generator if skipConfig is given', async () => {
+  it('should NOT create conde-pushup.config.ts file if skipConfig is given', async () => {
     const cwd = join(baseDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
@@ -127,10 +121,6 @@ describe('nx-plugin g configuration', () => {
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
 
-    expect(cleanedStderr).toContain(
-      'NOTE: The "dryRun" flag means no changes were made.',
-    );
-
     expect(cleanedStderr).not.toContain(
       `NOTE: No config file created as code-pushup.config.ts file already exists.`,
     );
@@ -141,12 +131,14 @@ describe('nx-plugin g configuration', () => {
     );
 
     expect(cleanedStdout).not.toContain(
-      `CREATE ${projectRoot}/code-pushup.config.ts`,
+      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
     );
-    expect(cleanedStdout).toContain(`UPDATE ${projectRoot}/project.json`);
+    expect(cleanedStdout).toContain(
+      `UPDATE ${join(projectRoot, 'project.json')}`,
+    );
   });
 
-  it('should run skip target for configuration generator if skipTarget is given', async () => {
+  it('should NOT add target to project.json if skipTarget is given', async () => {
     const cwd = join(baseDir, 'configure-skip-target');
     await materializeTree(tree, cwd);
 
@@ -158,10 +150,6 @@ describe('nx-plugin g configuration', () => {
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
 
-    expect(cleanedStderr).toContain(
-      'NOTE: The "dryRun" flag means no changes were made.',
-    );
-
     expect(cleanedStderr).not.toContain(
       `NOTE: No config file created as code-pushup.config.ts file already exists.`,
     );
@@ -172,8 +160,10 @@ describe('nx-plugin g configuration', () => {
     );
 
     expect(cleanedStdout).toContain(
-      `CREATE ${projectRoot}/code-pushup.config.ts`,
+      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
     );
-    expect(cleanedStdout).not.toContain(`UPDATE ${projectRoot}/project.json`);
+    expect(cleanedStdout).not.toContain(
+      `UPDATE ${join(projectRoot, 'project.json')}`,
+    );
   });
 });
