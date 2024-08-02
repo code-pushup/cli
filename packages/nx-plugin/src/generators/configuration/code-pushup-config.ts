@@ -48,7 +48,7 @@ export function generateCodePushupConfig(
     const plugins = rawPlugins.map(normalizeExecutableCode);
     const categories = rawCategories?.map(normalizeExecutableCode);
     const configFileImports = [
-      ...(normalizeItemOrArray(rawImports) ?? DEFAULT_IMPORTS),
+      ...(rawImports ? normalizeItemOrArray(rawImports) : DEFAULT_IMPORTS),
       ...plugins.flatMap(({ fileImports }) => fileImports),
       ...(categories ?? []).flatMap(({ fileImports }) => fileImports),
     ];

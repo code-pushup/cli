@@ -21,8 +21,8 @@ describe('formatArrayToJSArray', () => {
     expect(formatArrayToJSArray([])).toMatchInlineSnapshot('"[]"');
   });
 
-  it('should return undefined for nullish values', () => {
-    expect(formatArrayToJSArray()).toBeUndefined();
+  it('should return undefined for undefined values', () => {
+    expect(formatArrayToJSArray(undefined)).toBeUndefined();
   });
 });
 
