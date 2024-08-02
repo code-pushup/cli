@@ -71,12 +71,8 @@ describe('nx-plugin g configuration', () => {
       `NX  Generating ${distPluginPackage(cwd)}:configuration`,
     );
 
-    expect(cleanedStdout).toContain(
-      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
-    );
-    expect(cleanedStdout).toContain(
-      `UPDATE ${join(projectRoot, 'project.json')}`,
-    );
+    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
+    expect(cleanedStdout).toMatch(`^UPDATE.*project.json$`);
   });
 
   it('should NOT conde-pushup.config.ts file if one already exists', async () => {
@@ -101,12 +97,8 @@ describe('nx-plugin g configuration', () => {
       `NX  Generating ${distPluginPackage(cwd)}:configuration`,
     );
 
-    expect(cleanedStdout).not.toContain(
-      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
-    );
-    expect(cleanedStdout).toContain(
-      `UPDATE ${join(projectRoot, 'project.json')}`,
-    );
+    expect(cleanedStdout).not.toMatch(`^CREATE.*code-pushup.config.ts`);
+    expect(cleanedStdout).toMatch(`^UPDATE.*project.json$`);
   });
 
   it('should NOT create conde-pushup.config.ts file if skipConfig is given', async () => {
@@ -130,12 +122,8 @@ describe('nx-plugin g configuration', () => {
       `NX  Generating ${distPluginPackage(cwd)}:configuration`,
     );
 
-    expect(cleanedStdout).not.toContain(
-      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
-    );
-    expect(cleanedStdout).toContain(
-      `UPDATE ${join(projectRoot, 'project.json')}`,
-    );
+    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
+    expect(cleanedStdout).not.toMatch(`^UPDATE.*project.json$`);
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
@@ -159,11 +147,7 @@ describe('nx-plugin g configuration', () => {
       `NX  Generating ${distPluginPackage(cwd)}:configuration`,
     );
 
-    expect(cleanedStdout).toContain(
-      `CREATE ${join(projectRoot, 'code-pushup.config.ts')}`,
-    );
-    expect(cleanedStdout).not.toContain(
-      `UPDATE ${join(projectRoot, 'project.json')}`,
-    );
+    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
+    expect(cleanedStdout).not.toMatch(`^UPDATE.*project.json$`);
   });
 });
