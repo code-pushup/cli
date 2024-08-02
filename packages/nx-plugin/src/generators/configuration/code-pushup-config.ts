@@ -1,4 +1,4 @@
-import { Tree, generateFiles } from '@nx/devkit';
+import { Tree, generateFiles, logger } from '@nx/devkit';
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { ItemOrArray } from '@code-pushup/utils';
@@ -33,7 +33,7 @@ export function generateCodePushupConfig(
     tree.exists(join(root, `code-pushup.config.${ext}`)),
   );
   if (firstExistingFormat) {
-    console.warn(
+    logger.warn(
       `NOTE: No config file created as code-pushup.config.${firstExistingFormat} file already exists.`,
     );
   } else {

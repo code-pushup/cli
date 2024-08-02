@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { formatArrayToJSArray, formatArrayToLinesOfJsString } from './utils';
+import {
+  formatArrayToJSArray,
+  formatArrayToLinesOfJsString,
+  normalizeExecutableCode,
+} from './utils';
 
 describe('formatArrayToJSArray', () => {
   it('should return array as JS', () => {
@@ -43,5 +47,31 @@ describe('formatArrayToLinesOfJsString', () => {
 
   it('should return undefined for nullish values', () => {
     expect(formatArrayToLinesOfJsString()).toBeUndefined();
+  });
+});
+
+describe('normalizeExecutableCode', () => {
+  it('should return turn strings into arrays', () => {
+    expect(
+      normalizeExecutableCode({
+        fileImports: 'import { CoreConfig } from "@code-pushup/models";',
+        codeStrings: 'myPlugin()',
+      }),
+    ).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
+  });
+
+  it('should keep arrays', () => {
+    expect(
+      normalizeExecutableCode({
+        fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+        codeStrings: ['myPlugin()'],
+      }),
+    ).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
   });
 });
