@@ -37,7 +37,7 @@ export function addTargetToProject(
   const { targetName, project } = options;
 
   const codePushupTargetConfig = {
-    executor: `@code-pushup/nx-plugin:autorun`,
+    executor: '@code-pushup/nx-plugin:autorun',
   };
 
   updateProjectConfiguration(tree, project, {
