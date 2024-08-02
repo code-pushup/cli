@@ -40,7 +40,7 @@ describe('runAutorunExecutor', () => {
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
       expect.stringContaining('npx @code-pushup/cli autorun'),
-      {},
+      { cwd: '/test' },
     );
   });
 

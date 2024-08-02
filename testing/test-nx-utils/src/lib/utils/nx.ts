@@ -11,15 +11,11 @@ import { LibraryGeneratorSchema } from '@nx/js/src/utils/schema';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
 
-type ExecutorContextOptions = { projectName: string; cwd?: string };
-
-export function executorContext(
-  nameOrOpt: string | ExecutorContextOptions,
-): Omit<ExecutorContext, 'cwd'> & Partial<Pick<ExecutorContext, 'cwd'>> {
-  const { projectName, cwd } =
-    typeof nameOrOpt === 'string'
-      ? ({ projectName: nameOrOpt } satisfies ExecutorContextOptions)
-      : nameOrOpt;
+export function executorContext<
+  T extends { projectName: string; cwd?: string },
+>(nameOrOpt: string | T): ExecutorContext {
+  const { projectName, cwd = process.cwd() } =
+    typeof nameOrOpt === 'string' ? { projectName: nameOrOpt } : nameOrOpt;
   return {
     cwd,
     isVerbose: false,
