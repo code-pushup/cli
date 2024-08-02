@@ -1,11 +1,38 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import {
+  MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { MEMFS_VOLUME } from '../constants';
 import { ensureDirectoryExists } from './file-system';
 
+vi.mock('fs', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs;
+});
+vi.mock('fs/promises', async () => {
+  const memfs: typeof import('memfs') = await vi.importActual('memfs');
+  return memfs.fs.promises;
+});
+
 describe('ensureDirectoryExists', () => {
+  let cwdSpy: MockInstance<[], string>;
+
+  beforeEach(() => {
+    cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(MEMFS_VOLUME);
+  });
+
+  afterEach(() => {
+    cwdSpy.mockRestore();
+  });
+
   it('should create a nested folder', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
 

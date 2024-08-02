@@ -58,17 +58,4 @@ describe('invokeCreateNodesOnVirtualFiles', () => {
     ).resolves.toStrictEqual({});
     expect(createNodesFnSpy).not.toHaveBeenCalled();
   });
-
-  it('should NOT invoke passed function if matching file is NOT given', async () => {
-    const createNodesFnSpy = vi.fn().mockResolvedValue({});
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        [`**/project.json`, createNodesFnSpy],
-        createNodesContext(),
-        {},
-        { matchingFilesData: {} },
-      ),
-    ).resolves.toStrictEqual({});
-    expect(createNodesFnSpy).not.toHaveBeenCalled();
-  });
 });

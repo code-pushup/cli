@@ -1,7 +1,5 @@
-import { readJson } from '@nx/plugin/testing';
-import { readNxJson } from 'nx/src/config/nx-json';
+import * as process from 'node:process';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
-import * as process from 'process';
 import { describe, expect } from 'vitest';
 import { executorContext, registerPluginInWorkspace } from './nx';
 
