@@ -122,8 +122,24 @@ describe('configurationGenerator', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: '@code-pushup/nx-plugin:autorun',
+    });
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
       executor: `${PACKAGE_NAME}:autorun`,
     });
+  });
+
+  it('should skip target creation if skipTarget is used', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+      skipTarget: true,
+    });
+
+    const projectConfiguration = readProjectConfiguration(
+      tree,
+      testProjectName,
+    );
+    expect(projectConfiguration.targets).toBeUndefined();
   });
 
   it('should skip target creation if skipTarget is used', async () => {

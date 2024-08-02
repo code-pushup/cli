@@ -2,6 +2,7 @@ import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { removeColorCodes } from '@code-pushup/test-utils';
 import {
   DEFAULT_IMPORTS,
   generateCodePushupConfig,
@@ -17,6 +18,7 @@ describe('generateCodePushupConfig options', () => {
   let tree: devKit.Tree;
   const testProjectName = 'test-app';
   const generateFilesSpy = vi.spyOn(devKit, 'generateFiles');
+  const loggerWarnSpy = vi.spyOn(devKit.logger, 'warn');
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
@@ -73,6 +75,18 @@ describe('generateCodePushupConfig options', () => {
   it('should call generateFilesSpy', () => {
     generateCodePushupConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should skip creation if config already exists', () => {
+    tree.write(join(testProjectName, 'code-pushup.config.js'), '');
+    generateCodePushupConfig(tree, testProjectName);
+    expect(generateFilesSpy).toHaveBeenCalledTimes(0);
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      removeColorCodes(
+        'NOTE: No config file created as code-pushup.config.js file already exists.',
+      ),
+    );
   });
 
   it('should use correct templates', () => {

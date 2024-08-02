@@ -8,11 +8,12 @@ export function normalizeExecutableCode(
     executableCode;
 
   return {
-    fileImports: normalizeItemOrArray(rawFileImports) ?? [],
-    codeStrings: normalizeItemOrArray(rawCodeStrings) ?? [],
+    fileImports: normalizeItemOrArray(rawFileImports),
+    codeStrings: normalizeItemOrArray(rawCodeStrings),
   };
 }
 
+export function normalizeItemOrArray<T>(itemOrArray: T | T[]): T[];
 export function normalizeItemOrArray<T>(
   itemOrArray: T | T[] | undefined,
 ): T[] | undefined {
@@ -54,7 +55,7 @@ export function formatArrayToLinesOfJsString(
 }
 
 export function formatArrayToJSArray(lines?: string[]) {
-  if (lines == null) {
+  if (!Array.isArray(lines)) {
     return;
   }
 

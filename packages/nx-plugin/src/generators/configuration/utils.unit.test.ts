@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatArrayToJSArray, formatArrayToLinesOfJsString } from './utils';
+import {
+  formatArrayToJSArray,
+  formatArrayToLinesOfJsString,
+  normalizeExecutableCode,
+  normalizeItemOrArray,
+} from './utils';
 
 describe('formatArrayToJSArray', () => {
   it('should return array as JS', () => {
@@ -17,8 +22,8 @@ describe('formatArrayToJSArray', () => {
     expect(formatArrayToJSArray([])).toMatchInlineSnapshot('"[]"');
   });
 
-  it('should return undefined for nullish values', () => {
-    expect(formatArrayToJSArray()).toBeUndefined();
+  it('should return undefined for undefined values', () => {
+    expect(formatArrayToJSArray(undefined)).toBeUndefined();
   });
 });
 
@@ -43,5 +48,44 @@ describe('formatArrayToLinesOfJsString', () => {
 
   it('should return undefined for nullish values', () => {
     expect(formatArrayToLinesOfJsString()).toBeUndefined();
+  });
+});
+
+describe('normalizeExecutableCode', () => {
+  it('should turn strings into arrays', () => {
+    expect(
+      normalizeExecutableCode({
+        fileImports: 'import { CoreConfig } from "@code-pushup/models";',
+        codeStrings: 'myPlugin()',
+      }),
+    ).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
+  });
+
+  it('should keep arrays', () => {
+    expect(
+      normalizeExecutableCode({
+        fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+        codeStrings: ['myPlugin()'],
+      }),
+    ).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
+  });
+});
+
+describe('normalizeItemOrArray', () => {
+  it('should turn string into string array', () => {
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
+  });
+
+  it('should keep string array', () => {
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
   });
 });
