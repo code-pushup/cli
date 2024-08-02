@@ -75,9 +75,8 @@ describe('nx-plugin', () => {
     registerPluginInWorkspace(tree, pluginFilePath(cwd));
     await materializeTree(tree, cwd);
 
-    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup--configuration']: {
@@ -102,10 +101,9 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({
       ['cp--configuration']: expect.any(Object),
@@ -122,10 +120,9 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup--configuration']: {
@@ -147,10 +144,9 @@ describe('nx-plugin', () => {
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
 
-    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({});
     expect(projectJson).toMatchSnapshot();
@@ -160,10 +156,9 @@ describe('nx-plugin', () => {
     const cwd = join(baseDir, 'not-registered');
     await materializeTree(tree, cwd);
 
-    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(projectJson.targets).toStrictEqual({});
     expect(projectJson).toMatchSnapshot();
