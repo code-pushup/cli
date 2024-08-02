@@ -2,7 +2,7 @@ import { logger } from '@nx/devkit';
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
-import { executorContext } from '@code-pushup/test-utils';
+import { executorContext } from '@code-pushup/test-nx-utils';
 import runAutorunExecutor from './executor';
 
 vi.mock('node:child_process', async () => {

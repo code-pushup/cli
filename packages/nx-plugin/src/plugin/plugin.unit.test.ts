@@ -1,7 +1,7 @@
 import { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-utils';
+import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { CP_TARGET_NAME } from './constants';
 import { createNodes } from './plugin';

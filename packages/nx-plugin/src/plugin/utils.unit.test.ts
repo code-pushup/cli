@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { MEMFS_VOLUME, createNodesContext } from '@code-pushup/test-utils';
+import { createNodesContext } from '@code-pushup/test-nx-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { normalizedCreateNodesContext } from './utils';
 
 describe('normalizedCreateNodesContext', () => {
