@@ -41,6 +41,8 @@ describe('runAutorunExecutor', () => {
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
     // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {});
+    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {
+      cwd: process.cwd(),
+    });
   });
 });
