@@ -3,6 +3,7 @@ import {
   formatArrayToJSArray,
   formatArrayToLinesOfJsString,
   normalizeExecutableCode,
+  normalizeItemOrArray,
 } from './utils';
 
 describe('formatArrayToJSArray', () => {
@@ -51,7 +52,7 @@ describe('formatArrayToLinesOfJsString', () => {
 });
 
 describe('normalizeExecutableCode', () => {
-  it('should return turn strings into arrays', () => {
+  it('should turn strings into arrays', () => {
     expect(
       normalizeExecutableCode({
         fileImports: 'import { CoreConfig } from "@code-pushup/models";',
@@ -70,6 +71,19 @@ describe('normalizeExecutableCode', () => {
         codeStrings: ['myPlugin()'],
       }),
     ).toStrictEqual({
+      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
+      codeStrings: ['myPlugin()'],
+    });
+  });
+});
+
+describe('normalizeItemOrArray', () => {
+  it('should turn string into string array', () => {
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
+  });
+
+  it('should keep string array', () => {
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual({
       fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
       codeStrings: ['myPlugin()'],
     });
