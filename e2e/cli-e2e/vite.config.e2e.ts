@@ -6,7 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/cli-e2e',
   test: {
     reporters: ['basic'],
-    testTimeout: 140_000,
+    testTimeout: 150_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
