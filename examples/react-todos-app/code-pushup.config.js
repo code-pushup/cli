@@ -39,7 +39,7 @@ export default {
         // seo category
         'hreflang',
       ],
-      chromeFlags: DEFAULT_FLAGS.concat(['--headless', '--timeout=200000']),
+      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
     }),
   ],
   categories: [
