@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import {MEMFS_VOLUME, osAgnosticPath} from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
   derivePackageManager,
@@ -32,7 +32,7 @@ describe('derivePackageManagerInPackageJson', () => {
     );
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('npm');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package.json'));
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
@@ -48,7 +48,7 @@ describe('derivePackageManagerInPackageJson', () => {
     );
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('pnpm');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package.json'));
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
@@ -66,7 +66,7 @@ describe('derivePackageManagerInPackageJson', () => {
     await expect(derivePackageManagerInPackageJson()).resolves.toBe(
       'yarn-classic',
     );
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package.json'));
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 
@@ -84,7 +84,7 @@ describe('derivePackageManagerInPackageJson', () => {
     await expect(derivePackageManagerInPackageJson()).resolves.toBe(
       'yarn-modern',
     );
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package.json'));
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
 });
@@ -126,7 +126,7 @@ describe('derivePackageManager', () => {
       MEMFS_VOLUME,
     );
     await expect(derivePackageManager()).resolves.toBe('npm');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package-lock.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package-lock.json'));
     expect(deriveYarnVersionSpy).not.toHaveBeenCalled();
   });
 
@@ -138,7 +138,7 @@ describe('derivePackageManager', () => {
       MEMFS_VOLUME,
     );
     await expect(derivePackageManager()).resolves.toBe('pnpm');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/pnpm-lock.yaml');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/pnpm-lock.yaml'));
     expect(deriveYarnVersionSpy).not.toHaveBeenCalled();
   });
 
@@ -161,6 +161,6 @@ describe('derivePackageManager', () => {
     await expect(derivePackageManager()).rejects.toThrow(
       'Could not detect package manager. Please provide in in the js-packages plugin config.',
     );
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package-lock.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(osAgnosticPath('/test/package-lock.json'));
   });
 });
