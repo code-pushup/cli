@@ -83,9 +83,6 @@ describe('normalizeItemOrArray', () => {
   });
 
   it('should keep string array', () => {
-    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual({
-      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
-      codeStrings: ['myPlugin()'],
-    });
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
   });
 });
