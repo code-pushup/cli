@@ -43,7 +43,7 @@ describe('init generator', () => {
     ).toHaveLength(devDependencyNames.length);
   });
 
-  it('should skip packageJson', () => {
+  it('should skip package.json', () => {
     initGenerator(tree, { ...options, skipPackageJson: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
@@ -59,5 +59,12 @@ describe('init generator', () => {
         devDependencyNames.includes(dep),
       ),
     ).toHaveLength(0);
+  });
+
+  it('should skip nx.Json', () => {
+    initGenerator(tree, { ...options, skipNxJson: true });
+    // nx.json
+    const targetDefaults = readNxJson(tree)!.targetDefaults!;
+    expect(targetDefaults).not.toHaveProperty(cpTargetName);
   });
 });

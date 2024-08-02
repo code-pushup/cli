@@ -79,7 +79,10 @@ export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
   if (!schema.skipPackageJson) {
     moveToDevDependencies(tree);
   }
-  updateNxJsonConfig(tree);
+
+  if (!schema.skipNxJson) {
+    updateNxJsonConfig(tree);
+  }
 
   const tasks = [];
   if (!schema.skipPackageJson) {
