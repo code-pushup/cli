@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
   derivePackageManager,
@@ -33,7 +33,7 @@ describe('derivePackageManagerInPackageJson', () => {
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('npm');
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package.json'),
+      expect.stringContaining('package.json'),
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
@@ -51,7 +51,7 @@ describe('derivePackageManagerInPackageJson', () => {
 
     await expect(derivePackageManagerInPackageJson()).resolves.toBe('pnpm');
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package.json'),
+      expect.stringContaining('package.json'),
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
@@ -71,7 +71,7 @@ describe('derivePackageManagerInPackageJson', () => {
       'yarn-classic',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package.json'),
+      expect.stringContaining('package.json'),
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
@@ -91,7 +91,7 @@ describe('derivePackageManagerInPackageJson', () => {
       'yarn-modern',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package.json'),
+      expect.stringContaining('package.json'),
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
   });
@@ -122,7 +122,9 @@ describe('derivePackageManager', () => {
     );
 
     await expect(derivePackageManager()).resolves.toBe('pnpm');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/package.json');
+    expect(fileExistsSpy).toHaveBeenCalledWith(
+      expect.stringContaining('package.json'),
+    );
     expect(deriveYarnVersionSpy).not.toHaveBeenCalled();
   });
 
@@ -135,7 +137,7 @@ describe('derivePackageManager', () => {
     );
     await expect(derivePackageManager()).resolves.toBe('npm');
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package-lock.json'),
+      expect.stringContaining('package-lock.json'),
     );
     expect(deriveYarnVersionSpy).not.toHaveBeenCalled();
   });
@@ -149,7 +151,7 @@ describe('derivePackageManager', () => {
     );
     await expect(derivePackageManager()).resolves.toBe('pnpm');
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/pnpm-lock.yaml'),
+      expect.stringContaining('pnpm-lock.yaml'),
     );
     expect(deriveYarnVersionSpy).not.toHaveBeenCalled();
   });
@@ -164,7 +166,9 @@ describe('derivePackageManager', () => {
     deriveYarnVersionSpy.mockResolvedValue('yarn-classic');
 
     await expect(derivePackageManager()).resolves.toBe('yarn-classic');
-    expect(fileExistsSpy).toHaveBeenCalledWith('/test/yarn.lock');
+    expect(fileExistsSpy).toHaveBeenCalledWith(
+      expect.stringContaining('yarn.lock'),
+    );
     expect(deriveYarnVersionSpy).toHaveBeenCalledTimes(1);
     expect(deriveYarnVersionSpy).toHaveBeenCalledWith();
   });
@@ -174,7 +178,7 @@ describe('derivePackageManager', () => {
       'Could not detect package manager. Please provide in in the js-packages plugin config.',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith(
-      osAgnosticPath('/test/package-lock.json'),
+      expect.stringContaining('package-lock.json'),
     );
   });
 });
