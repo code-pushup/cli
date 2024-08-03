@@ -2,7 +2,7 @@
   "name": "@code-pushup/cli-source",
   "version": "0.0.0",
   "license": "MIT",
-  "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
+  "description": "A CLI to provide comprehensive tech quality monitoring on your repositories",
   "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
