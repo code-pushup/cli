@@ -2,7 +2,7 @@
   "name": "@code-pushup/lighthouse-plugin",
   "version": "0.49.0",
   "license": "MIT",
-  "description": "[Code PushUp](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md) plugin for measuring web performance and quality with Lighthouse \uD83D\uDD25",
+  "description": "[Code PushUp](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md) plugin for measuring web performance and quality with Lighthouse 🔥",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-lighthouse",
   "repository": {
     "type": "git",
