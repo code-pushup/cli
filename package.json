@@ -2,7 +2,8 @@
   "name": "@code-pushup/cli-source",
   "version": "0.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/code-pushup/cli#readme",
+  "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
+  "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
   },
@@ -10,33 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/code-pushup/cli.git"
   },
-  "contributors": [
-    {
-      "name": "Igor Katsuba",
-      "email": "igor@katsuba.dev",
-      "url": "https://katsuba.dev"
-    },
-    {
-      "name": "Kateřina Pilátová",
-      "email": "katerina.pilatova@flowup.cz",
-      "url": "https://github.com/Tlacenka"
-    },
-    {
-      "name": "Matěj Chalk",
-      "email": "matej.chalk@flowup.cz",
-      "url": "https://github.com/matejchalk"
-    },
-    {
-      "name": "Michael Hladky",
-      "email": "michael.hladky@push-based.io",
-      "url": "https://push-based.io"
-    },
-    {
-      "name": "Michael Seredenko",
-      "email": "misha.seredenko@push-based.io",
-      "url": "https://github.com/MishaSeredenkoPushBased"
-    }
-  ],
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
@@ -46,6 +20,7 @@
   "engine": {
     "node": ">=18.16"
   },
+  "packageManager": "npm@9.5.0",
   "dependencies": {
     "@code-pushup/portal-client": "^0.9.0",
     "@isaacs/cliui": "^8.0.2",
