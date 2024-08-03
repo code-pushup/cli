@@ -2,7 +2,7 @@
   "name": "@code-pushup/cli-source",
   "version": "0.0.0",
   "license": "MIT",
-  "description": "A CLI to provide comprehensive tech quality monitoring on your repositories",
+  "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
   "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
@@ -20,7 +20,6 @@
   "engine": {
     "node": ">=18.16"
   },
-  "packageManager": "npm@9.5.0",
   "dependencies": {
     "@code-pushup/portal-client": "^0.9.0",
     "@isaacs/cliui": "^8.0.2",
