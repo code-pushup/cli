@@ -3,59 +3,69 @@
 exports[`CLI help > should print help with help command 1`] = `
 "[1mCode PushUp CLI[22m
 
-Commands:
-  code-pushup               Shortcut for running collect followed by upload
+[32mCommands:[39m
+  code-pushup               [2mShortcut for running collect followed by upload[22m
                                                                        [default]
-  code-pushup autorun       Shortcut for running collect followed by upload
-  code-pushup collect       Run Plugins and collect results
-  code-pushup upload        Upload report results to the portal
-  code-pushup history       Collect reports for commit history
-  code-pushup compare       Compare 2 report files and create a diff file
-  code-pushup print-config  Print config
+  code-pushup autorun       [2mShortcut for running collect followed by upload[22m
 
-Global Options:
-      --progress     Show progress bar in stdout.      [boolean] [default: true]
-      --verbose      When true creates more verbose output. This is helpful when
-                      debugging.                      [boolean] [default: false]
-      --config       Path to config file, e.g. code-pushup.config.ts. By default
-                      it loads code-pushup.config.(ts|mjs|js).          [string]
-      --tsconfig     Path to a TypeScript config, to be used when loading config
-                      file.                                             [string]
-      --onlyPlugins  List of plugins to run. If not set all plugins are run.
-                                                           [array] [default: []]
-      --skipPlugins  List of plugins to skip. If not set all plugins are run.
-                                                           [array] [default: []]
+  code-pushup collect       [2mRun Plugins and collect results[22m
+  code-pushup upload        [2mUpload report results to the portal[22m
+  code-pushup history       [2mCollect reports for commit history[22m
+  code-pushup compare       [2mCompare 2 report files and create a diff file[22m
 
-Persist Options:
-      --persist.outputDir  Directory for the produced reports           [string]
-      --persist.filename   Filename for the produced reports.           [string]
-      --persist.format     Format of the report output. e.g. \`md\`, \`json\`[array]
+  code-pushup print-config  [2mPrint config[22m
 
-Upload Options:
-      --upload.organization  Organization slug from portal              [string]
-      --upload.project       Project slug from portal                   [string]
-      --upload.server        URL to your portal server                  [string]
-      --upload.apiKey        API key for the portal server              [string]
+[32mGlobal Options:[39m
+      --progress     [2mShow progress bar in stdout.[22m
+                                             [34m[boolean] [default: true][39m
+      --verbose      [2mWhen true creates more verbose output. This is helpful when
+                      debugging.[22m       [34m[boolean] [default: false][39m
+      --config       [2mPath to config file. By default it loads code-pushup.config
+                     .(ts|mjs|js).[22m                       [34m[string][39m
+      --tsconfig     [2mPath to a TypeScript config, to be used when loading config
+                      file.[22m                              [34m[string][39m
+      --onlyPlugins  [2mList of plugins to run. If not set all plugins are run.[22m
+                                                 [34m[array] [default: []][39m
+      --skipPlugins  [2mList of plugins to skip. If not set all plugins are run.[22m
+                                                 [34m[array] [default: []][39m
 
-Options:
-  -h, --help  Show help                                                [boolean]
+[32mPersist Options:[39m
+      --persist.outputDir  [2mDirectory for the produced reports[22m
+                                                              [34m[string][39m
+      --persist.filename   [2mFilename for the produced reports.[22m
+                                                              [34m[string][39m
+      --persist.format     [2mFormat of the report output. e.g. \`md\`, \`json\`[22m
+                                                               [34m[array][39m
 
-Examples:
-  code-pushup                               Run collect followed by upload based
+[32mUpload Options:[39m
+      --upload.organization  [2mOrganization slug from portal[22m
+                                                              [34m[string][39m
+      --upload.project       [2mProject slug from portal[22m[34m[string][39m
+      --upload.server        [2mURL to your portal server[22m
+                                                              [34m[string][39m
+      --upload.apiKey        [2mAPI key for the portal server[22m
+                                                              [34m[string][39m
+
+[32mOptions:[39m
+      --version  [2mShow version[22m                       [34m[boolean][39m
+  -h, --help     [2mShow help[22m                          [34m[boolean][39m
+
+[32mExamples:[39m
+  code-pushup                               [2mRun collect followed by upload based
                                              on configuration from code-pushup.c
-                                            onfig.* file.
-  code-pushup collect --tsconfig=tsconfig.  Run collect using custom tsconfig to
-  base.json                                  parse code-pushup.config.ts file.
-  code-pushup collect --onlyPlugins=covera  Run collect with only coverage plugi
+                                            onfig.* file.[22m
+  code-pushup collect --tsconfig=tsconfig.  [2mRun collect using custom tsconfig to
+  base.json                                  parse code-pushup.config.ts file.[22m
+  code-pushup collect --onlyPlugins=covera  [2mRun collect with only coverage plugi
   ge                                        n, other plugins from config file wi
-                                            ll be skipped.
-  code-pushup collect --skipPlugins=covera  Run collect skiping the coverage plu
+                                            ll be skipped.[22m
+  code-pushup collect --skipPlugins=covera  [2mRun collect skiping the coverage plu
   ge                                        gin, other plugins from config file
-                                            will be included.
-  code-pushup upload --persist.outputDir=d  Upload dist/cp-report.json to portal
-  ist --persist.filename=cp-report --uploa   using API key from environment vari
-  d.apiKey=$CP_API_KEY                      able
-  code-pushup print-config --config code-p  Print resolved config object parsed
-  ushup.config.test.js                      from custom config location
+                                            will be included.[22m
+  code-pushup upload --persist.outputDir=d  [2mUpload dist/cp-report.json to portal
+  ist --upload.apiKey=$CP_API_KEY            using API key from environment vari
+                                            able[22m
+  code-pushup print-config --config code-p  [2mPrint resolved config object parsed
+  ushup.config.test.js                      from custom config location[22m
 "
 `;
