@@ -12,8 +12,9 @@ import { TERMINAL_WIDTH } from '@code-pushup/utils';
 import { version } from '../../package.json';
 import {
   descriptionStyle,
-  formatNestedObjects,
-  formatObject,
+  formatNestedValues,
+  formatObjectValue,
+  headerStyle,
   titleStyle,
 } from './implementation/formatting';
 import { logErrorBeforeThrow } from './implementation/global.utils';
@@ -82,7 +83,7 @@ export function yargsCli<T = unknown>(
     .coerce('config', (config: string | string[]) =>
       Array.isArray(config) ? config.at(-1) : config,
     )
-    .options(formatNestedObjects(options, 'describe'));
+    .options(formatNestedValues(options, 'describe'));
 
   // usage message
   if (usageMessage) {
@@ -101,7 +102,7 @@ export function yargsCli<T = unknown>(
 
   // add groups
   Object.entries(groups).forEach(([groupName, optionNames]) =>
-    cli.group(optionNames, titleStyle(groupName)),
+    cli.group(optionNames, headerStyle(groupName)),
   );
 
   // add middlewares
@@ -115,7 +116,7 @@ export function yargsCli<T = unknown>(
   // add commands
   commands.forEach(commandObj => {
     cli.command(
-      formatObject(
+      formatObjectValue(
         {
           ...commandObj,
           handler: logErrorBeforeThrow(commandObj.handler),

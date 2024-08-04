@@ -2,8 +2,8 @@ import { bold, dim, green } from 'ansis';
 import { describe, expect } from 'vitest';
 import {
   descriptionStyle,
-  formatNestedObjects,
-  formatObject,
+  formatNestedValues,
+  formatObjectValue,
   headerStyle,
   titleStyle,
 } from './formatting';
@@ -34,10 +34,10 @@ describe('descriptionStyle', () => {
   });
 });
 
-describe('formatInformation', () => {
+describe('formatObjectValue', () => {
   it('should return a description property with dim color', () => {
     expect(
-      formatObject(
+      formatObjectValue(
         {
           describe: 'Directory for the produced reports',
         },
@@ -49,10 +49,10 @@ describe('formatInformation', () => {
   });
 });
 
-describe('formatOptions', () => {
+describe('formatNestedValues', () => {
   it('should return a description property with dim color', () => {
     expect(
-      formatNestedObjects(
+      formatNestedValues(
         {
           outputDir: {
             describe: 'Directory for the produced reports',

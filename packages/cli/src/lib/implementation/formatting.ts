@@ -12,7 +12,7 @@ export function descriptionStyle(title: unknown) {
   return `${dim((title as string).toString())}`;
 }
 
-export function formatObject<T>(opts: T, propName: keyof T) {
+export function formatObjectValue<T>(opts: T, propName: keyof T) {
   return {
     ...opts,
     ...(opts[propName] && {
@@ -21,14 +21,14 @@ export function formatObject<T>(opts: T, propName: keyof T) {
   };
 }
 
-export function formatNestedObjects<T>(
+export function formatNestedValues<T>(
   options: Record<string, T>,
   propName: keyof T,
 ) {
   return Object.fromEntries(
     Object.entries(options).map(([key, opts]) => [
       key,
-      formatObject(opts, propName),
+      formatObjectValue(opts, propName),
     ]),
   );
 }
