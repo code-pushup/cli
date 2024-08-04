@@ -51,7 +51,7 @@ const config: CoreConfig = {
 
   categories: [
     {
-      slug: 'custom-checks',
+      slug: 'custom-c?hecks',
       title: 'Custom checks',
       refs: [
         ...fileSizeRecommendedRefs,
