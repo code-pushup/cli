@@ -19,7 +19,7 @@ export function yargsGlobalOptionsDefinition(): Record<
     },
     config: {
       describe:
-        'Path to config file, e.g. code-pushup.config.ts. By default it loads code-pushup.config.(ts|mjs|js).',
+        'Path to config file. By default it loads code-pushup.config.(ts|mjs|js).',
       type: 'string',
     },
     tsconfig: {

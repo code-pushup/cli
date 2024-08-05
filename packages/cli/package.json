@@ -2,6 +2,7 @@
   "name": "@code-pushup/cli",
   "version": "0.49.0",
   "license": "MIT",
+  "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
   "bin": {
     "code-pushup": "index.js"
   },

@@ -26,7 +26,7 @@
               },
               {
                 "sourceTag": "scope:tooling",
-                "onlyDependOnLibsWithTags": ["scope:shared"]
+                "onlyDependOnLibsWithTags": ["scope:tooling", "scope:shared"]
               },
               {
                 "sourceTag": "type:e2e",

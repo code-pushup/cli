@@ -1,5 +1,7 @@
+import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { jsPackagesPlugin } from './js-packages-plugin';
 
 vi.mock('./runner/index.ts', () => ({
@@ -10,9 +12,43 @@ vi.mock('./runner/index.ts', () => ({
 }));
 
 describe('jsPackagesPlugin', () => {
-  it('should initialise a JS packages plugin', async () => {
+  it('should initialise the plugin without a given config for NPM', async () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({
+          packageManager:
+            'npm@1.2.3+sha224.953c8233f7a92884eee2de69a1b92d1f2ec1655e66d08071ba9a02fa',
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(jsPackagesPlugin()).resolves.toStrictEqual(
+      expect.objectContaining({
+        slug: 'js-packages',
+        title: 'JS Packages',
+        audits: expect.arrayContaining([
+          expect.objectContaining({ slug: 'npm-audit-prod' }),
+          expect.objectContaining({ slug: 'npm-audit-dev' }),
+          expect.objectContaining({ slug: 'npm-outdated-dev' }),
+        ]),
+        groups: expect.any(Array),
+      }),
+    );
+  });
+
+  it('should initialise the plugin with given checks', async () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({
+          packageManager:
+            'npm@1.2.3+sha224.953c8233f7a92884eee2de69a1b92d1f2ec1655e66d08071ba9a02fa',
+        }),
+      },
+      MEMFS_VOLUME,
+    );
     await expect(
-      jsPackagesPlugin({ packageManager: 'npm', checks: ['outdated'] }),
+      jsPackagesPlugin({ checks: ['outdated'] }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
@@ -25,9 +61,16 @@ describe('jsPackagesPlugin', () => {
   });
 
   it('should create a group for both audit and outdated when no check configuration is provided', async () => {
-    await expect(
-      jsPackagesPlugin({ packageManager: 'npm' }),
-    ).resolves.toStrictEqual(
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({
+          packageManager:
+            'npm@1.2.3+sha224.953c8233f7a92884eee2de69a1b92d1f2ec1655e66d08071ba9a02fa',
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(jsPackagesPlugin()).resolves.toStrictEqual(
       expect.objectContaining<Partial<PluginConfig>>({
         groups: [
           expect.objectContaining<Partial<Group>>({
