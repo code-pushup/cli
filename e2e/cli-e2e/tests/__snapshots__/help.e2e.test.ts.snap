@@ -62,9 +62,9 @@ Examples:
   code-pushup collect --skipPlugins=covera  Run collect skiping the coverage plu
   ge                                        gin, other plugins from config file
                                             will be included.
-  code-pushup upload --persist.outputDir=d  Upload dist/cp-report.json to portal
-  ist --upload.apiKey=$CP_API_KEY            using API key from environment vari
-                                            able
+  code-pushup upload --persist.outputDir=d  Upload dist/report.json to portal us
+  ist --upload.apiKey=$CP_API_KEY           ing API key from environment variabl
+                                            e
   code-pushup print-config --config code-p  Print resolved config object parsed
   ushup.config.test.js                      from custom config location
 "
