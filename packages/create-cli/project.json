@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/create-cli/src",
   "projectType": "application",
-  "implicitDependencies": ["nx-plugin"],
   "targets": {
     "build": {
       "dependsOn": ["^build"],
