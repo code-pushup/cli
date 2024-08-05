@@ -51,7 +51,7 @@ export function formatArrayToLinesOfJsString(
   if (lines == null || lines.length === 0) {
     return;
   }
-  return `${lines.join(separator).replace('"', '')}`;
+  return lines.join(separator).replace(/"/g, '');
 }
 
 export function formatArrayToJSArray(lines?: string[]) {
