@@ -1,3 +1,4 @@
+import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI help', () => {
@@ -8,7 +9,7 @@ describe('CLI help', () => {
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
-    expect(stdout).toMatchSnapshot();
+    expect(removeColorCodes(stdout)).toMatchSnapshot();
   });
 
   it('should produce the same output to stdout for both help argument and help command', async () => {
