@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
-import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { readJsonFile } from '@code-pushup/utils';
 import { materializeTree } from './tree';
 
