@@ -1,22 +1,22 @@
 import { bold, dim, green } from 'ansis';
 
-export function titleStyle(title: unknown) {
-  return `${bold((title as string).toString())}`;
+export function titleStyle(title: string) {
+  return `${bold(title)}`;
 }
 
-export function headerStyle(title: unknown) {
-  return `${green((title as string).toString())}`;
+export function headerStyle(title: string) {
+  return `${green(title)}`;
 }
 
-export function descriptionStyle(title: unknown) {
-  return `${dim((title as string).toString())}`;
+export function descriptionStyle(title: string) {
+  return `${dim(title)}`;
 }
 
 export function formatObjectValue<T>(opts: T, propName: keyof T) {
   return {
     ...opts,
-    ...(opts[propName] && {
-      [propName]: `${descriptionStyle(opts[propName])}`,
+    ...(typeof opts[propName] === 'string' && {
+      [propName]: descriptionStyle(opts[propName]),
     }),
   };
 }
