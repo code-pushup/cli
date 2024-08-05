@@ -2,7 +2,7 @@
   "name": "@code-pushup/models",
   "version": "0.49.0",
   "license": "MIT",
-  "description": "Model definitions and validators for the [Code PushUp CLI](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md)",
+  "description": "Model definitions and validators for the Code PushUp CLI",
   "dependencies": {
     "zod": "^3.22.1",
     "vscode-material-icons": "^0.1.0"

@@ -1,7 +1,7 @@
 {
   "name": "@code-pushup/coverage-plugin",
   "version": "0.49.0",
-  "description": "[Code PushUp](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md) plugin for tracking code coverage ☂",
+  "description": "Code PushUp plugin for tracking code coverage ☂",
   "dependencies": {
     "@code-pushup/models": "0.49.0",
     "@code-pushup/utils": "0.49.0",
