@@ -108,10 +108,10 @@ module.exports = {
           };
           packageJson.contributors = rootPackageJson.contributors;
 
-          if (project.name !== 'cli') {
-            packageJson.homepage = `https://github.com/code-pushup/cli/tree/main/packages/${project.name}#readme`;
-          } else {
+          if (project.name === 'cli') {
             packageJson.homepage = rootPackageJson.homepage;
+          } else {
+            packageJson.homepage = `https://github.com/code-pushup/cli/tree/main/packages/${project.name}#readme`;
           }
 
           packageJson.type = esmExports.module;
