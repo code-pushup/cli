@@ -27,7 +27,7 @@ export async function setupFile(
       await writeFile(filename, content);
     }
   } catch (error) {
-    if ((error as Error).message.includes('no such file or directory')) {
+    if (error instanceof Error && error.message.includes('no such file or directory')) {
       await writeFile(filename, content);
       return {
         ...setupResult,
