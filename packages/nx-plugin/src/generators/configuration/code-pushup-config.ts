@@ -12,7 +12,7 @@ import {
 } from './utils';
 
 export const DEFAULT_IMPORTS = [
-  "import type { CoreConfig } from '@code-pushup/models;'",
+  "import type { CoreConfig } from '@code-pushup/models';",
 ];
 
 export type GenerateCodePushupConfigOptions = {
