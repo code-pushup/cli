@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "CommonJS",
+    "module": "ESNext",
     "declaration": true,
     "types": ["node"]
   },

@@ -1,16 +1,16 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   ProcessConfig,
   executeProcess,
   objectToCliArgs,
-} from '@code-pushup/nx-plugin';
+} from '@code-pushup/utils';
+
 import {
   parseNxProcessOutput,
   setupNxContext,
   teardownNxContext,
 } from './utils';
 
-function nxPluginGenerator(
+export function nxPluginGenerator(
   generator: 'init' | 'configuration',
   opt: Record<string, unknown> = {},
 ): ProcessConfig {
@@ -26,15 +26,23 @@ function nxPluginGenerator(
 export async function initCodePushup() {
   const setupResult = await setupNxContext();
 
-  const { stdout: initStdout, stderr: initStderr } = await executeProcess(
-    nxPluginGenerator('init', {
-      skipNxJson: true,
-    }),
+  await executeProcess(
+    {
+      ...nxPluginGenerator('init', {
+        skipNxJson: true,
+      }),
+      observer: {
+        onStdout: (data) => {
+          console.info(parseNxProcessOutput(data.toString()));
+        },
+        onError: (error) => {
+          console.error(parseNxProcessOutput(error.message.toString()));
+        }
+      }
+    }
   );
-  console.info(parseNxProcessOutput(initStdout));
-  console.warn(parseNxProcessOutput(initStderr));
 
-  const { stdout: configStdout, stderr: configStderr } = await executeProcess(
+  const {stdout: configStdout, stderr: configStderr} = await executeProcess(
     nxPluginGenerator('configuration', {
       skipTarget: true,
       project: setupResult.projectName,
