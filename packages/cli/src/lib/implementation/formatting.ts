@@ -13,10 +13,11 @@ export function descriptionStyle(title: string) {
 }
 
 export function formatObjectValue<T>(opts: T, propName: keyof T) {
+  const description = opts[propName];
   return {
     ...opts,
-    ...(typeof opts[propName] === 'string' && {
-      [propName]: descriptionStyle(opts[propName]),
+    ...(typeof description === 'string' && {
+      [propName]: descriptionStyle(description),
     }),
   };
 }
