@@ -61,7 +61,7 @@ describe('init generator', () => {
     ).toHaveLength(0);
   });
 
-  it('should skip nx.Json', () => {
+  it('should skip nx.json', () => {
     initGenerator(tree, { ...options, skipNxJson: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
