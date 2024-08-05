@@ -1,4 +1,5 @@
 import * as devKit from '@nx/devkit';
+import { formatFiles } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -16,7 +17,7 @@ describe('generateCodePushupConfig options', () => {
     });
   });
 
-  it('should create code-pushup.config.ts with options in tree', () => {
+  it('should create code-pushup.config.ts with options in tree', async () => {
     generateCodePushupConfig(tree, projectRoot, {
       fileImports: 'import type { CoreConfig } from "../dist/packages/models";',
       persist: { filename: 'report-123' },
@@ -35,6 +36,7 @@ describe('generateCodePushupConfig options', () => {
       ],
     });
 
+    await formatFiles(tree);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     expect(
       tree.read(join(projectRoot, 'code-pushup.config.ts'))?.toString(),
