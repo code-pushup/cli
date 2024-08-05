@@ -173,7 +173,7 @@ describe('derivePackageManager', () => {
     expect(deriveYarnVersionSpy).toHaveBeenCalledWith();
   });
 
-  it('should fall back to npm if neither filesystem nor env shows hints', async () => {
+  it('should report error if neither filesystem nor env shows hints', async () => {
     await expect(derivePackageManager()).rejects.toThrow(
       'Could not detect package manager. Please provide in in the js-packages plugin config.',
     );
