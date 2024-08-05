@@ -24,7 +24,7 @@ describe('deriveYarnVersion', () => {
     });
   });
 
-  it('should return yarn-modern if and yarn greater than v1 is installed', async () => {
+  it('should return yarn-modern if yarn greater than v1 is installed', async () => {
     executeProcessSpy.mockResolvedValue({ stdout: '2.22.2' } as ProcessResult);
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
