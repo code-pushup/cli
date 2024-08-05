@@ -6,6 +6,7 @@ import { materializeTree } from './tree';
 
 describe('materializeTree', () => {
   const baseDir = join('tmp', 'materialize-tree');
+
   it('should create files from tree', async () => {
     const root = join(baseDir, 'materialize');
 
