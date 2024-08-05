@@ -34,7 +34,7 @@ export async function setupFile(
         teardown: true,
       };
     } else {
-      console.error((error as Error).toString());
+      console.error(error);
     }
   }
 
