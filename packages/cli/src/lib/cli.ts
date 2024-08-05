@@ -29,7 +29,7 @@ export const cli = (args: string[]) =>
       ],
       [
         'code-pushup upload --persist.outputDir=dist --upload.apiKey=$CP_API_KEY',
-        'Upload dist/cp-report.json to portal using API key from environment variable',
+        'Upload dist/report.json to portal using API key from environment variable',
       ],
       [
         'code-pushup print-config --config code-pushup.config.test.js',
