@@ -1,7 +1,7 @@
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { afterEach, expect, vi } from 'vitest';
-import { executorContext } from '@code-pushup/test-utils';
+import { executorContext } from '@code-pushup/test-nx-utils';
 import runAutorunExecutor from './executor';
 import * as utils from './utils';
 
@@ -41,6 +41,8 @@ describe('runAutorunExecutor', () => {
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledTimes(1);
     // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {});
+    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {
+      cwd: process.cwd(),
+    });
   });
 });

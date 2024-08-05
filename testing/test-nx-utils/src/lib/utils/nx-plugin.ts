@@ -1,6 +1,6 @@
 import { CreateNodes, CreateNodesContext, CreateNodesResult } from '@nx/devkit';
 import { vol } from 'memfs';
-import { MEMFS_VOLUME } from '../constants';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 
 /**
  * Unit Testing helper for the createNodes function of a Nx plugin.
