@@ -81,7 +81,9 @@ module.exports = {
             const newPackageJson = {
               name: `@code-pushup/${project.name}`,
               private: true,
-              ...esmExports,
+              type: 'module',
+              main: 'index.js',
+              types: 'src/index.d.ts',
             };
             await writeFile(
               outputPackageJsonPath,
@@ -101,22 +103,20 @@ module.exports = {
           );
 
           packageJson.license = rootPackageJson.license;
+          if (project.name === 'cli') {
+            packageJson.homepage = rootPackageJson.homepage;
+          } else {
+            packageJson.homepage = `https://github.com/code-pushup/cli/tree/main/packages/${project.name}#readme`;
+          }
           packageJson.bugs = rootPackageJson.bugs;
           packageJson.repository = {
             ...rootPackageJson.repository,
             directory: project.data.root,
           };
           packageJson.contributors = rootPackageJson.contributors;
-
-          if (project.name === 'cli') {
-            packageJson.homepage = rootPackageJson.homepage;
-          } else {
-            packageJson.homepage = `https://github.com/code-pushup/cli/tree/main/packages/${project.name}#readme`;
-          }
-
-          packageJson.type = esmExports.module;
-          packageJson.main = esmExports.main;
-          packageJson.types = esmExports.types;
+          packageJson.type = 'module';
+          packageJson.main = './index.js';
+          packageJson.types = './src/index.d.ts';
 
           await writeFile(
             outputPackageJsonPath,
