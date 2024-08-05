@@ -1,92 +1,130 @@
-import {beforeEach, describe, expect} from "vitest";
-import {nxPluginGenerator, initCodePushup} from "./init";
-import * as utils from "@code-pushup/utils";
-import {ProcessResult} from "@code-pushup/utils";
-import {vol} from "memfs";
-import {MEMFS_VOLUME} from "@code-pushup/test-utils";
-import * as createUtils from "./utils";
+import { vol } from 'memfs';
+import { beforeEach, describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import * as utils from '@code-pushup/utils';
+import { ProcessResult } from '@code-pushup/utils';
+import { initCodePushup, nxPluginGenerator } from './init';
+import * as createUtils from './utils';
 
-describe("nxPluginGenerator", () => {
-  it("should create valid command", () => {
-    expect(nxPluginGenerator("init", {skipNxJson: true})).toStrictEqual({
-      command: "npx",
-      args: ["nx", "g", "@code-pushup/nx-plugin:init", "--skipNxJson"],
+describe('nxPluginGenerator', () => {
+  it('should create valid command', () => {
+    expect(nxPluginGenerator('init', { skipNxJson: true })).toStrictEqual({
+      command: 'npx',
+      args: ['nx', 'g', '@code-pushup/nx-plugin:init', '--skipNxJson'],
     });
-  })
+  });
 });
 
-
-describe("initCodePushup", () => {
-  const spyExecuteProcess = vi.spyOn(utils, "executeProcess");
-  const spyParseNxProcessOutput = vi.spyOn(createUtils, "parseNxProcessOutput");
-  const spySetupNxContext= vi.spyOn(createUtils, "setupNxContext");
-  const spyTeardownNxContext = vi.spyOn(createUtils, "teardownNxContext");
+describe('initCodePushup', () => {
+  const spyExecuteProcess = vi.spyOn(utils, 'executeProcess');
+  const spyParseNxProcessOutput = vi.spyOn(createUtils, 'parseNxProcessOutput');
+  const spySetupNxContext = vi.spyOn(createUtils, 'setupNxContext');
+  const spyTeardownNxContext = vi.spyOn(createUtils, 'teardownNxContext');
 
   beforeEach(() => {
     // needed to get test folder set up
-    vol.fromJSON({
-      "random-file": '',
-    }, MEMFS_VOLUME);
+    vol.fromJSON(
+      {
+        'random-file': '',
+      },
+      MEMFS_VOLUME,
+    );
     vol.rm('random-file', () => void 0);
-  })
+  });
 
-  it("should add packages and create config file", async () => {
-    const projectJson= {name: 'my-lib'};
+  it('should add packages and create config file', async () => {
+    const projectJson = { name: 'my-lib' };
 
-    vol.fromJSON({
-      "nx.json": "{}",
-      "project.json": JSON.stringify(projectJson),
-    }, MEMFS_VOLUME)
+    vol.fromJSON(
+      {
+        'nx.json': '{}',
+        'project.json': JSON.stringify(projectJson),
+      },
+      MEMFS_VOLUME,
+    );
 
-    spyExecuteProcess.mockResolvedValue({stdout: "stdout-mock", stderr: ""} as ProcessResult);
+    spyExecuteProcess.mockResolvedValue({
+      stdout: 'stdout-mock',
+      stderr: '',
+    } as ProcessResult);
 
     await initCodePushup();
 
     expect(spySetupNxContext).toHaveBeenCalledTimes(1);
 
     expect(spyExecuteProcess).toHaveBeenNthCalledWith(1, {
-      command: "npx",
-      args: ["nx", "g", "@code-pushup/nx-plugin:init", "--skipNxJson"],
-      observer: expect.any(Object)
+      command: 'npx',
+      args: ['nx', 'g', '@code-pushup/nx-plugin:init', '--skipNxJson'],
+      observer: expect.any(Object),
     });
-    expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, "stdout-mock");
+    expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, 'stdout-mock');
     expect(spyExecuteProcess).toHaveBeenNthCalledWith(2, {
-      command: "npx",
-      args: ["nx", "g", "@code-pushup/nx-plugin:configuration", "--skipTarget", `--project="${projectJson.name}"`]
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        '@code-pushup/nx-plugin:configuration',
+        '--skipTarget',
+        `--project="${projectJson.name}"`,
+      ],
     });
-    expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, "stdout-mock");
+    expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, 'stdout-mock');
     expect(spyParseNxProcessOutput).toHaveBeenCalledTimes(2);
     expect(spyExecuteProcess).toHaveBeenCalledTimes(2);
     expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
-    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {projectName: projectJson.name, nxJsonTeardown: false, projectJsonTeardown: false});
+    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
+      projectName: projectJson.name,
+      nxJsonTeardown: false,
+      projectJsonTeardown: false,
+    });
   });
 
-  it("should teardown nx.json if set up", async () => {
-    const projectJson= {name: 'my-lib'};
-    vol.fromJSON({
-      "project.json": JSON.stringify(projectJson),
-    }, MEMFS_VOLUME)
+  it('should teardown nx.json if set up', async () => {
+    const projectJson = { name: 'my-lib' };
+    vol.fromJSON(
+      {
+        'project.json': JSON.stringify(projectJson),
+      },
+      MEMFS_VOLUME,
+    );
 
-    spyExecuteProcess.mockResolvedValue({stdout: "stdout-mock", stderr: ""} as ProcessResult);
+    spyExecuteProcess.mockResolvedValue({
+      stdout: 'stdout-mock',
+      stderr: '',
+    } as ProcessResult);
 
     await initCodePushup();
 
     expect(spySetupNxContext).toHaveBeenCalledTimes(1);
     expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
-    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {projectName: projectJson.name, nxJsonTeardown: true, projectJsonTeardown: false});
+    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
+      projectName: projectJson.name,
+      nxJsonTeardown: true,
+      projectJsonTeardown: false,
+    });
   });
 
-  it("should teardown project.json if set up", async () => {
-    vol.fromJSON({
-      "nx.json": "{}",
-    }, MEMFS_VOLUME)
+  it('should teardown project.json if set up', async () => {
+    vol.fromJSON(
+      {
+        'nx.json': '{}',
+      },
+      MEMFS_VOLUME,
+    );
 
-    spyExecuteProcess.mockResolvedValue({stdout: "stdout-mock", stderr: ""} as ProcessResult);
+    spyExecuteProcess.mockResolvedValue({
+      stdout: 'stdout-mock',
+      stderr: '',
+    } as ProcessResult);
 
     await initCodePushup();
 
     expect(spySetupNxContext).toHaveBeenCalledTimes(1);
     expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
-    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {projectName: 'source-root', nxJsonTeardown: false, projectJsonTeardown: true});
+    expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
+      projectName: 'source-root',
+      nxJsonTeardown: false,
+      projectJsonTeardown: true,
+    });
   });
 });

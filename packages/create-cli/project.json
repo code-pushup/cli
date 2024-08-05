@@ -52,5 +52,5 @@
       "options": {}
     }
   },
-  "tags": ["scope:core", "type:app"]
+  "tags": ["scope:tooling", "type:app"]
 }

@@ -3,7 +3,6 @@ import {
   executeProcess,
   objectToCliArgs,
 } from '@code-pushup/utils';
-
 import {
   parseNxProcessOutput,
   setupNxContext,
@@ -26,23 +25,21 @@ export function nxPluginGenerator(
 export async function initCodePushup() {
   const setupResult = await setupNxContext();
 
-  await executeProcess(
-    {
-      ...nxPluginGenerator('init', {
-        skipNxJson: true,
-      }),
-      observer: {
-        onStdout: (data) => {
-          console.info(parseNxProcessOutput(data.toString()));
-        },
-        onError: (error) => {
-          console.error(parseNxProcessOutput(error.message.toString()));
-        }
-      }
-    }
-  );
+  await executeProcess({
+    ...nxPluginGenerator('init', {
+      skipNxJson: true,
+    }),
+    observer: {
+      onStdout: data => {
+        console.info(parseNxProcessOutput(data.toString()));
+      },
+      onError: error => {
+        console.error(parseNxProcessOutput(error.message.toString()));
+      },
+    },
+  });
 
-  const {stdout: configStdout, stderr: configStderr} = await executeProcess(
+  const { stdout: configStdout, stderr: configStderr } = await executeProcess(
     nxPluginGenerator('configuration', {
       skipTarget: true,
       project: setupResult.projectName,
