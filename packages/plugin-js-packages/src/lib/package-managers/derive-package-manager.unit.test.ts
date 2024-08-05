@@ -175,7 +175,7 @@ describe('derivePackageManager', () => {
 
   it('should report error if neither filesystem nor env shows hints', async () => {
     await expect(derivePackageManager()).rejects.toThrow(
-      'Could not detect package manager. Please provide in in the js-packages plugin config.',
+      'Could not detect package manager. Please provide it in the js-packages plugin config.',
     );
     expect(fileExistsSpy).toHaveBeenCalledWith(
       expect.stringContaining('package-lock.json'),

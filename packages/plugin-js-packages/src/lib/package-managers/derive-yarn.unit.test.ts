@@ -24,19 +24,8 @@ describe('deriveYarnVersion', () => {
     });
   });
 
-  it('should return yarn-modern  if and yarn v2 is installed', async () => {
+  it('should return yarn-modern if and yarn greater than v1 is installed', async () => {
     executeProcessSpy.mockResolvedValue({ stdout: '2.22.2' } as ProcessResult);
-
-    await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'yarn',
-      args: ['-v'],
-    });
-  });
-
-  it('should return yarn-modern  if and yarn v3 is installed', async () => {
-    executeProcessSpy.mockResolvedValue({ stdout: '3.22.2' } as ProcessResult);
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);

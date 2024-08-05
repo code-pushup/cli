@@ -24,7 +24,7 @@ describe('normalizeConfig', () => {
 
   it('should throw if no package manager is detected', async () => {
     await expect(normalizeConfig()).rejects.toThrow(
-      'Could not detect package manager. Please provide in in the js-packages plugin config.',
+      'Could not detect package manager. Please provide it in the js-packages plugin config.',
     );
   });
 
