@@ -4,7 +4,7 @@
   "license": "MIT",
   "bin": "src/index.js",
   "dependencies": {
-    "@code-pushup/nx-plugin": "^0.48.0",
+    "@code-pushup/nx-plugin": "*",
     "tslib": "^2.6.2"
   }
 }
