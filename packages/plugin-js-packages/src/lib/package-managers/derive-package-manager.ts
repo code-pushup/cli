@@ -52,6 +52,6 @@ export async function derivePackageManager(
   }
 
   throw new Error(
-    'Could not detect package manager. Please provide in in the js-packages plugin config.',
+    'Could not detect package manager. Please provide it in the js-packages plugin config.',
   );
 }
