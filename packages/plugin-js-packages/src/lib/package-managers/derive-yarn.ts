@@ -6,10 +6,10 @@ export async function deriveYarnVersion() {
     args: ['-v'],
   });
 
-  const yarnVersion = stdout.toString().trim().at(0);
-  if (yarnVersion === '2' || yarnVersion === '3') {
+  const yarnVersion = Number.parseInt(stdout.toString().trim().at(0), 10);
+  if (yarnVersion >= 2) {
     return 'yarn-modern';
-  } else if (yarnVersion === '1') {
+  } else if (yarnVersion === 1) {
     return 'yarn-classic';
   }
   return false;
