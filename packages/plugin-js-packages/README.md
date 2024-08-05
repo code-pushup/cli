@@ -45,7 +45,7 @@ It supports the following package managers:
      // ...
      plugins: [
        // ...
-       await jsPackagesPlugin({ packageManager: 'npm' }), // replace with your package manager
+       await jsPackagesPlugin(), // the package manager is automatically derived from your file system. Use { packageManager: 'npm' } to configure it.
      ],
    };
    ```
@@ -59,7 +59,7 @@ It supports the following package managers:
      // ...
      plugins: [
        // ...
-       await jsPackagesPlugin({ packageManager: ['yarn-classic'], checks: ['audit'], dependencyGroups: ['prod'] }),
+       await jsPackagesPlugin({ packageManager: 'yarn-classic', checks: ['audit'], dependencyGroups: ['prod'] }),
      ],
    };
    ```

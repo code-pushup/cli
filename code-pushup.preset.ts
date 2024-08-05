@@ -98,7 +98,7 @@ export const coverageCategories: CategoryConfig[] = [
 
 export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => {
   return {
-    plugins: [await jsPackagesPlugin({ packageManager: 'npm' })],
+    plugins: [await jsPackagesPlugin()],
     categories: jsPackagesCategories,
   };
 };
