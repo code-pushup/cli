@@ -18,7 +18,7 @@ describe('generateCodePushupConfig options', () => {
 
   it('should create code-pushup.config.ts with options in tree', () => {
     generateCodePushupConfig(tree, projectRoot, {
-      fileImports: "import type { CoreConfig } from '../dist/packages/models;",
+      fileImports: 'import type { CoreConfig } from "../dist/packages/models";',
       persist: { filename: 'report-123' },
       upload: { apiKey: '123' },
       plugins: [

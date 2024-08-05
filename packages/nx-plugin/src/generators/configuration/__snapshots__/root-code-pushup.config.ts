@@ -1,4 +1,4 @@
-import type { CoreConfig } from "../dist/packages/models;
+import type { CoreConfig } from "../dist/packages/models";
 import * as myPlugin from "my-plugin";
 import {myPluginCategory} from "my-plugin";
 
