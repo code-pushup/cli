@@ -4,11 +4,11 @@
 [![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcreate-cli)](https://npmtrends.com/@code-pushup/create-cli)
 [![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/create-cli)](https://www.npmjs.com/package/@code-pushup/create-cli?activeTab=dependencies)
 
-A CLI tool to set up CodePushup in your repository.
+A CLI tool to set up Code PushUp in your repository.
 
 ## Usage
 
-To set uo CodePushup run the following command:
+To set up Code PushUp, run the following command:
 
 ```bash
 npx init @code-pushup/cli
