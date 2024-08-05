@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
+import * as utils from '@code-pushup/nx-plugin';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import * as utils from '@code-pushup/utils';
-import { ProcessResult } from '@code-pushup/utils';
+import type { ProcessResult } from '@code-pushup/utils';
 import { initCodePushup, nxPluginGenerator } from './init';
 import * as createUtils from './utils';
 
@@ -30,6 +30,15 @@ describe('initCodePushup', () => {
       MEMFS_VOLUME,
     );
     vol.rm('random-file', () => void 0);
+
+    spyExecuteProcess.mockResolvedValue({
+      stdout: 'stdout-mock',
+      stderr: '',
+    } as ProcessResult);
+  });
+
+  afterEach(() => {
+    spyExecuteProcess.mockReset();
   });
 
   it('should add packages and create config file', async () => {
@@ -42,11 +51,6 @@ describe('initCodePushup', () => {
       },
       MEMFS_VOLUME,
     );
-
-    spyExecuteProcess.mockResolvedValue({
-      stdout: 'stdout-mock',
-      stderr: '',
-    } as ProcessResult);
 
     await initCodePushup();
 
@@ -87,11 +91,6 @@ describe('initCodePushup', () => {
       },
       MEMFS_VOLUME,
     );
-
-    spyExecuteProcess.mockResolvedValue({
-      stdout: 'stdout-mock',
-      stderr: '',
-    } as ProcessResult);
 
     await initCodePushup();
 
