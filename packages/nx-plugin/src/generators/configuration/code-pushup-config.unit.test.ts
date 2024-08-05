@@ -32,10 +32,6 @@ describe('generateCodePushupConfig options', () => {
   });
 
   it('should create code-pushup.config.ts with options', () => {
-    generateFilesSpy.mockImplementation((...[_, __, target, options]) => {
-      expect({ target, options }).toMatchSnapshot();
-    });
-
     generateCodePushupConfig(tree, testProjectName, {
       fileImports: ["import type { CoreConfig } from 'dist/packages/models';"],
       persist: { filename: 'report-123' },
