@@ -60,9 +60,9 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.objectContaining({
         fileImports: formatArrayToLinesOfJsString([
-          "import type { CoreConfig } from 'dist/packages/models';",
-          "import * as myPlugin from 'my-plugin';",
-          "import {myPluginCategory} from 'my-plugin';",
+          'import type { CoreConfig } from "dist/packages/models";',
+          'import * as myPlugin from "my-plugin";',
+          'import {myPluginCategory} from "my-plugin";',
         ]),
         persist: formatObjectToFormattedJsString({ filename: 'report-123' }),
         upload: formatObjectToFormattedJsString({ apiKey: '123' }),
@@ -139,7 +139,7 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.objectContaining({
         fileImports: formatArrayToLinesOfJsString([
-          "import type { CoreConfig } from '../../dist/packages/models';",
+          'import type { CoreConfig } from "../../dist/packages/models";',
         ]),
       }),
     );

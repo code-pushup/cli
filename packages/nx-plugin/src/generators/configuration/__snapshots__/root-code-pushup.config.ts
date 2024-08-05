@@ -1,8 +1,5 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`generateCodePushupConfig options > should create code-pushup.config.ts with options in tree 1`] = `
-"import type { CoreConfig } from '../dist/packages/models;
-import * as myPlugin from my-plugin";
+import type { CoreConfig } from "../dist/packages/models;
+import * as myPlugin from "my-plugin";
 import {myPluginCategory} from "my-plugin";
 
 // see: https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md#coreconfig
@@ -16,5 +13,3 @@ export default {
     plugins: [myPlugin({ timeout: 42})],
     categories: [myPluginCategory()]
 } satisfies CoreConfig;
-"
-`;
