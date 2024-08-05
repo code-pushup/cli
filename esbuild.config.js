@@ -70,12 +70,6 @@ module.exports = {
             .then(stats => stats.isFile())
             .catch(() => false);
 
-          const esmExports = {
-            type: 'module',
-            main: 'index.js',
-            types: 'src/index.d.ts',
-          };
-
           if (!isPublishable) {
             /** @type {import('nx/src/utils/package-json').PackageJson} */
             const newPackageJson = {
