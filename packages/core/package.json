@@ -3,12 +3,6 @@
   "version": "0.49.0",
   "license": "MIT",
   "description": "Core business logic for the used by the [Code PushUp CLI](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md)",
-  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/core",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/code-pushup/cli.git",
-    "directory": "packages/core"
-  },
   "dependencies": {
     "@code-pushup/models": "0.49.0",
     "@code-pushup/utils": "0.49.0",

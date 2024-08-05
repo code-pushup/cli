@@ -2,12 +2,6 @@
   "name": "@code-pushup/js-packages-plugin",
   "version": "0.49.0",
   "description": "[Code PushUp](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md) plugin for JavaScript packages 🛡️",
-  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-js-packages",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/code-pushup/cli.git",
-    "directory": "packages/plugin-js-packages"
-  },
   "dependencies": {
     "@code-pushup/models": "0.49.0",
     "@code-pushup/utils": "0.49.0",

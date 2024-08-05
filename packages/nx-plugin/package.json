@@ -3,12 +3,6 @@
   "version": "0.29.0",
   "license": "MIT",
   "description": "Nx plugin to integrate the [Code PushUp CLI](https://github.com/code-pushup/cli/tree/main/packages/cli/README.md) into your workspace 🛠️",
-  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/nx-plugin",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/code-pushup/cli.git",
-    "directory": "packages/nx-plugin"
-  },
   "dependencies": {
     "@nx/devkit": "^17.1.3",
     "tslib": "2.6.2",
