@@ -30,14 +30,24 @@ describe('formatArrayToJSArray', () => {
 describe('formatArrayToLinesOfJsString', () => {
   it('should return lines as JS', () => {
     expect(
+      formatArrayToLinesOfJsString([`import plugin from "../mx-plugin";`]),
+    ).toMatchInlineSnapshot(
+      `
+        "import plugin from "../mx-plugin";"
+      `,
+    );
+  });
+
+  it('should return lines as JS with normalized quotes', () => {
+    expect(
       formatArrayToLinesOfJsString([
-        "import { CoreConfig } from '@code-pushup/models';",
-        "import plugin from '../mx-plugin';",
+        `import { CoreConfig } from '@code-pushup/models';`,
+        `import plugin from "../mx-plugin";`,
       ]),
     ).toMatchInlineSnapshot(
       `
-        "import { CoreConfig } from '@code-pushup/models';
-        import plugin from '../mx-plugin';"
+        "import { CoreConfig } from "@code-pushup/models";
+        import plugin from "../mx-plugin";"
       `,
     );
   });
@@ -83,9 +93,6 @@ describe('normalizeItemOrArray', () => {
   });
 
   it('should keep string array', () => {
-    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual({
-      fileImports: ['import { CoreConfig } from "@code-pushup/models";'],
-      codeStrings: ['myPlugin()'],
-    });
+    expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
   });
 });

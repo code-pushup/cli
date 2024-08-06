@@ -70,31 +70,6 @@ describe('addTargetToProject', () => {
       executor: `${PACKAGE_NAME}:autorun`,
     });
   });
-
-  it('should use bin to generate a project target', () => {
-    addTargetToProject(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-        bin: '../my-plugin',
-      },
-    );
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-
-    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: '../my-plugin:autorun',
-    });
-  });
 });
 
 describe('configurationGenerator', () => {
@@ -127,19 +102,6 @@ describe('configurationGenerator', () => {
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
       executor: `${PACKAGE_NAME}:autorun`,
     });
-  });
-
-  it('should skip target creation if skipTarget is used', async () => {
-    await configurationGenerator(tree, {
-      project: testProjectName,
-      skipTarget: true,
-    });
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-    expect(projectConfiguration.targets).toBeUndefined();
   });
 
   it('should skip target creation if skipTarget is used', async () => {

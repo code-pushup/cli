@@ -15,7 +15,7 @@ export async function configurationGenerator(
 ) {
   const projectConfiguration = readProjectConfiguration(tree, options.project);
 
-  const { skipConfig, skipTarget } = options;
+  const { skipConfig, skipTarget, skipFormat } = options;
 
   if (skipConfig !== true) {
     generateCodePushupConfig(tree, projectConfiguration.root);
@@ -25,7 +25,9 @@ export async function configurationGenerator(
     addTargetToProject(tree, projectConfiguration, options);
   }
 
-  await formatFiles(tree);
+  if (skipFormat !== true) {
+    await formatFiles(tree);
+  }
 }
 
 export function addTargetToProject(

@@ -5,4 +5,5 @@ export type ConfigurationGeneratorOptions = {
   bin?: string;
   skipTarget?: boolean;
   skipConfig?: boolean;
+  skipFormat?: boolean;
 } & DynamicTargetOptions;

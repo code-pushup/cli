@@ -35,6 +35,11 @@
       "type": "boolean",
       "description": "Skip adding the code-pushup.config.ts to the project root.",
       "$default": "false"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting of changed files",
+      "$default": "false"
     }
   },
   "required": ["project"]
