@@ -101,7 +101,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toMatch(updateProjectMsgRegex);
   });
 
-  it('should NOT create conde-pushup.config.ts file if skipConfig is given', async () => {
+  it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
     const cwd = join(baseDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
