@@ -1,6 +1,6 @@
 import { Tree } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile, rm } from 'node:fs/promises';
+import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
@@ -8,17 +8,14 @@ import {
   materializeTree,
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
-import { distPluginPackage, executeGenerator } from '../mocks/utils';
+import { executeProcess } from '@code-pushup/utils';
 
-function executeConfigurationGenerator(
-  args: string[],
-  cwd: string = process.cwd(),
-) {
-  return executeGenerator(args, {
-    bin: distPluginPackage(cwd),
-    generator: 'configuration',
-    cwd,
-  });
+// @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
+export function relativePathToDist(testDir: string): string {
+  return relative(
+    join(process.cwd(), testDir),
+    join(process.cwd(), 'dist/packages/nx-plugin'),
+  );
 }
 
 describe('nx-plugin g configuration', () => {
@@ -35,29 +32,21 @@ describe('nx-plugin g configuration', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should inform about dry run', async () => {
+  it('should generate code-pushup.config.ts file and add target to project.json', async () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
-    const { stderr } = await executeConfigurationGenerator(
-      [project, '--dryRun'],
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:configuration `,
+        project,
+        '--targetName=code-pushup',
+      ],
       cwd,
-    );
-
-    const cleanedStderr = removeColorCodes(stderr);
-    expect(cleanedStderr).toContain(
-      'NOTE: The "dryRun" flag means no changes were made.',
-    );
-  });
-
-  it('should generate conde-pushup.config.ts file and add target to project.json', async () => {
-    const cwd = join(baseDir, 'configure');
-    await materializeTree(tree, cwd);
-
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--targetName code-pushup', '--dryRun'],
-      cwd,
-    );
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
@@ -67,23 +56,42 @@ describe('nx-plugin g configuration', () => {
     );
 
     const cleanedStdout = removeColorCodes(stdout);
+
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
+
+    const projectJson = await readFile(
+      join(cwd, 'libs', project, 'project.json'),
+      'utf8',
     );
 
-    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
-    expect(cleanedStdout).toMatch(`^UPDATE.*project.json$`);
+    expect(JSON.parse(projectJson)).toStrictEqual(
+      expect.objectContaining({
+        targets: expect.objectContaining({
+          'code-pushup': {
+            executor: '@code-pushup/nx-plugin:autorun',
+          },
+        }),
+      }),
+    );
+    await expect(
+      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.not.toThrow();
   });
 
-  it('should NOT conde-pushup.config.ts file if one already exists', async () => {
+  it('should NOT create a code-pushup.config.ts file if one already exists', async () => {
     const cwd = join(baseDir, 'configure-config-existing');
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
 
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--dryRun'],
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'g', `${relativePathToDist(cwd)}:configuration `, project],
       cwd,
-    );
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
@@ -94,60 +102,134 @@ describe('nx-plugin g configuration', () => {
 
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
     );
+    expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
-    expect(cleanedStdout).not.toMatch(`^CREATE.*code-pushup.config.ts`);
-    expect(cleanedStdout).toMatch(`^UPDATE.*project.json$`);
+    const projectJson = await readFile(
+      join(cwd, 'libs', project, 'project.json'),
+      'utf8',
+    );
+    expect(JSON.parse(projectJson)).toStrictEqual(
+      expect.objectContaining({
+        targets: expect.objectContaining({
+          'code-pushup': {
+            executor: '@code-pushup/nx-plugin:autorun',
+          },
+        }),
+      }),
+    );
   });
 
-  it('should NOT create conde-pushup.config.ts file if skipConfig is given', async () => {
+  it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
     const cwd = join(baseDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--skipConfig', '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:configuration `,
+        project,
+        '--skipConfig',
+      ],
       cwd,
-    );
+    });
 
-    const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
 
-    expect(cleanedStderr).not.toContain(
-      `NOTE: No config file created as code-pushup.config.ts file already exists.`,
-    );
-
     const cleanedStdout = removeColorCodes(stdout);
+
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
+
+    const projectJson = await readFile(
+      join(cwd, 'libs', project, 'project.json'),
+      'utf8',
+    );
+    expect(JSON.parse(projectJson)).toStrictEqual(
+      expect.objectContaining({
+        targets: expect.objectContaining({
+          'code-pushup': {
+            executor: '@code-pushup/nx-plugin:autorun',
+          },
+        }),
+      }),
     );
 
-    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
-    expect(cleanedStdout).not.toMatch(`^UPDATE.*project.json$`);
+    await expect(
+      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+    ).rejects.toThrow('no such file or directory');
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
     const cwd = join(baseDir, 'configure-skip-target');
     await materializeTree(tree, cwd);
 
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--skipTarget', '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:configuration `,
+        project,
+        '--skipTarget',
+      ],
       cwd,
-    );
-
-    const cleanedStderr = removeColorCodes(stderr);
+    });
     expect(code).toBe(0);
 
-    expect(cleanedStderr).not.toContain(
-      `NOTE: No config file created as code-pushup.config.ts file already exists.`,
-    );
-
     const cleanedStdout = removeColorCodes(stdout);
+
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
+
+    const projectJson = await readFile(
+      join(cwd, 'libs', project, 'project.json'),
+      'utf8',
+    );
+    expect(JSON.parse(projectJson)).toStrictEqual(
+      expect.objectContaining({
+        targets: expect.not.objectContaining({
+          'code-pushup': {
+            executor: '@code-pushup/nx-plugin:autorun',
+          },
+        }),
+      }),
     );
 
-    expect(cleanedStdout).toMatch(`^CREATE.*code-pushup.config.ts`);
-    expect(cleanedStdout).not.toMatch(`^UPDATE.*project.json$`);
+    await expect(
+      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.toStrictEqual(expect.any(String));
+  });
+
+  it('should inform about dry run', async () => {
+    const cwd = join(baseDir, 'configure');
+    await materializeTree(tree, cwd);
+
+    const { stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:configuration `,
+        project,
+        '--dryRun',
+      ],
+      cwd,
+    });
+
+    const cleanedStderr = removeColorCodes(stderr);
+    expect(cleanedStderr).toContain(
+      'NOTE: The "dryRun" flag means no changes were made.',
+    );
   });
 });

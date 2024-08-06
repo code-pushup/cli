@@ -4,6 +4,7 @@ import {
   Tree,
   addDependenciesToPackageJson,
   convertNxGenerator,
+  logger,
   readJson,
   readNxJson,
   runTasksInSerial,
@@ -75,14 +76,19 @@ function updateNxJsonConfig(tree: Tree) {
 }
 
 export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
-  if (!schema.skipPackageJson) {
-    moveToDevDependencies(tree);
-  }
   updateNxJsonConfig(tree);
 
   const tasks = [];
-  if (!schema.skipPackageJson) {
-    tasks.push(checkDependenciesInstalled(tree));
+  if (schema.skipPackageJson) {
+    logger.info(`Skip updating package.json`);
+  } else {
+    moveToDevDependencies(tree);
+    const installDependencies = checkDependenciesInstalled(tree);
+    if (schema.skipInstall) {
+      logger.info(`Skip installing packages`);
+    } else {
+      tasks.push(installDependencies);
+    }
   }
   return runTasksInSerial(...tasks);
 }

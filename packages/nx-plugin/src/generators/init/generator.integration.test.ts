@@ -1,7 +1,6 @@
-import { Tree, readJson, readNxJson } from '@nx/devkit';
+import { Tree, logger, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { describe, expect, it } from 'vitest';
-import { PACKAGE_NAME } from '../../internal/constants';
+import { describe, expect, it, vi } from 'vitest';
 import { initGenerator } from './generator';
 import { InitGeneratorSchema } from './schema';
 
@@ -14,12 +13,13 @@ const cpTargetName = 'code-pushup';
 const devDependencyNames = [
   '@code-pushup/cli',
   '@code-pushup/models',
-  PACKAGE_NAME,
+  '@code-pushup/nx-plugin',
   '@code-pushup/utils',
 ];
 
 describe('init generator', () => {
   let tree: Tree;
+  const loggerInfoSpy = vi.spyOn(logger, 'info');
   const options: InitGeneratorSchema = { skipPackageJson: false };
 
   beforeEach(() => {
@@ -60,5 +60,25 @@ describe('init generator', () => {
         devDependencyNames.includes(dep),
       ),
     ).toHaveLength(0);
+    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip updating package.json');
+  });
+
+  it('should skip package installation', () => {
+    initGenerator(tree, { ...options, skipInstall: true });
+    // nx.json
+    const targetDefaults = readNxJson(tree)!.targetDefaults!;
+    expect(targetDefaults).toHaveProperty(cpTargetName);
+    expect(targetDefaults[cpTargetName]).toEqual({
+      inputs: ['default', '^production'],
+      cache: true,
+    });
+    // package.json
+    const pkgJson = readJson<PackageJson>(tree, 'package.json');
+    expect(
+      Object.keys(pkgJson.devDependencies).filter(dep =>
+        devDependencyNames.includes(dep),
+      ),
+    ).toHaveLength(4);
+    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip installing packages');
   });
 });
