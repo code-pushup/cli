@@ -1,6 +1,7 @@
 import {
   Tree,
   formatFiles,
+  logger,
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
@@ -17,15 +18,21 @@ export async function configurationGenerator(
 
   const { skipConfig, skipTarget, skipFormat } = options;
 
-  if (skipConfig !== true) {
+  if (skipConfig === true) {
+    logger.info('Skip config file creation');
+  } else {
     generateCodePushupConfig(tree, projectConfiguration.root);
   }
 
-  if (skipTarget !== true) {
+  if (skipTarget === true) {
+    logger.info('Skip adding target to project');
+  } else {
     addTargetToProject(tree, projectConfiguration, options);
   }
 
-  if (skipFormat !== true) {
+  if (skipFormat === true) {
+    logger.info('Skip formatting files');
+  } else {
     await formatFiles(tree);
   }
 }

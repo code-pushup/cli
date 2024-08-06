@@ -164,7 +164,7 @@ describe('nx-plugin g configuration', () => {
 
     await expect(
       readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
-    ).rejects.toThrow();
+    ).rejects.toThrow('no such file or directory');
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
