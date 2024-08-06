@@ -1,11 +1,12 @@
 import {
   Tree,
   formatFiles,
+  logger,
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
 import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
 import { generateCodePushupConfig } from './code-pushup-config';
 import { ConfigurationGeneratorOptions } from './schema';
 
@@ -17,15 +18,21 @@ export async function configurationGenerator(
 
   const { skipConfig, skipTarget, skipFormat } = options;
 
-  if (skipConfig !== true) {
+  if (skipConfig === true) {
+    logger.info('Skip config file creation');
+  } else {
     generateCodePushupConfig(tree, projectConfiguration.root);
   }
 
-  if (skipTarget !== true) {
+  if (skipTarget === true) {
+    logger.info('Skip adding target to project');
+  } else {
     addTargetToProject(tree, projectConfiguration, options);
   }
 
-  if (skipFormat !== true) {
+  if (skipFormat === true) {
+    logger.info('Skip formatting files');
+  } else {
     await formatFiles(tree);
   }
 }
@@ -39,7 +46,7 @@ export function addTargetToProject(
   const { targetName, project } = options;
 
   const codePushupTargetConfig = {
-    executor: '@code-pushup/nx-plugin:autorun',
+    executor: `${PACKAGE_NAME}:autorun`,
   };
 
   updateProjectConfiguration(tree, project, {

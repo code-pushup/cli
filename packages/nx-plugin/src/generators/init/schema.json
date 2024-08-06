@@ -9,6 +9,11 @@
       "type": "boolean",
       "description": "Skip adding package.json dependencies",
       "x-priority": "internal"
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "description": "Skip package installation",
+      "x-priority": "internal"
     }
   }
 }
