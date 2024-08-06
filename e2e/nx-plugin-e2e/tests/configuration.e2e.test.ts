@@ -11,7 +11,7 @@ import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
-export function relativePathToDist(testDir: string): string {
+function relativePathToDist(testDir: string): string {
   return relative(
     join(process.cwd(), testDir),
     join(process.cwd(), 'dist/packages/nx-plugin'),
