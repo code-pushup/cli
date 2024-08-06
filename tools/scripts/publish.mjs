@@ -26,8 +26,9 @@ const [, , name, version, tag = 'next', registry = 'https://www.npmjs.com'] =
 
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
+const parsedVersion = version && version.replace(/vV/, '');
 invariant(
-  version && validVersion.test(version),
+  version.match(parsedVersion),
   `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${version}.`,
 );
 
