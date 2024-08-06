@@ -2,28 +2,8 @@
  * This script starts a local registry for e2e testing purposes.
  * It is meant to be called in jest's globalSetup.
  */
-import { execSync, spawn } from 'node:child_process';
+import { execFileSync, execSync, spawn } from 'node:child_process';
 import { join } from 'node:path';
-import { releasePublish, releaseVersion } from 'nx/release';
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
-
-function isProcessRunning(pid) {
-  try {
-    // Send a signal of 0 to check if the process exists
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    console.error(`Prozess with id ${pid} could not get killed.\n${(error as Error).message}`);
-    return false;
-  }
-}
-
-function killSafe(pid) {
-  if (isProcessRunning(pid)) {
-    process.kill(pid);
-  }
-}
 
 export default async () => {
   // local registry target to run
@@ -54,29 +34,25 @@ export default async () => {
     const version = execSync('git describe --tags --abbrev=0')
       .toString()
       .trim();
-
-    await releaseVersion({
-      specifier: version.substring(1),
-      stageChanges: false,
-      gitCommit: false,
-      gitTag: false,
-      firstRelease: true,
-      generatorOptionsOverrides: {
-        skipLockFileUpdate: true,
-      },
-    });
-
-    await releasePublish({
-      tag: 'e2e',
-      registry,
-    });
-    // Adaptation of [the setup suggested by Nx](https://nx.dev/recipes/nx-release/update-local-registry-setup).
-    // Define explicitly the registry to remove dependency on NPM config.
-    return registry;
-  } catch (e) {
-    console.error(e);
-    global.stopLocalRegistry();
-    process.exit(1);
+    // is is also possible to use nx release to publish the packages to the local registry
+    execFileSync(
+      'npx',
+      [
+        'nx',
+        'run-many',
+        '--targets',
+        'publish',
+        '--ver',
+        version,
+        '--registry',
+        registry,
+        '--tag',
+        'e2e',
+      ],
+      { env: process.env, stdio: 'inherit', shell: true },
+    );
+  } catch (error) {
+    console.error((error as Error).message);
   }
 };
 
@@ -138,7 +114,7 @@ function startLocalRegistry({
             registry,
             stop: () => {
               if (childProcess.pid) {
-                killSafe(-childProcess.pid);
+                process.kill(-childProcess.pid);
               }
               // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
               childProcess.kill();
