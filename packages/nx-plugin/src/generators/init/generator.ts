@@ -83,7 +83,10 @@ export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
 
   const tasks = [];
   if (!schema.skipPackageJson) {
-    tasks.push(checkDependenciesInstalled(tree));
+    const installDependencies = checkDependenciesInstalled(tree);
+    if (!schema.skipInstall) {
+      tasks.push(installDependencies);
+    }
   }
   return runTasksInSerial(...tasks);
 }

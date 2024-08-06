@@ -1,5 +1,5 @@
 import { Tree } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
+import { readFile, rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import {
@@ -62,7 +62,7 @@ describe('nx-plugin g init', () => {
         'g',
         `${relativePathToDist(cwd)}:init `,
         project,
-        '--dryRun',
+        '--skipInstall',
       ],
       cwd,
     });
@@ -74,6 +74,30 @@ describe('nx-plugin g init', () => {
     );
     expect(cleanedStdout).toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
+
+    const packageJson = await readFile(join(cwd, 'package.json'), 'utf8');
+    const nxJson = await readFile(join(cwd, 'nx.json'), 'utf8');
+
+    expect(JSON.parse(packageJson)).toStrictEqual(
+      expect.objectContaining({
+        devDependencies: expect.objectContaining({
+          '@code-pushup/cli': expect.any(String),
+          '@code-pushup/models': expect.any(String),
+          '@code-pushup/nx-plugin': expect.any(String),
+          '@code-pushup/utils': expect.any(String),
+        }),
+      }),
+    );
+    expect(JSON.parse(nxJson)).toStrictEqual(
+      expect.objectContaining({
+        targetDefaults: expect.objectContaining({
+          'code-pushup': {
+            cache: true,
+            inputs: ['default', '^production'],
+          },
+        }),
+      }),
+    );
   });
 
   it('should skip packages.json update if --skipPackageJson is given', async () => {
@@ -87,7 +111,7 @@ describe('nx-plugin g init', () => {
         'g',
         `${relativePathToDist(cwd)}:init `,
         project,
-        '--dryRun',
+        '--skipInstall',
         '--skipPackageJson',
       ],
       cwd,
@@ -100,5 +124,29 @@ describe('nx-plugin g init', () => {
     );
     expect(cleanedStdout).not.toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
+
+    const packageJson = await readFile(join(cwd, 'package.json'), 'utf8');
+    const nxJson = await readFile(join(cwd, 'nx.json'), 'utf8');
+
+    expect(JSON.parse(packageJson)).toStrictEqual(
+      expect.objectContaining({
+        devDependencies: expect.not.objectContaining({
+          '@code-pushup/cli': expect.any(String),
+          '@code-pushup/models': expect.any(String),
+          '@code-pushup/nx-plugin': expect.any(String),
+          '@code-pushup/utils': expect.any(String),
+        }),
+      }),
+    );
+    expect(JSON.parse(nxJson)).toStrictEqual(
+      expect.objectContaining({
+        targetDefaults: expect.objectContaining({
+          'code-pushup': {
+            cache: true,
+            inputs: ['default', '^production'],
+          },
+        }),
+      }),
+    );
   });
 });
