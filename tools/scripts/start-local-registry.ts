@@ -28,12 +28,9 @@ export default async () => {
     [
       'nx',
       'run-many',
-      '--targets',
-      'publish',
-      '--ver',
-      version,
-      '--tag',
-      'e2e',
+      '--targets=publish',
+      `--ver=${version}`,
+      '--tag=e2e'
     ],
     { env: process.env, stdio: 'inherit', shell: true },
   );

@@ -39,7 +39,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-coverage {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs --name=plugin-coverage --ver={args.ver} --tag={args.tag}",
       "dependsOn": ["build"]
     }
   },
