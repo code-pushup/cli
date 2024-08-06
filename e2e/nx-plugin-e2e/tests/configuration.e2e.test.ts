@@ -78,7 +78,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toMatch(updateProjectMsgRegex);
   });
 
-  it('should NOT conde-pushup.config.ts file if one already exists', async () => {
+  it('should NOT create a code-pushup.config.ts file if one already exists', async () => {
     const cwd = join(baseDir, 'configure-config-existing');
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
