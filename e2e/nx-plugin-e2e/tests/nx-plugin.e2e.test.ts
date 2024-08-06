@@ -1,4 +1,5 @@
 import { Tree } from '@nx/devkit';
+import { plugins } from '@swc/core';
 import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
@@ -12,13 +13,14 @@ import {
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
+import {
+  formatArrayToLinesOfJsString,
+  formatObjectToFormattedJsString,
+} from '../../../packages/nx-plugin/src/generators/configuration/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
-export function relativePathToDist(testDir: string): string {
-  return relative(
-    join(process.cwd(), testDir),
-    join(process.cwd(), 'dist/packages/nx-plugin'),
-  );
+export function relativePathToCwd(testDir: string): string {
+  return relative(join(process.cwd(), testDir), join(process.cwd()));
 }
 
 describe('nx-plugin', () => {
@@ -35,13 +37,37 @@ describe('nx-plugin', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should execute configuration', async () => {
-    const cwd = join(baseDir, 'registered');
+  it('should add configuration target dynamically', async () => {
+    const cwd = join(baseDir, 'add-configuration-dynamically');
+    registerPluginInWorkspace(
+      tree,
+      join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+    );
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      ['code-pushup--configuration']: {
+        configurations: {}, // @TODO understand why this appears. should not be here
+        executor: 'nx:run-commands',
+        options: {
+          command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
+        },
+      },
+    });
+
+    expect(projectJson).toMatchSnapshot();
+  });
+
+  it('should execute dynamic configuration target', async () => {
+    const cwd = join(baseDir, 'execute-dynamic-configuration');
     registerPluginInWorkspace(tree, {
-      plugin: relativePathToDist(cwd),
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
         // would need to install it over verddaccio
-        bin: distPluginPackage(cwd),
+        bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       },
     });
     await materializeTree(tree, cwd);
@@ -63,31 +89,10 @@ describe('nx-plugin', () => {
     ).resolves.toMatchSnapshot();
   });
 
-  it('should add config targets dynamically', async () => {
-    const cwd = join(baseDir, 'registered');
-    registerPluginInWorkspace(tree, relativePathToDist(cwd));
-    await materializeTree(tree, cwd);
-
-    const { code, projectJson } = await nxShowProjectJson(cwd, project);
-    expect(code).toBe(0);
-
-    expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: {
-        configurations: {}, // @TODO understand why this appears. should not be here
-        executor: 'nx:run-commands',
-        options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
-        },
-      },
-    });
-
-    expect(projectJson).toMatchSnapshot();
-  });
-
-  it('should consider plugin option targetName', async () => {
-    const cwd = join(baseDir, 'option-target-name');
+  it('should consider plugin option targetName in configuration target', async () => {
+    const cwd = join(baseDir, 'configuration-option-target-name');
     registerPluginInWorkspace(tree, {
-      plugin: relativePathToDist(cwd),
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
         targetName: 'cp',
       },
@@ -103,12 +108,12 @@ describe('nx-plugin', () => {
     });
   });
 
-  it('should consider plugin option bin', async () => {
-    const cwd = join(baseDir, 'option-bin');
+  it('should consider plugin option bin in configuration target', async () => {
+    const cwd = join(baseDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
-      plugin: relativePathToDist(cwd),
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
-        bin: distPluginPackage(cwd),
+        bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       },
     });
     await materializeTree(tree, cwd);
@@ -122,8 +127,9 @@ describe('nx-plugin', () => {
         configurations: {}, // @TODO understand why this appears. should not be here
         executor: 'nx:run-commands',
         options: {
-          command: `nx g ${distPluginPackage(
-            cwd,
+          command: `nx g ${join(
+            relativePathToCwd(cwd),
+            'dist/packages/nx-plugin',
           )}:configuration --project=${project}`,
         },
       },
@@ -131,8 +137,11 @@ describe('nx-plugin', () => {
   });
 
   it('should NOT add config targets dynamically if the project is configured', async () => {
-    const cwd = join(baseDir, 'already-configured');
-    registerPluginInWorkspace(tree, relativePathToDist(cwd));
+    const cwd = join(baseDir, 'configuration-already-configured');
+    registerPluginInWorkspace(
+      tree,
+      join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+    );
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
@@ -141,12 +150,81 @@ describe('nx-plugin', () => {
 
     expect(code).toBe(0);
 
-    expect(projectJson.targets).toStrictEqual({});
+    expect(projectJson.targets).toStrictEqual(
+      expect.not.objectContaining({
+        ['code-pushup--configuration']: {
+          configurations: {}, // @TODO understand why this appears. should not be here
+          executor: 'nx:run-commands',
+          options: {
+            command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
+          },
+        },
+      }),
+    );
     expect(projectJson).toMatchSnapshot();
   });
 
-  it('should NOT add config targets dynamically if plugin is not registered', async () => {
-    const cwd = join(baseDir, 'not-registered');
+  it('should add executor target dynamically', async () => {
+    const cwd = join(baseDir, 'add-executor-dynamically');
+    registerPluginInWorkspace(
+      tree,
+      join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+    );
+    const { root } = readProjectConfiguration(tree, project);
+    generateCodePushupConfig(tree, root);
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      ['code-pushup']: {
+        configurations: {},
+        executor: `@code-pushup/nx-plugin:autorun`,
+        options: {},
+      },
+    });
+
+    expect(projectJson).toMatchSnapshot();
+  });
+
+  it.skip('should execute dynamic executor target', async () => {
+    const cwd = join(baseDir, 'execute-dynamic-executor');
+    registerPluginInWorkspace(tree, {
+      plugin: relativePathToCwd(cwd),
+      options: {
+        bin: relativePathToCwd(cwd),
+      },
+    });
+    const { root } = readProjectConfiguration(tree, project);
+    generateCodePushupConfig(tree, root, {
+      fileImports: `import {CoreConfig} from "${join(
+        relativePathToCwd(cwd),
+        'dist/packages/models',
+      )}";`,
+      plugins: [
+        {
+          fileImports: `import jsPackagesPlugin from "${join(
+            relativePathToCwd(cwd),
+            'dist/packages/plugin-js-packages',
+          )}";`,
+          codeStrings: 'await jsPackagesPlugin()',
+        },
+      ],
+    });
+    await materializeTree(tree, cwd);
+
+    const { stdout } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'run', `${project}:code-pushup`],
+      cwd,
+    });
+    const cleanStdout = removeColorCodes(stdout);
+    expect(cleanStdout).toBe('');
+  });
+
+  it('should NOT add targets dynamically if plugin is not registered', async () => {
+    const cwd = join(baseDir, 'plugin-not-registered');
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(cwd, project);

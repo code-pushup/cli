@@ -2,6 +2,7 @@ import { readdir } from 'node:fs/promises';
 import { CP_TARGET_NAME } from '../constants';
 import type { NormalizedCreateNodesContext } from '../types';
 import { createConfigurationTarget } from './configuration-target';
+import { createExecutorTarget } from './executor-target';
 
 export async function createTargets(
   normalizedContext: NormalizedCreateNodesContext,
@@ -12,7 +13,9 @@ export async function createTargets(
     filename.match(/^code-pushup\.config.(\w*\.)*(ts|js|mjs)$/),
   )
     ? // @TODO return code-pushup cli target https://github.com/code-pushup/cli/issues/619
-      {}
+      {
+        [targetName]: createExecutorTarget({ bin }),
+      }
     : // if NO code-pushup.config.*.(ts|js|mjs) is present return configuration target
       {
         [`${targetName}--configuration`]: createConfigurationTarget({

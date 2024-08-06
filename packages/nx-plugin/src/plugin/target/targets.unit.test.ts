@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { rm } from 'node:fs/promises';
-import { beforeEach, expect } from 'vitest';
+import { afterEach, beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { PACKAGE_NAME } from '../../internal/constants';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
 import { CP_TARGET_NAME } from '../constants';
 import { NormalizedCreateNodesContext } from '../types';
 import { createTargets } from './targets';
@@ -17,6 +17,10 @@ describe('createTargets', () => {
       MEMFS_VOLUME,
     );
     await rm('x');
+  });
+
+  afterEach(() => {
+    vol.reset();
   });
 
   it('should return configuration targets for project without code-pushup config', async () => {
@@ -75,11 +79,23 @@ describe('createTargets', () => {
           targetName,
         },
       } as NormalizedCreateNodesContext),
-    ).resolves.toStrictEqual({});
+    ).resolves.toStrictEqual(
+      expect.not.objectContaining({
+        [`${targetName}--configuration`]: {
+          command: `nx g ${PACKAGE_NAME}:configuration --project=${projectName}`,
+        },
+      }),
+    );
   });
 
-  it('should return executor targets for project is configured', async () => {
+  it('should return executor target if code-pushup config is given', async () => {
     const projectName = 'plugin-my-plugin';
+    vol.fromJSON(
+      {
+        [`code-pushup.config.ts`]: `{}`,
+      },
+      MEMFS_VOLUME,
+    );
     const targetName = 'cp';
     await expect(
       createTargets({
@@ -91,9 +107,59 @@ describe('createTargets', () => {
           targetName,
         },
       } as NormalizedCreateNodesContext),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        [targetName]: {
+          executor: `${PACKAGE_NAME}:autorun`,
+        },
+      }),
+    );
+  });
+
+  it('should return executor targets for project is configured', async () => {
+    const projectName = 'plugin-my-plugin';
+    vol.fromJSON(
+      {
+        [`code-pushup.config.ts`]: `{}`,
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(
+      createTargets({
+        projectRoot: '.',
+        projectJson: {
+          name: projectName,
+        },
+        createOptions: {},
+      } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [`${targetName}`]: {
-        command: `nx g ${PACKAGE_NAME}:autorun --project=${projectName}`,
+      [DEFAULT_TARGET_NAME]: {
+        executor: '@code-pushup/nx-plugin:autorun',
+      },
+    });
+  });
+
+  it('should return executor targets for configured project and use given targetName', async () => {
+    const projectName = 'plugin-my-plugin';
+    vol.fromJSON(
+      {
+        [`code-pushup.config.ts`]: `{}`,
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(
+      createTargets({
+        projectRoot: '.',
+        projectJson: {
+          name: projectName,
+        },
+        createOptions: {
+          targetName: 'cp',
+        },
+      } as NormalizedCreateNodesContext),
+    ).resolves.toStrictEqual({
+      cp: {
+        executor: '@code-pushup/nx-plugin:autorun',
       },
     });
   });
