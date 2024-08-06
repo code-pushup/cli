@@ -77,4 +77,25 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({});
   });
+
+  it('should return executor targets for project is configured', async () => {
+    const projectName = 'plugin-my-plugin';
+    const targetName = 'cp';
+    await expect(
+      createTargets({
+        projectRoot: '.',
+        projectJson: {
+          name: projectName,
+        },
+        createOptions: {
+          targetName,
+        },
+      } as NormalizedCreateNodesContext),
+    ).resolves.toStrictEqual({
+      [`${targetName}`]: {
+        command: `nx g ${PACKAGE_NAME}:autorun --project=${projectName}`,
+      },
+    });
+  });
+
 });

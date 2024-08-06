@@ -1,6 +1,6 @@
 import { Tree } from '@nx/devkit';
 import { rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import {join, relative} from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -12,22 +12,14 @@ import {
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
-import { distPluginPackage, pluginFilePath } from '../mocks/utils';
 
-async function executeConfigurationTarger(
-  project: string,
-  args: string[],
-  options: {
-    cwd?: string;
-    targetName?: string;
-  },
-) {
-  const { cwd } = options;
-  return await executeProcess({
-    command: 'npx',
-    args: ['nx', 'run', `${project}:code-pushup--configuration`, ...args],
-    cwd,
-  });
+
+// @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
+export function relativePathToDist(testDir: string): string {
+  return relative(
+    join(process.cwd(), testDir),
+    join(process.cwd(), 'dist/packages/nx-plugin'),
+  );
 }
 
 describe('nx-plugin', () => {
@@ -47,7 +39,7 @@ describe('nx-plugin', () => {
   it('should execute configuration', async () => {
     const cwd = join(baseDir, 'registered');
     registerPluginInWorkspace(tree, {
-      plugin: pluginFilePath(cwd),
+      plugin: relativePathToDist(cwd),
       options: {
         // would need to install it over verddaccio
         bin: distPluginPackage(cwd),
@@ -55,9 +47,11 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const { code, stdout } = await executeConfigurationTarger(project, [], {
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'run', `${project}:code-pushup--configuration`],
       cwd,
-    });
+    })
 
     expect(code).toBe(0);
 
@@ -72,7 +66,7 @@ describe('nx-plugin', () => {
 
   it('should add config targets dynamically', async () => {
     const cwd = join(baseDir, 'registered');
-    registerPluginInWorkspace(tree, pluginFilePath(cwd));
+    registerPluginInWorkspace(tree, relativePathToDist(cwd));
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(cwd, project);
@@ -94,7 +88,7 @@ describe('nx-plugin', () => {
   it('should consider plugin option targetName', async () => {
     const cwd = join(baseDir, 'option-target-name');
     registerPluginInWorkspace(tree, {
-      plugin: pluginFilePath(cwd),
+      plugin: relativePathToDist(cwd),
       options: {
         targetName: 'cp',
       },
@@ -113,7 +107,7 @@ describe('nx-plugin', () => {
   it('should consider plugin option bin', async () => {
     const cwd = join(baseDir, 'option-bin');
     registerPluginInWorkspace(tree, {
-      plugin: pluginFilePath(cwd),
+      plugin: relativePathToDist(cwd),
       options: {
         bin: distPluginPackage(cwd),
       },
@@ -139,7 +133,7 @@ describe('nx-plugin', () => {
 
   it('should NOT add config targets dynamically if the project is configured', async () => {
     const cwd = join(baseDir, 'already-configured');
-    registerPluginInWorkspace(tree, pluginFilePath(cwd));
+    registerPluginInWorkspace(tree, relativePathToDist(cwd));
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
