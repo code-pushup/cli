@@ -1,31 +1,25 @@
 import { Tree } from '@nx/devkit';
 import { rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
   materializeTree,
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
-import { distPluginPackage, executeGenerator } from '../mocks/utils';
+import { executeProcess } from '@code-pushup/utils';
 
-function executeInitGenerator(args: string[], cwd: string = process.cwd()) {
-  return executeGenerator(args, {
-    bin: distPluginPackage(cwd),
-    generator: 'init',
-    cwd,
-  });
+export function distPluginPackage(testDir: string): string {
+  return relative(
+    join(process.cwd(), testDir),
+    join(process.cwd(), 'dist/packages/nx-plugin'),
+  );
 }
 
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
   const baseDir = 'tmp/nx-plugin-e2e/generators/init';
-
-  const generatorExecMsgRegex = (cwd: string) =>
-    `NX  Generating ${distPluginPackage(cwd)}:init`;
-  const createNxJsonMsgRegex = /^UPDATE nx.json/m;
-  const updatePackageJsonMsgRegex = /^UPDATE package.json/m;
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -39,7 +33,11 @@ describe('nx-plugin g init', () => {
     const cwd = join(baseDir, 'dry-run');
     await materializeTree(tree, cwd);
 
-    const { stderr } = await executeInitGenerator([project, '--dryRun'], cwd);
+    const { stderr } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'g', `${distPluginPackage(cwd)}:init `, project, '--dryRun'],
+      cwd,
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(cleanedStderr).toContain(
@@ -51,29 +49,44 @@ describe('nx-plugin g init', () => {
     const cwd = join(baseDir, 'nx-update');
     await materializeTree(tree, cwd);
 
-    const { code, stdout } = await executeInitGenerator(
-      [project, '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'g', `${distPluginPackage(cwd)}:init `, project, '--dryRun'],
       cwd,
-    );
+    });
+
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).toMatch(updatePackageJsonMsgRegex);
-    expect(cleanedStdout).toMatch(createNxJsonMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:init`,
+    );
+    expect(cleanedStdout).toMatch(/^UPDATE package.json/m);
+    expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
   });
 
   it('should skip packages.json update if --skipPackageJson is given', async () => {
     const cwd = join(baseDir, 'skip-packages');
     await materializeTree(tree, cwd);
 
-    const { code, stdout } = await executeInitGenerator(
-      [project, '--skipPackageJson', '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:init `,
+        project,
+        '--dryRun',
+        '--skipPackageJson',
+      ],
       cwd,
-    );
+    });
+
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).not.toMatch(updatePackageJsonMsgRegex);
-    expect(cleanedStdout).toMatch(createNxJsonMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:init`,
+    );
+    expect(cleanedStdout).not.toMatch(/^UPDATE package.json/m);
+    expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
   });
 });

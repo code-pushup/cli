@@ -1,6 +1,6 @@
 import { Tree } from '@nx/devkit';
 import { rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
@@ -8,17 +8,14 @@ import {
   materializeTree,
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
-import { distPluginPackage, executeGenerator } from '../mocks/utils';
+import { executeProcess } from '@code-pushup/utils';
 
-function executeConfigurationGenerator(
-  args: string[],
-  cwd: string = process.cwd(),
-) {
-  return executeGenerator(args, {
-    bin: distPluginPackage(cwd),
-    generator: 'configuration',
-    cwd,
-  });
+// @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
+export function distPluginPackage(testDir: string): string {
+  return relative(
+    join(process.cwd(), testDir),
+    join(process.cwd(), 'dist/packages/nx-plugin'),
+  );
 }
 
 describe('nx-plugin g configuration', () => {
@@ -26,11 +23,6 @@ describe('nx-plugin g configuration', () => {
   const project = 'my-lib';
   const projectRoot = join('libs', project);
   const baseDir = 'tmp/nx-plugin-e2e/generators/configuration';
-
-  const generatorExecMsgRegex = (cwd: string) =>
-    `NX  Generating ${distPluginPackage(cwd)}:configuration`;
-  const createConfigMsgRegex = /^CREATE.*code-pushup.config.ts/m;
-  const updateProjectMsgRegex = /^UPDATE.*project.json/m;
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -44,10 +36,17 @@ describe('nx-plugin g configuration', () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
-    const { stderr } = await executeConfigurationGenerator(
-      [project, '--dryRun'],
+    const { stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:configuration `,
+        project,
+        '--dryRun',
+      ],
       cwd,
-    );
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(cleanedStderr).toContain(
@@ -59,10 +58,18 @@ describe('nx-plugin g configuration', () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--targetName code-pushup', '--dryRun'],
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:configuration `,
+        project,
+        '--dryRun',
+        '--targetName=code-pushup',
+      ],
       cwd,
-    );
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
@@ -73,9 +80,11 @@ describe('nx-plugin g configuration', () => {
 
     const cleanedStdout = removeColorCodes(stdout);
 
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).toMatch(createConfigMsgRegex);
-    expect(cleanedStdout).toMatch(updateProjectMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
   });
 
   it('should NOT create a code-pushup.config.ts file if one already exists', async () => {
@@ -83,10 +92,17 @@ describe('nx-plugin g configuration', () => {
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
 
-    const { code, stdout, stderr } = await executeConfigurationGenerator(
-      [project, '--dryRun'],
+    const { code, stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:configuration `,
+        project,
+        '--dryRun',
+      ],
       cwd,
-    );
+    });
 
     const cleanedStderr = removeColorCodes(stderr);
     expect(code).toBe(0);
@@ -96,43 +112,65 @@ describe('nx-plugin g configuration', () => {
     );
 
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).not.toMatch(createConfigMsgRegex);
-    expect(cleanedStdout).toMatch(updateProjectMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
   });
 
   it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
     const cwd = join(baseDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
-    const { code, stdout } = await executeConfigurationGenerator(
-      [project, '--skipConfig', '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:configuration `,
+        project,
+        '--dryRun',
+        '--skipConfig',
+      ],
       cwd,
-    );
+    });
 
     expect(code).toBe(0);
 
     const cleanedStdout = removeColorCodes(stdout);
 
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).not.toMatch(createConfigMsgRegex);
-    expect(cleanedStdout).toMatch(updateProjectMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
     const cwd = join(baseDir, 'configure-skip-target');
     await materializeTree(tree, cwd);
 
-    const { code, stdout } = await executeConfigurationGenerator(
-      [project, '--skipTarget', '--dryRun'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'g',
+        `${distPluginPackage(cwd)}:configuration `,
+        project,
+        '--dryRun',
+        '--skipTarget',
+      ],
       cwd,
-    );
+    });
     expect(code).toBe(0);
 
     const cleanedStdout = removeColorCodes(stdout);
 
-    expect(cleanedStdout).toContain(generatorExecMsgRegex(cwd));
-    expect(cleanedStdout).toMatch(createConfigMsgRegex);
-    expect(cleanedStdout).not.toMatch(updateProjectMsgRegex);
+    expect(cleanedStdout).toContain(
+      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+    );
+    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
   });
 });
