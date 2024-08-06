@@ -2,12 +2,12 @@ import {join, relative} from "node:path";
 import {executeProcess} from "@code-pushup/utils";
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
-export function distPluginPackage(cwd: string): string {
-  return relative(join(process.cwd(), cwd), join(process.cwd(), "dist/packages/nx-plugin"));
+export function distPluginPackage(testDir: string): string {
+  return relative(join(process.cwd(), testDir), join(process.cwd(), "dist/packages/nx-plugin"));
 }
 
-export function pluginFilePath(cwd: string): string {
-  return relative(join(process.cwd(), cwd), join(process.cwd(), "packages/nx-plugin/src/index.ts"));
+export function pluginFilePath(testDir: string): string {
+  return relative(join(process.cwd(), testDir), join(process.cwd(), "packages/nx-plugin/src/index.ts"));
 }
 
 export async function executeGenerator(args: string[], options: {
