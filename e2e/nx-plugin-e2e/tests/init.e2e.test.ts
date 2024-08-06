@@ -9,7 +9,7 @@ import {
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
-export function distPluginPackage(testDir: string): string {
+export function relativePathToDist(testDir: string): string {
   return relative(
     join(process.cwd(), testDir),
     join(process.cwd(), 'dist/packages/nx-plugin'),
@@ -35,7 +35,13 @@ describe('nx-plugin g init', () => {
 
     const { stderr } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'g', `${distPluginPackage(cwd)}:init `, project, '--dryRun'],
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:init `,
+        project,
+        '--dryRun',
+      ],
       cwd,
     });
 
@@ -51,14 +57,20 @@ describe('nx-plugin g init', () => {
 
     const { code, stdout } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'g', `${distPluginPackage(cwd)}:init `, project, '--dryRun'],
+      args: [
+        'nx',
+        'g',
+        `${relativePathToDist(cwd)}:init `,
+        project,
+        '--dryRun',
+      ],
       cwd,
     });
 
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:init`,
+      `NX  Generating ${relativePathToDist(cwd)}:init`,
     );
     expect(cleanedStdout).toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
@@ -73,7 +85,7 @@ describe('nx-plugin g init', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:init `,
+        `${relativePathToDist(cwd)}:init `,
         project,
         '--dryRun',
         '--skipPackageJson',
@@ -84,7 +96,7 @@ describe('nx-plugin g init', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:init`,
+      `NX  Generating ${relativePathToDist(cwd)}:init`,
     );
     expect(cleanedStdout).not.toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);

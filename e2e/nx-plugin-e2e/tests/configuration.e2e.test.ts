@@ -11,7 +11,7 @@ import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
-export function distPluginPackage(testDir: string): string {
+export function relativePathToDist(testDir: string): string {
   return relative(
     join(process.cwd(), testDir),
     join(process.cwd(), 'dist/packages/nx-plugin'),
@@ -41,7 +41,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:configuration `,
+        `${relativePathToDist(cwd)}:configuration `,
         project,
         '--dryRun',
       ],
@@ -63,7 +63,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:configuration `,
+        `${relativePathToDist(cwd)}:configuration `,
         project,
         '--dryRun',
         '--targetName=code-pushup',
@@ -81,7 +81,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -97,7 +97,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:configuration `,
+        `${relativePathToDist(cwd)}:configuration `,
         project,
         '--dryRun',
       ],
@@ -113,7 +113,7 @@ describe('nx-plugin g configuration', () => {
 
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -128,7 +128,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:configuration `,
+        `${relativePathToDist(cwd)}:configuration `,
         project,
         '--dryRun',
         '--skipConfig',
@@ -141,7 +141,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -156,7 +156,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${distPluginPackage(cwd)}:configuration `,
+        `${relativePathToDist(cwd)}:configuration `,
         project,
         '--dryRun',
         '--skipTarget',
@@ -168,7 +168,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${distPluginPackage(cwd)}:configuration`,
+      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
