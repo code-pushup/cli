@@ -5,6 +5,7 @@ import {executeProcess} from "@code-pushup/utils";
 export function distPluginPackage(cwd: string): string {
   return relative(join(process.cwd(), cwd), join(process.cwd(), "dist/packages/nx-plugin"));
 }
+
 export function pluginFilePath(cwd: string): string {
   return relative(join(process.cwd(), cwd), join(process.cwd(), "packages/nx-plugin/src/index.ts"));
 }
