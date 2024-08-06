@@ -1,6 +1,6 @@
 import { Tree } from '@nx/devkit';
 import { rm } from 'node:fs/promises';
-import {join, relative} from 'node:path';
+import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -12,7 +12,6 @@ import {
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
-
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function relativePathToDist(testDir: string): string {
@@ -51,7 +50,7 @@ describe('nx-plugin', () => {
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup--configuration`],
       cwd,
-    })
+    });
 
     expect(code).toBe(0);
 
