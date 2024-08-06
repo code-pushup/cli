@@ -5,7 +5,7 @@ import {
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
 import { addTargetToProject, configurationGenerator } from './generator';
 
 describe('addTargetToProject', () => {
@@ -42,7 +42,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+      executor: `${PACKAGE_NAME}:autorun`,
     });
   });
 
@@ -67,7 +67,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.['cp']).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+      executor: `${PACKAGE_NAME}:autorun`,
     });
   });
 });
@@ -97,7 +97,7 @@ describe('configurationGenerator', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+      executor: `${PACKAGE_NAME}:autorun`,
     });
   });
 

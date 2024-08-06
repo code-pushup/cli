@@ -5,7 +5,7 @@ import {
   updateProjectConfiguration,
 } from '@nx/devkit';
 import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
 import { generateCodePushupConfig } from './code-pushup-config';
 import { ConfigurationGeneratorOptions } from './schema';
 
@@ -39,7 +39,7 @@ export function addTargetToProject(
   const { targetName, project } = options;
 
   const codePushupTargetConfig = {
-    executor: '@code-pushup/nx-plugin:autorun',
+    executor: `${PACKAGE_NAME}:autorun`,
   };
 
   updateProjectConfiguration(tree, project, {
