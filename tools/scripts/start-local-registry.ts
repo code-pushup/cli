@@ -5,13 +5,16 @@
 import { execSync, spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { releasePublish, releaseVersion } from 'nx/release';
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 function isProcessRunning(pid) {
   try {
     // Send a signal of 0 to check if the process exists
     process.kill(pid, 0);
     return true;
-  } catch (err) {
+  } catch (error) {
+    console.error(`Prozess with id ${pid} could not get killed.\n${(error as Error).message}`);
     return false;
   }
 }
