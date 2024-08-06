@@ -32,7 +32,7 @@ describe('nx-plugin g configuration', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should generate conde-pushup.config.ts file and add target to project.json', async () => {
+  it('should generate code-pushup.config.ts file and add target to project.json', async () => {
     const cwd = join(baseDir, 'configure');
     await materializeTree(tree, cwd);
 
