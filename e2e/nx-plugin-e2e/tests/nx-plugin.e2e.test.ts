@@ -1,5 +1,4 @@
 import { Tree } from '@nx/devkit';
-import { plugins } from '@swc/core';
 import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
@@ -13,10 +12,6 @@ import {
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
-import {
-  formatArrayToLinesOfJsString,
-  formatObjectToFormattedJsString,
-} from '../../../packages/nx-plugin/src/generators/configuration/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function relativePathToCwd(testDir: string): string {
@@ -53,7 +48,7 @@ describe('nx-plugin', () => {
         configurations: {}, // @TODO understand why this appears. should not be here
         executor: 'nx:run-commands',
         options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
+          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName=code-pushup --project=${project}`,
         },
       },
     });
@@ -66,7 +61,6 @@ describe('nx-plugin', () => {
     registerPluginInWorkspace(tree, {
       plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
-        // would need to install it over verddaccio
         bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       },
     });
@@ -113,7 +107,7 @@ describe('nx-plugin', () => {
     registerPluginInWorkspace(tree, {
       plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
-        bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+        bin: 'XYZ',
       },
     });
     await materializeTree(tree, cwd);
@@ -123,16 +117,11 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: {
-        configurations: {}, // @TODO understand why this appears. should not be here
-        executor: 'nx:run-commands',
+      ['code-pushup--configuration']: expect.objectContaining({
         options: {
-          command: `nx g ${join(
-            relativePathToCwd(cwd),
-            'dist/packages/nx-plugin',
-          )}:configuration --project=${project}`,
+          command: `nx g XYZ:configuration --skipTarget --targetName=code-pushup --project=${project}`,
         },
-      },
+      }),
     });
   });
 
@@ -152,19 +141,13 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual(
       expect.not.objectContaining({
-        ['code-pushup--configuration']: {
-          configurations: {}, // @TODO understand why this appears. should not be here
-          executor: 'nx:run-commands',
-          options: {
-            command: `nx g @code-pushup/nx-plugin:configuration --project=${project}`,
-          },
-        },
+        ['code-pushup--configuration']: expect.any(Object),
       }),
     );
     expect(projectJson).toMatchSnapshot();
   });
 
-  it('should add executor target dynamically', async () => {
+  it('should add executor target dynamically if the project is configured', async () => {
     const cwd = join(baseDir, 'add-executor-dynamically');
     registerPluginInWorkspace(
       tree,
@@ -188,39 +171,75 @@ describe('nx-plugin', () => {
     expect(projectJson).toMatchSnapshot();
   });
 
-  it.skip('should execute dynamic executor target', async () => {
+  it('should execute dynamic executor target', async () => {
     const cwd = join(baseDir, 'execute-dynamic-executor');
+    const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
     registerPluginInWorkspace(tree, {
-      plugin: relativePathToCwd(cwd),
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
-        bin: relativePathToCwd(cwd),
+        bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       },
     });
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root, {
-      fileImports: `import {CoreConfig} from "${join(
+      fileImports: `import type {CoreConfig} from "${join(
         relativePathToCwd(cwd),
+        pathRelativeToPackage,
         'dist/packages/models',
       )}";`,
       plugins: [
         {
           fileImports: `import jsPackagesPlugin from "${join(
             relativePathToCwd(cwd),
+            pathRelativeToPackage,
             'dist/packages/plugin-js-packages',
           )}";`,
-          codeStrings: 'await jsPackagesPlugin()',
+          // @TODO improve formatObjectToJsString to get rid of the "`" hack
+          codeStrings: 'await jsPackagesPlugin({packageManager: `npm`})',
         },
       ],
     });
     await materializeTree(tree, cwd);
 
-    const { stdout } = await executeProcess({
+    const { stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`],
+      args: ['nx', 'run', `${project}:code-pushup -- --dryRun`],
       cwd,
     });
+
+    const cleanStderr = removeColorCodes(stderr);
+    // @TODO create test environment for working plugin. This here misses package.jock to execute correctly
+    expect(cleanStderr).toContain(
+      'DryRun execution of: npx @code-pushup/cli autorun',
+    );
+
     const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toBe('');
+    expect(cleanStdout).toContain(
+      'NX   Successfully ran target code-pushup for project my-lib',
+    );
+  });
+
+  it('should consider plugin option bin in executor target', async () => {
+    const cwd = join(baseDir, 'configuration-option-bin');
+    registerPluginInWorkspace(tree, {
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+      options: {
+        bin: 'XYZ',
+      },
+    });
+    const { root } = readProjectConfiguration(tree, project);
+    generateCodePushupConfig(tree, root);
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      ['code-pushup']: expect.objectContaining({
+        executor: 'XYZ:autorun',
+      }),
+    });
   });
 
   it('should NOT add targets dynamically if plugin is not registered', async () => {

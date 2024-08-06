@@ -19,6 +19,7 @@ export async function createTargets(
     : // if NO code-pushup.config.*.(ts|js|mjs) is present return configuration target
       {
         [`${targetName}--configuration`]: createConfigurationTarget({
+          targetName,
           projectName: normalizedContext.projectJson.name,
           bin,
         }),
