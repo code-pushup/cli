@@ -113,12 +113,16 @@ function startLocalRegistry({
           resolve({
             registry,
             stop: () => {
+              try{
               if (childProcess.pid) {
                 process.kill(-childProcess.pid);
               }
               // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
               childProcess.kill();
               execSync(`npm config delete //localhost:${port}/:_authToken`);
+              } catch (e) {
+                console.error((e as Error).message)
+              }
             },
           });
           childProcess?.stdout?.off('data', listener);
