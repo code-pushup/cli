@@ -9,6 +9,10 @@
       "type": "boolean",
       "description": "Skip adding package.json dependencies",
       "x-priority": "internal"
+    },
+    "skipNxJson": {
+      "type": "boolean",
+      "description": "Skip updating nx.json with configuration"
     }
   }
 }
