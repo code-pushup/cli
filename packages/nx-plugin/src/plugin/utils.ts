@@ -1,7 +1,11 @@
-import { CreateNodesContext, ProjectConfiguration } from '@nx/devkit';
+import { CreateNodesContext } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { CreateNodesOptions, NormalizedCreateNodesContext } from './types';
+import {
+  CreateNodesOptions,
+  NormalizedCreateNodesContext,
+  ProjectConfigWithName,
+} from './types';
 
 export async function normalizedCreateNodesContext(
   context: CreateNodesContext,
@@ -13,7 +17,7 @@ export async function normalizedCreateNodesContext(
   try {
     const projectJson = JSON.parse(
       (await readFile(projectConfigurationFile)).toString(),
-    ) as ProjectConfiguration;
+    ) as ProjectConfigWithName;
 
     return {
       ...context,

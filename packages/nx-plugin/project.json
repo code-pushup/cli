@@ -65,5 +65,5 @@
       }
     }
   },
-  "tags": ["scope:core", "type:feature"]
+  "tags": ["scope:tooling", "type:feature"]
 }
