@@ -9,7 +9,7 @@ import {
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
-export function relativePathToDist(testDir: string): string {
+function relativePathToDist(testDir: string): string {
   return relative(
     join(process.cwd(), testDir),
     join(process.cwd(), 'dist/packages/nx-plugin'),
