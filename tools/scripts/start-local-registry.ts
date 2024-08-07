@@ -29,6 +29,7 @@ export default async () => {
   }
   global.stopLocalRegistry = stop;
   global.registry = registry;
+  console.info('Set global.registry to: ', global.registry)
   try {
     //this enables getting the latest version of the packages (since versioning is tag-based and unique across all projects.)
     const version = execSync('git describe --tags --abbrev=0')
@@ -97,9 +98,10 @@ function startLocalRegistry({
           console.info('Local registry started on port ' + port);
 
           const registry = `http://localhost:${port}`;
-          process.env.npm_config_registry = registry;
-          execSync(
-            `npm config set //localhost:${port}/:_authToken "secretVerdaccioToken"`,
+          console.info(`add registry ${registry} to .npmrc:\nnpm config set ${registry}/:_authToken="secretVerdaccioToken"`);
+
+         execSync(
+           `npm config set registry ${registry}/:_authToken="secretVerdaccioToken"`,
           );
 
           // yarnv1
@@ -113,14 +115,16 @@ function startLocalRegistry({
           resolve({
             registry,
             stop: () => {
+              console.info(`Kill registry: ${registry}`)
               try{
               if (childProcess.pid) {
                 process.kill(-childProcess.pid);
               }
               // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
               childProcess.kill();
-              execSync(`npm config delete //localhost:${port}/:_authToken`);
+              execSync(`npm config delete registry`);
               } catch (e) {
+                console.error(`Error trying to kill ${registry}`)
                 console.error((e as Error).message)
               }
             },

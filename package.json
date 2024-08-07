@@ -72,12 +72,7 @@
   },
   "devDependencies": {
     "@beaussan/nx-knip": "0.0.5-13",
-    "@code-pushup/cli": "^0.49.0",
-    "@code-pushup/coverage-plugin": "^0.49.0",
     "@code-pushup/eslint-config": "^0.2.1",
-    "@code-pushup/eslint-plugin": "^0.49.0",
-    "@code-pushup/js-packages-plugin": "^0.49.0",
-    "@code-pushup/nx-plugin": "^0.49.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^18.4.3",
