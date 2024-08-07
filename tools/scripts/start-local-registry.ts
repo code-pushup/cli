@@ -13,7 +13,7 @@ export default async () => {
     'tmp',
     'local-registry',
     'storage',
-    process.env.NX_TASK_TARGET_PROJECT ?? '',
+    // process.env.NX_TASK_TARGET_PROJECT ?? '',
   );
 
   // using storage
@@ -29,12 +29,18 @@ export default async () => {
   }
   global.stopLocalRegistry = stop;
   global.registry = registry;
-  console.info('Set global.registry to: ', global.registry)
+  console.info('Set global.registry to: ', global.registry);
+  console.info(
+    `add registry ${registry} to .npmrc:\nprocess.env.npm_config_registry = ${registry}"`,
+  );
+  process.env.npm_config_registry = registry;
   try {
     //this enables getting the latest version of the packages (since versioning is tag-based and unique across all projects.)
     const version = execSync('git describe --tags --abbrev=0')
       .toString()
-      .trim();
+      .trim()
+      .replace(/^v/, '');
+
     // is is also possible to use nx release to publish the packages to the local registry
     execFileSync(
       'npx',
@@ -45,8 +51,6 @@ export default async () => {
         'publish',
         '--ver',
         version,
-        '--registry',
-        registry,
         '--tag',
         'e2e',
       ],
@@ -72,7 +76,6 @@ function startLocalRegistry({
   if (!localRegistryTarget) {
     throw new Error(`localRegistryTarget is required`);
   }
-
   return new Promise<{ stop: () => void; registry: string | null }>(
     (resolve, reject) => {
       const childProcess = spawn(
@@ -98,11 +101,10 @@ function startLocalRegistry({
           console.info('Local registry started on port ' + port);
 
           const registry = `http://localhost:${port}`;
-          console.info(`add registry ${registry} to .npmrc:\nnpm config set ${registry}/:_authToken="secretVerdaccioToken"`);
-
-         execSync(
-           `npm config set registry ${registry}/:_authToken="secretVerdaccioToken"`,
+          console.info(
+            `add registry ${registry} to .npmrc:\nprocess.env.npm_config_registry = ${registry}"`,
           );
+          process.env.npm_config_registry = registry;
 
           // yarnv1
           process.env.YARN_REGISTRY = registry;
@@ -115,17 +117,17 @@ function startLocalRegistry({
           resolve({
             registry,
             stop: () => {
-              console.info(`Kill registry: ${registry}`)
-              try{
-              if (childProcess.pid) {
-                process.kill(-childProcess.pid);
-              }
-              // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
-              childProcess.kill();
-              execSync(`npm config delete registry`);
+              console.info(`Kill registry: ${registry}`);
+              try {
+                if (childProcess.pid) {
+                  process.kill(-childProcess.pid);
+                }
+                // does not kill the underlying process, see https://github.com/nodejs/node/issues/46865
+                childProcess.kill();
+                execSync(`npm config delete registry`);
               } catch (e) {
-                console.error(`Error trying to kill ${registry}`)
-                console.error((e as Error).message)
+                console.error(`Error trying to kill ${registry}`);
+                console.error((e as Error).message);
               }
             },
           });

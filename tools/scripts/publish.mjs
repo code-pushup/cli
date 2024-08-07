@@ -21,8 +21,7 @@ function invariant(condition, message) {
 
 // Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
-const [, , name, version, tag = 'next'] =
-  process.argv;
+const [, , name, version, tag = 'next'] = process.argv;
 
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
@@ -57,5 +56,8 @@ try {
   console.error(`Error reading package.json file from library build output.`);
 }
 
-console.info('Current registry: ', execSync('npm config get registry').toString())
+console.info(
+  'Current registry: ',
+  execSync('npm config get registry').toString(),
+);
 execSync(`npm publish --access public --tag ${tag}`);
