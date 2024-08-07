@@ -7,8 +7,8 @@
  * You might need to authenticate with NPM before running this script.
  */
 import devkit from '@nx/devkit';
-import { execSync } from 'child_process';
-import { readFileSync, writeFileSync } from 'fs';
+import { execSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const { readCachedProjectGraph } = devkit;
 
@@ -25,8 +25,9 @@ const [, , name, version, tag = 'next'] = process.argv;
 
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
+const parsedVersion = version && version.replace(/vV/, '');
 invariant(
-  version && validVersion.test(version),
+  parsedVersion.match(parsedVersion),
   `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${version}.`,
 );
 
@@ -55,5 +56,8 @@ try {
   console.error(`Error reading package.json file from library build output.`);
 }
 
-// Execute "npm publish" to publish
+console.info(
+  'Current registry: ',
+  execSync('npm config get registry').toString(),
+);
 execSync(`npm publish --access public --tag ${tag}`);
