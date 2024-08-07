@@ -27,7 +27,7 @@ const [, , name, version, tag = 'next'] = process.argv;
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 const parsedVersion = version && version.replace(/vV/, '');
 invariant(
-  parsedVersion.match(parsedVersion),
+  parsedVersion.match(validVersion),
   `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${version}.`,
 );
 
