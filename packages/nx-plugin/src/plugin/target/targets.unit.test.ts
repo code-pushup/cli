@@ -114,7 +114,7 @@ describe('createTargets', () => {
     );
   });
 
-  it('should return executor targets for project is configured', async () => {
+  it('should return executor targets for project if configured', async () => {
     const projectName = 'plugin-my-plugin';
     vol.fromJSON(
       {
