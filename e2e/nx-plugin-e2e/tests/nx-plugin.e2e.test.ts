@@ -208,7 +208,7 @@ describe('nx-plugin', () => {
     });
 
     const cleanStderr = removeColorCodes(stderr);
-    // @TODO create test environment for working plugin. This here misses package.jock to execute correctly
+    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
     expect(cleanStderr).toContain(
       'DryRun execution of: npx @code-pushup/cli autorun',
     );
