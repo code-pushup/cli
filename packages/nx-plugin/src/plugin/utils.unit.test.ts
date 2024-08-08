@@ -113,6 +113,27 @@ describe('normalizedCreateNodesContext', () => {
     ).rejects.toThrow('Error parsing project.json file project.json.');
   });
 
+  it('should provide default targetName in createOptions', async () => {
+    vol.fromJSON(
+      {
+        'project.json': JSON.stringify({
+          name: 'my-project',
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        createOptions: {
+          targetName: 'code-pushup',
+        },
+      }),
+    );
+  });
+
   it('should provide createOptions', async () => {
     vol.fromJSON(
       {
@@ -130,6 +151,7 @@ describe('normalizedCreateNodesContext', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         createOptions: {
+          targetName: 'code-pushup',
           projectPrefix: 'cli',
         },
       }),

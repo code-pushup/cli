@@ -22,6 +22,10 @@
       "x-dropdown": "targetName",
       "default": "code-pushup"
     },
+    "bin": {
+      "type": "string",
+      "description": "Path to Code PushUp CLI"
+    },
     "skipTarget": {
       "type": "boolean",
       "description": "Skip adding the target to project.json.",

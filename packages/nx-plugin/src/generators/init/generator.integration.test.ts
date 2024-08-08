@@ -2,7 +2,6 @@ import { Tree, logger, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { initGenerator } from './generator';
-import { InitGeneratorSchema } from './schema';
 
 type PackageJson = {
   devDependencies: Record<string, string>;
@@ -20,14 +19,13 @@ const devDependencyNames = [
 describe('init generator', () => {
   let tree: Tree;
   const loggerInfoSpy = vi.spyOn(logger, 'info');
-  const options: InitGeneratorSchema = { skipPackageJson: false };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
   });
 
   it('should run successfully', () => {
-    initGenerator(tree, options);
+    initGenerator(tree, {});
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).toHaveProperty(cpTargetName);
@@ -45,7 +43,7 @@ describe('init generator', () => {
   });
 
   it('should skip packageJson', () => {
-    initGenerator(tree, { ...options, skipPackageJson: true });
+    initGenerator(tree, { skipPackageJson: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).toHaveProperty(cpTargetName);
@@ -64,7 +62,7 @@ describe('init generator', () => {
   });
 
   it('should skip package installation', () => {
-    initGenerator(tree, { ...options, skipInstall: true });
+    initGenerator(tree, { skipInstall: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).toHaveProperty(cpTargetName);

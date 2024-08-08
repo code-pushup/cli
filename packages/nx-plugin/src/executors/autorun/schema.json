@@ -19,6 +19,10 @@
       "type": "boolean",
       "description": "Print the commands that would be run, but don't actually run them"
     },
+    "bin": {
+      "type": "string",
+      "description": "Path to Code PushUp CLI"
+    },
     "verbose": {
       "type": "boolean",
       "description": "Print additional logs"

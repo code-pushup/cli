@@ -9,3 +9,9 @@ export type ExtractArray<T> = T extends Array<unknown> ? T : never;
 export type ExtractArrays<T extends Record<string, unknown>> = {
   [K in keyof T]: ExtractArray<T[K]>;
 };
+
+export type WithRequired<T, K extends keyof T> = Prettify<
+  Omit<T, K> & Required<Pick<T, K>>
+>;
+
+export type Prettify<T> = { [K in keyof T]: T[K] };
