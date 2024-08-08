@@ -15,7 +15,7 @@ import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function relativePathToCwd(testDir: string): string {
-  return relative(join(process.cwd(), testDir), join(process.cwd()));
+  return relative(join(process.cwd(), testDir), process.cwd());
 }
 
 describe('nx-plugin', () => {
