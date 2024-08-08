@@ -48,7 +48,7 @@ describe('nx-plugin', () => {
         configurations: {}, // @TODO understand why this appears. should not be here
         executor: 'nx:run-commands',
         options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName=code-pushup --project=${project}`,
+          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
       },
     });
@@ -119,7 +119,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup--configuration']: expect.objectContaining({
         options: {
-          command: `nx g XYZ:configuration --skipTarget --targetName=code-pushup --project=${project}`,
+          command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
       }),
     });

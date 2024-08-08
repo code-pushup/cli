@@ -39,7 +39,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName=code-pushup --project=@org/empty-root`,
+            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="@org/empty-root"`,
           },
         },
       },
@@ -65,7 +65,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName=code-pushup --project=@org/empty-root`,
+            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="@org/empty-root"`,
           },
         },
       },
