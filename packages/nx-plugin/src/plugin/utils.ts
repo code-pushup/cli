@@ -5,7 +5,7 @@ import { CP_TARGET_NAME } from './constants';
 import {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
-  ProjectConfigWithName,
+  ProjectConfigurationWithName,
 } from './types';
 
 export async function normalizedCreateNodesContext(
@@ -18,7 +18,7 @@ export async function normalizedCreateNodesContext(
   try {
     const projectJson = JSON.parse(
       (await readFile(projectConfigurationFile)).toString(),
-    ) as ProjectConfigWithName;
+    ) as ProjectConfigurationWithName;
 
     const { targetName = CP_TARGET_NAME } = createOptions;
     return {
