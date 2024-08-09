@@ -27,7 +27,7 @@
     "@poppinss/cliui": "^6.4.0",
     "@swc/helpers": "0.5.3",
     "ansis": "^3.3.0",
-    "build-md": "^0.4.1",
+    "build-md": "^0.4.2",
     "bundle-require": "^4.0.1",
     "cli-table3": "^0.6.3",
     "esbuild": "^0.19.12",

@@ -1,10 +1,15 @@
 import {
+  COMMIT_ALT_MOCK,
+  COMMIT_MOCK,
   reportsDiffAddedPluginMock,
   reportsDiffAltMock,
   reportsDiffMock,
   reportsDiffUnchangedMock,
 } from '@code-pushup/test-utils';
-import { generateMdReportsDiff } from './generate-md-reports-diff';
+import {
+  generateMdReportsDiff,
+  generateMdReportsDiffForMonorepo,
+} from './generate-md-reports-diff';
 
 describe('generateMdReportsDiff', () => {
   it('should format Markdown comment for improved reports diff', async () => {
@@ -61,14 +66,40 @@ describe('generateMdReportsDiff', () => {
 
   it('should format Markdown comment with link to portal', async () => {
     const report = reportsDiffAltMock();
-    const shas = [
-      report.commits!.before.hash,
-      report.commits!.after.hash,
-    ] as const;
-    const portalUrl = `https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/${shas[0]}/${shas[1]}`;
+    const portalUrl = `https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`;
 
     await expect(generateMdReportsDiff(report, portalUrl)).toMatchFileSnapshot(
-      '__snapshots__/report-diff-with-portal-link.md',
+      '__snapshots__/report-diff-with-portal.md',
     );
+  });
+});
+
+describe('generateMdReportsDiffForMonorepo', () => {
+  it('should format Markdown comment with multiple projects', async () => {
+    await expect(
+      generateMdReportsDiffForMonorepo([
+        { name: 'console', diff: reportsDiffMock() },
+        { name: 'admin', diff: reportsDiffAltMock() },
+        { name: 'marketing', diff: reportsDiffUnchangedMock() },
+        { name: 'docs', diff: reportsDiffAddedPluginMock() },
+      ]),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo.md');
+  });
+
+  it('should format Markdown comment with multiple projects and portal links', async () => {
+    await expect(
+      generateMdReportsDiffForMonorepo([
+        {
+          name: 'frontoffice',
+          diff: reportsDiffMock(),
+          portalUrl: `https://app.code-pushup.dev/portal/dunder-mifflin/frontoffice/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`,
+        },
+        {
+          name: 'backoffice',
+          diff: reportsDiffUnchangedMock(),
+          portalUrl: `https://app.code-pushup.dev/portal/dunder-mifflin/backoffice/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`,
+        },
+      ]),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-with-portal.md');
   });
 });
