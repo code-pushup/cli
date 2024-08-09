@@ -28,8 +28,7 @@ export function generateMdReportsDiff(
     .$concat(
       createDiffHeaderSection(diff, portalUrl),
       createDiffCategoriesSection(diff),
-      createDiffGroupsSection(diff),
-      createDiffAuditsSection(diff),
+      createDiffDetailsSection(diff),
     )
     .toString();
 }
@@ -124,6 +123,26 @@ function createDiffCategoriesSection(
     .paragraph(added.length > 0 && md.italic('(\\*) New category.'));
 }
 
+function createDiffDetailsSection(diff: ReportsDiff): MarkdownDocument | null {
+  if (diff.groups.changed.length + diff.audits.changed.length === 0) {
+    return null;
+  }
+  const summary = (['group', 'audit'] as const)
+    .map(token =>
+      summarizeDiffOutcomes(
+        changesToDiffOutcomes(diff[`${token}s`].changed),
+        token,
+      ),
+    )
+    .filter(Boolean)
+    .join(', ');
+  const details = new MarkdownDocument().$concat(
+    createDiffGroupsSection(diff),
+    createDiffAuditsSection(diff),
+  );
+  return new MarkdownDocument().details(summary, details);
+}
+
 function createDiffGroupsSection(diff: ReportsDiff): MarkdownDocument | null {
   if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
     return null;
@@ -187,24 +206,19 @@ function createGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
       summarizeUnchanged(token, { changed, unchanged }),
     );
   }
-  return new MarkdownDocument().details(
-    summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
-    md`${md.table(columns, rows.slice(0, MAX_ROWS))}${
-      changed.length > MAX_ROWS
-        ? md.paragraph(
-            md.italic(
-              `Only the ${MAX_ROWS} most affected ${pluralize(
-                token,
-              )} are listed above for brevity.`,
-            ),
-          )
-        : ''
-    }${
-      unchanged.length > 0
-        ? md.paragraph(summarizeUnchanged(token, { changed, unchanged }))
-        : ''
-    }`,
-  );
+  return new MarkdownDocument()
+    .table(columns, rows.slice(0, MAX_ROWS))
+    .paragraph(
+      changed.length > MAX_ROWS &&
+        md.italic(
+          `Only the ${MAX_ROWS} most affected ${pluralize(
+            token,
+          )} are listed above for brevity.`,
+        ),
+    )
+    .paragraph(
+      unchanged.length > 0 && summarizeUnchanged(token, { changed, unchanged }),
+    );
 }
 
 function summarizeUnchanged(
