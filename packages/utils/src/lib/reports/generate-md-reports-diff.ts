@@ -1,4 +1,5 @@
 import {
+  type HeadingLevel,
   InlineText,
   MarkdownDocument,
   TableColumnObject,
@@ -8,7 +9,7 @@ import {
 import { ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { HIERARCHY } from '../text-formats';
-import { objectToEntries } from '../transform';
+import { objectToEntries, toArray } from '../transform';
 import { DiffOutcome } from './types';
 import {
   formatScoreChange,
@@ -33,9 +34,29 @@ export function generateMdReportsDiff(
     .toString();
 }
 
+export type ProjectDiff = {
+  name: string;
+  portalUrl?: string;
+  diff: ReportsDiff;
+};
+
+export function generateMdReportsDiffForMonorepo(
+  projects: ProjectDiff[],
+): string {
+  // TODO: sort projects (most changed, alphabetical)
+  // TODO: abbreviate or filter out unchanged projects?
+  return new MarkdownDocument()
+    .$concat(
+      createDiffHeaderSection(projects.map(({ diff }) => diff)),
+      // @ts-expect-error overload too strict
+      ...projects.map(createDiffProjectSection), // TODO: patch overload in build-md
+    )
+    .toString();
+}
+
 function createDiffHeaderSection(
-  diff: ReportsDiff,
-  portalUrl: string | undefined,
+  diff: ReportsDiff | ReportsDiff[],
+  portalUrl?: string,
 ): MarkdownDocument {
   const outcomeTexts = {
     positive: md`🥳 Code PushUp report has ${md.bold('improved')}`,
@@ -46,31 +67,50 @@ function createDiffHeaderSection(
     unchanged: md`😐 Code PushUp report is ${md.bold('unchanged')}`,
   };
   const outcome = mergeDiffOutcomes(
-    changesToDiffOutcomes([
-      ...diff.categories.changed,
-      ...diff.groups.changed,
-      ...diff.audits.changed,
-    ]),
+    changesToDiffOutcomes(toArray(diff).flatMap(getDiffChanges)),
   );
 
-  const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) =>
+  const commits = Array.isArray(diff) ? diff[0]?.commits : diff.commits; // TODO: what if array contains different commit pairs?
+  const commitsText =
+    commits &&
     `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
 
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, 'Code PushUp')
     .paragraph(
-      diff.commits
-        ? md`${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
+      commitsText
+        ? md`${outcomeTexts[outcome]} – ${commitsText}.`
         : outcomeTexts[outcome],
     )
-    .paragraph(
-      portalUrl &&
-        md.link(portalUrl, '🕵️ See full comparison in Code PushUp portal 🔍'),
+    .paragraph(formatPortalLink(portalUrl));
+}
+
+function createDiffProjectSection(project: ProjectDiff): MarkdownDocument {
+  const outcomeTexts = {
+    positive: 'improved 🥳',
+    negative: 'regressed 😟',
+    mixed: 'mixed 🤨',
+    unchanged: 'unchanged 😐',
+  };
+  const outcome = mergeDiffOutcomes(
+    changesToDiffOutcomes(getDiffChanges(project.diff)),
+  );
+
+  return new MarkdownDocument()
+    .heading(
+      HIERARCHY.level_2,
+      md`💼 Project ${md.code(project.name)} – ${outcomeTexts[outcome]}`,
+    )
+    .paragraph(formatPortalLink(project.portalUrl))
+    .$concat(
+      createDiffCategoriesSection(project.diff, { skipHeading: true }),
+      createDiffDetailsSection(project.diff, HIERARCHY.level_3),
     );
 }
 
 function createDiffCategoriesSection(
   diff: ReportsDiff,
+  options: { skipHeading: boolean } = { skipHeading: false },
 ): MarkdownDocument | null {
   const { changed, unchanged, added } = diff.categories;
 
@@ -115,7 +155,7 @@ function createDiffCategoriesSection(
   ];
 
   return new MarkdownDocument()
-    .heading(HIERARCHY.level_2, '🏷️ Categories')
+    .heading(HIERARCHY.level_2, !options.skipHeading && '🏷️ Categories')
     .table(
       hasChanges ? columns : columns.slice(0, 2),
       rows.map(row => (hasChanges ? row : row.slice(0, 2))),
@@ -123,7 +163,10 @@ function createDiffCategoriesSection(
     .paragraph(added.length > 0 && md.italic('(\\*) New category.'));
 }
 
-function createDiffDetailsSection(diff: ReportsDiff): MarkdownDocument | null {
+function createDiffDetailsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel = HIERARCHY.level_2,
+): MarkdownDocument | null {
   if (diff.groups.changed.length + diff.audits.changed.length === 0) {
     return null;
   }
@@ -137,17 +180,20 @@ function createDiffDetailsSection(diff: ReportsDiff): MarkdownDocument | null {
     .filter(Boolean)
     .join(', ');
   const details = new MarkdownDocument().$concat(
-    createDiffGroupsSection(diff),
-    createDiffAuditsSection(diff),
+    createDiffGroupsSection(diff, level),
+    createDiffAuditsSection(diff, level),
   );
   return new MarkdownDocument().details(summary, details);
 }
 
-function createDiffGroupsSection(diff: ReportsDiff): MarkdownDocument | null {
+function createDiffGroupsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel,
+): MarkdownDocument | null {
   if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
     return null;
   }
-  return new MarkdownDocument().heading(HIERARCHY.level_2, '🗃️ Groups').$concat(
+  return new MarkdownDocument().heading(level, '🗃️ Groups').$concat(
     createGroupsOrAuditsDetails(
       'group',
       diff.groups,
@@ -169,8 +215,11 @@ function createDiffGroupsSection(diff: ReportsDiff): MarkdownDocument | null {
   );
 }
 
-function createDiffAuditsSection(diff: ReportsDiff): MarkdownDocument {
-  return new MarkdownDocument().heading(HIERARCHY.level_2, '🛡️ Audits').$concat(
+function createDiffAuditsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel,
+): MarkdownDocument {
+  return new MarkdownDocument().heading(level, '🛡️ Audits').$concat(
     createGroupsOrAuditsDetails(
       'audit',
       diff.audits,
@@ -270,6 +319,13 @@ function formatTitle({
   return title;
 }
 
+function formatPortalLink(portalUrl: string | undefined) {
+  return (
+    portalUrl &&
+    md.link(portalUrl, '🕵️ See full comparison in Code PushUp portal 🔍')
+  );
+}
+
 type Change = {
   scores: { diff: number };
   values?: { diff: number };
@@ -281,6 +337,14 @@ function sortChanges<T extends Change>(changes: T[]): T[] {
       Math.abs(b.scores.diff) - Math.abs(a.scores.diff) ||
       Math.abs(b.values?.diff ?? 0) - Math.abs(a.values?.diff ?? 0),
   );
+}
+
+function getDiffChanges(diff: ReportsDiff): Change[] {
+  return [
+    ...diff.categories.changed,
+    ...diff.groups.changed,
+    ...diff.audits.changed,
+  ];
 }
 
 function changesToDiffOutcomes(changes: Change[]): DiffOutcome[] {
