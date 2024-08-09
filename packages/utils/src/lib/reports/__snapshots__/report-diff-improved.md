@@ -10,22 +10,17 @@
 | Bug prevention                                                            |      🟡 68       |    🟢 **95**    | ![↑ +27](https://img.shields.io/badge/%E2%86%91%20%2B27-green) |
 | [Performance](https://developers.google.com/web/fundamentals/performance) |      🟢 92       |    🟢 **94**    |  ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)  |
 
-## 🗃️ Groups
-
 <details>
-<summary>👍 <strong>2</strong> groups improved</summary>
+<summary>👍 <strong>2</strong> groups improved, 👍 <strong>12</strong> audits improved</summary>
+
+## 🗃️ Groups
 
 | 🔌 Plugin                                                          | 🗃️ Group                | ⭐ Previous score | ⭐ Current score |                        🔄 Score change                         |
 | :----------------------------------------------------------------- | :----------------------- | :--------------: | :-------------: | :------------------------------------------------------------: |
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | Maximum lines limitation |      🟡 50       |   🟢 **100**    | ![↑ +50](https://img.shields.io/badge/%E2%86%91%20%2B50-green) |
 | Lighthouse                                                         | Performance              |      🟢 92       |    🟢 **94**    |  ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)  |
 
-</details>
-
 ## 🛡️ Audits
-
-<details>
-<summary>👍 <strong>12</strong> audits improved</summary>
 
 | 🔌 Plugin                                                          | 🛡️ Audit                                                                                                                                            | 📏 Previous value | 📏 Current value |                                   🔄 Value change                                    |
 | :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------: | :--------------: | :----------------------------------------------------------------------------------: |
