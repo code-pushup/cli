@@ -19,7 +19,6 @@ export function parseTableToAuditDetailsTable(
 
   try {
     return tableSchema().parse({
-      title: 'Table',
       columns: parseTableColumns(rawHeadings),
       rows: items.map(row => parseTableRow(row, rawHeadings)),
     });

@@ -93,7 +93,6 @@ describe('parseTableToAuditDetails', () => {
     } satisfies Details.Table);
 
     expect(outputs).toStrictEqual({
-      title: 'Table',
       columns: [
         {
           key: 'statistic',
@@ -219,7 +218,6 @@ describe('parseTableToAuditDetails', () => {
     } as Details.Table);
 
     expect(outputs).toEqual({
-      title: 'Table',
       columns: [
         {
           align: 'left',
