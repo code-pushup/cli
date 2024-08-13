@@ -107,5 +107,7 @@ export {
   ExtractArrays,
   ExtractArray,
   ItemOrArray,
+  WithRequired,
+  Prettify,
 } from './lib/types';
 export { verboseUtils } from './lib/verbose-utils';
