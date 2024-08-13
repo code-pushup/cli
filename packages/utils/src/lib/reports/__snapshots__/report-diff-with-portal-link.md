@@ -37,6 +37,6 @@
 | Lighthouse                                                         | [First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)     |     🟨 1.2 s      |   🟨 **1.1 s**   | ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green) |
 | Lighthouse                                                         | [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)                           |     🟩 1.2 s      |   🟩 **1.1 s**   | ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green) |
 
-48 other audits are unchanged.
+49 other audits are unchanged.
 
 </details>
