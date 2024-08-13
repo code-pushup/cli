@@ -39,7 +39,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-js-packages {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs --name=plugin-js-packages --ver={args.ver} --tag={args.tag}",
       "dependsOn": ["build"]
     }
   },

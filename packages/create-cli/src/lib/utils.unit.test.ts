@@ -34,7 +34,7 @@ describe('setupNxContext', () => {
     });
     expect(vol.toJSON()).toStrictEqual({
       '/test/nx.json':
-        '{"$schema":"./node_modules/nx/schemas/nx-schema.json","releaseTagPattern":"v{version}","targetDefaults":{}}',
+        '{"$schema":"./node_modules/nx/schemas/nx-schema.json","targetDefaults":{}}',
       '/test/project.json': '{"name": "my-lib"}',
     });
   });

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import { bold } from 'ansis';
+import { blue, dim, green } from 'ansis';
 import yargs, {
   Argv,
   CommandModule,
@@ -9,7 +9,29 @@ import yargs, {
 } from 'yargs';
 import { PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
+import { version } from '../../package.json';
+import {
+  descriptionStyle,
+  formatNestedValues,
+  formatObjectValue,
+  headerStyle,
+  titleStyle,
+} from './implementation/formatting';
 import { logErrorBeforeThrow } from './implementation/global.utils';
+
+export const yargsDecorator = {
+  'Commands:': `${green('Commands')}:`,
+  'Options:': `${green('Options')}:`,
+  'Examples:': `${green('Examples')}:`,
+  boolean: blue('boolean'),
+  count: blue('count'),
+  string: blue('string'),
+  array: blue('array'),
+  required: blue('required'),
+  'default:': `${blue('default')}:`,
+  'choices:': `${blue('choices')}:`,
+  'aliases:': `${blue('aliases')}:`,
+};
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -45,8 +67,11 @@ export function yargsCli<T = unknown>(
 
   // setup yargs
   cli
-    .help()
-    .version(false)
+    .updateLocale(yargsDecorator)
+    // take minimum of TERMINAL_WIDTH or full width of the terminal
+    .wrap(Math.max(TERMINAL_WIDTH, cli.terminalWidth()))
+    .help('help', descriptionStyle('Show help'))
+    .version('version', dim`Show version`, version)
     .alias('h', 'help')
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
@@ -58,13 +83,11 @@ export function yargsCli<T = unknown>(
     .coerce('config', (config: string | string[]) =>
       Array.isArray(config) ? config.at(-1) : config,
     )
-    .options(options)
-    // take full width of the terminal `cli.terminalWidth()`
-    .wrap(TERMINAL_WIDTH);
+    .options(formatNestedValues(options, 'describe'));
 
   // usage message
   if (usageMessage) {
-    cli.usage(bold(usageMessage));
+    cli.usage(titleStyle(usageMessage));
   }
 
   // script name
@@ -74,12 +97,12 @@ export function yargsCli<T = unknown>(
 
   // add examples
   examples.forEach(([exampleName, description]) =>
-    cli.example(exampleName, description),
+    cli.example(exampleName, descriptionStyle(description)),
   );
 
   // add groups
   Object.entries(groups).forEach(([groupName, optionNames]) =>
-    cli.group(optionNames, groupName),
+    cli.group(optionNames, headerStyle(groupName)),
   );
 
   // add middlewares
@@ -92,13 +115,18 @@ export function yargsCli<T = unknown>(
 
   // add commands
   commands.forEach(commandObj => {
-    cli.command({
-      ...commandObj,
-      handler: logErrorBeforeThrow(commandObj.handler),
-      ...(typeof commandObj.builder === 'function' && {
-        builder: logErrorBeforeThrow(commandObj.builder),
-      }),
-    });
+    cli.command(
+      formatObjectValue(
+        {
+          ...commandObj,
+          handler: logErrorBeforeThrow(commandObj.handler),
+          ...(typeof commandObj.builder === 'function' && {
+            builder: logErrorBeforeThrow(commandObj.builder),
+          }),
+        },
+        'describe',
+      ),
+    );
   });
 
   // this flag should be set for tests and debugging purposes

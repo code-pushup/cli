@@ -8,11 +8,11 @@ import {
   PackageCommand,
   PackageManagerId,
   dependencyGroups,
-  jsPackagesPluginConfigSchema,
 } from './config';
 import { dependencyDocs, dependencyGroupWeights } from './constants';
 import { packageManagers } from './package-managers';
 import { createRunnerConfig } from './runner';
+import { normalizeConfig } from './utils';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -32,13 +32,10 @@ import { createRunnerConfig } from './runner';
  */
 
 export async function jsPackagesPlugin(
-  config: JSPackagesPluginConfig,
+  config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(config);
-  const checks = [...new Set(jsPackagesPluginConfig.checks)];
-  const depGroups = [...new Set(jsPackagesPluginConfig.dependencyGroups)];
-  const id = jsPackagesPluginConfig.packageManager;
-  const pm = packageManagers[id];
+  const { packageManager, checks, depGroups, ...jsPackagesPluginConfigRest } =
+    await normalizeConfig(config);
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
@@ -48,15 +45,20 @@ export async function jsPackagesPlugin(
   return {
     slug: 'js-packages',
     title: 'JS Packages',
-    icon: pm.icon,
+    icon: packageManager.icon,
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: pm.docs.homepage,
+    docsUrl: packageManager.docs.homepage,
     packageName: name,
     version,
-    audits: createAudits(id, checks, depGroups),
-    groups: createGroups(id, checks, depGroups),
-    runner: await createRunnerConfig(runnerScriptPath, jsPackagesPluginConfig),
+    audits: createAudits(packageManager.slug, checks, depGroups),
+    groups: createGroups(packageManager.slug, checks, depGroups),
+    runner: await createRunnerConfig(runnerScriptPath, {
+      ...jsPackagesPluginConfigRest,
+      checks,
+      packageManager: packageManager.slug,
+      dependencyGroups: depGroups,
+    }),
   };
 }
 

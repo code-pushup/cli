@@ -25,16 +25,7 @@ export default async () => {
   // is is also possible to use nx release to publish the packages to the local registry
   execFileSync(
     'npx',
-    [
-      'nx',
-      'run-many',
-      '--targets',
-      'publish',
-      '--ver',
-      version,
-      '--tag',
-      'e2e',
-    ],
+    ['nx', 'run-many', '--targets=publish', `--ver=${version}`, '--tag=e2e'],
     { env: process.env, stdio: 'inherit', shell: true },
   );
 };

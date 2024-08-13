@@ -20,6 +20,7 @@ export type ProjectExecutorOnlyOptions = {
  * CLI types that apply globally for all commands.
  */
 export type GlobalExecutorOptions = {
+  bin?: string;
   verbose?: boolean;
   progress?: boolean;
   config?: string;

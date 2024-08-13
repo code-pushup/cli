@@ -10,7 +10,7 @@ import {
 export function globalConfig(
   options: Partial<GlobalExecutorOptions & Record<string, unknown>>,
   context: BaseNormalizedExecutorContext,
-): Required<GlobalExecutorOptions> {
+): GlobalExecutorOptions {
   const { projectConfig } = context;
   const { root: projectRoot = '' } = projectConfig ?? {};
   // For better debugging use `--verbose --no-progress` as default

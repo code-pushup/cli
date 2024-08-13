@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { MEMFS_VOLUME, createNodesContext } from '@code-pushup/test-utils';
+import { createNodesContext } from '@code-pushup/test-nx-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { normalizedCreateNodesContext } from './utils';
 
 describe('normalizedCreateNodesContext', () => {
@@ -112,6 +113,27 @@ describe('normalizedCreateNodesContext', () => {
     ).rejects.toThrow('Error parsing project.json file project.json.');
   });
 
+  it('should provide default targetName in createOptions', async () => {
+    vol.fromJSON(
+      {
+        'project.json': JSON.stringify({
+          name: 'my-project',
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        createOptions: {
+          targetName: 'code-pushup',
+        },
+      }),
+    );
+  });
+
   it('should provide createOptions', async () => {
     vol.fromJSON(
       {
@@ -129,6 +151,7 @@ describe('normalizedCreateNodesContext', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         createOptions: {
+          targetName: 'code-pushup',
           projectPrefix: 'cli',
         },
       }),

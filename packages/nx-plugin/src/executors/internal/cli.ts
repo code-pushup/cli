@@ -1,8 +1,12 @@
 export function createCliCommand(
   command: string,
   args: Record<string, unknown>,
+  options?: {
+    bin: string;
+  },
 ): string {
-  return `npx @code-pushup/cli ${command} ${objectToCliArgs(args).join(' ')}`;
+  const { bin = '@code-pushup/cli' } = options ?? {};
+  return `npx ${bin} ${command} ${objectToCliArgs(args).join(' ')}`;
 }
 
 type ArgumentValue = number | string | boolean | string[];
