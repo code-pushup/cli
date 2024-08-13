@@ -150,7 +150,6 @@ describe('toAuditOutputs', () => {
       table: {
         columns: [{ key: 'number', align: 'left' }],
         rows: [{ number: 42 }],
-        title: 'Table',
       },
     });
   });
