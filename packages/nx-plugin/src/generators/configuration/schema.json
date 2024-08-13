@@ -19,7 +19,6 @@
       "type": "string",
       "description": "The name of the target.",
       "x-prompt": "Which name should the target get? default is code-pushup.",
-      "x-dropdown": "targetName",
       "default": "code-pushup"
     },
     "bin": {
