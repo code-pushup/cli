@@ -7,7 +7,6 @@ import { createNpmWorkspace } from '../mocks/create-npm-workshpace';
 
 describe('create-cli-node', () => {
   const baseDir = join('tmp', 'create-cli-e2e');
-  const promptTitle = '<↗>  Generating @code-pushup/nx-plugin:configuration';
   const bin = 'dist/packages/create-cli';
   const binPath = (cwd?: string) =>
     cwd ? relative(join(process.cwd(), cwd), join(process.cwd(), bin)) : bin;
@@ -29,7 +28,9 @@ describe('create-cli-node', () => {
 
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(promptTitle);
+    expect(cleanedStdout).toContain(
+      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+    );
   });
 
   // eslint-disable-next-line vitest/no-disabled-tests
@@ -46,7 +47,9 @@ describe('create-cli-node', () => {
 
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(promptTitle);
+    expect(cleanedStdout).toContain(
+      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+    );
   });
 
   // eslint-disable-next-line vitest/no-disabled-tests
@@ -63,6 +66,8 @@ describe('create-cli-node', () => {
 
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
-    expect(cleanedStdout).toContain(promptTitle);
+    expect(cleanedStdout).toContain(
+      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+    );
   });
 });
