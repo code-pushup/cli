@@ -1,8 +1,8 @@
-import {mkdir, writeFile} from "node:fs/promises";
-import {join} from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export async function createNpmWorkspace(cwd: string) {
-  await mkdir(cwd, {recursive: true});
+  await mkdir(cwd, { recursive: true });
   await writeFile(join(cwd, 'package.json'), JSON.stringify({
     name: 'create-npm-workspace',
     version: '0.0.1',
