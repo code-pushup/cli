@@ -161,4 +161,29 @@ describe('createTargets', () => {
       },
     });
   });
+
+  it('should include projectPrefix options in executor targets if given', async () => {
+    const projectName = 'plugin-my-plugin';
+    vol.fromJSON(
+      {
+        [`code-pushup.config.ts`]: `{}`,
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(
+      createTargets({
+        projectRoot: '.',
+        projectJson: {
+          name: projectName,
+        },
+        createOptions: {
+          projectPrefix: 'cli',
+        },
+      } as NormalizedCreateNodesContext),
+    ).resolves.toStrictEqual({
+      [DEFAULT_TARGET_NAME]: expect.objectContaining({
+        options: { projectPrefix: 'cli' },
+      }),
+    });
+  });
 });

@@ -189,29 +189,23 @@ describe('nx-plugin', () => {
       )}";`,
       plugins: [
         {
-          fileImports: `import jsPackagesPlugin from "${join(
+          fileImports: `import {dummyPlugin} from "${join(
             relativePathToCwd(cwd),
             pathRelativeToPackage,
-            'dist/packages/plugin-js-packages',
+            'dist/testing/test-utils',
           )}";`,
-          // @TODO improve formatObjectToJsString to get rid of the "`" hack
-          codeStrings: 'await jsPackagesPlugin({packageManager: `npm`})',
+          codeStrings: 'dummyPluginConfig',
         },
       ],
     });
+
     await materializeTree(tree, cwd);
 
-    const { stdout, stderr } = await executeProcess({
+    const { stdout } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup -- --dryRun`],
       cwd,
     });
-
-    const cleanStderr = removeColorCodes(stderr);
-    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
-    expect(cleanStderr).toContain(
-      'DryRun execution of: npx @code-pushup/cli autorun',
-    );
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
@@ -238,6 +232,32 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
         executor: 'XYZ:autorun',
+      }),
+    });
+  });
+
+  it('should consider plugin option projectPrefix in executor target', async () => {
+    const cwd = join(baseDir, 'configuration-option-bin');
+    registerPluginInWorkspace(tree, {
+      plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
+      options: {
+        projectPrefix: 'cli',
+      },
+    });
+    const { root } = readProjectConfiguration(tree, project);
+    generateCodePushupConfig(tree, root);
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      ['code-pushup']: expect.objectContaining({
+        executor: `@code-pushup/nx-plugin:autorun`,
+        options: {
+          projectPrefix: 'cli',
+        },
       }),
     });
   });
