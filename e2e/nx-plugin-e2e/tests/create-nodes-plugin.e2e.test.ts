@@ -1,17 +1,17 @@
-import {Tree} from '@nx/devkit';
-import {rm} from 'node:fs/promises';
-import {join, relative} from 'node:path';
-import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
-import {afterEach, expect} from 'vitest';
-import {generateCodePushupConfig} from '@code-pushup/nx-plugin';
+import { Tree } from '@nx/devkit';
+import { rm } from 'node:fs/promises';
+import { join, relative } from 'node:path';
+import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
+import { afterEach, expect } from 'vitest';
+import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
   generateWorkspaceAndProject,
   materializeTree,
   nxShowProjectJson,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
-import {removeColorCodes} from '@code-pushup/test-utils';
-import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
+import { removeColorCodes } from '@code-pushup/test-utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function relativePathToCwd(testDir: string): string {
@@ -29,7 +29,7 @@ describe('nx-plugin', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, {recursive: true, force: true});
+    await rm(baseDir, { recursive: true, force: true });
   });
 
   it('should add configuration target dynamically', async () => {
@@ -40,7 +40,7 @@ describe('nx-plugin', () => {
     );
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
@@ -66,7 +66,7 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const {code, stdout} = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup--configuration`],
       cwd,
@@ -93,7 +93,7 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
@@ -112,7 +112,7 @@ describe('nx-plugin', () => {
     });
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
@@ -131,11 +131,11 @@ describe('nx-plugin', () => {
       tree,
       join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
     );
-    const {root} = readProjectConfiguration(tree, project);
+    const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
@@ -153,11 +153,11 @@ describe('nx-plugin', () => {
       tree,
       join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
     );
-    const {root} = readProjectConfiguration(tree, project);
+    const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
@@ -180,7 +180,7 @@ describe('nx-plugin', () => {
         bin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       },
     });
-    const {root} = readProjectConfiguration(tree, project);
+    const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root, {
       fileImports: `import type {CoreConfig} from "${join(
         relativePathToCwd(cwd),
@@ -201,7 +201,7 @@ describe('nx-plugin', () => {
 
     await materializeTree(tree, cwd);
 
-    const {stdout} = await executeProcess({
+    const { stdout } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`],
       cwd,
@@ -212,21 +212,24 @@ describe('nx-plugin', () => {
       'NX   Successfully ran target code-pushup for project my-lib',
     );
 
-    const report = await readJsonFile(join(cwd, '.code-pushup', project, 'report.json'));
-    expect(report).toStrictEqual(expect.objectContaining({
-      plugins: [
-        expect.objectContaining({
-          slug: "good-feels",
-          audits: [
-            expect.objectContaining({
-              displayValue: "✅ Perfect! 👌",
-              slug: "always-perfect"
-            })
-          ]
-        })
-      ]
-    }));
-
+    const report = await readJsonFile(
+      join(cwd, '.code-pushup', project, 'report.json'),
+    );
+    expect(report).toStrictEqual(
+      expect.objectContaining({
+        plugins: [
+          expect.objectContaining({
+            slug: 'good-feels',
+            audits: [
+              expect.objectContaining({
+                displayValue: '✅ Perfect! 👌',
+                slug: 'always-perfect',
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
   });
 
   it('should consider plugin option bin in executor target', async () => {
@@ -237,11 +240,11 @@ describe('nx-plugin', () => {
         bin: 'XYZ',
       },
     });
-    const {root} = readProjectConfiguration(tree, project);
+    const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
@@ -260,11 +263,11 @@ describe('nx-plugin', () => {
         projectPrefix: 'cli',
       },
     });
-    const {root} = readProjectConfiguration(tree, project);
+    const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
@@ -282,7 +285,7 @@ describe('nx-plugin', () => {
     const cwd = join(baseDir, 'plugin-not-registered');
     await materializeTree(tree, cwd);
 
-    const {code, projectJson} = await nxShowProjectJson(cwd, project);
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
 
     expect(code).toBe(0);
 
