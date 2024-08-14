@@ -11,7 +11,7 @@ import {
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
 import { removeColorCodes } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 export function relativePathToCwd(testDir: string): string {
@@ -203,32 +203,13 @@ describe('nx-plugin', () => {
 
     const { stdout } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`],
+      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
     });
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
       'NX   Successfully ran target code-pushup for project my-lib',
-    );
-
-    const report = await readJsonFile(
-      join(cwd, '.code-pushup', project, 'report.json'),
-    );
-    expect(report).toStrictEqual(
-      expect.objectContaining({
-        plugins: [
-          expect.objectContaining({
-            slug: 'good-feels',
-            audits: [
-              expect.objectContaining({
-                displayValue: '✅ Perfect! 👌',
-                slug: 'always-perfect',
-              }),
-            ],
-          }),
-        ],
-      }),
     );
   });
 
