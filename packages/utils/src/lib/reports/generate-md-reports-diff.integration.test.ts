@@ -102,4 +102,13 @@ describe('generateMdReportsDiffForMonorepo', () => {
       ]),
     ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-with-portal.md');
   });
+
+  it('should format Markdown comment with all projects unchanged', async () => {
+    await expect(
+      generateMdReportsDiffForMonorepo([
+        { name: 'frontoffice', diff: reportsDiffUnchangedMock() },
+        { name: 'backoffice', diff: reportsDiffUnchangedMock() },
+      ]),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-unchanged.md');
+  });
 });
