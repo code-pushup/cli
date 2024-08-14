@@ -189,12 +189,12 @@ describe('nx-plugin', () => {
       )}";`,
       plugins: [
         {
-          fileImports: `import {dummyPlugin} from "${join(
+          fileImports: `import {customPlugin} from "${join(
             relativePathToCwd(cwd),
             pathRelativeToPackage,
             'dist/testing/test-utils',
           )}";`,
-          codeStrings: 'dummyPluginConfig',
+          codeStrings: 'customPlugin()',
         },
       ],
     });
@@ -203,7 +203,7 @@ describe('nx-plugin', () => {
 
     const { stdout } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup -- --dryRun`],
+      args: ['nx', 'run', `${project}:code-pushup`],
       cwd,
     });
 
