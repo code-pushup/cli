@@ -4,6 +4,7 @@ import {
   Tree,
   addDependenciesToPackageJson,
   convertNxGenerator,
+  logger,
   readJson,
   readNxJson,
   runTasksInSerial,
@@ -11,6 +12,7 @@ import {
   updateNxJson,
 } from '@nx/devkit';
 import { PackageJson } from 'nx/src/utils/package-json';
+import { PACKAGE_NAME } from '../../internal/constants';
 import {
   cpCliVersion,
   cpModelVersion,
@@ -18,8 +20,6 @@ import {
   cpUtilsVersion,
 } from '../../internal/versions';
 import { InitGeneratorSchema } from './schema';
-
-const nxPluginPackageName = '@code-pushup/nx-plugin';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson<PackageJson>(host, 'package.json');
@@ -29,7 +29,7 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
-  devDependencies[nxPluginPackageName] = cpNxPluginVersion;
+  devDependencies[PACKAGE_NAME] = cpNxPluginVersion;
   devDependencies['@code-pushup/models'] = cpModelVersion;
   devDependencies['@code-pushup/utils'] = cpUtilsVersion;
   devDependencies['@code-pushup/cli'] = cpCliVersion;
@@ -45,15 +45,15 @@ function moveToDevDependencies(tree: Tree) {
       ...packageJson,
     };
 
-    if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
-      const { [nxPluginPackageName]: version, ...dependencies } =
+    if (newPackageJson.dependencies?.[PACKAGE_NAME] !== undefined) {
+      const { [PACKAGE_NAME]: version, ...dependencies } =
         newPackageJson.dependencies;
       return {
         ...newPackageJson,
         dependencies,
         devDependencies: {
           ...newPackageJson.devDependencies,
-          [nxPluginPackageName]: version,
+          [PACKAGE_NAME]: version,
         },
       };
     }
@@ -76,14 +76,19 @@ function updateNxJsonConfig(tree: Tree) {
 }
 
 export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
-  if (!schema.skipPackageJson) {
-    moveToDevDependencies(tree);
-  }
   updateNxJsonConfig(tree);
 
   const tasks = [];
-  if (!schema.skipPackageJson) {
-    tasks.push(checkDependenciesInstalled(tree));
+  if (schema.skipPackageJson) {
+    logger.info(`Skip updating package.json`);
+  } else {
+    moveToDevDependencies(tree);
+    const installDependencies = checkDependenciesInstalled(tree);
+    if (schema.skipInstall) {
+      logger.info(`Skip installing packages`);
+    } else {
+      tasks.push(installDependencies);
+    }
   }
   return runTasksInSerial(...tasks);
 }

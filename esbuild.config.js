@@ -97,7 +97,11 @@ module.exports = {
           );
 
           packageJson.license = rootPackageJson.license;
-          packageJson.homepage = rootPackageJson.homepage;
+          if (project.name === 'cli') {
+            packageJson.homepage = rootPackageJson.homepage;
+          } else {
+            packageJson.homepage = `https://github.com/code-pushup/cli/tree/main/packages/${project.name}#readme`;
+          }
           packageJson.bugs = rootPackageJson.bugs;
           packageJson.repository = {
             ...rootPackageJson.repository,

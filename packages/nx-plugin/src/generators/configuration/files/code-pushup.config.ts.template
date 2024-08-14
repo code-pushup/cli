@@ -1,10 +1,9 @@
-import type { CoreConfig } from '@code-pushup/models';
+<%- fileImports %>
 
 // see: https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md#coreconfig
-const config: CoreConfig = {
-  plugins: [
-    // ...
-  ]
-};
-
-export default config;
+export default {
+    <% if (persist) { %>persist: <%- persist %>,<% } %>
+    <% if (upload) { %>update: <%- upload %>,<% } %>
+    <% if (plugins) { %>plugins: <%- plugins %>,<% } %>
+    <% if (categories) { %>categories: <%- categories %><% } %>
+} satisfies CoreConfig;

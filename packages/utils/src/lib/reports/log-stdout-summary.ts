@@ -55,7 +55,8 @@ function logPlugins(report: ScoredReport): void {
         },
         {
           text: cyanBright(audit.displayValue || `${audit.value}`),
-          width: 10,
+          // eslint-disable-next-line no-magic-numbers
+          width: 20,
           padding: [0, 0, 0, 0],
         },
       ]);

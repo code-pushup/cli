@@ -17,7 +17,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs --name=plugin-eslint --ver={args.ver} --tag={args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {

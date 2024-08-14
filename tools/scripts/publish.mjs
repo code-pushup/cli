@@ -9,6 +9,8 @@
 import devkit from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
 const { readCachedProjectGraph } = devkit;
 
@@ -19,17 +21,28 @@ function invariant(condition, message) {
   }
 }
 
-// Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
-// Default "tag" to "next" so we won't publish the "latest" tag by accident.
-const [, , name, version, tag = 'next'] = process.argv;
-
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
-const parsedVersion = version && version.replace(/vV/, '');
-invariant(
-  parsedVersion.match(validVersion),
-  `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${version}.`,
-);
+
+// Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
+// Default "tag" to "next" so we won't publish the "latest" tag by accident.
+const {
+  name,
+  ver: version,
+  tag,
+} = yargs(hideBin(process.argv))
+  .options({
+    name: { type: 'string', demandOption: true },
+    ver: { type: 'string', demandOption: true },
+    tag: { type: 'string', default: 'next' },
+  })
+  .coerce('ver', ver => {
+    invariant(
+      ver && validVersion.test(ver),
+      `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${ver}.`,
+    );
+    return ver;
+  }).argv;
 
 const graph = readCachedProjectGraph();
 const project = graph.nodes[name];

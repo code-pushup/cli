@@ -16,7 +16,7 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag} {args.registry}",
+      "command": "node tools/scripts/publish.mjs --name=core --ver={args.ver} --tag={args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {

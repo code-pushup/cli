@@ -1,3 +1,4 @@
 export type InitGeneratorSchema = {
-  skipPackageJson: boolean;
+  skipPackageJson?: boolean;
+  skipInstall?: boolean;
 };
