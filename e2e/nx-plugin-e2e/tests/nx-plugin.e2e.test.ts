@@ -198,6 +198,11 @@ describe('nx-plugin', () => {
           codeStrings: 'await jsPackagesPlugin({packageManager: `npm`})',
         },
       ],
+      upload: {
+        server: 'http://staging.code-pushup.dev',
+        organization: 'code-pushup',
+        apiKey: '12345678',
+      },
     });
     await materializeTree(tree, cwd);
 
