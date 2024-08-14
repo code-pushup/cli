@@ -183,6 +183,25 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should set audit displayValue to formatted score when displayValue is missing and scoreDisplayMode is not binary', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'unsized-images',
+          title: 'Image elements do not have explicit `width` and `height`',
+          description:
+            'Set an explicit width and height on image elements to reduce layout shifts and improve CLS. [Learn how to set image dimensions](https://web.dev/articles/optimize-cls#images_without_dimensions)',
+          score: 0.5,
+          scoreDisplayMode: 'metricSavings',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: '50%' }),
+      ]),
+    );
+  });
+
   it('should not parse given audit details', () => {
     expect(
       toAuditOutputs(

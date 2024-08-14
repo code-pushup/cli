@@ -7,7 +7,12 @@ import perfConfig from 'lighthouse/core/config/perf-config.js';
 import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
-import { importModule, readJsonFile, ui } from '@code-pushup/utils';
+import {
+  formatReportScore,
+  importModule,
+  readJsonFile,
+  ui,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
@@ -40,14 +45,26 @@ export class LighthouseAuditParsingError extends Error {
 }
 
 function formatBaseAuditOutput(lhrAudit: Result): AuditOutput {
-  const { id: slug, score, numericValue, displayValue } = lhrAudit;
+  const {
+    id: slug,
+    score,
+    numericValue,
+    displayValue,
+    scoreDisplayMode,
+  } = lhrAudit;
   return {
     slug,
-    score: score ?? 1, // score can be null
-    value: numericValue ?? score ?? 0, // not every audit has a numericValue
+    score: score ?? 1,
+    value: numericValue ?? score ?? 0,
     displayValue:
       displayValue ??
-      (score === 1 ? 'passed' : score === 0 ? 'failed' : undefined),
+      (scoreDisplayMode === 'binary'
+        ? score === 1
+          ? 'passed'
+          : 'failed'
+        : score
+        ? `${formatReportScore(score)}%`
+        : undefined),
   };
 }
 
