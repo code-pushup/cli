@@ -128,6 +128,61 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should set displayValue to "passed" when binary score equals 1', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'passed' }),
+      ]),
+    );
+  });
+
+  it('should set displayValue to "failed" when binary score equals 0', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 0,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'failed' }),
+      ]),
+    );
+  });
+
+  it('should set audit value to its score when numericValue is missing', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([expect.objectContaining({ value: 1 })]),
+    );
+  });
+
   it('should not parse given audit details', () => {
     expect(
       toAuditOutputs(

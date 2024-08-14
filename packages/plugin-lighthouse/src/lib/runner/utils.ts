@@ -1,9 +1,10 @@
 import { bold } from 'ansis';
-import type { Config } from 'lighthouse';
+import type { Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
+import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import { importModule, readJsonFile, ui } from '@code-pushup/utils';
@@ -38,6 +39,32 @@ export class LighthouseAuditParsingError extends Error {
   }
 }
 
+function formatBaseAuditOutput(lhrAudit: Result): AuditOutput {
+  const { id: slug, score, numericValue, displayValue } = lhrAudit;
+  return {
+    slug,
+    score: score ?? 1, // score can be null
+    value: numericValue ?? score ?? 0, // not every audit has a numericValue
+    displayValue:
+      displayValue ??
+      (score === 1 ? 'passed' : score === 0 ? 'failed' : undefined),
+  };
+}
+
+function processAuditDetails(
+  auditOutput: AuditOutput,
+  details: FormattedIcu<Details>,
+): AuditOutput {
+  try {
+    const parsedDetails = toAuditDetails(details);
+    return Object.keys(parsedDetails).length > 0
+      ? { ...auditOutput, details: parsedDetails }
+      : auditOutput;
+  } catch (error) {
+    throw new LighthouseAuditParsingError(auditOutput.slug, error as Error);
+  }
+}
+
 export function toAuditOutputs(
   lhrAudits: Result[],
   { verbose = false }: { verbose?: boolean } = {},
@@ -45,36 +72,13 @@ export function toAuditOutputs(
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
+  return lhrAudits.map(audit => {
+    const auditOutput = formatBaseAuditOutput(audit);
 
-  return lhrAudits.map(
-    ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      details,
-      displayValue,
-    }: Result) => {
-      const auditOutput: AuditOutput = {
-        slug,
-        score: score ?? 1, // score can be null
-        value,
-        displayValue,
-      };
-
-      if (details != null) {
-        try {
-          const parsedDetails = toAuditDetails(details);
-          return Object.keys(parsedDetails).length > 0
-            ? { ...auditOutput, details: parsedDetails }
-            : auditOutput;
-        } catch (error) {
-          throw new LighthouseAuditParsingError(slug, error as Error);
-        }
-      }
-
-      return auditOutput;
-    },
-  );
+    return audit.details == null
+      ? auditOutput
+      : processAuditDetails(auditOutput, audit.details);
+  });
 }
 
 export type LighthouseLogLevel =
