@@ -1,12 +1,15 @@
-import {Tree, updateProjectConfiguration} from '@nx/devkit';
-import {rm} from 'node:fs/promises';
-import {join, relative} from 'node:path';
-import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
-import {afterEach, expect} from 'vitest';
-import {generateCodePushupConfig} from '@code-pushup/nx-plugin';
-import {generateWorkspaceAndProject, materializeTree,} from '@code-pushup/test-nx-utils';
-import {removeColorCodes} from '@code-pushup/test-utils';
-import {executeProcess} from '@code-pushup/utils';
+import { Tree, updateProjectConfiguration } from '@nx/devkit';
+import { rm } from 'node:fs/promises';
+import { join, relative } from 'node:path';
+import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
+import { afterEach, expect } from 'vitest';
+import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
+import {
+  generateWorkspaceAndProject,
+  materializeTree,
+} from '@code-pushup/test-nx-utils';
+import { removeColorCodes } from '@code-pushup/test-utils';
+import { executeProcess } from '@code-pushup/utils';
 
 // @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
 function relativePathToCwd(testDir: string): string {
@@ -17,7 +20,7 @@ async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
 ) {
-  const {cwd, project} = options;
+  const { cwd, project } = options;
   const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
   const projectCfg = readProjectConfiguration(tree, project);
   updateProjectConfiguration(tree, project, {
@@ -32,7 +35,7 @@ async function addTargetToWorkspace(
       },
     },
   });
-  const {root} = projectCfg;
+  const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
     fileImports: `import type {CoreConfig} from "${join(
       relativePathToCwd(cwd),
@@ -63,14 +66,14 @@ describe('executor autorun', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, {recursive: true, force: true});
+    await rm(baseDir, { recursive: true, force: true });
   });
 
   it('should execute autorun executor', async () => {
     const cwd = join(baseDir, 'execute-dynamic-executor');
-    await addTargetToWorkspace(tree, {cwd, project});
+    await addTargetToWorkspace(tree, { cwd, project });
 
-    const {stdout, code} = await executeProcess({
+    const { stdout, code } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
@@ -79,6 +82,5 @@ describe('executor autorun', () => {
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup --dryRun');
-
   });
 });
