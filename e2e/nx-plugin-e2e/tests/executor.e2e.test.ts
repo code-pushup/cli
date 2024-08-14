@@ -52,6 +52,11 @@ async function addTargetToWorkspace(
         codeStrings: 'customPlugin()',
       },
     ],
+    upload: {
+      server: 'http://staging.code-pushup.dev',
+      organization: 'code-pushup',
+      apiKey: '12345678',
+    },
   });
   await materializeTree(tree, cwd);
 }
@@ -72,7 +77,6 @@ describe('CLI executor', () => {
   it('should execute no command by default', async () => {
     const cwd = join(baseDir, 'execute-default-executor');
     await addTargetToWorkspace(tree, { cwd, project });
-
     const { stdout, code } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
