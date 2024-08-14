@@ -40,15 +40,38 @@ export type ProjectDiff = {
   diff: ReportsDiff;
 };
 
+export type ProjectDiffWithOutcome = ProjectDiff & {
+  outcome: DiffOutcome;
+};
+
 export function generateMdReportsDiffForMonorepo(
   projects: ProjectDiff[],
 ): string {
   // TODO: sort projects (most changed, alphabetical)
-  // TODO: abbreviate or filter out unchanged projects?
+  const projectsWithOutcomes = projects.map(
+    (project): ProjectDiffWithOutcome => ({
+      ...project,
+      outcome: mergeDiffOutcomes(
+        changesToDiffOutcomes(getDiffChanges(project.diff)),
+      ),
+    }),
+  );
+  const unchanged = projectsWithOutcomes.filter(
+    ({ outcome }) => outcome === 'unchanged',
+  );
+  const changed = projectsWithOutcomes.filter(
+    project => !unchanged.includes(project),
+  );
+
   return new MarkdownDocument()
     .$concat(
       createDiffHeaderSection(projects.map(({ diff }) => diff)),
-      ...projects.map(createDiffProjectSection),
+      ...changed.map(createDiffProjectSection),
+    )
+    .$if(unchanged.length > 0, doc =>
+      doc
+        .rule()
+        .paragraph(summarizeUnchanged('project', { unchanged, changed })),
     )
     .toString();
 }
@@ -84,34 +107,38 @@ function createDiffHeaderSection(
     .paragraph(formatPortalLink(portalUrl));
 }
 
-function createDiffProjectSection(project: ProjectDiff): MarkdownDocument {
+function createDiffProjectSection(
+  project: ProjectDiffWithOutcome,
+): MarkdownDocument {
   const outcomeTexts = {
     positive: 'improved 🥳',
     negative: 'regressed 😟',
     mixed: 'mixed 🤨',
     unchanged: 'unchanged 😐',
   };
-  const outcome = mergeDiffOutcomes(
-    changesToDiffOutcomes(getDiffChanges(project.diff)),
-  );
+  const outcomeText = outcomeTexts[project.outcome];
 
   return new MarkdownDocument()
     .heading(
       HIERARCHY.level_2,
-      md`💼 Project ${md.code(project.name)} – ${outcomeTexts[outcome]}`,
+      md`💼 Project ${md.code(project.name)} – ${outcomeText}`,
     )
     .paragraph(formatPortalLink(project.portalUrl))
     .$concat(
-      createDiffCategoriesSection(project.diff, { skipHeading: true }),
+      createDiffCategoriesSection(project.diff, {
+        skipHeading: true,
+        skipUnchanged: true,
+      }),
       createDiffDetailsSection(project.diff, HIERARCHY.level_3),
     );
 }
 
 function createDiffCategoriesSection(
   diff: ReportsDiff,
-  options: { skipHeading: boolean } = { skipHeading: false },
+  options?: { skipHeading?: boolean; skipUnchanged?: boolean },
 ): MarkdownDocument | null {
   const { changed, unchanged, added } = diff.categories;
+  const { skipHeading, skipUnchanged } = options ?? {};
 
   const categoriesCount = changed.length + unchanged.length + added.length;
   const hasChanges = unchanged.length < categoriesCount;
@@ -145,21 +172,28 @@ function createDiffCategoriesSection(
       formatScoreWithColor(category.score),
       md.italic('n/a (\\*)'),
     ]),
-    ...unchanged.map(category => [
-      formatTitle(category),
-      formatScoreWithColor(category.score, { skipBold: true }),
-      formatScoreWithColor(category.score),
-      '–',
-    ]),
+    ...(skipUnchanged
+      ? []
+      : unchanged.map(category => [
+          formatTitle(category),
+          formatScoreWithColor(category.score, { skipBold: true }),
+          formatScoreWithColor(category.score),
+          '–',
+        ])),
   ];
 
   return new MarkdownDocument()
-    .heading(HIERARCHY.level_2, !options.skipHeading && '🏷️ Categories')
+    .heading(HIERARCHY.level_2, !skipHeading && '🏷️ Categories')
     .table(
       hasChanges ? columns : columns.slice(0, 2),
       rows.map(row => (hasChanges ? row : row.slice(0, 2))),
     )
-    .paragraph(added.length > 0 && md.italic('(\\*) New category.'));
+    .paragraph(added.length > 0 && md.italic('(\\*) New category.'))
+    .paragraph(
+      skipUnchanged &&
+        unchanged.length > 0 &&
+        summarizeUnchanged('category', { changed, unchanged }),
+    );
 }
 
 function createDiffDetailsSection(
@@ -270,7 +304,7 @@ function createGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
 }
 
 function summarizeUnchanged(
-  token: 'category' | 'group' | 'audit',
+  token: string,
   { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
 ): string {
   return [

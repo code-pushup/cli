@@ -47,7 +47,8 @@
 | :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
 | Bug prevention |      🟡 68       |    🟡 **63**    | ![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red) |
 | Performance    |      🟢 92       |    🟢 **94**    |   ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)   |
-| Code style     |      🟡 54       |    🟡 **54**    |                                –                                 |
+
+1 other category is unchanged.
 
 <details>
 <summary>👍 <strong>1</strong> group improved, 👍 <strong>3</strong> audits improved, 👎 <strong>1</strong> audit regressed</summary>
@@ -73,23 +74,16 @@
 
 </details>
 
-## 💼 Project `marketing` – unchanged 😐
-
-| 🏷️ Category   | ⭐ Score |
-| :------------- | :-----: |
-| Performance    |  🟢 92  |
-| Bug prevention |  🟡 68  |
-| Code style     |  🟡 54  |
-
 ## 💼 Project `docs` – regressed 😟
 
 | 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
 | :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
 | Bug prevention |      🟡 68       |    🟡 **63**    | ![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red) |
 | Performance    |    _n/a (\*)_    |    🟢 **94**    |                            _n/a (\*)_                            |
-| Code style     |      🟡 54       |    🟡 **54**    |                                –                                 |
 
 _(\*) New category._
+
+1 other category is unchanged.
 
 <details>
 <summary>👎 <strong>1</strong> audit regressed</summary>
@@ -107,3 +101,7 @@ All of 1 group is unchanged.
 49 other audits are unchanged.
 
 </details>
+
+---
+
+1 other project is unchanged.
