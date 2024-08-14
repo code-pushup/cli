@@ -10,6 +10,7 @@ import { HIERARCHY } from '../text-formats';
 import { toArray } from '../transform';
 import {
   changesToDiffOutcomes,
+  compareDiffsBy,
   createGroupsOrAuditsDetails,
   formatPortalLink,
   formatTitle,
@@ -53,15 +54,22 @@ export type ProjectDiffWithOutcome = ProjectDiff & {
 export function generateMdReportsDiffForMonorepo(
   projects: ProjectDiff[],
 ): string {
-  // TODO: sort projects (most changed, alphabetical)
-  const projectsWithOutcomes = projects.map(
-    (project): ProjectDiffWithOutcome => ({
-      ...project,
-      outcome: mergeDiffOutcomes(
-        changesToDiffOutcomes(getDiffChanges(project.diff)),
-      ),
-    }),
-  );
+  const projectsWithOutcomes = projects
+    .map(
+      (project): ProjectDiffWithOutcome => ({
+        ...project,
+        outcome: mergeDiffOutcomes(
+          changesToDiffOutcomes(getDiffChanges(project.diff)),
+        ),
+      }),
+    )
+    .sort(
+      (a, b) =>
+        compareDiffsBy('categories', a.diff, b.diff) ||
+        compareDiffsBy('groups', a.diff, b.diff) ||
+        compareDiffsBy('audits', a.diff, b.diff) ||
+        a.name.localeCompare(b.name),
+    );
   const unchanged = projectsWithOutcomes.filter(
     ({ outcome }) => outcome === 'unchanged',
   );
