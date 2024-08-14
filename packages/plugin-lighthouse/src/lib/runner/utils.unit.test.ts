@@ -128,6 +128,80 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should set displayValue to "passed" when binary score equals 1', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'passed' }),
+      ]),
+    );
+  });
+
+  it('should set displayValue to "failed" when binary score equals 0', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 0,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'failed' }),
+      ]),
+    );
+  });
+
+  it('should set audit value to its score when numericValue is missing', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([expect.objectContaining({ value: 1 })]),
+    );
+  });
+
+  it('should set audit displayValue to formatted score when displayValue is missing and scoreDisplayMode is not binary', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'unsized-images',
+          title: 'Image elements do not have explicit `width` and `height`',
+          description:
+            'Set an explicit width and height on image elements to reduce layout shifts and improve CLS. [Learn how to set image dimensions](https://web.dev/articles/optimize-cls#images_without_dimensions)',
+          score: 0.5,
+          scoreDisplayMode: 'metricSavings',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: '50%' }),
+      ]),
+    );
+  });
+
   it('should not parse given audit details', () => {
     expect(
       toAuditOutputs(
