@@ -78,6 +78,16 @@ export const LIGHTHOUSE_AUDITS_MAP = {
     value: 1189,
     displayValue: '1.2 s',
   },
+  'third-party-summary': {
+    slug: 'third-party-summary',
+    title: 'Minimize third-party usage',
+    description:
+      'Third-party code can significantly impact load performance. Limit the number of redundant third-party providers and try to load third-party code after your page has primarily finished loading. [Learn how to minimize third-party impact](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/loading-third-party-javascript/).',
+    docsUrl: undefined,
+    displayValue: 'Third-party code blocked the main thread for 6,850 ms',
+    value: 0,
+    score: 0,
+  },
 } satisfies Record<string, AuditReport>;
 
 export const LIGHTHOUSE_AUDIT_SLUGS = Object.keys(

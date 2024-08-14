@@ -25,6 +25,6 @@ All of 1 group is unchanged.
 | :----------------------------------------------------------------- | :------------------------------------------------------------------------------- | :---------------: | :--------------: | :------------------------------------------------------------------------------: |
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Disallow unused variables](https://eslint.org/docs/latest/rules/no-unused-vars) |     🟩 passed     |  🟥 **1 error**  | ![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red) |
 
-48 other audits are unchanged.
+49 other audits are unchanged.
 
 </details>

@@ -89,7 +89,6 @@ describe('toAuditDetails', () => {
 
     expect(outputs).toStrictEqual({
       table: {
-        title: 'Table',
         columns: [
           {
             key: 'name',
