@@ -2,9 +2,9 @@
   "name": "@code-pushup/create-cli",
   "version": "0.0.0",
   "license": "MIT",
-  "bin": "src/index.js",
+  "bin": "index.js",
   "dependencies": {
     "@code-pushup/nx-plugin": "*",
-    "tslib": "^2.6.2"
+    "@code-pushup/utils": "*"
   }
 }

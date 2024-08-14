@@ -2,7 +2,7 @@ import {
   ProcessConfig,
   executeProcess,
   objectToCliArgs,
-} from '@code-pushup/nx-plugin';
+} from '@code-pushup/utils';
 import {
   parseNxProcessOutput,
   setupNxContext,

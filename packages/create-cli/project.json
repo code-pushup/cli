@@ -5,13 +5,14 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "dependsOn": ["^build"],
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/create-cli",
         "main": "packages/create-cli/src/index.ts",
-        "tsConfig": "packages/create-cli/tsconfig.lib.json"
+        "tsConfig": "packages/create-cli/tsconfig.lib.json",
+        "assets": ["packages/create-cli/*.md"],
+        "esbuildConfig": "esbuild.config.js"
       }
     },
     "publish": {
@@ -42,7 +43,7 @@
     },
     "exec-node": {
       "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
+      "command": "node ./dist/packages/create-cli/index.js",
       "options": {}
     },
     "exec-npm": {

@@ -18,11 +18,9 @@ describe('create-cli-node', () => {
   it('should execute index.js correctly over node', async () => {
     const cwd = join(baseDir, 'node');
     await createNpmWorkspace(cwd);
-    // If we use ESM the following error is thrown
-    // Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'dist/packages/create-cli/src/lib/init' imported from dist/packages/create-cli/src/index.js
     const { code, stdout } = await executeProcess({
       command: 'node',
-      args: [join(binPath(cwd), 'src/index.js')],
+      args: [join(binPath(cwd), 'index.js')],
       cwd,
     });
 
@@ -33,11 +31,9 @@ describe('create-cli-node', () => {
     );
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute index.js correctly over npm exec', async () => {
+  it('should execute package correctly over npm exec', async () => {
     const cwd = join(baseDir, 'exec');
     await createNpmWorkspace(cwd);
-    // Error: sh: /Users/<username>/.npm/_npx/9876543/node_modules/.bin/create-cli: Permission denied
     const { code, stdout } = await executeProcess({
       command: 'npm',
       args: ['exec', '@code-pushup/create-cli'],
@@ -52,14 +48,12 @@ describe('create-cli-node', () => {
     );
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute index.js correctly over npx init', async () => {
+  it('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'init');
     await createNpmWorkspace(cwd);
-    // Error: npm ERR! could not determine executable to run
     const { code, stdout } = await executeProcess({
-      command: 'npx',
-      args: ['init', '@code-pushup/create-cli'],
+      command: 'npm',
+      args: ['init', '@code-pushup/cli'],
       cwd,
       observer: { onStdout: console.info },
     });

@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
-import * as utils from '@code-pushup/nx-plugin';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ProcessResult } from '@code-pushup/utils';
+import * as utils from '@code-pushup/utils';
 import { initCodePushup, nxPluginGenerator } from './init';
 import * as createUtils from './utils';
 
