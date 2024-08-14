@@ -152,3 +152,31 @@ function countDiffOutcomes(
     unchanged: outcomes.filter(outcome => outcome === 'unchanged').length,
   };
 }
+
+export function compareDiffsBy<T extends 'categories' | 'groups' | 'audits'>(
+  type: T,
+  a: ReportsDiff,
+  b: ReportsDiff,
+): number {
+  return (
+    sumScoreChanges(b[type].changed) - sumScoreChanges(a[type].changed) ||
+    sumConfigChanges(b[type]) - sumConfigChanges(a[type])
+  );
+}
+
+function sumScoreChanges(changes: Change[]): number {
+  return changes.reduce<number>(
+    (acc, { scores }) => acc + Math.abs(scores.diff),
+    0,
+  );
+}
+
+function sumConfigChanges({
+  added,
+  removed,
+}: {
+  added: unknown[];
+  removed: unknown[];
+}): number {
+  return added.length + removed.length;
+}
