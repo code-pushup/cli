@@ -75,7 +75,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute no command by default', async () => {
-    const cwd = join(baseDir, 'execute-default-executor');
+    const cwd = join(baseDir, 'execute-default-command');
     await addTargetToWorkspace(tree, { cwd, project });
     const { stdout, code } = await executeProcess({
       command: 'npx',
@@ -89,7 +89,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute print-config executor', async () => {
-    const cwd = join(baseDir, 'execute-print-config-executor');
+    const cwd = join(baseDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -108,7 +108,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute collect executor', async () => {
-    const cwd = join(baseDir, 'execute-collect-executor');
+    const cwd = join(baseDir, 'execute-collect-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -142,7 +142,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute upload executor to throw if no report is present', async () => {
-    const cwd = join(baseDir, 'execute-upload-executor');
+    const cwd = join(baseDir, 'execute-upload-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -157,7 +157,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute autorun executor', async () => {
-    const cwd = join(baseDir, 'execute-autorun-executor');
+    const cwd = join(baseDir, 'execute-autorun-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
