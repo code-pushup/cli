@@ -14,6 +14,13 @@ To set up Code PushUp, run the following command:
 npx init @code-pushup/cli
 ```
 
+alternatives:
+
+```bash 
+npx @code-pushup/create-cli
+npm exec @code-pushup/create-cli
+```
+
 It should generate the following output:
 
 ```bash
