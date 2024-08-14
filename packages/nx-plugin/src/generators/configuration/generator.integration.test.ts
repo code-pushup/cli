@@ -45,7 +45,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:autorun`,
+      executor: `${PACKAGE_NAME}:command`,
     });
   });
 
@@ -70,7 +70,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.['cp']).toEqual({
-      executor: `${PACKAGE_NAME}:autorun`,
+      executor: `${PACKAGE_NAME}:command`,
     });
   });
 });
@@ -102,7 +102,7 @@ describe('configurationGenerator', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:autorun`,
+      executor: `${PACKAGE_NAME}:command`,
     });
   });
 

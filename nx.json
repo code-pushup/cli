@@ -109,5 +109,14 @@
       }
     },
     "releaseTagPattern": "v{version}"
-  }
+  },
+  "plugins": [
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "cp",
+        "projectPrefix": "cli"
+      }
+    }
+  ]
 }

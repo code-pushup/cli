@@ -72,7 +72,7 @@ describe('nx-plugin g configuration', () => {
       expect.objectContaining({
         targets: expect.objectContaining({
           'code-pushup': {
-            executor: '@code-pushup/nx-plugin:autorun',
+            executor: '@code-pushup/nx-plugin:command',
           },
         }),
       }),
@@ -115,7 +115,7 @@ describe('nx-plugin g configuration', () => {
       expect.objectContaining({
         targets: expect.objectContaining({
           'code-pushup': {
-            executor: '@code-pushup/nx-plugin:autorun',
+            executor: '@code-pushup/nx-plugin:command',
           },
         }),
       }),
@@ -156,7 +156,7 @@ describe('nx-plugin g configuration', () => {
       expect.objectContaining({
         targets: expect.objectContaining({
           'code-pushup': {
-            executor: '@code-pushup/nx-plugin:autorun',
+            executor: '@code-pushup/nx-plugin:command',
           },
         }),
       }),
@@ -200,7 +200,7 @@ describe('nx-plugin g configuration', () => {
       expect.objectContaining({
         targets: expect.not.objectContaining({
           'code-pushup': {
-            executor: '@code-pushup/nx-plugin:autorun',
+            executor: '@code-pushup/nx-plugin:command',
           },
         }),
       }),

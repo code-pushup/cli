@@ -163,7 +163,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: {
         configurations: {},
-        executor: `@code-pushup/nx-plugin:autorun`,
+        executor: `@code-pushup/nx-plugin:command`,
         options: {},
       },
     });
@@ -209,9 +209,7 @@ describe('nx-plugin', () => {
 
     const cleanStderr = removeColorCodes(stderr);
     // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
-    expect(cleanStderr).toContain(
-      'DryRun execution of: npx @code-pushup/cli autorun',
-    );
+    expect(cleanStderr).toContain('DryRun execution of: npx @code-pushup/cli');
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
@@ -237,7 +235,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: 'XYZ:autorun',
+        executor: 'XYZ:command',
       }),
     });
   });

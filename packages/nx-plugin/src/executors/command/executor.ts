@@ -3,10 +3,8 @@ import { ExecutorContext, logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli';
 import { normalizeContext } from '../internal/context';
-import { AUTORUN_COMMAND } from './constants';
 import { AutorunCommandExecutorOptions } from './schema';
 import { parseAutorunExecutorOptions } from './utils';
-import {bold} from "ansis";
 
 export type ExecutorOutput = {
   success: boolean;
@@ -17,18 +15,18 @@ export type ExecutorOutput = {
 export default function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
-) {
+): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command = AUTORUN_COMMAND } = terminalAndExecutorOptions;
+  const { dryRun, verbose, command } = terminalAndExecutorOptions;
 
-  const commandString = createCliCommand(command, cliArgumentObject);
+  const commandString = createCliCommand({ command, args: cliArgumentObject });
   const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
   if (verbose) {
-    logger.info(`Run CLI executor with commandString: ${bold(command)}`);
+    logger.info(`Run CLI executor ${command ?? ''}`);
     logger.info(`Command: ${commandString}`);
   }
   if (dryRun) {
@@ -42,8 +40,8 @@ export default function runAutorunExecutor(
       logger.error(error);
       return Promise.resolve({
         success: false,
-        commandString,
-        error,
+        command: commandString,
+        error: error as Error,
       });
     }
   }
@@ -51,5 +49,5 @@ export default function runAutorunExecutor(
   return Promise.resolve({
     success: true,
     command: commandString,
-  } satisfies ExecutorOutput);
+  });
 }

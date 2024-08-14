@@ -4,7 +4,6 @@ import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import runAutorunExecutor from './executor';
-import {bold} from "ansis";
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
@@ -34,13 +33,13 @@ describe('runAutorunExecutor', () => {
     envSpy.mockReset().mockReturnValue({});
   });
 
-  it('should call execSync with autorun command and return result', async () => {
+  it('should call execSync with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('npx @code-pushup/cli autorun');
+    expect(output.command).toMatch('npx @code-pushup/cli');
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
-      expect.stringContaining('npx @code-pushup/cli autorun'),
+      expect.stringContaining('npx @code-pushup/cli'),
       { cwd: '/test' },
     );
   });
@@ -95,10 +94,10 @@ describe('runAutorunExecutor', () => {
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
     expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`Run CLI executor with commandString: ${bold('autorun')}`),
+      expect.stringContaining(`Run CLI executor`),
     );
     expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Command: npx @code-pushup/cli autorun'),
+      expect.stringContaining('Command: npx @code-pushup/cli'),
     );
   });
 
@@ -109,7 +108,7 @@ describe('runAutorunExecutor', () => {
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        'DryRun execution of: npx @code-pushup/cli autorun --dryRun',
+        'DryRun execution of: npx @code-pushup/cli --dryRun',
       ),
     );
   });

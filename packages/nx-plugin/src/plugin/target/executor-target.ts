@@ -7,6 +7,6 @@ export function createExecutorTarget(options?: {
 }): TargetConfiguration<RunCommandsOptions> {
   const { bin = PACKAGE_NAME } = options ?? {};
   return {
-    executor: `${bin}:autorun`,
+    executor: `${bin}:command`,
   };
 }
