@@ -16,7 +16,7 @@ npx init @code-pushup/cli
 
 alternatives:
 
-```bash 
+```bash
 npx @code-pushup/create-cli
 npm exec @code-pushup/create-cli
 ```
