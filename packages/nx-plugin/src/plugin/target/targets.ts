@@ -2,6 +2,7 @@ import { readdir } from 'node:fs/promises';
 import { CP_TARGET_NAME } from '../constants';
 import type { NormalizedCreateNodesContext } from '../types';
 import { createConfigurationTarget } from './configuration-target';
+import { CODE_PUSHUP_CONFIG_REGEX } from './constants';
 import { createExecutorTarget } from './executor-target';
 
 export async function createTargets(
@@ -13,9 +14,7 @@ export async function createTargets(
     projectPrefix,
   } = normalizedContext.createOptions;
   const rootFiles = await readdir(normalizedContext.projectRoot);
-  return rootFiles.some(filename =>
-    filename.match(/^code-pushup\.config.(\w*\.)*(ts|js|mjs)$/),
-  )
+  return rootFiles.some(filename => filename.match(CODE_PUSHUP_CONFIG_REGEX))
     ? {
         [targetName]: createExecutorTarget({ bin, projectPrefix }),
       }
