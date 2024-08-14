@@ -46,7 +46,7 @@ _We want to change that!_
 ### 🔌 Officially supported plugins
 
 |                              Icon                              | Name                                                | Description                                                                        |
-| :------------------------------------------------------------: | :-------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| :------------------------------------------------------------: | :-------------------------------------------------- | :--------------------------------------------------------------------------------- |
 |   <img width="24" src="docs/images/plugin-eslint.icon.png">    | [ESLint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules.                                            |
 |  <img width="24" src="docs/images/plugin-coverage.icon.png">   | [Code Coverage](./packages/plugin-coverage#readme)  | Collects code **coverage** from your tests.                                        |
 | <img width="24" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Checks 3rd party packages for known **vulnerabilities** and **outdated** versions. |
