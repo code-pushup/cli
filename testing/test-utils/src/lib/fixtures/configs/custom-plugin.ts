@@ -20,5 +20,5 @@ const customPluginConfig = {
 
 export function customPlugin() {
   return customPluginConfig;
-};
+}
 export default customPluginConfig;
