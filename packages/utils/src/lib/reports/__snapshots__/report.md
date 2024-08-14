@@ -448,6 +448,12 @@ ESLint rule **yoda**. [📖 Docs](https://eslint.org/docs/latest/rules/yoda)
 
 ESLint rule **prefer-arrow-callback**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-arrow-callback)
 
+### Minimize third-party usage (Lighthouse)
+
+🟥 **Third-party code blocked the main thread for 6,850 ms** (score: 0)
+
+Third-party code can significantly impact load performance. Limit the number of redundant third-party providers and try to load third-party code after your page has primarily finished loading. [Learn how to minimize third-party impact](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/loading-third-party-javascript/).
+
 ### First Contentful Paint (Lighthouse)
 
 🟨 **1.2 s** (score: 76)
@@ -485,11 +491,11 @@ Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) o
 | Plugin     | Audits | Version | Duration |
 | :--------- | :----: | :-----: | -------: |
 | ESLint     |   47   | `0.1.0` |   368 ms |
-| Lighthouse |   5    | `0.1.0` |   1.23 s |
+| Lighthouse |   6    | `0.1.0` |   1.23 s |
 
 | Commit                                                 | Version | Duration | Plugins | Categories | Audits |
 | :----------------------------------------------------- | :-----: | -------: | :-----: | :--------: | :----: |
-| Minor fixes (abcdef0123456789abcdef0123456789abcdef01) | `0.0.1` |   1.65 s |    2    |     3      |   52   |
+| Minor fixes (abcdef0123456789abcdef0123456789abcdef01) | `0.0.1` |   1.65 s |    2    |     3      |   53   |
 
 ---
 
