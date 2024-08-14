@@ -6,6 +6,7 @@ import { normalizeContext } from '../internal/context';
 import { AUTORUN_COMMAND } from './constants';
 import { AutorunCommandExecutorOptions } from './schema';
 import { parseAutorunExecutorOptions } from './utils';
+import {bold} from "ansis";
 
 export type ExecutorOutput = {
   success: boolean;
@@ -22,25 +23,26 @@ export default function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose } = terminalAndExecutorOptions;
-  const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
-  const commandOptions = context.cwd ? { cwd: context.cwd } : {};
+  const { dryRun, verbose, command = AUTORUN_COMMAND } = terminalAndExecutorOptions;
+
+  const commandString = createCliCommand(command, cliArgumentObject);
+  const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
   if (verbose) {
-    logger.info(`Run ${AUTORUN_COMMAND} executor`);
-    logger.info(`Command: ${command}`);
+    logger.info(`Run CLI executor with commandString: ${bold(command)}`);
+    logger.info(`Command: ${commandString}`);
   }
   if (dryRun) {
-    logger.warn(`DryRun execution of: ${command}`);
+    logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
       // @TODO use executeProcess instead of execSync -> non blocking, logs #761
       // eslint-disable-next-line n/no-sync
-      execSync(command, commandOptions);
+      execSync(commandString, commandStringOptions);
     } catch (error) {
       logger.error(error);
       return Promise.resolve({
         success: false,
-        command,
+        commandString,
         error,
       });
     }
@@ -48,6 +50,6 @@ export default function runAutorunExecutor(
 
   return Promise.resolve({
     success: true,
-    command,
+    command: commandString,
   } satisfies ExecutorOutput);
 }
