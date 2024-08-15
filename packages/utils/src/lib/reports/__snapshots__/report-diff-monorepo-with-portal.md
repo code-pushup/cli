@@ -2,7 +2,9 @@
 
 🥳 Code PushUp report has **improved** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
 
-## 💼 Project `frontoffice` – improved 🥳
+## 💼 Project `frontoffice`
+
+🥳 Code PushUp report has **improved**.
 
 [🕵️ See full comparison in Code PushUp portal 🔍](https://app.code-pushup.dev/portal/dunder-mifflin/frontoffice/comparison/abcdef0123456789abcdef0123456789abcdef01/0123456789abcdef0123456789abcdef01234567)
 

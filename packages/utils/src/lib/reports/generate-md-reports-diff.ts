@@ -13,6 +13,7 @@ import {
   compareDiffsBy,
   createGroupsOrAuditsDetails,
   formatPortalLink,
+  formatReportOutcome,
   formatTitle,
   getDiffChanges,
   mergeDiffOutcomes,
@@ -94,49 +95,24 @@ function createDiffHeaderSection(
   diff: ReportsDiff | ReportsDiff[],
   portalUrl?: string,
 ): MarkdownDocument {
-  const outcomeTexts = {
-    positive: md`🥳 Code PushUp report has ${md.bold('improved')}`,
-    negative: md`😟 Code PushUp report has ${md.bold('regressed')}`,
-    mixed: md`🤨 Code PushUp report has both ${md.bold(
-      'improvements and regressions',
-    )}`,
-    unchanged: md`😐 Code PushUp report is ${md.bold('unchanged')}`,
-  };
   const outcome = mergeDiffOutcomes(
     changesToDiffOutcomes(toArray(diff).flatMap(getDiffChanges)),
   );
-
-  const commits = Array.isArray(diff) ? diff[0]?.commits : diff.commits; // TODO: what if array contains different commit pairs?
-  const commitsText =
-    commits &&
-    `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
+  // TODO: what if array contains different commit pairs?
+  const commits = Array.isArray(diff) ? diff[0]?.commits : diff.commits;
 
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, 'Code PushUp')
-    .paragraph(
-      commitsText
-        ? md`${outcomeTexts[outcome]} – ${commitsText}.`
-        : outcomeTexts[outcome],
-    )
+    .paragraph(formatReportOutcome(outcome, commits))
     .paragraph(formatPortalLink(portalUrl));
 }
 
 function createDiffProjectSection(
   project: ProjectDiffWithOutcome,
 ): MarkdownDocument {
-  const outcomeTexts = {
-    positive: 'improved 🥳',
-    negative: 'regressed 😟',
-    mixed: 'mixed 🤨',
-    unchanged: 'unchanged 😐',
-  };
-  const outcomeText = outcomeTexts[project.outcome];
-
   return new MarkdownDocument()
-    .heading(
-      HIERARCHY.level_2,
-      md`💼 Project ${md.code(project.name)} – ${outcomeText}`,
-    )
+    .heading(HIERARCHY.level_2, md`💼 Project ${md.code(project.name)}`)
+    .paragraph(formatReportOutcome(project.outcome))
     .paragraph(formatPortalLink(project.portalUrl))
     .$concat(
       createDiffCategoriesSection(project.diff, {
