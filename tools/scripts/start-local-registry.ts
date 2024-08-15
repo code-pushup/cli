@@ -2,30 +2,42 @@
  * This script starts a local registry for e2e testing purposes.
  * It is meant to be called in jest's globalSetup.
  */
-import { execFileSync, execSync, spawn } from 'child_process';
+import { execFileSync, execSync } from 'child_process';
+import { RegistryOptions, RegistryResult } from './types';
+import {
+  configureRegistry,
+  executeProcess,
+  findLatestVersion,
+  parseRegistryData,
+  unconfigureRegistry,
+} from './utils';
 
-export default async () => {
-  // local registry target to run
-  const localRegistryTarget = '@code-pushup/cli-source:local-registry';
-  // storage folder for the local registry
-  const storage = './tmp/local-registry/storage';
-
-  global.stopLocalRegistry = await startLocalRegistry({
+export default async ({
+  localRegistryTarget,
+  storage = './tmp/local-registry/storage',
+}: RegistryOptions) => {
+  const registryResult = await startLocalRegistry({
     localRegistryTarget,
     storage,
     verbose: true,
   });
+  const { stop, ...registryData } = registryResult;
 
-  // find latest version
-  const version = execSync('git describe --tags --abbrev=0')
-    .toString()
-    .trim()
-    .replace(/^v/, '');
+  console.info('Registry started:');
+  console.table(registryData);
 
-  // is is also possible to use nx release to publish the packages to the local registry
+  global.stopLocalRegistry = stop;
+
+  // Publish all
   execFileSync(
     'npx',
-    ['nx', 'run-many', '--targets=publish', `--ver=${version}`, '--tag=e2e'],
+    [
+      'nx',
+      'run-many',
+      '--targets=publish',
+      `--ver=${findLatestVersion()}`,
+      '--tag=e2e',
+    ],
     { env: process.env, stdio: 'inherit', shell: true },
   );
 };
@@ -37,70 +49,55 @@ function startLocalRegistry({
   localRegistryTarget,
   storage,
   verbose,
-}: {
-  localRegistryTarget: string;
-  storage?: string;
-  verbose?: boolean;
-}) {
-  if (!localRegistryTarget) {
-    throw new Error(`localRegistryTarget is required`);
-  }
-  return new Promise<() => void>((resolve, reject) => {
-    const childProcess = spawn(
-      'npx',
-      [
+}: RegistryOptions): Promise<Partial<RegistryResult>> {
+  return new Promise((resolve, reject) => {
+    executeProcess({
+      command: 'npx',
+      args: [
         'nx',
         ...`run ${localRegistryTarget} --location none --clear true`.split(' '),
         ...(storage ? [`--storage`, storage] : []),
       ],
-      { stdio: 'pipe', shell: true },
-    );
+      options: {
+        stdio: 'pipe',
+        shell: true,
+      },
+      observer: {
+        onStdout: (data, childProcess) => {
+          if (verbose) {
+            process.stdout.write(data);
+          }
 
-    const listener = data => {
-      if (verbose) {
-        process.stdout.write(data);
-      }
-      if (data.toString().includes('http://localhost:')) {
-        const port = parseInt(
-          data.toString().match(/localhost:(?<port>\d+)/)?.groups?.port,
-        );
-        console.info('Local registry started on port ' + port);
+          if (data.toString().includes('//localhost:')) {
+            const registryData = parseRegistryData(data);
 
-        const registry = `http://localhost:${port}`;
-        process.env.npm_config_registry = registry;
-        execSync(
-          `npm config set //localhost:${port}/:_authToken "secretVerdaccioToken"`,
-        );
+            configureRegistry(registryData);
 
-        // yarnv1
-        process.env.YARN_REGISTRY = registry;
-        // yarnv2
-        process.env.YARN_NPM_REGISTRY_SERVER = registry;
-        process.env.YARN_UNSAFE_HTTP_WHITELIST = 'localhost';
-
-        console.info('Set npm and yarn config registry to ' + registry);
-
-        resolve(() => {
-          childProcess.kill();
-          execSync(`npm config delete //localhost:${port}/:_authToken`);
-        });
-        childProcess?.stdout?.off('data', listener);
-      }
-    };
-    childProcess?.stdout?.on('data', listener);
-    childProcess?.stderr?.on('data', data => {
-      process.stderr.write(data);
-    });
-    childProcess.on('error', err => {
-      console.error('local registry error', err);
-      reject(err);
-    });
-    childProcess.on('exit', code => {
-      console.info('local registry exit', code);
-      if (code !== 0) {
-        reject(code);
-      } else {
-        resolve(() => {});
+            resolve({
+              registryData,
+              stop: () => {
+                // this makes the process throw
+                childProcess.kill();
+                unconfigureRegistry(registryData);
+                execSync(
+                  `npm config delete ${registryData.registryNoProtocol}/:_authToken`,
+                );
+              },
+            });
+          }
+        },
+        onStderr: data => {
+          if (verbose) {
+            process.stdout.write(data);
+          }
+        },
+        onComplete: code => {
+          console.info('local registry onComplete', code);
+        },
+      },
+    }).catch(error => {
+      if (error.message !== 'Failed to start verdaccio: undefined') {
+        reject(error);
       }
     });
   });
