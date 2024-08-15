@@ -72,6 +72,33 @@ describe('generateMdReportsDiff', () => {
       '__snapshots__/report-diff-with-portal.md',
     );
   });
+
+  it('should format Markdown comment with truncated audits table', async () => {
+    await expect(
+      generateMdReportsDiff({
+        ...reportsDiffMock(),
+        categories: { changed: [], unchanged: [], added: [], removed: [] },
+        groups: { changed: [], unchanged: [], added: [], removed: [] },
+        audits: {
+          changed: Array.from({ length: 123 }).map((_, i) => {
+            const id = i + 1;
+            const failing = (i % 10) + 1;
+            return {
+              slug: `test-suite-${id}`,
+              title: `Test suite #${id}`,
+              plugin: { slug: 'e2e', title: 'E2E tests' },
+              values: { before: 0, after: failing, diff: failing },
+              scores: { before: 1, after: 0, diff: -1 },
+              displayValues: { before: 'passed', after: `${failing} failed` },
+            };
+          }),
+          unchanged: [],
+          added: [],
+          removed: [],
+        },
+      }),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-many-audits.md');
+  });
 });
 
 describe('generateMdReportsDiffForMonorepo', () => {
