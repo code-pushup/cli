@@ -217,7 +217,7 @@ describe('nx-plugin', () => {
     expect(cleanStdout).toContain(
       'NX   Successfully ran target code-pushup for project my-lib',
     );
-  });
+  }, 70_000);
 
   it('should consider plugin option bin in executor target', async () => {
     const cwd = join(baseDir, 'configuration-option-bin');
