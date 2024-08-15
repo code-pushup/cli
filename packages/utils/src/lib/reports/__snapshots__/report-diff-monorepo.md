@@ -2,7 +2,9 @@
 
 🤨 Code PushUp report has both **improvements and regressions** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
 
-## 💼 Project `console` – improved 🥳
+## 💼 Project `console`
+
+🥳 Code PushUp report has **improved**.
 
 | 🏷️ Category                                                              | ⭐ Previous score | ⭐ Current score |                        🔄 Score change                         |
 | :------------------------------------------------------------------------ | :--------------: | :-------------: | :------------------------------------------------------------: |
@@ -41,7 +43,9 @@
 
 </details>
 
-## 💼 Project `admin` – mixed 🤨
+## 💼 Project `admin`
+
+🤨 Code PushUp report has both **improvements and regressions**.
 
 | 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
 | :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
@@ -74,7 +78,9 @@
 
 </details>
 
-## 💼 Project `docs` – regressed 😟
+## 💼 Project `docs`
+
+😟 Code PushUp report has **regressed**.
 
 | 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
 | :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |

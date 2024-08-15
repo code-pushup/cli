@@ -152,6 +152,27 @@ function countDiffOutcomes(
   };
 }
 
+export function formatReportOutcome(
+  outcome: DiffOutcome,
+  commits?: ReportsDiff['commits'],
+): InlineText {
+  const outcomeTexts = {
+    positive: md`🥳 Code PushUp report has ${md.bold('improved')}`,
+    negative: md`😟 Code PushUp report has ${md.bold('regressed')}`,
+    mixed: md`🤨 Code PushUp report has both ${md.bold(
+      'improvements and regressions',
+    )}`,
+    unchanged: md`😐 Code PushUp report is ${md.bold('unchanged')}`,
+  };
+
+  if (commits) {
+    const commitsText = `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
+    return md`${outcomeTexts[outcome]} – ${commitsText}.`;
+  }
+
+  return md`${outcomeTexts[outcome]}.`;
+}
+
 export function compareDiffsBy<T extends 'categories' | 'groups' | 'audits'>(
   type: T,
   a: ReportsDiff,
