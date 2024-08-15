@@ -11,13 +11,12 @@ export function summarizeUnchanged(
   token: string,
   { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
 ): string {
-  return [
+  const pluralizedCount =
     changed.length > 0
       ? pluralizeToken(`other ${token}`, unchanged.length)
-      : `All of ${pluralizeToken(token, unchanged.length)}`,
-    unchanged.length === 1 ? 'is' : 'are',
-    'unchanged.',
-  ].join(' ');
+      : `All of ${pluralizeToken(token, unchanged.length)}`;
+  const pluralizedVerb = unchanged.length === 1 ? 'is' : 'are';
+  return `${pluralizedCount} ${pluralizedVerb} unchanged.`;
 }
 
 export function summarizeDiffOutcomes(
