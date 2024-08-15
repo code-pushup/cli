@@ -17,25 +17,12 @@ import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
 
-// @TODO fix https://github.com/code-pushup/cli/issues/612
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,
   flags: LighthouseOptions = { skipAudits: [] },
 ): AuditOutputs {
   const toSkip = new Set(flags.skipAudits ?? []);
-  return auditOutputs.filter(({ slug }) => {
-    const doSkip = toSkip.has(slug);
-    if (doSkip) {
-      ui().logger.info(
-        `Audit ${bold(
-          slug,
-        )} was included in audit outputs of lighthouse but listed under ${bold(
-          'skipAudits',
-        )}.`,
-      );
-    }
-    return !doSkip;
-  });
+  return auditOutputs.filter(({ slug }) => !toSkip.has(slug));
 }
 
 export class LighthouseAuditParsingError extends Error {

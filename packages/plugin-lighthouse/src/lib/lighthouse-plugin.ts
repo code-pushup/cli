@@ -14,12 +14,8 @@ export function lighthousePlugin(
   url: string,
   flags?: LighthouseOptions,
 ): PluginConfig {
-  const {
-    skipAudits = [],
-    onlyAudits = [],
-    onlyCategories = [],
-    ...unparsedFlags
-  } = normalizeFlags(flags ?? {});
+  const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
+    normalizeFlags(flags ?? {});
 
   const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
     LIGHTHOUSE_NAVIGATION_AUDITS,

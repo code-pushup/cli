@@ -50,6 +50,8 @@ export function normalizeFlags(flags?: LighthouseOptions): LighthouseCliFlags {
       )
       // in code-pushup lighthouse categories are mapped as groups, therefor we had to rename "onlyCategories" to "onlyGroups" for the user of the plugin as it was confusing
       .map(([key, v]) => [key === 'onlyGroups' ? 'onlyCategories' : key, v])
+      // onlyAudits and onlyCategories cannot be empty arrays, otherwise skipAudits is ignored by lighthouse
+      .filter(([_, v]) => !(Array.isArray(v) && v.length === 0))
       // undefined | string | string[] => string[] (empty for undefined)
       .map(([key, v]) => {
         if (!REFINED_STRING_OR_STRING_ARRAY.has(key as never)) {
