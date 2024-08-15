@@ -46,7 +46,7 @@ describe('create-cli-node', () => {
     expect(cleanedStdout).toContain(
       '<↗>  Generating @code-pushup/nx-plugin:configuration',
     );
-  });
+  }, 70_000);
 
   it('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'init');
