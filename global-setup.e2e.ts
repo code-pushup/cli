@@ -1,49 +1,70 @@
 import { execFileSync, execSync } from 'child_process';
+import { join } from 'node:path';
 import { setup as globalSetup } from './global-setup';
 import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
 import startLocalRegistry from './tools/scripts/start-local-registry';
 import stopLocalRegistry from './tools/scripts/stop-local-registry';
-import { findLatestVersion } from './tools/scripts/utils';
 
-const localRegistryNxTarget = '@code-pushup/cli-source:local-registry';
+const uniquePort: number = Number(
+  (6000 + Number(Math.random() * 1000)).toFixed(0),
+);
+const e2eDir = join('tmp', 'e2e');
+const uniqueDir = join(e2eDir, `registry-${uniquePort}`);
+const uniqueLocalRegistryDir = join(uniqueDir, 'local-registry');
+const uniqueStorageDir = join(uniqueDir, 'storage');
 
 export async function setup() {
   await globalSetup();
+  // general e2e folder
+  await setupTestFolder(e2eDir);
+
+  // verdaccio
   try {
-    await setupTestFolder('tmp/local-registry');
-    await startLocalRegistry({ localRegistryTarget: localRegistryNxTarget });
-    console.info('Installing packages');
+    await setupTestFolder(uniqueLocalRegistryDir);
+    global.activeRegistry = await startLocalRegistry({
+      localRegistryTarget: '@code-pushup/cli-source:local-registry',
+      storage: uniqueStorageDir,
+      port: uniquePort,
+    });
+
+    process.env.registry = global.activeRegistry.registryData;
+    const { registry } = global.activeRegistry.registryData;
+    console.info(`Installing packages from registry: ${registry}`);
     execFileSync(
       'npx',
-      ['nx', 'run-many', '--targets=npm-install', '--parallel=1'],
+      [
+        'nx',
+        'run-many',
+        '--targets=npm-install',
+        `--registry=${registry}`,
+        '--parallel=1',
+      ],
       { env: process.env, stdio: 'inherit', shell: true },
     );
-    /*
-    execSync('npm install -D @code-pushup/cli@e2e');
-    execSync('npm install -D @code-pushup/nx-plugin@e2e');
-    execSync('npm install -D @code-pushup/eslint-plugin@e2e');
-    execSync('npm install -D @code-pushup/coverage-plugin@e2e');
-     */
-    await setupTestFolder('tmp/e2e');
   } catch (error) {
     console.info('setup error: ' + error.message);
   }
 }
 
 export async function teardown() {
-  stopLocalRegistry();
-  console.info('Uninstalling packages');
+  console.info(`process.env.registry: ${process.env.registry}`);
+  const registry = global.activeRegistry.registryData.registry ?? 'UNDEFINED';
+  const stop = global.activeRegistry.stop;
+  stopLocalRegistry(stop);
+  console.info(`Uninstalling packages from project: ${registry}`);
+
   execFileSync(
     'npx',
-    ['nx', 'run-many', '--targets=npm-uninstall', '--parallel=1'],
+    [
+      'nx',
+      'run-many',
+      '--targets=npm-uninstall',
+      `--registry=${registry}`,
+      '--parallel=1',
+    ],
     { env: process.env, stdio: 'inherit', shell: true },
   );
-  /*
-  execSync('npm uninstall @code-pushup/cli');
-  execSync('npm uninstall @code-pushup/nx-plugin');
-  execSync('npm uninstall @code-pushup/eslint-plugin');
-  execSync('npm uninstall @code-pushup/coverage-plugin');
-   */
-  await teardownTestFolder('tmp/e2e');
-  await teardownTestFolder('tmp/local-registry');
+
+  await teardownTestFolder(e2eDir);
+  await teardownTestFolder(uniqueDir);
 }

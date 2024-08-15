@@ -3,8 +3,10 @@
  * It is meant to be called in jest's globalTeardown.
  */
 
-export default () => {
-  if (global.stopLocalRegistry) {
-    global.stopLocalRegistry();
+export default (stopLocalRegistry?: () => void) => {
+  if (typeof stopLocalRegistry === 'function') {
+    stopLocalRegistry();
+  } else {
+    console.log('stopLocalRegistry: ', stopLocalRegistry);
   }
 };

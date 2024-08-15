@@ -15,18 +15,18 @@ import {
 export default async ({
   localRegistryTarget,
   storage = './tmp/local-registry/storage',
-}: RegistryOptions) => {
+  port,
+}: RegistryOptions): Promise<Partial<RegistryResult>> => {
   const registryResult = await startLocalRegistry({
     localRegistryTarget,
     storage,
     verbose: true,
+    port,
   });
-  const { stop, ...registryData } = registryResult;
+  const { registryData } = registryResult;
 
-  console.info('Registry started:');
+  console.info('Registry started:', port);
   console.table(registryData);
-
-  global.stopLocalRegistry = stop;
 
   // Publish all
   execFileSync(
@@ -37,26 +37,30 @@ export default async ({
       '--targets=publish',
       `--ver=${findLatestVersion()}`,
       '--tag=e2e',
+      `--registry=${registryData.registry}`,
     ],
     { env: process.env, stdio: 'inherit', shell: true },
   );
+
+  return registryResult;
 };
 
-// soft copy from https://github.com/nrwl/nx/blob/16.9.x/packages/js/src/plugins/jest/start-local-registry.ts
-// original function does not work, because it uses require.resolve('nx') and fork,
-// and it does not work with vite
 function startLocalRegistry({
   localRegistryTarget,
   storage,
   verbose,
+  port,
 }: RegistryOptions): Promise<Partial<RegistryResult>> {
   return new Promise((resolve, reject) => {
     executeProcess({
       command: 'npx',
       args: [
         'nx',
-        ...`run ${localRegistryTarget} --location none --clear true`.split(' '),
+        ...`run ${localRegistryTarget} -- --location none --clear true`.split(
+          ' ',
+        ),
         ...(storage ? [`--storage`, storage] : []),
+        ...(port ? [`--port`, String(port)] : []),
       ],
       options: {
         stdio: 'pipe',

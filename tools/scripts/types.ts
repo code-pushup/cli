@@ -12,6 +12,7 @@ export type RegistryOptions = {
   // storage folder for the local registry
   storage?: string;
   verbose?: boolean;
+  port?: number;
 };
 export type RegistryResult = {
   registryData: RegistryData;
