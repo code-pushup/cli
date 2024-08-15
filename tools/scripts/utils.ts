@@ -68,7 +68,6 @@ export function parseRegistryData(stdout: string): RegistryData {
   }
 
   const host = 'localhost';
-  //const protocol = 'http';
   const registryNoProtocol = `//${host}:${port}`;
   const registry = `${protocol}:${registryNoProtocol}`;
 
