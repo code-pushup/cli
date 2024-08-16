@@ -31,6 +31,7 @@ describe('create-cli-node', () => {
     );
   });
 
+  // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should execute package correctly over npm exec', async () => {
     const cwd = join(baseDir, 'npm-exec');
     await createNpmWorkspace(cwd);
