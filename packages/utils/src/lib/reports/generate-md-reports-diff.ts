@@ -8,6 +8,7 @@ import {
 import { ReportsDiff } from '@code-pushup/models';
 import { HIERARCHY } from '../text-formats';
 import { toArray } from '../transform';
+import { WithRequired } from '../types';
 import {
   changesToDiffOutcomes,
   compareDiffsBy,
@@ -29,58 +30,39 @@ import {
   scoreMarker,
 } from './utils';
 
-export function generateMdReportsDiff(
-  diff: ReportsDiff,
-  portalUrl?: string,
-): string {
+export function generateMdReportsDiff(diff: ReportsDiff): string {
   return new MarkdownDocument()
     .$concat(
-      createDiffHeaderSection(diff, portalUrl),
+      createDiffHeaderSection(diff),
       createDiffCategoriesSection(diff),
       createDiffDetailsSection(diff),
     )
     .toString();
 }
 
-export type ProjectDiff = {
-  name: string;
-  portalUrl?: string;
-  diff: ReportsDiff;
-};
+export type LabeledDiff = WithRequired<ReportsDiff, 'label'>;
 
-export type ProjectDiffWithOutcome = ProjectDiff & {
-  outcome: DiffOutcome;
-};
-
-export function generateMdReportsDiffForMonorepo(
-  projects: ProjectDiff[],
-): string {
-  const projectsWithOutcomes = projects
-    .map(
-      (project): ProjectDiffWithOutcome => ({
-        ...project,
-        outcome: mergeDiffOutcomes(
-          changesToDiffOutcomes(getDiffChanges(project.diff)),
-        ),
-      }),
-    )
+export function generateMdReportsDiffForMonorepo(diffs: LabeledDiff[]): string {
+  const diffsWithOutcomes = diffs
+    .map(diff => ({
+      ...diff,
+      outcome: mergeDiffOutcomes(changesToDiffOutcomes(getDiffChanges(diff))),
+    }))
     .sort(
       (a, b) =>
-        compareDiffsBy('categories', a.diff, b.diff) ||
-        compareDiffsBy('groups', a.diff, b.diff) ||
-        compareDiffsBy('audits', a.diff, b.diff) ||
-        a.name.localeCompare(b.name),
+        compareDiffsBy('categories', a, b) ||
+        compareDiffsBy('groups', a, b) ||
+        compareDiffsBy('audits', a, b) ||
+        a.label.localeCompare(b.label),
     );
-  const unchanged = projectsWithOutcomes.filter(
+  const unchanged = diffsWithOutcomes.filter(
     ({ outcome }) => outcome === 'unchanged',
   );
-  const changed = projectsWithOutcomes.filter(
-    project => !unchanged.includes(project),
-  );
+  const changed = diffsWithOutcomes.filter(diff => !unchanged.includes(diff));
 
   return new MarkdownDocument()
     .$concat(
-      createDiffHeaderSection(projects.map(({ diff }) => diff)),
+      createDiffHeaderSection(diffs),
       ...changed.map(createDiffProjectSection),
     )
     .$if(unchanged.length > 0, doc =>
@@ -93,13 +75,13 @@ export function generateMdReportsDiffForMonorepo(
 
 function createDiffHeaderSection(
   diff: ReportsDiff | ReportsDiff[],
-  portalUrl?: string,
 ): MarkdownDocument {
   const outcome = mergeDiffOutcomes(
     changesToDiffOutcomes(toArray(diff).flatMap(getDiffChanges)),
   );
   // TODO: what if array contains different commit pairs?
   const commits = Array.isArray(diff) ? diff[0]?.commits : diff.commits;
+  const portalUrl = Array.isArray(diff) ? undefined : diff.portalUrl;
 
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, 'Code PushUp')
@@ -108,18 +90,18 @@ function createDiffHeaderSection(
 }
 
 function createDiffProjectSection(
-  project: ProjectDiffWithOutcome,
+  diff: LabeledDiff & { outcome: DiffOutcome },
 ): MarkdownDocument {
   return new MarkdownDocument()
-    .heading(HIERARCHY.level_2, md`💼 Project ${md.code(project.name)}`)
-    .paragraph(formatReportOutcome(project.outcome))
-    .paragraph(formatPortalLink(project.portalUrl))
+    .heading(HIERARCHY.level_2, md`💼 Project ${md.code(diff.label)}`)
+    .paragraph(formatReportOutcome(diff.outcome))
+    .paragraph(formatPortalLink(diff.portalUrl))
     .$concat(
-      createDiffCategoriesSection(project.diff, {
+      createDiffCategoriesSection(diff, {
         skipHeading: true,
         skipUnchanged: true,
       }),
-      createDiffDetailsSection(project.diff, HIERARCHY.level_3),
+      createDiffDetailsSection(diff, HIERARCHY.level_3),
     );
 }
 
