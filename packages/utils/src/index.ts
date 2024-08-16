@@ -71,7 +71,10 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
-export { generateMdReportsDiff } from './lib/reports/generate-md-reports-diff';
+export {
+  generateMdReportsDiff,
+  generateMdReportsDiffForMonorepo,
+} from './lib/reports/generate-md-reports-diff';
 export { loadReport } from './lib/reports/load-report';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
@@ -108,10 +111,10 @@ export {
 } from './lib/transform';
 export {
   ExcludeNullFromPropertyTypes,
-  ExtractArrays,
   ExtractArray,
+  ExtractArrays,
   ItemOrArray,
-  WithRequired,
   Prettify,
+  WithRequired,
 } from './lib/types';
 export { verboseUtils } from './lib/verbose-utils';
