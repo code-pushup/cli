@@ -12,56 +12,30 @@
     "importHelpers": true,
     "target": "es2022",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@code-pushup/cli": [
-        "packages/cli/src/index.ts"
-      ],
-      "@code-pushup/core": [
-        "packages/core/src/index.ts"
-      ],
-      "@code-pushup/coverage-plugin": [
-        "packages/plugin-coverage/src/index.ts"
-      ],
-      "@code-pushup/eslint-plugin": [
-        "packages/plugin-eslint/src/index.ts"
-      ],
+      "@code-pushup/cli": ["packages/cli/src/index.ts"],
+      "@code-pushup/core": ["packages/core/src/index.ts"],
+      "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
+      "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
       "@code-pushup/js-packages-plugin": [
         "packages/plugin-js-packages/src/index.ts"
       ],
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
-      "@code-pushup/models": [
-        "packages/models/src/index.ts"
-      ],
-      "@code-pushup/nx-plugin": [
-        "packages/nx-plugin/src/index.ts"
-      ],
-      "@code-pushup/test-nx-utils": [
-        "testing/test-nx-utils/src/index.ts"
-      ],
-      "@code-pushup/test-setup": [
-        "testing/test-setup/src/index.ts"
-      ],
-      "@code-pushup/test-utils": [
-        "testing/test-utils/src/index.ts"
-      ],
-      "@code-pushup/utils": [
-        "packages/utils/src/index.ts"
-      ]
+      "@code-pushup/models": ["packages/models/src/index.ts"],
+      "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
+      "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
+      "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
+      "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }
