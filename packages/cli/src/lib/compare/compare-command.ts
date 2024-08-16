@@ -22,12 +22,13 @@ export function yargsCompareCommandObject() {
         upload?: UploadConfig;
       };
 
-      const { before, after, persist, upload } = options;
+      const { before, after, label, persist, upload } = options;
 
       const outputPaths = await compareReportFiles(
         { before, after },
         persist,
         upload,
+        label,
       );
 
       ui().logger.info(
