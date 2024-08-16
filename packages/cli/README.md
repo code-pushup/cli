@@ -285,3 +285,17 @@ Description:
 Print the resolved configuration.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+### `merge-diffs` command
+
+Usage:
+`code-pushup merge-diffs --files PATH_1 PATH_2 ... [options]`
+
+Description:
+Combine multiple report diffs into a single `report-diff.md`.
+
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `merge-diffs` command:
+
+| Option        | Required | Type       | Description                       |
+| ------------- | :------: | ---------- | --------------------------------- |
+| **`--files`** |   yes    | `string[]` | List of `report-diff.json` paths. |
