@@ -84,10 +84,9 @@ export class ProcessError extends Error {
  * args: ['--version']
  *
  */
-export type ProcessConfig = SpawnOptionsWithStdioTuple<
-  StdioPipe,
-  StdioPipe,
-  StdioPipe
+export type ProcessConfig = Omit<
+  SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>,
+  'stdio'
 > & {
   command: string;
   args?: string[];
