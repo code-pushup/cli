@@ -1,6 +1,7 @@
 import { CreateNodes, CreateNodesContext, readJsonFile } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { PackageJson } from 'nx/src/utils/package-json';
 
 export const createNodes: CreateNodes = [
   '**/project.json',
@@ -12,16 +13,14 @@ export const createNodes: CreateNodes = [
 
     const isPublishable = Boolean(projectConfiguration?.targets?.publish);
 
+    if (!isPublishable) {
+      return {};
+    }
+
     return {
       projects: {
         [root]: {
-          ...projectConfiguration,
-          targets: {
-            ...projectConfiguration.targets,
-            ...(isPublishable
-              ? publishTargets(projectConfiguration, root)
-              : {}),
-          },
+          targets: publishTargets(projectConfiguration, root),
         },
       },
     };

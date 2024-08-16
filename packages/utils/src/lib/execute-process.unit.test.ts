@@ -1,3 +1,4 @@
+import { ChildProcess } from 'node:child_process';
 import { describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
 import { ProcessObserver, executeProcess } from './execute-process';
@@ -5,6 +6,7 @@ import { ProcessObserver, executeProcess } from './execute-process';
 describe('executeProcess', () => {
   const spyObserver: ProcessObserver = {
     onStdout: vi.fn(),
+    onStderr: vi.fn(),
     onError: vi.fn(),
     onComplete: vi.fn(),
   };
@@ -66,6 +68,15 @@ describe('executeProcess', () => {
     expect(errorSpy).toHaveBeenCalledOnce();
     expect(processResult).toBeUndefined();
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
+    expect(spyObserver.onStdout).toHaveBeenLastCalledWith(
+      'process:update\n',
+      expect.any(ChildProcess),
+    );
+    expect(spyObserver.onStderr).toHaveBeenCalled();
+    expect(spyObserver.onStderr).toHaveBeenCalledWith(
+      expect.stringContaining('dummy-error'),
+      expect.any(ChildProcess),
+    );
     expect(spyObserver.onError).toHaveBeenCalledOnce();
     expect(spyObserver.onComplete).not.toHaveBeenCalled();
   });
@@ -86,6 +97,7 @@ describe('executeProcess', () => {
     expect(processResult.stdout).toContain('process:update');
     expect(processResult.stderr).toContain('dummy-error');
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
+    expect(spyObserver.onStderr).toHaveBeenCalled();
     expect(spyObserver.onError).not.toHaveBeenCalled();
     expect(spyObserver.onComplete).toHaveBeenCalledOnce();
   });

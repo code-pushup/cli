@@ -2,7 +2,11 @@
 
 🥳 Code PushUp report has **improved** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
 
-## 🏷️ Categories
+## 💼 Project `frontoffice`
+
+🥳 Code PushUp report has **improved**.
+
+[🕵️ See full comparison in Code PushUp portal 🔍](https://app.code-pushup.dev/portal/dunder-mifflin/frontoffice/comparison/abcdef0123456789abcdef0123456789abcdef01/0123456789abcdef0123456789abcdef01234567)
 
 | 🏷️ Category                                                              | ⭐ Previous score | ⭐ Current score |                        🔄 Score change                         |
 | :------------------------------------------------------------------------ | :--------------: | :-------------: | :------------------------------------------------------------: |
@@ -13,14 +17,14 @@
 <details>
 <summary>👍 <strong>2</strong> groups improved, 👍 <strong>12</strong> audits improved</summary>
 
-## 🗃️ Groups
+### 🗃️ Groups
 
 | 🔌 Plugin                                                          | 🗃️ Group                | ⭐ Previous score | ⭐ Current score |                        🔄 Score change                         |
 | :----------------------------------------------------------------- | :----------------------- | :--------------: | :-------------: | :------------------------------------------------------------: |
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | Maximum lines limitation |      🟡 50       |   🟢 **100**    | ![↑ +50](https://img.shields.io/badge/%E2%86%91%20%2B50-green) |
 | Lighthouse                                                         | Performance              |      🟢 92       |    🟢 **94**    |  ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)  |
 
-## 🛡️ Audits
+### 🛡️ Audits
 
 | 🔌 Plugin                                                          | 🛡️ Audit                                                                                                                                            | 📏 Previous value | 📏 Current value |                                   🔄 Value change                                    |
 | :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------: | :--------------: | :----------------------------------------------------------------------------------: |
@@ -40,3 +44,7 @@
 41 other audits are unchanged.
 
 </details>
+
+---
+
+1 other project is unchanged.
