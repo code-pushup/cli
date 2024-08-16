@@ -98,6 +98,13 @@ function startLocalRegistry({
     }).catch(error => {
       if (error.message !== 'Failed to start verdaccio: undefined') {
         reject(error);
+      } else {
+        reject({
+          registryData: null,
+          stop: () => {
+            console.log('Stop from executeProcess error' + error.message);
+          },
+        });
       }
     });
   });
