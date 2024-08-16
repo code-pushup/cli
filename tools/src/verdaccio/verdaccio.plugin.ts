@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 
 type CreateNodesOptions = {
-  port?: string;
+  port?: string | number;
   config?: string;
   storage?: string;
 };
