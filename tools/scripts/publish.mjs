@@ -7,8 +7,10 @@
  * You might need to authenticate with NPM before running this script.
  */
 import devkit from '@nx/devkit';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'child_process';
+import { execFile, execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -27,73 +29,85 @@ const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 // Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
 const {
-  name,
-  ver: version,
+  name: projectName,
+  nextVersion: version,
   tag,
   registry,
 } = yargs(hideBin(process.argv))
   .options({
     name: { type: 'string', demandOption: true },
-    ver: { type: 'string', demandOption: true },
+    nextVersion: {
+      type: 'string',
+      alias: ['ver', 'v'],
+    },
     tag: { type: 'string', default: 'next' },
     registry: { type: 'string' },
   })
-  .coerce('ver', ver => {
-    invariant(
-      ver && validVersion.test(ver),
-      `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${ver}.`,
-    );
-    return ver;
+  .coerce('nextVersion', rawVersion => {
+    if (rawVersion != null && rawVersion !== '') {
+      invariant(
+        rawVersion && validVersion.test(rawVersion),
+        `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${rawVersion}.`,
+      );
+      return rawVersion;
+    } else {
+      return undefined;
+    }
   }).argv;
 
 const graph = readCachedProjectGraph();
-const project = graph.nodes[name];
+const project = graph.nodes[projectName];
 
 invariant(
   project,
-  `Could not find project "${name}" in the workspace. Is the project.json configured correctly?`,
+  `Could not find project "${projectName}" in the workspace. Is the project.json configured correctly?`,
 );
 
 const outputPath = project.data?.targets?.build?.options?.outputPath;
 invariant(
   outputPath,
-  `Could not find "build.options.outputPath" of project "${name}". Is project.json configured  correctly?`,
+  `Could not find "build.options.outputPath" of project "${projectName}". Is project.json configured  correctly?`,
 );
 
+const cwd = process.cwd();
 process.chdir(outputPath);
 
 // Updating the version in "package.json" before publishing
 let packageJson;
+
 try {
   packageJson = JSON.parse(readFileSync(`package.json`).toString());
-  packageJson.version = version;
-  writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
+  if (version != null) {
+    console.info(
+      `Updating package.json version from ${packageJson.version} to ${version}`,
+    );
+    packageJson.version = version;
+    writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
+  }
 } catch (e) {
-  throw new Error(`Error reading package.json file from library build output.`);
+  throw new Error(`Error reading package.json file from ${outputPath}.`);
 }
 
-const pkgTagged = `${packageJson.name}@${tag}`;
+const packageRange = `${packageJson.name}@${packageJson.version}`;
+
 try {
-  // Hide process output via "2>/dev/null". Otherwise, it will print the error message to the terminal.
-  const viewResult = execSync(`npm view ${pkgTagged} 2>/dev/null`, {
-    shell: true,
-  }).toString();
-  const existingPackage = viewResult
-    .split('\n')
-    .filter(Boolean)
-    .at(0)
-    .split(' ')
-    .at(0);
+  const existingPackage = execSync(
+    `node tools/scripts/check-package-range.mjs --pkgVersion=${packageRange} ${
+      registry ? `--registry=${registry}` : ''
+    }`,
+    { cwd },
+  );
   console.warn(`Package ${existingPackage} is already published.`);
   process.exit(0);
 } catch (error) {
   console.info(
-    `Package ${pkgTagged} is not published yet. Proceeding to publish.`,
+    `Package ${packageRange} is not published yet. Proceeding to publish.`,
   );
 }
 
-// Execute "npm publish" to publish
-console.info(`npm publish --access public --tag=${tag} --registry=${registry}`);
-execSync(`npm publish --access public --tag=${tag} --registry=${registry}`);
-
+execSync(
+  `npm publish --access public ${tag ? '--tag=' + tag : ''} ${
+    registry ? '--registry=' + registry : ''
+  }`,
+);
 process.exit(0);

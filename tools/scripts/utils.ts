@@ -1,10 +1,17 @@
+import { execFileSync } from 'child_process';
 import {
   ChildProcess,
   SpawnOptions,
   execSync,
   spawn,
 } from 'node:child_process';
-import { RegistryData, RegistryResult } from './types';
+import {
+  NpmInstallOptions,
+  NpmUninstallOptions,
+  PublishOptions,
+  RegistryData,
+  RegistryResult,
+} from './types';
 
 export function configureRegistry({
   host,
@@ -46,10 +53,12 @@ export function unconfigureRegistry({
 }
 
 export function findLatestVersion(): string {
-  return execSync('git describe --tags --abbrev=0')
+  const version = execSync('git describe --tags --abbrev=0')
     .toString()
     .trim()
     .replace(/^v/, '');
+  console.info(`Version from "git describe --tags --abbrev=0": ${version}`);
+  return version;
 }
 
 export function parseRegistryData(stdout: string): RegistryData {
@@ -156,4 +165,62 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
       }
     });
   });
+}
+
+export function nxRunManyPublish({
+  registry,
+  tag = 'e2e',
+  nextVersion,
+}: PublishOptions) {
+  console.info(`Publish packages to registry: ${registry}.`);
+
+  execFileSync(
+    'npx',
+    [
+      'nx',
+      'run-many',
+      '--targets=publish',
+      '--',
+      ...(nextVersion ? [`--nextVersion=${nextVersion}`] : []),
+      ...(tag ? [`--tag=${tag}`] : []),
+      ...(registry ? [`--registry=${registry}`] : []),
+    ],
+    { env: process.env, stdio: 'inherit', shell: true },
+  );
+}
+
+export function nxRunManyNpmInstall({
+  registry,
+  tag = 'e2e',
+  pkgVersion,
+}: NpmInstallOptions) {
+  console.info(`Installing packages from registry: ${registry}.`);
+
+  execFileSync(
+    'npx',
+    [
+      'nx',
+      'run-many',
+      '--targets=npm-install',
+      '--parallel=1',
+      '--',
+      ...(pkgVersion ? [`--nextVersion=${pkgVersion}`] : []),
+      ...(tag ? [`--tag=${tag}`] : []),
+      ...(registry ? [`--registry=${registry}`] : []),
+    ],
+    { env: process.env, stdio: 'inherit', shell: true },
+  );
+}
+
+export function nxRunManyNpmUninstall() {
+  console.info('Uninstalling all NPM packages.');
+  try {
+    execFileSync(
+      'npx',
+      ['nx', 'run-many', '--targets=npm-uninstall', '--parallel=1'],
+      { env: process.env, stdio: 'inherit', shell: true },
+    );
+  } catch (error) {
+    console.error('Uninstalling all NPM packages failed.');
+  }
 }

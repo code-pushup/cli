@@ -14,7 +14,19 @@ export type RegistryOptions = {
   verbose?: boolean;
   port?: number;
 };
+
 export type RegistryResult = {
   registryData: RegistryData;
   stop: () => void;
+};
+
+export type PublishOptions = {
+  registry?: string;
+  tag?: string;
+  nextVersion: string;
+};
+export type NpmInstallOptions = {
+  registry?: string;
+  tag?: string;
+  pkgVersion: string;
 };

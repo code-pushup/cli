@@ -1,70 +1,65 @@
-import { execFileSync, execSync } from 'child_process';
 import { join } from 'node:path';
 import { setup as globalSetup } from './global-setup';
 import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
 import startLocalRegistry from './tools/scripts/start-local-registry';
 import stopLocalRegistry from './tools/scripts/stop-local-registry';
+import { RegistryResult } from './tools/scripts/types';
+import {
+  findLatestVersion,
+  nxRunManyNpmInstall,
+  nxRunManyNpmUninstall,
+  nxRunManyPublish,
+} from './tools/scripts/utils';
 
 const uniquePort: number = Number(
   (6000 + Number(Math.random() * 1000)).toFixed(0),
 );
 const e2eDir = join('tmp', 'e2e');
 const uniqueDir = join(e2eDir, `registry-${uniquePort}`);
-const uniqueLocalRegistryDir = join(uniqueDir, 'local-registry');
-const uniqueStorageDir = join(uniqueDir, 'storage');
+
+let activeRegistry: RegistryResult;
 
 export async function setup() {
   await globalSetup();
-  // general e2e folder
   await setupTestFolder(e2eDir);
 
   // verdaccio
   try {
-    await setupTestFolder(uniqueLocalRegistryDir);
-    global.activeRegistry = await startLocalRegistry({
+    activeRegistry = await startLocalRegistry({
       localRegistryTarget: '@code-pushup/cli-source:local-registry',
-      storage: uniqueStorageDir,
+      storage: join(uniqueDir, 'storage'),
       port: uniquePort,
     });
-
-    process.env.registry = global.activeRegistry.registryData;
-    const { registry } = global.activeRegistry.registryData;
-    console.info(`Installing packages from registry: ${registry}`);
-    execFileSync(
-      'npx',
-      [
-        'nx',
-        'run-many',
-        '--targets=npm-install',
-        `--registry=${registry}`,
-        '--parallel=1',
-      ],
-      { env: process.env, stdio: 'inherit', shell: true },
-    );
   } catch (error) {
-    console.info('setup error: ' + error.message);
+    console.info('Error startLocalRegistry: ' + error.message);
+    if (typeof error.stop === 'function') {
+      activeRegistry = {
+        registryData: null,
+        stop: () => {},
+      };
+    } else {
+      throw error;
+    }
   }
+
+  // package publish & install
+  const { registry } = activeRegistry.registryData;
+  const version = findLatestVersion();
+  nxRunManyPublish({ registry, nextVersion: version });
+  nxRunManyNpmInstall({ registry, pkgVersion: version });
 }
 
 export async function teardown() {
-  console.info(`process.env.registry: ${process.env.registry}`);
-  const registry = global.activeRegistry.registryData.registry ?? 'UNDEFINED';
-  const stop = global.activeRegistry.stop;
-  stopLocalRegistry(stop);
-  console.info(`Uninstalling packages from project: ${registry}`);
+  if (activeRegistry && 'registryData' in activeRegistry) {
+    const { registryData, stop } = activeRegistry;
+    const { registry } = registryData;
 
-  execFileSync(
-    'npx',
-    [
-      'nx',
-      'run-many',
-      '--targets=npm-uninstall',
-      `--registry=${registry}`,
-      '--parallel=1',
-    ],
-    { env: process.env, stdio: 'inherit', shell: true },
-  );
+    stopLocalRegistry(stop);
 
+    nxRunManyNpmUninstall();
+  } else {
+    activeRegistry.stop();
+    return;
+  }
   await teardownTestFolder(e2eDir);
-  await teardownTestFolder(uniqueDir);
 }

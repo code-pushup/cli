@@ -11,7 +11,6 @@ export const createNodes: CreateNodes = [
     );
 
     const isPublishable = Boolean(projectConfiguration?.targets?.publish);
-    const { name: projectName } = projectConfiguration;
 
     return {
       projects: {
@@ -34,11 +33,14 @@ function publishTargets(projectConfig: ProjectConfiguration, root: string) {
   const { name: packageName } = readJsonFile(join(root, 'package.json'));
   return {
     publish: {
-      command: `node tools/scripts/publish.mjs --name=${projectName} --ver={args.ver} --tag={args.tag}`,
       dependsOn: ['build'],
+      command: `node tools/scripts/publish.mjs --name=${projectName} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag}`,
+    },
+    'npm-check': {
+      command: `node ./tools/scripts/check-package-range.mjs --pkgVersion={args.pkgVersion} --registry={args.registry}`,
     },
     'npm-install': {
-      command: `npm install -D ${packageName}@e2e`,
+      command: `npm install -D ${packageName}@{args.pkgVersion}`,
     },
     'npm-uninstall': {
       command: `npm uninstall ${packageName}`,

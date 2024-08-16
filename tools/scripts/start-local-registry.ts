@@ -12,45 +12,16 @@ import {
   unconfigureRegistry,
 } from './utils';
 
-export default async ({
-  localRegistryTarget,
-  storage = './tmp/local-registry/storage',
-  port,
-}: RegistryOptions): Promise<Partial<RegistryResult>> => {
-  const registryResult = await startLocalRegistry({
-    localRegistryTarget,
-    storage,
-    verbose: true,
-    port,
-  });
-  const { registryData } = registryResult;
-
-  console.info('Registry started:', port);
-  console.table(registryData);
-
-  // Publish all
-  execFileSync(
-    'npx',
-    [
-      'nx',
-      'run-many',
-      '--targets=publish',
-      `--ver=${findLatestVersion()}`,
-      '--tag=e2e',
-      `--registry=${registryData.registry}`,
-    ],
-    { env: process.env, stdio: 'inherit', shell: true },
-  );
-
-  return registryResult;
-};
-
-function startLocalRegistry({
+export default async function startLocalRegistry({
   localRegistryTarget,
   storage,
   verbose,
   port,
-}: RegistryOptions): Promise<Partial<RegistryResult>> {
+}: RegistryOptions): Promise<RegistryResult> {
+  if (verbose) {
+    console.info(`Set up registry for port: ${port}.`);
+  }
+
   return new Promise((resolve, reject) => {
     executeProcess({
       command: 'npx',
@@ -77,6 +48,11 @@ function startLocalRegistry({
 
             configureRegistry(registryData);
 
+            if (verbose) {
+              console.info('Registry started:');
+              console.table(registryData);
+            }
+
             resolve({
               registryData,
               stop: () => {
@@ -95,13 +71,17 @@ function startLocalRegistry({
             process.stdout.write(data);
           }
         },
-        onComplete: code => {
-          console.info('local registry onComplete', code);
-        },
       },
     }).catch(error => {
       if (error.message !== 'Failed to start verdaccio: undefined') {
         reject(error);
+      } else {
+        reject({
+          registryData: { port },
+          stop: () => {
+            console.log('Stop from executeProcess error' + error.message);
+          },
+        });
       }
     });
   });

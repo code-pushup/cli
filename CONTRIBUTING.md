@@ -69,6 +69,113 @@ You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS
 To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
+### Publishing
+
+Every publishable project in the monorepo has needs the following targets:
+
+- `publish` - publish the package to the local registry
+- `npm-install` - install package. pass `--registry=http://localhost:61181` to specify the registry
+- `npm-uninstall` - uninstall package form project
+
+Examples:
+
+- `npx nx publish models` - publish source to NPM registry
+- `npx nx publish models --tag="e2e"` - publish source to NPM registry with tag
+- `npx nx npm-install models --registry=http://localhost:61181` - install package from to NPM registry
+- `npx nx npm-uninstall models` - uninstall package from project
+
+### E2e testing
+
+As the current e2e testing environment is rather complex, the current state is summarized here briefly.
+
+**Tools:**
+
+Our e2e tests use `vitest` as test runner and `verdaccio` as local NPM registry.  
+`verdaccio` is used to publish and install packages locally, which is necessary to test the build artefact including in a real registry.
+The unit and integration tests, in comparison, are built and execute differently.
+
+**Running e2e tests for a given project:**
+
+Every project in the monorepo that has e2e tests follows the project naming pattern: `<project-name>-e2e`.
+
+Examples:
+
+- `npx nx e2e cli-e2e` - run e2e tests for the cli project
+- `npx nx e2e cli-e2e --skipNxCache` - pass Nx CLI arguments
+- `npx nx e2e cli-e2e -- --tag="e2e"` - pass general CLI arguments (untouched by Nx)
+
+#### E2e testing process
+
+- `nx run e2e`
+  - **vitest setup**
+  - **vitest test runner**
+  - **vitest teardown**
+
+// mermaid diagram about the process
+
+```mermaid
+graph TD
+  A[nx run e2e] --> B[global-setup.e2e.ts]
+  B --> C[nx run publish]
+  C --> D[nx run npm-install]
+  D --> E[nx run test]
+  E --> F[nx run npm-uninstall]
+```
+
+The target looks like this:
+
+```jsonc
+{
+  "targets": {
+    // ...
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/<project-name>-e2e/vite.config.e2e.ts"
+      }
+    }
+  }
+}
+```
+
+The important part is the `configFile` option.
+This file is used to configure the Vite test runner with a global setup script `global-setup.e2e.ts`:
+
+```typescript
+export default defineConfig({
+    // ...
+    globalSetup: ['../../global-setup.e2e.ts'],
+  }
+});
+```
+
+`global-setup.e2e.ts` is the complex part.
+
+The script is called before all test suites and is responsible for starting verdaccio and publishing the packages needed for the tests.
+
+To reduce configuration and code duplication, a nx plugin generates the needed targets for all publishable projects.
+
+##### **`global-setup.e2e.ts`**
+
+- `nx run e2e`
+  - `global-setup.e2e.ts#setup` (vitest setup script)
+    - `nx run-many -t publish`
+    - `nx run-many -t npm-install`
+  - `vitest test`
+  - `global-setup.e2e.ts#teardown` (vitest teardown script)
+    - `nx run npm-uninstall`
+
+// mermaid diagram about the process
+
+```mermaid
+graph TD
+  A[nx run e2e] --> B[global-setup.e2e.ts]
+  B --> C[nx run publish]
+  C --> D[nx run npm-install]
+  D --> E[nx run test]
+  E --> F[nx run npm-uninstall]
+```
+
 ## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.
