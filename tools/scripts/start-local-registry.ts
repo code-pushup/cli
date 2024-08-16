@@ -3,10 +3,10 @@
  * It is meant to be called in jest's globalSetup.
  */
 import { execFileSync, execSync } from 'child_process';
+import { executeProcess } from '../../packages/utils/src';
 import { RegistryOptions, RegistryResult } from './types';
 import {
   configureRegistry,
-  executeProcess,
   findLatestVersion,
   parseRegistryData,
   unconfigureRegistry,
@@ -58,10 +58,8 @@ function startLocalRegistry({
         ...`run ${localRegistryTarget} --location none --clear true`.split(' '),
         ...(storage ? [`--storage`, storage] : []),
       ],
-      options: {
-        stdio: 'pipe',
-        shell: true,
-      },
+      stdio: 'pipe',
+      shell: true,
       observer: {
         onStdout: (data, childProcess) => {
           if (verbose) {
@@ -91,8 +89,8 @@ function startLocalRegistry({
             process.stdout.write(data);
           }
         },
-        onComplete: code => {
-          console.info('local registry onComplete', code);
+        onComplete: () => {
+          console.info('local registry onComplete');
         },
       },
     }).catch(error => {

@@ -1,10 +1,5 @@
-import {
-  ChildProcess,
-  SpawnOptions,
-  execSync,
-  spawn,
-} from 'node:child_process';
-import { RegistryData, RegistryResult } from './types';
+import { execSync } from 'node:child_process';
+import { RegistryData } from './types';
 
 export function configureRegistry({
   host,
@@ -89,81 +84,4 @@ export function parseRegistryData(stdout: string): RegistryData {
     registryNoProtocol,
     registry,
   };
-}
-
-export type ProcessResult = {
-  stdout: string;
-  stderr: string;
-  code: number | null;
-  date: string;
-  duration: number;
-};
-
-export class ProcessError extends Error {
-  code: number | null;
-  stderr: string;
-  stdout: string;
-
-  constructor(result: ProcessResult) {
-    super(result.stderr);
-    this.code = result.code;
-    this.stderr = result.stderr;
-    this.stdout = result.stdout;
-  }
-}
-
-export type ProcessConfig = {
-  command: string;
-  args?: string[];
-  options: SpawnOptions;
-  observer?: ProcessObserver;
-  ignoreExitCode?: boolean;
-};
-
-export type ProcessObserver = {
-  onStdout?: (stdout: string, childProcess: ChildProcess) => void;
-  onStderr?: (stdout: string, childProcess: ChildProcess) => void;
-  onError?: (error: ProcessError) => void;
-  onComplete?: (code?: number) => void;
-};
-
-export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const date = new Date().toISOString();
-  const start = performance.now();
-
-  const { observer, options, command, args, ignoreExitCode = false } = cfg;
-  const { onStdout, onStderr, onError, onComplete } = observer ?? {};
-
-  return new Promise((resolve, reject) => {
-    // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(command, args, { shell: true, ...options });
-    let stdout = '';
-    let stderr = '';
-
-    process.stdout.on('data', data => {
-      stdout += String(data);
-      onStdout?.(String(data), process);
-    });
-
-    process.stderr.on('data', data => {
-      stderr += String(data);
-      onStderr?.(String(data), process);
-    });
-
-    process.on('error', err => {
-      stderr += err.toString();
-    });
-
-    process.on('close', code => {
-      const timings = { date, duration: start - performance.now() };
-      if (code === 0 || ignoreExitCode) {
-        onComplete?.(code);
-        resolve({ code, stdout, stderr, ...timings });
-      } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
-        onError?.(errorMsg);
-        reject(errorMsg);
-      }
-    });
-  });
 }

@@ -3,7 +3,6 @@ import { setup as globalSetup } from './global-setup';
 import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
 import startLocalRegistry from './tools/scripts/start-local-registry';
 import stopLocalRegistry from './tools/scripts/stop-local-registry';
-import { findLatestVersion } from './tools/scripts/utils';
 
 const localRegistryNxTarget = '@code-pushup/cli-source:local-registry';
 
