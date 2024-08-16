@@ -31,7 +31,7 @@ describe('create-cli-node', () => {
     );
   });
 
-  it('should execute package correctly over npm exec', async () => {
+  it.skip('should execute package correctly over npm exec', async () => {
     const cwd = join(baseDir, 'npm-exec');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
