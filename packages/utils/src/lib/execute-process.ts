@@ -1,5 +1,9 @@
-import { ChildProcess, ChildProcessByStdio } from 'child_process';
-import { SpawnOptions, spawn } from 'node:child_process';
+import {
+  ChildProcess,
+  ChildProcessByStdio,
+  SpawnOptions,
+  spawn,
+} from 'node:child_process';
 import { Readable, Writable } from 'node:stream';
 import { calcDuration } from './reports/utils';
 
@@ -147,7 +151,9 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
       ...options,
     }) as ChildProcessByStdio<Writable, Readable, Readable>;
 
+    // eslint-disable-next-line functional/no-let
     let stdout = '';
+    // eslint-disable-next-line functional/no-let
     let stderr = '';
 
     spawnedProcess.stdout.on('data', data => {
