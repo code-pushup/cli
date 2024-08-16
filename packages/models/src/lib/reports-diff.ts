@@ -12,6 +12,7 @@ import {
   scoreSchema,
   slugSchema,
   titleSchema,
+  urlSchema,
 } from './implementation/schemas';
 import { pluginMetaSchema } from './plugin-config';
 
@@ -112,6 +113,10 @@ export const reportsDiffSchema = z
     commits: makeComparisonSchema(commitSchema)
       .nullable()
       .describe('Commits identifying compared reports'),
+    portalUrl: urlSchema
+      .optional()
+      .describe('Link to comparison page in Code PushUp portal'),
+    label: z.string().optional().describe('Label (e.g. project name)'),
     categories: makeArraysComparisonSchema(
       categoryDiffSchema,
       categoryResultSchema,
