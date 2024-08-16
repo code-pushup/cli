@@ -15,9 +15,9 @@ describe('create-cli-node', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute index.js correctly over node', async () => {
-    const cwd = join(baseDir, 'node-index');
+
+  it('should execute index.js correctly over node', async () => {
+    const cwd = join(baseDir, 'node-index.js');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
       command: 'node',
@@ -50,7 +50,8 @@ describe('create-cli-node', () => {
     );
   });
 
-  it('should execute package correctly over npm init', async () => {
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'npm-init');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
