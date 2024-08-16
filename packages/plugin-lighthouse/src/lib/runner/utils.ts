@@ -1,12 +1,18 @@
 import { bold } from 'ansis';
-import type { Config } from 'lighthouse';
+import type { Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
+import Details from 'lighthouse/types/lhr/audit-details';
 import { Result } from 'lighthouse/types/lhr/audit-result';
 import { AuditOutput, AuditOutputs } from '@code-pushup/models';
-import { importModule, readJsonFile, ui } from '@code-pushup/utils';
+import {
+  formatReportScore,
+  importModule,
+  readJsonFile,
+  ui,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
 import { LighthouseCliFlags } from './types';
@@ -38,6 +44,44 @@ export class LighthouseAuditParsingError extends Error {
   }
 }
 
+function formatBaseAuditOutput(lhrAudit: Result): AuditOutput {
+  const {
+    id: slug,
+    score,
+    numericValue,
+    displayValue,
+    scoreDisplayMode,
+  } = lhrAudit;
+  return {
+    slug,
+    score: score ?? 1,
+    value: numericValue ?? score ?? 0,
+    displayValue:
+      displayValue ??
+      (scoreDisplayMode === 'binary'
+        ? score === 1
+          ? 'passed'
+          : 'failed'
+        : score
+        ? `${formatReportScore(score)}%`
+        : undefined),
+  };
+}
+
+function processAuditDetails(
+  auditOutput: AuditOutput,
+  details: FormattedIcu<Details>,
+): AuditOutput {
+  try {
+    const parsedDetails = toAuditDetails(details);
+    return Object.keys(parsedDetails).length > 0
+      ? { ...auditOutput, details: parsedDetails }
+      : auditOutput;
+  } catch (error) {
+    throw new LighthouseAuditParsingError(auditOutput.slug, error as Error);
+  }
+}
+
 export function toAuditOutputs(
   lhrAudits: Result[],
   { verbose = false }: { verbose?: boolean } = {},
@@ -45,36 +89,13 @@ export function toAuditOutputs(
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
+  return lhrAudits.map(audit => {
+    const auditOutput = formatBaseAuditOutput(audit);
 
-  return lhrAudits.map(
-    ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      details,
-      displayValue,
-    }: Result) => {
-      const auditOutput: AuditOutput = {
-        slug,
-        score: score ?? 1, // score can be null
-        value,
-        displayValue,
-      };
-
-      if (details != null) {
-        try {
-          const parsedDetails = toAuditDetails(details);
-          return Object.keys(parsedDetails).length > 0
-            ? { ...auditOutput, details: parsedDetails }
-            : auditOutput;
-        } catch (error) {
-          throw new LighthouseAuditParsingError(slug, error as Error);
-        }
-      }
-
-      return auditOutput;
-    },
-  );
+    return audit.details == null
+      ? auditOutput
+      : processAuditDetails(auditOutput, audit.details);
+  });
 }
 
 export type LighthouseLogLevel =

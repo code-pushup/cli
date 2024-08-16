@@ -81,7 +81,11 @@ export {
   ScoredGroup,
   ScoredReport,
 } from './lib/reports/types';
-export { calcDuration, compareIssueSeverity } from './lib/reports/utils';
+export {
+  calcDuration,
+  compareIssueSeverity,
+  formatReportScore,
+} from './lib/reports/utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {
