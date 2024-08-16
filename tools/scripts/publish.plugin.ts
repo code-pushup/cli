@@ -31,7 +31,9 @@ export const createNodes: CreateNodes = [
 
 function publishTargets(projectConfig: ProjectConfiguration, root: string) {
   const { name: projectName } = projectConfig;
-  const { name: packageName } = readJsonFile(join(root, 'package.json'));
+  const { name: packageName } = readJsonFile<PackageJson>(
+    join(root, 'package.json'),
+  );
   return {
     publish: {
       command: `node tools/scripts/publish.mjs --name=${projectName} --ver={args.ver} --tag={args.tag}`,
