@@ -89,13 +89,13 @@ try {
 
 const packageRange = `${packageJson.name}@${packageJson.version}`;
 try {
-  const existingPackage = execSync(
+  execSync(
     `node tools/scripts/check-package-range.mjs --pkgVersion=${packageRange} ${
       registry ? `--registry=${registry}` : ''
     }`,
     { cwd },
   );
-  console.warn(`Package ${existingPackage} is already published.`);
+  console.warn(`Package ${packageRange} is already published.`);
   process.exit(0);
 } catch (error) {
   console.info(

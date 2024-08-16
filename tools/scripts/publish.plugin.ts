@@ -37,7 +37,7 @@ function publishTargets(projectConfig: ProjectConfiguration, root: string) {
       command: `node tools/scripts/publish.mjs --name=${projectName} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag}`,
     },
     'npm-check': {
-      command: `node ./tools/scripts/check-package-range.mjs --pkgVersion={args.pkgVersion} --registry={args.registry}`,
+      command: `node ./tools/scripts/check-package-range.mjs --pkgVersion=${packageName}@{args.pkgVersion} --registry={args.registry}`,
     },
     'npm-install': {
       command: `npm install -D ${packageName}@{args.pkgVersion}`,
