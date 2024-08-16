@@ -127,7 +127,7 @@ describe('normalizeFlags', () => {
       onlyCategories: [],
     };
     const result = normalizeFlags(flags);
-    expect(result).not.toHaveProperty(['onlyAudits']);
+    expect(result).not.toHaveProperty('onlyAudits');
     expect(result).not.toHaveProperty('skipAudits');
     expect(result).not.toHaveProperty('onlyCategories');
   });
