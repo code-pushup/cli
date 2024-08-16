@@ -110,12 +110,6 @@ export function objectToCliArgs<
       return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
 
-    if (typeof value === 'undefined') {
-      return [`${prefix}${key}`];
-    }
-
-    // @TODO add support for nested objects `persist.filename`
-
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
 }
