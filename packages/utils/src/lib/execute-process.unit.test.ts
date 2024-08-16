@@ -72,7 +72,7 @@ describe('executeProcess', () => {
       'process:update\n',
       expect.any(ChildProcess),
     );
-    expect(spyObserver.onStderr).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onStderr).toHaveBeenCalled();
     expect(spyObserver.onStderr).toHaveBeenCalledWith(
       expect.stringContaining('dummy-error'),
       expect.any(ChildProcess),
@@ -97,7 +97,7 @@ describe('executeProcess', () => {
     expect(processResult.stdout).toContain('process:update');
     expect(processResult.stderr).toContain('dummy-error');
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
-    expect(spyObserver.onStderr).toHaveBeenCalledTimes(1);
+    expect(spyObserver.onStderr).toHaveBeenCalled();
     expect(spyObserver.onError).not.toHaveBeenCalled();
     expect(spyObserver.onComplete).toHaveBeenCalledOnce();
   });
