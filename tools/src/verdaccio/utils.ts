@@ -48,15 +48,6 @@ export function unconfigureRegistry({
   console.info('delete npm authToken: ' + registryNoProtocol);
 }
 
-export function findLatestVersion(): string {
-  const version = execSync('git describe --tags --abbrev=0')
-    .toString()
-    .trim()
-    .replace(/^v/, '');
-  console.info(`Version from "git describe --tags --abbrev=0": ${version}`);
-  return version;
-}
-
 export function parseRegistryData(stdout: string): RegistryData {
   const port = parseInt(
     stdout.toString().match(/localhost:(?<port>\d+)/)?.groups?.port,

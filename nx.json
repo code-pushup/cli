@@ -110,5 +110,9 @@
     },
     "releaseTagPattern": "v{version}"
   },
-  "plugins": ["./tools/scripts/publish.plugin.ts"]
+  "plugins": [
+    "./tools/src/npm/npm.plugin.ts",
+    "./tools/src/publish/publish.plugin.ts",
+    "./tools/src/verdaccio/verdaccio.plugin.ts"
+  ]
 }

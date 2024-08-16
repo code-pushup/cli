@@ -6,13 +6,12 @@
  *
  * You might need to authenticate with NPM before running this script.
  */
-import devkit from '@nx/devkit';
+import { logger, readCachedProjectGraph } from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-
-const { readCachedProjectGraph, logger } = devkit;
+import { NpmCheckToken } from '../../npm/types';
 
 function invariant(condition, message) {
   if (!condition) {
@@ -23,9 +22,6 @@ function invariant(condition, message) {
 
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
-
-// Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
-// Default "tag" to "next" so we won't publish the "latest" tag by accident.
 const {
   name: projectName,
   nextVersion: version,
@@ -87,20 +83,21 @@ try {
   process.exit(1);
 }
 
-const packageRange = `${packageJson.name}@${packageJson.version}`;
-try {
-  execSync(
-    `node tools/scripts/check-package-range.mjs --pkgVersion=${packageRange} ${
-      registry ? `--registry=${registry}` : ''
-    }`,
-    { cwd },
-  );
-  console.warn(`Package ${packageRange} is already published.`);
+const pkgRange = `${packageJson.name}@${packageJson.version}`;
+// @TODO replace with nxNpmCheck
+const [_, token] = execSync(
+  `tsx tools/src/npm/scripts/check-package-range.ts --pkgRange=${pkgRange} ${
+    registry ? `--registry=${registry}` : ''
+  }`,
+  { cwd },
+)
+  .toString()
+  .trim()
+  .split('#') as [string, NpmCheckToken];
+
+if (token === 'FOUND') {
+  console.warn(`Package ${pkgRange} is already published.`);
   process.exit(0);
-} catch (error) {
-  console.info(
-    `Package ${packageRange} is not published yet. Proceeding to publish.`,
-  );
 }
 
 execSync(

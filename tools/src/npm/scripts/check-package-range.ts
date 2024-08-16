@@ -1,15 +1,15 @@
 import { execFileSync } from 'node:child_process';
-import yargs from 'yargs';
+import yargs, { Argv } from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { objectToCliArgs } from '../../../../packages/utils/src';
+import { NpmCheckOptions, NpmCheckResult } from '../types';
 
-const { pkgVersion, registry = 'https://registry.npmjs.org/' } = yargs(
-  hideBin(process.argv),
-)
+const argv = yargs(hideBin(process.argv))
   .options({
-    pkgVersion: { type: 'string', demandOption: true },
+    pkgRange: { type: 'string', demandOption: true },
     registry: { type: 'string' },
   })
-  .coerce('pkgVersion', rawVersion => {
+  .coerce('pkgRange', rawVersion => {
     if (rawVersion != null && rawVersion !== '') {
       return rawVersion;
     } else {
@@ -24,13 +24,17 @@ const { pkgVersion, registry = 'https://registry.npmjs.org/' } = yargs(
     }
   }).argv;
 
+const { pkgRange, registry = 'https://registry.npmjs.org/' } =
+  argv as NpmCheckOptions;
+
 try {
   const viewResult = execFileSync(
     'npm',
     [
-      'view',
-      pkgVersion,
-      registry ? `--registry=${registry}` : '',
+      ...objectToCliArgs({
+        _: ['view', pkgRange],
+        registry,
+      }),
       // Hide process output via "2>/dev/null". Otherwise, it will print the error message to the terminal.
       '2>/dev/null',
     ],
@@ -43,11 +47,9 @@ try {
     .at(0)
     .split(' ')
     .at(0);
-  console.warn(`Package ${existingPackage} exists in registry ${registry}.`);
+  console.log(`${pkgRange}#FOUND` satisfies NpmCheckResult); // process output to parse
   process.exit(0);
 } catch (e) {
-  console.error(
-    `Package range ${pkgVersion} is not present in registry ${registry}.`,
-  );
-  process.exit(1);
+  console.log(`${pkgRange}#NOT_FOUND` satisfies NpmCheckResult); // process output to parse
+  process.exit(0);
 }

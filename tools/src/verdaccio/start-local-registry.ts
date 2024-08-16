@@ -3,9 +3,9 @@
  * It is meant to be called in jest's globalSetup.
  */
 import { execSync } from 'child_process';
+import { executeProcess } from '../../../packages/utils/src';
 import {
   configureRegistry,
-  executeProcess,
   parseRegistryData,
   unconfigureRegistry,
 } from './utils';
@@ -52,10 +52,8 @@ export default async function startLocalRegistry({
         ...(storage ? [`--storage`, storage] : []),
         ...(port ? [`--port`, String(port)] : []),
       ],
-      options: {
-        stdio: 'pipe',
-        shell: true,
-      },
+      //stdio: 'pipe',
+      shell: true,
       observer: {
         onStdout: (data, childProcess) => {
           if (verbose) {

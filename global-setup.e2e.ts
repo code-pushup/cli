@@ -1,15 +1,14 @@
 import { join } from 'node:path';
 import { setup as globalSetup } from './global-setup';
 import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
-import startLocalRegistry from './tools/scripts/start-local-registry';
-import stopLocalRegistry from './tools/scripts/stop-local-registry';
-import { RegistryResult } from './tools/scripts/types';
 import {
-  findLatestVersion,
   nxRunManyNpmInstall,
   nxRunManyNpmUninstall,
-  nxRunManyPublish,
-} from './tools/scripts/utils';
+} from './tools/src/npm/utils';
+import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
+import startLocalRegistry from './tools/src/verdaccio/start-local-registry';
+import stopLocalRegistry from './tools/src/verdaccio/stop-local-registry';
+import { RegistryResult } from './tools/src/verdaccio/types';
 
 const uniquePort: number = Number(
   (6000 + Number(Math.random() * 1000)).toFixed(0),
