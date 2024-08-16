@@ -16,5 +16,9 @@ export function yargsCompareOptionsDefinition(): Record<
       type: 'string',
       demandOption: true,
     },
+    label: {
+      describe: 'Label for diff (e.g. project name)',
+      type: 'string',
+    },
   };
 }
