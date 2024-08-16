@@ -23,3 +23,4 @@ export {
 } from './lib/implementation/read-rc-file';
 export { GlobalOptions } from './lib/types';
 export { UploadOptions, upload } from './lib/upload';
+export { mergeDiffs } from './lib/merge-diffs';
