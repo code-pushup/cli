@@ -18,12 +18,6 @@ export async function setup() {
       ['nx', 'run-many', '--targets=npm-install', '--parallel=1'],
       { env: process.env, stdio: 'inherit', shell: true },
     );
-    /*
-    execSync('npm install -D @code-pushup/cli@e2e');
-    execSync('npm install -D @code-pushup/nx-plugin@e2e');
-    execSync('npm install -D @code-pushup/eslint-plugin@e2e');
-    execSync('npm install -D @code-pushup/coverage-plugin@e2e');
-     */
     await setupTestFolder('tmp/e2e');
   } catch (error) {
     console.info('setup error: ' + error.message);
