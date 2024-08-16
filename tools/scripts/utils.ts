@@ -12,17 +12,25 @@ export function configureRegistry({
   registryNoProtocol,
 }: RegistryData) {
   /**
-   * TODO
+   * Sets environment variables for NPM and Yarn registries, and optionally configures
+   * Yarn's unsafe HTTP whitelist.
+   *
+   * @param {string} registry - The registry URL to set for NPM and Yarn.
+   * @param {string} host - The hostname to whitelist for Yarn (optional).
+   *
+   * Variables Set:
+   * - `npm_config_registry`: NPM registry.
+   * - `YARN_REGISTRY`: Yarn v1 registry.
+   * - `YARN_NPM_REGISTRY_SERVER`: Yarn v2 registry.
+   * - `YARN_UNSAFE_HTTP_WHITELIST`: Yarn HTTP whitelist.
    */
-  // npm
   process.env.npm_config_registry = registry;
-  // yarnv1
   process.env.YARN_REGISTRY = registry;
-  // yarnv2
   process.env.YARN_NPM_REGISTRY_SERVER = registry;
   console.info(`Set NPM and yarn registry process.env`);
+
   /**
-   * TODO
+   * Optional: Set Yarn HTTP whitelist for non-HTTPS registries.
    */
   process.env.YARN_UNSAFE_HTTP_WHITELIST = host;
   console.info(`Set yarn whitelíst process.env`);
