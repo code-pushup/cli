@@ -15,10 +15,7 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs --name=models --ver={args.ver} --tag={args.tag}",
-      "dependsOn": ["build"]
-    },
+    "publish": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

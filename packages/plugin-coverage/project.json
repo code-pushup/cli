@@ -38,10 +38,7 @@
         "configFile": "packages/plugin-coverage/vite.config.integration.ts"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs --name=plugin-coverage --ver={args.ver} --tag={args.tag}",
-      "dependsOn": ["build"]
-    }
+    "publish": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }
