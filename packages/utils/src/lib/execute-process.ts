@@ -1,7 +1,8 @@
 import {
   ChildProcess,
   ChildProcessByStdio,
-  SpawnOptions,
+  SpawnOptionsWithStdioTuple,
+  StdioPipe,
   spawn,
 } from 'node:child_process';
 import { Readable, Writable } from 'node:stream';
@@ -83,7 +84,11 @@ export class ProcessError extends Error {
  * args: ['--version']
  *
  */
-export type ProcessConfig = SpawnOptions & {
+export type ProcessConfig = SpawnOptionsWithStdioTuple<
+  StdioPipe,
+  StdioPipe,
+  StdioPipe
+> & {
   command: string;
   args?: string[];
   observer?: ProcessObserver;
