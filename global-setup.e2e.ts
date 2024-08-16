@@ -32,12 +32,6 @@ export async function teardown() {
     ['nx', 'run-many', '--targets=npm-uninstall', '--parallel=1'],
     { env: process.env, stdio: 'inherit', shell: true },
   );
-  /*
-  execSync('npm uninstall @code-pushup/cli');
-  execSync('npm uninstall @code-pushup/nx-plugin');
-  execSync('npm uninstall @code-pushup/eslint-plugin');
-  execSync('npm uninstall @code-pushup/coverage-plugin');
-   */
   await teardownTestFolder('tmp/e2e');
   await teardownTestFolder('tmp/local-registry');
 }
