@@ -100,7 +100,7 @@ function startLocalRegistry({
         reject({
           registryData: null,
           stop: () => {
-            console.log('Stop from executeProcess error' + error.message);
+            console.log('Stop from executeProcess error - failed to start Verdaccio');
           },
         });
       }
