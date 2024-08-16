@@ -12,7 +12,7 @@ describe('create-cli-node', () => {
     cwd ? relative(join(process.cwd(), cwd), join(process.cwd(), bin)) : bin;
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true });
+    await rm(baseDir, { recursive: true, force: true });
   });
 
   it('should execute index.js correctly over node', async () => {
