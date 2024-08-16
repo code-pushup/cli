@@ -7,10 +7,8 @@
  * You might need to authenticate with NPM before running this script.
  */
 import devkit from '@nx/devkit';
-import { execFileSync } from 'child_process';
-import { execFile, execSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -85,11 +83,11 @@ try {
     writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
   }
 } catch (e) {
-  throw new Error(`Error reading package.json file from ${outputPath}.`);
+  console.info(`Error reading package.json file from ${outputPath}.`);
+  process.exit(1);
 }
 
 const packageRange = `${packageJson.name}@${packageJson.version}`;
-
 try {
   const existingPackage = execSync(
     `node tools/scripts/check-package-range.mjs --pkgVersion=${packageRange} ${

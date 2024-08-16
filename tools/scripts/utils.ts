@@ -5,13 +5,7 @@ import {
   execSync,
   spawn,
 } from 'node:child_process';
-import {
-  NpmInstallOptions,
-  NpmUninstallOptions,
-  PublishOptions,
-  RegistryData,
-  RegistryResult,
-} from './types';
+import { RegistryData } from './start-local-registry';
 
 export function configureRegistry({
   host,
@@ -167,6 +161,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   });
 }
 
+export type PublishOptions = {
+  registry?: string;
+  tag?: string;
+  nextVersion: string;
+};
 export function nxRunManyPublish({
   registry,
   tag = 'e2e',
@@ -189,6 +188,11 @@ export function nxRunManyPublish({
   );
 }
 
+export type NpmInstallOptions = {
+  registry?: string;
+  tag?: string;
+  pkgVersion: string;
+};
 export function nxRunManyNpmInstall({
   registry,
   tag = 'e2e',

@@ -2,16 +2,35 @@
  * This script starts a local registry for e2e testing purposes.
  * It is meant to be called in jest's globalSetup.
  */
-import { execFileSync, execSync } from 'child_process';
-import { RegistryOptions, RegistryResult } from './types';
+import { execSync } from 'child_process';
 import {
   configureRegistry,
   executeProcess,
-  findLatestVersion,
   parseRegistryData,
   unconfigureRegistry,
 } from './utils';
 
+export type RegistryOptions = {
+  // local registry target to run
+  localRegistryTarget: string;
+  // storage folder for the local registry
+  storage?: string;
+  verbose?: boolean;
+  port?: number;
+};
+
+export type RegistryData = {
+  protocol: string;
+  port: string | number;
+  host: string;
+  registryNoProtocol: string;
+  registry: string;
+};
+
+export type RegistryResult = {
+  registryData: RegistryData;
+  stop: () => void;
+};
 export default async function startLocalRegistry({
   localRegistryTarget,
   storage,
