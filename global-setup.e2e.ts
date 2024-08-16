@@ -22,6 +22,5 @@ export async function teardown() {
   execSync('npm uninstall @code-pushup/nx-plugin');
   execSync('npm uninstall @code-pushup/eslint-plugin');
   execSync('npm uninstall @code-pushup/coverage-plugin');
-  await teardownTestFolder('tmp/e2e');
   await teardownTestFolder('tmp/local-registry');
 }
