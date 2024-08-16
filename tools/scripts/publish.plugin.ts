@@ -13,16 +13,14 @@ export const createNodes: CreateNodes = [
     const isPublishable = Boolean(projectConfiguration?.targets?.publish);
     const { name: projectName } = projectConfiguration;
 
+    if (!isPublishable) {
+      return {};
+    }
+
     return {
       projects: {
         [root]: {
-          ...projectConfiguration,
-          targets: {
-            ...projectConfiguration.targets,
-            ...(isPublishable
-              ? publishTargets(projectConfiguration, root)
-              : {}),
-          },
+          targets: publishTargets(projectConfiguration, root),
         },
       },
     };
