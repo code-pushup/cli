@@ -5,6 +5,7 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { NPM_CHECK_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
@@ -24,7 +25,8 @@ export const createNodes: CreateNodes = [
     );
     const {
       tsconfig = 'tools/tsconfig.tools.json',
-      npmCheckScript = 'tools/src/npm/scripts/check-package-range.ts',
+      npmCheckScript = NPM_CHECK_SCRIPT,
+      verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
     const isPublishable = Boolean(projectConfiguration?.targets?.publish);
@@ -35,7 +37,7 @@ export const createNodes: CreateNodes = [
     return {
       projects: {
         [root]: {
-          targets: npmTargets({ root, tsconfig, npmCheckScript }),
+          targets: npmTargets({ root, tsconfig, npmCheckScript, verbose }),
         },
       },
     };

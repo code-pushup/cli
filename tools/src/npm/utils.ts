@@ -1,6 +1,7 @@
 import { execFileSync, execSync } from 'node:child_process';
 import { objectToCliArgs } from '../../../packages/utils/src';
-import { NpmCheckToken } from './check-package-range';
+import { NPM_CHECK_SCRIPT } from './constants';
+import { NpmCheckToken } from './types';
 
 // @TODO The function is returning a strange string not matching the one in the function :)
 export function npmCheck({
@@ -13,7 +14,7 @@ export function npmCheck({
   cwd: string;
 }): string | undefined {
   const [foundPackage, token] = execSync(
-    `tsx tools/scripts/check-package-range.ts ${objectToCliArgs({
+    `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({
       pkgRange,
       registry,
     }).join(' ')}`,
@@ -75,6 +76,7 @@ export type NpmInstallOptions = {
   tag?: string;
   pkgVersion: string;
 };
+
 export function nxRunManyNpmInstall({
   registry,
   tag = 'e2e',
@@ -85,14 +87,14 @@ export function nxRunManyNpmInstall({
   execFileSync(
     'npx',
     [
-      'nx',
-      'run-many',
-      '--targets=npm-install',
-      '--parallel=1',
-      '--',
-      ...(pkgVersion ? [`--nextVersion=${pkgVersion}`] : []),
-      ...(tag ? [`--tag=${tag}`] : []),
-      ...(registry ? [`--registry=${registry}`] : []),
+      ...objectToCliArgs({
+        _: ['nx', 'run-many'],
+        targets: 'npm-install',
+        parallel: 1,
+        pkgVersion,
+        tag,
+        registry,
+      }),
     ],
     { env: process.env, stdio: 'inherit', shell: true },
   );
@@ -103,7 +105,11 @@ export function nxRunManyNpmUninstall() {
   try {
     execFileSync(
       'npx',
-      ['nx', 'run-many', '--targets=npm-uninstall', '--parallel=1'],
+      objectToCliArgs({
+        _: ['nx', 'run-many'],
+        targets: 'npm-uninstall',
+        parallel: 1,
+      }),
       { env: process.env, stdio: 'inherit', shell: true },
     );
   } catch (error) {

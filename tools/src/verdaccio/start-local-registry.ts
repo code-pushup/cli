@@ -46,13 +46,18 @@ export default async function startLocalRegistry({
       command: 'npx',
       args: [
         'nx',
-        ...`run ${localRegistryTarget} -- --location none --clear true`.split(
-          ' ',
-        ),
-        ...(storage ? [`--storage`, storage] : []),
-        ...(port ? [`--port`, String(port)] : []),
+        'run',
+        localRegistryTarget,
+        '--',
+        '--location none',
+        // reset or remove cached packages and or metadata.
+        '--clear true',
+        ...(storage ? [`--storage=${storage}`] : []),
+        ...(port ? [`--port${String(port)}`] : []),
+        ...(verbose ? [`--verbose`] : []),
       ],
-      //stdio: 'pipe',
+      // @TODO understand what it does
+      // stdio: 'pipe',
       shell: true,
       observer: {
         onStdout: (data, childProcess) => {
@@ -90,6 +95,7 @@ export default async function startLocalRegistry({
         },
       },
     }).catch(error => {
+      // @TODO check with previous state to not overwrite them
       if (error.message !== 'Failed to start verdaccio: undefined') {
         reject(error);
       } else {

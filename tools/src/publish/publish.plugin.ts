@@ -5,6 +5,7 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
@@ -26,7 +27,7 @@ export const createNodes: CreateNodes = [
 
     const {
       tsconfig = 'tools/tsconfig.tools.json',
-      publishScript = 'tools/src/publish/scripts/publish-package.ts',
+      publishScript = PUBLISH_SCRIPT,
       sourceDir = projectConfiguration?.targets?.build?.options?.outputPath ??
         process.cwd(),
       verbose = false,

@@ -6,11 +6,12 @@
  *
  * You might need to authenticate with NPM before running this script.
  */
-import { logger, readCachedProjectGraph } from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { objectToCliArgs } from '../../../../packages/utils/src';
+import { NPM_CHECK_SCRIPT } from '../../npm/constants';
 import { NpmCheckToken } from '../../npm/types';
 
 function invariant(condition, message) {
@@ -78,9 +79,7 @@ try {
 const pkgRange = `${packageJson.name}@${packageJson.version}`;
 // @TODO replace with nxNpmCheck
 const [_, token] = execSync(
-  `tsx tools/src/npm/scripts/check-package-range.ts --pkgRange=${pkgRange} ${
-    registry ? `--registry=${registry}` : ''
-  }`,
+  `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({ pkgRange, registry })}`,
   { cwd },
 )
   .toString()
@@ -93,8 +92,11 @@ if (token === 'FOUND') {
 }
 
 execSync(
-  `npm publish --access public ${tag ? '--tag=' + tag : ''} ${
-    registry ? '--registry=' + registry : ''
-  }`,
+  objectToCliArgs({
+    _: ['npm', 'publish'],
+    access: 'public',
+    tag,
+    registry,
+  }).join(' '),
 );
 process.exit(0);

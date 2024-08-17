@@ -44,12 +44,13 @@ export const createNodes: CreateNodes = [
       port = 4873,
       config = '.verdaccio/config.yml',
       storage = 'tmp/local-registry/storage',
+      verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
     return {
       projects: {
         [root]: {
-          targets: verdaccioTargets({ port, config, storage }),
+          targets: verdaccioTargets({ port, config, storage, verbose }),
         },
       },
     };
