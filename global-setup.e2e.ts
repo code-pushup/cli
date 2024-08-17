@@ -25,7 +25,7 @@ export async function setup() {
   // verdaccio
   try {
     activeRegistry = await startLocalRegistry({
-      localRegistryTarget: '@code-pushup/cli-source:local-registry',
+      localRegistryTarget: '@code-pushup/cli-source:start-verdaccio',
       storage: join(uniqueDir, 'storage'),
       port: uniquePort,
     });
