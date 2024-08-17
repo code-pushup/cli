@@ -1,20 +1,3 @@
-# Publish script - `scripts/publish-package.ts`
-
-This script is used to publish a package to npm.
-
-Run:
-
-- `tsx tools/publish/scripts/publish-package.ts`
-- `tsx tools/publish/scripts/publish-package.ts --nextVersion=0.50.3 --tag=e2e --registry=https://registry.npmjs.org`
-
-Options:
-
-| Option          | Type     | Description              | Default                    |
-| --------------- | -------- | ------------------------ | -------------------------- |
-| `--nextVersion` | `string` | The version to publish.  | next                       |
-| `--tag`         | `string` | The tag to publish.      | `undefined`                |
-| `--registry`    | `string` | The registry to publish. | https://registry.npmjs.org |
-
 # Publish Nx Plugin
 
 ## Usage
@@ -25,7 +8,7 @@ Configure a target in your project json.
 // nx.json
 {
   "name": "my-project",
-  "plugins": ["tools/npm/npm.plugin.ts"]
+  "plugins": ["tools/publish/publish.plugin.ts"]
 }
 ```
 
@@ -37,16 +20,55 @@ With options:
   "name": "my-project",
   "plugins": [
     {
-      "plugin": "tools/npm/npm.plugin.ts",
+      "plugin": "tools/publish/publish.plugin.ts",
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
-        "npmCheckScript": "check-package-range.ts"
+        "publishScript": "publish-package.ts"
       }
     }
   ]
 }
 ```
 
-Run dynamically added targets:
+### Targets
 
-- `nx run <project-name>:publish --nextVersion=1.0.0 --registry=https://registry.npmjs.org`
+#### `publish`
+
+Added dynamically to every project that is publishable (has a target named `publishable`).
+Publishes a package to a given registry.
+
+It will automatically use `tools/tsconfig.tools.ts` to execute the script as well as derives the package name from the project name from `package/root/package.json`.
+By default, it registers the latest version of the package from the default registry.
+
+Run:
+`nx run <project-name>:publish`
+
+**Options:**
+
+| Name         | Type     | Default                      | Description                             |
+| ------------ | -------- | ---------------------------- | --------------------------------------- |
+| `pkgVersion` | `string` | `latest`                     | The package version to publish.         |
+| `registry`   | `string` | `https://registry.npmjs.org` | The registry to publish the package to. |
+
+Examples:
+
+- `nx run <project-name>:publish`
+- `nx run <project-name>:publish --registry=http://localhost:58999`
+- `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0`
+- `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0 --dryRun`
+- `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0 --dryRun --verbose`
+
+## Scripts
+
+### `publish-package.ts`
+
+The script that is executed when running the `publish` target.
+
+Options:
+
+| Name         | Type      | Default  | Description                                               |
+| ------------ | --------- | -------- | --------------------------------------------------------- |
+| `pkgVersion` | `string`  | `latest` | The package version to publish.                           |
+| `registry`   | `string`  |          | The registry to publish the package to .                  |
+| `dryRun`     | `boolean` | `false`  | Show what will be executed without actually executing it. |
+| `verbose`    | `boolean` | `false`  | Show more information about the execution.                |
