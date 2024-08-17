@@ -1,4 +1,21 @@
-# NPM Nx Plugin
+# Publish script - `scripts/publish-package.ts`
+
+This script is used to publish a package to npm.
+
+Run:
+
+- `tsx tools/publish/scripts/publish-package.ts`
+- `tsx tools/publish/scripts/publish-package.ts --nextVersion=0.50.3 --tag=e2e --registry=https://registry.npmjs.org`
+
+Options:
+
+| Option          | Type     | Description              | Default                    |
+| --------------- | -------- | ------------------------ | -------------------------- |
+| `--nextVersion` | `string` | The version to publish.  | next                       |
+| `--tag`         | `string` | The tag to publish.      | `undefined`                |
+| `--registry`    | `string` | The registry to publish. | https://registry.npmjs.org |
+
+# Publish Nx Plugin
 
 ## Usage
 
@@ -32,6 +49,4 @@ With options:
 
 Run dynamically added targets:
 
-- `nx run <project-name>:npm-check --pkgVersion=1.0.0 --registry=https://registry.npmjs.org`
-- `nx run <project-name>:npm-install --pkgVersion=1.0.0 --registry=https://registry.npmjs.org`
-- `nx run <project-name>:npm-uninstall`
+- `nx run <project-name>:publish --nextVersion=1.0.0 --registry=https://registry.npmjs.org`

@@ -57,5 +57,8 @@ function verdaccioTargets({
         storage,
       },
     },
+    'post-e2e': {
+      dependsOn: [{ projects: 'self', target: 'e2e' }],
+    },
   };
 }

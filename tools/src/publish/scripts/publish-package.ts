@@ -27,9 +27,11 @@ const {
   nextVersion: version,
   tag,
   registry,
+  sourceDir,
 } = yargs(hideBin(process.argv))
   .options({
     name: { type: 'string', demandOption: true },
+    sourceDir: { type: 'string' },
     nextVersion: {
       type: 'string',
       alias: ['ver', 'v'],
@@ -49,22 +51,8 @@ const {
     }
   }).argv;
 
-const graph = readCachedProjectGraph();
-const project = graph.nodes[projectName];
-
-invariant(
-  project,
-  `Could not find project "${projectName}" in the workspace. Is the project.json configured correctly?`,
-);
-
-const outputPath = project.data?.targets?.build?.options?.outputPath;
-invariant(
-  outputPath,
-  `Could not find "build.options.outputPath" of project "${projectName}". Is project.json configured  correctly?`,
-);
-
 const cwd = process.cwd();
-process.chdir(outputPath);
+process.chdir(sourceDir);
 
 // Updating the version in "package.json" before publishing
 let packageJson;
@@ -79,7 +67,7 @@ try {
     writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
   }
 } catch (e) {
-  console.info(`Error reading package.json file from ${outputPath}.`);
+  console.info(`Error reading package.json file from ${sourceDir}.`);
   process.exit(1);
 }
 

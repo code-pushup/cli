@@ -50,11 +50,9 @@ export async function setup() {
 
 export async function teardown() {
   if (activeRegistry && 'registryData' in activeRegistry) {
-    const { registryData, stop } = activeRegistry;
-    const { registry } = registryData;
+    const { stop } = activeRegistry;
 
     stopLocalRegistry(stop);
-
     nxRunManyNpmUninstall();
   } else {
     activeRegistry.stop();
