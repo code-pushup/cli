@@ -10,6 +10,7 @@ type CreateNodesOptions = {
   port?: string | number;
   config?: string;
   storage?: string;
+  verbose?: boolean;
 };
 
 export const createNodes: CreateNodes = [

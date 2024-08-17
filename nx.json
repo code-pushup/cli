@@ -111,8 +111,17 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    "./tools/src/npm/npm.plugin.ts",
-    "./tools/src/publish/publish.plugin.ts",
-    "./tools/src/verdaccio/verdaccio.plugin.ts"
+    {
+      "plugin": "./tools/src/npm/npm.plugin.ts",
+      "options": { "verbose": true }
+    },
+    {
+      "plugin": "./tools/src/publish/publish.plugin.ts",
+      "options": { "verbose": true }
+    },
+    {
+      "plugin": "./tools/src/verdaccio/verdaccio.plugin.ts",
+      "options": { "verbose": true }
+    }
   ]
 }

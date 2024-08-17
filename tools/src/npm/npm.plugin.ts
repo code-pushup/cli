@@ -9,6 +9,7 @@ import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-
 type CreateNodesOptions = {
   tsconfig?: string;
   npmCheckScript?: string;
+  verbose?: boolean;
 };
 export const createNodes: CreateNodes = [
   '**/project.json',
@@ -45,11 +46,12 @@ function npmTargets({
   root,
   tsconfig,
   npmCheckScript,
+  verbose,
 }: Required<CreateNodesOptions> & { root: string }) {
   const { name: packageName } = readJsonFile(join(root, 'package.json'));
   return {
     'npm-check': {
-      command: `tsx --tsconfig={args.tsconfig} {args.script} --pkgRange=${packageName}@{args.pkgVersion} --registry={args.registry}`,
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --pkgRange=${packageName}@{args.pkgVersion} --registry={args.registry} --verbose=${verbose}`,
       options: {
         script: npmCheckScript,
         tsconfig,

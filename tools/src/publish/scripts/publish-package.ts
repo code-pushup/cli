@@ -27,6 +27,7 @@ const {
   nextVersion: version,
   tag,
   registry,
+  verbose,
   sourceDir,
 } = yargs(hideBin(process.argv))
   .options({
@@ -38,6 +39,7 @@ const {
     },
     tag: { type: 'string', default: 'next' },
     registry: { type: 'string' },
+    verbose: { type: 'boolean' },
   })
   .coerce('nextVersion', rawVersion => {
     if (rawVersion != null && rawVersion !== '') {
@@ -60,9 +62,11 @@ let packageJson;
 try {
   packageJson = JSON.parse(readFileSync(`package.json`).toString());
   if (version != null) {
-    console.info(
-      `Updating package.json version from ${packageJson.version} to ${version}`,
-    );
+    if (verbose) {
+      console.info(
+        `Updating package.json version from ${packageJson.version} to ${version}`,
+      );
+    }
     packageJson.version = version;
     writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
   }

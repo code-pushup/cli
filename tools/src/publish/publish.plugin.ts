@@ -10,6 +10,7 @@ type CreateNodesOptions = {
   tsconfig?: string;
   publishScript?: string;
   sourceDir?: string;
+  verbose?: boolean;
 };
 export const createNodes: CreateNodes = [
   '**/project.json',
@@ -28,6 +29,7 @@ export const createNodes: CreateNodes = [
       publishScript = 'tools/src/publish/scripts/publish-package.ts',
       sourceDir = projectConfiguration?.targets?.build?.options?.outputPath ??
         process.cwd(),
+      verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
     const isPublishable = Boolean(projectConfiguration?.targets?.publish);
     if (!isPublishable) {
@@ -43,6 +45,7 @@ export const createNodes: CreateNodes = [
             publishScript,
             sourceDir,
             projectName,
+            verbose,
           }),
         },
       },
@@ -55,12 +58,13 @@ function publishTargets({
   publishScript,
   sourceDir,
   projectName,
+  verbose,
 }: Required<CreateNodesOptions> & { projectName: string }) {
   return {
     publish: {
       dependsOn: ['build'],
       // @TODO use objToCliArgs
-      command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --sourceDir=${sourceDir} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag}`,
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --sourceDir=${sourceDir} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,
         tsconfig,
