@@ -31,7 +31,9 @@ export const createNodes: CreateNodes = [
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
-    const isPublishable = Boolean(projectConfiguration?.targets[publishableTargets]);
+    const isPublishable = Boolean(
+      projectConfiguration?.targets[publishableTargets],
+    );
     if (!isPublishable) {
       return {};
     }
@@ -51,7 +53,9 @@ function npmTargets({
   tsconfig,
   npmCheckScript,
   verbose,
-}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & { root: string }) {
+}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & {
+  root: string;
+}) {
   const { name: packageName } = readJsonFile(join(root, 'package.json'));
   return {
     'npm-check': {

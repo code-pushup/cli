@@ -34,7 +34,9 @@ export const createNodes: CreateNodes = [
         process.cwd(),
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
-    const isPublishable = Boolean(projectConfiguration?.targets[publishableTargets]);
+    const isPublishable = Boolean(
+      projectConfiguration?.targets[publishableTargets],
+    );
     if (!isPublishable) {
       return {};
     }
@@ -62,7 +64,9 @@ function publishTargets({
   sourceDir,
   projectName,
   verbose,
-}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & { projectName: string }) {
+}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & {
+  projectName: string;
+}) {
   return {
     publish: {
       dependsOn: ['build'],
