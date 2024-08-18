@@ -31,8 +31,7 @@ describe('create-cli-node', () => {
     );
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute package correctly over npm exec', async () => {
+  it('should execute package correctly over npm exec', async () => {
     const cwd = join(baseDir, 'npm-exec');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
@@ -49,8 +48,7 @@ describe('create-cli-node', () => {
     );
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute package correctly over npm init', async () => {
+  it('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'npm-init');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
