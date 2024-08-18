@@ -75,10 +75,13 @@ try {
   process.exit(1);
 }
 
-const pkgRange = `${packageJson.name}@${packageJson.version}`;
+const pkgVersion = `${packageJson.name}@${packageJson.version}`;
 // @TODO replace with nxNpmCheck helper from utils
 const [_, token] = execSync(
-  `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({ pkgRange, registry })}`,
+  `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({
+    pkgRange: pkgVersion,
+    registry,
+  })}`,
   { cwd },
 )
   .toString()
@@ -86,18 +89,29 @@ const [_, token] = execSync(
   .split('#') as [string, NpmCheckToken];
 
 if (token === 'FOUND') {
-  console.warn(`Package ${pkgRange} is already published.`);
+  console.warn(`Package ${pkgVersion} is already published.`);
   process.exit(0);
 }
 
-execSync(
-  objectToCliArgs({
-    _: ['npm', 'publish'],
-    access: 'public',
-    tag,
-    registry,
-  }).join(' '),
-);
-
+try {
+  execSync(
+    objectToCliArgs({
+      _: ['npm', 'publish'],
+      access: 'public',
+      tag,
+      registry,
+    }).join(' '),
+  );
+} catch (error) {
+  // @TODO check if it works
+  if ((error as Error).message.includes('already published')) {
+    console.info(
+      `Failed publish package ${pkgVersion} as already published to ${registry}`,
+    );
+    process.chdir(cwd);
+    process.exit(0);
+  }
+  throw error;
+}
 process.chdir(cwd);
 process.exit(0);
