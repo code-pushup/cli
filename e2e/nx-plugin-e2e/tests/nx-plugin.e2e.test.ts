@@ -224,7 +224,7 @@ describe('nx-plugin', () => {
     registerPluginInWorkspace(tree, {
       plugin: join(relativePathToCwd(cwd), 'dist/packages/nx-plugin'),
       options: {
-        bin: 'WXYZ',
+        bin: 'XYZ',
       },
     });
     const { root } = readProjectConfiguration(tree, project);
@@ -237,7 +237,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: 'WXYZ:autorun',
+        executor: 'XYZ:autorun',
       }),
     });
   });
