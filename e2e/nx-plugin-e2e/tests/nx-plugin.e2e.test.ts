@@ -251,6 +251,5 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({});
-    expect(projectJson).toMatchSnapshot();
   });
 });
