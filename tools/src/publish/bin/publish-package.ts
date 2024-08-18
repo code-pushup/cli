@@ -77,7 +77,7 @@ try {
 }
 
 const pkgRange = `${packageJson.name}@${packageJson.version}`;
-// @TODO replace with nxNpmCheck
+// @TODO replace with nxNpmCheck helper from utils
 const [_, token] = execSync(
   `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({ pkgRange, registry })}`,
   { cwd },
@@ -99,4 +99,6 @@ execSync(
     registry,
   }).join(' '),
 );
+
+process.chdir(cwd);
 process.exit(0);
