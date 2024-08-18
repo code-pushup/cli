@@ -1,5 +1,7 @@
 # Publish Nx Plugin
 
+A Nx plugin that adds targets that help to publish packages to NPM.
+
 ## Usage
 
 Register the plugin in your `nx.json`
@@ -14,7 +16,18 @@ Register the plugin in your `nx.json`
 
 ### Options
 
-You can configure the plugin by providing a options object in addition to the plugin path:
+You can configure the plugin by providing options object in addition to the plugin path
+
+**Options:**
+
+| Name                 | Type       | Default                     | Description                                     |
+| -------------------- | ---------- | --------------------------- | ----------------------------------------------- |
+| `verbose`            | `boolean`  | `false`                     | Log additional information.                     |
+| `tsconfig`           | `string`   | `tools/tsconfig.tools.json` | The tsconfig file to use.                       |
+| `publishScript`      | `string`   | `publish-package.ts`        | The script to execute when publishing.          |
+| `publishableTargets` | `string[]` | `["publishable"]`           | The targets that mark a project as publishable. |
+
+Example:
 
 ```jsonc
 // nx.json
@@ -25,7 +38,8 @@ You can configure the plugin by providing a options object in addition to the pl
       "plugin": "tools/publish/publish.plugin.ts",
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
-        "publishScript": "publish-package.ts"
+        "publishScript": "publish-package.ts",
+        "publishableTargets": ["add-to-npm-registry"]
       }
     }
   ]
@@ -35,7 +49,7 @@ You can configure the plugin by providing a options object in addition to the pl
 ### Targets
 
 > [!NOTE]
-> A project can be marked as publishable by adding a empty target named `publishable`.
+> A project can be marked as publishable by adding an empty target named `publishable`.
 
 #### `publish`
 
@@ -60,8 +74,6 @@ Examples:
 - `nx run <project-name>:publish`
 - `nx run <project-name>:publish --registry=http://localhost:58999`
 - `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0`
-- `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0 --dryRun`
-- `nx run <project-name>:publish --registry=http://localhost:58999 --pkgVersion=1.0.0 --dryRun --verbose`
 
 ## Scripts
 
@@ -71,9 +83,10 @@ The script that is executed when running the `publish` target.
 
 Options:
 
-| Name         | Type      | Default  | Description                                               |
-| ------------ | --------- | -------- | --------------------------------------------------------- |
-| `pkgVersion` | `string`  | `latest` | The package version to publish.                           |
-| `registry`   | `string`  |          | The registry to publish the package to .                  |
-| `dryRun`     | `boolean` | `false`  | Show what will be executed without actually executing it. |
-| `verbose`    | `boolean` | `false`  | Show more information about the execution.                |
+| Name          | Type      | Default  | Description                                                          |
+| ------------- | --------- | -------- | -------------------------------------------------------------------- |
+| `nextVersion` | `string`  | `latest` | The version to publish.                                              |
+| `tag`         | `string`  | `latest` | The tag to publish.                                                  |
+| `registry`    | `string`  |          | The registry to publish the package to.                              |
+| `verbose`     | `boolean` | `false`  | Log additional information.                                          |
+| `directory`   | `string`  |          | The directory to publish. (location of the build artefact e.g. dist) |

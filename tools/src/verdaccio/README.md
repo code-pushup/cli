@@ -1,5 +1,9 @@
 # Verdaccio Nx Plugin
 
+A Nx plugin that adds targets that help to test packages published to a package registry like NPM.
+It uses Verdaccio to start a local registry and test the package against it.
+This helps to catch tricky bugs before publishing the package to the public registry.
+
 ## Usage
 
 Register the plugin in your `nx.json`
@@ -14,7 +18,17 @@ Register the plugin in your `nx.json`
 
 ### Options
 
-You can configure the plugin by providing a options object in addition to the plugin path:
+You can configure the plugin by providing a options object in addition to the plugin path
+
+| Name       | Type      | Default                         | Description                                |
+| ---------- | --------- | ------------------------------- | ------------------------------------------ |
+| `verbose`  | `boolean` | `false`                         | Log additional information.                |
+| `tsconfig` | `string`  | `tools/tsconfig.tools.json`     | The tsconfig file to use.                  |
+| `port`     | `number`  | `4873`                          | The port to start the Verdaccio server on. |
+| `config`   | `string`  | `tools/verdaccio/verdaccio.yml` | The Verdaccio configuration file.          |
+| `storage`  | `string`  | `tools/verdaccio/storage`       | The storage directory for Verdaccio.       |
+
+Example:
 
 ```jsonc
 // nx.json
@@ -25,7 +39,7 @@ You can configure the plugin by providing a options object in addition to the pl
       "plugin": "tools/verdaccio/verdaccio.plugin.ts",
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
-        "vernose": true
+        "verbose": true
       }
     }
   ]

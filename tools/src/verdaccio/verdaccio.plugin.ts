@@ -3,13 +3,16 @@ import {
   type CreateNodesContext,
   readJsonFile,
 } from '@nx/devkit';
-import { dirname, join, relative } from 'node:path';
+import { dirname } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { uniquePort } from './utils';
 
 type CreateNodesOptions = {
+  // @TODO move into target options
   port?: string | number;
   config?: string;
   storage?: string;
+  preTargets?: string | string[];
   verbose?: boolean;
 };
 
@@ -20,6 +23,13 @@ export const createNodes: CreateNodes = [
     opts: undefined | unknown,
     context: CreateNodesContext,
   ) => {
+    const {
+      port = uniquePort(),
+      config = '.verdaccio/config.yml',
+      storage = 'tmp/local-registry/storage',
+      verbose = false,
+      preTargets = ['e2e'],
+    } = (opts ?? {}) as CreateNodesOptions;
     const { workspaceRoot } = context;
     const root = dirname(projectConfigurationFile);
     const projectConfiguration: ProjectConfiguration = readJsonFile(
@@ -34,23 +44,22 @@ export const createNodes: CreateNodes = [
 
     /*
     // @TODO we want to move verdaccio targets into every project that has a e2e target
-    const isE2eTarget = Boolean(projectConfiguration?.targets?.e2e);
-    if (!isE2eTarget) {
+    const hasPreVerdaccioTargets = someTargetsPresent(projectConfiguration?.targets ?? {}, preTargets);
+    if (!hasPreVerdaccioTargets) {
       return {};
     }
-     */
-
-    const {
-      port = 4873,
-      config = '.verdaccio/config.yml',
-      storage = 'tmp/local-registry/storage',
-      verbose = false,
-    } = (opts ?? {}) as CreateNodesOptions;
+    */
 
     return {
       projects: {
         [root]: {
-          targets: verdaccioTargets({ port, config, storage, verbose }),
+          targets: verdaccioTargets({
+            port,
+            config,
+            storage,
+            verbose,
+            preTargets,
+          }),
         },
       },
     };
@@ -61,7 +70,9 @@ function verdaccioTargets({
   port,
   config,
   storage,
+  preTargets,
 }: Required<CreateNodesOptions>) {
+  const targets = Array.isArray(preTargets) ? preTargets : [preTargets];
   return {
     'start-verdaccio': {
       executor: '@nx/js:verdaccio',
@@ -71,8 +82,14 @@ function verdaccioTargets({
         storage,
       },
     },
-    'post-e2e': {
-      dependsOn: [{ projects: 'self', target: 'e2e' }],
+    'post-registry': {
+      dependsOn: [
+        ...targets.map(target => ({
+          projects: 'self',
+          target,
+        })),
+      ],
+      command: `echo POST E2E - stop verdaccio on port ${port}`,
     },
   };
 }

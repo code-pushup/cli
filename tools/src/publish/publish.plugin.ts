@@ -5,13 +5,14 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { someTargetsPresent } from '../utils';
 import { PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
-  publishableTargets?: string;
+  publishableTargets?: string | string[];
   publishScript?: string;
-  sourceDir?: string;
+  directory?: string;
   verbose?: boolean;
 };
 export const createNodes: CreateNodes = [
@@ -27,15 +28,16 @@ export const createNodes: CreateNodes = [
     );
 
     const {
-      publishableTargets = 'publishable',
+      publishableTargets = ['publishable'],
       tsconfig = 'tools/tsconfig.tools.json',
       publishScript = PUBLISH_SCRIPT,
-      sourceDir = projectConfiguration?.targets?.build?.options?.outputPath ??
+      directory = projectConfiguration?.targets?.build?.options?.outputPath ??
         process.cwd(),
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
-    const isPublishable = Boolean(
-      projectConfiguration?.targets[publishableTargets],
+    const isPublishable = someTargetsPresent(
+      projectConfiguration?.targets ?? {},
+      publishableTargets,
     );
     if (!isPublishable) {
       return {};
@@ -48,7 +50,7 @@ export const createNodes: CreateNodes = [
           targets: publishTargets({
             tsconfig,
             publishScript,
-            sourceDir,
+            directory,
             projectName,
             verbose,
           }),
@@ -61,7 +63,7 @@ export const createNodes: CreateNodes = [
 function publishTargets({
   tsconfig,
   publishScript,
-  sourceDir,
+  directory,
   projectName,
   verbose,
 }: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & {
@@ -71,7 +73,7 @@ function publishTargets({
     publish: {
       dependsOn: ['build'],
       // @TODO use objToCliArgs
-      command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --sourceDir=${sourceDir} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --directory=${directory} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,
         tsconfig,

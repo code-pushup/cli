@@ -24,16 +24,15 @@ function invariant(condition, message) {
 // A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 const {
-  name: projectName,
   nextVersion: version,
   tag,
   registry,
   verbose,
-  sourceDir,
+  directory,
 } = yargs(hideBin(process.argv))
   .options({
     name: { type: 'string', demandOption: true },
-    sourceDir: { type: 'string' },
+    directory: { type: 'string' },
     nextVersion: {
       type: 'string',
       alias: ['ver', 'v'],
@@ -55,7 +54,7 @@ const {
   }).argv;
 
 const cwd = process.cwd();
-process.chdir(sourceDir);
+process.chdir(directory);
 
 // Updating the version in "package.json" before publishing
 let packageJson;
@@ -72,7 +71,7 @@ try {
     writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
   }
 } catch (e) {
-  console.info(`Error reading package.json file from ${sourceDir}.`);
+  console.info(`Error reading package.json file from ${directory}.`);
   process.exit(1);
 }
 

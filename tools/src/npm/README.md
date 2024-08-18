@@ -1,5 +1,7 @@
 # NPM Nx Plugin
 
+A Nx plugin that adds targets that help to work with packages published to NPM.
+
 ## Usage
 
 Register the plugin in your `nx.json`
@@ -7,25 +9,37 @@ Register the plugin in your `nx.json`
 ```jsonc
 // nx.json
 {
-  "name": "my-project",
+  //...
   "plugins": ["tools/npm/npm.plugin.ts"]
 }
 ```
 
 ### Options
 
-You can configure the plugin by providing a options object in addition to the plugin path
+You can configure the plugin by providing options object in addition to the plugin path
+
+**Options:**
+
+| Name                 | Type       | Default                     | Description                                     |
+| -------------------- | ---------- | --------------------------- | ----------------------------------------------- |
+| `verbose`            | `boolean`  | `false`                     | Log additional information.                     |
+| `tsconfig`           | `string`   | `tools/tsconfig.tools.json` | The tsconfig file to use.                       |
+| `npmCheckScript`     | `string`   | `check-package-range.ts`    | The script to execute when checking a package.  |
+| `publishableTargets` | `string[]` | `["publishable"]`           | The targets that mark a project as publishable. |
+
+Example:
 
 ```jsonc
 // nx.json
 {
-  "name": "my-project",
+  //...
   "plugins": [
     {
       "plugin": "tools/npm/npm.plugin.ts",
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
-        "npmCheckScript": "check-package-range.ts"
+        "npmCheckScript": "check-package-range.ts",
+        "publishableTargets": ["add-to-npm-registry"]
       }
     }
   ]
@@ -35,7 +49,8 @@ You can configure the plugin by providing a options object in addition to the pl
 ### Targets
 
 > [!NOTE]
-> A project can be marked as publishable by adding a empty target named `publishable`.
+> A project can be marked as publishable by owning target included in ``
+Default is`publishable`.
 
 #### `npm-check`
 
@@ -49,10 +64,11 @@ Run:
 `nx run <project-name>:npm-check`
 
 **Options:**
-| Name | Type | Default | Description |
-| ------------ | --- | --- | --- |
-| `pkgVersion` | `string` | `latest` | The package version to check. |
-| `registry` | `string` | `https://registry.npmjs.org` | The registry to check the package version against. |
+
+| Name         | Type     | Default                      | Description                                        |
+| ------------ | -------- | ---------------------------- | -------------------------------------------------- |
+| `pkgVersion` | `string` | `latest`                     | The package version to check.                      |
+| `registry`   | `string` | `https://registry.npmjs.org` | The registry to check the package version against. |
 
 Examples:
 
@@ -72,13 +88,16 @@ Run:
 `nx run <project-name>:npm-install`
 
 **Options:**
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `pkgVersion` | `string` | `latest` | The package version to install. |
-| `registry` | `string` | `https://registry.npmjs.org` | The registry to install the package from. |
+
+| Name         | Type     | Default                      | Description                               |
+| ------------ | -------- | ---------------------------- | ----------------------------------------- |
+| `pkgVersion` | `string` | `latest`                     | The package version to install.           |
+| `registry`   | `string` | `https://registry.npmjs.org` | The registry to install the package from. |
 
 Examples:
 
+- `nx run <project-name>:npm-install`
+- `nx run <project-name>:npm-install --pkgVersion=1.0.0`
 - `nx run <project-name>:npm-install --pkgVersion=1.0.0 --registry=http://localhost:58999`
 
 #### `npm-uninstall`
@@ -102,4 +121,17 @@ Examples:
 Checks if a given package is registered in a given registry.
 
 Run:
-`tsx --tsconfig=tools/tsconfig.tools.json tools/npm/check-package-range.ts <package-name> <package-version> <registry>`
+`tsx --tsconfig=tools/tsconfig.tools.json tools/npm/check-package-range.ts`
+
+**Options:**
+
+| Name         | Type     | Default                      | Description                                        |
+| ------------ | -------- | ---------------------------- | -------------------------------------------------- |
+| `pkgVersion` | `string` | `latest`                     | The package version to check.                      |
+| `registry`   | `string` | `https://registry.npmjs.org` | The registry to check the package version against. |
+
+Examples:
+
+- `tsx --tsconfig=tools/tsconfig.tools.json tools/npm/check-package-range.ts`
+- `tsx --tsconfig=tools/tsconfig.tools.json tools/npm/check-package-range.ts --registry=http://localhost:58999`
+- `tsx --tsconfig=tools/tsconfig.tools.json tools/npm/check-package-range.ts --registry=http://localhost:58999 --pkgVersion=1.0.0`

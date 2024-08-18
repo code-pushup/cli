@@ -5,6 +5,7 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { someTargetsPresent } from '../utils';
 import { NPM_CHECK_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
@@ -31,8 +32,9 @@ export const createNodes: CreateNodes = [
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
-    const isPublishable = Boolean(
-      projectConfiguration?.targets[publishableTargets],
+    const isPublishable = someTargetsPresent(
+      projectConfiguration?.targets ?? {},
+      publishableTargets,
     );
     if (!isPublishable) {
       return {};
