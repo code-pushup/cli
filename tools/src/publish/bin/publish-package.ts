@@ -100,5 +100,4 @@ execSync(
   }).join(' '),
 );
 
-process.chdir(cwd);
 process.exit(0);
