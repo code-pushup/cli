@@ -58,6 +58,7 @@ invariant(
   `Could not find "build.options.outputPath" of project "${name}". Is project.json configured  correctly?`,
 );
 
+const cwd = process.cwd();
 process.chdir(outputPath);
 
 // Updating the version in "package.json" before publishing
@@ -71,3 +72,6 @@ try {
 
 // Execute "npm publish" to publish
 execSync(`npm publish --access public --tag ${tag}`);
+
+process.chdir(cwd);
+process.exit(0);
