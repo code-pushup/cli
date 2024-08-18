@@ -11,7 +11,7 @@ type CreateNodesOptions = {
   tsconfig?: string;
   npmCheckScript?: string;
   verbose?: boolean;
-  publishableTargets?: boolean;
+  publishableTargets?: string;
 };
 export const createNodes: CreateNodes = [
   '**/project.json',
@@ -31,7 +31,7 @@ export const createNodes: CreateNodes = [
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
-    const isPublishable = Boolean(projectConfiguration?.targets?[publishableTargets]);
+    const isPublishable = Boolean(projectConfiguration?.targets[publishableTargets]);
     if (!isPublishable) {
       return {};
     }

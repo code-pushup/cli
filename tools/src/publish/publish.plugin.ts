@@ -34,7 +34,7 @@ export const createNodes: CreateNodes = [
         process.cwd(),
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
-    const isPublishable = Boolean(projectConfiguration?.targets?[publishableTargets]);
+    const isPublishable = Boolean(projectConfiguration?.targets[publishableTargets]);
     if (!isPublishable) {
       return {};
     }
