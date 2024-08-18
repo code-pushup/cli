@@ -15,7 +15,6 @@ describe('create-cli-node', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-
   it('should execute index.js correctly over node', async () => {
     const cwd = join(baseDir, 'node-index.js');
     await createNpmWorkspace(cwd);
