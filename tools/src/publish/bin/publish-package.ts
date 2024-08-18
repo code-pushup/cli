@@ -97,7 +97,7 @@ execSync(
     access: 'public',
     tag,
     registry,
-  }).join(' '),
+  }).join('  '),
 );
 
 process.exit(0);
