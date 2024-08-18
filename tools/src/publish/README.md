@@ -2,7 +2,7 @@
 
 ## Usage
 
-Configure a target in your project json.
+Register the plugin in your `nx.json`
 
 ```jsonc
 // nx.json
@@ -12,7 +12,9 @@ Configure a target in your project json.
 }
 ```
 
-With options:
+### Options
+
+You can configure the plugin by providing a options object in addition to the plugin path:
 
 ```jsonc
 // nx.json
@@ -31,6 +33,9 @@ With options:
 ```
 
 ### Targets
+
+> [!NOTE]
+> A project can be marked as publishable by adding a empty target named `publishable`.
 
 #### `publish`
 

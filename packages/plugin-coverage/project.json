@@ -38,7 +38,7 @@
         "configFile": "packages/plugin-coverage/vite.config.integration.ts"
       }
     },
-    "publish": {}
+    "publishable": {}
   },
   "tags": ["scope:plugin", "type:feature"]
 }

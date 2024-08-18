@@ -15,7 +15,7 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {},
+    "publishable": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

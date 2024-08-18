@@ -38,7 +38,7 @@
         "configFile": "packages/plugin-js-packages/vite.config.integration.ts"
       }
     },
-    "publish": {}
+    "publishable": {}
   },
   "tags": ["scope:plugin", "type:feature"],
   "description": "A plugin for JavaScript packages."

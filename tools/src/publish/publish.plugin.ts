@@ -9,6 +9,7 @@ import { PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
+  publishableTargets?: string;
   publishScript?: string;
   sourceDir?: string;
   verbose?: boolean;
@@ -26,13 +27,14 @@ export const createNodes: CreateNodes = [
     );
 
     const {
+      publishableTargets = 'publishable',
       tsconfig = 'tools/tsconfig.tools.json',
       publishScript = PUBLISH_SCRIPT,
       sourceDir = projectConfiguration?.targets?.build?.options?.outputPath ??
         process.cwd(),
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
-    const isPublishable = Boolean(projectConfiguration?.targets?.publish);
+    const isPublishable = Boolean(projectConfiguration?.targets?[publishableTargets]);
     if (!isPublishable) {
       return {};
     }
@@ -60,7 +62,7 @@ function publishTargets({
   sourceDir,
   projectName,
   verbose,
-}: Required<CreateNodesOptions> & { projectName: string }) {
+}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & { projectName: string }) {
   return {
     publish: {
       dependsOn: ['build'],

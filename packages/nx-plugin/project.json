@@ -37,7 +37,7 @@
         ]
       }
     },
-    "publish": {},
+    "publishable": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
