@@ -8,7 +8,6 @@ import {
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import { LibraryGeneratorSchema } from '@nx/js/src/utils/schema';
-import { join } from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
 
