@@ -15,7 +15,7 @@ export async function setup() {
     await startLocalRegistry({ localRegistryTarget: localRegistryNxTarget });
   } catch (error) {
     console.error(
-      'Error starting local verdaccio registry: \nr: ' + error.message,
+      'Error starting local verdaccio registry:\n' + error.message,
     );
     throw error;
   }
