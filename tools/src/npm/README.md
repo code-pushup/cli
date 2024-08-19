@@ -1,3 +1,14 @@
+# TODO
+
+Reduce file interactions:
+https://docs.npmjs.com/cli/v8/commands/npm-install#package-lock
+`--no-package-lock`
+
+Reduce target install folder
+https://docs.npmjs.com/cli/v8/commands/npm-install#global (explains the prefix flag)
+`--prefix=${join('tmp',packageName,'node_modules')}`
+
+
 # NPM Nx Plugin
 
 A Nx plugin that adds targets that help to work with packages published to NPM.
