@@ -28,7 +28,7 @@ export async function setup() {
       { env: process.env, stdio: 'inherit', shell: true },
     );
   } catch (error) {
-    console.error('Error installing packages: \n' + error.message);
+    console.error('Error installing packages:\n' + error.message);
     throw error;
   }
 }
