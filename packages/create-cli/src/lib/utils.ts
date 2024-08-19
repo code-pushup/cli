@@ -81,14 +81,9 @@ export async function teardownNxContext({
   nxJsonTeardown: boolean;
   projectJsonTeardown: boolean;
 }) {
-  const toDelete: Promise<unknown>[] = [];
-  if (nxJsonTeardown) {
-    // eslint-disable-next-line functional/immutable-data
-    toDelete.push(rm(NX_JSON_FILENAME));
-  }
-  if (projectJsonTeardown) {
-    // eslint-disable-next-line functional/immutable-data
-    toDelete.push(rm(PROJECT_JSON_FILENAME));
-  }
-  await Promise.all(toDelete);
+  const filesToDelete = [
+    ...nxJsonTeardown ? [NX_JSON_FILENAME] : [],
+    ...projectJsonTeardown ? [PROJECT_JSON_FILENAME] : [],
+  ];
+  await Promise.all(filesToDelete.map(rm));
 }
