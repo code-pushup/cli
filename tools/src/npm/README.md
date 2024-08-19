@@ -30,11 +30,11 @@ You can configure the plugin by providing options object in addition to the plug
 
 **Options:**
 
-| Name                 | Type       | Default                     | Description                                     |
-| -------------------- | ---------- | --------------------------- | ----------------------------------------------- |
-| `verbose`            | `boolean`  | `false`                     | Log additional information.                     |
-| `tsconfig`           | `string`   | `tools/tsconfig.tools.json` | The tsconfig file to use.                       |
-| `npmCheckScript`     | `string`   | `check-package-range.ts`    | The script to execute when checking a package.  |
+| Name                 | Type                   | Default                     | Description                                     |
+| -------------------- | ---------------------- | --------------------------- | ----------------------------------------------- |
+| `verbose`            | `boolean`              | `false`                     | Log additional information.                     |
+| `tsconfig`           | `string`               | `tools/tsconfig.tools.json` | The tsconfig file to use.                       |
+| `npmCheckScript`     | `string`               | `check-package-range.ts`    | The script to execute when checking a package.  |
 | `publishableTargets` | `string` or `string[]` | `["publishable"]`           | The targets that mark a project as publishable. |
 
 Example:

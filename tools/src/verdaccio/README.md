@@ -1,6 +1,7 @@
 # TODO
 
 Add post target
+
 ```jsonc
 'post-registry': {
       dependsOn: [
@@ -14,13 +15,14 @@ Add post target
 ```
 
 Move verdaccio targets into every project that has a e2e target
+
 ```typescript
-    
+
     const hasPreVerdaccioTargets = someTargetsPresent(projectConfiguration?.targets ?? {}, preTargets);
     if (!hasPreVerdaccioTargets) {
       return {};
     }
-    
+
 ```
 
 # Verdaccio Nx Plugin
@@ -89,7 +91,7 @@ Run:
 **Options:**
 
 | Name       | Type     | Default                         | Description                                        |
-| ---------- | -------- |---------------------------------| -------------------------------------------------- |
+| ---------- | -------- | ------------------------------- | -------------------------------------------------- |
 | `registry` | `string` | `https://registry.npmjs.org`    | The registry to check the package version against. |
 | `config`   | `string` | `tools/verdaccio/verdaccio.yml` | The Verdaccio configuration file.                  |
 | `port`     | `number` | generated uniquePort            | The port to start the Verdaccio server on.         |

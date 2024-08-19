@@ -73,6 +73,6 @@ function verdaccioTargets({
         config,
         storage,
       },
-    }
+    },
   };
 }

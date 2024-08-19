@@ -21,7 +21,7 @@ You can configure the plugin by providing options object in addition to the plug
 **Options:**
 
 | Name                 | Type                   | Default                     | Description                                     |
-| -------------------- |------------------------|-----------------------------| ----------------------------------------------- |
+| -------------------- | ---------------------- | --------------------------- | ----------------------------------------------- |
 | `verbose`            | `boolean`              | `false`                     | Log additional information.                     |
 | `tsconfig`           | `string`               | `tools/tsconfig.tools.json` | The tsconfig file to use.                       |
 | `publishScript`      | `string`               | `publish-package.ts`        | The script to execute when publishing.          |
