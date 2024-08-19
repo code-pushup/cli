@@ -42,14 +42,6 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
-    /*
-    // @TODO we want to move verdaccio targets into every project that has a e2e target
-    const hasPreVerdaccioTargets = someTargetsPresent(projectConfiguration?.targets ?? {}, preTargets);
-    if (!hasPreVerdaccioTargets) {
-      return {};
-    }
-    */
-
     return {
       projects: {
         [root]: {
@@ -81,15 +73,6 @@ function verdaccioTargets({
         config,
         storage,
       },
-    },
-    'post-registry': {
-      dependsOn: [
-        ...targets.map(target => ({
-          projects: 'self',
-          target,
-        })),
-      ],
-      command: `echo POST E2E - stop verdaccio on port ${port}`,
-    },
+    }
   };
 }
