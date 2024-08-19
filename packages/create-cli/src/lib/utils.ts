@@ -62,9 +62,7 @@ export async function setupNxContext(): Promise<{
     PROJECT_JSON_CONTENT,
   );
 
-  const projectJsonContent = (
-    await readFile(PROJECT_JSON_FILENAME, 'utf8')
-  ).toString();
+  const projectJsonContent = await readFile(PROJECT_JSON_FILENAME, 'utf8');
   const { name = PROJECT_NAME } = JSON.parse(projectJsonContent) as {
     name: string;
   };
