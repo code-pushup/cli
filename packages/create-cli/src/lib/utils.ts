@@ -85,5 +85,5 @@ export async function teardownNxContext({
     ...(nxJsonTeardown ? [NX_JSON_FILENAME] : []),
     ...(projectJsonTeardown ? [PROJECT_JSON_FILENAME] : []),
   ];
-  await Promise.all(filesToDelete.map(rm));
+  await Promise.all(filesToDelete.map(file => rm(file)));
 }
