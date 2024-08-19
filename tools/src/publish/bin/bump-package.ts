@@ -3,12 +3,9 @@ import { join } from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { parseVersion } from '../../utils';
+import type { BumpOptions } from '../types';
 
-const {
-  nextVersion: version,
-  verbose,
-  directory = process.cwd(),
-} = yargs(hideBin(process.argv))
+const argv = yargs(hideBin(process.argv))
   .options({
     nextVersion: {
       type: 'string',
@@ -17,6 +14,11 @@ const {
   })
   .coerce('nextVersion', parseVersion).argv;
 
+const {
+  nextVersion: version,
+  verbose,
+  directory = process.cwd(),
+} = argv as BumpOptions;
 // Updating the version in "package.json"
 const packageJsonFile = join(directory, 'package.json');
 try {

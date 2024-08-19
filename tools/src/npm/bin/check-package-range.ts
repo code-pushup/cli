@@ -56,10 +56,10 @@ try {
     .at(0)
     .split(' ')
     .at(0);
-  console.log(`${pkgRange}#FOUND` satisfies NpmCheckResult); // process output to parse
+  console.log(`${existingPackage}#FOUND` satisfies NpmCheckResult); // process output to parse
   process.exit(0);
 } catch (error) {
-  // @TODO we use  '2>/dev/null' to hide errors from process output but can't also can't check error message. Find better solution
+  // @TODO we use  '2>/dev/null' to hide errors from process output, but also can't check error message. Find better solution.
   // if (error.message.includes(`npm ERR! 404  '${pkgRange}' is not in this registry`)) {
   console.log(`${pkgRange}#NOT_FOUND` satisfies NpmCheckResult); // process output to parse
   process.exit(0);

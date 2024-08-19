@@ -76,8 +76,7 @@ function publishTargets({
   return {
     publish: {
       dependsOn: ['build'],
-      // @TODO use objToCliArgs
-      command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --directory=${directory} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --projectName=${projectName} --directory=${directory} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,
         tsconfig,

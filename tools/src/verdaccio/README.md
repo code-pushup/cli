@@ -1,6 +1,7 @@
 # TODO
 
 - Use `.npmrc` form e2e folder
+- move uniquePort into project targets
 
 https://verdaccio.org/docs/setup-npm#specific
 

@@ -10,7 +10,6 @@ import startLocalRegistry from './tools/src/verdaccio/start-local-registry';
 import stopLocalRegistry from './tools/src/verdaccio/stop-local-registry';
 import { RegistryResult } from './tools/src/verdaccio/types';
 
-// @TODO move this into project targets
 const uniquePort: number = Number(
   (6000 + Number(Math.random() * 1000)).toFixed(0),
 );

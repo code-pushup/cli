@@ -3,6 +3,7 @@
 - refactor version bumping
 - reconsider latest version detection logic
 - use executeProcess instead of execSync
+- refactor targets to use objToCliArgs
 
 # Publish Nx Plugin
 

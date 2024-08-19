@@ -13,28 +13,28 @@ import { DEFAULT_REGISTRY } from 'verdaccio/build/lib/constants';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { objectToCliArgs } from '../../../../packages/utils/src';
-import { npmCheck } from '../../npm/utils';
 import { parseVersion } from '../../utils';
+import type { PublishOptions } from '../types';
 import { findLatestVersion, nxBumpVersion } from '../utils';
 
-const {
-  directory = process.cwd(),
-  name: projectName,
-  nextVersion,
-  tag,
-  registry = DEFAULT_REGISTRY,
-  verbose,
-} = yargs(hideBin(process.argv))
+const argv = yargs(hideBin(process.argv))
   .options({
     directory: { type: 'string' },
-    name: { type: 'string' },
+    projectName: { type: 'string' },
     nextVersion: { type: 'string' },
     tag: { type: 'string', default: 'next' },
     registry: { type: 'string' },
     verbose: { type: 'boolean' },
   })
   .coerce('nextVersion', parseVersion).argv;
-
+const {
+  directory = process.cwd(),
+  projectName,
+  nextVersion,
+  tag,
+  registry = DEFAULT_REGISTRY,
+  verbose,
+} = argv as PublishOptions;
 const version = nextVersion ?? findLatestVersion();
 
 // Updating the version in "package.json" before publishing
