@@ -112,6 +112,32 @@ Examples:
 
 The `e2e` testing process is complex and involves multiple steps.
 
+Here the involved files:
+
+// ascii directory structure
+
+```text 
+Root/
+├── .verdaccio/
+│   ├── config.yaml
+│   └── storage/
+├── e2e/
+│   └── <project-name>-e2e/
+│       ├── tests/
+│       │   └── <file-name>.e2e.ts
+│       └── vite.config.e2e.ts
+├── package/
+│   └── <project-name>/
+│       ├── ...
+│       └── package.json
+├── global-setup.e2e.ts
+├── tools/
+│    ├── src/
+│    │   └── verdaccio/
+│    │   ├── global-setup.e2e.ts
+│    │    └── verdaccio.plugin.ts
+```
+
 The `e2e` target looks like this:
 
 ```jsonc
