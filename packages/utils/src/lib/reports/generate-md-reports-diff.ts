@@ -1,14 +1,27 @@
 import {
-  InlineText,
+  HeadingLevel,
   MarkdownDocument,
   TableColumnObject,
   TableRow,
   md,
 } from 'build-md';
 import { ReportsDiff } from '@code-pushup/models';
-import { pluralize, pluralizeToken } from '../formatting';
 import { HIERARCHY } from '../text-formats';
-import { objectToEntries } from '../transform';
+import { toArray } from '../transform';
+import { WithRequired } from '../types';
+import {
+  changesToDiffOutcomes,
+  compareDiffsBy,
+  createGroupsOrAuditsDetails,
+  formatPortalLink,
+  formatReportOutcome,
+  formatTitle,
+  getDiffChanges,
+  mergeDiffOutcomes,
+  sortChanges,
+  summarizeDiffOutcomes,
+  summarizeUnchanged,
+} from './generate-md-reports-diff-utils';
 import { DiffOutcome } from './types';
 import {
   formatScoreChange,
@@ -17,63 +30,87 @@ import {
   scoreMarker,
 } from './utils';
 
-// to prevent exceeding Markdown comment character limit
-const MAX_ROWS = 100;
-
-export function generateMdReportsDiff(
-  diff: ReportsDiff,
-  portalUrl?: string,
-): string {
+export function generateMdReportsDiff(diff: ReportsDiff): string {
   return new MarkdownDocument()
     .$concat(
-      createDiffHeaderSection(diff, portalUrl),
+      createDiffHeaderSection(diff),
       createDiffCategoriesSection(diff),
-      createDiffGroupsSection(diff),
-      createDiffAuditsSection(diff),
+      createDiffDetailsSection(diff),
+    )
+    .toString();
+}
+
+export type LabeledDiff = WithRequired<ReportsDiff, 'label'>;
+
+export function generateMdReportsDiffForMonorepo(diffs: LabeledDiff[]): string {
+  const diffsWithOutcomes = diffs
+    .map(diff => ({
+      ...diff,
+      outcome: mergeDiffOutcomes(changesToDiffOutcomes(getDiffChanges(diff))),
+    }))
+    .sort(
+      (a, b) =>
+        compareDiffsBy('categories', a, b) ||
+        compareDiffsBy('groups', a, b) ||
+        compareDiffsBy('audits', a, b) ||
+        a.label.localeCompare(b.label),
+    );
+  const unchanged = diffsWithOutcomes.filter(
+    ({ outcome }) => outcome === 'unchanged',
+  );
+  const changed = diffsWithOutcomes.filter(diff => !unchanged.includes(diff));
+
+  return new MarkdownDocument()
+    .$concat(
+      createDiffHeaderSection(diffs),
+      ...changed.map(createDiffProjectSection),
+    )
+    .$if(unchanged.length > 0, doc =>
+      doc
+        .rule()
+        .paragraph(summarizeUnchanged('project', { unchanged, changed })),
     )
     .toString();
 }
 
 function createDiffHeaderSection(
-  diff: ReportsDiff,
-  portalUrl: string | undefined,
+  diff: ReportsDiff | ReportsDiff[],
 ): MarkdownDocument {
-  const outcomeTexts = {
-    positive: md`🥳 Code PushUp report has ${md.bold('improved')}`,
-    negative: md`😟 Code PushUp report has ${md.bold('regressed')}`,
-    mixed: md`🤨 Code PushUp report has both ${md.bold(
-      'improvements and regressions',
-    )}`,
-    unchanged: md`😐 Code PushUp report is ${md.bold('unchanged')}`,
-  };
   const outcome = mergeDiffOutcomes(
-    changesToDiffOutcomes([
-      ...diff.categories.changed,
-      ...diff.groups.changed,
-      ...diff.audits.changed,
-    ]),
+    changesToDiffOutcomes(toArray(diff).flatMap(getDiffChanges)),
   );
-
-  const styleCommits = (commits: NonNullable<ReportsDiff['commits']>) =>
-    `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
+  // TODO: what if array contains different commit pairs?
+  const commits = Array.isArray(diff) ? diff[0]?.commits : diff.commits;
+  const portalUrl = Array.isArray(diff) ? undefined : diff.portalUrl;
 
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, 'Code PushUp')
-    .paragraph(
-      diff.commits
-        ? md`${outcomeTexts[outcome]} – ${styleCommits(diff.commits)}.`
-        : outcomeTexts[outcome],
-    )
-    .paragraph(
-      portalUrl &&
-        md.link(portalUrl, '🕵️ See full comparison in Code PushUp portal 🔍'),
+    .paragraph(formatReportOutcome(outcome, commits))
+    .paragraph(formatPortalLink(portalUrl));
+}
+
+function createDiffProjectSection(
+  diff: LabeledDiff & { outcome: DiffOutcome },
+): MarkdownDocument {
+  return new MarkdownDocument()
+    .heading(HIERARCHY.level_2, md`💼 Project ${md.code(diff.label)}`)
+    .paragraph(formatReportOutcome(diff.outcome))
+    .paragraph(formatPortalLink(diff.portalUrl))
+    .$concat(
+      createDiffCategoriesSection(diff, {
+        skipHeading: true,
+        skipUnchanged: true,
+      }),
+      createDiffDetailsSection(diff, HIERARCHY.level_3),
     );
 }
 
 function createDiffCategoriesSection(
   diff: ReportsDiff,
+  options?: { skipHeading?: boolean; skipUnchanged?: boolean },
 ): MarkdownDocument | null {
   const { changed, unchanged, added } = diff.categories;
+  const { skipHeading, skipUnchanged } = options ?? {};
 
   const categoriesCount = changed.length + unchanged.length + added.length;
   const hasChanges = unchanged.length < categoriesCount;
@@ -81,6 +118,29 @@ function createDiffCategoriesSection(
   if (categoriesCount === 0) {
     return null;
   }
+
+  const [columns, rows] = createCategoriesTable(diff, {
+    hasChanges,
+    skipUnchanged,
+  });
+
+  return new MarkdownDocument()
+    .heading(HIERARCHY.level_2, !skipHeading && '🏷️ Categories')
+    .table(columns, rows)
+    .paragraph(added.length > 0 && md.italic('(\\*) New category.'))
+    .paragraph(
+      skipUnchanged &&
+        unchanged.length > 0 &&
+        summarizeUnchanged('category', { changed, unchanged }),
+    );
+}
+
+function createCategoriesTable(
+  diff: ReportsDiff,
+  options: { hasChanges: boolean; skipUnchanged?: boolean },
+): Parameters<MarkdownDocument['table']> {
+  const { changed, unchanged, added } = diff.categories;
+  const { hasChanges, skipUnchanged } = options;
 
   const columns: TableColumnObject[] = [
     { heading: '🏷️ Category', alignment: 'left' },
@@ -107,28 +167,53 @@ function createDiffCategoriesSection(
       formatScoreWithColor(category.score),
       md.italic('n/a (\\*)'),
     ]),
-    ...unchanged.map(category => [
-      formatTitle(category),
-      formatScoreWithColor(category.score, { skipBold: true }),
-      formatScoreWithColor(category.score),
-      '–',
-    ]),
+    ...(skipUnchanged
+      ? []
+      : unchanged.map(category => [
+          formatTitle(category),
+          formatScoreWithColor(category.score, { skipBold: true }),
+          formatScoreWithColor(category.score),
+          '–',
+        ])),
   ];
 
-  return new MarkdownDocument()
-    .heading(HIERARCHY.level_2, '🏷️ Categories')
-    .table(
-      hasChanges ? columns : columns.slice(0, 2),
-      rows.map(row => (hasChanges ? row : row.slice(0, 2))),
-    )
-    .paragraph(added.length > 0 && md.italic('(\\*) New category.'));
+  return [
+    hasChanges ? columns : columns.slice(0, 2),
+    rows.map(row => (hasChanges ? row : row.slice(0, 2))),
+  ];
 }
 
-function createDiffGroupsSection(diff: ReportsDiff): MarkdownDocument | null {
+function createDiffDetailsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel = HIERARCHY.level_2,
+): MarkdownDocument | null {
+  if (diff.groups.changed.length + diff.audits.changed.length === 0) {
+    return null;
+  }
+  const summary = (['group', 'audit'] as const)
+    .map(token =>
+      summarizeDiffOutcomes(
+        changesToDiffOutcomes(diff[`${token}s`].changed),
+        token,
+      ),
+    )
+    .filter(Boolean)
+    .join(', ');
+  const details = new MarkdownDocument().$concat(
+    createDiffGroupsSection(diff, level),
+    createDiffAuditsSection(diff, level),
+  );
+  return new MarkdownDocument().details(summary, details);
+}
+
+function createDiffGroupsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel,
+): MarkdownDocument | null {
   if (diff.groups.changed.length + diff.groups.unchanged.length === 0) {
     return null;
   }
-  return new MarkdownDocument().heading(HIERARCHY.level_2, '🗃️ Groups').$concat(
+  return new MarkdownDocument().heading(level, '🗃️ Groups').$concat(
     createGroupsOrAuditsDetails(
       'group',
       diff.groups,
@@ -150,8 +235,11 @@ function createDiffGroupsSection(diff: ReportsDiff): MarkdownDocument | null {
   );
 }
 
-function createDiffAuditsSection(diff: ReportsDiff): MarkdownDocument {
-  return new MarkdownDocument().heading(HIERARCHY.level_2, '🛡️ Audits').$concat(
+function createDiffAuditsSection(
+  diff: ReportsDiff,
+  level: HeadingLevel,
+): MarkdownDocument {
+  return new MarkdownDocument().heading(level, '🛡️ Audits').$concat(
     createGroupsOrAuditsDetails(
       'audit',
       diff.audits,
@@ -175,135 +263,4 @@ function createDiffAuditsSection(diff: ReportsDiff): MarkdownDocument {
       ]),
     ),
   );
-}
-
-function createGroupsOrAuditsDetails<T extends 'group' | 'audit'>(
-  token: T,
-  { changed, unchanged }: ReportsDiff[`${T}s`],
-  ...[columns, rows]: Parameters<(typeof md)['table']>
-): MarkdownDocument {
-  if (changed.length === 0) {
-    return new MarkdownDocument().paragraph(
-      summarizeUnchanged(token, { changed, unchanged }),
-    );
-  }
-  return new MarkdownDocument().details(
-    summarizeDiffOutcomes(changesToDiffOutcomes(changed), token),
-    md`${md.table(columns, rows.slice(0, MAX_ROWS))}${
-      changed.length > MAX_ROWS
-        ? md.paragraph(
-            md.italic(
-              `Only the ${MAX_ROWS} most affected ${pluralize(
-                token,
-              )} are listed above for brevity.`,
-            ),
-          )
-        : ''
-    }${
-      unchanged.length > 0
-        ? md.paragraph(summarizeUnchanged(token, { changed, unchanged }))
-        : ''
-    }`,
-  );
-}
-
-function summarizeUnchanged(
-  token: 'category' | 'group' | 'audit',
-  { changed, unchanged }: { changed: unknown[]; unchanged: unknown[] },
-): string {
-  return [
-    changed.length > 0
-      ? pluralizeToken(`other ${token}`, unchanged.length)
-      : `All of ${pluralizeToken(token, unchanged.length)}`,
-    unchanged.length === 1 ? 'is' : 'are',
-    'unchanged.',
-  ].join(' ');
-}
-
-function summarizeDiffOutcomes(outcomes: DiffOutcome[], token: string): string {
-  return objectToEntries(countDiffOutcomes(outcomes))
-    .filter(
-      (entry): entry is [Exclude<DiffOutcome, 'unchanged'>, number] =>
-        entry[0] !== 'unchanged' && entry[1] > 0,
-    )
-    .map(([outcome, count]): string => {
-      const formattedCount = `<strong>${count}</strong> ${pluralize(
-        token,
-        count,
-      )}`;
-      switch (outcome) {
-        case 'positive':
-          return `👍 ${formattedCount} improved`;
-        case 'negative':
-          return `👎 ${formattedCount} regressed`;
-        case 'mixed':
-          return `${formattedCount} changed without impacting score`;
-      }
-    })
-    .join(', ');
-}
-
-function formatTitle({
-  title,
-  docsUrl,
-}: {
-  title: string;
-  docsUrl?: string;
-}): InlineText {
-  if (docsUrl) {
-    return md.link(docsUrl, title);
-  }
-  return title;
-}
-
-type Change = {
-  scores: { diff: number };
-  values?: { diff: number };
-};
-
-function sortChanges<T extends Change>(changes: T[]): T[] {
-  return [...changes].sort(
-    (a, b) =>
-      Math.abs(b.scores.diff) - Math.abs(a.scores.diff) ||
-      Math.abs(b.values?.diff ?? 0) - Math.abs(a.values?.diff ?? 0),
-  );
-}
-
-function changesToDiffOutcomes(changes: Change[]): DiffOutcome[] {
-  return changes.map((change): DiffOutcome => {
-    if (change.scores.diff > 0) {
-      return 'positive';
-    }
-    if (change.scores.diff < 0) {
-      return 'negative';
-    }
-    if (change.values != null && change.values.diff !== 0) {
-      return 'mixed';
-    }
-    return 'unchanged';
-  });
-}
-
-function mergeDiffOutcomes(outcomes: DiffOutcome[]): DiffOutcome {
-  if (outcomes.every(outcome => outcome === 'unchanged')) {
-    return 'unchanged';
-  }
-  if (outcomes.includes('positive') && !outcomes.includes('negative')) {
-    return 'positive';
-  }
-  if (outcomes.includes('negative') && !outcomes.includes('positive')) {
-    return 'negative';
-  }
-  return 'mixed';
-}
-
-function countDiffOutcomes(
-  outcomes: DiffOutcome[],
-): Record<DiffOutcome, number> {
-  return {
-    positive: outcomes.filter(outcome => outcome === 'positive').length,
-    negative: outcomes.filter(outcome => outcome === 'negative').length,
-    mixed: outcomes.filter(outcome => outcome === 'mixed').length,
-    unchanged: outcomes.filter(outcome => outcome === 'unchanged').length,
-  };
 }

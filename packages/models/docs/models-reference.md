@@ -1193,13 +1193,6 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
-## PrimitiveValue
-
-_Union of the following possible types:_
-
-- `string`
-- `number`
-
 ## Report
 
 _Object containing the following properties:_
@@ -1223,6 +1216,8 @@ _Object containing the following properties:_
 | Property               | Description                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | :--------------------- | :---------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`commits`** (\*)     | Commits identifying compared reports            | _Object with properties:_<ul><li>`before`: _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> - Git commit (source commit)</li><li>`after`: _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> - Git commit (target commit)</li></ul> (_nullable_) |
+| `portalUrl`            | Link to comparison page in Code PushUp portal   | `string` (_url_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `label`                | Label (e.g. project name)                       | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **`categories`** (\*)  | Changes affecting categories                    | _Object with properties:_<ul><li>`changed`: _Array of [CategoryDiff](#categorydiff) items_</li><li>`unchanged`: _Array of [CategoryResult](#categoryresult) items_</li><li>`added`: _Array of [CategoryResult](#categoryresult) items_</li><li>`removed`: _Array of [CategoryResult](#categoryresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **`groups`** (\*)      | Changes affecting groups                        | _Object with properties:_<ul><li>`changed`: _Array of [GroupDiff](#groupdiff) items_</li><li>`unchanged`: _Array of [GroupResult](#groupresult) items_</li><li>`added`: _Array of [GroupResult](#groupresult) items_</li><li>`removed`: _Array of [GroupResult](#groupresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **`audits`** (\*)      | Changes affecting audits                        | _Object with properties:_<ul><li>`changed`: _Array of [AuditDiff](#auditdiff) items_</li><li>`unchanged`: _Array of [AuditResult](#auditresult) items_</li><li>`added`: _Array of [AuditResult](#auditresult) items_</li><li>`removed`: _Array of [AuditResult](#auditresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -1270,6 +1265,18 @@ _Enum string, one of the following possible values:_
 - `'center'`
 - `'right'`
 
+## TableCellValue
+
+_Union of the following possible types:_
+
+- `string`
+- `number`
+- `boolean`
+- `null` (_nullable_)
+  (_optional & nullable_)
+
+_Default value:_ `null`
+
 ## TableColumnObject
 
 _Object containing the following properties:_
@@ -1299,13 +1306,13 @@ Object row
 _Object record with dynamic keys:_
 
 - _keys of type_ `string`
-- _values of type_ [PrimitiveValue](#primitivevalue)
+- _values of type_ [TableCellValue](#tablecellvalue) (_optional & nullable_)
 
 ## TableRowPrimitive
 
 Primitive row
 
-_Array of [PrimitiveValue](#primitivevalue) items._
+_Array of [TableCellValue](#tablecellvalue) (\_optional & nullable_) items.\_
 
 ## UploadConfig
 

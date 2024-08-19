@@ -37,10 +37,7 @@
         ]
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs --name=nx-plugin --ver={args.ver} --tag={args.tag}",
-      "dependsOn": ["build"]
-    },
+    "publish": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

@@ -75,7 +75,7 @@ describe('globalConfig', () => {
         },
       },
     );
-    expect(osAgnosticPath(config)).toStrictEqual(
+    expect(osAgnosticPath(String(config))).toStrictEqual(
       expect.stringContaining(
         osAgnosticPath('project-root/code-pushup.config.ts'),
       ),
@@ -173,7 +173,7 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(osAgnosticPath(outputDir)).toBe(
+    expect(osAgnosticPath(String(outputDir))).toBe(
       osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
     );
   });
@@ -192,7 +192,7 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(osAgnosticPath(resultingOutDir)).toEqual(
+    expect(osAgnosticPath(String(resultingOutDir))).toEqual(
       expect.stringContaining(osAgnosticPath('../dist/packages/test-folder')),
     );
   });
@@ -205,7 +205,7 @@ describe('persistConfig', () => {
       },
     );
 
-    expect(osAgnosticPath(outputDir)).toEqual(
+    expect(osAgnosticPath(String(outputDir))).toEqual(
       expect.stringContaining(osAgnosticPath('.code-pushup')),
     );
   });

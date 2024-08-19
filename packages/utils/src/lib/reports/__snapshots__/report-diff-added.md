@@ -12,14 +12,14 @@
 
 _(\*) New category._
 
+<details>
+<summary>👎 <strong>1</strong> audit regressed</summary>
+
 ## 🗃️ Groups
 
 All of 1 group is unchanged.
 
 ## 🛡️ Audits
-
-<details>
-<summary>👎 <strong>1</strong> audit regressed</summary>
 
 | 🔌 Plugin                                                          | 🛡️ Audit                                                                        | 📏 Previous value | 📏 Current value |                                 🔄 Value change                                  |
 | :----------------------------------------------------------------- | :------------------------------------------------------------------------------- | :---------------: | :--------------: | :------------------------------------------------------------------------------: |

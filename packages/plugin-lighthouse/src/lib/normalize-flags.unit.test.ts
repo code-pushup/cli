@@ -54,9 +54,6 @@ describe('normalizeFlags', () => {
     channel: 'cli',
     // custom overwrites in favour of the plugin
     quiet: true,
-    onlyAudits: [],
-    skipAudits: [],
-    onlyCategories: [],
     output: ['json'],
     outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
@@ -121,5 +118,17 @@ describe('normalizeFlags', () => {
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
     expect(getLogMessages(ui().logger)).toHaveLength(1);
+  });
+
+  it('should remove any flag with an empty array as a value', () => {
+    const flags = {
+      onlyAudits: [],
+      skipAudits: [],
+      onlyCategories: [],
+    };
+    const result = normalizeFlags(flags);
+    expect(result).not.toHaveProperty('onlyAudits');
+    expect(result).not.toHaveProperty('skipAudits');
+    expect(result).not.toHaveProperty('onlyCategories');
   });
 });
