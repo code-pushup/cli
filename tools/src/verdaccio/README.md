@@ -64,8 +64,8 @@ Run:
 **Options:**
 
 | Name       | Type     | Default                         | Description                                        |
-| ---------- | -------- | ------------------------------- | -------------------------------------------------- |
+| ---------- | -------- |---------------------------------| -------------------------------------------------- |
 | `registry` | `string` | `https://registry.npmjs.org`    | The registry to check the package version against. |
 | `config`   | `string` | `tools/verdaccio/verdaccio.yml` | The Verdaccio configuration file.                  |
 | `port`     | `number` | `4873`                          | The port to start the Verdaccio server on.         |
-| `storage`  | `string` | `tools/verdaccio/storage `      | The storage directory for Verdaccio.               |
+| `storage`  | `string` | `tmp/e2e/storage `              | The storage directory for Verdaccio.               |
