@@ -76,7 +76,11 @@ function updateNxJsonConfig(tree: Tree) {
 }
 
 export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
-  updateNxJsonConfig(tree);
+  if (schema.skipNxJson) {
+    logger.info(`Skip updating nx.json`);
+  } else {
+    updateNxJsonConfig(tree);
+  }
 
   const tasks = [];
   if (schema.skipPackageJson) {

@@ -8,18 +8,26 @@ const localRegistryNxTarget = '@code-pushup/cli-source:local-registry';
 
 export async function setup() {
   await globalSetup();
+  await setupTestFolder('tmp/local-registry');
+  await setupTestFolder('tmp/e2e');
+
   try {
-    await setupTestFolder('tmp/local-registry');
     await startLocalRegistry({ localRegistryTarget: localRegistryNxTarget });
+  } catch (error) {
+    console.error('Error starting local verdaccio registry:\n' + error.message);
+    throw error;
+  }
+
+  try {
     console.info('Installing packages');
     execFileSync(
       'npx',
       ['nx', 'run-many', '--targets=npm-install', '--parallel=1'],
       { env: process.env, stdio: 'inherit', shell: true },
     );
-    await setupTestFolder('tmp/e2e');
   } catch (error) {
-    console.info('setup error: ' + error.message);
+    console.error('Error installing packages:\n' + error.message);
+    throw error;
   }
 }
 

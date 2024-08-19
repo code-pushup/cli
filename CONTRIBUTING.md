@@ -25,11 +25,11 @@ This table provides a quick overview of the environmental setup, with detailed e
 **❗️** Test Inclusion Logic
 
 - `INCLUDE_SLOW_TESTS='false'` skips long tests.
-- without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
+- Without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
 
 **❗️❗️** Windows specific path set only in CI
 
-- some setups also require this setting locally
+- Some setups also require this setting locally.
 
 ## Development
 

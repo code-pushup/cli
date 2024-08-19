@@ -25,7 +25,7 @@ function invariant(condition, message) {
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 
 // Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
-// Default "tag" to "next" so we won't publish the "latest" tag by accident.
+// Default "tag" to "next" so we won't publish the "latest" tag by accident
 const {
   name,
   ver: version,
@@ -55,9 +55,10 @@ invariant(
 const outputPath = project.data?.targets?.build?.options?.outputPath;
 invariant(
   outputPath,
-  `Could not find "build.options.outputPath" of project "${name}". Is project.json configured  correctly?`,
+  `Could not find "build.options.outputPath" of project "${name}". Is project.json configured correctly?`,
 );
 
+const cwd = process.cwd();
 process.chdir(outputPath);
 
 // Updating the version in "package.json" before publishing
@@ -71,3 +72,6 @@ try {
 
 // Execute "npm publish" to publish
 execSync(`npm publish --access public --tag ${tag}`);
+
+process.chdir(cwd);
+process.exit(0);

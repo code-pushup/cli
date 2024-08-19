@@ -42,7 +42,7 @@ describe('init generator', () => {
     ).toHaveLength(devDependencyNames.length);
   });
 
-  it('should skip packageJson', () => {
+  it('should skip package.json', () => {
     initGenerator(tree, { skipPackageJson: true });
     // nx.json
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
@@ -78,5 +78,12 @@ describe('init generator', () => {
       ),
     ).toHaveLength(4);
     expect(loggerInfoSpy).toHaveBeenCalledWith('Skip installing packages');
+  });
+
+  it('should skip nx.json', () => {
+    initGenerator(tree, { skipNxJson: true });
+    // nx.json
+    const targetDefaults = readNxJson(tree)!.targetDefaults!;
+    expect(targetDefaults).not.toHaveProperty(cpTargetName);
   });
 });
