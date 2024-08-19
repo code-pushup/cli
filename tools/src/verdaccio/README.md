@@ -33,7 +33,7 @@ Example:
 ```jsonc
 // nx.json
 {
-  "name": "my-project",
+  //...
   "plugins": [
     {
       "plugin": "tools/verdaccio/verdaccio.plugin.ts",
