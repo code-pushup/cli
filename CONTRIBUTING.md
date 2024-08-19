@@ -71,28 +71,32 @@ Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`
 
 ### Publishing
 
-Every publishable project in the monorepo has needs the following targets:
+> [!NOTE] Projects are marked as publishabel by adding a target named `publishabel`.
+> Those libraries will have dynamic targets to publish and install the package.
 
-- `publish` - publish the package to the local registry
-- `npm-install` - install package. pass `--registry=http://localhost:61181` to specify the registry
-- `npm-uninstall` - uninstall package form project
+Every publishable project in the monorepo has the following targets:
 
-Examples:
+- [`publish`](./tools/src/publish/README.md#publish) - publish the package to the local registry
+- [`npm-check`](./tools/src/npm/README.md#npm-check) - check if the package is installed in registry
+- [`npm-install`](./tools/src/npm/README.md#npm-install) - install package.
+- [`npm-uninstall`](./tools/src/npm/README.md#npm-uninstall) - uninstall package form project
 
-- `npx nx publish models` - publish source to NPM registry
-- `npx nx publish models --tag="e2e"` - publish source to NPM registry with tag
-- `npx nx npm-install models --registry=http://localhost:61181` - install package from to NPM registry
-- `npx nx npm-uninstall models` - uninstall package from project
+The following steps are necessary to publish a package:
+
+1. `nx run <project-name>:npm-check` - check if the package is not already published
+2. `nx run <project-name>:publish --nextVersion=<version>` - publish package (login required)
+3. `nx run <project-name>:npm-check` - check if the package is published
 
 ### E2e testing
 
-As the current e2e testing environment is rather complex, the current state is summarized here briefly.
+> [!NOTE] Projects that need verdaccio are identified over the `e2e` target.
+> Those libraries will have dynamic targets to start verdaccio and test the package.
 
-**Tools:**
+All e2e tests use verdaccio to test the build artefact in a real registry.
 
-Our e2e tests use `vitest` as test runner and `verdaccio` as local NPM registry.  
-`verdaccio` is used to publish and install packages locally, which is necessary to test the build artefact including in a real registry.
-The unit and integration tests, in comparison, are built and execute differently.
+Every e2e project in the monorepo has the following targets:
+
+- [`start-verdaccio`](./tools/src/verdaccio/README.md#start-verdaccio) - start a local registry
 
 **Running e2e tests for a given project:**
 
@@ -102,27 +106,13 @@ Examples:
 
 - `npx nx e2e cli-e2e` - run e2e tests for the cli project
 - `npx nx e2e cli-e2e --skipNxCache` - pass Nx CLI arguments
-- `npx nx e2e cli-e2e -- --tag="e2e"` - pass general CLI arguments (untouched by Nx)
+- `npx nx run-many -t e2e` - run all e2e tests
 
 #### E2e testing process
 
-- `nx run e2e`
-  - **vitest setup**
-  - **vitest test runner**
-  - **vitest teardown**
+The `e2e` testing process is complex and involves multiple steps.
 
-// mermaid diagram about the process
-
-```mermaid
-graph TD
-  A[nx run e2e] --> B[global-setup.e2e.ts]
-  B --> C[nx run publish]
-  C --> D[nx run npm-install]
-  D --> E[nx run test]
-  E --> F[nx run npm-uninstall]
-```
-
-The target looks like this:
+The `e2e` target looks like this:
 
 ```jsonc
 {
@@ -145,35 +135,32 @@ This file is used to configure the Vite test runner with a global setup script `
 export default defineConfig({
     // ...
     globalSetup: ['../../global-setup.e2e.ts'],
-  }
 });
 ```
 
-`global-setup.e2e.ts` is the complex part.
+Runner the target executes the following steps:
 
-The script is called before all test suites and is responsible for starting verdaccio and publishing the packages needed for the tests.
-
-To reduce configuration and code duplication, a nx plugin generates the needed targets for all publishable projects.
-
-##### **`global-setup.e2e.ts`**
-
-- `nx run e2e`
-  - `global-setup.e2e.ts#setup` (vitest setup script)
-    - `nx run-many -t publish`
-    - `nx run-many -t npm-install`
-  - `vitest test`
-  - `global-setup.e2e.ts#teardown` (vitest teardown script)
-    - `nx run npm-uninstall`
+- `nx run e2e <project-name>`
+  - `global-setup.e2e.ts#setup` (vitest setup script configured in `vite.config.e2e.ts`)
+    - setup - `nx start-verdaccio`
+    - setup - `nx run-many -t publish`
+    - setup - `nx run-many -t npm-install`
+  - **run tests**
+  - `global-setup.e2e.ts#teardown` (vitest teardown script configured in `vite.config.e2e.ts`)
+    - teardown - `nx run-many -t npm-uninstall`
+    - teardown - `process.kill(<verdaccio-port>)`
 
 // mermaid diagram about the process
 
 ```mermaid
 graph TD
-  A[nx run e2e] --> B[global-setup.e2e.ts]
-  B --> C[nx run publish]
-  C --> D[nx run npm-install]
-  D --> E[nx run test]
-  E --> F[nx run npm-uninstall]
+  A[nx run e2e <project-name>] --> B[global-setup.e2e.ts]
+  B --> C[nx start-verdaccio]
+  C --> D[nx run-many -t publish]
+  D --> E[nx run-many -t npm-install]
+  E --> F[vitest test]
+  F --> G[nx run-many -t npm-uninstall]
+  G --> H[process.kill(<verdaccio-port>)]
 ```
 
 ## Git

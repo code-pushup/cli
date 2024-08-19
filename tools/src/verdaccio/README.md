@@ -1,6 +1,10 @@
 # TODO
 
-Add post target
+- Use `.npmrc` form e2e folder
+
+https://verdaccio.org/docs/setup-npm#specific
+
+- Add post target
 
 ```jsonc
 'post-registry': {
@@ -14,7 +18,7 @@ Add post target
     },
 ```
 
-Move verdaccio targets into every project that has a e2e target
+- Move verdaccio targets into every project that has a e2e target
 
 ```typescript
 

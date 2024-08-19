@@ -95,7 +95,6 @@ export default async function startLocalRegistry({
         },
       },
     }).catch(error => {
-      // @TODO check with previous state to not overwrite them
       if (error.message !== 'Failed to start verdaccio: undefined') {
         reject(error);
       } else {
