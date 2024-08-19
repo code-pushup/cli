@@ -8,6 +8,7 @@ import {
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import { LibraryGeneratorSchema } from '@nx/js/src/utils/schema';
+import { join } from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
 
@@ -41,14 +42,19 @@ export async function generateWorkspaceAndProject(
       }),
 ) {
   const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+  const { name, ...normalizedOptions } =
+    typeof options === 'string' ? { name: options } : options;
   await libraryGenerator(tree, {
+    name,
+    directory: 'libs',
     tags: 'scope:plugin',
     linter: 'none',
     unitTestRunner: 'none',
     testEnvironment: 'node',
     buildable: false,
     publishable: false,
-    ...(typeof options === 'string' ? { name: options } : options),
+    projectNameAndRootFormat: 'derived',
+    ...normalizedOptions,
   });
 
   return tree;
