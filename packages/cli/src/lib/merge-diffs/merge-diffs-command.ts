@@ -11,7 +11,7 @@ export function yargsMergeDiffsCommandObject() {
   const command = 'merge-diffs';
   return {
     command,
-    describe: 'Combine many report diffs into single report-diff.md',
+    describe: 'Combine many report diffs into a single diff file',
     builder: yargsMergeDiffsOptionsDefinition(),
     handler: async (args: unknown) => {
       ui().logger.log(bold(CLI_NAME));
