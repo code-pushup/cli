@@ -53,6 +53,7 @@ async function addTargetToWorkspace(
       },
     ],
     upload: {
+      project: 'my-lib',
       server: 'http://staging.code-pushup.dev',
       organization: 'code-pushup',
       apiKey: '12345678',
