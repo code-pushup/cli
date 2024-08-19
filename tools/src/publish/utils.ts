@@ -22,6 +22,7 @@ export function nxRunManyPublish({
       'nx',
       'run-many',
       '--targets=publish',
+      '--parallel=1',
       '--',
       ...(nextVersion ? [`--nextVersion=${nextVersion}`] : []),
       ...(tag ? [`--tag=${tag}`] : []),
@@ -46,14 +47,58 @@ export function bumpVersion({
 }: {
   nextVersion: string;
   cwd: string;
-}): void {
+}) {
   try {
-    execSync(
+    return execSync(
       `tsx ${join(process.cwd(), BUMP_SCRIPT)} ${objectToCliArgs({
         nextVersion,
-      })}`,
+      }).join(' ')}`,
       { cwd },
-    );
+    ).toString();
+  } catch (error) {
+    console.error('Error pumping package version.');
+    throw error;
+  }
+}
+
+export function nxBumpVersion({
+  projectName,
+  nextVersion,
+  directory,
+}: {
+  projectName: string;
+  nextVersion: string;
+  directory: string;
+}) {
+  try {
+    execSync(
+      `nx bump-version ${objectToCliArgs({
+        _: projectName,
+        nextVersion,
+        directory,
+      }).join(' ')}`,
+      {},
+    ).toString();
+  } catch (error) {
+    console.error('Error Nx bump-version target failed.');
+    throw error;
+  }
+}
+
+export function checkLogin({
+  nextVersion,
+  cwd,
+}: {
+  nextVersion: string;
+  cwd: string;
+}) {
+  try {
+    return execSync(
+      `tsx ${join(process.cwd(), BUMP_SCRIPT)} ${objectToCliArgs({
+        nextVersion,
+      }).join(' ')}`,
+      { cwd },
+    ).toString();
   } catch (error) {
     console.error('Error pumping package version.');
     throw error;

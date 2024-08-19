@@ -36,19 +36,19 @@ export async function setup() {
   }
 
   // package publish
+  const { registry } = activeRegistry.registryData;
   try {
     console.info('Publish packages');
-    const { registry } = activeRegistry.registryData;
-    nxRunManyPublish({ registry, nextVersion: version });
+    nxRunManyPublish({ registry, nextVersion: findLatestVersion() });
   } catch (error) {
-    console.error('Error publishin packages:\n' + error.message);
+    console.error('Error publishing packages:\n' + error.message);
     throw error;
   }
 
   // package install
   try {
     console.info('Installing packages');
-    nxRunManyNpmInstall({ registry, pkgVersion: version });
+    nxRunManyNpmInstall({ registry });
   } catch (error) {
     console.error('Error installing packages:\n' + error.message);
     throw error;

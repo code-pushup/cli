@@ -1,6 +1,8 @@
 # TODO
 
 - refactor version bumping
+- reconsider latest version detection logic
+- use executeProcess instead of execSync
 
 # Publish Nx Plugin
 

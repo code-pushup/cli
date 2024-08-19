@@ -6,12 +6,13 @@ import {
 import { dirname, join } from 'node:path';
 import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
-import { PUBLISH_SCRIPT } from './constants';
+import { BUMP_SCRIPT, LOGIN_CHECK_SCRIPT, PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
   publishableTargets?: string | string[];
   publishScript?: string;
+  bumpScript?: string;
   directory?: string;
   verbose?: boolean;
 };
@@ -31,6 +32,7 @@ export const createNodes: CreateNodes = [
       publishableTargets = ['publishable'],
       tsconfig = 'tools/tsconfig.tools.json',
       publishScript = PUBLISH_SCRIPT,
+      bumpScript = BUMP_SCRIPT,
       directory = projectConfiguration?.targets?.build?.options?.outputPath ??
         process.cwd(),
       verbose = false,
@@ -50,6 +52,7 @@ export const createNodes: CreateNodes = [
           targets: publishTargets({
             tsconfig,
             publishScript,
+            bumpScript,
             directory,
             projectName,
             verbose,
@@ -63,6 +66,7 @@ export const createNodes: CreateNodes = [
 function publishTargets({
   tsconfig,
   publishScript,
+  bumpScript,
   directory,
   projectName,
   verbose,
@@ -76,6 +80,14 @@ function publishTargets({
       command: `tsx --tsconfig={args.tsconfig} {args.script} --name=${projectName} --directory=${directory} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,
+        tsconfig,
+      },
+    },
+    'bump-version': {
+      dependsOn: ['build'],
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --directory=${directory} --nextVersion={args.nextVersion} --verbose=${verbose}`,
+      options: {
+        script: bumpScript,
         tsconfig,
       },
     },

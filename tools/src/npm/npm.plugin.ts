@@ -14,6 +14,7 @@ type CreateNodesOptions = {
   verbose?: boolean;
   publishableTargets?: string;
 };
+
 export const createNodes: CreateNodes = [
   '**/project.json',
   (

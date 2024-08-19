@@ -1,5 +1,6 @@
 import { execFileSync, execSync } from 'node:child_process';
 import { objectToCliArgs } from '../../../packages/utils/src';
+import { removeColorCodes } from '../../../testing/test-utils/src';
 import { NPM_CHECK_SCRIPT } from './constants';
 import { NpmCheckToken } from './types';
 
@@ -11,7 +12,7 @@ export function npmCheck({
 }: {
   pkgRange: string;
   registry: string;
-  cwd: string;
+  cwd?: string;
 }): string | undefined {
   const [foundPackage, token] = execSync(
     `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({
@@ -58,12 +59,14 @@ export function nxNpmCheck({
     .toString()
     .trim()
     .split('#') as [string, NpmCheckToken];
-  const cleanToken = token.split('').join('');
+  const cleanToken = removeColorCodes(token.split('').join(''));
 
-  if (cleanToken === 'FOUND') {
+  return cleanToken;
+
+  if (cleanToken == 'FOUND') {
     return token;
-  } else if (cleanToken === 'NOT_FOUND') {
-    return;
+  } else if (cleanToken == 'NOT_FOUND') {
+    return token;
   } else {
     throw new Error(
       `Nx NPM check script returned invalid token ${cleanToken} for package ${foundPackage}`,
@@ -74,7 +77,7 @@ export function nxNpmCheck({
 export type NpmInstallOptions = {
   registry?: string;
   tag?: string;
-  pkgVersion: string;
+  pkgVersion?: string;
 };
 
 export function nxRunManyNpmInstall({
@@ -91,9 +94,9 @@ export function nxRunManyNpmInstall({
         _: ['nx', 'run-many'],
         targets: 'npm-install',
         parallel: 1,
-        pkgVersion,
-        tag,
-        registry,
+        ...(pkgVersion ? { pkgVersion } : {}),
+        ...(tag ? { tag } : {}),
+        ...(registry ? { registry } : {}),
       }),
     ],
     { env: process.env, stdio: 'inherit', shell: true },

@@ -7,111 +7,78 @@
  * You might need to authenticate with NPM before running this script.
  */
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { DEFAULT_REGISTRY } from 'verdaccio/build/lib/constants';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { objectToCliArgs } from '../../../../packages/utils/src';
-import { NPM_CHECK_SCRIPT } from '../../npm/constants';
-import { NpmCheckToken } from '../../npm/types';
+import { npmCheck } from '../../npm/utils';
+import { parseVersion } from '../../utils';
+import { findLatestVersion, nxBumpVersion } from '../utils';
 
-function invariant(condition, message) {
-  if (!condition) {
-    console.error(message);
-    process.exit(1);
-  }
-}
-
-// A simple SemVer validation to validate the version
-const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 const {
-  nextVersion: version,
+  directory = process.cwd(),
+  name: projectName,
+  nextVersion,
   tag,
-  registry,
+  registry = DEFAULT_REGISTRY,
   verbose,
-  directory,
 } = yargs(hideBin(process.argv))
   .options({
-    name: { type: 'string', demandOption: true },
     directory: { type: 'string' },
-    nextVersion: {
-      type: 'string',
-      alias: ['ver', 'v'],
-    },
+    name: { type: 'string' },
+    nextVersion: { type: 'string' },
     tag: { type: 'string', default: 'next' },
     registry: { type: 'string' },
     verbose: { type: 'boolean' },
   })
-  .coerce('nextVersion', rawVersion => {
-    if (rawVersion != null && rawVersion !== '') {
-      invariant(
-        rawVersion && validVersion.test(rawVersion),
-        `No version provided or version did not match Semantic Versioning, expected: #.#.#-tag.# or #.#.#, got ${rawVersion}.`,
-      );
-      return rawVersion;
-    } else {
-      return undefined;
-    }
-  }).argv;
+  .coerce('nextVersion', parseVersion).argv;
 
-const cwd = process.cwd();
-process.chdir(directory);
+const version = nextVersion ?? findLatestVersion();
 
 // Updating the version in "package.json" before publishing
-let packageJson;
+nxBumpVersion({ nextVersion: version, directory, projectName });
 
-try {
-  packageJson = JSON.parse(readFileSync(`package.json`).toString());
-  if (version != null) {
-    if (verbose) {
-      console.info(
-        `Updating package.json version from ${packageJson.version} to ${version}`,
-      );
-    }
-    packageJson.version = version;
-    writeFileSync(`package.json`, JSON.stringify(packageJson, null, 2));
-  }
-} catch (e) {
-  console.info(`Error reading package.json file from ${directory}.`);
-  process.exit(1);
-}
+const packageJson = JSON.parse(
+  readFileSync(join(directory, 'package.json')).toString(),
+);
+const pkgRange = `${packageJson.name}@${version}`;
 
-const pkgVersion = `${packageJson.name}@${packageJson.version}`;
-// @TODO replace with nxNpmCheck helper from utils
-const [_, token] = execSync(
-  `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({
-    pkgRange: pkgVersion,
-    registry,
-  })}`,
-  { cwd },
-)
-  .toString()
-  .trim()
-  .split('#') as [string, NpmCheckToken];
-
-if (token === 'FOUND') {
-  console.warn(`Package ${pkgVersion} is already published.`);
+// @TODO if we hav no registry set up this implementation swallows the error
+/*if (npmCheck(
+  { registry, pkgRange },
+) === 'FOUND') {
+  console.warn(`Package ${version} is already published.`);
   process.exit(0);
-}
+}*/
 
 try {
   execSync(
     objectToCliArgs({
       _: ['npm', 'publish'],
       access: 'public',
-      tag,
-      registry,
+      ...(tag ? { tag } : {}),
+      ...(registry ? { registry } : {}),
     }).join(' '),
+    {
+      cwd: directory,
+    },
   );
 } catch (error) {
-  // @TODO check if it works
-  if ((error as Error).message.includes('already published')) {
+  if (
+    error.message.includes(
+      `need auth This command requires you to be logged in to ${registry}`,
+    )
+  ) {
     console.info(
-      `Failed publish package ${pkgVersion} as already published to ${registry}`,
+      `Authentication error! Check if your registry is set up correctly. If you publish to a public registry run login before.`,
     );
-    process.chdir(cwd);
+    process.exit(1);
+  } else if (error.message.includes(`Cannot publish over existing version`)) {
+    console.info(`Version ${version} already published to ${registry}.`);
     process.exit(0);
   }
   throw error;
 }
-process.chdir(cwd);
 process.exit(0);
