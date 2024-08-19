@@ -111,6 +111,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "./tools/scripts/publish.plugin.ts",
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {

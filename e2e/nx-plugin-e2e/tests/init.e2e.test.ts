@@ -109,7 +109,7 @@ describe('nx-plugin g init', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:init `,
+        `${relativePathToDist(cwd)}:init`,
         project,
         '--skipInstall',
         '--skipPackageJson',

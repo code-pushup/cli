@@ -26,6 +26,7 @@ Show what will be generated without writing to disk:
 
 ## Options
 
-| Name                  | type                        | description                              |
-| --------------------- | --------------------------- | ---------------------------------------- |
-| **--skipPackageJson** | `boolean` (DEFAULT `false`) | Skip adding `package.json` dependencies. |
+| Name                  | type                        | description                                 |
+| --------------------- | --------------------------- | ------------------------------------------- |
+| **--skipPackageJson** | `boolean` (DEFAULT `false`) | Skip adding `package.json` dependencies.    |
+| **--skipNxJson**      | `boolean` (DEFAULT `false`) | Skip updating `nx.json` with configuration. |

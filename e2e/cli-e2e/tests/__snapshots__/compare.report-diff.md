@@ -9,10 +9,10 @@
 | Code style     |      🟡 54       |    🟡 **77**    | ![↑ +23.1](https://img.shields.io/badge/%E2%86%91%20%2B23.1-green) |
 | Bug prevention |      🟡 68       |    🟡 **68**    |                                 –                                  |
 
-## 🗃️ Groups
-
 <details>
-<summary>👍 <strong>1</strong> group improved</summary>
+<summary>👍 <strong>1</strong> group improved, 👍 <strong>3</strong> audits improved</summary>
+
+## 🗃️ Groups
 
 | 🔌 Plugin                                                          | 🗃️ Group   | ⭐ Previous score | ⭐ Current score |                          🔄 Score change                           |
 | :----------------------------------------------------------------- | :---------- | :--------------: | :-------------: | :----------------------------------------------------------------: |
@@ -20,12 +20,7 @@
 
 3 other groups are unchanged.
 
-</details>
-
 ## 🛡️ Audits
-
-<details>
-<summary>👍 <strong>3</strong> audits improved</summary>
 
 | 🔌 Plugin                                                          | 🛡️ Audit                                                                                                                                | 📏 Previous value | 📏 Current value |                                   🔄 Value change                                    |
 | :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- | :---------------: | :--------------: | :----------------------------------------------------------------------------------: |

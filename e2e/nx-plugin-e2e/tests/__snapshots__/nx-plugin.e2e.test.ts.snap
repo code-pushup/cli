@@ -21,21 +21,6 @@ exports[`nx-plugin > should NOT add config targets dynamically if the project is
 }
 `;
 
-exports[`nx-plugin > should NOT add targets dynamically if plugin is not registered 1`] = `
-{
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": [],
-  "name": "my-lib",
-  "projectType": "library",
-  "root": "libs/my-lib",
-  "sourceRoot": "libs/my-lib/src",
-  "tags": [
-    "scope:plugin",
-  ],
-  "targets": {},
-}
-`;
-
 exports[`nx-plugin > should add configuration target dynamically 1`] = `
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",

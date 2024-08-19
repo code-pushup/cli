@@ -33,6 +33,7 @@ export async function compareReportFiles(
   inputPaths: Diff<string>,
   persistConfig: Required<PersistConfig>,
   uploadConfig: UploadConfig | undefined,
+  label?: string,
 ): Promise<string[]> {
   const { outputDir, filename, format } = persistConfig;
 
@@ -45,17 +46,23 @@ export async function compareReportFiles(
     after: reportSchema.parse(reportAfter),
   };
 
-  const reportsDiff = compareReports(reports);
-
-  const portalUrl =
-    uploadConfig && reportsDiff.commits && format.includes('md')
-      ? await fetchPortalComparisonLink(uploadConfig, reportsDiff.commits)
-      : undefined;
+  const diff = compareReports(reports);
+  if (label) {
+    // eslint-disable-next-line functional/immutable-data
+    diff.label = label;
+  }
+  if (uploadConfig && diff.commits) {
+    // eslint-disable-next-line functional/immutable-data
+    diff.portalUrl = await fetchPortalComparisonLink(
+      uploadConfig,
+      diff.commits,
+    );
+  }
 
   return Promise.all(
     format.map(async fmt => {
       const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
-      const content = reportsDiffToFileContent(reportsDiff, fmt, portalUrl);
+      const content = reportsDiffToFileContent(diff, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
       return outputPath;
@@ -98,13 +105,12 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 function reportsDiffToFileContent(
   reportsDiff: ReportsDiff,
   format: Format,
-  portalUrl: string | undefined,
 ): string {
   switch (format) {
     case 'json':
       return JSON.stringify(reportsDiff, null, 2);
     case 'md':
-      return generateMdReportsDiff(reportsDiff, portalUrl ?? undefined);
+      return generateMdReportsDiff(reportsDiff);
   }
 }
 
