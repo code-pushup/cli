@@ -1,5 +1,6 @@
 export { exists } from '@code-pushup/models';
 export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
+export { stringifyError } from './lib/errors';
 export {
   ProcessConfig,
   ProcessError,
