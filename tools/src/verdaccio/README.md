@@ -1,7 +1,8 @@
 # TODO
 
+- in the future the root project has no verdaccio target anymore. only e2e projects have a verdaccio target.
 - Use `.npmrc` form e2e folder
-- move uniquePort into project targets
+- move uniquePort into project targets of e2e projects
 
 https://verdaccio.org/docs/setup-npm#specific
 

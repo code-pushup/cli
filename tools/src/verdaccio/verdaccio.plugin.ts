@@ -8,7 +8,6 @@ import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-
 import { uniquePort } from './utils';
 
 type CreateNodesOptions = {
-  // @TODO move into target options
   port?: string | number;
   config?: string;
   storage?: string;
@@ -36,7 +35,6 @@ export const createNodes: CreateNodes = [
       projectConfigurationFile,
     );
 
-    // @TODO in the future the root project has no verdaccio target anymore. only e2e projects have.
     const isRootProject = root === '.';
     if (!isRootProject) {
       return {};
@@ -49,7 +47,6 @@ export const createNodes: CreateNodes = [
             port,
             config,
             storage,
-            verbose,
             preTargets,
           }),
         },
@@ -63,7 +60,7 @@ function verdaccioTargets({
   config,
   storage,
   preTargets,
-}: Required<CreateNodesOptions>) {
+}: Required<Omit<CreateNodesOptions, 'verbose'>>) {
   const targets = Array.isArray(preTargets) ? preTargets : [preTargets];
   return {
     'start-verdaccio': {
