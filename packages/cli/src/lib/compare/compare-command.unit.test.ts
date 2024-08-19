@@ -44,6 +44,28 @@ describe('compare-command', () => {
         format: DEFAULT_PERSIST_FORMAT,
       },
       expect.any(Object),
+      undefined,
+    );
+  });
+
+  it('should forward label from command line', async () => {
+    await yargsCli(
+      [
+        'compare',
+        '--before=source-report.json',
+        '--after=target-report.json',
+        '--label=core',
+      ],
+      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
+    ).parseAsync();
+
+    expect(compareReportFiles).toHaveBeenCalledWith<
+      Parameters<typeof compareReportFiles>
+    >(
+      { before: 'source-report.json', after: 'target-report.json' },
+      expect.any(Object),
+      expect.any(Object),
+      'core',
     );
   });
 

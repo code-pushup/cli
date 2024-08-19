@@ -21,9 +21,9 @@ let activeRegistry: RegistryResult;
 
 export async function setup() {
   await globalSetup();
+  await setupTestFolder('tmp/local-registry');
   await setupTestFolder(e2eDir);
 
-  // verdaccio
   try {
     activeRegistry = await startLocalRegistry({
       localRegistryTarget: '@code-pushup/cli-source:start-verdaccio',
@@ -31,22 +31,28 @@ export async function setup() {
       port: uniquePort,
     });
   } catch (error) {
-    console.info('Error startLocalRegistry: ' + error.message);
-    if (typeof error.stop === 'function') {
-      activeRegistry = {
-        registryData: null,
-        stop: () => {},
-      };
-    } else {
-      throw error;
-    }
+    console.error('Error starting local verdaccio registry:\n' + error.message);
+    throw error;
   }
 
-  // package publish & install
-  const { registry } = activeRegistry.registryData;
-  const version = findLatestVersion();
-  nxRunManyPublish({ registry, nextVersion: version });
-  nxRunManyNpmInstall({ registry, pkgVersion: version });
+  // package publish
+  try {
+    console.info('Publish packages');
+    const { registry } = activeRegistry.registryData;
+    nxRunManyPublish({ registry, nextVersion: version });
+  } catch (error) {
+    console.error('Error publishin packages:\n' + error.message);
+    throw error;
+  }
+
+  // package install
+  try {
+    console.info('Installing packages');
+    nxRunManyNpmInstall({ registry, pkgVersion: version });
+  } catch (error) {
+    console.error('Error installing packages:\n' + error.message);
+    throw error;
+  }
 }
 
 export async function teardown() {

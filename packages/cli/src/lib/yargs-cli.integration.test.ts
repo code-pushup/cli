@@ -8,6 +8,8 @@ import {
   UploadConfigCliOptions,
 } from './implementation/core-config.model';
 import { GeneralCliOptions } from './implementation/global.model';
+import { MergeDiffsOptions } from './implementation/merge-diffs.model';
+import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options';
 import { OnlyPluginsOptions } from './implementation/only-plugins.model';
 import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
 import { SkipPluginsOptions } from './implementation/skip-plugins.model';
@@ -173,6 +175,30 @@ describe('yargsCli', () => {
         noExitProcess: true,
       }).parse(),
     ).toThrow('Missing required arguments: before, after');
+  });
+
+  it('should parse merge-diffs options', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & MergeDiffsOptions>(
+      [
+        '--files',
+        '.code-pushup/frontend/report-diff.json',
+        '.code-pushup/backend/report-diff.json',
+      ],
+      { options: { ...options, ...yargsMergeDiffsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv.files).toEqual([
+      '.code-pushup/frontend/report-diff.json',
+      '.code-pushup/backend/report-diff.json',
+    ]);
+  });
+
+  it('should error if required merge-diffs option is missing', () => {
+    expect(() =>
+      yargsCli<GeneralCliOptions & CompareOptions>([], {
+        options: { ...options, ...yargsMergeDiffsOptionsDefinition() },
+        noExitProcess: true,
+      }).parse(),
+    ).toThrow('Missing required argument: files');
   });
 
   it('should provide default arguments for history command', async () => {

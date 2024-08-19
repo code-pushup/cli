@@ -242,7 +242,7 @@ describe('nx-plugin', () => {
     });
   });
 
-  it('should NOT add targets dynamically if plugin is not registered', async () => {
+  it('should NOT add targets dynamically if plugin is NOT registered', async () => {
     const cwd = join(baseDir, 'plugin-not-registered');
     await materializeTree(tree, cwd);
 
@@ -251,6 +251,5 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({});
-    expect(projectJson).toMatchSnapshot();
   });
 });

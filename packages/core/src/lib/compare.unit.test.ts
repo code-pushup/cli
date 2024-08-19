@@ -155,13 +155,13 @@ describe('compareReportFiles', () => {
     expect(getPortalComparisonLink).not.toHaveBeenCalled();
   });
 
-  it('should not fetch portal link if Markdown not included in formats', async () => {
+  it('should include portal link in JSON file', async () => {
     await compareReportFiles(
       {
         before: join(MEMFS_VOLUME, 'source-report.json'),
         after: join(MEMFS_VOLUME, 'target-report.json'),
       },
-      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json'] },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       {
         server: 'https://api.code-pushup.dev/graphql',
         apiKey: 'cp_XXXXX',
@@ -170,11 +170,33 @@ describe('compareReportFiles', () => {
       },
     );
 
-    expect(getPortalComparisonLink).not.toHaveBeenCalled();
+    await expect(
+      readJsonFile(join(MEMFS_VOLUME, 'report-diff.json')),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        portalUrl: `https://code-pushup.example.com/portal/dunder-mifflin/website/comparison/${commitShas.before}/${commitShas.after}`,
+      }),
+    );
+  });
+
+  it('should include label in JSON file', async () => {
+    await compareReportFiles(
+      {
+        before: join(MEMFS_VOLUME, 'source-report.json'),
+        after: join(MEMFS_VOLUME, 'target-report.json'),
+      },
+      { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
+      undefined,
+      'backoffice',
+    );
 
     await expect(
-      fileExists(join(MEMFS_VOLUME, 'report-diff.md')),
-    ).resolves.toBeFalsy();
+      readJsonFile(join(MEMFS_VOLUME, 'report-diff.json')),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        label: 'backoffice',
+      }),
+    );
   });
 });
 

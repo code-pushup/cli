@@ -65,12 +65,12 @@ describe('generateMdReportsDiff', () => {
   });
 
   it('should format Markdown comment with link to portal', async () => {
-    const report = reportsDiffAltMock();
-    const portalUrl = `https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`;
-
-    await expect(generateMdReportsDiff(report, portalUrl)).toMatchFileSnapshot(
-      '__snapshots__/report-diff-with-portal.md',
-    );
+    await expect(
+      generateMdReportsDiff({
+        ...reportsDiffAltMock(),
+        portalUrl: `https://app.code-pushup.dev/portal/dunder-mifflin/website/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`,
+      }),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-with-portal.md');
   });
 
   it('should format Markdown comment with truncated audits table', async () => {
@@ -105,10 +105,10 @@ describe('generateMdReportsDiffForMonorepo', () => {
   it('should format Markdown comment with multiple projects', async () => {
     await expect(
       generateMdReportsDiffForMonorepo([
-        { name: 'console', diff: reportsDiffMock() },
-        { name: 'admin', diff: reportsDiffAltMock() },
-        { name: 'marketing', diff: reportsDiffUnchangedMock() },
-        { name: 'docs', diff: reportsDiffAddedPluginMock() },
+        { ...reportsDiffMock(), label: 'console' },
+        { ...reportsDiffAltMock(), label: 'admin' },
+        { ...reportsDiffUnchangedMock(), label: 'marketing' },
+        { ...reportsDiffAddedPluginMock(), label: 'docs' },
       ]),
     ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo.md');
   });
@@ -117,13 +117,13 @@ describe('generateMdReportsDiffForMonorepo', () => {
     await expect(
       generateMdReportsDiffForMonorepo([
         {
-          name: 'frontoffice',
-          diff: reportsDiffMock(),
+          ...reportsDiffMock(),
+          label: 'frontoffice',
           portalUrl: `https://app.code-pushup.dev/portal/dunder-mifflin/frontoffice/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`,
         },
         {
-          name: 'backoffice',
-          diff: reportsDiffUnchangedMock(),
+          ...reportsDiffUnchangedMock(),
+          label: 'backoffice',
           portalUrl: `https://app.code-pushup.dev/portal/dunder-mifflin/backoffice/comparison/${COMMIT_MOCK.hash}/${COMMIT_ALT_MOCK.hash}`,
         },
       ]),
@@ -133,8 +133,8 @@ describe('generateMdReportsDiffForMonorepo', () => {
   it('should format Markdown comment with all projects unchanged', async () => {
     await expect(
       generateMdReportsDiffForMonorepo([
-        { name: 'frontoffice', diff: reportsDiffUnchangedMock() },
-        { name: 'backoffice', diff: reportsDiffUnchangedMock() },
+        { ...reportsDiffUnchangedMock(), label: 'frontoffice' },
+        { ...reportsDiffUnchangedMock(), label: 'backoffice' },
       ]),
     ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-unchanged.md');
   });
