@@ -40,7 +40,6 @@ describe('create-cli-node', () => {
       command: 'npm',
       args: ['exec', '@code-pushup/create-cli'],
       cwd,
-      observer: { onStdout: console.info },
     });
 
     expect(code).toBe(0);
@@ -57,7 +56,6 @@ describe('create-cli-node', () => {
       command: 'npm',
       args: ['init', '@code-pushup/cli'],
       cwd,
-      observer: { onStdout: console.info },
     });
 
     expect(code).toBe(0);
