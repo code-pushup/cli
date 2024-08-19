@@ -1,3 +1,7 @@
+# TODO
+
+- refactor version bumping
+
 # Publish Nx Plugin
 
 A Nx plugin that adds targets that help to publish packages to NPM.
@@ -88,5 +92,45 @@ Options:
 | `nextVersion` | `string`  | `latest` | The version to publish.                                              |
 | `tag`         | `string`  | `latest` | The tag to publish.                                                  |
 | `registry`    | `string`  |          | The registry to publish the package to.                              |
-| `verbose`     | `boolean` | `false`  | Log additional information.                                          |
 | `directory`   | `string`  |          | The directory to publish. (location of the build artefact e.g. dist) |
+| `verbose`     | `boolean` | `false`  | Log additional information.                                          |
+
+Examples:
+
+- `tsx tools/src/publish/bin/publish-package.ts`
+- `tsx tools/src/publish/bin/publish-package.ts --directory=dist/packages/<package-name>`
+- `tsx tools/src/publish/bin/publish-package.ts --directory=dist/packages/<package-name> --registry=http://localhost:58999 --nextVersion=1.0.0`
+
+### `bump-package.ts`
+
+This script is used to bump the version of the package. It will automatically update the version in the `package.json` file.
+
+Options:
+
+| Name          | Type      | Default         | Description                                                          |
+| ------------- | --------- | --------------- | -------------------------------------------------------------------- |
+| `directory`   | `string`  | `process.cwd()` | The directory to publish. (location of the build artefact e.g. dist) |
+| `nextVersion` | `string`  |                 | The version to publish.                                              |
+| `verbose`     | `boolean` | `false`         | Log additional information.                                          |
+
+Examples:
+
+- `tsx tools/src/publish/bin/bump-package.ts --nextVersion=<version-number>`
+- `tsx tools/src/publish/bin/bump-package.ts --directory=dist/packages/<package-name> --nextVersion=<version-number>`
+
+### `login-check.ts`
+
+This script is used to check if the user is logged in to the NPM registry.
+
+Options:
+
+| Name       | Type      | Default                      | Description                 |
+| ---------- | --------- | ---------------------------- | --------------------------- |
+| `registry` | `string`  | `https://registry.npmjs.org` | The registry to check.      |
+| `verbose`  | `boolean` | `false`                      | Log additional information. |
+
+Examples:
+
+- `tsx tools/src/publish/bin/login-check.ts`
+- `tsx tools/src/publish/bin/login-check.ts --registry=http://localhost:58999`
+- `tsx tools/src/publish/bin/login-check.ts --registry=http://localhost:58999 --verbose`

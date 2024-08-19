@@ -1,10 +1,14 @@
 import { execFileSync, execSync } from 'node:child_process';
+import { join } from 'node:path';
+import { objectToCliArgs } from '../../../packages/utils/src';
+import { BUMP_SCRIPT } from './constants';
 
 export type PublishOptions = {
   registry?: string;
   tag?: string;
   nextVersion: string;
 };
+
 export function nxRunManyPublish({
   registry,
   tag = 'e2e',
@@ -34,4 +38,24 @@ export function findLatestVersion(): string {
     .replace(/^v/, '');
   console.info(`Version from "git describe --tags --abbrev=0": ${version}`);
   return version;
+}
+
+export function bumpVersion({
+  nextVersion,
+  cwd,
+}: {
+  nextVersion: string;
+  cwd: string;
+}): void {
+  try {
+    execSync(
+      `tsx ${join(process.cwd(), BUMP_SCRIPT)} ${objectToCliArgs({
+        nextVersion,
+      })}`,
+      { cwd },
+    );
+  } catch (error) {
+    console.error('Error pumping package version.');
+    throw error;
+  }
 }
