@@ -1,3 +1,28 @@
+# TODO
+
+Add post target
+```jsonc
+'post-registry': {
+      dependsOn: [
+        ...targets.map(target => ({
+          projects: 'self',
+          target,
+        })),
+      ],
+      command: `echo POST E2E - stop verdaccio on port ${port}`,
+    },
+```
+
+Move verdaccio targets into every project that has a e2e target
+```typescript
+    
+    const hasPreVerdaccioTargets = someTargetsPresent(projectConfiguration?.targets ?? {}, preTargets);
+    if (!hasPreVerdaccioTargets) {
+      return {};
+    }
+    
+```
+
 # Verdaccio Nx Plugin
 
 A Nx plugin that adds targets that help to test packages published to a package registry like NPM.
