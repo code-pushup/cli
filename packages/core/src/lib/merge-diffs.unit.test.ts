@@ -66,10 +66,10 @@ describe('mergeDiffs', () => {
 
     expect(getLogMessages(ui().logger)).toEqual([
       expect.stringContaining(
-        'Failed to parse report diff file - Error: ENOENT: no such file or directory',
+        'Skipped invalid report diff - Failed to read JSON file missing-report-diff.json',
       ),
-      expect.stringMatching(
-        /Failed to parse report diff file - .*invalid_type.*Required/s,
+      expect.stringContaining(
+        'Skipped invalid report diff - Invalid reports diff in invalid-report-diff.json',
       ),
     ]);
   });

@@ -7,6 +7,7 @@ import {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
   readJsonFile,
+  stringifyError,
   ui,
 } from '@code-pushup/utils';
 
@@ -16,13 +17,24 @@ export async function mergeDiffs(
 ): Promise<string> {
   const results = await Promise.allSettled(
     files.map(async file => {
-      const json = await readJsonFile(file);
-      const diff = await reportsDiffSchema.parseAsync(json);
-      return { ...diff, file };
+      const json = await readJsonFile(file).catch((error: unknown) => {
+        throw new Error(
+          `Failed to read JSON file ${file} - ${stringifyError(error)}`,
+        );
+      });
+      const result = await reportsDiffSchema.safeParseAsync(json);
+      if (!result.success) {
+        throw new Error(
+          `Invalid reports diff in ${file} - ${result.error.message}`,
+        );
+      }
+      return { ...result.data, file };
     }),
   );
   results.filter(isPromiseRejectedResult).forEach(({ reason }) => {
-    ui().logger.warning(`Failed to parse report diff file - ${reason}`);
+    ui().logger.warning(
+      `Skipped invalid report diff - ${stringifyError(reason)}`,
+    );
   });
   const diffs = results
     .filter(isPromiseFulfilledResult)
