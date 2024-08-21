@@ -13,4 +13,13 @@ describe('createExecutorTarget', () => {
       executor: 'xyz:autorun',
     });
   });
+
+  it('should use projectPrefix if provided', () => {
+    expect(createExecutorTarget({ projectPrefix: 'cli' })).toStrictEqual({
+      executor: '@code-pushup/nx-plugin:autorun',
+      options: {
+        projectPrefix: 'cli',
+      },
+    });
+  });
 });
