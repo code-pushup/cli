@@ -50,7 +50,7 @@ try {
     .split('\n')
     .filter(Boolean)
     .at(0)
-    .split(' ')
+    ?.split(' ')
     .at(0);
   console.log(`${existingPackage}#FOUND` satisfies NpmCheckResult); // process output to parse
   process.exit(0);
