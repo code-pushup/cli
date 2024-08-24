@@ -9,8 +9,8 @@ Every publishable project in the monorepo has the following targets:
 
 - [`publish`](./tools/src/publish/README.md#publish) - publish the package to the local registry
 - [`npm-check`](./tools/src/npm/README.md#npm-check) - check if the package is installed in registry
-- [`npm-install`](./tools/src/npm/README.md#npm-install) - install package.
-- [`npm-uninstall`](./tools/src/npm/README.md#npm-uninstall) - uninstall package form project
+- [`npm-install`](./tools/src/npm/README.md#npm-install) - install package in workspace.
+- [`npm-uninstall`](./tools/src/npm/README.md#npm-uninstall) - uninstall package form workspace
 
 The following steps are necessary to publish a package:
 
@@ -215,5 +215,5 @@ After running the E2E tests all changes are reverted, and the workspace is in th
 
 - start local registry manually with `nx start-verdaccio` - logs port
 - check if a package is published with `nx npm-check <project-name> --registry=http://localhost:<port>`
-- install a package to a registry `nx npm-install <project-name> --registry=http://localhost:<port>`
-- uninstall a package from a registry `nx npm-uninstall <project-name>`
+- install a package in workspace `nx npm-install <project-name> --registry=http://localhost:<port>`
+- uninstall a package from workspace `nx npm-uninstall <project-name>`
