@@ -4,7 +4,7 @@ export type PublishOptions = {
   registry?: string;
   tag?: string;
   nextVersion: string;
-  verbose: boolean;
+  verbose?: boolean;
 };
 export type BumpOptions = {
   nextVersion: string;

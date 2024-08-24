@@ -9,12 +9,10 @@ import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
 import startLocalRegistry from './tools/src/verdaccio/start-local-registry';
 import stopLocalRegistry from './tools/src/verdaccio/stop-local-registry';
 import { RegistryResult } from './tools/src/verdaccio/types';
+import { uniquePort } from './tools/src/verdaccio/utils';
 
-const uniquePort: number = Number(
-  (6000 + Number(Math.random() * 1000)).toFixed(0),
-);
 const e2eDir = join('tmp', 'e2e');
-const uniqueDir = join(e2eDir, `registry-${uniquePort}`);
+const uniqueDir = join(e2eDir, `registry-${uniquePort()}`);
 
 let activeRegistry: RegistryResult;
 
@@ -27,7 +25,7 @@ export async function setup() {
     activeRegistry = await startLocalRegistry({
       localRegistryTarget: '@code-pushup/cli-source:start-verdaccio',
       storage: join(uniqueDir, 'storage'),
-      port: uniquePort,
+      port: uniquePort(),
     });
   } catch (error) {
     console.error('Error starting local verdaccio registry:\n' + error.message);
