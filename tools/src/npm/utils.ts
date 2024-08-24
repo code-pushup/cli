@@ -59,7 +59,7 @@ export function nxNpmCheck({
     .toString()
     .trim()
     .split('#') as [string, NpmCheckToken];
-  const cleanToken = removeColorCodes(token.split('').join(''));
+  const cleanToken = removeColorCodes(token);
 
   return cleanToken;
 
