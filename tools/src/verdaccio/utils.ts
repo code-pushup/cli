@@ -54,8 +54,11 @@ export function unconfigureRegistry({
 
 export function parseRegistryData(stdout: string): RegistryData {
   const port = parseInt(
-    stdout.toString().match(/localhost:(?<port>\d+)/)?.groups?.port,
+    stdout.toString().match(/localhost:(?<port>\d+)/)?.groups?.port ?? '',
   );
+  if (isNaN(port)) {
+    throw new Error('Invalid port number');
+  }
   const protocolMatch = stdout
     .toString()
     .match(/(?<proto>https?):\/\/localhost:/);
