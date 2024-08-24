@@ -36,8 +36,7 @@
       "options": {
         "configFile": "packages/plugin-lighthouse/vite.config.integration.ts"
       }
-    },
-    "publishable": {}
+    }
   },
-  "tags": ["scope:plugin", "type:feature"]
+  "tags": ["scope:plugin", "type:feature", "publishable"]
 }

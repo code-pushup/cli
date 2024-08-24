@@ -12,7 +12,7 @@ type CreateNodesOptions = {
   tsconfig?: string;
   npmCheckScript?: string;
   verbose?: boolean;
-  publishableTargets?: string;
+  publishableTags?: string;
 };
 
 export const createNodes: CreateNodes = [
@@ -27,15 +27,14 @@ export const createNodes: CreateNodes = [
       projectConfigurationFile,
     );
     const {
-      publishableTargets = 'publishable',
+      publishableTags = 'publishable',
       tsconfig = 'tools/tsconfig.tools.json',
       npmCheckScript = NPM_CHECK_SCRIPT,
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
-    const isPublishable = someTargetsPresent(
-      projectConfiguration?.targets ?? {},
-      publishableTargets,
+    const isPublishable = (projectConfiguration?.tags ?? []).some(target =>
+      publishableTags.includes(target),
     );
     if (!isPublishable) {
       return {};
@@ -56,7 +55,7 @@ function npmTargets({
   tsconfig,
   npmCheckScript,
   verbose,
-}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & {
+}: Required<Omit<CreateNodesOptions, 'publishableTags'>> & {
   root: string;
 }) {
   const { name: packageName } = readJsonFile(join(root, 'package.json'));

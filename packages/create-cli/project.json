@@ -15,7 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publishable": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -49,5 +48,5 @@
       "options": {}
     }
   },
-  "tags": ["scope:tooling", "type:app"]
+  "tags": ["scope:tooling", "type:app", "publishable"]
 }

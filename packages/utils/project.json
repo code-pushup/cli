@@ -48,8 +48,7 @@
       "options": {
         "configFile": "packages/utils/vite.config.integration.ts"
       }
-    },
-    "publishable": {}
+    }
   },
-  "tags": ["scope:shared", "type:util"]
+  "tags": ["scope:shared", "type:util", "publishable"]
 }

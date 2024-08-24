@@ -10,7 +10,7 @@ import { BUMP_SCRIPT, LOGIN_CHECK_SCRIPT, PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
-  publishableTargets?: string | string[];
+  publishableTags?: string | string[];
   publishScript?: string;
   bumpScript?: string;
   directory?: string;
@@ -29,7 +29,7 @@ export const createNodes: CreateNodes = [
     );
 
     const {
-      publishableTargets = ['publishable'],
+      publishableTags = ['publishable'],
       tsconfig = 'tools/tsconfig.tools.json',
       publishScript = PUBLISH_SCRIPT,
       bumpScript = BUMP_SCRIPT,
@@ -37,9 +37,8 @@ export const createNodes: CreateNodes = [
         process.cwd(),
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
-    const isPublishable = someTargetsPresent(
-      projectConfiguration?.targets ?? {},
-      publishableTargets,
+    const isPublishable = (projectConfiguration?.tags ?? []).some(target =>
+      publishableTags.includes(target),
     );
     if (!isPublishable) {
       return {};
@@ -70,7 +69,7 @@ function publishTargets({
   directory,
   projectName,
   verbose,
-}: Required<Omit<CreateNodesOptions, 'publishableTargets'>> & {
+}: Required<Omit<CreateNodesOptions, 'publishableTags'>> & {
   projectName: string;
 }) {
   return {
