@@ -78,7 +78,7 @@ describe('getSortableAuditByRef', () => {
 });
 
 describe('getSortableGroupByRef', () => {
-  it('should return a sortable group with sorted references', () => {
+  it('should return a sortable group with references sorted based on score > weight > value > title', () => {
     expect(
       getSortableGroupByRef(
         {
@@ -134,12 +134,12 @@ describe('getSortableGroupByRef', () => {
       score: 0.66,
       refs: [
         {
-          slug: 'function-coverage',
-          weight: 2,
-        },
-        {
           slug: 'branch-coverage',
           weight: 1,
+        },
+        {
+          slug: 'function-coverage',
+          weight: 2,
         },
       ],
       weight: 2,
@@ -180,7 +180,7 @@ describe('getSortableGroupByRef', () => {
 });
 
 describe('getSortedGroupAudits', () => {
-  it('should return sorted group audits based on weight > score > value > title', () => {
+  it('should return sorted group audits based on score > weight > value > title', () => {
     expect(
       getSortedGroupAudits(
         {
@@ -226,10 +226,6 @@ describe('getSortedGroupAudits', () => {
       ),
     ).toStrictEqual([
       expect.objectContaining({
-        weight: 6,
-        slug: 'function-coverage',
-      }),
-      expect.objectContaining({
         weight: 3,
         score: 0.5,
         slug: 'line-coverage',
@@ -238,6 +234,10 @@ describe('getSortedGroupAudits', () => {
         weight: 3,
         score: 0.75,
         slug: 'branch-coverage',
+      }),
+      expect.objectContaining({
+        weight: 6,
+        slug: 'function-coverage',
       }),
     ]);
   });

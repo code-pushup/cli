@@ -164,12 +164,12 @@ export function compareCategoryAuditsAndGroups(
   a: SortableAuditReport | SortableGroup,
   b: SortableAuditReport | SortableGroup,
 ): number {
-  if (a.weight !== b.weight) {
-    return b.weight - a.weight;
-  }
-
   if (a.score !== b.score) {
     return a.score - b.score;
+  }
+
+  if (a.weight !== b.weight) {
+    return b.weight - a.weight;
   }
 
   if ('value' in a && 'value' in b && a.value !== b.value) {

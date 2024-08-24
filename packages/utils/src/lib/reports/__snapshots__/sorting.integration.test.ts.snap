@@ -26,19 +26,7 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
       "refs": [
         {
           "plugin": "eslint",
-          "slug": "typescript-eslint",
-          "type": "group",
-          "weight": 8,
-        },
-        {
-          "plugin": "eslint",
           "slug": "eslint-functional",
-          "type": "audit",
-          "weight": 1,
-        },
-        {
-          "plugin": "eslint",
-          "slug": "eslint-jest-consistent-naming",
           "type": "audit",
           "weight": 1,
         },
@@ -47,6 +35,18 @@ exports[`sortReport > should sort the audits and audit groups in categories, plu
           "slug": "typescript-eslint-extra",
           "type": "group",
           "weight": 0,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "typescript-eslint",
+          "type": "group",
+          "weight": 8,
+        },
+        {
+          "plugin": "eslint",
+          "slug": "eslint-jest-consistent-naming",
+          "type": "audit",
+          "weight": 1,
         },
         {
           "plugin": "eslint",
