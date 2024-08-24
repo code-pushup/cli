@@ -38,8 +38,8 @@ try {
     );
     process.exit(0);
   }
-  // @TODO
-  console.info('Implement autodetect version bump');
+  // @TODO: Implement autodetect version bump
+  console.info('Autodetecting version bump not yet implemented, exiting with error');
   process.exit(1);
 } catch (e) {
   console.info(`Error updating version in ${packageJsonFile} file.`);
