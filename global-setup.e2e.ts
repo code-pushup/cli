@@ -58,9 +58,6 @@ export async function teardown() {
 
     stopLocalRegistry(stop);
     nxRunManyNpmUninstall();
-  } else {
-    activeRegistry.stop();
-    return;
   }
   await teardownTestFolder(e2eDir);
 }
