@@ -18,7 +18,6 @@ let activeRegistry: RegistryResult;
 
 export async function setup() {
   await globalSetup();
-  await setupTestFolder('tmp/local-registry');
   await setupTestFolder(e2eDir);
 
   try {

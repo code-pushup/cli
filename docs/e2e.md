@@ -78,7 +78,7 @@ Root/
 │       └── project.json
 ├── packages/
 │   └── <project-name>/
-│       └── package.json // marked as "publishable"
+│       └── project.json // marked as "publishable"
 ├── .verdaccio/
 │   └── config.yaml
 ├── tools/ // all plugins registered in nx.json
@@ -95,7 +95,7 @@ Root/
 
 #### `nx e2e <project-name>` process:
 
-1. Nx derives all dynamic targets from the plugins registers in `nx.json`.
+1. Nx derives all dynamic targets from the plugins registered in `nx.json`.
    The following plugins are registered to publish packages to a local registry:
 
 ```jsonc
@@ -143,7 +143,7 @@ export default defineConfig({
 // global-setup.e2e.ts
 
 // to avoid port conflicts ever E2E targets has a unique port
-const uniquePort = Math.random();
+const uniquePort = 6000 + Math.round(Math.random() * 1000);
 const e2eDir = join('tmp', 'e2e');
 
 export async function setup() {
