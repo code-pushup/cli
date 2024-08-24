@@ -128,7 +128,7 @@ describe('compareIssueSeverity', () => {
 });
 
 describe('compareCategoryAuditsAndGroups', () => {
-  it('should sort audits by weight and score', () => {
+  it('should sort audits by score and weight', () => {
     const mockAudits = [
       { weight: 0, score: 0.1 },
       { weight: 5, score: 1 },
@@ -136,10 +136,10 @@ describe('compareCategoryAuditsAndGroups', () => {
       { weight: 10, score: 1 },
     ] as SortableAuditReport[];
     expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
-      { weight: 10, score: 1 },
-      { weight: 5, score: 1 },
       { weight: 0, score: 0.1 },
       { weight: 0, score: 0.7 },
+      { weight: 10, score: 1 },
+      { weight: 5, score: 1 },
     ]);
   });
 
@@ -187,9 +187,9 @@ describe('compareCategoryAuditsAndGroups', () => {
     expect(
       [...mockAudits, ...mockGroups].sort(compareCategoryAuditsAndGroups),
     ).toEqual([
-      { weight: 2, score: 1, title: 'group A' },
       { weight: 1, score: 0, value: 5, title: 'audit C' },
       { weight: 1, score: 0, value: 0, title: 'audit B' },
+      { weight: 2, score: 1, title: 'group A' },
       { weight: 1, score: 1, value: 100, title: 'audit A' },
       { weight: 1, score: 1, title: 'group B' },
     ]);

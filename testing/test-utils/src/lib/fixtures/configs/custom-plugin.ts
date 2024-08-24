@@ -1,4 +1,4 @@
-const customPlugin = {
+const customPluginConfig = {
   slug: 'good-feels',
   title: 'Good feels',
   icon: 'javascript',
@@ -18,4 +18,7 @@ const customPlugin = {
   ],
 };
 
-export default customPlugin;
+export function customPlugin() {
+  return customPluginConfig;
+}
+export default customPluginConfig;
