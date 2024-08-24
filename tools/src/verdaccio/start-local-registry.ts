@@ -79,7 +79,7 @@ export default async function startLocalRegistry({
               registryData,
               stop: () => {
                 // this makes the process throw
-                childProcess.kill();
+                childProcess?.kill();
                 unconfigureRegistry(registryData);
                 execSync(
                   `npm config delete ${registryData.registryNoProtocol}/:_authToken`,
