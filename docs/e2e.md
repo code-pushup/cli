@@ -55,17 +55,15 @@ The `e2e` testing process is complex and involves multiple steps and targets.
     - teardown - `nx run-many -t npm-uninstall`
     - teardown - `process.kill(<verdaccio-port>)`
 
-// mermaid diagram about the process
-
 ```mermaid
 graph TD
-  A[nx run e2e <project-name>] --> B[global-setup.e2e.ts]
+  A["nx run e2e <project-name>"] --> B[global-setup.e2e.ts]
   B --> C[nx start-verdaccio]
   C --> D[nx run-many -t publish]
   D --> E[nx run-many -t npm-install]
   E --> F[vitest test]
   F --> G[nx run-many -t npm-uninstall]
-  G --> H[process.kill(<verdaccio-port>)]
+  G --> H["process.kill(<verdaccio-port>)"]
 ```
 
 #### Involved files:
