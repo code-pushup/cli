@@ -39,7 +39,9 @@ try {
     process.exit(0);
   }
   // @TODO: Implement autodetect version bump
-  console.info('Autodetecting version bump not yet implemented, exiting with error');
+  console.info(
+    'Autodetecting version bump not yet implemented, exiting with error',
+  );
   process.exit(1);
 } catch (e) {
   console.info(`Error updating version in ${packageJsonFile} file.`);
