@@ -59,8 +59,8 @@ Example:
 ### Targets
 
 > [!NOTE]
-> A project can be marked as publishable by owning target included in ``
-Default is`publishable`.
+> A project can be marked as publishable by owning target included in `project.json`
+> Default is`publishable`.
 
 #### `npm-check`
 

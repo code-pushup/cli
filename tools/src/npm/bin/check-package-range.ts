@@ -8,7 +8,6 @@ const argv = yargs(hideBin(process.argv))
   .options({
     pkgRange: { type: 'string', demandOption: true },
     registry: { type: 'string' },
-    verbose: { type: 'boolean' },
   })
   .coerce('pkgRange', rawVersion => {
     if (rawVersion != null && rawVersion !== '') {
@@ -25,11 +24,8 @@ const argv = yargs(hideBin(process.argv))
     }
   }).argv;
 
-const {
-  pkgRange,
-  registry = 'https://registry.npmjs.org/',
-  verbose,
-} = argv as NpmCheckOptions;
+const { pkgRange, registry = 'https://registry.npmjs.org/' } =
+  argv as NpmCheckOptions;
 
 try {
   const command = 'npm';
