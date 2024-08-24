@@ -51,7 +51,7 @@ export function bumpVersion({
       { cwd },
     ).toString();
   } catch (error) {
-    console.error('Error pumping package version.');
+    console.error('Error bumping package version.');
     throw error;
   }
 }
