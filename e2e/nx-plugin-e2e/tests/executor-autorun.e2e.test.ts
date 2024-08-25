@@ -30,7 +30,7 @@ async function addTargetToWorkspace(
         executor: `${join(
           relativePathToCwd(cwd),
           'dist/packages/nx-plugin',
-        )}:autorun`,
+        )}:command`,
       },
     },
   });
@@ -55,7 +55,7 @@ async function addTargetToWorkspace(
   await materializeTree(tree, cwd);
 }
 
-describe('executor autorun', () => {
+describe('executor command', () => {
   let tree: Tree;
   const project = 'my-lib';
   const baseDir = 'tmp/nx-plugin-e2e/executor';
@@ -68,7 +68,7 @@ describe('executor autorun', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should execute autorun executor', async () => {
+  it('should execute command executor', async () => {
     const cwd = join(baseDir, 'execute-dynamic-executor');
     await addTargetToWorkspace(tree, { cwd, project });
 

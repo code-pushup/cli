@@ -94,7 +94,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [CP_TARGET_NAME]: {
-            executor: `${PACKAGE_NAME}:autorun`,
+            executor: `${PACKAGE_NAME}:command`,
             options: {
               projectPrefix: 'cli',
             },
@@ -126,7 +126,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [CP_TARGET_NAME]: {
-            executor: `${PACKAGE_NAME}:autorun`,
+            executor: `${PACKAGE_NAME}:command`,
             options: {
               projectPrefix: 'cli',
             },

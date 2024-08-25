@@ -16,7 +16,7 @@ describe('createExecutorTarget', () => {
 
   it('should use projectPrefix if provided', () => {
     expect(createExecutorTarget({ projectPrefix: 'cli' })).toStrictEqual({
-      executor: '@code-pushup/nx-plugin:autorun',
+      executor: '@code-pushup/nx-plugin:command',
       options: {
         projectPrefix: 'cli',
       },

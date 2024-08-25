@@ -158,7 +158,7 @@ describe('CLI executor', () => {
   });
 
   it('should execute autorun executor', async () => {
-    const cwd = join(baseDir, 'execute-autorun-command');
+    const cwd = join(baseDir, 'execute-command-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({

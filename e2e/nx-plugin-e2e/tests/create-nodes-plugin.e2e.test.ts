@@ -206,7 +206,7 @@ describe('nx-plugin', () => {
 
     await materializeTree(tree, cwd);
 
-    const { stdout } = await executeProcess({
+    const { stdout, stderr } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
@@ -263,7 +263,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: `@code-pushup/nx-plugin:autorun`,
+        executor: `@code-pushup/nx-plugin:command`,
         options: {
           projectPrefix: 'cli',
         },
