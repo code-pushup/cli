@@ -188,7 +188,7 @@ export async function teardown() {
 
 #### Changes/generated files during e2e tests:
 
-```text
+```sh
 Root/
 ├── dist/
 │   └── packages/
@@ -203,8 +203,8 @@ Root/
 │           ├── node_modules/...
 │           └── <test-name>/...
 │                └── src/...
-├── package-lock.json // npm install/uninstall installs into workspace root
-└── package.json // npm install/uninstall installs into workspace root
+├── package-lock.json # npm install/uninstall installs into workspace root
+└── package.json # npm install/uninstall installs into workspace root
 ```
 
 After running the E2E tests all changes are reverted, and the workspace is in the same state as before the tests.
