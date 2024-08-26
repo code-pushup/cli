@@ -30,7 +30,7 @@ async function addTargetToWorkspace(
         executor: `${join(
           relativePathToCwd(cwd),
           'dist/packages/nx-plugin',
-        )}:command`,
+        )}:cli`,
       },
     },
   });

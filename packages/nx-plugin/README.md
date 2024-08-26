@@ -43,10 +43,10 @@ Examples:
 
 ### Executor
 
-#### Command
+#### CLI
 
 Install JS packages configure a target in your project json.
-See [command executor docs](./src/executor/command/README.md) for details
+See [CLI executor docs](./src/executor/cli/README.md) for details
 
 Examples:
 
@@ -55,7 +55,7 @@ Examples:
   "name": "my-project",
   "targets": {
     "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:command",
+      "executor": "@code-pushup/nx-plugin:cli",
       "options": {
         "projectPrefix": "workspace-name"
       }

@@ -45,7 +45,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:command`,
+      executor: `${PACKAGE_NAME}:cli`,
     });
   });
 
@@ -70,7 +70,7 @@ describe('addTargetToProject', () => {
     );
 
     expect(projectConfiguration.targets?.['cp']).toEqual({
-      executor: `${PACKAGE_NAME}:command`,
+      executor: `${PACKAGE_NAME}:cli`,
     });
   });
 });
@@ -102,7 +102,7 @@ describe('configurationGenerator', () => {
     );
 
     expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:command`,
+      executor: `${PACKAGE_NAME}:cli`,
     });
   });
 

@@ -3,7 +3,7 @@
 This executor is used to run the code-pushup CLI autorun command in a Nx workspace.
 For details on the CLI command read the [CLI autorun documentation](https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command).
 
-#### @code-pushup/nx-plugin:command
+#### @code-pushup/nx-plugin:cli
 
 ## Usage
 
@@ -15,7 +15,7 @@ Configure a target in your project json.
   "name": "my-project",
   "targets": {
     "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:command"
+      "executor": "@code-pushup/nx-plugin:cli"
     }
   }
 }

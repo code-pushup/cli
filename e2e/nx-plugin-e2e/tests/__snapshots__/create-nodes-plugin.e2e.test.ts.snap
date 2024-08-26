@@ -14,7 +14,7 @@ exports[`nx-plugin > should NOT add config targets dynamically if the project is
   "targets": {
     "code-pushup": {
       "configurations": {},
-      "executor": "@code-pushup/nx-plugin:command",
+      "executor": "@code-pushup/nx-plugin:cli",
       "options": {},
     },
   },
@@ -58,7 +58,7 @@ exports[`nx-plugin > should add executor target dynamically if the project is co
   "targets": {
     "code-pushup": {
       "configurations": {},
-      "executor": "@code-pushup/nx-plugin:command",
+      "executor": "@code-pushup/nx-plugin:cli",
       "options": {},
     },
   },

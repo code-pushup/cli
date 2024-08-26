@@ -46,7 +46,7 @@ export function addTargetToProject(
   const { targetName, project } = options;
 
   const codePushupTargetConfig = {
-    executor: `${PACKAGE_NAME}:command`,
+    executor: `${PACKAGE_NAME}:cli`,
   };
 
   updateProjectConfiguration(tree, project, {

@@ -163,7 +163,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: {
         configurations: {},
-        executor: `@code-pushup/nx-plugin:command`,
+        executor: `@code-pushup/nx-plugin:cli`,
         options: {},
       },
     });
@@ -240,7 +240,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: 'XYZ:command',
+        executor: 'XYZ:cli',
       }),
     });
   });
@@ -263,7 +263,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: `@code-pushup/nx-plugin:command`,
+        executor: `@code-pushup/nx-plugin:cli`,
         options: {
           projectPrefix: 'cli',
         },
