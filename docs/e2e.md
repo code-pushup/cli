@@ -68,20 +68,20 @@ graph TD
 
 #### Involved files:
 
-```text
+```sh
 Root/
 ├── e2e/
 │   └── <project-name>-e2e/
 │       ├── tests/
 │       │   └── <file-name>.e2e.ts
-│       ├── vite.config.e2e.ts // uses `global-setup.e2e.ts` for as `globalSetup` script
+│       ├── vite.config.e2e.ts # uses `global-setup.e2e.ts` for as `globalSetup` script
 │       └── project.json
 ├── packages/
 │   └── <project-name>/
-│       └── project.json // marked as "publishable"
+│       └── project.json # marked as "publishable"
 ├── .verdaccio/
 │   └── config.yaml
-├── tools/ // all plugins registered in nx.json
+├── tools/ # all plugins registered in nx.json
 │    └── src/
 │       ├── npm/
 │       │   └── npm.plugin.ts
@@ -90,7 +90,7 @@ Root/
 │       └── verdaccio/
 │           └── verdaccio.plugin.ts
 ├── global-setup.e2e.ts
-└── nx.json // registers npm, publish and verdaccio plugin
+└── nx.json # registers npm, publish and verdaccio plugin
 ```
 
 #### `nx e2e <project-name>` process:
