@@ -56,11 +56,11 @@ Example:
 }
 ```
 
-### Targets
+### Nx tags
 
 > [!NOTE]
-> A project can be marked as publishable by owning target included in `project.json`
-> Default is`publishable`.
+> A project can be marked as publishable using `tags` in `project.json`.
+> Default tag name is `publishable`.
 
 #### `npm-check`
 
