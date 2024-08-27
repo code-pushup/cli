@@ -110,5 +110,8 @@
     },
     "releaseTagPattern": "v{version}"
   },
-  "plugins": ["./tools/scripts/publish.plugin.ts"]
+  "plugins": [
+    "./tools/scripts/publish.plugin.ts",
+    "./tools/src/debug/debug.plugin.ts"
+  ]
 }
