@@ -1,4 +1,4 @@
-import { bold, green, red } from 'ansis';
+import { bold, gray, red } from 'ansis';
 import { executeProcess } from '@code-pushup/utils';
 import { objectToCliArgs } from '../../../packages/nx-plugin';
 // cant import from utils
@@ -115,7 +115,11 @@ export async function nxStartVerdaccioServer({
   const commandId = positionalArgs.join(' ');
 
   if (verbose) {
-    console.info(`Start verdaccio with command: ${commandId}`);
+    console.info(
+      `${gray('>')} ${gray(
+        bold('Verdaccio'),
+      )} Start server with command: ${commandId}`,
+    );
   }
 
   return (
@@ -128,7 +132,7 @@ export async function nxStartVerdaccioServer({
           onStdout: (stdout: string) => {
             if (verbose) {
               process.stdout.write(
-                `${green('>')} ${green(bold('Verdaccio'))} ${stdout}`,
+                `${gray('>')} ${gray(bold('Verdaccio'))} ${stdout}`,
               );
             }
 
@@ -150,11 +154,16 @@ export async function nxStartVerdaccioServer({
               };
 
               console.info(
-                `Registry started on URL: ${result.registry.url}, with PID: ${
-                  listProcess({ commandMatch: commandId }).at(0)?.pid
-                }`,
+                `${gray('>')} ${gray(
+                  bold('Verdaccio'),
+                )} Registry started on URL: ${bold(
+                  result.registry.url,
+                )}, with PID: ${bold(
+                  listProcess({ commandMatch: commandId }).at(0)?.pid,
+                )}`,
               );
               if (verbose) {
+                console.info(`${gray('>')} ${gray(bold('Verdaccio'))}`);
                 console.table(result);
               }
 
@@ -174,7 +183,9 @@ export async function nxStartVerdaccioServer({
         .catch(error => {
           if (error.message !== 'Failed to start verdaccio: undefined') {
             console.error(
-              `Error starting ${projectName} verdaccio registry:\n${error}`,
+              `${red('>')} ${red(
+                bold('Verdaccio'),
+              )} Error starting ${projectName} verdaccio registry:\n${error}`,
             );
           } else {
             reject(error);
