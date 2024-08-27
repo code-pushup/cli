@@ -1,6 +1,9 @@
 import yargs, { Options } from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { nxStartVerdaccioAndSetupEnv, type StartVerdaccioAndSetupEnvOptions } from '../env';
+import {
+  type StartVerdaccioAndSetupEnvOptions,
+  nxStartVerdaccioAndSetupEnv,
+} from '../env';
 
 const argv = yargs(hideBin(process.argv))
   .version(false)

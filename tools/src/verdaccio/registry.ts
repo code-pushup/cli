@@ -1,10 +1,10 @@
+import { bold, green, red } from 'ansis';
 import { executeProcess } from '@code-pushup/utils';
 import { objectToCliArgs } from '../../../packages/nx-plugin';
 // cant import from utils
 import { teardownTestFolder } from '../../../testing/test-setup/src';
 import { killProcesses, listProcess } from '../debug/utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
-import {bold, green, red} from "ansis";
 
 export function uniquePort(): number {
   return Number((6000 + Number(Math.random() * 1000)).toFixed(0));
@@ -127,7 +127,9 @@ export async function nxStartVerdaccioServer({
         observer: {
           onStdout: (stdout: string) => {
             if (verbose) {
-              process.stdout.write(`${green('>')} ${green(bold('Verdaccio'))} ${stdout}`);
+              process.stdout.write(
+                `${green('>')} ${green(bold('Verdaccio'))} ${stdout}`,
+              );
             }
 
             // Log of interest: warn --- http address - http://localhost:<PORT-NUMBER>/ - verdaccio/5.31.1
@@ -161,7 +163,9 @@ export async function nxStartVerdaccioServer({
           },
           onStderr: (stderr: string) => {
             if (verbose) {
-              process.stdout.write(`${red('>')} ${red(bold('Verdaccio'))} ${stderr}`);
+              process.stdout.write(
+                `${red('>')} ${red(bold('Verdaccio'))} ${stderr}`,
+              );
             }
           },
         },
