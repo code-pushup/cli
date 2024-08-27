@@ -15,10 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs --name='create-cli' --ver='{args.ver}' --tag='{args.tag}'",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -52,5 +48,5 @@
       "options": {}
     }
   },
-  "tags": ["scope:tooling", "type:app"]
+  "tags": ["scope:tooling", "type:app", "publishable"]
 }

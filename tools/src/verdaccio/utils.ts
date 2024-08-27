@@ -1,5 +1,9 @@
 import { execSync } from 'node:child_process';
-import { RegistryData } from './types';
+import { RegistryData } from './start-local-registry';
+
+export function uniquePort(): number {
+  return Number((6000 + Number(Math.random() * 1000)).toFixed(0));
+}
 
 export function configureRegistry({
   host,
@@ -46,13 +50,6 @@ export function unconfigureRegistry({
 }: Pick<RegistryData, 'registryNoProtocol'>) {
   execSync(`npm config delete ${registryNoProtocol}/:_authToken`);
   console.info('delete npm authToken: ' + registryNoProtocol);
-}
-
-export function findLatestVersion(): string {
-  return execSync('git describe --tags --abbrev=0')
-    .toString()
-    .trim()
-    .replace(/^v/, '');
 }
 
 export function parseRegistryData(stdout: string): RegistryData {

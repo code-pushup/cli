@@ -29,7 +29,7 @@ describe('nx-plugin g init', () => {
     await rm(baseDir, { recursive: true, force: true });
   });
 
-  it('should inform about dry run', async () => {
+  it('should inform about dry run when used on init generator', async () => {
     const cwd = join(baseDir, 'dry-run');
     await materializeTree(tree, cwd);
 
