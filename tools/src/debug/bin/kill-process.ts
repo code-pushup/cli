@@ -20,8 +20,12 @@ const { commandMatch, pid, verbose, force } = yargs(hideBin(process.argv))
   pid: PID[];
   commandMatch: string[];
 };
-verbose && commandMatch && console.log(`Command Filter: ${commandMatch}`);
-verbose && pid != null && console.log(`PID Filter: ${pid.join(', ')}`);
+if (verbose && commandMatch) {
+  console.log(`Command Filter: ${commandMatch}`);
+}
+if (verbose && pid != null) {
+  console.log(`PID Filter: ${pid.join(', ')}`);
+}
 
 if (pid.length === 0 && commandMatch.length === 0 && !force) {
   throw new Error(
