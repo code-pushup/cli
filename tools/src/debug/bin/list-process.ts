@@ -23,15 +23,15 @@ const { commandMatch, pid, verbose, slice } = yargs(hideBin(process.argv))
   slice: number;
 };
 
-verbose &&
-  commandMatch &&
+if (verbose && commandMatch.length < 0) {
   console.log(`Command Match: ${commandMatch.join(', ')}`);
-verbose &&
-  pid &&
-  pid.length < 0 &&
-  console.log(`PID Filter: ${pid.join(', ')}`);
+}
 
-const processesToLog = listProcess({ commandMatch, pid }).slice(-slice); // show only first N processes
+if (verbose && pid.length < 0) {
+  console.log(`Command Match: ${pid.join(', ')}`);
+}
+
+const processesToLog = listProcess({ commandMatch, pid }).slice(-slice); // show only last N processes
 
 if (processesToLog.length === 0) {
   console.info(
