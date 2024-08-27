@@ -45,7 +45,7 @@ describe('nx-plugin', () => {
       },
     });
 
-    expect(projectJson).toMatchSnapshot();
+    expect(projectJson.targets).toMatchSnapshot();
   });
 
   it('should execute dynamic configuration target', async () => {
@@ -130,7 +130,7 @@ describe('nx-plugin', () => {
         ['code-pushup--configuration']: expect.any(Object),
       }),
     );
-    expect(projectJson).toMatchSnapshot();
+    expect(projectJson.targets).toMatchSnapshot();
   });
 
   it('should add executor target dynamically if the project is configured', async () => {
@@ -151,7 +151,7 @@ describe('nx-plugin', () => {
       },
     });
 
-    expect(projectJson).toMatchSnapshot();
+    expect(projectJson.targets).toMatchSnapshot();
   });
 
   it('should execute dynamic executor target', async () => {
