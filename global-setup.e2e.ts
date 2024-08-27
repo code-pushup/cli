@@ -6,9 +6,11 @@ import {
   nxRunManyNpmUninstall,
 } from './tools/src/npm/utils';
 import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
-import startLocalRegistry from './tools/src/verdaccio/start-local-registry';
+import { START_VERDACCIO_SERVER_TARGET_NAME } from './tools/src/verdaccio/constants';
+import startLocalRegistry, {
+  RegistryResult,
+} from './tools/src/verdaccio/start-local-registry';
 import stopLocalRegistry from './tools/src/verdaccio/stop-local-registry';
-import { RegistryResult } from './tools/src/verdaccio/types';
 import { uniquePort } from './tools/src/verdaccio/utils';
 
 const e2eDir = join('tmp', 'e2e');
@@ -22,7 +24,7 @@ export async function setup() {
 
   try {
     activeRegistry = await startLocalRegistry({
-      localRegistryTarget: '@code-pushup/cli-source:start-verdaccio',
+      localRegistryTarget: `@code-pushup/cli-source:${START_VERDACCIO_SERVER_TARGET_NAME}`,
       storage: join(uniqueDir, 'storage'),
       port: uniquePort(),
     });

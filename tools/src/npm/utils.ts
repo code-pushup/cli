@@ -75,6 +75,7 @@ export function nxNpmCheck({
 }
 
 export type NpmInstallOptions = {
+  directory?: string;
   registry?: string;
   tag?: string;
   pkgVersion?: string;
@@ -84,6 +85,7 @@ export function nxRunManyNpmInstall({
   registry,
   tag = 'e2e',
   pkgVersion,
+  directory,
 }: NpmInstallOptions) {
   console.info(`Installing packages from registry: ${registry}.`);
 
@@ -99,7 +101,12 @@ export function nxRunManyNpmInstall({
         ...(registry ? { registry } : {}),
       }),
     ],
-    { env: process.env, stdio: 'inherit', shell: true },
+    {
+      env: process.env,
+      stdio: 'inherit',
+      shell: true,
+      cwd: directory ?? process.cwd(),
+    },
   );
 }
 
