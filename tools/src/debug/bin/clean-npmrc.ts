@@ -15,7 +15,7 @@ const argv = yargs(hideBin(process.argv))
     Array.isArray(entriesToRemove) ? entriesToRemove : [entriesToRemove],
   ).argv;
 
-const { userconfig, entryMatch = [], verbose } = argv as CleanNpmrcBinOptions;
+const { userconfig, entryMatch = [] } = argv as CleanNpmrcBinOptions;
 
 if (entryMatch.length === 0) {
   throw new Error(
