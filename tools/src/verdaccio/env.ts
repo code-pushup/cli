@@ -95,16 +95,15 @@ export async function nxStartVerdaccioAndSetupEnv({
   projectName,
   port,
   verbose = false,
-  workspaceRoot: workspaceRootDir = projectE2eScope(projectName),
+  workspaceRoot = projectE2eScope(projectName),
   location = 'none',
   // reset or remove cached packages and/or metadata.
   clear = true,
 }: StartVerdaccioAndSetupEnvOptions): Promise<VerdaccioEnvResult> {
   // set up NPM workspace environment
-  const workspaceRoot = workspaceRootDir ?? projectE2eScope(projectName);
   const storage = join(workspaceRoot, 'storage');
 
-  // potentially done by verdaccio task when clearing storage
+  // @TODO potentially done by verdaccio task when clearing storage
   await setupTestFolder(storage);
   const registryResult = await nxStartVerdaccioServer({
     projectName,
@@ -113,7 +112,7 @@ export async function nxStartVerdaccioAndSetupEnv({
     location,
     clear,
     verbose,
-  }); // cant type nxStartVerdaccioServer to only return RegistryResult :(
+  });
 
   await setupNpmWorkspace(workspaceRoot, verbose);
 

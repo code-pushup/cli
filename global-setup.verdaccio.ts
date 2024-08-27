@@ -1,8 +1,5 @@
 import { setup as globalSetup } from './global-setup';
-import {
-  nxRunManyNpmInstall,
-  nxRunManyNpmUninstall,
-} from './tools/src/npm/utils';
+import { nxRunManyNpmInstall } from './tools/src/npm/utils';
 import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
 import {
   VerdaccioEnvResult,
@@ -18,37 +15,26 @@ export async function setup() {
   try {
     activeRegistry = await nxStartVerdaccioAndSetupEnv({
       projectName: process.env['NX_TASK_TARGET_PROJECT'],
+      verbose: true,
     });
   } catch (error) {
     console.error('Error starting local verdaccio registry:\n' + error.message);
     throw error;
   }
 
-  // package publish
   const { userconfig, workspaceRoot } = activeRegistry;
-  try {
-    console.info('Publish packages');
-    nxRunManyPublish({
-      nextVersion: findLatestVersion(),
-      userconfig,
-    });
-  } catch (error) {
-    console.error('Error publishing packages:\n' + error.message);
-    throw error;
-  }
-
-  // package install
-  try {
-    console.info('Installing packages');
-    nxRunManyNpmInstall({ prefix: workspaceRoot, userconfig });
-  } catch (error) {
-    console.error('Error installing packages:\n' + error.message);
-    throw error;
-  }
+  nxRunManyPublish({
+    nextVersion: findLatestVersion(),
+    userconfig,
+    parallel: 1,
+  });
+  nxRunManyNpmInstall({ prefix: workspaceRoot, userconfig, parallel: 1 });
 }
 
 export async function teardown() {
-  const { userconfig, workspaceRoot } = activeRegistry;
-  nxRunManyNpmUninstall({ userconfig, prefix: workspaceRoot }); // potentially just skip as folder are deleted next line
+  // potentially just skip as folder are deleted next line
+  // nxRunManyNpmUninstall({ userconfig, prefix: activeRegistry.workspaceRoot, parallel: 1 });
+
+  // comment out to see the folder and web interface
   await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }

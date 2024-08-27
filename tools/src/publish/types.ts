@@ -6,6 +6,7 @@ export type PublishOptions = {
   tag?: string;
   nextVersion: string;
   verbose?: boolean;
+  parallel?: number;
 };
 export type BumpOptions = {
   nextVersion: string;

@@ -8,6 +8,7 @@ export type NpmInstallOptions = {
   userconfig?: string;
   tag?: string;
   pkgVersion?: string;
+  parallel?: number;
 };
 
 export function nxRunManyNpmInstall({
@@ -17,37 +18,46 @@ export function nxRunManyNpmInstall({
   tag = 'e2e',
   pkgVersion,
   directory,
+  parallel,
 }: NpmInstallOptions) {
   console.info(
     `Installing packages in ${directory} from registry: ${registry}.`,
   );
-
-  execFileSync(
-    'nx',
-    [
-      ...objectToCliArgs({
-        _: ['run-many'],
-        targets: 'npm-install',
-        parallel: 1,
-        ...(pkgVersion ? { pkgVersion } : {}),
-        ...(tag ? { tag } : {}),
-        ...(registry ? { registry } : {}),
-        ...(userconfig ? { userconfig } : {}),
-        ...(prefix ? { prefix } : {}),
-      }),
-    ],
-    {
-      env: process.env,
-      stdio: 'inherit',
-      shell: true,
-      cwd: directory ?? process.cwd(),
-    },
-  );
+  try {
+    execFileSync(
+      'nx',
+      [
+        ...objectToCliArgs({
+          _: ['run-many'],
+          targets: 'npm-install',
+          ...(parallel ? { parallel } : {}),
+          ...(pkgVersion ? { pkgVersion } : {}),
+          ...(tag ? { tag } : {}),
+          ...(registry ? { registry } : {}),
+          ...(userconfig ? { userconfig } : {}),
+          ...(prefix ? { prefix } : {}),
+        }),
+      ],
+      {
+        env: process.env,
+        stdio: 'inherit',
+        shell: true,
+        cwd: directory ?? process.cwd(),
+      },
+    );
+  } catch (error) {
+    console.error('Error installing packages:\n' + error.message);
+    throw error;
+  }
 }
 
-export function nxRunManyNpmUninstall(opt: {
+export function nxRunManyNpmUninstall({
+  parallel,
+  ...opt
+}: {
   prefix: string;
   userconfig: string;
+  parallel: number;
 }) {
   console.info('Uninstalling all NPM packages.');
   try {
@@ -56,7 +66,7 @@ export function nxRunManyNpmUninstall(opt: {
       objectToCliArgs({
         _: ['nx', 'run-many'],
         targets: 'npm-uninstall',
-        parallel: 1,
+        parallel,
         ...opt,
       }),
       { env: process.env, stdio: 'inherit', shell: true },

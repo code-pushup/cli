@@ -9,24 +9,29 @@ export function nxRunManyPublish({
   tag = 'e2e',
   nextVersion,
   userconfig,
+  parallel,
 }: PublishOptions) {
   console.info(`Publish packages to registry: ${registry}.`);
-
-  execFileSync(
-    'npx',
-    [
-      'nx',
-      'run-many',
-      '--targets=publish',
-      '--parallel=1',
-      '--',
-      ...(nextVersion ? [`--nextVersion=${nextVersion}`] : []),
-      ...(tag ? [`--tag=${tag}`] : []),
-      ...(registry ? [`--registry=${registry}`] : []),
-      ...(userconfig ? [`--userconfig=${userconfig}`] : []),
-    ],
-    { env: process.env, stdio: 'inherit', shell: true },
-  );
+  try {
+    execFileSync(
+      'npx',
+      [
+        'nx',
+        'run-many',
+        '--targets=publish',
+        ...(parallel ? [`--parallel=${parallel}`] : []),
+        '--',
+        ...(nextVersion ? [`--nextVersion=${nextVersion}`] : []),
+        ...(tag ? [`--tag=${tag}`] : []),
+        ...(registry ? [`--registry=${registry}`] : []),
+        ...(userconfig ? [`--userconfig=${userconfig}`] : []),
+      ],
+      { env: process.env, stdio: 'inherit', shell: true },
+    );
+  } catch (error) {
+    console.error('Error publishing packages:\n' + error.message);
+    throw error;
+  }
 }
 
 export function findLatestVersion(): string {
