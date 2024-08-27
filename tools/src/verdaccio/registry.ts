@@ -72,7 +72,7 @@ export type VerdaccioExecuterOptions = {
   config?: string;
   c?: string;
   location: string;
-  // reset or remove cached packages and or metadata.
+  // reset or remove cached packages and/or metadata.
   clear: boolean;
 };
 
