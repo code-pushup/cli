@@ -8,7 +8,7 @@
  */
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { DEFAULT_REGISTRY } from 'verdaccio/build/lib/constants';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -24,6 +24,7 @@ const argv = yargs(hideBin(process.argv))
     nextVersion: { type: 'string' },
     tag: { type: 'string', default: 'next' },
     registry: { type: 'string' },
+    userconfig: { type: 'string' },
     verbose: { type: 'boolean' },
   })
   .coerce('nextVersion', parseVersion).argv;
@@ -33,25 +34,13 @@ const {
   nextVersion,
   tag,
   registry = DEFAULT_REGISTRY,
+  userconfig,
   verbose,
 } = argv as PublishOptions;
 const version = nextVersion ?? findLatestVersion();
 
 // Updating the version in "package.json" before publishing
 nxBumpVersion({ nextVersion: version, directory, projectName });
-
-const packageJson = JSON.parse(
-  readFileSync(join(directory, 'package.json')).toString(),
-);
-const pkgRange = `${packageJson.name}@${version}`;
-
-// @TODO if we hav no registry set up this implementation swallows the error
-/*if (npmCheck(
-  { registry, pkgRange },
-) === 'FOUND') {
-  console.warn(`Package ${version} is already published.`);
-  process.exit(0);
-}*/
 
 try {
   execSync(
@@ -60,6 +49,14 @@ try {
       access: 'public',
       ...(tag ? { tag } : {}),
       ...(registry ? { registry } : {}),
+      ...(userconfig
+        ? {
+            userconfig: relative(
+              join(process.cwd(), directory ?? ''),
+              join(process.cwd(), userconfig),
+            ),
+          }
+        : {}),
     }).join(' '),
     {
       cwd: directory,
@@ -67,7 +64,7 @@ try {
   );
 } catch (error) {
   if (
-    error.message.includes(
+    (error as Error).message.includes(
       `need auth This command requires you to be logged in to ${registry}`,
     )
   ) {
@@ -75,7 +72,9 @@ try {
       `Authentication error! Check if your registry is set up correctly. If you publish to a public registry run login before.`,
     );
     process.exit(1);
-  } else if (error.message.includes(`Cannot publish over existing version`)) {
+  } else if (
+    (error as Error).message.includes(`Cannot publish over existing version`)
+  ) {
     console.info(`Version ${version} already published to ${registry}.`);
     process.exit(0);
   }

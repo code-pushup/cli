@@ -19,7 +19,7 @@ function relativePathToDist(testDir: string): string {
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/nx-plugin-e2e/generators/init';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/init';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);

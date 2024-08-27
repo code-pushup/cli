@@ -3,10 +3,9 @@ import {
   type CreateNodesContext,
   readJsonFile,
 } from '@nx/devkit';
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { someTargetsPresent } from '../utils';
-import { BUMP_SCRIPT, LOGIN_CHECK_SCRIPT, PUBLISH_SCRIPT } from './constants';
+import { BUMP_SCRIPT, PUBLISH_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
   tsconfig?: string;
@@ -75,7 +74,7 @@ function publishTargets({
   return {
     publish: {
       dependsOn: ['build'],
-      command: `tsx --tsconfig={args.tsconfig} {args.script} --projectName=${projectName} --directory=${directory} --registry={args.registry} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --projectName=${projectName} --directory=${directory} --registry={args.registry} --userconfig={args.userconfig} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,
         tsconfig,

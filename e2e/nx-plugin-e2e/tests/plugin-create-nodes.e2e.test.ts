@@ -22,7 +22,7 @@ describe('nx-plugin', () => {
   let tree: Tree;
   const project = 'my-lib';
   const projectRoot = join('libs', project);
-  const baseDir = 'tmp/nx-plugin-e2e/plugin';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/plugin/create-nodes';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);

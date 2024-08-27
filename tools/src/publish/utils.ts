@@ -8,6 +8,7 @@ export function nxRunManyPublish({
   registry,
   tag = 'e2e',
   nextVersion,
+  userconfig,
 }: PublishOptions) {
   console.info(`Publish packages to registry: ${registry}.`);
 
@@ -22,6 +23,7 @@ export function nxRunManyPublish({
       ...(nextVersion ? [`--nextVersion=${nextVersion}`] : []),
       ...(tag ? [`--tag=${tag}`] : []),
       ...(registry ? [`--registry=${registry}`] : []),
+      ...(userconfig ? [`--userconfig=${userconfig}`] : []),
     ],
     { env: process.env, stdio: 'inherit', shell: true },
   );

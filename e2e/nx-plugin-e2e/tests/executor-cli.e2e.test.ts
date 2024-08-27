@@ -58,7 +58,7 @@ async function addTargetToWorkspace(
 describe('executor autorun', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/nx-plugin-e2e/executor';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/executor/cli';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);

@@ -17,7 +17,7 @@ export async function setup() {
 
   try {
     activeRegistry = await nxStartVerdaccioAndSetupEnv({
-      projectName: process.env['NX_TASK_TARGET_TARGET'],
+      projectName: process.env['NX_TASK_TARGET_PROJECT'],
     });
   } catch (error) {
     console.error('Error starting local verdaccio registry:\n' + error.message);
@@ -25,11 +25,13 @@ export async function setup() {
   }
 
   // package publish
-  const { registry, workspaceRoot } = activeRegistry;
-  const { url } = registry;
+  const { userconfig, workspaceRoot } = activeRegistry;
   try {
     console.info('Publish packages');
-    nxRunManyPublish({ nextVersion: findLatestVersion() });
+    nxRunManyPublish({
+      nextVersion: findLatestVersion(),
+      userconfig,
+    });
   } catch (error) {
     console.error('Error publishing packages:\n' + error.message);
     throw error;
@@ -38,7 +40,7 @@ export async function setup() {
   // package install
   try {
     console.info('Installing packages');
-    nxRunManyNpmInstall({ directory: workspaceRoot });
+    nxRunManyNpmInstall({ prefix: workspaceRoot, userconfig });
   } catch (error) {
     console.error('Error installing packages:\n' + error.message);
     throw error;
@@ -46,6 +48,7 @@ export async function setup() {
 }
 
 export async function teardown() {
-  nxRunManyNpmUninstall(); // potentially just skip as folder are deleted next line
-  nxStopVerdaccioAndTeardownEnv(activeRegistry);
+  const { userconfig, workspaceRoot } = activeRegistry;
+  nxRunManyNpmUninstall({ userconfig, prefix: workspaceRoot }); // potentially just skip as folder are deleted next line
+  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }

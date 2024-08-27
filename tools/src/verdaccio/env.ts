@@ -1,13 +1,16 @@
 // eslint-disable-next-line n/no-sync
 import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
-import { objectToCliArgs } from '@code-pushup/utils';
-import { setupTestFolder } from '../../../testing/test-setup/src';
+import { objectToCliArgs } from '../../../packages/nx-plugin/src';
+// cant import from utils
+import {
+  setupTestFolder,
+  teardownTestFolder,
+} from '../../../testing/test-setup/src';
 import { ensureDirectoryExists } from '../../../testing/test-utils/src';
 import {
   NxStarVerdaccioOptions,
   Registry,
-  RegistryResult,
   nxStartVerdaccioServer,
 } from './registry';
 
@@ -37,7 +40,7 @@ export function configureRegistry(
   const token = 'secretVerdaccioToken';
   const setAuthToken = `npm config set ${urlNoProtocol}/:_authToken "${token}" ${objectToCliArgs(
     { userconfig },
-  ).join(' ')}"`;
+  ).join(' ')}`;
   if (verbose) {
     console.info(`Execute: ${setAuthToken}`);
   }
@@ -85,7 +88,7 @@ export type StartVerdaccioAndSetupEnvOptions = Partial<
 
 export type VerdaccioEnvResult = VerdaccioEnv & {
   registry: Registry;
-  stop: () => void | Promise<void>;
+  stop: () => void;
 };
 
 export async function nxStartVerdaccioAndSetupEnv({
@@ -103,14 +106,14 @@ export async function nxStartVerdaccioAndSetupEnv({
 
   // potentially done by verdaccio task when clearing storage
   await setupTestFolder(storage);
-  const registryResult = (await nxStartVerdaccioServer({
+  const registryResult = await nxStartVerdaccioServer({
     projectName,
     storage,
     port,
     location,
     clear,
     verbose,
-  })) as RegistryResult; // cant type nxStartVerdaccioServer to only return RegistryResult :(
+  }); // cant type nxStartVerdaccioServer to only return RegistryResult :(
 
   await setupNpmWorkspace(workspaceRoot, verbose);
 
@@ -132,18 +135,19 @@ export async function nxStopVerdaccioAndTeardownEnv(
   result: VerdaccioEnvResult,
 ) {
   if (result) {
-    const { stop } = result;
+    const { stop, registry, workspaceRoot } = result;
     if (stop == null) {
       throw new Error(
         'global e2e teardown script was not able to derive the stop script for the active registry from "activeRegistry"',
       );
     }
-    console.info(`Un configure registry: ${result.registry.url}`);
+    console.info(`Un configure registry: ${registry.url}`);
     if (typeof stop === 'function') {
-      await stop();
+      stop();
     } else {
       console.error('Stop is not a function. Type:', typeof stop);
     }
+    await teardownTestFolder(workspaceRoot);
   } else {
     throw new Error(`Failed to stop registry.`);
   }

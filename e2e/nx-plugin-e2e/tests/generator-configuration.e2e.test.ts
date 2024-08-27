@@ -22,7 +22,7 @@ describe('nx-plugin g configuration', () => {
   let tree: Tree;
   const project = 'my-lib';
   const projectRoot = join('libs', project);
-  const baseDir = 'tmp/nx-plugin-e2e/generators/configuration';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/configuration';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);

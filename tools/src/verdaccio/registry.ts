@@ -1,5 +1,7 @@
 import { ConfigYaml } from '@verdaccio/types/build/configuration';
-import { executeProcess, objectToCliArgs } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
+import { objectToCliArgs } from '../../../packages/nx-plugin';
+// cant import from utils
 import { teardownTestFolder } from '../../../testing/test-setup/src';
 import { killProcesses, listProcess } from '../debug/utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
@@ -20,7 +22,7 @@ export type Registry = RegistryServer &
 
 export type RegistryResult = {
   registry: Registry;
-  stop: () => void | Promise<void>;
+  stop: () => void;
 };
 
 export function parseRegistryData(stdout: string): RegistryServer {
@@ -79,7 +81,7 @@ export type VerdaccioExecuterOptions = {
 export type NxStarVerdaccioOptions = VerdaccioExecuterOptions &
   NxStarVerdaccioOnlyOptions;
 
-export function nxStartVerdaccioServer({
+export async function nxStartVerdaccioServer({
   projectName = '',
   storage,
   port,
@@ -89,97 +91,92 @@ export function nxStartVerdaccioServer({
 }: NxStarVerdaccioOptions): Promise<RegistryResult> {
   let startDetected = false;
 
+  const positionalArgs = [
+    'exec',
+    'nx',
+    START_VERDACCIO_SERVER_TARGET_NAME,
+    projectName ?? '',
+    '--',
+  ];
+  const args = objectToCliArgs<
+    Partial<
+      VerdaccioExecuterOptions &
+        ConfigYaml & { _: string[]; verbose: boolean; cwd: string }
+    >
+  >({
+    _: positionalArgs,
+    storage,
+    port,
+    verbose,
+    location,
+    clear,
+  });
+
+  // a link to the process started by this command, not one of the child processes. (every port is spawned by a command)
+  const commandId = positionalArgs.join(' ');
+
+  if (verbose) {
+    console.info(`Start verdaccio with command: ${commandId}`);
+  }
+
   return (
-    new Promise((resolve, reject) => {
-      const positionalArgs = [
-        'exec',
-        'nx',
-        START_VERDACCIO_SERVER_TARGET_NAME,
-        projectName ?? '',
-        '--',
-      ];
-      const args = objectToCliArgs<
-        Partial<
-          VerdaccioExecuterOptions &
-            ConfigYaml & { _: string[]; verbose: boolean; cwd: string }
-        >
-      >({
-        _: positionalArgs,
-        storage,
-        port,
-        verbose,
-        location,
-        clear,
-      });
+    new Promise<RegistryResult>((resolve, reject) => {
+      executeProcess({
+        command: 'npm',
+        args,
+        shell: true,
+        observer: {
+          onStdout: (stdout: string) => {
+            if (verbose) {
+              process.stdout.write(stdout);
+            }
 
-      // a link to the process started by this command, not one of the child processes. (every port is spawned by a command)
-      const commandId = positionalArgs.join(' ');
+            // Log of interest: warn --- http address - http://localhost:<PORT-NUMBER>/ - verdaccio/5.31.1
+            if (!startDetected && stdout.includes('http://localhost:')) {
+              // only setup env one time
+              startDetected = true;
 
-      if (verbose) {
-        console.info(`Start verdaccio with command: ${commandId}`);
-      }
+              const result: RegistryResult = {
+                registry: {
+                  storage,
+                  ...parseRegistryData(stdout),
+                },
+                // https://verdaccio.org/docs/cli/#default-database-file-location
+                stop: () => {
+                  // this makes the process throw
+                  killProcesses({ commandMatch: commandId });
+                },
+              };
 
-      return new Promise<RegistryResult>((resolve, reject) => {
-        executeProcess({
-          command: 'npm',
-          args,
-          shell: true,
-          observer: {
-            onStdout: (stdout: string) => {
+              console.info(
+                `Registry started on URL: ${result.registry.url}, with PID: ${
+                  listProcess({ commandMatch: commandId }).at(0)?.pid
+                }`,
+              );
               if (verbose) {
-                process.stdout.write(stdout);
+                console.table(result);
               }
 
-              // Log of interest: warn --- http address - http://localhost:<PORT-NUMBER>/ - verdaccio/5.31.1
-              if (!startDetected && stdout.includes('http://localhost:')) {
-                // only setup env one time
-                startDetected = true;
-
-                const result: RegistryResult = {
-                  registry: {
-                    storage,
-                    ...parseRegistryData(stdout),
-                  },
-                  // https://verdaccio.org/docs/cli/#default-database-file-location
-                  stop: () => {
-                    teardownTestFolder(storage);
-                    // this makes the process throw
-                    killProcesses({ commandMatch: commandId });
-                  },
-                };
-
-                console.info(
-                  `Registry started on URL: ${result.registry.url}, with PID: ${
-                    listProcess({ commandMatch: commandId }).at(0)?.pid
-                  }`,
-                );
-                if (verbose) {
-                  console.table(result);
-                }
-
-            resolve(result);
-          }
+              resolve(result);
+            }
+          },
+          onStderr: (data: string) => {
+            if (verbose) {
+              process.stdout.write(data);
+            }
+          },
         },
-        onStderr: (data: string) => {
-          if (verbose) {
-            process.stdout.write(data);
+      })
+        // @TODO reconsider this error handling
+        .catch(error => {
+          if (error.message !== 'Failed to start verdaccio: undefined') {
+            console.error(
+              `Error starting ${projectName} verdaccio registry:\n${error}`,
+            );
+          } else {
+            reject(error);
           }
-        },
-      },
-    })
-      // @TODO reconsider this error handling
-      .catch(error => {
-        if (error.message !== 'Failed to start verdaccio: undefined') {
-          console.error(
-            `Error starting ${projectName} verdaccio registry:\n${
-              error as Error
-            }`,
-          );
-          reject(error);
-        }
-        teardownTestFolder(storage);
-        throw error;
-      });
+        });
     })
       // in case the server dies unexpectedly clean folder
       .catch(() => teardownTestFolder(storage))
