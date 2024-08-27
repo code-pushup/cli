@@ -1,4 +1,4 @@
-import { Table } from '@code-pushup/models';
+import type { Table } from '@code-pushup/models';
 import { table } from './table';
 
 describe('tableHtml', () => {

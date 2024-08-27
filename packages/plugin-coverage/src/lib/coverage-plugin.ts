@@ -4,8 +4,8 @@ import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
 import { name, version } from '../../package.json';
 import {
-  CoveragePluginConfig,
-  CoverageType,
+  type CoveragePluginConfig,
+  type CoverageType,
   coveragePluginConfigSchema,
 } from './config';
 import { createRunnerConfig } from './runner';

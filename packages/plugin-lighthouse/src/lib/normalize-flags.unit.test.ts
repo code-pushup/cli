@@ -6,7 +6,7 @@ import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_OUTPUT_PATH } from './constants';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
 import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
-import { LighthouseOptions } from './types';
+import type { LighthouseOptions } from './types';
 
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {

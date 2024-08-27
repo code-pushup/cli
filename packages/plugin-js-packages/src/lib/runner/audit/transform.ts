@@ -2,13 +2,13 @@ import { md } from 'build-md';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectToEntries } from '@code-pushup/utils';
 import {
-  AuditSeverity,
-  DependencyGroup,
-  PackageManagerId,
+  type AuditSeverity,
+  type DependencyGroup,
+  type PackageManagerId,
   packageAuditLevels,
 } from '../../config';
 import { auditScoreModifiers } from './constants';
-import { AuditResult, AuditSummary, Vulnerability } from './types';
+import type { AuditResult, AuditSummary, Vulnerability } from './types';
 
 export function auditResultToAuditOutput(
   result: AuditResult,

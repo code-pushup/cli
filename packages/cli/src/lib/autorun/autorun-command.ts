@@ -1,8 +1,8 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
-  CollectOptions,
-  UploadOptions,
+  type CollectOptions,
+  type UploadOptions,
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';

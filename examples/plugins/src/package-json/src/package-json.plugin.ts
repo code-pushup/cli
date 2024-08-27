@@ -1,4 +1,4 @@
-import {
+import type {
   AuditOutputs,
   PluginConfig,
   RunnerFunction,
@@ -10,13 +10,17 @@ import {
 } from '@code-pushup/utils';
 import { pluginSlug } from './constants';
 import {
-  RequiredDependencies,
+  type RequiredDependencies,
   dependenciesAudit,
   dependenciesAuditMeta,
 } from './integration/dependencies.audit';
 import { licenseAudit, licenseAuditMeta } from './integration/license.audit';
 import { typeAudit, typeAuditInfoMeta } from './integration/type.audit';
-import { PackageJson, SourceResult, SourceResults } from './integration/types';
+import type {
+  PackageJson,
+  SourceResult,
+  SourceResults,
+} from './integration/types';
 import {
   documentationGroup,
   performanceGroup,

@@ -1,6 +1,6 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { UploadOptions, upload } from '@code-pushup/core';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { type UploadOptions, upload } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
 import {

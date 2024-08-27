@@ -1,4 +1,4 @@
-import { CommandModule } from 'yargs';
+import type { CommandModule } from 'yargs';
 import { yargsAutorunCommandObject } from './autorun/autorun-command';
 import { yargsCollectCommandObject } from './collect/collect-command';
 import { yargsCompareCommandObject } from './compare/compare-command';

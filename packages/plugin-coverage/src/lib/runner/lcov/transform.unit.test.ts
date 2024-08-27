@@ -1,4 +1,4 @@
-import { LCOVRecord } from 'parse-lcov';
+import type { LCOVRecord } from 'parse-lcov';
 import { describe, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { INVALID_FUNCTION_NAME } from '../constants';
@@ -8,7 +8,7 @@ import {
   lcovReportToFunctionStat,
   lcovReportToLineStat,
 } from './transform';
-import { LCOVStat } from './types';
+import type { LCOVStat } from './types';
 
 const lcovRecordMock: LCOVRecord = {
   file: 'cli.ts',

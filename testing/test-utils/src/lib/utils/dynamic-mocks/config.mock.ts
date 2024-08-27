@@ -1,4 +1,4 @@
-import { CoreConfig, coreConfigSchema } from '@code-pushup/models';
+import { type CoreConfig, coreConfigSchema } from '@code-pushup/models';
 import { categoryConfigsMock } from './categories.mock';
 import { eslintPluginConfigMock } from './eslint-plugin.mock';
 import { lighthousePluginConfigMock } from './lighthouse-plugin.mock';

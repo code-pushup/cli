@@ -1,8 +1,8 @@
 import { join } from 'node:path';
 import {
-  Audit,
-  AuditReport,
-  PluginConfig,
+  type Audit,
+  type AuditReport,
+  type PluginConfig,
   auditReportSchema,
   auditSchema,
   pluginConfigSchema,
@@ -26,7 +26,7 @@ export function pluginConfigMock(
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfigMock(auditOutput)),
     runner: echoRunnerConfigMock(auditOutputs, pluginOutputFile),
-    ...(opt || {}),
+    ...opt,
   });
 }
 
@@ -51,6 +51,6 @@ export function auditReportMock(opt?: Partial<AuditReport>): AuditReport {
     details: {
       issues: [],
     },
-    ...(opt || {}),
+    ...opt,
   }) as Required<AuditReport>;
 }

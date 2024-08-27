@@ -1,6 +1,6 @@
-import Result from 'lighthouse/types/lhr/lhr';
+import type Result from 'lighthouse/types/lhr/lhr';
 import { dirname } from 'node:path';
-import {
+import type {
   AuditOutput,
   AuditOutputs,
   PluginConfig,
@@ -17,7 +17,7 @@ import {
   audits,
   categoryCorePerfGroup,
 } from './constants';
-import { LighthouseCliOptions, PluginOptions } from './types';
+import type { LighthouseCliOptions, PluginOptions } from './types';
 import { getLighthouseCliArguments, lhrDetailsToIssueDetails } from './utils';
 
 /**

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditOutput,
-  AuditOutputs,
+  type AuditOutput,
+  type AuditOutputs,
   auditOutputSchema,
   auditOutputsSchema,
 } from './audit-output';

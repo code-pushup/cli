@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
-import { PersistConfig, reportsDiffSchema } from '@code-pushup/models';
+import { type PersistConfig, reportsDiffSchema } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   generateMdReportsDiffForMonorepo,

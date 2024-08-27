@@ -2,7 +2,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { ESLintTarget } from '../config';
-import { RuleData, listRules, parseRuleId } from './rules';
+import { type RuleData, listRules, parseRuleId } from './rules';
 
 describe('listRules', () => {
   const fixturesDir = join(

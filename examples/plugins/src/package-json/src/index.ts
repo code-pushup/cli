@@ -5,4 +5,4 @@ export {
   versionControlGroupRef,
   recommendedRefs,
 } from './scoring';
-export { create, PluginOptions } from './package-json.plugin';
+export { create, type PluginOptions } from './package-json.plugin';

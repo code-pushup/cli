@@ -1,26 +1,31 @@
 export {
-  TableCellValue,
+  type TableCellValue,
   tableCellValueSchema,
 } from './lib/implementation/schemas';
 
-export { Audit, auditSchema } from './lib/audit';
+export { type Audit, auditSchema } from './lib/audit';
 export {
-  AuditDetails,
-  AuditOutput,
-  AuditOutputs,
+  type AuditDetails,
+  type AuditOutput,
+  type AuditOutputs,
   auditDetailsSchema,
   auditOutputSchema,
   auditOutputsSchema,
 } from './lib/audit-output';
 export {
-  CategoryConfig,
-  CategoryRef,
+  type CategoryConfig,
+  type CategoryRef,
   categoryConfigSchema,
   categoryRefSchema,
 } from './lib/category-config';
-export { Commit, commitSchema } from './lib/commit';
-export { CoreConfig, coreConfigSchema } from './lib/core-config';
-export { Group, GroupRef, groupRefSchema, groupSchema } from './lib/group';
+export { type Commit, commitSchema } from './lib/commit';
+export { type CoreConfig, coreConfigSchema } from './lib/core-config';
+export {
+  type Group,
+  type GroupRef,
+  groupRefSchema,
+  groupSchema,
+} from './lib/group';
 export {
   CONFIG_FILE_NAME,
   SUPPORTED_CONFIG_FILE_FORMATS,
@@ -36,56 +41,59 @@ export {
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits';
-export { MaterialIcon, materialIconSchema } from './lib/implementation/schemas';
+export {
+  type MaterialIcon,
+  materialIconSchema,
+} from './lib/implementation/schemas';
 export { exists } from './lib/implementation/utils';
 export {
-  TableAlignment,
+  type TableAlignment,
   tableAlignmentSchema,
-  TableRowPrimitive,
+  type TableRowPrimitive,
   tableRowPrimitiveSchema,
-  TableRowObject,
+  type TableRowObject,
   tableRowObjectSchema,
-  TableColumnPrimitive,
+  type TableColumnPrimitive,
   tableColumnPrimitiveSchema,
-  TableColumnObject,
+  type TableColumnObject,
   tableColumnObjectSchema,
-  Table,
+  type Table,
   tableSchema,
 } from './lib/table';
 export {
-  Issue,
-  IssueSeverity,
+  type Issue,
+  type IssueSeverity,
   issueSchema,
   issueSeveritySchema,
 } from './lib/issue';
 export {
-  Format,
-  PersistConfig,
+  type Format,
+  type PersistConfig,
   formatSchema,
   persistConfigSchema,
 } from './lib/persist-config';
 export {
-  PluginConfig,
-  PluginMeta,
+  type PluginConfig,
+  type PluginMeta,
   pluginConfigSchema,
   pluginMetaSchema,
 } from './lib/plugin-config';
 export {
-  AuditReport,
-  PluginReport,
-  Report,
+  type AuditReport,
+  type PluginReport,
+  type Report,
   auditReportSchema,
   pluginReportSchema,
   reportSchema,
 } from './lib/report';
 export {
-  AuditDiff,
-  AuditResult,
-  CategoryDiff,
-  CategoryResult,
-  GroupDiff,
-  GroupResult,
-  ReportsDiff,
+  type AuditDiff,
+  type AuditResult,
+  type CategoryDiff,
+  type CategoryResult,
+  type GroupDiff,
+  type GroupResult,
+  type ReportsDiff,
   auditDiffSchema,
   auditResultSchema,
   categoryDiffSchema,
@@ -95,11 +103,11 @@ export {
   reportsDiffSchema,
 } from './lib/reports-diff';
 export {
-  OnProgress,
-  RunnerConfig,
-  RunnerFunction,
+  type OnProgress,
+  type RunnerConfig,
+  type RunnerFunction,
   onProgressSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
 } from './lib/runner-config';
-export { UploadConfig, uploadConfigSchema } from './lib/upload-config';
+export { type UploadConfig, uploadConfigSchema } from './lib/upload-config';

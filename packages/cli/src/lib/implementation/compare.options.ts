@@ -1,4 +1,4 @@
-import { Options } from 'yargs';
+import type { Options } from 'yargs';
 import type { CompareOptions } from './compare.model';
 
 export function yargsCompareOptionsDefinition(): Record<

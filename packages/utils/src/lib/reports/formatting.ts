@@ -1,5 +1,10 @@
-import { HeadingLevel, InlineText, MarkdownDocument, md } from 'build-md';
-import { AuditReport, Table } from '@code-pushup/models';
+import {
+  type HeadingLevel,
+  type InlineText,
+  MarkdownDocument,
+  md,
+} from 'build-md';
+import type { AuditReport, Table } from '@code-pushup/models';
 import { HIERARCHY } from '../text-formats';
 import {
   columnsToStringArray,

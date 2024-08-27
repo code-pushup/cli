@@ -1,6 +1,6 @@
 import { stat } from 'node:fs/promises';
 import { basename } from 'node:path';
-import {
+import type {
   AuditOutput,
   AuditOutputs,
   CategoryRef,

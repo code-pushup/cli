@@ -2,7 +2,7 @@ export {
   create as fileSizePlugin,
   audits as fileSizeAudits,
   recommendedRefs as fileSizeRecommendedRefs,
-  PluginOptions as FileSizePluginOptions,
+  type PluginOptions as FileSizePluginOptions,
 } from './file-size/src/file-size.plugin';
 export {
   recommendedRefs as packageJsonRecommendedRefs,

@@ -1,9 +1,9 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  AuditReport,
-  PluginReport,
-  Report,
+  type AuditReport,
+  type PluginReport,
+  type Report,
   reportSchema,
 } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';

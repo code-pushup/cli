@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditSeverity,
-  FinalJSPackagesPluginConfig,
-  JSPackagesPluginConfig,
+  type AuditSeverity,
+  type FinalJSPackagesPluginConfig,
+  type JSPackagesPluginConfig,
   fillAuditLevelMapping,
   jsPackagesPluginConfigSchema,
 } from './config';

@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { PID, killProcesses } from '../utils';
-import { KillProcessesBinOptions } from './types';
+import { type PID, killProcesses } from '../utils';
+import type { KillProcessesBinOptions } from './types';
 
 const { commandMatch, pid, verbose, force } = yargs(hideBin(process.argv))
   .version(false)

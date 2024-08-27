@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
 import { loadReport } from './load-report';
 

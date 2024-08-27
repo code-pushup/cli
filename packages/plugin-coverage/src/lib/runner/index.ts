@@ -10,7 +10,7 @@ import {
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
-import { FinalCoveragePluginConfig } from '../config';
+import type { FinalCoveragePluginConfig } from '../config';
 import { applyMaxScoreAboveThreshold } from '../utils';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { lcovResultsToAuditOutputs } from './lcov/lcov-runner';

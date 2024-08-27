@@ -4,9 +4,9 @@ import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
-import Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import type Details from 'lighthouse/types/lhr/audit-details';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
+import type { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import {
   formatReportScore,
   importModule,
@@ -15,7 +15,7 @@ import {
 } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
-import { LighthouseCliFlags } from './types';
+import type { LighthouseCliFlags } from './types';
 
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,

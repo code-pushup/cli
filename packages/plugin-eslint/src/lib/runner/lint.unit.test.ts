@@ -1,7 +1,7 @@
-import { ESLint, Linter } from 'eslint';
+import { ESLint, type Linter } from 'eslint';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import { ESLintPluginConfig } from '../config';
+import type { ESLintPluginConfig } from '../config';
 import { lint } from './lint';
 
 class MockESLint {

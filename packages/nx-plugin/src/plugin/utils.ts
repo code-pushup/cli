@@ -1,8 +1,8 @@
-import { CreateNodesContext } from '@nx/devkit';
+import type { CreateNodesContext } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { CP_TARGET_NAME } from './constants';
-import {
+import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
   ProjectConfigurationWithName,

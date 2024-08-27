@@ -1,11 +1,11 @@
 import type { Ansis } from 'ansis';
-import { Mock, describe, expect, it } from 'vitest';
-import { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
+import { type Mock, describe, expect, it } from 'vitest';
+import type { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants';
-import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 import {
   MARKERS,
-  MarkerShape,
+  type MarkerShape,
   applyScoreColor,
   calcDuration,
   colorByScoreDiff,

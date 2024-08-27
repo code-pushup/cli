@@ -1,5 +1,5 @@
 import {
-  Tree,
+  type Tree,
   addProjectConfiguration,
   logger,
   readProjectConfiguration,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Audit, auditSchema, pluginAuditsSchema } from './audit';
+import { type Audit, auditSchema, pluginAuditsSchema } from './audit';
 
 describe('auditSchema', () => {
   it('should accept a valid audit with all information', () => {

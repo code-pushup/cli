@@ -1,4 +1,4 @@
-import {
+import type {
   AuditDiff,
   AuditReport,
   AuditResult,
@@ -10,10 +10,10 @@ import {
   ReportsDiff,
 } from '@code-pushup/models';
 import {
-  Diff,
-  ScoredCategoryConfig,
-  ScoredGroup,
-  ScoredReport,
+  type Diff,
+  type ScoredCategoryConfig,
+  type ScoredGroup,
+  type ScoredReport,
   comparePairs,
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,

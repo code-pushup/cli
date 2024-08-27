@@ -7,7 +7,7 @@ import {
   summaryToDisplayValue,
   vulnerabilitiesToIssues,
 } from './transform';
-import { Vulnerability } from './types';
+import type { Vulnerability } from './types';
 
 describe('auditResultToAuditOutput', () => {
   it('should return audit output with no vulnerabilities', () => {

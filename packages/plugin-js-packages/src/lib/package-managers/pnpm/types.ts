@@ -1,6 +1,6 @@
 // Subset of PNPM audit JSON type
-import { PackageAuditLevel } from '../../config';
-import { DependencyGroupLong } from '../../runner/outdated/types';
+import type { PackageAuditLevel } from '../../config';
+import type { DependencyGroupLong } from '../../runner/outdated/types';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type PnpmAuditAdvisory = {

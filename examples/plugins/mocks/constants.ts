@@ -1,4 +1,4 @@
-import {
+import type {
   PackageJson,
   SourceResult,
 } from '../src/package-json/src/integration/types';

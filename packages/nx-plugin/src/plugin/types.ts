@@ -1,6 +1,6 @@
 import type { CreateNodesContext, ProjectConfiguration } from '@nx/devkit';
-import { WithRequired } from '@code-pushup/utils';
-import { DynamicTargetOptions } from '../internal/types';
+import type { WithRequired } from '@code-pushup/utils';
+import type { DynamicTargetOptions } from '../internal/types';
 
 export type ProjectPrefixOptions = {
   projectPrefix?: string;

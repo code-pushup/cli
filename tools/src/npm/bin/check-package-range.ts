@@ -2,7 +2,7 @@ import { execFileSync, execSync } from 'node:child_process';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { objectToCliArgs } from '../../../../packages/utils/src';
-import { NpmCheckOptions, NpmCheckResult } from '../types';
+import type { NpmCheckOptions, NpmCheckResult } from '../types';
 
 const argv = yargs(hideBin(process.argv))
   .options({

@@ -4,7 +4,7 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import { dirname } from 'node:path';
-import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { uniquePort } from './utils';
 
 type CreateNodesOptions = {

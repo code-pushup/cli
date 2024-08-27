@@ -1,4 +1,4 @@
-import { Tree } from '@nx/devkit';
+import type { Tree } from '@nx/devkit';
 import { writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { ensureDirectoryExists } from '@code-pushup/test-utils';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PluginConfig, pluginConfigSchema } from './plugin-config';
+import { type PluginConfig, pluginConfigSchema } from './plugin-config';
 
 describe('pluginConfigSchema', () => {
   it('should accept a valid plugin configuration with all entities', () => {

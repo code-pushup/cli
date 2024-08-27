@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { AuditResult } from '../../runner/audit/types';
+import type { AuditResult } from '../../runner/audit/types';
 import { pnpmToAuditResult, pnpmToDirectDependency } from './audit-result';
-import { PnpmAuditResultJson } from './types';
+import type { PnpmAuditResultJson } from './types';
 
 describe('pnpmToAuditResult', () => {
   it('should transform PNPM audit to unified audit result', () => {

@@ -1,7 +1,7 @@
 // Yarn v2 does not currently audit optional dependencies
-import { DependencyGroup } from '../../config';
+import type { DependencyGroup } from '../../config';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { PackageManager } from '../types';
+import type { PackageManager } from '../types';
 import { yarnv2ToAuditResult } from './audit-result';
 import { yarnv2ToOutdatedResult } from './outdated-result';
 

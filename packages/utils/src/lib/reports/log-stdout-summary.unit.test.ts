@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { ui } from '../logging';
 import { binaryIconPrefix, logCategories } from './log-stdout-summary';
-import { ScoredReport } from './types';
+import type { ScoredReport } from './types';
 
 describe('logCategories', () => {
   let logs: string[];
