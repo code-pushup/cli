@@ -95,7 +95,7 @@ export async function nxStartVerdaccioAndSetupEnv({
   verbose = false,
   workspaceRoot: workspaceRootDir = projectE2eScope(projectName),
   location = 'none',
-  // reset or remove cached packages and or metadata.
+  // reset or remove cached packages and/or metadata.
   clear = true,
 }: StartVerdaccioAndSetupEnvOptions): Promise<VerdaccioEnvResult> {
   // setup NPM workspace environment
