@@ -20,7 +20,7 @@ export type Registry = RegistryServer &
 
 export type RegistryResult = {
   registry: Registry;
-  stop: () => void;
+  stop: () => void | Promise<void>;
 };
 
 export function parseRegistryData(stdout: string): RegistryServer {
@@ -89,69 +89,73 @@ export function nxStartVerdaccioServer({
 }: NxStarVerdaccioOptions): Promise<RegistryResult> {
   let startDetected = false;
 
-  return new Promise((resolve, reject) => {
-    const positionalArgs = [
-      'exec',
-      'nx',
-      START_VERDACCIO_SERVER_TARGET_NAME,
-      projectName ?? '',
-      '--',
-    ];
-    const args = objectToCliArgs<
-      Partial<
-        VerdaccioExecuterOptions &
-          ConfigYaml & { _: string[]; verbose: boolean; cwd: string }
-      >
-    >({
-      _: positionalArgs,
-      storage,
-      port,
-      verbose,
-      location,
-      clear,
-    });
+  return (
+    new Promise((resolve, reject) => {
+      const positionalArgs = [
+        'exec',
+        'nx',
+        START_VERDACCIO_SERVER_TARGET_NAME,
+        projectName ?? '',
+        '--',
+      ];
+      const args = objectToCliArgs<
+        Partial<
+          VerdaccioExecuterOptions &
+            ConfigYaml & { _: string[]; verbose: boolean; cwd: string }
+        >
+      >({
+        _: positionalArgs,
+        storage,
+        port,
+        verbose,
+        location,
+        clear,
+      });
 
-    // a link to the process started by this command, not one of the child processes. (every port is spawned by a command)
-    const commandId = positionalArgs.join(' ');
+      // a link to the process started by this command, not one of the child processes. (every port is spawned by a command)
+      const commandId = positionalArgs.join(' ');
 
-    verbose && console.log(`Start verdaccio with command: ${commandId}`);
+      if (verbose) {
+        console.info(`Start verdaccio with command: ${commandId}`);
+      }
 
-    executeProcess({
-      command: 'npm',
-      args,
-      // @TODO understand what it does
-      // stdio: 'pipe',
-      shell: true,
-      observer: {
-        onStdout: (stdout: string) => {
-          if (verbose) {
-            process.stdout.write(stdout);
-          }
+      return new Promise<RegistryResult>((resolve, reject) => {
+        executeProcess({
+          command: 'npm',
+          args,
+          shell: true,
+          observer: {
+            onStdout: (stdout: string) => {
+              if (verbose) {
+                process.stdout.write(stdout);
+              }
 
-          // Log of interest: warn --- http address - http://localhost:<PORT-NUMBER>/ - verdaccio/5.31.1
-          if (!startDetected && stdout.includes('http://localhost:')) {
-            // only setup env one time
-            startDetected = true;
+              // Log of interest: warn --- http address - http://localhost:<PORT-NUMBER>/ - verdaccio/5.31.1
+              if (!startDetected && stdout.includes('http://localhost:')) {
+                // only setup env one time
+                startDetected = true;
 
-            const result: RegistryResult = {
-              registry: {
-                storage,
-                ...parseRegistryData(stdout),
-              },
-              // https://verdaccio.org/docs/cli/#default-database-file-location
-              stop: () => {
-                teardownTestFolder(storage);
-                // this makes the process throw
-                killProcesses({ commandMatch: commandId });
-              },
-            };
+                const result: RegistryResult = {
+                  registry: {
+                    storage,
+                    ...parseRegistryData(stdout),
+                  },
+                  // https://verdaccio.org/docs/cli/#default-database-file-location
+                  stop: () => {
+                    teardownTestFolder(storage);
+                    // this makes the process throw
+                    killProcesses({ commandMatch: commandId });
+                  },
+                };
 
-            console.info(
-              `Registry started on URL: ${result.registry.url}, with PID: ${
-                listProcess({ commandMatch: commandId }).at(0)?.pid
-              }`,
-            );
-            verbose && console.table(result);
+                console.info(
+                  `Registry started on URL: ${result.registry.url}, with PID: ${
+                    listProcess({ commandMatch: commandId }).at(0)?.pid
+                  }`,
+                );
+                if (verbose) {
+                  console.table(result);
+                }
 
             resolve(result);
           }
@@ -176,5 +180,8 @@ export function nxStartVerdaccioServer({
         teardownTestFolder(storage);
         throw error;
       });
-  });
+    })
+      // in case the server dies unexpectedly clean folder
+      .catch(() => teardownTestFolder(storage))
+  );
 }

@@ -1,20 +1,19 @@
-import { execFileSync } from 'child_process';
-import { execSync } from 'node:child_process';
+// eslint-disable-next-line n/no-sync
+import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
-import {
-  ensureDirectoryExists,
-  projectE2eScope,
-} from '@code-pushup/test-utils';
-import { objectToCliArgs } from '../../../packages/nx-plugin';
-import {
-  setupTestFolder,
-  teardownTestFolder,
-} from '../../../testing/test-setup/src';
+import { objectToCliArgs } from '@code-pushup/utils';
+import { setupTestFolder } from '../../../testing/test-setup/src';
+import { ensureDirectoryExists } from '../../../testing/test-utils/src';
 import {
   NxStarVerdaccioOptions,
   Registry,
+  RegistryResult,
   nxStartVerdaccioServer,
 } from './registry';
+
+export function projectE2eScope(projectName: string): string {
+  return join('tmp', 'e2e', projectName);
+}
 
 export type VerdaccioEnv = {
   workspaceRoot: string;
@@ -86,7 +85,7 @@ export type StartVerdaccioAndSetupEnvOptions = Partial<
 
 export type VerdaccioEnvResult = VerdaccioEnv & {
   registry: Registry;
-  stop: () => void;
+  stop: () => void | Promise<void>;
 };
 
 export async function nxStartVerdaccioAndSetupEnv({
@@ -104,14 +103,14 @@ export async function nxStartVerdaccioAndSetupEnv({
 
   // potentially done by verdaccio task when clearing storage
   await setupTestFolder(storage);
-  const registryResult = await nxStartVerdaccioServer({
+  const registryResult = (await nxStartVerdaccioServer({
     projectName,
     storage,
     port,
     location,
     clear,
     verbose,
-  });
+  })) as RegistryResult; // cant type nxStartVerdaccioServer to only return RegistryResult :(
 
   await setupNpmWorkspace(workspaceRoot, verbose);
 
@@ -141,7 +140,7 @@ export async function nxStopVerdaccioAndTeardownEnv(
     }
     console.info(`Un configure registry: ${result.registry.url}`);
     if (typeof stop === 'function') {
-      stop();
+      await stop();
     } else {
       console.error('Stop is not a function. Type:', typeof stop);
     }
