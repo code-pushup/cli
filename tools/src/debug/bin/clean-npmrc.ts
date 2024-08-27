@@ -1,0 +1,29 @@
+import yargs, { Options } from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { cleanNpmrc } from '../utils';
+import { CleanNpmrcBinOptions } from './types';
+
+const argv = yargs(hideBin(process.argv))
+  .version(false)
+  .options({
+    userconfig: { type: 'string' },
+    entryMatch: { type: 'array' },
+    verbose: { type: 'boolean' },
+    force: { type: 'boolean' },
+  } satisfies Record<keyof CleanNpmrcBinOptions, Options>)
+  .coerce('entriesToRemove', entriesToRemove =>
+    Array.isArray(entriesToRemove) ? entriesToRemove : [entriesToRemove],
+  ).argv;
+
+const { userconfig, entryMatch = [], verbose } = argv as CleanNpmrcBinOptions;
+
+if (entryMatch.length === 0) {
+  throw new Error(
+    'This would remove all entries. Please provide a entry filter --entryMatch. (or pass --force if you really want to remove ALL entries)',
+  );
+}
+
+cleanNpmrc({
+  ...(userconfig ? { userconfig } : {}),
+  entryMatch,
+});
