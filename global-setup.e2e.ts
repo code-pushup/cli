@@ -37,7 +37,11 @@ export async function setup() {
   const { registry } = activeRegistry.registryData;
   try {
     console.info('Publish packages');
-    nxRunManyPublish({ registry, nextVersion: findLatestVersion() });
+    nxRunManyPublish({
+      registry,
+      nextVersion: findLatestVersion(),
+      parallel: 1,
+    });
   } catch (error) {
     console.error('Error publishing packages:\n' + error.message);
     throw error;
@@ -46,7 +50,7 @@ export async function setup() {
   // package install
   try {
     console.info('Installing packages');
-    nxRunManyNpmInstall({ registry });
+    nxRunManyNpmInstall({ registry, parallel: 1 });
   } catch (error) {
     console.error('Error installing packages:\n' + error.message);
     throw error;
@@ -58,7 +62,7 @@ export async function teardown() {
     const { stop } = activeRegistry;
 
     stopLocalRegistry(stop);
-    nxRunManyNpmUninstall();
+    nxRunManyNpmUninstall({ parallel: 1 });
   }
   await teardownTestFolder(e2eDir);
 }

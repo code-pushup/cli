@@ -55,9 +55,9 @@ export function nxRunManyNpmUninstall({
   parallel,
   ...opt
 }: {
-  prefix: string;
-  userconfig: string;
-  parallel: number;
+  prefix?: string;
+  userconfig?: string;
+  parallel?: number;
 }) {
   console.info('Uninstalling all NPM packages.');
   try {
