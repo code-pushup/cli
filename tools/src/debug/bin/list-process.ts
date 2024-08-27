@@ -23,11 +23,10 @@ const { commandMatch, pid, verbose, slice } = yargs(hideBin(process.argv))
   slice: number;
 };
 
-if (verbose && commandMatch.length < 0) {
+if (verbose && commandMatch.length > 0) {
   console.log(`Command Match: ${commandMatch.join(', ')}`);
 }
-
-if (verbose && pid.length < 0) {
+if (verbose && pid.length > 0) {
   console.log(`Command Match: ${pid.join(', ')}`);
 }
 
