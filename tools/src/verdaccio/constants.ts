@@ -1,5 +1,4 @@
 import { join } from 'node:path';
-import 'verdaccio';
 
 export const START_VERDACCIO_SERVER_TARGET_NAME = 'start-verdaccio-server';
 export const START_VERDACCIO_ENV_TARGET_NAME = 'start-verdaccio-env';
