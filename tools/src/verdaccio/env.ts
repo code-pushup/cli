@@ -44,7 +44,7 @@ export function configureRegistry(
   ).join(' ')}`;
   if (verbose) {
     console.info(
-      `${gray('>')} ${gray(bold('Verdaccio Env'))} Execute: ${setAuthToken}`,
+      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${setAuthToken}`,
     );
   }
   execSync(setAuthToken);
@@ -54,7 +54,7 @@ export function configureRegistry(
   }).join(' ')}`;
   if (verbose) {
     console.info(
-      `${gray('>')} ${gray(bold('Verdaccio Env'))} Execute: ${userconfig}`,
+      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${userconfig}`,
     );
   }
   execSync(setRegistry);
@@ -67,10 +67,10 @@ export function unconfigureRegistry(
   execSync(`npm config delete registry`);
   execSync(`npm config delete ${urlNoProtocol}/:_authToken`);
   if (verbose) {
-    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} delete registry`);
+    console.info(`${gray('>')} ${gray(bold('Verdaccio-Env'))} delete registry`);
     console.info(
       `${gray('>')} ${gray(
-        bold('Verdaccio Env'),
+        bold('Verdaccio-Env'),
       )} delete npm authToken: ${urlNoProtocol}`,
     );
   }
@@ -80,7 +80,7 @@ export async function setupNpmWorkspace(directory: string, verbose?: boolean) {
   if (verbose) {
     console.info(
       `${gray('>')} ${gray(
-        bold('Verdaccio Env'),
+        bold('Verdaccio-Env'),
       )} Execute: npm init in directory ${directory}`,
     );
   }
@@ -92,7 +92,7 @@ export async function setupNpmWorkspace(directory: string, verbose?: boolean) {
   } catch (error) {
     console.error(
       `${red('>')} ${red(
-        bold('Verdaccio Env'),
+        bold('Verdaccio-Env'),
       )} Error creating NPM workspace: ${(error as Error).message}`,
     );
   } finally {
