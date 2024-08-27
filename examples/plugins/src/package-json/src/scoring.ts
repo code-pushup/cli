@@ -1,4 +1,4 @@
-import { CategoryRef, Group } from '@code-pushup/models';
+import type { CategoryRef, Group } from '@code-pushup/models';
 import { pluginSlug } from './constants';
 import { dependenciesAuditMeta } from './integration/dependencies.audit';
 import { licenseAuditMeta } from './integration/license.audit';

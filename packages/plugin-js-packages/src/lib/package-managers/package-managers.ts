@@ -1,7 +1,7 @@
-import { PackageManagerId } from '../config';
+import type { PackageManagerId } from '../config';
 import { npmPackageManager } from './npm/npm';
 import { pnpmPackageManager } from './pnpm/pnpm';
-import { PackageManager } from './types';
+import type { PackageManager } from './types';
 import { yarnv1PackageManager } from './yarn-classic/yarn-classic';
 import { yarnv2PackageManager } from './yarn-modern/yarn-modern';
 

@@ -1,5 +1,5 @@
 // options for `bin/list-processes`
-import { CleanNpmrcOptions, ProcessListOption } from '../utils';
+import type { CleanNpmrcOptions, ProcessListOption } from '../utils';
 
 export type ListProcessesBinOptions = ProcessListOption & {
   slice?: number;

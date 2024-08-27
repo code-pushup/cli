@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { parseEnv } from './env';
-import {
+import type {
   BaseNormalizedExecutorContext,
   GlobalExecutorOptions,
   ProjectExecutorOnlyOptions,

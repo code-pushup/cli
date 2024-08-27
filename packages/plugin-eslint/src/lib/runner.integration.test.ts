@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MockInstance, describe, expect, it } from 'vitest';
+import { type MockInstance, describe, expect, it } from 'vitest';
 import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';

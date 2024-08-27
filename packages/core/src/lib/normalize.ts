@@ -1,4 +1,4 @@
-import { type AuditOutputs, Issue } from '@code-pushup/models';
+import type { AuditOutputs, Issue } from '@code-pushup/models';
 import { formatGitPath, getGitRoot } from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {

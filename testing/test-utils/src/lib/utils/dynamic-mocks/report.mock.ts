@@ -1,4 +1,4 @@
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
 import { categoryConfigsMock } from './categories.mock';
 import {

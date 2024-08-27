@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { packageResult } from '../../../../mocks/constants';
 import { typeAudit } from './type.audit';
-import { PackageJson } from './types';
+import type { PackageJson } from './types';
 
 describe('typeAudit', () => {
   it('should pass if not configured', () => {

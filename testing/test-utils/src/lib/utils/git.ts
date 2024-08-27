@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { SimpleGit, SimpleGitFactory } from 'simple-git';
+import type { SimpleGit, SimpleGitFactory } from 'simple-git';
 
 export type GitConfig = { name: string; email: string };
 

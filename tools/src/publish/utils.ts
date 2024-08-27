@@ -2,7 +2,7 @@ import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
 import { objectToCliArgs } from '../../../packages/utils/src';
 import { BUMP_SCRIPT } from './constants';
-import { PublishOptions } from './types';
+import type { PublishOptions } from './types';
 
 export function nxRunManyPublish({
   registry,

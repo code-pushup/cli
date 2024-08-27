@@ -1,6 +1,6 @@
-import { ReportsDiff } from '@code-pushup/models';
+import type { ReportsDiff } from '@code-pushup/models';
 import {
-  ReportsToCompare,
+  type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,

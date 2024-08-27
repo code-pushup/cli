@@ -7,13 +7,13 @@ import {
 import {
   type Format,
   type PersistConfig,
-  Report,
-  ReportsDiff,
+  type Report,
+  type ReportsDiff,
   type UploadConfig,
   reportSchema,
 } from '@code-pushup/models';
 import {
-  Diff,
+  type Diff,
   calcDuration,
   ensureDirectoryExists,
   generateMdReportsDiff,
@@ -23,7 +23,7 @@ import {
 } from '@code-pushup/utils';
 import { name as packageName, version } from '../../package.json';
 import {
-  ReportsToCompare,
+  type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,

@@ -1,6 +1,6 @@
 import {
-  ProjectGraph,
-  TargetConfiguration,
+  type ProjectGraph,
+  type TargetConfiguration,
   readCachedProjectGraph,
 } from '@nx/devkit';
 

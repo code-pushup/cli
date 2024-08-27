@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { AuditResult } from '../../runner/audit/types';
+import type { AuditResult } from '../../runner/audit/types';
 import {
   npmToAdvisory,
   npmToAuditResult,
   npmToFixInformation,
 } from './audit-result';
-import { NpmAdvisory, NpmAuditResultJson, NpmVulnerability } from './types';
+import type {
+  NpmAdvisory,
+  NpmAuditResultJson,
+  NpmVulnerability,
+} from './types';
 
 describe('npmToAuditResult', () => {
   it('should transform NPM audit to unified audit result', () => {

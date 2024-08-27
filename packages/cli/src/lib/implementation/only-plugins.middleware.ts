@@ -1,5 +1,5 @@
 import { filterItemRefsBy } from '@code-pushup/utils';
-import { OnlyPluginsOptions } from './only-plugins.model';
+import type { OnlyPluginsOptions } from './only-plugins.model';
 import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';
 
 export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(

@@ -1,10 +1,10 @@
-import { InlineText, MarkdownDocument, md } from 'build-md';
-import { AuditReport } from '@code-pushup/models';
+import { type InlineText, MarkdownDocument, md } from 'build-md';
+import type { AuditReport } from '@code-pushup/models';
 import { slugify } from '../formatting';
 import { HIERARCHY } from '../text-formats';
 import { metaDescription } from './formatting';
 import { getSortableAuditByRef, getSortableGroupByRef } from './sorting';
-import { ScoredGroup, ScoredReport } from './types';
+import type { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
   formatReportScore,

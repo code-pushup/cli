@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  OutputTransform,
-  RunnerConfig,
-  RunnerFunction,
+  type OutputTransform,
+  type RunnerConfig,
+  type RunnerFunction,
   outputTransformSchema,
   runnerConfigSchema,
   runnerFunctionSchema,

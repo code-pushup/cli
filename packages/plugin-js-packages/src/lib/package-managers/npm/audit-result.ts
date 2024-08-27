@@ -1,6 +1,6 @@
 import { objectToEntries } from '@code-pushup/utils';
-import { AuditResult, Vulnerability } from '../../runner/audit/types';
-import {
+import type { AuditResult, Vulnerability } from '../../runner/audit/types';
+import type {
   NpmAdvisory,
   NpmAuditResultJson,
   NpmFixInformation,

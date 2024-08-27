@@ -1,5 +1,5 @@
 import type { Issue } from '@code-pushup/models';
-import { CoverageType } from '../../config';
+import type { CoverageType } from '../../config';
 
 export type LCOVStat = {
   totalFound: number;

@@ -1,11 +1,11 @@
 import {
-  ChildProcess,
-  ChildProcessByStdio,
-  SpawnOptionsWithStdioTuple,
-  StdioPipe,
+  type ChildProcess,
+  type ChildProcessByStdio,
+  type SpawnOptionsWithStdioTuple,
+  type StdioPipe,
   spawn,
 } from 'node:child_process';
-import { Readable, Writable } from 'node:stream';
+import type { Readable, Writable } from 'node:stream';
 import { calcDuration } from './reports/utils';
 
 /**

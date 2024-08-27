@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { skipPluginsMiddleware } from './skip-plugins.middleware';
 
 vi.mock('@code-pushup/core', async () => {

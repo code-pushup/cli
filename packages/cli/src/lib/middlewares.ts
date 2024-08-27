@@ -1,4 +1,4 @@
-import { MiddlewareFunction } from 'yargs';
+import type { MiddlewareFunction } from 'yargs';
 import { coreConfigMiddleware } from './implementation/core-config.middleware';
 import { onlyPluginsMiddleware } from './implementation/only-plugins.middleware';
 import { skipPluginsMiddleware } from './implementation/skip-plugins.middleware';

@@ -1,5 +1,5 @@
 import { MATERIAL_ICONS } from 'vscode-material-icons';
-import { ZodObject, ZodOptional, ZodString, z } from 'zod';
+import { type ZodObject, type ZodOptional, type ZodString, z } from 'zod';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,

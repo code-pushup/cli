@@ -1,5 +1,5 @@
-import { OutdatedDependency } from '../../runner/outdated/types';
-import { Yarnv1FieldName } from './types';
+import type { OutdatedDependency } from '../../runner/outdated/types';
+import type { Yarnv1FieldName } from './types';
 
 export const outdatedtoFieldMapper: Record<
   keyof OutdatedDependency,

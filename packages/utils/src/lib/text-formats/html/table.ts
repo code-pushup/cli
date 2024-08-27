@@ -1,4 +1,4 @@
-import { Table } from '@code-pushup/models';
+import type { Table } from '@code-pushup/models';
 import { NEW_LINE } from '../constants';
 import { columnsToStringArray, rowToStringArray } from '../table';
 

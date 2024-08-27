@@ -1,13 +1,13 @@
 /* eslint-disable max-lines-per-function */
 import { blue, dim, green } from 'ansis';
 import yargs, {
-  Argv,
-  CommandModule,
-  MiddlewareFunction,
-  Options,
-  ParserConfigurationOptions,
+  type Argv,
+  type CommandModule,
+  type MiddlewareFunction,
+  type Options,
+  type ParserConfigurationOptions,
 } from 'yargs';
-import { PersistConfig, formatSchema } from '@code-pushup/models';
+import { type PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
 import { version } from '../../package.json';
 import {

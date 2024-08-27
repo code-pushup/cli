@@ -2,7 +2,7 @@ import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
-  PersistConfig,
+  type PersistConfig,
   persistConfigSchema,
 } from '@code-pushup/models';
 

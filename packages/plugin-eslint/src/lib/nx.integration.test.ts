@@ -2,7 +2,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
-import { type ESLintTarget } from './config';
+import type { ESLintTarget } from './config';
 import {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProjectAndDeps,

@@ -1,4 +1,7 @@
-import { JSPackagesPluginConfig, jsPackagesPluginConfigSchema } from './config';
+import {
+  type JSPackagesPluginConfig,
+  jsPackagesPluginConfigSchema,
+} from './config';
 import { packageManagers } from './package-managers';
 import { derivePackageManager } from './package-managers/derive-package-manager';
 

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
 // Note: The plugins of the ScoredReport are not structured correctly, hence the ESLint disables.
-import { CategoryRef, GroupRef, Report } from '@code-pushup/models';
+import type { CategoryRef, GroupRef, Report } from '@code-pushup/models';
 import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
-import {
+import type {
   ScoredCategoryConfig,
   ScoredReport,
 } from '../../src/lib/reports/types';

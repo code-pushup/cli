@@ -1,6 +1,6 @@
-import ansis, { Ansis } from 'ansis';
-import { InlineText, md } from 'build-md';
-import {
+import ansis, { type Ansis } from 'ansis';
+import { type InlineText, md } from 'build-md';
+import type {
   AuditDiff,
   AuditReport,
   CategoryRef,
@@ -9,7 +9,7 @@ import {
   Issue,
 } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants';
-import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;

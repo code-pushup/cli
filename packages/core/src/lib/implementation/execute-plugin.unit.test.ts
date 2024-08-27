@@ -1,7 +1,7 @@
 import { bold } from 'ansis';
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import type { AuditOutputs, PluginConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,

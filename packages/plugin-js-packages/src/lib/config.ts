@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
+import { type IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
 import { defaultAuditLevelMapping } from './constants';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;

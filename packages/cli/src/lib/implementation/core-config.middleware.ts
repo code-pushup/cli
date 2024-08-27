@@ -1,16 +1,16 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
-  CoreConfig,
+  type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
-  Format,
+  type Format,
   uploadConfigSchema,
 } from '@code-pushup/models';
-import { CoreConfigCliOptions } from './core-config.model';
-import { GeneralCliOptions } from './global.model';
-import { OnlyPluginsOptions } from './only-plugins.model';
-import { SkipPluginsOptions } from './skip-plugins.model';
+import type { CoreConfigCliOptions } from './core-config.model';
+import type { GeneralCliOptions } from './global.model';
+import type { OnlyPluginsOptions } from './only-plugins.model';
+import type { SkipPluginsOptions } from './skip-plugins.model';
 
 export type CoreConfigMiddlewareOptions = GeneralCliOptions &
   CoreConfigCliOptions &

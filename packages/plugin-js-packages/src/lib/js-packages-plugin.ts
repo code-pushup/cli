@@ -3,10 +3,10 @@ import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
 import {
-  DependencyGroup,
-  JSPackagesPluginConfig,
-  PackageCommand,
-  PackageManagerId,
+  type DependencyGroup,
+  type JSPackagesPluginConfig,
+  type PackageCommand,
+  type PackageManagerId,
   dependencyGroups,
 } from './config';
 import { dependencyDocs, dependencyGroupWeights } from './constants';

@@ -1,5 +1,5 @@
-import { Options } from 'yargs';
-import {
+import type { Options } from 'yargs';
+import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './core-config.model';

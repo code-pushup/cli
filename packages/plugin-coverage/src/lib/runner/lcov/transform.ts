@@ -1,9 +1,9 @@
-import { LCOVRecord } from 'parse-lcov';
-import { AuditOutput, Issue } from '@code-pushup/models';
+import type { LCOVRecord } from 'parse-lcov';
+import type { AuditOutput, Issue } from '@code-pushup/models';
 import { toNumberPrecision, toOrdinal } from '@code-pushup/utils';
-import { CoverageType } from '../../config';
+import type { CoverageType } from '../../config';
 import { INVALID_FUNCTION_NAME } from '../constants';
-import { LCOVStat } from './types';
+import type { LCOVStat } from './types';
 import { calculateCoverage, mergeConsecutiveNumbers } from './utils';
 
 export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {

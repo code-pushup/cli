@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { TableCellValue, tableCellValueSchema, weightSchema } from './schemas';
+import {
+  type TableCellValue,
+  tableCellValueSchema,
+  weightSchema,
+} from './schemas';
 
 describe('primitiveValueSchema', () => {
   it('should accept a valid union', () => {

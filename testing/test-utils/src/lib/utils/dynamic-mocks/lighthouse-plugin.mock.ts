@@ -1,5 +1,5 @@
-import { join } from 'path';
-import {
+import { join } from 'node:path';
+import type {
   Audit,
   AuditReport,
   Group,

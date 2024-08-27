@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { RegistryData } from './start-local-registry';
+import type { RegistryData } from './start-local-registry';
 
 export function uniquePort(): number {
   return Number((6000 + Number(Math.random() * 1000)).toFixed(0));

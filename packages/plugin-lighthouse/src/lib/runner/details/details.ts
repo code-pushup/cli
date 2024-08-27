@@ -1,8 +1,8 @@
 import { bold, yellow } from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditDetails, Table } from '@code-pushup/models';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
+import type { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type';

@@ -4,7 +4,7 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import { dirname } from 'node:path';
-import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
 import { uniquePort } from './utils';

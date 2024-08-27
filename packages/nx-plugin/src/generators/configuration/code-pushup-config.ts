@@ -1,8 +1,8 @@
-import { Tree, generateFiles, logger } from '@nx/devkit';
+import { type Tree, generateFiles, logger } from '@nx/devkit';
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { ItemOrArray } from '@code-pushup/utils';
-import { ExecutableCode } from './types';
+import type { ExecutableCode } from './types';
 import {
   formatArrayToJSArray,
   formatArrayToLinesOfJsString,

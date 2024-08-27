@@ -1,14 +1,14 @@
 import {
-  Tree,
+  type Tree,
   formatFiles,
   logger,
   readProjectConfiguration,
   updateProjectConfiguration,
 } from '@nx/devkit';
-import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
 import { generateCodePushupConfig } from './code-pushup-config';
-import { ConfigurationGeneratorOptions } from './schema';
+import type { ConfigurationGeneratorOptions } from './schema';
 
 export async function configurationGenerator(
   tree: Tree,

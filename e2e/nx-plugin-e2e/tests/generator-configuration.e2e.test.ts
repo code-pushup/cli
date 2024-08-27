@@ -1,4 +1,4 @@
-import { Tree } from '@nx/devkit';
+import type { Tree } from '@nx/devkit';
 import { readFile, rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';

@@ -2,7 +2,7 @@ import type { CreateNodes, CreateNodesContext } from '@nx/devkit';
 import type { CreateNodesResult } from 'nx/src/utils/nx-plugin';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
-import { CreateNodesOptions } from './types';
+import type { CreateNodesOptions } from './types';
 import { normalizedCreateNodesContext } from './utils';
 
 // name has to be "createNodes" to get picked up by Nx

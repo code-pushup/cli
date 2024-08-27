@@ -1,5 +1,5 @@
 import { bold, cyan, cyanBright, green, red } from 'ansis';
-import { AuditReport } from '@code-pushup/models';
+import type { AuditReport } from '@code-pushup/models';
 import { ui } from '../logging';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -8,7 +8,7 @@ import {
   REPORT_RAW_OVERVIEW_TABLE_HEADERS,
   TERMINAL_WIDTH,
 } from './constants';
-import { ScoredReport } from './types';
+import type { ScoredReport } from './types';
 import { applyScoreColor, countCategoryAudits, targetScoreIcon } from './utils';
 
 function log(msg = ''): void {

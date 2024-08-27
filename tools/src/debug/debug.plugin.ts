@@ -1,4 +1,4 @@
-import { type CreateNodes, type CreateNodesContext } from '@nx/devkit';
+import type { CreateNodes, CreateNodesContext } from '@nx/devkit';
 import { dirname } from 'node:path';
 import { objectToCliArgs } from '../../../packages/nx-plugin/src/executors/internal/cli';
 import { TOOLS_TSCONFIG_PATH } from '../constants';

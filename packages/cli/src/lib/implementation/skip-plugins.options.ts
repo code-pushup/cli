@@ -1,6 +1,6 @@
-import { Options } from 'yargs';
+import type { Options } from 'yargs';
 import { coerceArray } from './global.utils';
-import { SkipPluginsCliOptions } from './skip-plugins.model';
+import type { SkipPluginsCliOptions } from './skip-plugins.model';
 
 export const skipPluginsOption: Options = {
   describe: 'List of plugins to skip. If not set all plugins are run.',

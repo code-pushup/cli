@@ -1,4 +1,4 @@
-import { SimpleGit, StatusResult } from 'simple-git';
+import type { SimpleGit, StatusResult } from 'simple-git';
 import { describe, expect } from 'vitest';
 import { GitStatusError, formatGitPath, guardAgainstLocalChanges } from './git';
 

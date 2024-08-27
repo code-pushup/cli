@@ -1,7 +1,7 @@
 import * as Benchmark from 'benchmark';
 import { join } from 'node:path';
 import {
-  CrawlFileSystemOptions,
+  type CrawlFileSystemOptions,
   crawlFileSystem,
 } from '../../src/lib/file-system';
 import { crawlFileSystemFsWalk } from './fs-walk';
