@@ -1,4 +1,3 @@
-import { ConfigYaml } from '@verdaccio/types/build/configuration';
 import { executeProcess } from '@code-pushup/utils';
 import { objectToCliArgs } from '../../../packages/nx-plugin';
 // cant import from utils
@@ -101,8 +100,7 @@ export async function nxStartVerdaccioServer({
   ];
   const args = objectToCliArgs<
     Partial<
-      VerdaccioExecuterOptions &
-        ConfigYaml & { _: string[]; verbose: boolean; cwd: string }
+      VerdaccioExecuterOptions & { _: string[]; verbose: boolean; cwd: string }
     >
   >({
     _: positionalArgs,

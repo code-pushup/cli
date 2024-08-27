@@ -13,6 +13,7 @@ import {
   Registry,
   nxStartVerdaccioServer,
 } from './registry';
+import {bold, gray, red} from "ansis";
 
 export function projectE2eScope(projectName: string): string {
   return join('tmp', 'e2e', projectName);
@@ -42,7 +43,7 @@ export function configureRegistry(
     { userconfig },
   ).join(' ')}`;
   if (verbose) {
-    console.info(`Execute: ${setAuthToken}`);
+    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} Execute: ${setAuthToken}`);
   }
   execSync(setAuthToken);
 
@@ -50,7 +51,7 @@ export function configureRegistry(
     userconfig,
   }).join(' ')}`;
   if (verbose) {
-    console.info(`Execute: ${setRegistry}`);
+    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} Execute: ${userconfig}`);
   }
   execSync(setRegistry);
 }
@@ -62,20 +63,22 @@ export function unconfigureRegistry(
   execSync(`npm config delete registry`);
   execSync(`npm config delete ${urlNoProtocol}/:_authToken`);
   if (verbose) {
-    console.info('delete registry ');
-    console.info(`delete npm authToken: ${urlNoProtocol}`);
+    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} delete registry`);
+    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} delete npm authToken: ${urlNoProtocol}`);
   }
 }
 
 export async function setupNpmWorkspace(directory: string, verbose?: boolean) {
-  verbose && console.info(`Execute: npm init in directory ${directory}`);
+  if(verbose) {
+    console.info(`${gray('>')} ${gray(bold('Verdaccio Env'))} Execute: npm init in directory ${directory}`);
+  }
   const cwd = process.cwd();
   await ensureDirectoryExists(directory);
   process.chdir(join(cwd, directory));
   try {
     execFileSync('npm', ['init', '--force']).toString();
   } catch (error) {
-    console.error(`Error creating NPM workspace: ${(error as Error).message}`);
+    console.error(`${red('>')} ${red(bold('Verdaccio Env'))} Error creating NPM workspace: ${(error as Error).message}`);
   } finally {
     process.chdir(cwd);
   }

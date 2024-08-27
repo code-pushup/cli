@@ -1,7 +1,6 @@
 import yargs, { Options } from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { nxStartVerdaccioAndSetupEnv } from '../env';
-import { NxStarVerdaccioOptions } from '../registry';
+import { nxStartVerdaccioAndSetupEnv, type StartVerdaccioAndSetupEnvOptions } from '../env';
 
 const argv = yargs(hideBin(process.argv))
   .version(false)
@@ -9,9 +8,9 @@ const argv = yargs(hideBin(process.argv))
     verbose: { type: 'boolean' },
     projectName: { type: 'string', demandOption: true },
     port: { type: 'string' },
-  } satisfies Partial<Record<keyof NxStarVerdaccioOptions, Options>>).argv;
+  } satisfies Partial<Record<keyof StartVerdaccioAndSetupEnvOptions, Options>>).argv;
 
 (async () => {
-  const registryResult = await nxStartVerdaccioAndSetupEnv(argv as any);
+  await nxStartVerdaccioAndSetupEnv(argv as StartVerdaccioAndSetupEnvOptions);
   process.exit(0);
 })();
