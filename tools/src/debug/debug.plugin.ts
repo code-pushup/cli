@@ -1,6 +1,6 @@
 import { type CreateNodes, type CreateNodesContext } from '@nx/devkit';
 import { dirname } from 'node:path';
-import { objectToCliArgs } from '../../../packages/nx-plugin';
+import { objectToCliArgs } from '../../../packages/nx-plugin/src/executors/internal/cli';
 import { TOOLS_TSCONFIG_PATH } from '../constants';
 import { KILL_PROCESS_BIN, LIST_PROCESS_BIN } from './constants';
 

@@ -58,7 +58,7 @@ function startLocalRegistry({
         ...`run ${localRegistryTarget} --location none --clear true`.split(' '),
         ...(storage ? [`--storage`, storage] : []),
       ],
-      stdio: 'pipe',
+      //stdio: 'pipe',
       shell: true,
       observer: {
         onStdout: (data, childProcess) => {
