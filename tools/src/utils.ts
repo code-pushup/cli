@@ -1,4 +1,4 @@
-import { TargetConfiguration } from '@nx/devkit';
+import type { TargetConfiguration } from '@nx/devkit';
 
 export function someTargetsPresent(
   targets: Record<string, TargetConfiguration>,

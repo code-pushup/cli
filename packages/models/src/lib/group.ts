@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  WeightedRef,
+  type WeightedRef,
   metaSchema,
   scorableSchema,
   weightedRefSchema,

@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": true,
     "paths": {
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],

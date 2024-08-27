@@ -8,7 +8,7 @@ import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
 import {
   CATEGORIES_MAP,
   CATEGORY_SLUGS,
-  CategorySlug,
+  type CategorySlug,
 } from './categories.mock';
 import {
   ESLINT_AUDITS_FIXED_SLUGS,
@@ -18,7 +18,7 @@ import {
 import {
   ESLINT_PLUGIN_GROUP_MAX_LINES,
   ESLINT_PLUGIN_META,
-  ESLintAuditSlug,
+  type ESLintAuditSlug,
 } from './eslint-plugin.mock';
 import {
   LIGHTHOUSE_AUDITS_CHANGES,

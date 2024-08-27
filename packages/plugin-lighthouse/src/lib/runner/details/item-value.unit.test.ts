@@ -1,10 +1,10 @@
 import { bold } from 'ansis';
-import Details from 'lighthouse/types/lhr/audit-details';
+import type Details from 'lighthouse/types/lhr/audit-details';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
-  SimpleItemValue,
+  type SimpleItemValue,
   formatTableItemPropertyValue,
   parseNodeValue,
   parseSimpleItemValue,

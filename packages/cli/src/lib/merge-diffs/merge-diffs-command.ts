@@ -1,10 +1,10 @@
 import { bold, gray } from 'ansis';
-import { CommandModule } from 'yargs';
+import type { CommandModule } from 'yargs';
 import { mergeDiffs } from '@code-pushup/core';
-import { PersistConfig } from '@code-pushup/models';
+import type { PersistConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import { MergeDiffsOptions } from '../implementation/merge-diffs.model';
+import type { MergeDiffsOptions } from '../implementation/merge-diffs.model';
 import { yargsMergeDiffsOptionsDefinition } from '../implementation/merge-diffs.options';
 
 export function yargsMergeDiffsCommandObject() {

@@ -2,8 +2,8 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { AuditResult, Vulnerability } from './audit/types';
-import { DependencyTotals, PackageJson } from './outdated/types';
+import type { AuditResult, Vulnerability } from './audit/types';
+import type { DependencyTotals, PackageJson } from './outdated/types';
 import {
   filterAuditResult,
   findAllPackageJson,

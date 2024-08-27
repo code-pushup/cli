@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
-import { HistoryOptions, history } from './history';
+import { type HistoryOptions, history } from './history';
 import { upload } from './upload';
 
 vi.mock('@code-pushup/utils', async () => {

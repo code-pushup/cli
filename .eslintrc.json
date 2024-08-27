@@ -69,7 +69,8 @@
           {
             "argsIgnorePattern": "^_"
           }
-        ]
+        ],
+        "@typescript-eslint/no-import-type-side-effects": "warn"
       }
     },
     {

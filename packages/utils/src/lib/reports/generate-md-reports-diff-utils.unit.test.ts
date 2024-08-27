@@ -1,4 +1,4 @@
-import { ReportsDiff } from '@code-pushup/models';
+import type { ReportsDiff } from '@code-pushup/models';
 import {
   changesToDiffOutcomes,
   compareDiffsBy,
@@ -9,7 +9,7 @@ import {
   summarizeDiffOutcomes,
   summarizeUnchanged,
 } from './generate-md-reports-diff-utils';
-import { DiffOutcome } from './types';
+import type { DiffOutcome } from './types';
 
 describe('summarizeUnchanged', () => {
   it('should print unchanged array length with pluralized token and verb', () => {

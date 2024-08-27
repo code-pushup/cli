@@ -1,4 +1,4 @@
-import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 
 /**
  * Types used in the executor only

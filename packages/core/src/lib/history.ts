@@ -1,7 +1,11 @@
-import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
+import type {
+  CoreConfig,
+  PersistConfig,
+  UploadConfig,
+} from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist';
-import { GlobalOptions } from './types';
+import type { GlobalOptions } from './types';
 import { upload } from './upload';
 
 export type HistoryOnlyOptions = {

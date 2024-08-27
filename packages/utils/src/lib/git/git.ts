@@ -1,5 +1,5 @@
 import { isAbsolute, join, relative } from 'node:path';
-import { StatusResult, simpleGit } from 'simple-git';
+import { type StatusResult, simpleGit } from 'simple-git';
 import { ui } from '../logging';
 import { toUnixPath } from '../transform';
 

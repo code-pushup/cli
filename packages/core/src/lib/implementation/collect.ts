@@ -1,7 +1,7 @@
-import { CoreConfig, Report } from '@code-pushup/models';
+import type { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
 import { name, version } from '../../../package.json';
-import { GlobalOptions } from '../types';
+import type { GlobalOptions } from '../types';
 import { executePlugins } from './execute-plugin';
 
 export type CollectOptions = Required<

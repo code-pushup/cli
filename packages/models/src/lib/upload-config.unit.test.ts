@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UploadConfig, uploadConfigSchema } from './upload-config';
+import { type UploadConfig, uploadConfigSchema } from './upload-config';
 
 describe('uploadConfigSchema', () => {
   it('should accept a valid upload configuration', () => {

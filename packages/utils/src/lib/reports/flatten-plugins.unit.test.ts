@@ -1,4 +1,4 @@
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,

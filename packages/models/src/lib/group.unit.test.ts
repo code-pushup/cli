@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  Group,
-  GroupRef,
+  type Group,
+  type GroupRef,
   groupRefSchema,
   groupSchema,
   groupsSchema,

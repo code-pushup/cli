@@ -4,7 +4,7 @@ import {
   readJsonFile,
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
-import { type ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
 import { BUMP_SCRIPT, LOGIN_CHECK_SCRIPT, PUBLISH_SCRIPT } from './constants';
 

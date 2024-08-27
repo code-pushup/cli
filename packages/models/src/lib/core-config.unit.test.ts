@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, coreConfigSchema } from './core-config';
+import { type CoreConfig, coreConfigSchema } from './core-config';
 
 describe('coreConfigSchema', () => {
   it('should accept a valid core configuration with all entities', () => {

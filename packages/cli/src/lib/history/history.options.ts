@@ -1,5 +1,5 @@
-import { Options } from 'yargs';
-import { HistoryCliOptions } from './history.model';
+import type { Options } from 'yargs';
+import type { HistoryCliOptions } from './history.model';
 
 export function yargsHistoryOptionsDefinition(): Record<
   keyof HistoryCliOptions,

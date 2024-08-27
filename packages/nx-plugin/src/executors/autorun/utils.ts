@@ -1,6 +1,6 @@
 import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
-import { NormalizedExecutorContext } from '../internal/context';
-import {
+import type { NormalizedExecutorContext } from '../internal/context';
+import type {
   AutorunCommandExecutorOnlyOptions,
   AutorunCommandExecutorOptions,
 } from './schema';

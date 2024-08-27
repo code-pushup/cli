@@ -1,6 +1,6 @@
-import { PackageAuditLevel } from '../../config';
-import { AuditSummary } from '../../runner/audit/types';
-import { DependencyGroupLong } from '../../runner/outdated/types';
+import type { PackageAuditLevel } from '../../config';
+import type { AuditSummary } from '../../runner/audit/types';
+import type { DependencyGroupLong } from '../../runner/outdated/types';
 
 // Subset of NPM audit JSON type
 export type NpmAdvisory = {

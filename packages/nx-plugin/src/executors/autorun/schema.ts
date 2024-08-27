@@ -1,5 +1,5 @@
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import {
+import type {
   CollectExecutorOnlyOptions,
   GeneralExecutorOnlyOptions,
   GlobalExecutorOptions,

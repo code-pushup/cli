@@ -3,7 +3,7 @@ import { auditSchema } from './audit';
 import { auditOutputSchema } from './audit-output';
 import { categoryConfigSchema } from './category-config';
 import { commitSchema } from './commit';
-import { Group, groupSchema } from './group';
+import { type Group, groupSchema } from './group';
 import {
   executionMetaSchema,
   packageVersionSchema,

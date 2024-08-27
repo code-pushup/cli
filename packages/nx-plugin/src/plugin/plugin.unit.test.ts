@@ -1,4 +1,4 @@
-import { CreateNodesContext } from '@nx/devkit';
+import type { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
 import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';

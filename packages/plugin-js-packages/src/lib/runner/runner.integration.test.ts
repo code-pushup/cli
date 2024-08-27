@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { RunnerConfig } from '@code-pushup/models';
+import type { RunnerConfig } from '@code-pushup/models';
 import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
 import { createRunnerConfig } from '.';
-import { FinalJSPackagesPluginConfig } from '../config';
+import type { FinalJSPackagesPluginConfig } from '../config';
 import { defaultAuditLevelMapping } from '../constants';
 import { PLUGIN_CONFIG_PATH, WORKDIR } from './constants';
 

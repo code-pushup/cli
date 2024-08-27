@@ -4,10 +4,10 @@ import {
   coreConfigMiddleware,
   normalizeFormats,
 } from './core-config.middleware';
-import { CoreConfigCliOptions } from './core-config.model';
-import { GeneralCliOptions } from './global.model';
-import { OnlyPluginsOptions } from './only-plugins.model';
-import { SkipPluginsOptions } from './skip-plugins.model';
+import type { CoreConfigCliOptions } from './core-config.model';
+import type { GeneralCliOptions } from './global.model';
+import type { OnlyPluginsOptions } from './only-plugins.model';
+import type { SkipPluginsOptions } from './skip-plugins.model';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =

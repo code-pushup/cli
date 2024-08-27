@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CoveragePluginConfig,
-  CoverageType,
+  type CoveragePluginConfig,
+  type CoverageType,
   coveragePluginConfigSchema,
 } from './config';
 

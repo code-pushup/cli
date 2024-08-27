@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileExists } from '@code-pushup/utils';
-import { PackageManagerId } from '../config';
+import type { PackageManagerId } from '../config';
 import { deriveYarnVersion } from './derive-yarn';
 
 export async function derivePackageManagerInPackageJson(

@@ -2,7 +2,11 @@ import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { getPortalComparisonLink } from '@code-pushup/portal-client';
-import { Commit, Report, reportsDiffSchema } from '@code-pushup/models';
+import {
+  type Commit,
+  type Report,
+  reportsDiffSchema,
+} from '@code-pushup/models';
 import {
   COMMIT_ALT_MOCK,
   COMMIT_MOCK,
@@ -11,7 +15,7 @@ import {
   REPORT_MOCK,
   reportMock,
 } from '@code-pushup/test-utils';
-import { Diff, fileExists, readJsonFile } from '@code-pushup/utils';
+import { type Diff, fileExists, readJsonFile } from '@code-pushup/utils';
 import { compareReportFiles, compareReports } from './compare';
 
 describe('compareReportFiles', () => {

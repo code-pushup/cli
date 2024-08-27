@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Table, TableRowObject } from '@code-pushup/models';
+import type { Table, TableRowObject } from '@code-pushup/models';
 import {
   columnsToStringArray,
   getColumnAlignmentForIndex,

@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PersistConfig } from '@code-pushup/models';
+import type { PersistConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   getLogMessages,

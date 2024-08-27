@@ -11,17 +11,17 @@ import {
   readJsonFile,
 } from '@code-pushup/utils';
 import {
-  AuditSeverity,
-  DependencyGroup,
-  FinalJSPackagesPluginConfig,
-  PackageJsonPaths,
-  PackageManagerId,
+  type AuditSeverity,
+  type DependencyGroup,
+  type FinalJSPackagesPluginConfig,
+  type PackageJsonPaths,
+  type PackageManagerId,
   dependencyGroups,
 } from '../config';
 import { dependencyGroupToLong } from '../constants';
 import { packageManagers } from '../package-managers';
 import { auditResultToAuditOutput } from './audit/transform';
-import { AuditResult } from './audit/types';
+import type { AuditResult } from './audit/types';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
 import { outdatedResultToAuditOutput } from './outdated/transform';
 import { findAllPackageJson, getTotalDependencies } from './utils';

@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import {
   CONFIG_FILE_NAME,
-  CoreConfig,
+  type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';

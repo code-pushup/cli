@@ -2,13 +2,13 @@ import { bold } from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  AuditOutput,
-  CoreConfig,
+  type AuditOutput,
+  type CoreConfig,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';

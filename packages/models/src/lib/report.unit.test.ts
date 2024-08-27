@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditReport,
-  PluginReport,
-  Report,
+  type AuditReport,
+  type PluginReport,
+  type Report,
   auditReportSchema,
   pluginReportSchema,
   reportSchema,

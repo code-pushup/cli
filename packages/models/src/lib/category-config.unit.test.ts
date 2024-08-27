@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CategoryConfig,
-  CategoryRef,
+  type CategoryConfig,
+  type CategoryRef,
   categoriesSchema,
   categoryConfigSchema,
   categoryRefSchema,

@@ -1,4 +1,4 @@
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 
 // generic type param infers ScoredGroup if ScoredReport provided
 export function listGroupsFromAllPlugins<T extends Report>(

@@ -2,7 +2,7 @@ import { execFileSync, execSync } from 'node:child_process';
 import { objectToCliArgs } from '../../../packages/utils/src';
 import { removeColorCodes } from '../../../testing/test-utils/src';
 import { NPM_CHECK_SCRIPT } from './constants';
-import { NpmCheckToken } from './types';
+import type { NpmCheckToken } from './types';
 
 // @TODO The function is returning a strange string not matching the one in the function :)
 export function npmCheck({

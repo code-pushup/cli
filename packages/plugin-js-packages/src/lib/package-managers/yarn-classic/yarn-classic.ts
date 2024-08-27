@@ -1,6 +1,6 @@
 import { dependencyGroupToLong } from '../../constants';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { PackageManager } from '../types';
+import type { PackageManager } from '../types';
 import { yarnv1ToAuditResult } from './audit-result';
 import { yarnv1ToOutdatedResult } from './outdated-result';
 

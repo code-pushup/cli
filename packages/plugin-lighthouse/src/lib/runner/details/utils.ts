@@ -1,5 +1,5 @@
 import { bold } from 'ansis';
-import Details from 'lighthouse/types/lhr/audit-details';
+import type Details from 'lighthouse/types/lhr/audit-details';
 
 export class LighthouseAuditDetailsParsingError extends Error {
   constructor(

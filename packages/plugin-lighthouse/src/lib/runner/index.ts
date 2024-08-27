@@ -5,4 +5,4 @@ export {
   LIGHTHOUSE_GROUPS,
   DEFAULT_CLI_FLAGS,
 } from './constants';
-export { LighthouseCliFlags } from './types';
+export type { LighthouseCliFlags } from './types';

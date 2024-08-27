@@ -1,8 +1,8 @@
 import { join } from 'node:path';
 import {
-  Format,
-  PersistConfig,
-  Report,
+  type Format,
+  type PersistConfig,
+  type Report,
   reportSchema,
 } from '@code-pushup/models';
 import {

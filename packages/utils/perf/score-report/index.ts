@@ -1,5 +1,5 @@
 import * as Benchmark from 'benchmark';
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import { scoreReport } from '../../src/lib/reports/scoring';
 import { scoreReportOptimized0 } from './optimized0';
 import { scoreReportOptimized1 } from './optimized1';

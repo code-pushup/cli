@@ -1,10 +1,10 @@
-import {
+import type {
   AuditReport,
   CategoryRef,
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { ScoredGroup, ScoredReport } from '../../src/lib/reports/types';
+import type { ScoredGroup, ScoredReport } from '../../src/lib/reports/types';
 
 function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {

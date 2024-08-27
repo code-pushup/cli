@@ -1,4 +1,4 @@
-import { InlineText, md } from 'build-md';
+import { type InlineText, md } from 'build-md';
 import { describe, expect, it } from 'vitest';
 import {
   binaryIconSuffix,
@@ -7,7 +7,7 @@ import {
   categoryGroupItem,
   categoryRef,
 } from './generate-md-report-categoy-section';
-import { ScoredGroup, ScoredReport } from './types';
+import type { ScoredGroup, ScoredReport } from './types';
 
 // === Categories Overview Section
 

@@ -1,7 +1,7 @@
-import yargs, { Options } from 'yargs';
+import yargs, { type Options } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { cleanNpmrc } from '../utils';
-import { CleanNpmrcBinOptions } from './types';
+import type { CleanNpmrcBinOptions } from './types';
 
 const argv = yargs(hideBin(process.argv))
   .version(false)
