@@ -29,7 +29,7 @@ if (verbose && pid != null) {
 
 if (pid.length === 0 && commandMatch.length === 0 && !force) {
   throw new Error(
-    'This would killall processes. Please provide a PID or a command filter and a PID filter. (or pass --force if you really want to kill ALL processes)',
+    'This would kill all processes. Please provide a PID or a command filter and a PID filter. (or pass --force if you really want to kill ALL processes)',
   );
 }
 
