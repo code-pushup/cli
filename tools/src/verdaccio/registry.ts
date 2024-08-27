@@ -163,7 +163,7 @@ export function nxStartVerdaccioServer({
         },
       },
     })
-      // @TOSO reconsider this error handling
+      // @TODO reconsider this error handling
       .catch(error => {
         if (error.message !== 'Failed to start verdaccio: undefined') {
           console.error(
