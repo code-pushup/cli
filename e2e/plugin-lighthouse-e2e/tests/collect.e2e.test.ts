@@ -1,8 +1,5 @@
 import { join } from 'node:path';
-import {
-  createTreeWithEmptyV1Workspace,
-  createTreeWithEmptyWorkspace,
-} from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
+import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { afterEach, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
