@@ -5,7 +5,7 @@ import {
 } from '@nx/devkit';
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { someTargetsPresent } from '../utils';
+import { getAllDependencies, someTargetsPresent } from '../utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
 import { uniquePort } from './utils';
 
@@ -19,7 +19,7 @@ type CreateNodesOptions = {
 
 export const createNodes: CreateNodes = [
   '**/project.json',
-  (
+  async (
     projectConfigurationFile: string,
     opts: undefined | unknown,
     context: CreateNodesContext,
@@ -38,10 +38,11 @@ export const createNodes: CreateNodes = [
     );
 
     const hasPreVerdaccioTargets = someTargetsPresent(
-      projectConfiguration?.targets ?? {},
+      projectConfiguration.targets ?? {},
       preTargets,
     );
     const isRootProject = root === '.';
+
     if (!hasPreVerdaccioTargets && !isRootProject) {
       return {};
     }
@@ -49,11 +50,12 @@ export const createNodes: CreateNodes = [
     return {
       projects: {
         [root]: {
-          targets: verdaccioTargets({
+          targets: await verdaccioTargets({
             port,
             config,
             storage,
             preTargets,
+            packageName: projectConfiguration.name,
           }),
         },
       },
@@ -61,11 +63,14 @@ export const createNodes: CreateNodes = [
   },
 ];
 
-function verdaccioTargets({
+async function verdaccioTargets({
   port,
   config,
   storage,
-}: Required<Omit<CreateNodesOptions, 'verbose'>>) {
+  packageName,
+}: Required<Omit<CreateNodesOptions, 'verbose'>> & { packageName: string }) {
+  const dependencies = await getAllDependencies(packageName);
+
   return {
     [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
@@ -73,6 +78,26 @@ function verdaccioTargets({
         port,
         config,
         storage,
+      },
+    },
+    'publish-deps': {
+      executor: 'nx:run-commands',
+      options: {
+        commands: [
+          `npx nx run-many --t publish -p ${dependencies.join(
+            ',',
+          )} --exclude type:testing --parallel={args.parallel} --registry={args.registry} --userconfig={args.prefix}/.npmrc`,
+        ],
+      },
+    },
+    'install-deps': {
+      executor: 'nx:run-commands',
+      options: {
+        commands: [
+          `npx nx run-many --t npm-install -p ${dependencies.join(
+            ',',
+          )} --exclude type:testing --parallel={args.parallel} --prefix={args.prefix} --userconfig={args.prefix}/.npmrc`,
+        ],
       },
     },
   };

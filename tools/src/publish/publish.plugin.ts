@@ -73,7 +73,7 @@ function publishTargets({
 }) {
   return {
     publish: {
-      dependsOn: ['build'],
+      dependsOn: ['build', '^publish'],
       command: `tsx --tsconfig={args.tsconfig} {args.script} --projectName=${projectName} --directory=${directory} --registry={args.registry} --userconfig={args.userconfig} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
       options: {
         script: publishScript,

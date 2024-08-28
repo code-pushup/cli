@@ -1,7 +1,7 @@
-import { bold, red } from 'ansis';
+import { execFileSync } from 'node:child_process';
 import { setup as globalSetup } from './global-setup';
+import { objectToCliArgs } from './packages/nx-plugin';
 import { nxRunManyNpmInstall } from './tools/src/npm/utils';
-import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
 import {
   VerdaccioEnvResult,
   nxStartVerdaccioAndSetupEnv,
@@ -9,13 +9,14 @@ import {
 } from './tools/src/verdaccio/env';
 
 let activeRegistry: VerdaccioEnvResult;
+const projectName = process.env['NX_TASK_TARGET_PROJECT'];
 
 export async function setup() {
   await globalSetup();
 
   try {
     activeRegistry = await nxStartVerdaccioAndSetupEnv({
-      projectName: process.env['NX_TASK_TARGET_PROJECT'],
+      projectName,
       verbose: true,
     });
   } catch (error) {
@@ -23,14 +24,48 @@ export async function setup() {
     throw error;
   }
 
-  const { userconfig, workspaceRoot } = activeRegistry;
-  nxRunManyPublish({
-    registry: activeRegistry.registry.url,
-    nextVersion: findLatestVersion(),
-    userconfig,
-    parallel: 1,
-  });
-  nxRunManyNpmInstall({ prefix: workspaceRoot, userconfig, parallel: 1 });
+  const { workspaceRoot, registry } = activeRegistry;
+  const { url } = registry;
+  console.info(`Publish packages to registry: ${url}.`);
+  try {
+    execFileSync(
+      'npx',
+      [
+        'nx',
+        'publish-deps',
+        projectName,
+        ...objectToCliArgs({
+          prefix: workspaceRoot,
+          registry: url,
+          parallel: 9,
+        }),
+      ],
+      { env: process.env, stdio: 'inherit', shell: true },
+    );
+  } catch (error) {
+    console.error('Error publishing packages:\n' + error.message);
+    throw error;
+  }
+  console.info(`Install packages to registry: ${url}.`);
+  try {
+    execFileSync(
+      'npx',
+      [
+        'nx',
+        'install-deps',
+        projectName,
+        ...objectToCliArgs({
+          prefix: workspaceRoot,
+          registry: url,
+          parallel: 1,
+        }),
+      ],
+      { env: process.env, stdio: 'inherit', shell: true },
+    );
+  } catch (error) {
+    console.error('Error installing packages:\n' + error.message);
+    throw error;
+  }
 }
 
 export async function teardown() {

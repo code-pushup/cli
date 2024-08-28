@@ -4,7 +4,7 @@ export type PublishOptions = {
   userconfig?: string;
   registry?: string;
   tag?: string;
-  nextVersion: string;
+  nextVersion?: string;
   verbose?: boolean;
   parallel?: number;
 };

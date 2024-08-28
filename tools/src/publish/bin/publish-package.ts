@@ -7,7 +7,6 @@
  * You might need to authenticate with NPM before running this script.
  */
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { DEFAULT_REGISTRY } from 'verdaccio/build/lib/constants';
 import yargs from 'yargs';
@@ -15,7 +14,7 @@ import { hideBin } from 'yargs/helpers';
 import { objectToCliArgs } from '../../../../packages/utils/src';
 import { parseVersion } from '../../utils';
 import type { PublishOptions } from '../types';
-import { findLatestVersion, nxBumpVersion } from '../utils';
+import { nxBumpVersion } from '../utils';
 
 const argv = yargs(hideBin(process.argv))
   .options({
@@ -35,12 +34,12 @@ const {
   tag,
   registry = DEFAULT_REGISTRY,
   userconfig,
-  verbose,
 } = argv as PublishOptions;
-const version = nextVersion ?? findLatestVersion();
 
-// Updating the version in "package.json" before publishing
-nxBumpVersion({ nextVersion: version, directory, projectName });
+if (nextVersion) {
+  // Updating the version in "package.json" before publishing
+  nxBumpVersion({ nextVersion, directory, projectName });
+}
 
 try {
   execSync(
@@ -75,7 +74,7 @@ try {
   } else if (
     (error as Error).message.includes(`Cannot publish over existing version`)
   ) {
-    console.info(`Version ${version} already published to ${registry}.`);
+    console.info(`Version ${nextVersion} already published to ${registry}.`);
     process.exit(0);
   }
   throw error;

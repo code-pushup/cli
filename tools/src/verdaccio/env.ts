@@ -54,10 +54,19 @@ export function configureRegistry(
   }).join(' ')}`;
   if (verbose) {
     console.info(
-      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${userconfig}`,
+      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${setRegistry}`,
     );
   }
   execSync(setRegistry);
+  /*
+  const setSave = `npm config set save="false" ${objectToCliArgs({ userconfig }  ).join(' ')}`;
+  if (verbose) {
+    console.info(
+      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${setSave}`,
+    );
+  }
+  execSync(setSave);
+ */
 }
 
 export function unconfigureRegistry(
