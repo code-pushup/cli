@@ -2,8 +2,8 @@
 import { bold, gray, red } from 'ansis';
 import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
+// can't import from utils
 import { objectToCliArgs } from '../../../packages/nx-plugin/src';
-// cant import from utils
 import {
   setupTestFolder,
   teardownTestFolder,
