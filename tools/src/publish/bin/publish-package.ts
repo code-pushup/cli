@@ -73,7 +73,7 @@ try {
     );
     process.exit(1);
   } else if (
-    (error as Error).message.includes(`Cannot publish over existing version`)
+    error instanceof Error && error.message.includes(`Cannot publish over existing version`)
   ) {
     console.info(`Version ${version} already published to ${registry}.`);
     process.exit(0);
