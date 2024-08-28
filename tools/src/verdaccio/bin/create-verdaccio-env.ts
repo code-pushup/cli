@@ -2,7 +2,7 @@ import yargs, { Options } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {
   type StartVerdaccioAndSetupEnvOptions,
-  nxStartVerdaccioAndSetupEnv,
+  startVerdaccioAndSetupEnv,
 } from '../env';
 
 const argv = yargs(hideBin(process.argv))
@@ -14,6 +14,6 @@ const argv = yargs(hideBin(process.argv))
   } satisfies Partial<Record<keyof StartVerdaccioAndSetupEnvOptions, Options>>).argv;
 
 (async () => {
-  await nxStartVerdaccioAndSetupEnv(argv as StartVerdaccioAndSetupEnvOptions);
+  await startVerdaccioAndSetupEnv(argv as StartVerdaccioAndSetupEnvOptions);
   process.exit(0);
 })();

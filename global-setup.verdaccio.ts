@@ -4,8 +4,8 @@ import { nxRunManyNpmInstall } from './tools/src/npm/utils';
 import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
 import {
   VerdaccioEnvResult,
-  nxStartVerdaccioAndSetupEnv,
   nxStopVerdaccioAndTeardownEnv,
+  startVerdaccioAndSetupEnv,
 } from './tools/src/verdaccio/env';
 
 let activeRegistry: VerdaccioEnvResult;
@@ -15,7 +15,7 @@ export async function setup() {
   await globalSetup();
 
   try {
-    activeRegistry = await nxStartVerdaccioAndSetupEnv({
+    activeRegistry = await startVerdaccioAndSetupEnv({
       projectName,
       verbose: true,
     });

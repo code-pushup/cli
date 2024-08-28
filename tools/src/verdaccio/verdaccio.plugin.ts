@@ -68,7 +68,6 @@ async function verdaccioTargets({
   port,
   config,
   storage,
-  packageName,
 }: Required<Omit<CreateNodesOptions, 'verbose'>> & { packageName: string }) {
   const dependencies: string[] = []; //await getAllDependencies(packageName);
 
@@ -81,13 +80,8 @@ async function verdaccioTargets({
         storage,
       },
     },
-    [START_VERDACCIO_ENV_TARGET_NAME]: {
-      command: 'tsx -tsconfig=tools/tsconfig.json tools/src/verdaccio/bin/',
-      options: {
-        port,
-        config,
-        storage,
-      },
+    mmm: {
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --pkgRange=@{args.pkgVersion} --registry={args.registry}`,
     },
     'publish-deps': {
       executor: 'nx:run-commands',

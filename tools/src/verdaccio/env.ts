@@ -110,7 +110,7 @@ export type VerdaccioEnvResult = VerdaccioEnv & {
   stop: () => void;
 };
 
-export async function nxStartVerdaccioAndSetupEnv({
+export async function startVerdaccioAndSetupEnv({
   projectName,
   port,
   verbose = false,

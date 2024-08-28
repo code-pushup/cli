@@ -82,7 +82,7 @@ describe('nx-plugin', () => {
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(project, {
-      cwd
+      cwd,
     });
 
     expect(code).toBe(0);
