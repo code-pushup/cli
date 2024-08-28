@@ -1,7 +1,7 @@
 import { bold, gray, red } from 'ansis';
 import { executeProcess } from '@code-pushup/utils';
+// can't import from utils
 import { objectToCliArgs } from '../../../packages/nx-plugin';
-// cant import from utils
 import { teardownTestFolder } from '../../../testing/test-setup/src';
 import { killProcesses, listProcess } from '../debug/utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
@@ -193,6 +193,9 @@ export async function nxStartVerdaccioServer({
         });
     })
       // in case the server dies unexpectedly clean folder
-      .catch(() => teardownTestFolder(storage))
+      .catch((error: unknown) => {
+        teardownTestFolder(storage);
+        throw error;
+      })
   );
 }

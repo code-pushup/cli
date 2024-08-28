@@ -1,9 +1,9 @@
-// eslint-disable-next-line n/no-sync
 import { bold, gray, red } from 'ansis';
+// eslint-disable-next-line n/no-sync
 import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
+// can't import from utils
 import { objectToCliArgs } from '../../../packages/nx-plugin/src';
-// cant import from utils
 import {
   setupTestFolder,
   teardownTestFolder,
