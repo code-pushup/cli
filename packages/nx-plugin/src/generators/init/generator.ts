@@ -1,7 +1,7 @@
 /* eslint-disable functional/immutable-data */
 import {
-  NxJsonConfiguration,
-  Tree,
+  type NxJsonConfiguration,
+  type Tree,
   addDependenciesToPackageJson,
   convertNxGenerator,
   logger,
@@ -11,7 +11,7 @@ import {
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
-import { PackageJson } from 'nx/src/utils/package-json';
+import type { PackageJson } from 'nx/src/utils/package-json';
 import { PACKAGE_NAME } from '../../internal/constants';
 import {
   cpCliVersion,
@@ -19,7 +19,7 @@ import {
   cpNxPluginVersion,
   cpUtilsVersion,
 } from '../../internal/versions';
-import { InitGeneratorSchema } from './schema';
+import type { InitGeneratorSchema } from './schema';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson<PackageJson>(host, 'package.json');

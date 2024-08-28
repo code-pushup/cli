@@ -1,8 +1,8 @@
-import { InlineText, MarkdownDocument, md } from 'build-md';
-import { ReportsDiff } from '@code-pushup/models';
+import { type InlineText, MarkdownDocument, md } from 'build-md';
+import type { ReportsDiff } from '@code-pushup/models';
 import { pluralize, pluralizeToken } from '../formatting';
 import { objectToEntries } from '../transform';
-import { DiffOutcome } from './types';
+import type { DiffOutcome } from './types';
 
 // to prevent exceeding Markdown comment character limit
 const MAX_ROWS = 100;

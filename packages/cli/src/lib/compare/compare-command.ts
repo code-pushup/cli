@@ -1,10 +1,10 @@
 import { bold, gray } from 'ansis';
-import { CommandModule } from 'yargs';
+import type { CommandModule } from 'yargs';
 import { compareReportFiles } from '@code-pushup/core';
-import { PersistConfig, UploadConfig } from '@code-pushup/models';
+import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants';
-import { CompareOptions } from '../implementation/compare.model';
+import type { CompareOptions } from '../implementation/compare.model';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options';
 
 export function yargsCompareCommandObject() {

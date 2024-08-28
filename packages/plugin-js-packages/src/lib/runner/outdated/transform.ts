@@ -1,11 +1,11 @@
 import { md } from 'build-md';
-import { ReleaseType, clean, diff, neq } from 'semver';
+import { type ReleaseType, clean, diff, neq } from 'semver';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
-import { DependencyGroup, PackageManagerId } from '../../config';
+import type { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
 import { RELEASE_TYPES, outdatedSeverity } from './constants';
-import { OutdatedResult } from './types';
+import type { OutdatedResult } from './types';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,

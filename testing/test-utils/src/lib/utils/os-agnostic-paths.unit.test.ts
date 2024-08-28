@@ -1,5 +1,5 @@
 import {
-  MockInstance,
+  type MockInstance,
   afterEach,
   beforeEach,
   describe,

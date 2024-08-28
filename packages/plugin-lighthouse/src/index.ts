@@ -8,8 +8,8 @@ export {
 export {
   lighthouseAuditRef,
   lighthouseGroupRef,
-  LighthouseGroupSlugs,
+  type LighthouseGroupSlugs,
 } from './lib/utils';
-export { LighthouseOptions } from './lib/types';
+export type { LighthouseOptions } from './lib/types';
 export { lighthousePlugin } from './lib/lighthouse-plugin';
 export default lighthousePlugin;

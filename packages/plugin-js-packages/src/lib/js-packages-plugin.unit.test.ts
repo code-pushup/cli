@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
+import type { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { jsPackagesPlugin } from './js-packages-plugin';
 

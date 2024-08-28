@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, PluginConfig } from '@code-pushup/models';
+import type { CoreConfig, PluginConfig } from '@code-pushup/models';
 import { mergeConfigs } from './merge-configs';
 
 const MOCK_CONFIG_PERSIST = {

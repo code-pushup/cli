@@ -1,5 +1,5 @@
-import { Audit, AuditOutput, Issue } from '@code-pushup/models';
-import { SourceResults } from './types';
+import type { Audit, AuditOutput, Issue } from '@code-pushup/models';
+import type { SourceResults } from './types';
 import {
   assertPropertyEmpty,
   assertPropertyEqual,

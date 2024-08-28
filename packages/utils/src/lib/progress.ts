@@ -1,5 +1,5 @@
 import { black, bold, gray, green } from 'ansis';
-import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
+import { type CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 import { TERMINAL_WIDTH } from './reports/constants';
 
 type BarStyles = 'active' | 'done' | 'idle';

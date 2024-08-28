@@ -7,7 +7,7 @@ import {
   pluginWorkDir,
   readJsonFile,
 } from '@code-pushup/utils';
-import { ESLintPluginRunnerConfig, type ESLintTarget } from '../config';
+import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config';
 import { lint } from './lint';
 import { lintResultsToAudits, mergeLinterOutputs } from './transform';
 import type { LinterOutput } from './types';

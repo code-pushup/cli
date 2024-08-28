@@ -1,5 +1,9 @@
 import { join } from 'node:path';
-import { OnProgress, RunnerConfig, RunnerFunction } from '@code-pushup/models';
+import type {
+  OnProgress,
+  RunnerConfig,
+  RunnerFunction,
+} from '@code-pushup/models';
 import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
 
 export type RunnerResult = {

@@ -1,4 +1,4 @@
-import { MockInstance, expect, vi } from 'vitest';
+import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import {
   parseAutorunExecutorOnlyOptions,

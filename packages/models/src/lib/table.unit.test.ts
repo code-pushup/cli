@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  Table,
-  TableAlignment,
-  TableColumnObject,
-  TableColumnPrimitive,
-  TableRowObject,
-  TableRowPrimitive,
+  type Table,
+  type TableAlignment,
+  type TableColumnObject,
+  type TableColumnPrimitive,
+  type TableRowObject,
+  type TableRowPrimitive,
   tableAlignmentSchema,
   tableColumnObjectSchema,
   tableColumnPrimitiveSchema,

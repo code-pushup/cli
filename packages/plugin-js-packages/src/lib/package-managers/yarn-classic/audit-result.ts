@@ -1,7 +1,7 @@
 import { fromJsonLines } from '@code-pushup/utils';
-import { AuditResult, Vulnerability } from '../../runner/audit/types';
+import type { AuditResult, Vulnerability } from '../../runner/audit/types';
 import { filterAuditResult } from '../../runner/utils';
-import {
+import type {
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
   Yarnv1AuditSummary,

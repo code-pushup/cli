@@ -4,10 +4,10 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { CoverageResult } from '../config';
+import type { CoverageResult } from '../config';
 import {
-  JestCoverageConfig,
-  VitestCoverageConfig,
+  type JestCoverageConfig,
+  type VitestCoverageConfig,
   getCoveragePathForJest,
   getCoveragePathForVitest,
   getCoveragePathsForTarget,

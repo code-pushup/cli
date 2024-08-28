@@ -1,17 +1,17 @@
 export { exists } from '@code-pushup/models';
-export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
+export { type Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
 export { stringifyError } from './lib/errors';
 export {
-  ProcessConfig,
+  type ProcessConfig,
   ProcessError,
-  ProcessObserver,
-  ProcessResult,
+  type ProcessObserver,
+  type ProcessResult,
   executeProcess,
 } from './lib/execute-process';
 export {
-  CrawlFileSystemOptions,
-  FileResult,
-  MultipleFileResults,
+  type CrawlFileSystemOptions,
+  type FileResult,
+  type MultipleFileResults,
   crawlFileSystem,
   directoryExists,
   ensureDirectoryExists,
@@ -45,7 +45,7 @@ export {
   toGitPath,
 } from './lib/git/git';
 export {
-  LogResult,
+  type LogResult,
   getCurrentBranchOrTag,
   getHashFromTag,
   getHashes,
@@ -58,9 +58,9 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { CliUi, Column, link, ui } from './lib/logging';
+export { type CliUi, type Column, link, ui } from './lib/logging';
 export { mergeConfigs } from './lib/merge-configs';
-export { ProgressBar, getProgressBar } from './lib/progress';
+export { type ProgressBar, getProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -80,7 +80,7 @@ export { loadReport } from './lib/reports/load-report';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
-export {
+export type {
   ScoredCategoryConfig,
   ScoredGroup,
   ScoredReport,
@@ -93,7 +93,7 @@ export {
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {
-  CliArgsObject,
+  type CliArgsObject,
   capitalize,
   countOccurrences,
   distinct,
@@ -110,7 +110,7 @@ export {
   toUnixNewlines,
   toUnixPath,
 } from './lib/transform';
-export {
+export type {
   ExcludeNullFromPropertyTypes,
   ExtractArray,
   ExtractArrays,

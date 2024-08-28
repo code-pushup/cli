@@ -1,10 +1,10 @@
 import type { RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import { dirname } from 'node:path';
-import { AuditOutputs, RunnerFunction } from '@code-pushup/models';
+import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import { ensureDirectoryExists } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants';
-import { LighthouseCliFlags } from './types';
+import type { LighthouseCliFlags } from './types';
 import {
   determineAndSetLogLevel,
   getConfig,

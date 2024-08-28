@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AuditReport, Issue, Table } from '@code-pushup/models';
+import type { AuditReport, Issue, Table } from '@code-pushup/models';
 import { tableSection } from './formatting';
 import {
   aboutSection,
@@ -9,7 +9,7 @@ import {
   auditsSection,
   generateMdReport,
 } from './generate-md-report';
-import { ScoredReport } from './types';
+import type { ScoredReport } from './types';
 
 const baseScoredReport = {
   date: '2025.01.01',

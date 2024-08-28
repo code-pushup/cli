@@ -1,12 +1,12 @@
 import {
-  CoreConfig,
-  PersistConfig,
+  type CoreConfig,
+  type PersistConfig,
   pluginReportSchema,
 } from '@code-pushup/models';
 import { verboseUtils } from '@code-pushup/utils';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
-import { GlobalOptions } from './types';
+import type { GlobalOptions } from './types';
 
 export type CollectAndPersistReportsOptions = Required<
   Pick<CoreConfig, 'plugins' | 'categories'>

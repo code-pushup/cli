@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, Format } from '@code-pushup/models';
+import type { CoreConfig, Format } from '@code-pushup/models';
 import { yargsHistoryOptionsDefinition } from './history/history.options';
-import { CompareOptions } from './implementation/compare.model';
+import type { CompareOptions } from './implementation/compare.model';
 import { yargsCompareOptionsDefinition } from './implementation/compare.options';
-import {
+import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './implementation/core-config.model';
-import { GeneralCliOptions } from './implementation/global.model';
-import { MergeDiffsOptions } from './implementation/merge-diffs.model';
+import type { GeneralCliOptions } from './implementation/global.model';
+import type { MergeDiffsOptions } from './implementation/merge-diffs.model';
 import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options';
-import { OnlyPluginsOptions } from './implementation/only-plugins.model';
+import type { OnlyPluginsOptions } from './implementation/only-plugins.model';
 import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
-import { SkipPluginsOptions } from './implementation/skip-plugins.model';
+import type { SkipPluginsOptions } from './implementation/skip-plugins.model';
 import { yargsSkipPluginsOptionsDefinition } from './implementation/skip-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';

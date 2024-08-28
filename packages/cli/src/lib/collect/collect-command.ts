@@ -1,7 +1,7 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
-  CollectAndPersistReportsOptions,
+  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
 import { link, ui } from '@code-pushup/utils';

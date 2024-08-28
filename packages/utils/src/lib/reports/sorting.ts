@@ -1,10 +1,10 @@
-import {
+import type {
   AuditReport,
   CategoryRef,
   Group,
   PluginReport,
 } from '@code-pushup/models';
-import {
+import type {
   ScoredGroup,
   ScoredReport,
   SortableAuditReport,

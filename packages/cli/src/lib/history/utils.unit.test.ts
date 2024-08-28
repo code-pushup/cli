@@ -1,6 +1,6 @@
 import { describe, expect, vi } from 'vitest';
-import { type HistoryOptions } from '@code-pushup/core';
-import { HistoryCliOptions } from './history.model';
+import type { HistoryOptions } from '@code-pushup/core';
+import type { HistoryCliOptions } from './history.model';
 import { normalizeHashOptions } from './utils';
 
 vi.mock('simple-git', async () => {

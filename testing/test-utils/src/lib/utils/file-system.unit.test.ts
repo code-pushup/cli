@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
-  MockInstance,
+  type MockInstance,
   afterEach,
   beforeEach,
   describe,

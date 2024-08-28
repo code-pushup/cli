@@ -1,5 +1,5 @@
 import { filterItemRefsBy } from '@code-pushup/utils';
-import { SkipPluginsOptions } from './skip-plugins.model';
+import type { SkipPluginsOptions } from './skip-plugins.model';
 import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';
 
 export function skipPluginsMiddleware<T extends SkipPluginsOptions>(

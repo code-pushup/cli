@@ -1,5 +1,5 @@
 import { simpleGit } from 'simple-git';
-import { ReportsDiff } from '@code-pushup/models';
+import type { ReportsDiff } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 

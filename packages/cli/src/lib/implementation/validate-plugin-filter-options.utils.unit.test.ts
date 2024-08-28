@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';

@@ -1,8 +1,8 @@
 import { objectToKeys } from '@code-pushup/utils';
-import { DependencyGroup } from '../../config';
+import type { DependencyGroup } from '../../config';
 import { filterAuditResult } from '../../runner/utils';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { AuditResults, PackageManager } from '../types';
+import type { AuditResults, PackageManager } from '../types';
 import { pnpmToAuditResult } from './audit-result';
 import { pnpmToOutdatedResult } from './outdated-result';
 

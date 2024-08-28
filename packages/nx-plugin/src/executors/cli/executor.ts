@@ -1,9 +1,9 @@
-import { ExecutorContext, logger } from '@nx/devkit';
+import { type ExecutorContext, logger } from '@nx/devkit';
 // eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli';
 import { normalizeContext } from '../internal/context';
-import { AutorunCommandExecutorOptions } from './schema';
+import type { AutorunCommandExecutorOptions } from './schema';
 import { parseAutorunExecutorOptions } from './utils';
 
 export type ExecutorOutput = {

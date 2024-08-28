@@ -1,5 +1,5 @@
-import { InlineText, MarkdownDocument, md } from 'build-md';
-import { AuditReport, Issue, Report } from '@code-pushup/models';
+import { type InlineText, MarkdownDocument, md } from 'build-md';
+import type { AuditReport, Issue, Report } from '@code-pushup/models';
 import { formatDate, formatDuration } from '../formatting';
 import { HIERARCHY } from '../text-formats';
 import { FOOTER_PREFIX, README_LINK, REPORT_HEADLINE_TEXT } from './constants';
@@ -8,7 +8,7 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
-import { ScoredReport } from './types';
+import type { ScoredReport } from './types';
 import { formatReportScore, scoreMarker, severityMarker } from './utils';
 
 export function auditDetailsAuditValue({

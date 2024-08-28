@@ -1,5 +1,5 @@
-import { TargetConfiguration } from '@nx/devkit';
-import { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
+import type { TargetConfiguration } from '@nx/devkit';
+import type { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
 import { objectToCliArgs } from '../../executors/internal/cli';
 import { PACKAGE_NAME } from '../../internal/constants';
 import { CP_TARGET_NAME } from '../constants';

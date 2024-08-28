@@ -5,11 +5,11 @@ import {
   objectToKeys,
   readJsonFile,
 } from '@code-pushup/utils';
-import { AuditResult, Vulnerability } from './audit/types';
+import type { AuditResult, Vulnerability } from './audit/types';
 import {
-  DependencyGroupLong,
-  DependencyTotals,
-  PackageJson,
+  type DependencyGroupLong,
+  type DependencyTotals,
+  type PackageJson,
   dependencyGroupLong,
 } from './outdated/types';
 

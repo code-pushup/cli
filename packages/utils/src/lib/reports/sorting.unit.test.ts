@@ -4,7 +4,7 @@ import {
   getSortableGroupByRef,
   getSortedGroupAudits,
 } from './sorting';
-import { SortableAuditReport, SortableGroup } from './types';
+import type { SortableAuditReport, SortableGroup } from './types';
 
 describe('getSortableAuditByRef', () => {
   it('should return a sortable audit', () => {

@@ -1,16 +1,16 @@
 import { bold } from 'ansis';
 import {
-  Audit,
-  AuditOutput,
-  AuditOutputs,
-  AuditReport,
-  OnProgress,
-  PluginConfig,
-  PluginReport,
+  type Audit,
+  type AuditOutput,
+  type AuditOutputs,
+  type AuditReport,
+  type OnProgress,
+  type PluginConfig,
+  type PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import {
-  ProgressBar,
+  type ProgressBar,
   getProgressBar,
   groupByStatus,
   logMultipleResults,

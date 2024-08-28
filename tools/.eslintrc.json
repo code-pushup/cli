@@ -1,0 +1,15 @@
+{
+  "extends": "../.eslintrc.json",
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": "*.ts",
+      "parserOptions": {
+        "project": ["tools/tsconfig.tools.json"]
+      },
+      "rules": {
+        "@nx/enforce-module-boundaries": "off"
+      }
+    }
+  ]
+}

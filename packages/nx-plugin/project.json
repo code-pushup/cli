@@ -37,7 +37,6 @@
         ]
       }
     },
-    "publish": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -62,5 +61,5 @@
       }
     }
   },
-  "tags": ["scope:tooling", "type:feature"]
+  "tags": ["scope:tooling", "type:feature", "publishable"]
 }

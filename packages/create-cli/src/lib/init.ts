@@ -1,5 +1,5 @@
 import {
-  ProcessConfig,
+  type ProcessConfig,
   executeProcess,
   objectToCliArgs,
 } from '@code-pushup/utils';

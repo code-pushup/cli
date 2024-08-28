@@ -1,14 +1,14 @@
 import {
-  HeadingLevel,
+  type HeadingLevel,
   MarkdownDocument,
-  TableColumnObject,
-  TableRow,
+  type TableColumnObject,
+  type TableRow,
   md,
 } from 'build-md';
-import { ReportsDiff } from '@code-pushup/models';
+import type { ReportsDiff } from '@code-pushup/models';
 import { HIERARCHY } from '../text-formats';
 import { toArray } from '../transform';
-import { WithRequired } from '../types';
+import type { WithRequired } from '../types';
 import {
   changesToDiffOutcomes,
   compareDiffsBy,
@@ -22,7 +22,7 @@ import {
   summarizeDiffOutcomes,
   summarizeUnchanged,
 } from './generate-md-reports-diff-utils';
-import { DiffOutcome } from './types';
+import type { DiffOutcome } from './types';
 import {
   formatScoreChange,
   formatScoreWithColor,

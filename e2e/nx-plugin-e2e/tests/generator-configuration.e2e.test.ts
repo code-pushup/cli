@@ -1,6 +1,6 @@
-import { Tree } from '@nx/devkit';
+import type { Tree } from '@nx/devkit';
 import { readFile, rm } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
@@ -10,19 +10,11 @@ import {
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
-// @TODO replace with default bin after https://github.com/code-pushup/cli/issues/643
-function relativePathToDist(testDir: string): string {
-  return relative(
-    join(process.cwd(), testDir),
-    join(process.cwd(), 'dist/packages/nx-plugin'),
-  );
-}
-
 describe('nx-plugin g configuration', () => {
   let tree: Tree;
   const project = 'my-lib';
   const projectRoot = join('libs', project);
-  const baseDir = 'tmp/nx-plugin-e2e/generators/configuration';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/configuration';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -41,7 +33,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:configuration `,
+        '@code-pushup/nx-plugin:configuration',
         project,
         '--targetName=code-pushup',
       ],
@@ -58,7 +50,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+      'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -89,7 +81,7 @@ describe('nx-plugin g configuration', () => {
 
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'g', `${relativePathToDist(cwd)}:configuration `, project],
+      args: ['nx', 'g', '@code-pushup/nx-plugin:configuration', project],
       cwd,
     });
 
@@ -102,7 +94,7 @@ describe('nx-plugin g configuration', () => {
 
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+      'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -131,7 +123,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:configuration `,
+        '@code-pushup/nx-plugin:configuration',
         project,
         '--skipConfig',
       ],
@@ -143,7 +135,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+      'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
@@ -176,7 +168,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:configuration `,
+        '@code-pushup/nx-plugin:configuration',
         project,
         '--skipTarget',
       ],
@@ -187,7 +179,7 @@ describe('nx-plugin g configuration', () => {
     const cleanedStdout = removeColorCodes(stdout);
 
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:configuration`,
+      'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
     expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
@@ -220,7 +212,7 @@ describe('nx-plugin g configuration', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:configuration `,
+        '@code-pushup/nx-plugin:configuration',
         project,
         '--dryRun',
       ],

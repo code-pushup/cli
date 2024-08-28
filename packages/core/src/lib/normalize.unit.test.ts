@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { describe, expect } from 'vitest';
-import { AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput, Issue } from '@code-pushup/models';
 import { normalizeAuditOutputs, normalizeIssue } from './normalize';
 
 vi.mock('@code-pushup/utils', async () => {

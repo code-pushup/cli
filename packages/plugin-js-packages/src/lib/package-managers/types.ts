@@ -1,7 +1,7 @@
 import type { MaterialIcon } from '@code-pushup/models';
-import { DependencyGroup, PackageManagerId } from '../config';
-import { AuditResult } from '../runner/audit/types';
-import { OutdatedResult } from '../runner/outdated/types';
+import type { DependencyGroup, PackageManagerId } from '../config';
+import type { AuditResult } from '../runner/audit/types';
+import type { OutdatedResult } from '../runner/outdated/types';
 
 export type AuditResults = Partial<Record<DependencyGroup, AuditResult>>;
 

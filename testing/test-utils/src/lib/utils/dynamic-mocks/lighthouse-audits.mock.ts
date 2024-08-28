@@ -1,4 +1,4 @@
-import { AuditReport } from '@code-pushup/models';
+import type { AuditReport } from '@code-pushup/models';
 
 export const LIGHTHOUSE_AUDITS_CHANGES: Partial<
   Record<

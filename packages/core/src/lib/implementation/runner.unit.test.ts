@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { AuditOutputs, auditOutputsSchema } from '@code-pushup/models';
+import { type AuditOutputs, auditOutputsSchema } from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
@@ -7,7 +7,7 @@ import {
   MINIMAL_RUNNER_FUNCTION_MOCK,
 } from '@code-pushup/test-utils';
 import {
-  RunnerResult,
+  type RunnerResult,
   executeRunnerConfig,
   executeRunnerFunction,
 } from './runner';

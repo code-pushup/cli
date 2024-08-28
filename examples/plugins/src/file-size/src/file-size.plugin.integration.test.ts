@@ -8,7 +8,7 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
-  PluginOptions,
+  type PluginOptions,
   audits,
   create,
   recommendedRefs,

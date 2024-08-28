@@ -1,5 +1,5 @@
-import { GlobalOptions } from '@code-pushup/core';
-import { CoreConfig } from '@code-pushup/models';
+import type { GlobalOptions } from '@code-pushup/core';
+import type { CoreConfig } from '@code-pushup/models';
 
 export type OnlyPluginsCliOptions = {
   onlyPlugins?: string[];

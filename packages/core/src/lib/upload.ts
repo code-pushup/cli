@@ -2,10 +2,10 @@ import {
   type SaveReportMutationVariables,
   uploadToPortal,
 } from '@code-pushup/portal-client';
-import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
+import type { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { loadReport } from '@code-pushup/utils';
 import { reportToGQL } from './implementation/report-to-gql';
-import { GlobalOptions } from './types';
+import type { GlobalOptions } from './types';
 
 export type UploadOptions = { upload?: UploadConfig } & {
   persist: Required<PersistConfig>;
