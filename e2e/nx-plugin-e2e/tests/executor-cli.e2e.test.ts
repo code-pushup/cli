@@ -1,15 +1,11 @@
-import { type Tree, updateProjectConfiguration } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
-import { join, relative } from 'node:path';
-import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterEach, expect } from 'vitest';
-import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
-import {
-  generateWorkspaceAndProject,
-  materializeTree,
-} from '@code-pushup/test-nx-utils';
-import { removeColorCodes } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import {type Tree, updateProjectConfiguration} from '@nx/devkit';
+import {join, relative} from 'node:path';
+import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
+import {afterEach, expect} from 'vitest';
+import {generateCodePushupConfig} from '@code-pushup/nx-plugin';
+import {generateWorkspaceAndProject, materializeTree,} from '@code-pushup/test-nx-utils';
+import {removeColorCodes} from '@code-pushup/test-utils';
+import {executeProcess, readJsonFile} from '@code-pushup/utils';
 
 function relativePathToCwd(testDir: string): string {
   return relative(join(process.cwd(), testDir), process.cwd());
