@@ -6,11 +6,11 @@ import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import { materializeTree } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
+  createNpmWorkspace,
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { createNpmWorkspace } from '../../create-cli-e2e/mocks/create-npm-workshpace';
 
 async function setupWorkspace(cwd: string) {
   const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
@@ -39,8 +39,8 @@ describe('collect report with lighthouse-plugin NPM package', () => {
     const cwd = join(baseDir, 'create-report');
     await setupWorkspace(cwd);
     const { code, stdout } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress'],
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd,
     });
 

@@ -1,9 +1,8 @@
 import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import { createNpmWorkspace, removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import { createNpmWorkspace } from '../mocks/create-npm-workshpace';
 
 describe('create-cli-node', () => {
   const baseDir = join('tmp', 'create-cli-e2e');
