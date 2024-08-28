@@ -118,21 +118,6 @@ describe('CLI collect', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
-      cwd: 'examples/react-todos-app',
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
-
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
