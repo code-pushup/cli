@@ -1,6 +1,7 @@
 import {
   type ProjectGraph,
   type TargetConfiguration,
+  createProjectGraphAsync,
   readCachedProjectGraph,
 } from '@nx/devkit';
 
@@ -38,8 +39,14 @@ export function parseVersion(rawVersion: string) {
 export async function getAllDependencies(
   projectName: string,
 ): Promise<string[]> {
-  // TODO check if the caching problems are introduced by readCachedProjectGraph
-  const projectGraph: ProjectGraph = await readCachedProjectGraph();
+  let projectGraph: ProjectGraph;
+  try {
+    await createProjectGraphAsync();
+    projectGraph = readCachedProjectGraph();
+  } catch (e) {
+    console.error('Error reading project graph from cache.');
+    return [];
+  }
 
   // Helper function to recursively collect dependencies
   const collectDependencies = (

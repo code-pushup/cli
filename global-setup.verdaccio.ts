@@ -1,7 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { setup as globalSetup } from './global-setup';
 import { objectToCliArgs } from './packages/nx-plugin';
-import { nxRunManyNpmInstall } from './tools/src/npm/utils';
 import {
   VerdaccioEnvResult,
   nxStartVerdaccioAndSetupEnv,
@@ -37,7 +36,7 @@ export async function setup() {
         ...objectToCliArgs({
           prefix: workspaceRoot,
           registry: url,
-          parallel: 9,
+          parallel: 1,
         }),
       ],
       { env: process.env, stdio: 'inherit', shell: true },

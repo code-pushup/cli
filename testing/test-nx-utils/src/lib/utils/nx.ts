@@ -33,16 +33,34 @@ export function executorContext<
   };
 }
 
+export const DISABLE_NX_CACHE_ENV =
+  'NX_DAEMON=false\nNX_SKIP_NX_CACHE=true\nNX_CACHE_PROJECT_GRAPH=false\n';
+export const DISABLE_NX_CACHE_ENVOBJ = {
+  NX_DAEMON: 'false',
+  NX_SKIP_NX_CACHE: 'true',
+  NX_CACHE_PROJECT_GRAPH: 'false',
+};
+
+type GenerateWorkspaceAndProjectOptions = Omit<
+  Partial<LibraryGeneratorSchema>,
+  'name'
+> & {
+  name: string;
+  env?: string;
+};
+
 export async function generateWorkspaceAndProject(
-  options:
-    | string
-    | (Omit<Partial<LibraryGeneratorSchema>, 'name'> & {
-        name: string;
-      }),
+  options: string | GenerateWorkspaceAndProjectOptions,
 ) {
   const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
-  const { name, ...normalizedOptions } =
-    typeof options === 'string' ? { name: options } : options;
+  const { name, env, ...normalizedOptions } = (
+    typeof options === 'string' ? { name: options } : options
+  ) as GenerateWorkspaceAndProjectOptions;
+
+  if (env) {
+    tree.write('.env', env);
+  }
+
   await libraryGenerator(tree, {
     name,
     directory: 'libs',
@@ -76,13 +94,13 @@ export function registerPluginInWorkspace(
 }
 
 export async function nxShowProjectJson<T extends ProjectConfiguration>(
-  cwd: string,
   project: string,
+  opt: { cwd: string; env?: Record<string, string> },
 ) {
   const { code, stderr, stdout } = await executeProcess({
     command: 'npx',
     args: ['nx', 'show', `project --json  ${project}`],
-    cwd,
+    ...opt,
   });
 
   return { code, stderr, projectJson: JSON.parse(stdout) as T };

@@ -6,7 +6,10 @@ import {
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { getAllDependencies, someTargetsPresent } from '../utils';
-import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
+import {
+  START_VERDACCIO_ENV_TARGET_NAME,
+  START_VERDACCIO_SERVER_TARGET_NAME,
+} from './constants';
 import { uniquePort } from './utils';
 
 type CreateNodesOptions = {
@@ -28,10 +31,8 @@ export const createNodes: CreateNodes = [
       port = uniquePort(),
       config = '.verdaccio/config.yml',
       storage = 'tmp/local-registry/storage',
-      verbose = false,
       preTargets = ['e2e'],
     } = (opts ?? {}) as CreateNodesOptions;
-    const { workspaceRoot } = context;
     const root = dirname(projectConfigurationFile);
     const projectConfiguration: ProjectConfiguration = readJsonFile(
       projectConfigurationFile,
@@ -69,11 +70,19 @@ async function verdaccioTargets({
   storage,
   packageName,
 }: Required<Omit<CreateNodesOptions, 'verbose'>> & { packageName: string }) {
-  const dependencies = await getAllDependencies(packageName);
+  const dependencies: string[] = []; //await getAllDependencies(packageName);
 
   return {
     [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
+      options: {
+        port,
+        config,
+        storage,
+      },
+    },
+    [START_VERDACCIO_ENV_TARGET_NAME]: {
+      command: 'tsx -tsconfig=tools/tsconfig.json tools/src/verdaccio/bin/',
       options: {
         port,
         config,
