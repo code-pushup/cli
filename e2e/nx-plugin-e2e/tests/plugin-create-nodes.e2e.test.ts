@@ -5,8 +5,6 @@ import { readProjectConfiguration } from 'nx/src/generators/utils/project-config
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
-  DISABLE_NX_CACHE_ENV,
-  DISABLE_NX_CACHE_ENVOBJ,
   generateWorkspaceAndProject,
   materializeTree,
   nxShowProjectJson,
