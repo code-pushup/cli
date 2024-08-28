@@ -193,6 +193,9 @@ export async function nxStartVerdaccioServer({
         });
     })
       // in case the server dies unexpectedly clean folder
-      .catch(() => teardownTestFolder(storage))
+      .catch((error: unknown) => {
+        teardownTestFolder(storage);
+        throw error;
+      })
   );
 }
