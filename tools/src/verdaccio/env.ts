@@ -1,14 +1,14 @@
-import {bold, gray, red} from 'ansis';
+import { bold, gray, red } from 'ansis';
 // eslint-disable-next-line n/no-sync
-import {execFileSync, execSync} from 'node:child_process';
-import {join} from 'node:path';
+import { execFileSync, execSync } from 'node:child_process';
+import { join } from 'node:path';
 // can't import from utils
-import {objectToCliArgs} from '../../../packages/nx-plugin/src';
+import { objectToCliArgs } from '../../../packages/nx-plugin/src';
 import {
   setupTestFolder,
   teardownTestFolder,
 } from '../../../testing/test-setup/src';
-import {ensureDirectoryExists} from '../../../testing/test-utils/src';
+import { ensureDirectoryExists } from '../../../testing/test-utils/src';
 import {
   NxStarVerdaccioOptions,
   Registry,
@@ -40,7 +40,7 @@ export function configureRegistry(
    */
   const token = 'secretVerdaccioToken';
   const setAuthToken = `npm config set ${urlNoProtocol}/:_authToken "${token}" ${objectToCliArgs(
-    {userconfig},
+    { userconfig },
   ).join(' ')}`;
   if (verbose) {
     console.info(
@@ -54,14 +54,14 @@ export function configureRegistry(
   }).join(' ')}`;
   if (verbose) {
     console.info(
-      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${setRegistry}`,
+      `${gray('>')} ${gray(bold('Verdaccio-Env'))} Execute: ${userconfig}`,
     );
   }
   execSync(setRegistry);
 }
 
 export function unconfigureRegistry(
-  {urlNoProtocol}: Pick<Registry, 'urlNoProtocol'>,
+  { urlNoProtocol }: Pick<Registry, 'urlNoProtocol'>,
   verbose?: boolean,
 ) {
   execSync(`npm config delete registry`);
@@ -111,14 +111,14 @@ export type VerdaccioEnvResult = VerdaccioEnv & {
 };
 
 export async function nxStartVerdaccioAndSetupEnv({
-                                                    projectName,
-                                                    port,
-                                                    verbose = false,
-                                                    workspaceRoot = projectE2eScope(projectName),
-                                                    location = 'none',
-                                                    // reset or remove cached packages and/or metadata.
-                                                    clear = true,
-                                                  }: StartVerdaccioAndSetupEnvOptions): Promise<VerdaccioEnvResult> {
+  projectName,
+  port,
+  verbose = false,
+  workspaceRoot = projectE2eScope(projectName),
+  location = 'none',
+  // reset or remove cached packages and/or metadata.
+  clear = true,
+}: StartVerdaccioAndSetupEnvOptions): Promise<VerdaccioEnvResult> {
   // set up NPM workspace environment
   const storage = join(workspaceRoot, 'storage');
 
@@ -136,7 +136,7 @@ export async function nxStartVerdaccioAndSetupEnv({
   await setupNpmWorkspace(workspaceRoot, verbose);
 
   const userconfig = join(workspaceRoot, '.npmrc');
-  configureRegistry({...registryResult.registry, userconfig}, verbose);
+  configureRegistry({ ...registryResult.registry, userconfig }, verbose);
 
   return {
     ...registryResult,
@@ -153,7 +153,7 @@ export async function nxStopVerdaccioAndTeardownEnv(
   result: VerdaccioEnvResult,
 ) {
   if (result) {
-    const {stop, registry, workspaceRoot} = result;
+    const { stop, registry, workspaceRoot } = result;
     if (stop == null) {
       throw new Error(
         'global e2e teardown script was not able to derive the stop script for the active registry from "activeRegistry"',

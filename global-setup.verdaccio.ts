@@ -1,6 +1,7 @@
-import { execFileSync } from 'node:child_process';
+import { bold, red } from 'ansis';
 import { setup as globalSetup } from './global-setup';
-import { objectToCliArgs } from './packages/nx-plugin';
+import { nxRunManyNpmInstall } from './tools/src/npm/utils';
+import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
 import {
   VerdaccioEnvResult,
   nxStartVerdaccioAndSetupEnv,

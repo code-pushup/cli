@@ -67,7 +67,6 @@ function npmTargets({
       },
     },
     'npm-install': {
-      dependsOn: [],
       command: `npm install ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
