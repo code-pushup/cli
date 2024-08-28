@@ -27,22 +27,16 @@ async function addTargetToWorkspace(
     targets: {
       ...projectCfg.targets,
       ['code-pushup']: {
-        executor: `${join(
-          relativePathToCwd(cwd),
-          'dist/packages/nx-plugin',
-        )}:autorun`,
+        executor: '@code-pushup/nx-plugin:autorun',
       },
     },
   });
   const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
-    fileImports: `import type {CoreConfig} from "${join(
-      relativePathToCwd(cwd),
-      pathRelativeToPackage,
-      'dist/packages/models',
-    )}";`,
+    fileImports: `import type {CoreConfig} from "@code-pushup/models";`,
     plugins: [
       {
+        // @TODO replace with inline plugin
         fileImports: `import {customPlugin} from "${join(
           relativePathToCwd(cwd),
           pathRelativeToPackage,
@@ -58,7 +52,7 @@ async function addTargetToWorkspace(
 describe('executor autorun', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/nx-plugin-e2e/executor';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/executor/cli';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);

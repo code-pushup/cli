@@ -5,6 +5,8 @@ import {
 } from '@nx/devkit';
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import { someTargetsPresent } from '../utils';
+import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
 import { uniquePort } from './utils';
 
 type CreateNodesOptions = {
@@ -35,8 +37,12 @@ export const createNodes: CreateNodes = [
       projectConfigurationFile,
     );
 
+    const hasPreVerdaccioTargets = someTargetsPresent(
+      projectConfiguration?.targets ?? {},
+      preTargets,
+    );
     const isRootProject = root === '.';
-    if (!isRootProject) {
+    if (!hasPreVerdaccioTargets && !isRootProject) {
       return {};
     }
 
@@ -59,11 +65,9 @@ function verdaccioTargets({
   port,
   config,
   storage,
-  preTargets,
 }: Required<Omit<CreateNodesOptions, 'verbose'>>) {
-  const targets = Array.isArray(preTargets) ? preTargets : [preTargets];
   return {
-    'start-verdaccio': {
+    [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
       options: {
         port,

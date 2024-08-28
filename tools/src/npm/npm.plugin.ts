@@ -5,7 +5,6 @@ import {
 } from '@nx/devkit';
 import { dirname, join } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { someTargetsPresent } from '../utils';
 import { NPM_CHECK_SCRIPT } from './constants';
 
 type CreateNodesOptions = {
@@ -24,7 +23,7 @@ export const createNodes: CreateNodes = [
   ) => {
     const root = dirname(projectConfigurationFile);
     const projectConfiguration: ProjectConfiguration = readJsonFile(
-      projectConfigurationFile,
+      join(process.cwd(), projectConfigurationFile),
     );
     const {
       publishableTags = 'publishable',
@@ -68,10 +67,10 @@ function npmTargets({
       },
     },
     'npm-install': {
-      command: `npm install -D ${packageName}@{args.pkgVersion} --registry={args.registry}`,
+      command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
-      command: `npm uninstall ${packageName}`,
+      command: `npm uninstall ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
   };
 }

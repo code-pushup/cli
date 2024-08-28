@@ -1,6 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import { readFile, rm } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
@@ -9,17 +9,10 @@ import {
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
-function relativePathToDist(testDir: string): string {
-  return relative(
-    join(process.cwd(), testDir),
-    join(process.cwd(), 'dist/packages/nx-plugin'),
-  );
-}
-
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/nx-plugin-e2e/generators/init';
+  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/init';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -35,13 +28,7 @@ describe('nx-plugin g init', () => {
 
     const { stderr } = await executeProcess({
       command: 'npx',
-      args: [
-        'nx',
-        'g',
-        `${relativePathToDist(cwd)}:init `,
-        project,
-        '--dryRun',
-      ],
+      args: ['nx', 'g', '@code-pushup/nx-plugin:init', project, '--dryRun'],
       cwd,
     });
 
@@ -60,7 +47,7 @@ describe('nx-plugin g init', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:init `,
+        '@code-pushup/nx-plugin:init',
         project,
         '--skipInstall',
       ],
@@ -70,7 +57,7 @@ describe('nx-plugin g init', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:init`,
+      'NX  Generating @code-pushup/nx-plugin:init',
     );
     expect(cleanedStdout).toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
@@ -109,7 +96,7 @@ describe('nx-plugin g init', () => {
       args: [
         'nx',
         'g',
-        `${relativePathToDist(cwd)}:init`,
+        '@code-pushup/nx-plugin:init',
         project,
         '--skipInstall',
         '--skipPackageJson',
@@ -120,7 +107,7 @@ describe('nx-plugin g init', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      `NX  Generating ${relativePathToDist(cwd)}:init`,
+      'NX  Generating @code-pushup/nx-plugin:init',
     );
     expect(cleanedStdout).not.toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);

@@ -1,109 +1,64 @@
-import { execFileSync, execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { objectToCliArgs } from '../../../packages/utils/src';
-import { removeColorCodes } from '../../../testing/test-utils/src';
-import { NPM_CHECK_SCRIPT } from './constants';
-import type { NpmCheckToken } from './types';
-
-// @TODO The function is returning a strange string not matching the one in the function :)
-export function npmCheck({
-  pkgRange,
-  registry,
-  cwd,
-}: {
-  pkgRange: string;
-  registry: string;
-  cwd?: string;
-}): string | undefined {
-  const [foundPackage, token] = execSync(
-    `tsx ${NPM_CHECK_SCRIPT} ${objectToCliArgs({
-      pkgRange,
-      registry,
-    }).join(' ')}`,
-    { cwd },
-  )
-    .toString()
-    .trim()
-    .split('#') as [string, NpmCheckToken];
-  const cleanToken = token.trim();
-
-  if (cleanToken === 'FOUND') {
-    return cleanToken;
-  } else if (cleanToken === 'NOT_FOUND') {
-    return;
-  } else {
-    throw new Error(
-      `NPM check script returned invalid token ${cleanToken} for package ${foundPackage}`,
-    );
-  }
-}
-
-// @TODO The function is returning a strange string not matching the one in the function :)
-export function nxNpmCheck({
-  projectName,
-  registry,
-  cwd,
-  pkgVersion,
-}: {
-  projectName?: string;
-  pkgVersion?: string;
-  registry?: string;
-  cwd?: string;
-}) {
-  const [foundPackage, token] = execSync(
-    `nx npm-check ${projectName} ${objectToCliArgs({
-      pkgVersion,
-      registry,
-    }).join(' ')}`,
-    { cwd },
-  )
-    .toString()
-    .trim()
-    .split('#') as [string, NpmCheckToken];
-  const cleanToken = removeColorCodes(token);
-
-  return cleanToken;
-
-  if (cleanToken === 'FOUND') {
-    return token;
-  } else if (cleanToken === 'NOT_FOUND') {
-    return token;
-  } else {
-    throw new Error(
-      `Nx NPM check script returned invalid token ${cleanToken} for package ${foundPackage}`,
-    );
-  }
-}
 
 export type NpmInstallOptions = {
+  directory?: string;
+  prefix?: string;
   registry?: string;
+  userconfig?: string;
   tag?: string;
   pkgVersion?: string;
+  parallel?: number;
 };
 
 export function nxRunManyNpmInstall({
   registry,
+  prefix,
+  userconfig,
   tag = 'e2e',
   pkgVersion,
+  directory,
+  parallel,
 }: NpmInstallOptions) {
-  console.info(`Installing packages from registry: ${registry}.`);
-
-  execFileSync(
-    'npx',
-    [
-      ...objectToCliArgs({
-        _: ['nx', 'run-many'],
-        targets: 'npm-install',
-        parallel: 1,
-        ...(pkgVersion ? { pkgVersion } : {}),
-        ...(tag ? { tag } : {}),
-        ...(registry ? { registry } : {}),
-      }),
-    ],
-    { env: process.env, stdio: 'inherit', shell: true },
+  console.info(
+    `Installing packages in ${directory} from registry: ${registry}.`,
   );
+  try {
+    execFileSync(
+      'nx',
+      [
+        ...objectToCliArgs({
+          _: ['run-many'],
+          targets: 'npm-install',
+          ...(parallel ? { parallel } : {}),
+          ...(pkgVersion ? { pkgVersion } : {}),
+          ...(tag ? { tag } : {}),
+          ...(registry ? { registry } : {}),
+          ...(userconfig ? { userconfig } : {}),
+          ...(prefix ? { prefix } : {}),
+        }),
+      ],
+      {
+        env: process.env,
+        stdio: 'inherit',
+        shell: true,
+        cwd: directory ?? process.cwd(),
+      },
+    );
+  } catch (error) {
+    console.error('Error installing packages:\n' + error.message);
+    throw error;
+  }
 }
 
-export function nxRunManyNpmUninstall() {
+export function nxRunManyNpmUninstall({
+  parallel,
+  ...opt
+}: {
+  prefix?: string;
+  userconfig?: string;
+  parallel?: number;
+}) {
   console.info('Uninstalling all NPM packages.');
   try {
     execFileSync(
@@ -111,7 +66,8 @@ export function nxRunManyNpmUninstall() {
       objectToCliArgs({
         _: ['nx', 'run-many'],
         targets: 'npm-uninstall',
-        parallel: 1,
+        parallel,
+        ...opt,
       }),
       { env: process.env, stdio: 'inherit', shell: true },
     );
