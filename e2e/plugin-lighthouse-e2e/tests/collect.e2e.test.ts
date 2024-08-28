@@ -1,50 +1,16 @@
 import { join } from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { afterEach, expect } from 'vitest';
-import {
-  type AuditReport,
-  type PluginReport,
-  type Report,
-  reportSchema,
-} from '@code-pushup/models';
+import { type Report, reportSchema } from '@code-pushup/models';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import { materializeTree } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import {
+  omitVariableReportData,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 import { createNpmWorkspace } from '../../create-cli-e2e/mocks/create-npm-workshpace';
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const omitVariableAuditData = ({
-  score,
-  value,
-  displayValue,
-  ...auditReport
-}: AuditReport) => auditReport;
-const omitVariablePluginData = ({
-  date,
-  duration,
-  version,
-  audits,
-  ...pluginReport
-}: PluginReport) =>
-  ({
-    ...pluginReport,
-    audits: audits.map(
-      pluginReport.slug === 'lighthouse' ? omitVariableAuditData : p => p,
-    ) as AuditReport[],
-  } as PluginReport);
-const omitVariableReportData = ({
-  commit,
-  date,
-  duration,
-  version,
-  ...report
-}: Report) => ({
-  ...report,
-  plugins: report.plugins.map(omitVariablePluginData),
-});
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 async function setupWorkspace(cwd: string) {
   const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
@@ -62,7 +28,7 @@ async function setupWorkspace(cwd: string) {
   await createNpmWorkspace(cwd);
 }
 
-describe('lighthouse-plugin NPM package', () => {
+describe('collect report with lighthouse-plugin NPM package', () => {
   const baseDir = 'tmp/e2e/plugin-lighthouse-e2e/__test__/report';
 
   afterEach(async () => {
@@ -85,6 +51,8 @@ describe('lighthouse-plugin NPM package', () => {
 
     const report = await readJsonFile(join(cwd, '.code-pushup', 'report.json'));
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+    expect(
+      omitVariableReportData(report as Report, { omitAuditData: true }),
+    ).toMatchSnapshot();
   });
 });
