@@ -1,5 +1,4 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
@@ -8,6 +7,7 @@ import {
   generateWorkspaceAndProject,
   materializeTree,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
@@ -59,7 +59,7 @@ describe('executor autorun', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should execute autorun executor', async () => {

@@ -1,6 +1,6 @@
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 import { createNpmWorkspace } from '../mocks/create-npm-workshpace';
@@ -10,7 +10,7 @@ describe('create-cli-inti', () => {
   const baseDir = 'tmp/e2e/create-cli-e2e/__test__/init';
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should execute package correctly over npm exec', async () => {
@@ -83,5 +83,28 @@ describe('create-cli-inti', () => {
     ).resolves.toContain(
       "import type { CoreConfig } from '@code-pushup/models';",
     );
+  });
+
+  it('should produce an executable setup when running npm init', async () => {
+    const cwd = join(baseDir, 'npm-init-executable');
+    const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
+
+    await createNpmWorkspace(cwd);
+
+    await executeProcess({
+      command: 'npm',
+      args: ['init', '@code-pushup/cli', `--userconfig=${userconfig}`],
+      cwd,
+    });
+
+    await expect(
+      executeProcess({
+        command: 'npx',
+        args: ['@code-pushup/cli print-config', `--userconfig=${userconfig}`],
+        cwd,
+      }),
+    )
+      // @TODO: Generate an executable setup. Edit configuration generator defaults
+      .rejects.toThrow('Array must contain at least 1 element(s)');
   });
 });
