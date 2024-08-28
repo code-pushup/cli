@@ -1,5 +1,4 @@
 import type { Tree } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
