@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { afterEach, expect } from 'vitest';
@@ -12,6 +13,50 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
+const codePushupConfigContent = `
+import lighthousePlugin, { lighthouseGroupRef } from '@code-pushup/lighthouse-plugin';
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
+
+export default {
+    plugins: [
+            lighthousePlugin('https://codepushup.dev/', {
+              onlyAudits: [
+                // performance category
+                'largest-contentful-paint',
+                // a11y category
+                'aria-allowed-attr',
+                // best-practices category
+                'deprecations',
+                // seo category
+                'hreflang',
+              ],
+              chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+            })
+    ],
+    categories: [
+        {
+          slug: 'performance',
+          title: 'Performance',
+          refs: [lighthouseGroupRef('performance')],
+        },
+        {
+          slug: 'a11y',
+          title: 'Accessibility',
+          refs: [lighthouseGroupRef('accessibility')],
+        },
+        {
+          slug: 'best - practices',
+          title: 'Best Practices',
+          refs: [lighthouseGroupRef('best - practices')],
+        },
+        {
+          slug: 'seo',
+          title: 'SEO',
+          refs: [lighthouseGroupRef('seo')],
+        }
+    ]
+}
+`;
 async function setupWorkspace(cwd: string) {
   // @TODO create empty tree without workspace
   const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
@@ -81,7 +126,8 @@ describe('collect report with lighthouse-plugin NPM package', () => {
 
   it('should run plugin over CLI and creates report.json', async () => {
     const cwd = join(baseDir, 'create-report');
-    await setupWorkspace(cwd);
+    await createNpmWorkspace(cwd);
+    await writeFile(cwd, codePushupConfigContent);
     const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],

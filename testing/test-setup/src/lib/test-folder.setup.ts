@@ -13,9 +13,12 @@ export async function cleanTestFolder(dirName: string) {
 
 export async function teardownTestFolder(dirName: string) {
   try {
-    await rm(dirName, { recursive: true, force: true, maxRetries: 2 });
+    await rm(dirName, { recursive: true, force: true, maxRetries: 3 });
   } catch (error) {
-    logger.error(`Failed to delete test artefact ${bold(dirName)} :(.`);
-    throw error;
+    logger.error(
+      `⚠️ Failed to delete test artefact ${bold(
+        dirName,
+      )} :(. ️The folder is still in the file system!`,
+    );
   }
 }
