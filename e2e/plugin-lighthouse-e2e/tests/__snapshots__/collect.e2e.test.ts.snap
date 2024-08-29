@@ -2,7 +2,56 @@
 
 exports[`collect report with lighthouse-plugin NPM package > should run plugin over CLI and creates report.json 1`] = `
 {
-  "categories": [],
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "performance",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "performance",
+      "title": "Performance",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "accessibility",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "a11y",
+      "title": "Accessibility",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "best-practices",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "best-practices",
+      "title": "Best Practices",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "lighthouse",
+          "slug": "seo",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "seo",
+      "title": "SEO",
+    },
+  ],
   "packageName": "@code-pushup/core",
   "plugins": [
     {

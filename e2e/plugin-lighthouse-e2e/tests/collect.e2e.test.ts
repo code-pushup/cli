@@ -20,8 +20,8 @@ async function setupWorkspace(cwd: string) {
     plugins: [
       {
         fileImports: [
-          'import lighthousePlugin from "@code-pushup/lighthouse-plugin";',
-          'import { DEFAULT_FLAGS } from "chrome-launcher/dist/flags.js";',
+          "import lighthousePlugin from '@code-pushup/lighthouse-plugin';",
+          "import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';",
         ],
         // @TODO fix ` hack, add support for string literals in generateCodePushupConfig
         codeStrings: `await lighthousePlugin(\`https://codepushup.dev/\`, {
@@ -39,6 +39,34 @@ async function setupWorkspace(cwd: string) {
     }),`,
       },
     ],
+    categories: [
+      {
+        fileImports:
+          "import { lighthouseGroupRef } from '@code-pushup/lighthouse-plugin';",
+        codeStrings: `
+    {
+      slug: \`performance\`,
+      title: \`Performance\`,
+      refs: [lighthouseGroupRef(\`performance\`)],
+    },
+    {
+      slug: \`a11y\`,
+      title: \`Accessibility\`,
+      refs: [lighthouseGroupRef(\`accessibility\`)],
+    },
+    {
+      slug: \`best-practices\`,
+      title: \`Best Practices\`,
+      refs: [lighthouseGroupRef(\`best-practices\`)],
+    },
+    {
+      slug: \`seo\`,
+      title: \`SEO\`,
+      refs: [lighthouseGroupRef(\`seo\`)],
+    }
+    `,
+      },
+    ],
   });
   await materializeTree(tree, cwd);
   await createNpmWorkspace(cwd);
@@ -48,7 +76,7 @@ describe('collect report with lighthouse-plugin NPM package', () => {
   const baseDir = 'tmp/e2e/plugin-lighthouse-e2e/__test__/report';
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    // await teardownTestFolder(baseDir);
   });
 
   it('should run plugin over CLI and creates report.json', async () => {

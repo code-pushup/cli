@@ -37,5 +37,5 @@ export async function teardown() {
   // potentially just skip as folder are deleted next line
   // nxRunManyNpmUninstall({ userconfig, prefix: activeRegistry.workspaceRoot, parallel: 1 });
   // comment out to see the folder and web interface
-  //await nxStopVerdaccioAndTeardownEnv(activeRegistry);
+  // await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }
