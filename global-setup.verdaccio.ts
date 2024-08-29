@@ -1,4 +1,3 @@
-import { bold, red } from 'ansis';
 import { setup as globalSetup } from './global-setup';
 import { nxRunManyNpmInstall } from './tools/src/npm/utils';
 import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
