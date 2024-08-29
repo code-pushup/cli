@@ -76,7 +76,7 @@ describe('collect report with lighthouse-plugin NPM package', () => {
   const baseDir = 'tmp/e2e/plugin-lighthouse-e2e/__test__/report';
 
   afterEach(async () => {
-    // await teardownTestFolder(baseDir);
+    await teardownTestFolder(baseDir);
   });
 
   it('should run plugin over CLI and creates report.json', async () => {
