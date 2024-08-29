@@ -21,7 +21,6 @@
   "implicitDependencies": [
     "cli",
     "plugin-eslint",
-    "plugin-lighthouse",
     "plugin-coverage",
     "plugin-js-packages",
     "react-todos-app"
