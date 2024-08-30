@@ -46,6 +46,12 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
+    if (!projectConfiguration.implicitDependencies) {
+      throw new Error(
+        'You have to specify the needed projects as implicitDependencies to have them set up.',
+      );
+    }
+
     return {
       projects: {
         [root]: {
@@ -54,6 +60,7 @@ export const createNodes: CreateNodes = [
             config,
             storage,
             preTargets,
+            deps: projectConfiguration.implicitDependencies,
           }),
         },
       },
@@ -65,7 +72,8 @@ function verdaccioTargets({
   port,
   config,
   storage,
-}: Required<Omit<CreateNodesOptions, 'verbose'>>) {
+  deps,
+}: Required<Omit<CreateNodesOptions, 'verbose'>> & { deps: string[] }) {
   return {
     [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
@@ -73,6 +81,16 @@ function verdaccioTargets({
         port,
         config,
         storage,
+      },
+    },
+    ['setup-deps']: {
+      executor: 'nx:run-commands',
+      options: {
+        commands: [
+          `nx run-many -t publish -p ${deps.join(',')} --parallel=1`,
+          `nx run-many -t npm-install -p ${deps.join(',')} --parallel=1`,
+        ],
+        parallel: false,
       },
     },
   };
