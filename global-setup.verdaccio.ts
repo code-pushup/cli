@@ -1,6 +1,5 @@
 import { setup as globalSetup } from './global-setup';
-import { executeProcess } from './packages/nx-plugin';
-import { objectToCliArgs } from './packages/utils/src';
+import { executeProcess, objectToCliArgs } from './packages/utils/src';
 import {
   VerdaccioEnvResult,
   nxStartVerdaccioAndSetupEnv,
@@ -15,7 +14,6 @@ export async function setup() {
 
   activeRegistry = await nxStartVerdaccioAndSetupEnv({
     projectName,
-    verbose: true,
   });
 
   const { userconfig, workspaceRoot } = activeRegistry;
@@ -27,7 +25,7 @@ export async function setup() {
       userconfig, // publish & install
       prefix: workspaceRoot, // install
     }),
-    observer: { onStdout: console.info },
+    observer: { onStdout: stdout => console.info(stdout) },
   });
 }
 
