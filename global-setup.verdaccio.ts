@@ -1,4 +1,3 @@
-import { bold, red } from 'ansis';
 import { setup as globalSetup } from './global-setup';
 import { nxRunManyNpmInstall } from './tools/src/npm/utils';
 import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
@@ -37,5 +36,5 @@ export async function teardown() {
   // potentially just skip as folder are deleted next line
   // nxRunManyNpmUninstall({ userconfig, prefix: activeRegistry.workspaceRoot, parallel: 1 });
   // comment out to see the folder and web interface
-  // await nxStopVerdaccioAndTeardownEnv(activeRegistry);
+  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }
