@@ -1,4 +1,3 @@
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-setup';
