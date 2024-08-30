@@ -73,10 +73,17 @@ function publishTargets({
 }) {
   return {
     publish: {
+      command: `tsx --tsconfig={args.tsconfig} {args.script} --projectName=${projectName} --directory=${directory} --registry={args.registry} --userconfig={args.userconfig} --nextVersion={args.nextVersion} --tag={args.tag} --verbose=${verbose}`,
+      options: {
+        script: publishScript,
+        tsconfig,
+      },
+    },
+    'publish-e2e': {
       dependsOn: [
         'build',
         {
-          target: 'publish',
+          target: 'publish-e2e',
           projects: 'dependencies',
           params: 'forward',
         },

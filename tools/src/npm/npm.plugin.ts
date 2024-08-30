@@ -67,19 +67,22 @@ function npmTargets({
       },
     },
     'npm-install': {
+      command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
+    },
+    'npm-install-e2e': {
       dependsOn: [
         {
-          target: 'publish',
+          target: 'publish-e2e',
           projects: 'self',
           params: 'forward',
         },
         {
-          target: 'npm-install',
+          target: 'npm-install-e2e',
           projects: 'dependencies',
           params: 'forward',
         },
         {
-          target: 'publish',
+          target: 'publish-e2e',
           projects: 'dependencies',
           params: 'forward',
         },

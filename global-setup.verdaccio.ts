@@ -20,7 +20,7 @@ export async function setup() {
   await executeProcess({
     command: 'npx',
     args: objectToCliArgs({
-      _: ['nx', 'setup-deps', projectName],
+      _: ['nx', 'setup-e2e-deps', projectName],
       registry: activeRegistry.registry.url, // publish
       userconfig, // publish & install
       prefix: workspaceRoot, // install

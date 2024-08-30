@@ -3,7 +3,6 @@ import {
   type CreateNodesContext,
   readJsonFile,
 } from '@nx/devkit';
-import { bold } from 'ansis';
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
@@ -29,7 +28,6 @@ export const createNodes: CreateNodes = [
       port = uniquePort(),
       config = '.verdaccio/config.yml',
       storage = 'tmp/local-registry/storage',
-      verbose = false,
       preTargets = ['e2e'],
     } = (opts ?? {}) as CreateNodesOptions;
     const root = dirname(projectConfigurationFile);
@@ -75,24 +73,15 @@ function verdaccioTargets({
         storage,
       },
     },
-    ['setup-deps']: {
+    ['setup-e2e-deps']: {
       dependsOn: [
         {
-          target: 'npm-install',
+          target: 'npm-install-e2e',
           projects: 'dependencies',
           params: 'forward',
         },
       ],
-      executor: 'nx:run-commands',
-      options: {
-        commands: [
-          `echo "Dependencies are ready to use!"`,
-          //  `nx run-many -t publish -p ${deps?.join(',')}`,
-          // NPM install needs to be run sequentially as it can cause issues with installing dependencies multiple times
-          //  `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
-        ],
-        parallel: false,
-      },
+      command: 'echo "Dependencies are ready to use!"',
     },
   };
 }
