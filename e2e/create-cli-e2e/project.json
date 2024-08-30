@@ -18,6 +18,6 @@
       }
     }
   },
-  "implicitDependencies": ["create-cli"],
+  "implicitDependencies": ["models", "utils", "core", "cli", "create-cli"],
   "tags": ["scope:tooling", "type:e2e"]
 }

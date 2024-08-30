@@ -1,6 +1,6 @@
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { createNpmWorkspace, removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
@@ -11,7 +11,7 @@ describe('create-cli-node', () => {
     cwd ? relative(join(process.cwd(), cwd), join(process.cwd(), bin)) : bin;
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   // eslint-disable-next-line vitest/no-disabled-tests

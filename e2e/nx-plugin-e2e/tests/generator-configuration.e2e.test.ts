@@ -1,5 +1,5 @@
 import type { Tree } from '@nx/devkit';
-import { readFile, rm } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -7,6 +7,7 @@ import {
   generateWorkspaceAndProject,
   materializeTree,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
@@ -21,7 +22,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should generate code-pushup.config.ts file and add target to project.json', async () => {
