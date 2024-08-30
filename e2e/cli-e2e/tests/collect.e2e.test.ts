@@ -46,7 +46,7 @@ describe('CLI collect', () => {
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
-    await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder('tmp/e2e/react-todos-app');
   });
 
   it('should run ESLint plugin and create report.json', async () => {
