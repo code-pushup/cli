@@ -91,6 +91,7 @@ function verdaccioTargets({
       options: {
         commands: [
           `nx run-many -t publish -p ${deps?.join(',')}`,
+          // NPM install needs to be run sequentially as it can cause issues with installing dependencies multiple times
           `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
         ],
         parallel: false,
