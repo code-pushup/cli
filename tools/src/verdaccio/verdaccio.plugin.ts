@@ -32,7 +32,6 @@ export const createNodes: CreateNodes = [
       verbose = false,
       preTargets = ['e2e'],
     } = (opts ?? {}) as CreateNodesOptions;
-    const { workspaceRoot } = context;
     const root = dirname(projectConfigurationFile);
     const projectConfiguration: ProjectConfiguration = readJsonFile(
       projectConfigurationFile,
@@ -42,17 +41,9 @@ export const createNodes: CreateNodes = [
       projectConfiguration.targets ?? {},
       preTargets,
     );
-    const isRootProject = root === '.';
-    if (!hasPreVerdaccioTargets && !isRootProject) {
-      return {};
-    }
 
-    if (!projectConfiguration.implicitDependencies && !isRootProject) {
-      throw new Error(
-        `You have to specify the needed projects as implicitDependencies in ${bold(
-          projectConfiguration.name,
-        )} to have them set up.`,
-      );
+    if (!hasPreVerdaccioTargets) {
+      return {};
     }
 
     return {
@@ -63,7 +54,6 @@ export const createNodes: CreateNodes = [
             config,
             storage,
             preTargets,
-            deps: projectConfiguration.implicitDependencies,
           }),
         },
       },
@@ -75,8 +65,7 @@ function verdaccioTargets({
   port,
   config,
   storage,
-  deps,
-}: Required<Omit<CreateNodesOptions, 'verbose'>> & { deps: string[] }) {
+}: Required<Omit<CreateNodesOptions, 'verbose'>>) {
   return {
     [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
@@ -87,12 +76,20 @@ function verdaccioTargets({
       },
     },
     ['setup-deps']: {
+      dependsOn: [
+        {
+          target: 'npm-install',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+      ],
       executor: 'nx:run-commands',
       options: {
         commands: [
-          `nx run-many -t publish -p ${deps?.join(',')}`,
+          `echo "Dependencies are ready to use!"`,
+          //  `nx run-many -t publish -p ${deps?.join(',')}`,
           // NPM install needs to be run sequentially as it can cause issues with installing dependencies multiple times
-          `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
+          //  `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
         ],
         parallel: false,
       },

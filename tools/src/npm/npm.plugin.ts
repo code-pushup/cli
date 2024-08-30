@@ -67,6 +67,23 @@ function npmTargets({
       },
     },
     'npm-install': {
+      dependsOn: [
+        {
+          target: 'publish',
+          projects: 'self',
+          params: 'forward',
+        },
+        {
+          target: 'npm-install',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+        {
+          target: 'publish',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+      ],
       command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {

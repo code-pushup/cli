@@ -19,9 +19,6 @@
     }
   },
   "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
     "cli",
     "plugin-eslint",
     "plugin-lighthouse",
