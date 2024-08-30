@@ -1,15 +1,11 @@
 import { execSync } from 'node:child_process';
-import type { RegistryData } from './start-local-registry';
+import { Registry, RegistryServer } from './registry';
 
 export function uniquePort(): number {
   return Number((6000 + Number(Math.random() * 1000)).toFixed(0));
 }
 
-export function configureRegistry({
-  host,
-  registry,
-  registryNoProtocol,
-}: RegistryData) {
+export function configureRegistry({ host, url, urlNoProtocol }: Registry) {
   /**
    * Sets environment variables for NPM and Yarn registries, and optionally configures
    * Yarn's unsafe HTTP whitelist.
@@ -23,9 +19,9 @@ export function configureRegistry({
    * - `YARN_NPM_REGISTRY_SERVER`: Yarn v2 registry.
    * - `YARN_UNSAFE_HTTP_WHITELIST`: Yarn HTTP whitelist.
    */
-  process.env.npm_config_registry = registry;
-  process.env.YARN_REGISTRY = registry;
-  process.env.YARN_NPM_REGISTRY_SERVER = registry;
+  process.env.npm_config_registry = url;
+  process.env.YARN_REGISTRY = url;
+  process.env.YARN_NPM_REGISTRY_SERVER = url;
   console.info(`Set NPM and yarn registry process.env`);
 
   /**
@@ -41,18 +37,18 @@ export function configureRegistry({
    * Example: //registry.npmjs.org/:_authToken=your-token
    */
   const token = 'secretVerdaccioToken';
-  execSync(`npm config set ${registryNoProtocol}/:_authToken "${token}"`);
-  console.info(`_authToken for ${registry} set to ${token}`);
+  execSync(`npm config set ${urlNoProtocol}/:_authToken "${token}"`);
+  console.info(`_authToken for ${url} set to ${token}`);
 }
 
 export function unconfigureRegistry({
-  registryNoProtocol,
-}: Pick<RegistryData, 'registryNoProtocol'>) {
-  execSync(`npm config delete ${registryNoProtocol}/:_authToken`);
-  console.info('delete npm authToken: ' + registryNoProtocol);
+  urlNoProtocol,
+}: Pick<Registry, 'urlNoProtocol'>) {
+  execSync(`npm config delete ${urlNoProtocol}/:_authToken`);
+  console.info('delete npm authToken: ' + urlNoProtocol);
 }
 
-export function parseRegistryData(stdout: string): RegistryData {
+export function parseRegistryData(stdout: string): RegistryServer {
   const port = parseInt(
     stdout.toString().match(/localhost:(?<port>\d+)/)?.groups?.port ?? '',
   );
@@ -71,14 +67,14 @@ export function parseRegistryData(stdout: string): RegistryData {
   }
 
   const host = 'localhost';
-  const registryNoProtocol = `//${host}:${port}`;
-  const registry = `${protocol}:${registryNoProtocol}`;
+  const urlNoProtocol = `//${host}:${port}`;
+  const url = `${protocol}:${urlNoProtocol}`;
 
   return {
     protocol,
     host,
     port,
-    registryNoProtocol,
-    registry,
+    urlNoProtocol,
+    url,
   };
 }

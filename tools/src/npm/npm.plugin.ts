@@ -87,7 +87,7 @@ function npmTargets({
           params: 'forward',
         },
       ],
-      command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
+      command: `npm install -D --no-fund ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
       command: `npm uninstall ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,
