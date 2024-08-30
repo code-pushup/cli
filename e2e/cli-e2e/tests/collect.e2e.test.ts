@@ -52,7 +52,12 @@ describe('CLI collect', () => {
   it('should run ESLint plugin and create report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress', '--onlyPlugins=eslint'],
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=eslint',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
@@ -106,7 +111,12 @@ describe('CLI collect', () => {
   it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress', '--onlyPlugins=coverage'],
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=coverage',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
@@ -122,7 +132,12 @@ describe('CLI collect', () => {
   it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress', '--onlyPlugins=lighthouse'],
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=lighthouse',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
@@ -138,7 +153,11 @@ describe('CLI collect', () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
       args: [
-        '@code-pushup/cli', 'collect', '--persist.format=md', '--no-progress'],
+        '@code-pushup/cli',
+        'collect',
+        '--persist.format=md',
+        '--no-progress',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
@@ -155,8 +174,7 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
