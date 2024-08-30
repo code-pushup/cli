@@ -1,6 +1,6 @@
 import { bold, gray, red } from 'ansis';
 import { executeProcess } from '@code-pushup/utils';
-// can't import from utils
+// can't import from utils.
 import { objectToCliArgs } from '../../../packages/nx-plugin';
 import { teardownTestFolder } from '../../../testing/test-setup/src';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
