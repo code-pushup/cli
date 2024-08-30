@@ -3,7 +3,6 @@ import { executeProcess } from '@code-pushup/utils';
 // can't import from utils
 import { objectToCliArgs } from '../../../packages/nx-plugin';
 import { teardownTestFolder } from '../../../testing/test-setup/src';
-import { killProcesses, listProcess } from '../debug/utils';
 import { START_VERDACCIO_SERVER_TARGET_NAME } from './constants';
 
 export function uniquePort(): number {
@@ -129,7 +128,7 @@ export async function nxStartVerdaccioServer({
         args,
         shell: true,
         observer: {
-          onStdout: (stdout: string) => {
+          onStdout: (stdout: string, childProcess) => {
             if (verbose) {
               process.stdout.write(
                 `${gray('>')} ${gray(bold('Verdaccio'))} ${stdout}`,
@@ -149,7 +148,13 @@ export async function nxStartVerdaccioServer({
                 // https://verdaccio.org/docs/cli/#default-database-file-location
                 stop: () => {
                   // this makes the process throw
-                  killProcesses({ commandMatch: commandId });
+                  try {
+                    childProcess?.kill();
+                  } catch {
+                    console.error(
+                      `Can't kill verdaccio process: ${childProcess.pid}`,
+                    );
+                  }
                 },
               };
 
@@ -158,9 +163,7 @@ export async function nxStartVerdaccioServer({
                   bold('Verdaccio'),
                 )} Registry started on URL: ${bold(
                   result.registry.url,
-                )}, with PID: ${bold(
-                  listProcess({ commandMatch: commandId }).at(0)?.pid,
-                )}`,
+                )}, with PID: ${bold(childProcess?.pid)}`,
               );
               if (verbose) {
                 console.info(`${gray('>')} ${gray(bold('Verdaccio'))}`);
