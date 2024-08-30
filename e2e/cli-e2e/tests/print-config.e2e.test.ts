@@ -6,13 +6,14 @@ const extensions = ['js', 'mjs', 'ts'] as const;
 export const configFilePath = (ext: (typeof extensions)[number]) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
 
-describe('print-config', () => {
+describe('CLI print-config', () => {
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
       const { code, stderr, stdout } = await executeProcess({
-        command: 'code-pushup',
+        command: 'npx',
         args: [
+          '@code-pushup/cli',
           'print-config',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
