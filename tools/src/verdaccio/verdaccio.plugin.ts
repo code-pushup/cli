@@ -3,6 +3,7 @@ import {
   type CreateNodesContext,
   readJsonFile,
 } from '@nx/devkit';
+import { bold } from 'ansis';
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
@@ -38,7 +39,7 @@ export const createNodes: CreateNodes = [
     );
 
     const hasPreVerdaccioTargets = someTargetsPresent(
-      projectConfiguration?.targets ?? {},
+      projectConfiguration.targets ?? {},
       preTargets,
     );
     const isRootProject = root === '.';
@@ -46,9 +47,11 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
-    if (!projectConfiguration.implicitDependencies) {
+    if (!projectConfiguration.implicitDependencies && !isRootProject) {
       throw new Error(
-        'You have to specify the needed projects as implicitDependencies to have them set up.',
+        `You have to specify the needed projects as implicitDependencies in ${bold(
+          projectConfiguration.name,
+        )} to have them set up.`,
       );
     }
 
@@ -87,8 +90,8 @@ function verdaccioTargets({
       executor: 'nx:run-commands',
       options: {
         commands: [
-          `nx run-many -t publish -p ${deps.join(',')} --parallel=1`,
-          `nx run-many -t npm-install -p ${deps.join(',')} --parallel=1`,
+          `nx run-many -t publish -p ${deps?.join(',')} --parallel=1`,
+          `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
         ],
         parallel: false,
       },
