@@ -23,7 +23,6 @@
     "utils",
     "core",
     "cli",
-    "cli",
     "plugin-eslint",
     "plugin-lighthouse",
     "plugin-coverage",
