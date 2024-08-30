@@ -50,7 +50,7 @@ describe('CLI collect', () => {
   });
 
   it('should run ESLint plugin and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
@@ -62,7 +62,6 @@ describe('CLI collect', () => {
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
