@@ -91,7 +91,7 @@ function verdaccioTargets({
       options: {
         commands: [
           `nx run-many -t publish -p ${deps?.join(',')}`,
-          `nx run-many -t npm-install -p ${deps?.join(',')}`,
+          `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
         ],
         parallel: false,
       },
