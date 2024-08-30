@@ -49,7 +49,7 @@ export async function setup() {
 
   // package install
   try {
-    console.info('Installing packages');
+    console.info('Installing packages...');
     nxRunManyNpmInstall({ registry, parallel: 1 });
   } catch (error) {
     console.error('Error installing packages:\n' + error.message);
