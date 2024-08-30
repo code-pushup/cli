@@ -1,11 +1,12 @@
 import type { Tree } from '@nx/devkit';
-import { readFile, rm } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
   materializeTree,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
@@ -19,7 +20,7 @@ describe('nx-plugin g init', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should inform about dry run when used on init generator', async () => {
