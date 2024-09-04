@@ -1,6 +1,8 @@
+/* eslint-disable deprecation/deprecation,import/no-deprecated */
 import type {
   CreateNodes,
   CreateNodesContext,
+  CreateNodesContextV2,
   CreateNodesResult,
 } from '@nx/devkit';
 import { vol } from 'memfs';
@@ -30,6 +32,7 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 export async function invokeCreateNodesOnVirtualFiles<
   T extends Record<string, unknown> | undefined,
 >(
+  // FIXME: refactor this to use the V2 api & remove the eslint disable on the whole file
   createNodes: CreateNodes,
   context: CreateNodesContext,
   createNodeOptions: T,
@@ -54,8 +57,8 @@ export async function invokeCreateNodesOnVirtualFiles<
 }
 
 export function createNodesContext(
-  options?: Partial<CreateNodesContext>,
-): CreateNodesContext {
+  options?: Partial<CreateNodesContextV2>,
+): CreateNodesContextV2 {
   const { workspaceRoot = process.cwd(), nxJsonConfiguration = {} } =
     options ?? {};
   return {
