@@ -45,6 +45,7 @@ module.exports = {
 
           try {
             await promisify(exec)(
+              // `npx tsc --emitDeclarationOnly --project ${tsConfig} --outDir dist`,
               `tsc --emitDeclarationOnly --project ${tsConfig} --outDir dist`,
             );
           } catch (err) {
