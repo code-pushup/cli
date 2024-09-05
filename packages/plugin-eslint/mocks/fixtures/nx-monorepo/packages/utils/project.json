@@ -7,10 +7,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/utils/**/*.ts",
-          "packages/utils/package.json"
-        ]
+        "lintFilePatterns": ["packages/utils/**/*.ts"]
       }
     }
   }
