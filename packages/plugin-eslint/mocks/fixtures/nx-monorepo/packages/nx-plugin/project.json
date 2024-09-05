@@ -2,16 +2,13 @@
   "name": "nx-plugin",
   "sourceRoot": "packages/nx-plugin/src",
   "projectType": "library",
+  "implicitDependencies": ["utils"],
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/nx-plugin/**/*.ts",
-          "packages/nx-plugin/package.json",
-          "packages/nx-plugin/generators.json"
-        ]
+        "lintFilePatterns": ["packages/nx-plugin/**/*.ts"]
       }
     }
   }
