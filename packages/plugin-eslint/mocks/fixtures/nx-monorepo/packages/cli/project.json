@@ -2,15 +2,13 @@
   "name": "cli",
   "sourceRoot": "packages/cli/src",
   "projectType": "application",
+  "implicitDependencies": ["core"],
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/cli/**/*.ts",
-          "packages/cli/package.json"
-        ]
+        "lintFilePatterns": ["packages/cli/**/*.ts"]
       }
     }
   }
