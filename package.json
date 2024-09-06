@@ -18,7 +18,7 @@
   },
   "private": true,
   "engine": {
-    "node": ">=18.20"
+    "node": ">=20.11"
   },
   "dependencies": {
     "@code-pushup/portal-client": "^0.9.0",

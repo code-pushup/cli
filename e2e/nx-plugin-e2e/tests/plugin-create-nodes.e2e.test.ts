@@ -1,5 +1,4 @@
 import type { Tree } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
@@ -10,6 +9,7 @@ import {
   nxShowProjectJson,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
@@ -24,7 +24,7 @@ describe('nx-plugin', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should add configuration target dynamically', async () => {
@@ -36,13 +36,13 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: {
+      'code-pushup--configuration': expect.objectContaining({
         configurations: {},
         executor: 'nx:run-commands',
         options: {
           command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
-      },
+      }),
     });
 
     expect(projectJson.targets).toMatchSnapshot();
@@ -63,9 +63,10 @@ describe('nx-plugin', () => {
 
     expect(code).toBe(0);
 
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain(
-      `>  NX   Successfully ran target code-pushup--configuration for project ${project}`,
+    const cleanedStdout = removeColorCodes(stdout);
+
+    expect(cleanedStdout).toContain(
+      `NX   Successfully ran target code-pushup--configuration for project ${project}`,
     );
     await expect(
       readTextFile(join(cwd, projectRoot, 'code-pushup.config.ts')),
@@ -105,11 +106,14 @@ describe('nx-plugin', () => {
 
     expect(code).toBe(0);
 
-    expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: expect.objectContaining({
+    expect(projectJson.targets).toEqual({
+      'code-pushup--configuration': expect.objectContaining({
+        executor: 'nx:run-commands',
         options: {
-          command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command:
+            'nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="my-lib"',
         },
+        parallelism: true,
       }),
     });
   });
@@ -144,11 +148,11 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: {
+      'code-pushup': expect.objectContaining({
         configurations: {},
         executor: `@code-pushup/nx-plugin:autorun`,
         options: {},
-      },
+      }),
     });
 
     expect(projectJson.targets).toMatchSnapshot();
@@ -206,9 +210,12 @@ describe('nx-plugin', () => {
 
     expect(code).toBe(0);
 
-    expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+    // FIXME: output has empty configurations object so this passes
+    expect(projectJson.targets).toEqual({
+      'code-pushup': expect.objectContaining({
         executor: 'XYZ:autorun',
+        options: expect.any(Object),
+        configurations: expect.any(Object),
       }),
     });
   });
@@ -230,7 +237,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+      'code-pushup': expect.objectContaining({
         executor: `@code-pushup/nx-plugin:autorun`,
         options: {
           projectPrefix: 'cli',

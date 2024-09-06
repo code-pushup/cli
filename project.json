@@ -2,6 +2,9 @@
   "name": "@code-pushup/cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
+    "start-verdaccio-server": {
+      "executor": "@nx/js:verdaccio"
+    },
     "code-pushup": {
       "command": "npx dist/packages/cli",
       "dependsOn": [

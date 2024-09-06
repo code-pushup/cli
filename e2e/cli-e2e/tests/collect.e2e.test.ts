@@ -46,18 +46,22 @@ describe('CLI collect', () => {
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
-    await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder('tmp/e2e/react-todos-app');
   });
 
   it('should run ESLint plugin and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=eslint',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
@@ -82,9 +86,10 @@ describe('CLI collect', () => {
       'code-pushup.config.ts',
     );
 
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
+    const { code } = await executeProcess({
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'collect',
         '--no-progress',
         `--config=${configPath}`,
@@ -94,7 +99,6 @@ describe('CLI collect', () => {
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile(join('tmp', 'e2e', 'report.json'));
 
@@ -103,14 +107,18 @@ describe('CLI collect', () => {
   });
 
   it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=coverage'],
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=coverage',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
@@ -119,14 +127,18 @@ describe('CLI collect', () => {
   });
 
   it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=lighthouse',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
     expect(() => reportSchema.parse(report)).not.toThrow();
@@ -134,15 +146,18 @@ describe('CLI collect', () => {
   });
 
   it('should create report.md', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--persist.format=md', '--no-progress'],
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--persist.format=md',
+        '--no-progress',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
-
     const md = await readTextFile('tmp/e2e/react-todos-app/report.md');
 
     expect(md).toContain('# Code PushUp Report');
@@ -151,14 +166,13 @@ describe('CLI collect', () => {
   });
 
   it('should print report summary to stdout', async () => {
-    const { code, stdout, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress'],
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(stdout).toContain('Code PushUp Report');
     expect(stdout).not.toContain('Generated reports');

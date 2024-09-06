@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import coveragePlugin from '@code-pushup/coverage-plugin';
 import eslintPlugin from '@code-pushup/eslint-plugin';
-import { CoreConfig } from '@code-pushup/models';
+import type { CoreConfig } from '@code-pushup/models';
 
 export default {
   upload: {

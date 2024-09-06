@@ -28,7 +28,7 @@ export function yargsPersistConfigOptionsDefinition(): Record<
       type: 'string',
     },
     'persist.format': {
-      describe: 'Format of the report output. e.g. `md`, `json`',
+      describe: 'Report output format (e.g. `md`, `json`)',
       type: 'array',
     },
   };

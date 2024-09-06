@@ -1,3 +1,4 @@
+/* eslint-disable import/no-deprecated,deprecation/deprecation */
 import {
   type CreateNodes,
   type CreateNodesContext,
@@ -14,15 +15,12 @@ type CreateNodesOptions = {
   publishableTags?: string;
 };
 
+// FIXME: refactor this to use the V2 api & remove the eslint disable on the whole file
 export const createNodes: CreateNodes = [
   '**/project.json',
-  (
-    projectConfigurationFile: string,
-    opts: undefined | unknown,
-    context: CreateNodesContext,
-  ) => {
+  (projectConfigurationFile: string, opts: unknown, _: CreateNodesContext) => {
     const root = dirname(projectConfigurationFile);
-    const projectConfiguration: ProjectConfiguration = readJsonFile(
+    const projectConfiguration = readJsonFile<ProjectConfiguration>(
       join(process.cwd(), projectConfigurationFile),
     );
     const {
@@ -32,6 +30,7 @@ export const createNodes: CreateNodes = [
       verbose = false,
     } = (opts ?? {}) as CreateNodesOptions;
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const isPublishable = (projectConfiguration?.tags ?? []).some(target =>
       publishableTags.includes(target),
     );
@@ -57,7 +56,9 @@ function npmTargets({
 }: Required<Omit<CreateNodesOptions, 'publishableTags'>> & {
   root: string;
 }) {
-  const { name: packageName } = readJsonFile(join(root, 'package.json'));
+  const { name: packageName } = readJsonFile<{ name: string }>(
+    join(root, 'package.json'),
+  );
   return {
     'npm-check': {
       command: `tsx --tsconfig={args.tsconfig} {args.script} --pkgRange=${packageName}@{args.pkgVersion} --registry={args.registry} --verbose=${verbose}`,
@@ -68,6 +69,26 @@ function npmTargets({
     },
     'npm-install': {
       command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
+    },
+    'npm-install-e2e': {
+      dependsOn: [
+        {
+          target: 'publish-e2e',
+          projects: 'self',
+          params: 'forward' as const,
+        },
+        {
+          target: 'npm-install-e2e',
+          projects: 'dependencies',
+          params: 'forward' as const,
+        },
+        {
+          target: 'publish-e2e',
+          projects: 'dependencies',
+          params: 'forward' as const,
+        },
+      ],
+      command: `npm install -D --no-fund ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
       command: `npm uninstall ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,
