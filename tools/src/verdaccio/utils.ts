@@ -37,15 +37,19 @@ export function configureRegistry({ host, url, urlNoProtocol }: Registry) {
    * Example: //registry.npmjs.org/:_authToken=your-token
    */
   const token = 'secretVerdaccioToken';
-  execSync(`npm config set ${urlNoProtocol}/:_authToken "${token}"`);
-  console.info(`_authToken for ${url} set to ${token}`);
+  execSync(
+    `npm config set ${urlNoProtocol}/:_authToken "${token}" --userconfig .npmrc`,
+  );
+  console.info(`_authToken for ${url} set to ${token} in .npmrc`);
 }
 
 export function unconfigureRegistry({
   urlNoProtocol,
 }: Pick<Registry, 'urlNoProtocol'>) {
-  execSync(`npm config delete ${urlNoProtocol}/:_authToken`);
-  console.info('delete npm authToken: ' + urlNoProtocol);
+  execSync(
+    `npm config delete ${urlNoProtocol}/:_authToken --userconfig .npmrc`,
+  );
+  console.info(`delete npm authToken: ${urlNoProtocol} form .npmrc`);
 }
 
 export function parseRegistryData(stdout: string): RegistryServer {
