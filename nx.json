@@ -86,7 +86,7 @@
     }
   },
   "release": {
-    "projects": ["packages/*", "!packages/nx-plugin"],
+    "projects": ["packages/*", "!packages/nx-plugin", "!packages/create-cli"],
     "projectsRelationship": "fixed",
     "changelog": {
       "automaticFromRef": true,
