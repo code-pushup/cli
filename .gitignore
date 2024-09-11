@@ -48,3 +48,8 @@ Thumbs.db
 
 # Nx workspace cache
 .nx/cache
+
+# e2e tests in examples
+/examples/react-todos-app/storage
+/examples/react-todos-app/package-lock.json
+/examples/react-todos-app/node_modules
