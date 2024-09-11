@@ -8,6 +8,7 @@ import {
 } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
@@ -58,7 +59,7 @@ describe('CLI collect', () => {
         '--no-progress',
         '--onlyPlugins=eslint',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -96,6 +97,7 @@ describe('CLI collect', () => {
         '--persist.outputDir=tmp/e2e',
         '--onlyPlugins=coverage',
       ],
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -116,7 +118,7 @@ describe('CLI collect', () => {
         '--no-progress',
         '--onlyPlugins=coverage',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -137,7 +139,7 @@ describe('CLI collect', () => {
         '--no-progress',
         '--onlyPlugins=lighthouse',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -157,7 +159,7 @@ describe('CLI collect', () => {
         '--persist.format=md',
         '--no-progress',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -174,7 +176,7 @@ describe('CLI collect', () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);

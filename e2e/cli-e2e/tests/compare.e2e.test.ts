@@ -2,12 +2,13 @@ import { simpleGit } from 'simple-git';
 import type { ReportsDiff } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 describe('CLI compare', () => {
   const git = simpleGit();
 
   beforeEach(async () => {
-    if (await git.diff(['--', 'examples/react-todos-app'])) {
+    if (await git.diff(['--', EXAMPLES_REACT_TODOS_APP])) {
       throw new Error(
         'Unstaged changes found in examples/react-todos-app, please stage or commit them to prevent E2E tests interfering',
       );
@@ -21,12 +22,12 @@ describe('CLI compare', () => {
         '--persist.filename=source-report',
         '--onlyPlugins=eslint',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
     await executeProcess({
       command: 'npx',
       args: ['eslint', '--fix', 'src', '--ext=js,jsx'],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
     await executeProcess({
       command: 'npx',
@@ -36,12 +37,12 @@ describe('CLI compare', () => {
         '--persist.filename=target-report',
         '--onlyPlugins=eslint',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
   }, 20_000);
 
   afterEach(async () => {
-    await git.checkout(['--', 'examples/react-todos-app']);
+    await git.checkout(['--', EXAMPLES_REACT_TODOS_APP]);
     await cleanTestFolder('tmp/e2e');
   });
 
@@ -55,7 +56,7 @@ describe('CLI compare', () => {
         '--before=../../tmp/e2e/react-todos-app/source-report.json',
         '--after=../../tmp/e2e/react-todos-app/target-report.json',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(

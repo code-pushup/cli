@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { expect } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
+import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 export const configFilePath = (ext: (typeof extensions)[number]) =>
@@ -24,6 +25,7 @@ describe('CLI print-config', () => {
           '--onlyPlugins=coverage',
           '--skipPlugins=eslint',
         ],
+        cwd: EXAMPLES_REACT_TODOS_APP,
       });
 
       expect(code).toBe(0);
@@ -54,6 +56,7 @@ describe('CLI print-config', () => {
           categories: [expect.objectContaining({ slug: 'code-coverage' })],
           onlyPlugins: ['coverage'],
           skipPlugins: ['eslint'],
+          cwd: EXAMPLES_REACT_TODOS_APP,
         }),
       );
     },
