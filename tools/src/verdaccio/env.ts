@@ -61,17 +61,26 @@ export function configureRegistry(
 }
 
 export function unconfigureRegistry(
-  { urlNoProtocol }: Pick<Registry, 'urlNoProtocol'>,
+  {
+    urlNoProtocol,
+    userconfig,
+  }: Pick<Registry, 'urlNoProtocol'> & Pick<VerdaccioEnv, 'userconfig'>,
   verbose?: boolean,
 ) {
-  execSync(`npm config delete registry`);
-  execSync(`npm config delete ${urlNoProtocol}/:_authToken`);
+  execSync(`npm config delete registry --userconfig ${userconfig}`);
+  execSync(
+    `npm config delete ${urlNoProtocol}/:_authToken --userconfig ${userconfig}`,
+  );
   if (verbose) {
-    console.info(`${gray('>')} ${gray(bold('Verdaccio-Env'))} delete registry`);
     console.info(
       `${gray('>')} ${gray(
         bold('Verdaccio-Env'),
-      )} delete npm authToken: ${urlNoProtocol}`,
+      )} delete registry from ${userconfig}`,
+    );
+    console.info(
+      `${gray('>')} ${gray(
+        bold('Verdaccio-Env'),
+      )} delete npm authToken: ${urlNoProtocol} from ${userconfig}`,
     );
   }
 }
@@ -151,6 +160,8 @@ export async function nxStartVerdaccioAndSetupEnv({
 
 export async function nxStopVerdaccioAndTeardownEnv(
   result: VerdaccioEnvResult,
+  teardownWorkspaceRoot = true,
+  teardownStorage = true,
 ) {
   if (result) {
     const { stop, registry, workspaceRoot } = result;
@@ -165,7 +176,12 @@ export async function nxStopVerdaccioAndTeardownEnv(
     } else {
       console.error('Stop is not a function. Type:', typeof stop);
     }
-    await teardownTestFolder(workspaceRoot);
+
+    if (teardownWorkspaceRoot) {
+      await teardownTestFolder(workspaceRoot);
+    } else if (teardownStorage) {
+      await teardownTestFolder(result.registry.storage);
+    }
   } else {
     throw new Error(`Failed to stop registry.`);
   }
