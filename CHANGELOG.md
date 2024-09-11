@@ -1,3 +1,42 @@
+## 0.50.0 (2024-09-10)
+
+### 🚀 Features
+
+- add defaults to js-packages plugin options ([#762](https://github.com/code-pushup/cli/pull/762))
+- **cli:** add optional label option to compare command ([b3494d63](https://github.com/code-pushup/cli/commit/b3494d63))
+- **cli:** scaffold merge-diffs command and test argument parsing ([074c50fb](https://github.com/code-pushup/cli/commit/074c50fb))
+- **cli:** do not show help on error ([7cefdaad](https://github.com/code-pushup/cli/commit/7cefdaad))
+- **core:** include portal link and label in report-diff.json ([e5036f1d](https://github.com/code-pushup/cli/commit/e5036f1d))
+- **core:** implement mergeDiffs logic ([0a3594d5](https://github.com/code-pushup/cli/commit/0a3594d5))
+- **core:** improve error messages for report-diff.json parsing ([85b3cdb1](https://github.com/code-pushup/cli/commit/85b3cdb1))
+- **create-cli:** package to align with package managers init command ([#779](https://github.com/code-pushup/cli/pull/779))
+- **models:** add optional portalUrl and label to reports diff schema ([8a1dacb1](https://github.com/code-pushup/cli/commit/8a1dacb1))
+- **nx-plugin:** extend config generator ([#778](https://github.com/code-pushup/cli/pull/778))
+- **nx-plugin:** implement `bin` property in options ([#773](https://github.com/code-pushup/cli/pull/773))
+- **nx-plugin:** add project prefix to plugin ([#792](https://github.com/code-pushup/cli/pull/792))
+- **plugin-lighthouse:** omit audit details table title ([eb7d6295](https://github.com/code-pushup/cli/commit/eb7d6295))
+- **test-nx-utils:** add testing lib for nx specific logic ([#777](https://github.com/code-pushup/cli/pull/777))
+- **utils:** increase audit value column width ([2d125074](https://github.com/code-pushup/cli/commit/2d125074))
+- **utils:** move groups and audits under details to make diff comment more compact ([7d77b51a](https://github.com/code-pushup/cli/commit/7d77b51a))
+- **utils:** implement diff markdown comment for monorepos ([3cf7b114](https://github.com/code-pushup/cli/commit/3cf7b114))
+- **utils:** skip unchanged categories and projects in report-diff.md ([c834cfa1](https://github.com/code-pushup/cli/commit/c834cfa1))
+- **utils:** sort projects in report-diff.md by most changed ([40d24768](https://github.com/code-pushup/cli/commit/40d24768))
+- **utils:** move project status from heading to paragraph in report-diff.md ([260692e1](https://github.com/code-pushup/cli/commit/260692e1))
+- **utils:** helper function to convert unknown errors to string ([1ac3c231](https://github.com/code-pushup/cli/commit/1ac3c231))
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** process empty array flags ([2101cf14](https://github.com/code-pushup/cli/commit/2101cf14))
+- **plugin-lighthouse:** process empty array flags ([304b2298](https://github.com/code-pushup/cli/commit/304b2298))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
 ## 0.49.0 (2024-07-31)
 
 ### 🚀 Features
