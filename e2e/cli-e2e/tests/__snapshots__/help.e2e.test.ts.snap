@@ -7,38 +7,50 @@ Commands:
   code-pushup               Shortcut for running collect followed by upload
                                                                        [default]
   code-pushup autorun       Shortcut for running collect followed by upload
+
   code-pushup collect       Run Plugins and collect results
   code-pushup upload        Upload report results to the portal
   code-pushup history       Collect reports for commit history
   code-pushup compare       Compare 2 report files and create a diff file
+
   code-pushup print-config  Print config
+  code-pushup merge-diffs   Combine many report diffs into a single diff file
+
 
 Global Options:
-      --progress     Show progress bar in stdout.      [boolean] [default: true]
+      --progress     Show progress bar in stdout.
+                                             [boolean] [default: true]
       --verbose      When true creates more verbose output. This is helpful when
-                      debugging.                      [boolean] [default: false]
-      --config       Path to config file, e.g. code-pushup.config.ts. By default
-                      it loads code-pushup.config.(ts|mjs|js).          [string]
+                      debugging.       [boolean] [default: false]
+      --config       Path to config file. By default it loads code-pushup.config
+                     .(ts|mjs|js).                       [string]
       --tsconfig     Path to a TypeScript config, to be used when loading config
-                      file.                                             [string]
+                      file.                              [string]
       --onlyPlugins  List of plugins to run. If not set all plugins are run.
-                                                           [array] [default: []]
+                                                 [array] [default: []]
       --skipPlugins  List of plugins to skip. If not set all plugins are run.
-                                                           [array] [default: []]
+                                                 [array] [default: []]
 
 Persist Options:
-      --persist.outputDir  Directory for the produced reports           [string]
-      --persist.filename   Filename for the produced reports.           [string]
-      --persist.format     Format of the report output. e.g. \`md\`, \`json\`[array]
+      --persist.outputDir  Directory for the produced reports
+                                                              [string]
+      --persist.filename   Filename for the produced reports.
+                                                              [string]
+      --persist.format     Format of the report output. e.g. \`md\`, \`json\`
+                                                               [array]
 
 Upload Options:
-      --upload.organization  Organization slug from portal              [string]
-      --upload.project       Project slug from portal                   [string]
-      --upload.server        URL to your portal server                  [string]
-      --upload.apiKey        API key for the portal server              [string]
+      --upload.organization  Organization slug from portal
+                                                              [string]
+      --upload.project       Project slug from portal[string]
+      --upload.server        URL to your portal server
+                                                              [string]
+      --upload.apiKey        API key for the portal server
+                                                              [string]
 
 Options:
-  -h, --help  Show help                                                [boolean]
+      --version  Show version                       [boolean]
+  -h, --help     Show help                          [boolean]
 
 Examples:
   code-pushup                               Run collect followed by upload based
@@ -52,9 +64,9 @@ Examples:
   code-pushup collect --skipPlugins=covera  Run collect skiping the coverage plu
   ge                                        gin, other plugins from config file
                                             will be included.
-  code-pushup upload --persist.outputDir=d  Upload dist/cp-report.json to portal
-  ist --persist.filename=cp-report --uploa   using API key from environment vari
-  d.apiKey=$CP_API_KEY                      able
+  code-pushup upload --persist.outputDir=d  Upload dist/report.json to portal us
+  ist --upload.apiKey=$CP_API_KEY           ing API key from environment variabl
+                                            e
   code-pushup print-config --config code-p  Print resolved config object parsed
   ushup.config.test.js                      from custom config location
 "
