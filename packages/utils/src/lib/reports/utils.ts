@@ -101,10 +101,8 @@ const MIN_NON_ZERO_RESULT = 0.1;
 
 export function roundValue(value: number): number {
   const roundedValue = Math.round(value * 10) / 10; // round with max 1 decimal
-  if (Math.abs(value) < 1 && value !== 0) {
-    return roundedValue === 0
-      ? MIN_NON_ZERO_RESULT * Math.sign(value)
-      : roundedValue;
+  if (roundedValue === 0 && value !== 0) {
+    return MIN_NON_ZERO_RESULT * Math.sign(value);
   }
   return roundedValue;
 }
