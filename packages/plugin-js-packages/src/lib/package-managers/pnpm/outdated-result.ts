@@ -1,11 +1,11 @@
 import { objectToEntries } from '@code-pushup/utils';
 import type { OutdatedResult } from '../../runner/outdated/types';
 import type { PnpmOutdatedResultJson } from './types';
-import { filterWarnings } from './utils';
+import { filterOutWarnings } from './utils';
 
 export function pnpmToOutdatedResult(output: string): OutdatedResult {
   const pnpmOutdated = JSON.parse(
-    filterWarnings(output),
+    filterOutWarnings(output),
   ) as PnpmOutdatedResultJson;
 
   return objectToEntries(pnpmOutdated).map(
