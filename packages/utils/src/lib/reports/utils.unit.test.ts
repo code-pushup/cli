@@ -289,7 +289,7 @@ describe('sortAudits', () => {
 });
 
 describe('getPluginNameFromSlug', () => {
-  it('should return plugin tiitle', () => {
+  it('should return plugin title', () => {
     const plugins = [
       { slug: 'plugin-a', title: 'Plugin A' },
       { slug: 'plugin-b', title: 'Plugin B' },
