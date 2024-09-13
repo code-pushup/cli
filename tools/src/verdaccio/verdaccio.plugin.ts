@@ -28,21 +28,19 @@ export const createNodes: CreateNodes = [
       port = uniquePort(),
       config = '.verdaccio/config.yml',
       storage = 'tmp/local-registry/storage',
-      verbose = false,
       preTargets = ['e2e'],
     } = (opts ?? {}) as CreateNodesOptions;
-    const { workspaceRoot } = context;
     const root = dirname(projectConfigurationFile);
     const projectConfiguration: ProjectConfiguration = readJsonFile(
       projectConfigurationFile,
     );
 
     const hasPreVerdaccioTargets = someTargetsPresent(
-      projectConfiguration?.targets ?? {},
+      projectConfiguration.targets ?? {},
       preTargets,
     );
-    const isRootProject = root === '.';
-    if (!hasPreVerdaccioTargets && !isRootProject) {
+
+    if (!hasPreVerdaccioTargets) {
       return {};
     }
 
@@ -74,6 +72,16 @@ function verdaccioTargets({
         config,
         storage,
       },
+    },
+    ['setup-e2e-deps']: {
+      dependsOn: [
+        {
+          target: 'npm-install-e2e',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+      ],
+      command: 'echo "Dependencies are ready to use!"',
     },
   };
 }

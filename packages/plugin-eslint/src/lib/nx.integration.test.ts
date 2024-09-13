@@ -45,7 +45,6 @@ describe('Nx helpers', () => {
           eslintrc: './packages/cli/.eslintrc.json',
           patterns: [
             'packages/cli/**/*.ts',
-            'packages/cli/package.json',
             'packages/cli/src/*.spec.ts',
             'packages/cli/src/*.cy.ts',
             'packages/cli/src/*.stories.ts',
@@ -56,7 +55,6 @@ describe('Nx helpers', () => {
           eslintrc: './packages/core/.eslintrc.json',
           patterns: [
             'packages/core/**/*.ts',
-            'packages/core/package.json',
             'packages/core/src/*.spec.ts',
             'packages/core/src/*.cy.ts',
             'packages/core/src/*.stories.ts',
@@ -67,8 +65,6 @@ describe('Nx helpers', () => {
           eslintrc: './packages/nx-plugin/.eslintrc.json',
           patterns: [
             'packages/nx-plugin/**/*.ts',
-            'packages/nx-plugin/package.json',
-            'packages/nx-plugin/generators.json',
             'packages/nx-plugin/src/*.spec.ts',
             'packages/nx-plugin/src/*.cy.ts',
             'packages/nx-plugin/src/*.stories.ts',
@@ -79,7 +75,6 @@ describe('Nx helpers', () => {
           eslintrc: './packages/utils/.eslintrc.json',
           patterns: [
             'packages/utils/**/*.ts',
-            'packages/utils/package.json',
             'packages/utils/src/*.spec.ts',
             'packages/utils/src/*.cy.ts',
             'packages/utils/src/*.stories.ts',

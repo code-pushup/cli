@@ -2,7 +2,7 @@ import { bold, gray, red } from 'ansis';
 // eslint-disable-next-line n/no-sync
 import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
-// can't import from utils
+// can't import from utils.
 import { objectToCliArgs } from '../../../packages/nx-plugin/src';
 import {
   setupTestFolder,
@@ -10,12 +10,12 @@ import {
 } from '../../../testing/test-setup/src';
 import { ensureDirectoryExists } from '../../../testing/test-utils/src';
 import {
-  NxStarVerdaccioOptions,
-  Registry,
+  type NxStarVerdaccioOptions,
+  type Registry,
   nxStartVerdaccioServer,
 } from './registry';
 
-export function projectE2eScope(projectName: string): string {
+export function projectE2EScope(projectName: string): string {
   return join('tmp', 'e2e', projectName);
 }
 
@@ -107,14 +107,14 @@ export type StartVerdaccioAndSetupEnvOptions = Partial<
 
 export type VerdaccioEnvResult = VerdaccioEnv & {
   registry: Registry;
-  stop: () => void;
+  stop?: () => void;
 };
 
 export async function nxStartVerdaccioAndSetupEnv({
   projectName,
   port,
   verbose = false,
-  workspaceRoot = projectE2eScope(projectName),
+  workspaceRoot = projectE2EScope(projectName || ''),
   location = 'none',
   // reset or remove cached packages and/or metadata.
   clear = true,
@@ -150,7 +150,7 @@ export async function nxStartVerdaccioAndSetupEnv({
 }
 
 export async function nxStopVerdaccioAndTeardownEnv(
-  result: VerdaccioEnvResult,
+  result: VerdaccioEnvResult | null,
 ) {
   if (result) {
     const { stop, registry, workspaceRoot } = result;

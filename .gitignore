@@ -47,4 +47,4 @@ Thumbs.db
 **/.code-pushup
 
 # Nx workspace cache
-.nx/cache
+.nx
