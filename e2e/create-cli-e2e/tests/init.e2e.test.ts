@@ -28,7 +28,7 @@ describe('create-cli-node', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+      '<✓>  Generating @code-pushup/nx-plugin:configuration',
     );
   });
 
@@ -45,7 +45,7 @@ describe('create-cli-node', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+      '<✓>  Generating @code-pushup/nx-plugin:configuration',
     );
   });
 
@@ -61,7 +61,7 @@ describe('create-cli-node', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+      '<✓>  Generating @code-pushup/nx-plugin:configuration',
     );
   });
 });
