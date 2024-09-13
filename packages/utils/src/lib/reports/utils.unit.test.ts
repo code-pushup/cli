@@ -13,6 +13,7 @@ import {
   compareCategoryAuditsAndGroups,
   compareIssueSeverity,
   compareIssues,
+  countCategoryAudits,
   countWeightedRefs,
   formatDiffNumber,
   formatReportScore,
@@ -52,6 +53,12 @@ describe('formatScoreWithColor', () => {
 
   it('should skip round value and optionally skip bold formatting', () => {
     expect(formatScoreWithColor(0.123).toString()).toBe('🔴 **12**');
+  });
+
+  it('should skip bold formatting', () => {
+    expect(formatScoreWithColor(0.123, { skipBold: true }).toString()).toBe(
+      '🔴 12',
+    );
   });
 });
 
@@ -118,6 +125,54 @@ describe('countWeightedRefs', () => {
         },
       ]),
     ).toBe(1);
+  });
+
+  it('should include multiple weighted references', () => {
+    expect(
+      countWeightedRefs([
+        {
+          slug: 'a1',
+          weight: 0.5,
+          plugin: 'a',
+          type: 'audit',
+        },
+        {
+          slug: 'a2',
+          weight: 0.3,
+          plugin: 'a',
+          type: 'audit',
+        },
+        {
+          slug: 'a3',
+          weight: 0.2,
+          plugin: 'a',
+          type: 'audit',
+        },
+      ]),
+    ).toBe(1);
+  });
+
+  it('should return 0 when all weights are 0', () => {
+    expect(
+      countWeightedRefs([
+        {
+          slug: 'a1',
+          weight: 0,
+          plugin: 'a',
+          type: 'audit',
+        },
+        {
+          slug: 'a2',
+          weight: 0,
+          plugin: 'a',
+          type: 'audit',
+        },
+      ]),
+    ).toBe(0);
+  });
+
+  it('should handle cases when no weights are provided', () => {
+    expect(countWeightedRefs([])).toBe(0);
   });
 });
 
@@ -234,13 +289,29 @@ describe('sortAudits', () => {
 });
 
 describe('getPluginNameFromSlug', () => {
-  it('should return plugin name', () => {
+  it('should return plugin tiitle', () => {
     const plugins = [
       { slug: 'plugin-a', title: 'Plugin A' },
       { slug: 'plugin-b', title: 'Plugin B' },
     ] as ScoredReport['plugins'];
     expect(getPluginNameFromSlug('plugin-a', plugins)).toBe('Plugin A');
     expect(getPluginNameFromSlug('plugin-b', plugins)).toBe('Plugin B');
+  });
+
+  it('should return plugin slug when plugin title is an empty string', () => {
+    expect(
+      getPluginNameFromSlug('plugin-a', [
+        { slug: 'plugin-a', title: '' },
+      ] as ScoredReport['plugins']),
+    ).toBe('plugin-a');
+  });
+
+  it('should return provided slug when plugin slug and title are empty strings', () => {
+    expect(
+      getPluginNameFromSlug('plugin-a', [
+        { slug: '', title: '' },
+      ] as ScoredReport['plugins']),
+    ).toBe('plugin-a');
   });
 });
 
@@ -476,6 +547,7 @@ describe('formatValueChange', () => {
     [{ before: 600, after: 450, diff: -150 }, '↓ −25 %'],
     [{ before: 1, after: 3, diff: 2 }, '↑ +200 %'],
     [{ before: 0, after: 2, diff: 2 }, '↑ +∞ %'],
+    [{ before: 0, after: -2, diff: -2 }, '↓ −∞ %'],
     [{ before: 100, after: 101, diff: 1 }, '↑ +1 %'],
     [{ before: 1000, after: 1001, diff: 1 }, '↑ +0.1 %'],
     [{ before: 500, after: 499, diff: -1 }, '↓ −0.2 %'],
@@ -491,4 +563,139 @@ describe('formatValueChange', () => {
       ).toHaveProperty('alt', valueChange);
     },
   );
+});
+
+describe('countCategoryAudits', () => {
+  it('should count single audit references', () => {
+    expect(
+      countCategoryAudits(
+        [
+          {
+            type: 'audit',
+            plugin: 'coverage',
+            slug: 'function-coverage',
+            weight: 1,
+          },
+        ],
+        [],
+      ),
+    ).toBe(1);
+  });
+
+  it('should count audits in a group', () => {
+    expect(
+      countCategoryAudits(
+        [
+          {
+            type: 'group',
+            plugin: 'coverage',
+            slug: 'code-coverage',
+            weight: 1,
+          },
+        ],
+        [
+          {
+            slug: 'coverage',
+            groups: [
+              {
+                slug: 'code-coverage',
+                refs: [
+                  { slug: 'branch-coverage', weight: 0.33 },
+                  { slug: 'function-coverage', weight: 0.33 },
+                  { slug: 'line-coverage', weight: 0.33 },
+                ],
+              },
+            ],
+          },
+        ] as ScoredReport['plugins'],
+      ),
+    ).toBe(3);
+  });
+
+  it('should handle mixed audit and group references', () => {
+    expect(
+      countCategoryAudits(
+        [
+          {
+            type: 'audit',
+            plugin: 'lighthouse',
+            slug: 'is-on-https',
+            weight: 1,
+          },
+          {
+            type: 'group',
+            plugin: 'coverage',
+            slug: 'code-coverage',
+            weight: 1,
+          },
+        ],
+        [
+          {
+            slug: 'coverage',
+            groups: [
+              {
+                slug: 'code-coverage',
+                refs: [
+                  { slug: 'branch-coverage', weight: 0.5 },
+                  { slug: 'line-coverage', weight: 0.5 },
+                ],
+              },
+            ],
+          },
+        ] as ScoredReport['plugins'],
+      ),
+    ).toBe(3);
+  });
+
+  it('should return 0 when a group is not found', () => {
+    expect(
+      countCategoryAudits(
+        [
+          {
+            type: 'group',
+            plugin: 'plugin-A',
+            slug: 'missing-group',
+            weight: 1,
+          },
+        ],
+        [
+          {
+            slug: 'plugin-A',
+            groups: [
+              {
+                slug: 'code-coverage',
+                refs: [
+                  { slug: 'branch-coverage', weight: 0.5 },
+                  { slug: 'line-coverage', weight: 0.5 },
+                ],
+              },
+            ],
+          },
+        ] as ScoredReport['plugins'],
+      ),
+    ).toBe(0);
+  });
+
+  it.each([[[]], [undefined]])(
+    'should return 0 when plugin groups are %p and no single audit references are provided',
+    groups => {
+      expect(
+        countCategoryAudits(
+          [
+            {
+              type: 'group',
+              plugin: 'coverage',
+              slug: 'code-coverage',
+              weight: 1,
+            },
+          ],
+          [{ slug: 'coverage', groups: groups }] as ScoredReport['plugins'],
+        ),
+      ).toBe(0);
+    },
+  );
+
+  it('should return 0 when no audits or groups are present', () => {
+    expect(countCategoryAudits([], [])).toBe(0);
+  });
 });
