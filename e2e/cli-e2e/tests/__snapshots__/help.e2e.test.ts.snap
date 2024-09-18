@@ -26,9 +26,9 @@ Global Options:
                      .(ts|mjs|js).                       [string]
       --tsconfig     Path to a TypeScript config, to be used when loading config
                       file.                              [string]
-      --onlyPlugins  List of plugins to run. If not set all plugins are run.
+  -p, --onlyPlugins  List of plugins to run. If not set all plugins are run.
                                                  [array] [default: []]
-      --skipPlugins  List of plugins to skip. If not set all plugins are run.
+  -P, --skipPlugins  List of plugins to skip. If not set all plugins are run.
                                                  [array] [default: []]
 
 Persist Options:

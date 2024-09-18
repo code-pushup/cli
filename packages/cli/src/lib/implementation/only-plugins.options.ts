@@ -7,6 +7,7 @@ export const onlyPluginsOption: Options = {
   type: 'array',
   default: [],
   coerce: coerceArray,
+  alias: 'p',
 };
 
 export function yargsOnlyPluginsOptionsDefinition(): Record<
