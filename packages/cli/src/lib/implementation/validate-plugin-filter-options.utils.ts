@@ -1,4 +1,3 @@
-import { yellow } from 'ansis';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
@@ -28,15 +27,13 @@ export function validatePluginFilterOption(
       ? pluginsToFilterSet.has(plugin)
       : !pluginsToFilterSet.has(plugin);
 
-  if (missingPlugins.length > 0 && verbose) {
-    ui().logger.info(
-      `${yellow(
-        '⚠',
-      )} The --${filterOption} argument references plugins with "${missingPlugins.join(
-        '", "',
-      )}" slugs, but no such plugins are present in the configuration. Expected one of the following plugin slugs: "${plugins
-        .map(({ slug }) => slug)
-        .join('", "')}".`,
+  if (missingPlugins.length > 0) {
+    ui().logger.warning(
+      `The --${filterOption} argument references ${
+        missingPlugins.length === 1 ? 'a plugin that does' : 'plugins that do'
+      } not exist: ${missingPlugins.join(', ')}. The valid plugin ${
+        plugins.length === 1 ? 'slug is' : 'slugs are'
+      } ${plugins.map(({ slug }) => slug).join(', ')}.`,
     );
   }
 
@@ -45,10 +42,9 @@ export function validatePluginFilterOption(
       filterFunction(plugin),
     ).map(({ slug }) => slug);
     ui().logger.info(
-      `The --${filterOption} argument removed categories with "${removedCategorySlugs.join(
-        '", "',
-      )}" slugs.
-    `,
+      `The --${filterOption} argument removed the following categories: ${removedCategorySlugs.join(
+        ', ',
+      )}.`,
     );
   }
 }
