@@ -4,7 +4,7 @@ import {
   MarkdownDocument,
   md,
 } from 'build-md';
-import * as path from 'node:path';
+import { posix as pathPosix } from 'node:path';
 import type {
   AuditReport,
   SourceFileLocation,
@@ -16,6 +16,8 @@ import {
   getColumnAlignments,
   rowToStringArray,
 } from '../text-formats/table';
+import { toUnixPath } from '../transform';
+import { ideEnvironment } from './ide-environment';
 import type { MdReportOptions } from './types';
 
 export function tableSection(
@@ -76,47 +78,46 @@ export function metaDescription(
 export function linkToLocalSourceForIde(
   source: SourceFileLocation,
   options?: Pick<MdReportOptions, 'outputDir'>,
-): string {
+): InlineText {
   const { file, position } = source;
-
-  const unixPath = file.replace(/\\/g, '/');
-
   const { outputDir } = options ?? {};
+  const unixPath = toUnixPath(file);
 
   // NOT linkable
   if (!outputDir) {
-    return unixPath;
+    return md.code(unixPath);
   }
 
-  const relativePath = path.relative(outputDir, unixPath);
-  return md
-    .link(formatFilePosition(relativePath, position), unixPath)
-    .toString();
+  const relativePath = pathPosix.relative(outputDir, unixPath);
+  return md.link(formatFilePosition(relativePath, position), md.code(unixPath));
 }
 
-export function formatSourceLine(source: SourceFileLocation) {
-  const { startLine, endLine } = source?.position ?? {};
-  return `${startLine || ''}${
-    endLine && startLine !== endLine ? `-${endLine}` : ''
-  }`;
+export function formatSourceLine(source: SourceFileLocation): string {
+  if (!source.position) {
+    return '';
+  }
+  const { startLine, endLine } = source.position;
+  return endLine
+    ? startLine === endLine
+      ? `${startLine}`
+      : `${startLine}-${endLine}`
+    : `${startLine}`;
 }
 
-function formatFilePosition(
+export function formatFilePosition(
   file: string,
   position?: SourceFileLocation['position'],
-) {
+): string {
   if (!position) {
     return file;
   }
-  const { startLine, startColumn } = position;
-
-  if (!startLine) {
-    return file;
-  }
-
-  if (!startColumn) {
-    return `${file}:${startLine}`;
-  }
-
-  return `${file}:${startLine}:${startColumn}`;
+  const ide = ideEnvironment();
+  const { startLine, endLine } = position;
+  return ide === 'vscode'
+    ? `${file}#L${startLine}`
+    : ide === 'github'
+    ? endLine
+      ? `${file}#L${startLine}-L${endLine}`
+      : `${file}#L${startLine}`
+    : file;
 }

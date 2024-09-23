@@ -64,8 +64,7 @@ export function auditDetailsIssues(
       if (!source) {
         return [severity, message];
       }
-      // TODO: implement file links, ticket #149
-      const file = md.code(linkToLocalSourceForIde(source, options));
+      const file = linkToLocalSourceForIde(source, options);
       if (!source.position) {
         return [severity, message, file];
       }

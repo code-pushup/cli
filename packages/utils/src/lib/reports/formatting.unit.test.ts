@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatFilePosition,
   formatSourceLine,
   linkToLocalSourceForIde,
   metaDescription,
@@ -119,77 +120,106 @@ describe('metaDescription', () => {
 });
 
 describe('formatSourceLine', () => {
-  it('should return empty string for missing position', () => {
+  it.each([
+    [{ startLine: 2 }, '2'],
+    [{ startLine: 2, endLine: undefined }, '2'],
+    [{ startLine: 2, endLine: 2 }, '2'],
+    [{ startLine: 2, endLine: 3 }, '2-3'],
+  ])('should format position %o as "%s"', (position, expected) => {
+    expect(
+      formatSourceLine({ file: '/packages/utils/src/index.ts', position }),
+    ).toBe(expected);
+  });
+
+  it('should return an empty string when position is missing', () => {
     expect(formatSourceLine({ file: '/packages/utils/src/index.ts' })).toBe('');
-  });
-
-  it('should return line if present in position', () => {
-    expect(
-      formatSourceLine({
-        file: '/packages/utils/src/index.ts',
-        position: { startLine: 2 },
-      }),
-    ).toBe('2');
-  });
-
-  it('should return line range if present in position', () => {
-    expect(
-      formatSourceLine({
-        file: '/packages/utils/src/index.ts',
-        position: { startLine: 2, endLine: 3 },
-      }),
-    ).toBe('2-3');
   });
 });
 
 describe('linkToLocalSourceForIde', () => {
-  it('should not wrap the given file with a link if the outputDirectory is undefined', () => {
+  it('should not format file path as link when outputDir is undefined', () => {
     expect(
       linkToLocalSourceForIde({
         file: '/packages/utils/src/index.ts',
-      }),
-    ).toBe(`/packages/utils/src/index.ts`);
+      }).toString(),
+    ).toBe('`/packages/utils/src/index.ts`');
   });
 
-  it('should return link to file if given', () => {
+  it('should format file path as link when outputDir is provided', () => {
+    expect(
+      linkToLocalSourceForIde(
+        { file: '/packages/utils/src/index.ts' },
+        { outputDir: '/.code-pushup' },
+      ).toString(),
+    ).toBe('[`/packages/utils/src/index.ts`](../packages/utils/src/index.ts)');
+  });
+
+  it('should return link to specific line when startLine is provided (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
     expect(
       linkToLocalSourceForIde(
         {
           file: '/packages/utils/src/index.ts',
+          position: { startLine: 2 },
         },
         { outputDir: '/.code-pushup' },
-      ),
-    ).toBe(`[/packages/utils/src/index.ts](../packages/utils/src/index.ts)`);
-  });
-
-  it('should return link to line if given', () => {
-    expect(
-      linkToLocalSourceForIde(
-        {
-          file: '/packages/utils/src/index.ts',
-          position: {
-            startLine: 2,
-          },
-        },
-        { outputDir: '/.code-pushup' },
-      ),
-    ).toBe(`[/packages/utils/src/index.ts](../packages/utils/src/index.ts:2)`);
-  });
-
-  it('should return link to column if given', () => {
-    expect(
-      linkToLocalSourceForIde(
-        {
-          file: '/packages/utils/src/index.ts',
-          position: {
-            startLine: 2,
-            startColumn: 1,
-          },
-        },
-        { outputDir: '/.code-pushup' },
-      ),
+      ).toString(),
     ).toBe(
-      `[/packages/utils/src/index.ts](../packages/utils/src/index.ts:2:1)`,
+      '[`/packages/utils/src/index.ts`](../packages/utils/src/index.ts#L2)',
     );
+    vi.unstubAllEnvs();
+  });
+});
+
+describe('formatFilePosition', () => {
+  it.each([
+    ['../src/index.ts', { startLine: 2 }, '../src/index.ts#L2'],
+    ['../src/index.ts', { startLine: 2, endLine: 5 }, '../src/index.ts#L2-L5'],
+    ['../src/index.ts', { startLine: 2, startColumn: 1 }, '../src/index.ts#L2'],
+  ])(
+    'should transform file path "%s" by including position %o when running in GitHub',
+    (file, position, expected) => {
+      vi.stubEnv('GITHUB_ACTIONS', 'true');
+      vi.stubEnv('TERM_PROGRAM', '');
+      expect(formatFilePosition(file, position)).toBe(expected);
+      vi.unstubAllEnvs();
+    },
+  );
+
+  it('should return file path when position is undefined (GitHub)', () => {
+    vi.stubEnv('GITHUB_ACTIONS', 'true');
+    vi.stubEnv('TERM_PROGRAM', '');
+    expect(formatFilePosition('../src/index.ts')).toBe('../src/index.ts');
+    vi.unstubAllEnvs();
+  });
+
+  it.each([
+    ['../src/index.ts', { startLine: 2 }, '../src/index.ts#L2'],
+    ['../src/index.ts', { startLine: 2, endLine: 5 }, '../src/index.ts#L2'],
+    ['../src/index.ts', { startLine: 2, startColumn: 1 }, '../src/index.ts#L2'],
+  ])(
+    'should transform file path "%s" by including position %o when running in VS Code',
+    (file, position, expected) => {
+      vi.stubEnv('TERM_PROGRAM', 'vscode');
+      vi.stubEnv('GITHUB_ACTIONS', '');
+      expect(formatFilePosition(file, position)).toBe(expected);
+      vi.unstubAllEnvs();
+    },
+  );
+
+  it('should return file path when position is undefined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', '');
+    expect(formatFilePosition('../src/index.ts')).toBe('../src/index.ts');
+    vi.unstubAllEnvs();
+  });
+
+  it('should return link to file when environment is neither VS Code nor GitHub', () => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', '');
+    expect(
+      formatFilePosition('../src/index.ts', { startLine: 2, startColumn: 1 }),
+    ).toBe('../src/index.ts');
+    vi.unstubAllEnvs();
   });
 });

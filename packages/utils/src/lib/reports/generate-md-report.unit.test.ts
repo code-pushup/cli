@@ -140,7 +140,8 @@ describe('auditDetailsIssues', () => {
     ).toMatch('`/index.js`');
   });
 
-  it('should include source file linked with position', () => {
+  it('should include source file linked with position (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
     expect(
       auditDetailsIssues(
         [
@@ -157,7 +158,8 @@ describe('auditDetailsIssues', () => {
         ],
         { outputDir: '/.code-pushup' },
       )?.toString(),
-    ).toMatch('`[/src/index.js](../src/index.js:4:7)`');
+    ).toMatch('[`/src/index.js`](../src/index.js#L4)');
+    vi.unstubAllEnvs();
   });
 
   it('should include formatted line information', () => {

@@ -33,3 +33,5 @@ export type SortableAuditReport = AuditReport & {
 export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
 
 export type MdReportOptions = Pick<PersistConfig, 'outputDir'>;
+
+export type IdeEnvironment = 'vscode' | 'github' | 'other';
