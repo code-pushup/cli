@@ -4,14 +4,14 @@ import {
   objectToEntries,
   objectToKeys,
 } from '@code-pushup/utils';
-import {
+import type {
   OutdatedDependency,
   OutdatedResult,
 } from '../../runner/outdated/types';
 import { REQUIRED_OUTDATED_FIELDS, outdatedtoFieldMapper } from './constants';
 import {
-  Yarnv1FieldName,
-  Yarnv1OutdatedResultJson,
+  type Yarnv1FieldName,
+  type Yarnv1OutdatedResultJson,
   yarnv1FieldNames,
 } from './types';
 

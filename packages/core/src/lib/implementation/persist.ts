@@ -1,8 +1,8 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PersistConfig, Report } from '@code-pushup/models';
+import type { PersistConfig, Report } from '@code-pushup/models';
 import {
-  MultipleFileResults,
+  type MultipleFileResults,
   directoryExists,
   generateMdReport,
   logMultipleFileResults,

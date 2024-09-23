@@ -1,8 +1,8 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
-  Table,
-  TableColumnObject,
-  TableRowObject,
+  type Table,
+  type TableColumnObject,
+  type TableRowObject,
   tableSchema,
 } from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value';
@@ -19,7 +19,6 @@ export function parseTableToAuditDetailsTable(
 
   try {
     return tableSchema().parse({
-      title: 'Table',
       columns: parseTableColumns(rawHeadings),
       rows: items.map(row => parseTableRow(row, rawHeadings)),
     });

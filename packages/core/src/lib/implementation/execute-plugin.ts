@@ -1,16 +1,16 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import {
-  Audit,
-  AuditOutput,
-  AuditOutputs,
-  AuditReport,
-  OnProgress,
-  PluginConfig,
-  PluginReport,
+  type Audit,
+  type AuditOutput,
+  type AuditOutputs,
+  type AuditReport,
+  type OnProgress,
+  type PluginConfig,
+  type PluginReport,
   auditOutputsSchema,
 } from '@code-pushup/models';
 import {
-  ProgressBar,
+  type ProgressBar,
   getProgressBar,
   groupByStatus,
   logMultipleResults,
@@ -25,7 +25,7 @@ import { executeRunnerConfig, executeRunnerFunction } from './runner';
 export class PluginOutputMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${chalk.bold(
+      `Audit metadata not present in plugin config. Missing slug: ${bold(
         auditSlug,
       )}`,
     );
@@ -110,7 +110,7 @@ const wrapProgress = async (
   steps: number,
   progressBar: ProgressBar | null,
 ) => {
-  progressBar?.updateTitle(`Executing ${chalk.bold(pluginCfg.title)}`);
+  progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
   try {
     const pluginReport = await executePlugin(pluginCfg);
     progressBar?.incrementInSteps(steps);
@@ -119,7 +119,7 @@ const wrapProgress = async (
     progressBar?.incrementInSteps(steps);
     throw new Error(
       error instanceof Error
-        ? `- Plugin ${chalk.bold(pluginCfg.title)} (${chalk.bold(
+        ? `- Plugin ${bold(pluginCfg.title)} (${bold(
             pluginCfg.slug,
           )}) produced the following error:\n  - ${error.message}`
         : String(error),

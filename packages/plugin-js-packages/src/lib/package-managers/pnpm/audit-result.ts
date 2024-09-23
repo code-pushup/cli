@@ -1,9 +1,12 @@
-import { AuditResult, Vulnerability } from '../../runner/audit/types';
+import type { AuditResult, Vulnerability } from '../../runner/audit/types';
 import { getVulnerabilitiesTotal } from '../../runner/audit/utils';
-import { PnpmAuditResultJson } from './types';
+import type { PnpmAuditResultJson } from './types';
+import { filterOutWarnings } from './utils';
 
 export function pnpmToAuditResult(output: string): AuditResult {
-  const pnpmResult = JSON.parse(output) as PnpmAuditResultJson;
+  const pnpmResult = JSON.parse(
+    filterOutWarnings(output),
+  ) as PnpmAuditResultJson;
 
   const vulnerabilities = Object.values(pnpmResult.advisories).map(
     ({

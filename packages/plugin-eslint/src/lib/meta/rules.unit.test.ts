@@ -2,7 +2,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { ESLintTarget } from '../config';
-import { RuleData, listRules, parseRuleId } from './rules';
+import { type RuleData, listRules, parseRuleId } from './rules';
 
 describe('listRules', () => {
   const fixturesDir = join(
@@ -36,7 +36,7 @@ describe('listRules', () => {
     });
 
     it('should list expected number of rules', async () => {
-      await expect(listRules(targets)).resolves.toHaveLength(47);
+      await expect(listRules(targets)).resolves.toHaveLength(31);
     });
 
     it('should include explicitly set built-in rule', async () => {

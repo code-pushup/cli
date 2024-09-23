@@ -1,8 +1,8 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PluginConfig } from '@code-pushup/models';
+import type { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
-import { ESLintPluginConfig, eslintPluginConfigSchema } from './config';
+import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config';
 import { listAuditsAndGroups } from './meta';
 import { createRunnerConfig } from './runner';
 

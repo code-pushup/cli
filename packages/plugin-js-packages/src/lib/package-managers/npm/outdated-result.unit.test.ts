@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { OutdatedResult } from '../../runner/outdated/types';
+import type { OutdatedResult } from '../../runner/outdated/types';
 import { npmToOutdatedResult } from './outdated-result';
 
 describe('npmToOutdatedResult', () => {

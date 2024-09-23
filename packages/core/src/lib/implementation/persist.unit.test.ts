@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
@@ -83,7 +83,9 @@ describe('persistReport', () => {
 
     const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
     expect(mdReport).toContain('Code PushUp Report');
-    expect(mdReport).toContain('|🏷 Category|⭐ Score|🛡 Audits|');
+    expect(mdReport).toMatch(
+      /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
+    );
 
     const jsonReport: Report = JSON.parse(
       await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),

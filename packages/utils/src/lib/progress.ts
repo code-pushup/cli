@@ -1,19 +1,19 @@
-import chalk from 'chalk';
-import { CtorOptions, MultiProgressBars } from 'multi-progress-bars';
+import { black, bold, gray, green } from 'ansis';
+import { type CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 import { TERMINAL_WIDTH } from './reports/constants';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
 export const barStyles: StatusStyles = {
-  active: (s: string) => chalk.green(s),
-  done: (s: string) => chalk.gray(s),
-  idle: (s: string) => chalk.gray(s),
+  active: (s: string) => green(s),
+  done: (s: string) => gray(s),
+  idle: (s: string) => gray(s),
 };
 
 export const messageStyles: StatusStyles = {
-  active: (s: string) => chalk.black(s),
-  done: (s: string) => chalk.green(chalk.bold(s)),
-  idle: (s: string) => chalk.gray(s),
+  active: (s: string) => black(s),
+  done: (s: string) => bold.green(s),
+  idle: (s: string) => gray(s),
 };
 
 export type ProgressBar = {

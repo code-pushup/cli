@@ -1,6 +1,6 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
-import { Table } from '@code-pushup/models';
+import type { Table } from '@code-pushup/models';
 import {
   parseTableColumns,
   parseTableEntry,
@@ -93,7 +93,6 @@ describe('parseTableToAuditDetails', () => {
     } satisfies Details.Table);
 
     expect(outputs).toStrictEqual({
-      title: 'Table',
       columns: [
         {
           key: 'statistic',
@@ -219,7 +218,6 @@ describe('parseTableToAuditDetails', () => {
     } as Details.Table);
 
     expect(outputs).toEqual({
-      title: 'Table',
       columns: [
         {
           align: 'left',

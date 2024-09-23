@@ -1,8 +1,9 @@
 {
   "name": "@code-pushup/cli-source",
-  "version": "0.29.0",
+  "version": "0.0.0",
   "license": "MIT",
-  "homepage": "https://github.com/code-pushup/cli#readme",
+  "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
+  "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
   },
@@ -10,33 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/code-pushup/cli.git"
   },
-  "contributors": [
-    {
-      "name": "Igor Katsuba",
-      "email": "igor@katsuba.dev",
-      "url": "https://katsuba.dev"
-    },
-    {
-      "name": "Kateřina Pilátová",
-      "email": "katerina.pilatova@flowup.cz",
-      "url": "https://github.com/Tlacenka"
-    },
-    {
-      "name": "Matěj Chalk",
-      "email": "matej.chalk@flowup.cz",
-      "url": "https://github.com/matejchalk"
-    },
-    {
-      "name": "Michael Hladky",
-      "email": "michael.hladky@push-based.io",
-      "url": "https://push-based.io"
-    },
-    {
-      "name": "Michael Seredenko",
-      "email": "misha.seredenko@push-based.io",
-      "url": "https://github.com/MishaSeredenkoPushBased"
-    }
-  ],
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
@@ -44,16 +18,17 @@
   },
   "private": true,
   "engine": {
-    "node": ">=18.16"
+    "node": ">=18.20"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.8.0",
+    "@code-pushup/portal-client": "^0.9.0",
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "17.3.2",
     "@poppinss/cliui": "^6.4.0",
     "@swc/helpers": "0.5.3",
+    "ansis": "^3.3.0",
+    "build-md": "^0.4.2",
     "bundle-require": "^4.0.1",
-    "chalk": "^5.3.0",
     "cli-table3": "^0.6.3",
     "esbuild": "^0.19.12",
     "eslint": "~8.56.0",
@@ -84,8 +59,9 @@
     "@nx/react": "17.3.2",
     "@nx/vite": "17.3.2",
     "@nx/workspace": "17.3.2",
+    "@swc-node/register": "^1.10.9",
     "@swc/cli": "~0.1.62",
-    "@swc/core": "1.3.99",
+    "@swc/core": "^1.3.99",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
@@ -97,6 +73,7 @@
     "@types/react-dom": "18.2.9",
     "@typescript-eslint/eslint-plugin": "6.13.2",
     "@typescript-eslint/parser": "6.13.2",
+    "@verdaccio/types": "^10.8.0",
     "@vitejs/plugin-react": "4.2.1",
     "@vitest/coverage-v8": "1.3.1",
     "@vitest/ui": "1.3.1",

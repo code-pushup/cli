@@ -1,5 +1,10 @@
-import { AuditReport, CategoryRef, PluginReport } from '@code-pushup/models';
-import {
+import type {
+  AuditReport,
+  CategoryRef,
+  Group,
+  PluginReport,
+} from '@code-pushup/models';
+import type {
   ScoredGroup,
   ScoredReport,
   SortableAuditReport,
@@ -9,9 +14,80 @@ import {
   compareAudits,
   compareCategoryAuditsAndGroups,
   compareIssues,
-  getSortableAuditByRef,
-  getSortableGroupByRef,
+  throwIsNotPresentError,
 } from './utils';
+
+export function getSortableAuditByRef(
+  { slug, weight, plugin }: CategoryRef,
+  plugins: ScoredReport['plugins'],
+): SortableAuditReport {
+  const auditPlugin = plugins.find(p => p.slug === plugin);
+  if (!auditPlugin) {
+    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
+  }
+  const audit = auditPlugin.audits.find(
+    ({ slug: auditSlug }) => auditSlug === slug,
+  );
+  if (!audit) {
+    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
+  }
+  return {
+    ...audit,
+    weight,
+    plugin,
+  };
+}
+
+export function getSortedGroupAudits(
+  group: Group,
+  plugin: string,
+  plugins: ScoredReport['plugins'],
+): SortableAuditReport[] {
+  return group.refs
+    .map(ref =>
+      getSortableAuditByRef(
+        {
+          plugin,
+          slug: ref.slug,
+          weight: ref.weight,
+          type: 'audit',
+        },
+        plugins,
+      ),
+    )
+    .sort(compareCategoryAuditsAndGroups);
+}
+
+export function getSortableGroupByRef(
+  { plugin, slug, weight }: CategoryRef,
+  plugins: ScoredReport['plugins'],
+): SortableGroup {
+  const groupPlugin = plugins.find(p => p.slug === plugin);
+  if (!groupPlugin) {
+    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
+  }
+
+  const group = groupPlugin.groups?.find(
+    ({ slug: groupSlug }) => groupSlug === slug,
+  );
+  if (!group) {
+    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
+  }
+
+  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
+  const sortedAuditRefs = [...group.refs].sort((a, b) => {
+    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
+    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
+    return aIndex - bIndex;
+  });
+
+  return {
+    ...group,
+    refs: sortedAuditRefs,
+    plugin,
+    weight,
+  };
+}
 
 export function sortReport(report: ScoredReport): ScoredReport {
   const { categories, plugins } = report;

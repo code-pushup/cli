@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
-import {
+import type {
   OutdatedDependency,
   OutdatedResult,
 } from '../../runner/outdated/types';
@@ -10,7 +10,7 @@ import {
   validateOutdatedFields,
   yarnv1ToOutdatedResult,
 } from './outdated-result';
-import { Yarnv1FieldName } from './types';
+import type { Yarnv1FieldName } from './types';
 
 describe('yarnv1ToOutdatedResult', () => {
   const yarnInfo = { type: 'info', data: 'Colours' };

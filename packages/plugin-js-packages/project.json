@@ -37,11 +37,8 @@
       "options": {
         "configFile": "packages/plugin-js-packages/vite.config.integration.ts"
       }
-    },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-js-packages {args.ver} {args.tag}",
-      "dependsOn": ["build"]
     }
   },
-  "tags": ["scope:plugin", "type:feature"]
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "description": "A plugin for JavaScript packages."
 }

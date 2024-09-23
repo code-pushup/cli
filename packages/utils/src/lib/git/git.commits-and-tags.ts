@@ -1,5 +1,5 @@
-import { LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
-import { Commit, commitSchema } from '@code-pushup/models';
+import { type LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
+import { type Commit, commitSchema } from '@code-pushup/models';
 import { isSemver } from '../semver';
 
 export async function getLatestCommit(

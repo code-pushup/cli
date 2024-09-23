@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, yellow } from 'ansis';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
@@ -6,16 +6,16 @@ import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_OUTPUT_PATH } from './constants';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
 import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
-import { LighthouseOptions } from './types';
+import type { LighthouseOptions } from './types';
 
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
         'lighthouse',
-      )} used unsupported flags: ${chalk.bold('list-all-audits')}`,
+      )} used unsupported flags: ${bold('list-all-audits')}`,
     );
   });
   it('should log only 3 details of unsupported entries', () => {
@@ -33,9 +33,9 @@ describe('logUnsupportedFlagsInUse', () => {
     } as unknown as LighthouseOptions);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
         'lighthouse',
-      )} used unsupported flags: ${chalk.bold(
+      )} used unsupported flags: ${bold(
         'list-all-audits, list-locales, list-trace-categories',
       )} and 3 more.`,
     );
@@ -54,9 +54,6 @@ describe('normalizeFlags', () => {
     channel: 'cli',
     // custom overwrites in favour of the plugin
     quiet: true,
-    onlyAudits: [],
-    skipAudits: [],
-    onlyCategories: [],
     output: ['json'],
     outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
@@ -121,5 +118,17 @@ describe('normalizeFlags', () => {
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
     expect(getLogMessages(ui().logger)).toHaveLength(1);
+  });
+
+  it('should remove any flag with an empty array as a value', () => {
+    const flags = {
+      onlyAudits: [],
+      skipAudits: [],
+      onlyCategories: [],
+    };
+    const result = normalizeFlags(flags);
+    expect(result).not.toHaveProperty('onlyAudits');
+    expect(result).not.toHaveProperty('skipAudits');
+    expect(result).not.toHaveProperty('onlyCategories');
   });
 });

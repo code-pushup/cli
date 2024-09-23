@@ -1,7 +1,8 @@
-import {
+import type {
   AuditReport,
   CategoryConfig,
   Group,
+  PersistConfig,
   PluginReport,
   Report,
 } from '@code-pushup/models';
@@ -30,3 +31,5 @@ export type SortableAuditReport = AuditReport & {
 };
 
 export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
+
+export type MdReportOptions = Pick<PersistConfig, 'outputDir'>;

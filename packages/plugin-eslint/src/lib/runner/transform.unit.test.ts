@@ -1,5 +1,5 @@
 import type { ESLint } from 'eslint';
-import { AuditOutput } from '@code-pushup/models';
+import type { AuditOutput } from '@code-pushup/models';
 import { lintResultsToAudits } from './transform';
 
 describe('lintResultsToAudits', () => {

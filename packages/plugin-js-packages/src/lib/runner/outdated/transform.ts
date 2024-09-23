@@ -1,10 +1,11 @@
-import { ReleaseType, clean, diff, neq } from 'semver';
+import { md } from 'build-md';
+import { type ReleaseType, clean, diff, neq } from 'semver';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
-import { DependencyGroup, PackageManagerId } from '../../config';
+import type { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
 import { RELEASE_TYPES, outdatedSeverity } from './constants';
-import { OutdatedResult } from './types';
+import type { OutdatedResult } from './types';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,
@@ -89,10 +90,12 @@ export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const outdatedLevel = diff(current, latest)!;
     const packageReference =
-      url == null ? `\`${name}\`` : `[\`${name}\`](${url})`;
+      url == null ? md.code(name) : md.link(url, md.code(name));
 
     return {
-      message: `Package ${packageReference} requires a **${outdatedLevel}** update from **${current}** to **${latest}**.`,
+      message: md`Package ${packageReference} requires a ${md.bold(
+        outdatedLevel,
+      )} update from ${md.bold(current)} to ${md.bold(latest)}.`.toString(),
       severity: outdatedSeverity[outdatedLevel],
     };
   });

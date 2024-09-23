@@ -1,5 +1,6 @@
-import { Options } from 'yargs';
+import type { Options } from 'yargs';
 import { coerceArray } from './global.utils';
+import type { OnlyPluginsCliOptions } from './only-plugins.model';
 
 export const onlyPluginsOption: Options = {
   describe: 'List of plugins to run. If not set all plugins are run.',
@@ -9,7 +10,7 @@ export const onlyPluginsOption: Options = {
 };
 
 export function yargsOnlyPluginsOptionsDefinition(): Record<
-  'onlyPlugins',
+  keyof OnlyPluginsCliOptions,
   Options
 > {
   return {

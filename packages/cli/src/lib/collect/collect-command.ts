@@ -1,7 +1,7 @@
-import chalk from 'chalk';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { bold, gray } from 'ansis';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
-  CollectAndPersistReportsOptions,
+  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
 import { link, ui } from '@code-pushup/utils';
@@ -18,8 +18,8 @@ export function yargsCollectCommandObject(): CommandModule {
     describe: 'Run Plugins and collect results',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
-      ui().logger.log(chalk.bold(CLI_NAME));
-      ui().logger.info(chalk.gray(`Run ${command}...`));
+      ui().logger.log(bold(CLI_NAME));
+      ui().logger.info(gray(`Run ${command}...`));
 
       await collectAndPersistReports(options);
       collectSuccessfulLog();
@@ -42,10 +42,10 @@ export function yargsCollectCommandObject(): CommandModule {
 export function renderUploadAutorunHint(): void {
   ui()
     .sticker()
-    .add(chalk.bold(chalk.gray('💡 Visualize your reports')))
+    .add(bold.gray('💡 Visualize your reports'))
     .add('')
     .add(
-      `${chalk.gray('❯')} npx code-pushup upload - ${chalk.gray(
+      `${gray('❯')} npx code-pushup upload - ${gray(
         'Run upload to upload the created report to the server',
       )}`,
     )
@@ -55,9 +55,7 @@ export function renderUploadAutorunHint(): void {
       )}`,
     )
     .add(
-      `${chalk.gray('❯')} npx code-pushup autorun - ${chalk.gray(
-        'Run collect & upload',
-      )}`,
+      `${gray('❯')} npx code-pushup autorun - ${gray('Run collect & upload')}`,
     )
     .add(
       `  ${link(

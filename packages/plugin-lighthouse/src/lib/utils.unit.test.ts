@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  Audit,
-  Group,
-  PluginConfig,
+  type Audit,
+  type Group,
+  type PluginConfig,
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';

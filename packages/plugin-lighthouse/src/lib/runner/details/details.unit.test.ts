@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, yellow } from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
@@ -14,11 +14,9 @@ describe('logUnsupportedDetails', () => {
     ] as unknown as Result[]);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
         'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
-        'screenshot',
-      )}`,
+      )} skipped parsing of unsupported audit details: ${bold('screenshot')}`,
     );
   });
 
@@ -34,9 +32,9 @@ describe('logUnsupportedDetails', () => {
     ] as unknown as Result[]);
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
         'lighthouse',
-      )} skipped parsing of unsupported audit details: ${chalk.bold(
+      )} skipped parsing of unsupported audit details: ${bold(
         'filmstrip, screenshot, debugdata',
       )} and 2 more.`,
     );
@@ -91,7 +89,6 @@ describe('toAuditDetails', () => {
 
     expect(outputs).toStrictEqual({
       table: {
-        title: 'Table',
         columns: [
           {
             key: 'name',

@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { onlyPluginsMiddleware } from './only-plugins.middleware';
 
 vi.mock('@code-pushup/core', async () => {
@@ -48,7 +48,7 @@ describe('onlyPluginsMiddleware', () => {
     expect(plugins).toStrictEqual([expect.objectContaining({ slug: 'p1' })]);
   });
 
-  it('should filter categories for slug "p1"', () => {
+  it('should forward plugins and categories for a slug not present in plugins', () => {
     const originalCategories = [
       {
         slug: 'c1',
@@ -69,7 +69,7 @@ describe('onlyPluginsMiddleware', () => {
     expect(plugins).toBe(originalPlugins);
   });
 
-  it('should forward plugins and categories for a slug not present in plugins', () => {
+  it('should filter categories for slug "p1"', () => {
     const { categories } = onlyPluginsMiddleware({
       onlyPlugins: ['p1'],
       plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],

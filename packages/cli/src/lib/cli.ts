@@ -24,8 +24,12 @@ export const cli = (args: string[]) =>
         'Run collect with only coverage plugin, other plugins from config file will be skipped.',
       ],
       [
-        'code-pushup upload --persist.outputDir=dist --persist.filename=cp-report --upload.apiKey=$CP_API_KEY',
-        'Upload dist/cp-report.json to portal using API key from environment variable',
+        'code-pushup collect --skipPlugins=coverage',
+        'Run collect skiping the coverage plugin, other plugins from config file will be included.',
+      ],
+      [
+        'code-pushup upload --persist.outputDir=dist --upload.apiKey=$CP_API_KEY',
+        'Upload dist/report.json to portal using API key from environment variable',
       ],
       [
         'code-pushup print-config --config code-pushup.config.test.js',

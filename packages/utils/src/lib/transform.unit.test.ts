@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  apostrophize,
   capitalize,
   countOccurrences,
   deepClone,
@@ -26,6 +25,13 @@ describe('toArray', () => {
   it('should leave array value unchanged', () => {
     expect(toArray(['*.ts', '*.js'])).toEqual(['*.ts', '*.js']);
   });
+
+  it('should handle nested arrays', () => {
+    expect(toArray([['*.ts', '*.js'], ['*.json']])).toEqual([
+      ['*.ts', '*.js'],
+      ['*.json'],
+    ]);
+  });
 });
 
 describe('objectToKeys', () => {
@@ -37,6 +43,14 @@ describe('objectToKeys', () => {
   it('should transform empty object into empty array', () => {
     const keys: never[] = objectToKeys({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of keys', () => {
+    const keys = objectToKeys({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual(['prop1', 'nestedProp1']);
   });
 });
 
@@ -73,6 +87,17 @@ describe('objectToEntries', () => {
   it('should transform empty object into empty array', () => {
     const keys: [never, never][] = objectToEntries({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of entries', () => {
+    const keys = objectToEntries({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual([
+      ['prop1', 1],
+      ['nestedProp1', { nestedKey1: 1 }],
+    ]);
   });
 });
 
@@ -191,6 +216,16 @@ describe('objectToCliArgs', () => {
     expect(result).toEqual(['--format="json"', '--format="md"']);
   });
 
+  it('should handle nested objects', () => {
+    const params = { persist: { format: ['json', 'md'], verbose: false } };
+    const result = objectToCliArgs(params);
+    expect(result).toEqual([
+      '--persist.format="json"',
+      '--persist.format="md"',
+      '--no-persist.verbose',
+    ]);
+  });
+
   it('should throw error for unsupported type', () => {
     const params = { unsupported: undefined as any };
     expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
@@ -249,24 +284,6 @@ describe('capitalize', () => {
 
   it('should accept empty string', () => {
     expect(capitalize('')).toBe('');
-  });
-});
-
-describe('apostrophize', () => {
-  it("should add apostrophe and 's'", () => {
-    expect(apostrophize('cli')).toBe("cli's");
-  });
-
-  it("should add apostrophe without 's' for words ending with 's'", () => {
-    expect(apostrophize('yargs')).toBe("yargs'");
-  });
-
-  it("should add capital 'S' when upper case is defined", () => {
-    expect(apostrophize('WORLD', true)).toBe("WORLD'S");
-  });
-
-  it('should leave formatting if provided', () => {
-    expect(apostrophize('`git`')).toBe("`git`'s");
   });
 });
 

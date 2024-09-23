@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AuditReport, Issue } from '@code-pushup/models';
-import { NEW_LINE } from '../text-formats/constants';
+import type { AuditReport, Issue, Table } from '@code-pushup/models';
 import { tableSection } from './formatting';
 import {
   aboutSection,
@@ -10,7 +9,7 @@ import {
   auditsSection,
   generateMdReport,
 } from './generate-md-report';
-import { ScoredReport } from './types';
+import type { ScoredReport } from './types';
 
 const baseScoredReport = {
   date: '2025.01.01',
@@ -52,19 +51,21 @@ const baseScoredReport = {
 
 describe('auditDetailsAuditValue', () => {
   it('should include score', () => {
-    expect(auditDetailsAuditValue({ score: 0.77 } as AuditReport)).toMatch(
-      '(score: 77)',
-    );
+    expect(
+      auditDetailsAuditValue({ score: 0.77 } as AuditReport).toString(),
+    ).toMatch('(score: 77)');
   });
 
   it('should include value', () => {
-    expect(auditDetailsAuditValue({ value: 125 } as AuditReport)).toMatch(
-      '<b>125</b>',
-    );
+    expect(
+      auditDetailsAuditValue({ value: 125 } as AuditReport).toString(),
+    ).toMatch('**125**');
   });
 
   it('should add score icon for scores at the beginning', () => {
-    expect(auditDetailsAuditValue({ score: 0 } as AuditReport)).toMatch(/^🟥/);
+    expect(
+      auditDetailsAuditValue({ score: 0 } as AuditReport).toString(),
+    ).toMatch(/^🟥/);
   });
 
   it('should include both display value and score when provided', () => {
@@ -72,8 +73,8 @@ describe('auditDetailsAuditValue', () => {
       auditDetailsAuditValue({
         score: 1,
         displayValue: '100ms',
-      } as AuditReport),
-    ).toBe('🟩 <b>100ms</b> (score: 100)');
+      } as AuditReport).toString(),
+    ).toBe('🟩 **100ms** (score: 100)');
   });
 });
 
@@ -109,30 +110,34 @@ describe('auditDetailsIssues', () => {
             },
           },
         },
-      ]),
+      ])?.toString(),
     ).toMatchSnapshot();
   });
 
   it('should return empty string for missing issues', () => {
-    expect(auditDetailsIssues()).toBe('');
+    expect(auditDetailsIssues()).toBeNull();
   });
 
   it('should include message', () => {
     expect(
       auditDetailsIssues([
-        { message: 'File `index.js` is 56Kb too big.' } as Issue,
-      ]),
+        { message: 'File `index.js` is 56Kb too big.', severity: 'error' },
+      ])?.toString(),
     ).toMatch('File `index.js` is 56Kb too big.');
   });
 
   it('should include correct severity icon', () => {
-    expect(auditDetailsIssues([{ severity: 'info' } as Issue])).toMatch('ℹ️');
+    expect(
+      auditDetailsIssues([{ severity: 'info' } as Issue])?.toString(),
+    ).toMatch('ℹ️');
   });
 
   it('should include source file', () => {
     expect(
-      auditDetailsIssues([{ source: { file: '/index.js' } } as Issue]),
-    ).toMatch('<code>/index.js</code>');
+      auditDetailsIssues([
+        { source: { file: '/index.js' }, severity: 'error' } as Issue,
+      ])?.toString(),
+    ).toMatch('`/index.js`');
   });
 
   it('should include source file linked with position', () => {
@@ -147,11 +152,12 @@ describe('auditDetailsIssues', () => {
                 startColumn: 7,
               },
             },
+            severity: 'warning',
           } as Issue,
         ],
         { outputDir: '/.code-pushup' },
-      ),
-    ).toMatch('<code>[/src/index.js](../src/index.js:4:7)</code>');
+      )?.toString(),
+    ).toMatch('`[/src/index.js](../src/index.js:4:7)`');
   });
 
   it('should include formatted line information', () => {
@@ -165,9 +171,10 @@ describe('auditDetailsIssues', () => {
               endLine: 7,
             },
           },
+          severity: 'warning',
         } as Issue,
-      ]),
-    ).toMatch('|4-7|');
+      ])?.toString(),
+    ).toMatch(/\|\s*4-7\s*\|/);
   });
 });
 
@@ -202,16 +209,16 @@ describe('tableSection', () => {
             timing: '140 ms',
           },
         ],
-      }),
+      })?.toString(),
     ).toMatchSnapshot();
   });
 });
 
 describe('auditDetails', () => {
   it('should only return audit value if no details are given', () => {
-    expect(auditDetails({ score: 0, value: 125 } as AuditReport)).toBe(
-      `🟥 <b>125</b> (score: 0)${NEW_LINE}`,
-    );
+    expect(
+      auditDetails({ score: 0, value: 125 } as AuditReport).toString(),
+    ).toBe('🟥 **125** (score: 0)\n');
   });
 
   it('should wrap details into an HTML details element if details are present', () => {
@@ -219,10 +226,10 @@ describe('auditDetails', () => {
       score: 0,
       value: 0,
       details: {
-        issues: [{}],
+        issues: [{ severity: 'error' }],
         table: { rows: [['']] },
       },
-    } as AuditReport);
+    } as AuditReport).toString();
     expect(md).toMatch('<details>');
     expect(md).toMatch('<summary>🟥 <b>0</b> (score: 0)</summary>');
     expect(md).toMatch('</details>');
@@ -233,9 +240,9 @@ describe('auditDetails', () => {
       score: 0,
       value: 0,
       details: {
-        issues: [{}],
+        issues: [{ severity: 'warning' }],
       },
-    } as AuditReport);
+    } as AuditReport).toString();
     expect(md).toMatch('<details>');
     expect(md).toMatch('#### Issues');
     expect(md).not.toMatch('#### Additional Information');
@@ -246,9 +253,9 @@ describe('auditDetails', () => {
       score: 0,
       value: 0,
       details: {
-        issues: [],
+        issues: [] as Issue[],
       },
-    } as unknown as AuditReport);
+    } as AuditReport).toString();
     expect(md).not.toMatch('<details>');
     expect(md).not.toMatch('#### Issues');
     expect(md).not.toMatch('#### Additional Information');
@@ -274,11 +281,11 @@ describe('auditDetails', () => {
           ],
         },
       },
-    } as AuditReport);
+    } as AuditReport).toString();
     expect(md).toMatch('<details>');
     expect(md).toMatch('#### Elements');
-    expect(md).toMatch('|button|');
-    expect(md).toMatch('|div|');
+    expect(md).toMatch(/\|\s*button\s*\|/);
+    expect(md).toMatch(/\|\s*div\s*\|/);
     expect(md).not.toMatch('#### Issues');
   });
 
@@ -328,7 +335,7 @@ describe('auditDetails', () => {
             },
           ],
         },
-      } as AuditReport),
+      } as AuditReport).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -337,12 +344,8 @@ describe('auditsSection', () => {
   it('should render section heading', () => {
     expect(
       auditsSection({
-        plugins: [
-          {
-            audits: [],
-          },
-        ],
-      } as unknown as ScoredReport),
+        plugins: [{ audits: [] as AuditReport[] }],
+      } as ScoredReport).toString(),
     ).toMatch('## 🛡️ Audits');
   });
 
@@ -350,8 +353,8 @@ describe('auditsSection', () => {
     expect(
       auditsSection({
         plugins: [{ audits: [{ score: 1, value: 0 }] }],
-      } as ScoredReport),
-    ).toMatch('🟩 <b>0</b> (score: 100)');
+      } as ScoredReport).toString(),
+    ).toMatch('🟩 **0** (score: 100)');
   });
 
   it('should render audit details', () => {
@@ -361,17 +364,19 @@ describe('auditsSection', () => {
           audits: [
             {
               details: {
-                issues: [{ source: { file: 'index.js' } }],
-                table: { rows: [{ value: 42 }] },
+                issues: [{ severity: 'error' }] as Issue[],
+                table: { rows: [{ value: 42 }] } as Table,
               },
             },
           ],
         },
       ],
-    } as unknown as ScoredReport);
+    } as ScoredReport).toString();
     expect(md).toMatch('#### Issues');
-    expect(md).toMatch('|Severity|Message|Source file|Line(s)|');
-    expect(md).toMatch('|value|');
+    expect(md).toMatch(
+      /\|\s*Severity\s*\|\s*Message\s*\|\s*Source file\s*\|\s*Line\(s\)\s*\|/,
+    );
+    expect(md).toMatch(/\|\s*value\s*\|/);
   });
 
   it('should render audit meta information', () => {
@@ -393,7 +398,7 @@ describe('auditsSection', () => {
             ],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatch(`Measures responsiveness. [📖 Docs](https://web.dev/inp)`);
   });
 
@@ -403,7 +408,7 @@ describe('auditsSection', () => {
         plugins: [
           {
             slug: 'eslint',
-            title: 'Eslint',
+            title: 'ESLint',
             audits: [
               {
                 slug: 'no-any',
@@ -436,7 +441,7 @@ describe('auditsSection', () => {
             ],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -445,7 +450,7 @@ describe('auditsSection', () => {
 
 describe('aboutSection', () => {
   it('should return about section with h2 and created by in plain test', () => {
-    const md = aboutSection(baseScoredReport);
+    const md = aboutSection(baseScoredReport).toString();
     expect(md).toMatch('## About');
     expect(md).toMatch(
       'Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.',
@@ -464,10 +469,12 @@ describe('aboutSection', () => {
         },
       ],
       categories: Array.from({ length: 3 }),
-    } as unknown as ScoredReport);
-    expect(md).toMatch('|Commit|Version|Duration|Plugins|Categories|Audits|');
+    } as ScoredReport).toString();
     expect(md).toMatch(
-      '|ci: update action (535b8e9e557336618a764f3fa45609d224a62837)|`v1.0.0`|4.20 s|1|3|3|',
+      /\|\s*Commit\s*\|\s*Version\s*\|\s*Duration\s*\|\s*Plugins\s*\|\s*Categories\s*\|\s*Audits\s*\|/,
+    );
+    expect(md).toMatch(
+      /\|\s*ci: update action \(535b8e9e557336618a764f3fa45609d224a62837\)\s*\|\s*`v1.0.0`\s*\|\s*4.20 s\s*\|\s*1\s*\|\s*3\s*\|\s*3\s*\|/,
     );
   });
 
@@ -488,10 +495,16 @@ describe('aboutSection', () => {
           audits: Array.from({ length: 2 }),
         },
       ],
-    } as unknown as ScoredReport);
-    expect(md).toMatch('|Plugin|Audits|Version|Duration|');
-    expect(md).toMatch('|Lighthouse|78|`1.0.1`|15.37 s|');
-    expect(md).toMatch('|File Size|2|`0.3.12`|260 ms|');
+    } as ScoredReport).toString();
+    expect(md).toMatch(
+      /\|\s*Plugin\s*\|\s*Audits\s*\|\s*Version\s*\|\s*Duration\s*\|/,
+    );
+    expect(md).toMatch(
+      /\|\s*Lighthouse\s*\|\s*78\s*\|\s*`1.0.1`\s*\|\s*15.37 s\s*\|/,
+    );
+    expect(md).toMatch(
+      /\|\s*File Size\s*\|\s*2\s*\|\s*`0.3.12`\s*\|\s*260 ms\s*\|/,
+    );
   });
 
   it('should return full about section', () => {
@@ -506,7 +519,7 @@ describe('aboutSection', () => {
         },
       ],
       categories: Array.from({ length: 3 }),
-    } as ScoredReport);
+    } as ScoredReport).toString();
     expect(md).toMatchSnapshot();
   });
 });
@@ -519,7 +532,7 @@ describe('generateMdReport', () => {
     // report title
     expect(md).toMatch('# Code PushUp Report');
     // categories section heading
-    expect(md).toMatch('|🏷 Category|⭐ Score|🛡 Audits|');
+    expect(md).toMatch(/\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/);
     // categories section heading
     expect(md).toMatch('## 🏷 Categories');
     // audits heading
@@ -527,9 +540,17 @@ describe('generateMdReport', () => {
     // about section heading
     expect(md).toMatch('## About');
     // plugin table
-    expect(md).toMatch('|Plugin|Audits|Version|Duration|');
+    expect(md).toMatch(
+      /\|\s*Plugin\s*\|\s*Audits\s*\|\s*Version\s*\|\s*Duration\s*\|/,
+    );
     // made with <3
     expect(md).toMatch('Made with ❤ by [Code PushUp]');
+  });
+
+  it('should skip categories section if empty', () => {
+    const md = generateMdReport({ ...baseScoredReport, categories: [] });
+    expect(md).not.toMatch('## 🏷 Categories');
+    expect(md).toMatch('# Code PushUp Report\n\n## 🛡️ Audits');
   });
 
   it('should render complete md report', () => {
@@ -638,7 +659,7 @@ describe('generateMdReport', () => {
           {
             date: 'Wed, Apr 17, 2024, 2:38 PM GMT+2',
             slug: 'eslint',
-            title: 'Eslint',
+            title: 'ESLint',
             packageName: '@code-pushup/eslint',
             version: '3.71.8',
             duration: 17_968,
@@ -722,6 +743,7 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
+            isBinary: true,
             refs: [
               {
                 slug: 'is-crawlable',

@@ -16,10 +16,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-eslint {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -43,5 +39,5 @@
       }
     }
   },
-  "tags": ["scope:plugin", "type:feature"]
+  "tags": ["scope:plugin", "type:feature", "publishable"]
 }

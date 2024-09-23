@@ -1,4 +1,4 @@
-import { NumberRange } from './types';
+import type { NumberRange } from './types';
 
 /**
  * This function calculates coverage as ratio of tested entities vs total

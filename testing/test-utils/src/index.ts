@@ -5,12 +5,14 @@ export * from './lib/utils/logging';
 export * from './lib/utils/env';
 export * from './lib/utils/git';
 export * from './lib/utils/string';
+export * from './lib/utils/file-system';
 
 // static mocks
 export * from './lib/utils/commit.mock';
 export * from './lib/utils/core-config.mock';
 export * from './lib/utils/minimal-config.mock';
 export * from './lib/utils/report.mock';
+export * from './lib/fixtures/configs/custom-plugin';
 
 // dynamic mocks
 export * from './lib/utils/dynamic-mocks/categories.mock';

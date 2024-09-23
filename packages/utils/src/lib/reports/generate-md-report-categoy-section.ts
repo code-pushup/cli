@@ -1,124 +1,126 @@
-import { AuditReport, Table } from '@code-pushup/models';
+import { type InlineText, MarkdownDocument, md } from 'build-md';
+import type { AuditReport } from '@code-pushup/models';
 import { slugify } from '../formatting';
-import { SPACE, md } from '../text-formats';
-import { CATEGORIES_TITLE, reportOverviewTableHeaders } from './constants';
-import { metaDescription, tableSection } from './formatting';
-import { ScoredGroup, ScoredReport } from './types';
+import { HIERARCHY } from '../text-formats';
+import { metaDescription } from './formatting';
+import { getSortableAuditByRef, getSortableGroupByRef } from './sorting';
+import type { ScoredGroup, ScoredReport } from './types';
 import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
-  getSortableAuditByRef,
-  getSortableGroupByRef,
   scoreMarker,
+  targetScoreIcon,
 } from './utils';
-
-const { link, section, h2, lines, li, bold: boldMd, h3, indentation } = md;
 
 export function categoriesOverviewSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
-): string {
+): MarkdownDocument {
   const { categories, plugins } = report;
-  if (categories.length > 0 && plugins.length > 0) {
-    const tableContent: Table = {
-      columns: reportOverviewTableHeaders,
-      rows: categories.map(({ title, refs, score }) => ({
-        // The heading "ID" is inferred from the heading text in Markdown.
-        category: link(`#${slugify(title)}`, title),
-        score: `${scoreMarker(score)}${SPACE}${boldMd(
-          formatReportScore(score),
-        )}`,
-        audits: countCategoryAudits(refs, plugins).toString(),
-      })),
-    };
-    return tableSection(tableContent);
-  }
-  return '';
+  return new MarkdownDocument().table(
+    [
+      { heading: '🏷 Category', alignment: 'left' },
+      { heading: '⭐ Score', alignment: 'center' },
+      { heading: '🛡 Audits', alignment: 'center' },
+    ],
+    categories.map(({ title, refs, score, isBinary }) => [
+      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+      // The heading "ID" is inferred from the heading text in Markdown.
+      md.link(`#${slugify(title)}`, title),
+      md`${scoreMarker(score)} ${md.bold(
+        formatReportScore(score),
+      )}${binaryIconSuffix(score, isBinary)}`,
+      countCategoryAudits(refs, plugins).toString(),
+    ]),
+  );
 }
 
 export function categoriesDetailsSection(
   report: Pick<ScoredReport, 'categories' | 'plugins'>,
-): string {
+): MarkdownDocument {
   const { categories, plugins } = report;
 
-  const categoryDetails = categories.flatMap(category => {
-    const categoryTitle = h3(category.title);
-    const categoryScore = `${scoreMarker(
-      category.score,
-    )}${SPACE}Score:  ${boldMd(formatReportScore(category.score))}`;
-
-    const categoryMDItems = category.refs.map(ref => {
-      // Add group details
-      if (ref.type === 'group') {
-        const group = getSortableGroupByRef(ref, plugins);
-        const groupAudits = group.refs.map(groupRef =>
-          getSortableAuditByRef(
-            { ...groupRef, plugin: group.plugin, type: 'audit' },
-            plugins,
-          ),
-        );
-        const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return categoryGroupItem(group, groupAudits, pluginTitle);
-      }
-      // Add audit details
-      else {
-        const audit = getSortableAuditByRef(ref, plugins);
-        const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-        return categoryRef(audit, pluginTitle);
-      }
-    });
-
-    return section(
-      categoryTitle,
-      metaDescription(category),
-      categoryScore,
-      ...categoryMDItems,
+  return new MarkdownDocument()
+    .heading(HIERARCHY.level_2, '🏷 Categories')
+    .$foreach(categories, (doc, category) =>
+      doc
+        .heading(HIERARCHY.level_3, category.title)
+        .paragraph(metaDescription(category))
+        .paragraph(
+          md`${scoreMarker(category.score)} Score: ${md.bold(
+            formatReportScore(category.score),
+          )}${binaryIconSuffix(category.score, category.isBinary)}`,
+        )
+        .list(
+          category.refs.map(ref => {
+            // Add group details
+            if (ref.type === 'group') {
+              const group = getSortableGroupByRef(ref, plugins);
+              const groupAudits = group.refs.map(groupRef =>
+                getSortableAuditByRef(
+                  { ...groupRef, plugin: group.plugin, type: 'audit' },
+                  plugins,
+                ),
+              );
+              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+              return categoryGroupItem(group, groupAudits, pluginTitle);
+            }
+            // Add audit details
+            else {
+              const audit = getSortableAuditByRef(ref, plugins);
+              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+              return categoryRef(audit, pluginTitle);
+            }
+          }),
+        ),
     );
-  });
-
-  return lines(h2(CATEGORIES_TITLE), ...categoryDetails);
 }
 
 export function categoryRef(
   { title, score, value, displayValue }: AuditReport,
   pluginTitle: string,
-): string {
-  const auditTitleAsLink = link(
+): InlineText {
+  const auditTitleAsLink = md.link(
     `#${slugify(title)}-${slugify(pluginTitle)}`,
     title,
   );
   const marker = scoreMarker(score, 'square');
-  return li(
-    `${marker}${SPACE}${auditTitleAsLink}${SPACE}(_${pluginTitle}_) - ${boldMd(
-      (displayValue || value).toString(),
-    )}`,
-  );
+  return md`${marker} ${auditTitleAsLink} (${md.italic(
+    pluginTitle,
+  )}) - ${md.bold((displayValue || value).toString())}`;
 }
 
 export function categoryGroupItem(
   { score = 0, title }: ScoredGroup,
   groupAudits: AuditReport[],
   pluginTitle: string,
-): string {
-  const groupTitle = li(
-    `${scoreMarker(score)}${SPACE}${title}${SPACE}(_${pluginTitle}_)`,
-  );
-  const auditTitles = groupAudits.map(
-    ({ title: auditTitle, score: auditScore, value, displayValue }) => {
-      const auditTitleLink = link(
-        `#${slugify(auditTitle)}-${slugify(pluginTitle)}`,
-        auditTitle,
-      );
-      const marker = scoreMarker(auditScore, 'square');
-      return indentation(
-        li(
-          `${marker}${SPACE}${auditTitleLink} - ${boldMd(
-            String(displayValue ?? value),
-          )}`,
-        ),
-      );
-    },
+): InlineText {
+  const groupTitle = md`${scoreMarker(score)} ${title} (${md.italic(
+    pluginTitle,
+  )})`;
+
+  const auditsList = md.list(
+    groupAudits.map(
+      ({ title: auditTitle, score: auditScore, value, displayValue }) => {
+        const auditTitleLink = md.link(
+          `#${slugify(auditTitle)}-${slugify(pluginTitle)}`,
+          auditTitle,
+        );
+        const marker = scoreMarker(auditScore, 'square');
+        return md`${marker} ${auditTitleLink} - ${md.bold(
+          String(displayValue ?? value),
+        )}`;
+      },
+    ),
   );
 
-  return lines(groupTitle, ...auditTitles);
+  return md`${groupTitle}${auditsList}`;
+}
+
+export function binaryIconSuffix(
+  score: number,
+  isBinary: boolean | undefined,
+): string {
+  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
 }

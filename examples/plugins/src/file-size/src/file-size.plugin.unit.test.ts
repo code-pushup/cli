@@ -4,7 +4,7 @@ import { basename, join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { formatBytes } from '@code-pushup/utils';
 import {
-  PluginOptions,
+  type PluginOptions,
   assertFileSize,
   errorMessage,
   fileSizeIssues,

@@ -25,11 +25,11 @@ This table provides a quick overview of the environmental setup, with detailed e
 **❗️** Test Inclusion Logic
 
 - `INCLUDE_SLOW_TESTS='false'` skips long tests.
-- without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
+- Without `INCLUDE_SLOW_TESTS`, tests run if `CI` is set.
 
 **❗️❗️** Windows specific path set only in CI
 
-- some setups also require this setting locally
+- Some setups also require this setting locally.
 
 ## Development
 
@@ -94,7 +94,7 @@ Projects are tagged in two different dimensions - scope and type:
 | `scope:core`        | core features and CLI (agnostic towards specific plugins)                    | `scope:core` or `scope:shared`                     |
 | `scope:plugin`      | a specific plugin implementation (contract with core defined by data models) | `scope:shared`                                     |
 | `scope:shared`      | data models, utility functions, etc. (not specific to core or plugins)       | `scope:shared`                                     |
-| `scope:tooling`     | supplementary tooling, e.g. code generation                                  | `scope:shared`                                     |
+| `scope:tooling`     | supplementary tooling, e.g. code generation                                  | `scope:tooling`, `scope:shared`                    |
 | `scope:internal`    | internal project, e.g. example plugin                                        | any                                                |
 | `type:app`          | application, e.g. CLI or example web app                                     | `type:feature`, `type:util` or `type:testing-util` |
 | `type:feature`      | library with business logic for a specific feature                           | `type:util` or `type:testing-util`                 |

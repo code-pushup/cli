@@ -1,42 +1,71 @@
-import chalk from 'chalk';
-import type { Config } from 'lighthouse';
+import { bold } from 'ansis';
+import type { Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
-import { Result } from 'lighthouse/types/lhr/audit-result';
-import { AuditOutput, AuditOutputs } from '@code-pushup/models';
-import { importModule, readJsonFile, ui } from '@code-pushup/utils';
+import type Details from 'lighthouse/types/lhr/audit-details';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
+import type { AuditOutput, AuditOutputs } from '@code-pushup/models';
+import {
+  formatReportScore,
+  importModule,
+  readJsonFile,
+  ui,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types';
 import { logUnsupportedDetails, toAuditDetails } from './details/details';
-import { LighthouseCliFlags } from './types';
+import type { LighthouseCliFlags } from './types';
 
-// @TODO fix https://github.com/code-pushup/cli/issues/612
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,
   flags: LighthouseOptions = { skipAudits: [] },
 ): AuditOutputs {
   const toSkip = new Set(flags.skipAudits ?? []);
-  return auditOutputs.filter(({ slug }) => {
-    const doSkip = toSkip.has(slug);
-    if (doSkip) {
-      ui().logger.info(
-        `Audit ${chalk.bold(
-          slug,
-        )} was included in audit outputs of lighthouse but listed under ${chalk.bold(
-          'skipAudits',
-        )}.`,
-      );
-    }
-    return !doSkip;
-  });
+  return auditOutputs.filter(({ slug }) => !toSkip.has(slug));
 }
 
 export class LighthouseAuditParsingError extends Error {
   constructor(slug: string, error: Error) {
-    super(
-      `\nAudit ${chalk.bold(slug)} failed parsing details: \n${error.message}`,
-    );
+    super(`\nAudit ${bold(slug)} failed parsing details: \n${error.message}`);
+  }
+}
+
+function formatBaseAuditOutput(lhrAudit: Result): AuditOutput {
+  const {
+    id: slug,
+    score,
+    numericValue,
+    displayValue,
+    scoreDisplayMode,
+  } = lhrAudit;
+  return {
+    slug,
+    score: score ?? 1,
+    value: numericValue ?? score ?? 0,
+    displayValue:
+      displayValue ??
+      (scoreDisplayMode === 'binary'
+        ? score === 1
+          ? 'passed'
+          : 'failed'
+        : score
+        ? `${formatReportScore(score)}%`
+        : undefined),
+  };
+}
+
+function processAuditDetails(
+  auditOutput: AuditOutput,
+  details: FormattedIcu<Details>,
+): AuditOutput {
+  try {
+    const parsedDetails = toAuditDetails(details);
+    return Object.keys(parsedDetails).length > 0
+      ? { ...auditOutput, details: parsedDetails }
+      : auditOutput;
+  } catch (error) {
+    throw new LighthouseAuditParsingError(auditOutput.slug, error as Error);
   }
 }
 
@@ -47,36 +76,13 @@ export function toAuditOutputs(
   if (verbose) {
     logUnsupportedDetails(lhrAudits);
   }
+  return lhrAudits.map(audit => {
+    const auditOutput = formatBaseAuditOutput(audit);
 
-  return lhrAudits.map(
-    ({
-      id: slug,
-      score,
-      numericValue: value = 0, // not every audit has a numericValue
-      details,
-      displayValue,
-    }: Result) => {
-      const auditOutput: AuditOutput = {
-        slug,
-        score: score ?? 1, // score can be null
-        value,
-        displayValue,
-      };
-
-      if (details != null) {
-        try {
-          const parsedDetails = toAuditDetails(details);
-          return Object.keys(parsedDetails).length > 0
-            ? { ...auditOutput, details: parsedDetails }
-            : auditOutput;
-        } catch (error) {
-          throw new LighthouseAuditParsingError(slug, error as Error);
-        }
-      }
-
-      return auditOutput;
-    },
-  );
+    return audit.details == null
+      ? auditOutput
+      : processAuditDetails(auditOutput, audit.details);
+  });
 }
 
 export type LighthouseLogLevel =

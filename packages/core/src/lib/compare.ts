@@ -1,23 +1,29 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
+  PortalOperationError,
+  getPortalComparisonLink,
+} from '@code-pushup/portal-client';
+import {
   type Format,
   type PersistConfig,
-  Report,
-  ReportsDiff,
+  type Report,
+  type ReportsDiff,
+  type UploadConfig,
   reportSchema,
 } from '@code-pushup/models';
 import {
-  Diff,
+  type Diff,
   calcDuration,
   ensureDirectoryExists,
   generateMdReportsDiff,
   readJsonFile,
   scoreReport,
+  ui,
 } from '@code-pushup/utils';
 import { name as packageName, version } from '../../package.json';
 import {
-  ReportsToCompare,
+  type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,
@@ -26,6 +32,8 @@ import {
 export async function compareReportFiles(
   inputPaths: Diff<string>,
   persistConfig: Required<PersistConfig>,
+  uploadConfig: UploadConfig | undefined,
+  label?: string,
 ): Promise<string[]> {
   const { outputDir, filename, format } = persistConfig;
 
@@ -38,12 +46,23 @@ export async function compareReportFiles(
     after: reportSchema.parse(reportAfter),
   };
 
-  const reportsDiff = compareReports(reports);
+  const diff = compareReports(reports);
+  if (label) {
+    // eslint-disable-next-line functional/immutable-data
+    diff.label = label;
+  }
+  if (uploadConfig && diff.commits) {
+    // eslint-disable-next-line functional/immutable-data
+    diff.portalUrl = await fetchPortalComparisonLink(
+      uploadConfig,
+      diff.commits,
+    );
+  }
 
   return Promise.all(
     format.map(async fmt => {
       const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
-      const content = reportsDiffToFileContent(reportsDiff, fmt);
+      const content = reportsDiffToFileContent(diff, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
       return outputPath;
@@ -92,5 +111,32 @@ function reportsDiffToFileContent(
       return JSON.stringify(reportsDiff, null, 2);
     case 'md':
       return generateMdReportsDiff(reportsDiff);
+  }
+}
+
+async function fetchPortalComparisonLink(
+  uploadConfig: UploadConfig,
+  commits: NonNullable<ReportsDiff['commits']>,
+): Promise<string | undefined> {
+  const { server, apiKey, organization, project } = uploadConfig;
+  try {
+    return await getPortalComparisonLink({
+      server,
+      apiKey,
+      parameters: {
+        organization,
+        project,
+        before: commits.before.hash,
+        after: commits.after.hash,
+      },
+    });
+  } catch (error) {
+    if (error instanceof PortalOperationError) {
+      ui().logger.warning(
+        `Failed to fetch portal comparison link - ${error.message}`,
+      );
+      return undefined;
+    }
+    throw error;
   }
 }

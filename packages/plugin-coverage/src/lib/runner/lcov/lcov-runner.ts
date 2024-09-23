@@ -1,15 +1,15 @@
 import { join } from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
-import { AuditOutputs } from '@code-pushup/models';
+import type { AuditOutputs } from '@code-pushup/models';
 import { exists, readTextFile, toUnixNewlines, ui } from '@code-pushup/utils';
-import { CoverageResult, CoverageType } from '../../config';
+import type { CoverageResult, CoverageType } from '../../config';
 import { mergeLcovResults } from './merge-lcov';
 import { parseLcov } from './parse-lcov';
 import {
   lcovCoverageToAuditOutput,
   recordToStatFunctionMapper,
 } from './transform';
-import { LCOVStat, LCOVStats } from './types';
+import type { LCOVStat, LCOVStats } from './types';
 
 // Note: condition or statement coverage is not supported in LCOV
 // https://stackoverflow.com/questions/48260434/is-it-possible-to-check-condition-coverage-with-gcov

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold, gray } from 'ansis';
 import { getProgressBar } from '../../../../dist/packages/utils/index.js';
 
 const _arg = (name, fallback = '') =>
@@ -27,10 +27,10 @@ const verbose = Boolean(_arg('verbose', false));
 (async () => {
   verbose &&
     console.info(
-      chalk.gray(
-        `Start progress with duration: ${chalk.bold(
-          duration,
-        )}, steps: ${chalk.bold(steps)}`,
+      gray(
+        `Start progress with duration: ${bold(duration)}, steps: ${bold(
+          steps,
+        )}`,
       ),
     );
   const progress = getProgressBar('mock-progress');

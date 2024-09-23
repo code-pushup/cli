@@ -1,31 +1,63 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`categoriesDetails > should render complete categories details 1`] = `
+exports[`categoriesDetailsSection > should render categories details and add "✅" when isBinary is passing 1`] = `
 "## 🏷 Categories
 
 ### Bug Prevention
 
-🟢 Score:  **98**
+🟢 Score: **100** ✅
+
+- 🟩 [No let](#no-let-eslint) (_Eslint_) - **5**
+"
+`;
+
+exports[`categoriesDetailsSection > should render categories details and add "❌" when isBinary is failing 1`] = `
+"## 🏷 Categories
+
+### Bug Prevention
+
+🟢 Score: **98** ❌
+
+- 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
+"
+`;
+
+exports[`categoriesDetailsSection > should render complete categories details 1`] = `
+"## 🏷 Categories
+
+### Bug Prevention
+
+🟢 Score: **100** ✅
+
 - 🟥 [No let](#no-let-eslint) (_Eslint_) - **5**
 
 ### Performance
 
-🟡 Score:  **74**
+🟡 Score: **74**
+
 - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) (_Lighthouse_) - **2905**
 
 ### Typescript
 
-🔴 Score:  **14**
+🔴 Score: **14** ❌
+
 - 🟩 [No any](#no-any-eslint) (_Eslint_) - **0**
 "
 `;
 
 exports[`categoriesOverviewSection > should render complete categories table 1`] = `
-"|🏷 Category|⭐ Score|🛡 Audits|
-|:--|:--:|:--:|
-|[Bug Prevention](#bug-prevention)|🟢 **98**|1|
-|[Performance](#performance)|🟡 **74**|1|
-|[Typescript](#typescript)|🔴 **14**|1|
+"| 🏷 Category                       |  ⭐ Score  | 🛡 Audits |
+| :-------------------------------- | :-------: | :-------: |
+| [Bug Prevention](#bug-prevention) | 🟢 **98** |     1     |
+| [Performance](#performance)       | 🟡 **74** |     1     |
+| [Typescript](#typescript)         | 🔴 **14** |     1     |
+"
+`;
+
+exports[`categoriesOverviewSection > should render targetScore icon "❌" if score fails 1`] = `
+"| 🏷 Category                       |   ⭐ Score   | 🛡 Audits |
+| :-------------------------------- | :---------: | :-------: |
+| [Bug Prevention](#bug-prevention) | 🟢 **98** ❌ |     1     |
 "
 `;
 

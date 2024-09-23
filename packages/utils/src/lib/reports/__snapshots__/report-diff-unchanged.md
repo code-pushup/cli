@@ -4,16 +4,8 @@
 
 ## 🏷️ Categories
 
-|🏷️ Category|⭐ Score|
-|:--|:--:|
-|Performance|🟢 92|
-|Bug prevention|🟡 68|
-|Code style|🟡 54|
-
-## 🗃️ Groups
-
-All of 2 groups are unchanged.
-
-## 🛡️ Audits
-
-All of 52 audits are unchanged.
+| 🏷️ Category   | ⭐ Score |
+| :------------- | :-----: |
+| Performance    |  🟢 92  |
+| Bug prevention |  🟡 68  |
+| Code style     |  🟡 54  |

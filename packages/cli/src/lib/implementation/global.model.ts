@@ -1,4 +1,4 @@
-import { GlobalOptions } from '@code-pushup/core';
-import { ConfigCliOptions } from './core-config.model';
+import type { GlobalOptions } from '@code-pushup/core';
+import type { ConfigCliOptions } from './core-config.model';
 
 export type GeneralCliOptions = ConfigCliOptions & GlobalOptions;

@@ -1,9 +1,13 @@
 import { describe, expect, vi } from 'vitest';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
-import { coreConfigMiddleware } from './core-config.middleware';
-import { CoreConfigCliOptions } from './core-config.model';
-import { GeneralCliOptions } from './global.model';
-import { OnlyPluginsOptions } from './only-plugins.model';
+import {
+  coreConfigMiddleware,
+  normalizeFormats,
+} from './core-config.middleware';
+import type { CoreConfigCliOptions } from './core-config.model';
+import type { GeneralCliOptions } from './global.model';
+import type { OnlyPluginsOptions } from './only-plugins.model';
+import type { SkipPluginsOptions } from './skip-plugins.model';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -16,10 +20,31 @@ vi.mock('@code-pushup/core', async () => {
   };
 });
 
+describe('normalizeFormats', () => {
+  it('should forward valid formats', () => {
+    expect(normalizeFormats(['json', 'md'])).toEqual(['json', 'md']);
+  });
+
+  it('should split comma separated strings', () => {
+    expect(normalizeFormats(['json,md'])).toEqual(['json', 'md']);
+  });
+
+  it('should accept empty formats', () => {
+    expect(normalizeFormats([])).toEqual([]);
+  });
+
+  it('should accept missing formats', () => {
+    expect(normalizeFormats()).toEqual([]);
+  });
+});
+
 describe('coreConfigMiddleware', () => {
   it('should attempt to load code-pushup.config.(ts|mjs|js) by default', async () => {
     await coreConfigMiddleware(
-      {} as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions,
+      {} as GeneralCliOptions &
+        CoreConfigCliOptions &
+        OnlyPluginsOptions &
+        SkipPluginsOptions,
     );
     expect(autoloadRc).toHaveBeenCalled();
   });
@@ -27,7 +52,7 @@ describe('coreConfigMiddleware', () => {
   it('should directly attempt to load passed config', async () => {
     await coreConfigMiddleware({
       config: 'cli/custom-config.mjs',
-    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions & SkipPluginsOptions);
     expect(autoloadRc).not.toHaveBeenCalled();
     expect(readRcByPath).toHaveBeenCalledWith(
       'cli/custom-config.mjs',
@@ -38,7 +63,7 @@ describe('coreConfigMiddleware', () => {
   it('should forward --tsconfig option to config autoload', async () => {
     await coreConfigMiddleware({
       tsconfig: 'tsconfig.base.json',
-    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions & SkipPluginsOptions);
     expect(autoloadRc).toHaveBeenCalledWith('tsconfig.base.json');
   });
 
@@ -46,7 +71,7 @@ describe('coreConfigMiddleware', () => {
     await coreConfigMiddleware({
       config: 'apps/website/code-pushup.config.ts',
       tsconfig: 'apps/website/tsconfig.json',
-    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions);
+    } as GeneralCliOptions & CoreConfigCliOptions & OnlyPluginsOptions & SkipPluginsOptions);
     expect(readRcByPath).toHaveBeenCalledWith(
       'apps/website/code-pushup.config.ts',
       'apps/website/tsconfig.json',

@@ -23,6 +23,7 @@ describe('coreConfigMiddleware', () => {
     progress: true,
     verbose: false,
     onlyPlugins: [],
+    skipPlugins: [],
   };
 
   it.each(['ts', 'mjs', 'js'])(

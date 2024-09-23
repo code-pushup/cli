@@ -1,11 +1,11 @@
 import { describe, expect, vi } from 'vitest';
 import {
-  CoreConfig,
+  type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
-  PersistConfig,
-  UploadConfig,
+  type PersistConfig,
+  type UploadConfig,
 } from '@code-pushup/models';
 import { CORE_CONFIG_MOCK, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { yargsCli } from '../yargs-cli';

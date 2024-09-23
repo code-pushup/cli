@@ -1,23 +1,17 @@
+import { type InlineText, md } from 'build-md';
 import { describe, expect, it } from 'vitest';
 import {
+  binaryIconSuffix,
   categoriesDetailsSection,
   categoriesOverviewSection,
   categoryGroupItem,
   categoryRef,
 } from './generate-md-report-categoy-section';
-import { ScoredGroup, ScoredReport } from './types';
+import type { ScoredGroup, ScoredReport } from './types';
 
 // === Categories Overview Section
 
 describe('categoriesOverviewSection', () => {
-  it('should skip categories table if categories are empty', () => {
-    const md = categoriesOverviewSection({
-      plugins: [],
-      categories: [],
-    });
-    expect(md).toBe('');
-  });
-
   it('should render complete categories table', () => {
     expect(
       categoriesOverviewSection({
@@ -51,7 +45,29 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-any', type: 'audit' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+
+  it('should render targetScore icon "❌" if score fails', () => {
+    expect(
+      categoriesOverviewSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit' }],
+          },
+        ],
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -69,9 +85,9 @@ describe('categoryRef', () => {
           score: 1,
         },
         'lighthouse',
-      ),
+      ).toString(),
     ).toBe(
-      '- 🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**',
+      '🟩 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12245**',
     );
   });
 
@@ -86,56 +102,62 @@ describe('categoryRef', () => {
           displayValue: '12 errors',
         },
         'lighthouse',
-      ),
+      ).toString(),
     ).toBe(
-      '- 🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**',
+      '🟥 [Score Report Performance](#score-report-performance-lighthouse) (_lighthouse_) - **12 errors**',
     );
   });
 });
 
 describe('categoryGroupItem', () => {
+  const printAsListItem = (text: InlineText) => md.list([text]).toString();
+
   it('should render partial category reference', () => {
     expect(
-      categoryGroupItem(
-        {
-          slug: 'bug-prevention',
-          title: 'Bug Prevention',
-          score: 0.9,
-        } as ScoredGroup,
-        [
-          { title: 'No let', slug: 'no-let', score: 0, value: 23 },
-          { title: 'No any', slug: 'no-any', score: 0.6, value: 91 },
-        ],
-        'Eslint',
+      printAsListItem(
+        categoryGroupItem(
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.9,
+          } as ScoredGroup,
+          [
+            { title: 'No let', slug: 'no-let', score: 0, value: 23 },
+            { title: 'No any', slug: 'no-any', score: 0.6, value: 91 },
+          ],
+          'Eslint',
+        ),
       ),
     ).toMatchSnapshot();
   });
 
   it('should render complete category reference', () => {
     expect(
-      categoryGroupItem(
-        {
-          slug: 'bug-prevention',
-          title: 'Bug Prevention',
-          score: 0.6,
-        } as ScoredGroup,
-        [
+      printAsListItem(
+        categoryGroupItem(
           {
-            title: 'No any',
-            slug: 'no-any',
-            score: 0,
-            value: 12,
-            displayValue: '12 errors',
-          },
-          { title: 'No let', slug: 'no-let', score: 1, value: 0 },
-        ],
-        'Eslint',
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.6,
+          } as ScoredGroup,
+          [
+            {
+              title: 'No any',
+              slug: 'no-any',
+              score: 0,
+              value: 12,
+              displayValue: '12 errors',
+            },
+            { title: 'No let', slug: 'no-let', score: 1, value: 0 },
+          ],
+          'Eslint',
+        ),
       ),
     ).toMatchSnapshot();
   });
 });
 
-describe('categoriesDetails', () => {
+describe('categoriesDetailsSection', () => {
   it('should render complete categories details', () => {
     expect(
       categoriesDetailsSection({
@@ -165,7 +187,8 @@ describe('categoriesDetails', () => {
           {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
-            score: 0.98,
+            score: 1,
+            isBinary: true,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
           {
@@ -184,10 +207,71 @@ describe('categoriesDetails', () => {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
+            isBinary: true,
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport),
+      } as ScoredReport).toString(),
     ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "❌" when isBinary is failing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 0, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 0.98,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+
+  it('should render categories details and add "✅" when isBinary is passing', () => {
+    expect(
+      categoriesDetailsSection({
+        plugins: [
+          {
+            slug: 'eslint',
+            title: 'Eslint',
+            audits: [{ slug: 'no-let', title: 'No let', score: 1, value: 5 }],
+          },
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug Prevention',
+            score: 1,
+            isBinary: true,
+            refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+          },
+        ],
+      } as ScoredReport).toString(),
+    ).toMatchSnapshot();
+  });
+});
+
+describe('binaryIconSuffix', () => {
+  it('should return passing binarySuffix if score is 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(1, true)).toBe(' ✅');
+  });
+
+  it('should return failing binarySuffix if score is < then 1 and isBinary is true', () => {
+    expect(binaryIconSuffix(0, true)).toBe(' ❌');
+  });
+
+  it('should return NO binarySuffix if score is 1 and isBinary is false', () => {
+    expect(binaryIconSuffix(1, false)).toBe('');
   });
 });

@@ -1,5 +1,5 @@
-import { type LogOptions } from 'simple-git';
-import { HistoryOnlyOptions } from '@code-pushup/core';
+import type { LogOptions } from 'simple-git';
+import type { HistoryOnlyOptions } from '@code-pushup/core';
 
 export type HistoryCliOptions = {
   targetBranch?: string;

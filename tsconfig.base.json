@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": true,
     "paths": {
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],
@@ -31,6 +32,7 @@
       ],
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
       "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
       "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
       "@code-pushup/utils": ["packages/utils/src/index.ts"]

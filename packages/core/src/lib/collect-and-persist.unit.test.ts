@@ -5,7 +5,7 @@ import {
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/test-utils';
 import {
-  CollectAndPersistReportsOptions,
+  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from './collect-and-persist';
 import { collect } from './implementation/collect';

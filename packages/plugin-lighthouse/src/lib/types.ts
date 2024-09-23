@@ -1,5 +1,5 @@
 import type { CliFlags } from 'lighthouse';
-import { ExcludeNullFromPropertyTypes } from '@code-pushup/utils';
+import type { ExcludeNullFromPropertyTypes } from '@code-pushup/utils';
 
 export type LighthouseOptions = ExcludeNullFromPropertyTypes<
   Partial<

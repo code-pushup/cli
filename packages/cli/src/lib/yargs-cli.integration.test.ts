@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, Format } from '@code-pushup/models';
+import type { CoreConfig, Format } from '@code-pushup/models';
 import { yargsHistoryOptionsDefinition } from './history/history.options';
-import { CompareOptions } from './implementation/compare.model';
+import type { CompareOptions } from './implementation/compare.model';
 import { yargsCompareOptionsDefinition } from './implementation/compare.options';
-import {
+import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './implementation/core-config.model';
-import { GeneralCliOptions } from './implementation/global.model';
-import { OnlyPluginsOptions } from './implementation/only-plugins.model';
+import type { GeneralCliOptions } from './implementation/global.model';
+import type { MergeDiffsOptions } from './implementation/merge-diffs.model';
+import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options';
+import type { OnlyPluginsOptions } from './implementation/only-plugins.model';
 import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
+import type { SkipPluginsOptions } from './implementation/skip-plugins.model';
+import { yargsSkipPluginsOptionsDefinition } from './implementation/skip-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
@@ -28,6 +32,33 @@ describe('yargsCli', () => {
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
     expect(parsedArgv.onlyPlugins).toEqual([]);
+  });
+
+  it('should parse an empty array as a default skipPlugins option', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & SkipPluginsOptions>(
+      [],
+      { options: { ...options, ...yargsSkipPluginsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv.skipPlugins).toEqual([]);
+  });
+
+  it('should parse the overrides of skipPlugins and onlyPlugins even with different formats', async () => {
+    const parsedArgv = await yargsCli<
+      GeneralCliOptions & OnlyPluginsOptions & SkipPluginsOptions
+    >(
+      [
+        '--onlyPlugins=lighthouse',
+        '--onlyPlugins=eslint',
+        '--skipPlugins=coverage,eslint',
+      ],
+      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv).toEqual(
+      expect.objectContaining({
+        onlyPlugins: ['lighthouse', 'eslint'],
+        skipPlugins: ['coverage', 'eslint'],
+      }),
+    );
   });
 
   it('should parse a single boolean negated argument', async () => {
@@ -84,7 +115,8 @@ describe('yargsCli', () => {
       GeneralCliOptions &
         PersistConfigCliOptions &
         UploadConfigCliOptions &
-        OnlyPluginsOptions
+        OnlyPluginsOptions &
+        SkipPluginsOptions
     >(
       [
         '--verbose',
@@ -97,6 +129,8 @@ describe('yargsCli', () => {
         '--upload.apiKey=some-api-key',
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
+        '--skipPlugins=coverage',
+        '--skipPlugins=eslint',
       ],
       { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
     ).parseAsync();
@@ -118,6 +152,7 @@ describe('yargsCli', () => {
           apiKey: 'some-api-key',
         }),
         onlyPlugins: ['lighthouse', 'eslint'],
+        skipPlugins: ['coverage', 'eslint'],
       }),
     );
   });
@@ -140,6 +175,30 @@ describe('yargsCli', () => {
         noExitProcess: true,
       }).parse(),
     ).toThrow('Missing required arguments: before, after');
+  });
+
+  it('should parse merge-diffs options', async () => {
+    const parsedArgv = await yargsCli<GeneralCliOptions & MergeDiffsOptions>(
+      [
+        '--files',
+        '.code-pushup/frontend/report-diff.json',
+        '.code-pushup/backend/report-diff.json',
+      ],
+      { options: { ...options, ...yargsMergeDiffsOptionsDefinition() } },
+    ).parseAsync();
+    expect(parsedArgv.files).toEqual([
+      '.code-pushup/frontend/report-diff.json',
+      '.code-pushup/backend/report-diff.json',
+    ]);
+  });
+
+  it('should error if required merge-diffs option is missing', () => {
+    expect(() =>
+      yargsCli<GeneralCliOptions & CompareOptions>([], {
+        options: { ...options, ...yargsMergeDiffsOptionsDefinition() },
+        noExitProcess: true,
+      }).parse(),
+    ).toThrow('Missing required argument: files');
   });
 
   it('should provide default arguments for history command', async () => {

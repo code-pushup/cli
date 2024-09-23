@@ -1,72 +1,144 @@
 import {
-  Tree,
+  type Tree,
   addProjectConfiguration,
+  logger,
   readProjectConfiguration,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { configurationGenerator } from './generator';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
+import { addTargetToProject, configurationGenerator } from './generator';
 
-describe('configuration generator', () => {
+describe('addTargetToProject', () => {
   let tree: Tree;
   const testProjectName = 'test-app';
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
-
-    addProjectConfiguration(tree, testProjectName, {
-      root: testProjectName,
-      projectType: 'library',
-      sourceRoot: `${testProjectName}/src`,
-      targets: {},
+    addProjectConfiguration(tree, 'test-app', {
+      root: 'test-app',
     });
   });
+  afterEach(() => {
+    //reset tree
+    tree.delete(testProjectName);
+  });
 
-  it('should add code-pushup.config.ts to the project root', async () => {
-    await configurationGenerator(tree, { project: testProjectName });
+  it('should generate a project target', () => {
+    addTargetToProject(
+      tree,
+      {
+        root: testProjectName,
+        projectType: 'library',
+        sourceRoot: `${testProjectName}/src`,
+        targets: {},
+      },
+      {
+        project: testProjectName,
+      },
+    );
 
     const projectConfiguration = readProjectConfiguration(
       tree,
       testProjectName,
     );
 
-    expect(tree.exists('test-app/code-pushup.config.ts')).toBe(true);
-    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
-      executor: 'nx:run-commands',
-      options: {
-        command: `code-pushup autorun --no-progress --config=${join(
-          './',
-          projectConfiguration.root,
-          'code-pushup.config.ts',
-        )}`,
-      },
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: `${PACKAGE_NAME}:autorun`,
     });
+  });
+
+  it('should use targetName to generate a project target', () => {
+    addTargetToProject(
+      tree,
+      {
+        root: testProjectName,
+        projectType: 'library',
+        sourceRoot: `${testProjectName}/src`,
+        targets: {},
+      },
+      {
+        project: testProjectName,
+        targetName: 'cp',
+      },
+    );
+
+    const projectConfiguration = readProjectConfiguration(
+      tree,
+      testProjectName,
+    );
+
+    expect(projectConfiguration.targets?.['cp']).toEqual({
+      executor: `${PACKAGE_NAME}:autorun`,
+    });
+  });
+});
+
+describe('configurationGenerator', () => {
+  let tree: Tree;
+  const testProjectName = 'test-app';
+  const loggerInfoSpy = vi.spyOn(logger, 'info');
+
+  beforeEach(() => {
+    tree = createTreeWithEmptyWorkspace();
+    addProjectConfiguration(tree, 'test-app', {
+      root: 'test-app',
+    });
+  });
+
+  afterEach(() => {
+    tree.delete(testProjectName);
+  });
+
+  it('should generate a project target and config file', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+    });
+
+    const projectConfiguration = readProjectConfiguration(
+      tree,
+      testProjectName,
+    );
+
+    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
+      executor: `${PACKAGE_NAME}:autorun`,
+    });
+  });
+
+  it('should skip config creation if skipConfig is used', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+      skipConfig: true,
+    });
+
+    readProjectConfiguration(tree, testProjectName);
+
     expect(
-      tree.read('test-app/code-pushup.config.ts')?.toString(),
-    ).toMatchSnapshot();
+      tree.read(join('libs', testProjectName, 'code-pushup.config.ts')),
+    ).toBeNull();
+    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip config file creation');
   });
 
-  it('should skip code-pushup.config.ts generation if config fin in ts, mjs or js format already exists', async () => {
-    tree.write(join('code-pushup.config.js'), 'export default {}');
-    await configurationGenerator(tree, { project: testProjectName });
+  it('should skip target creation if skipTarget is used', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+      skipTarget: true,
+    });
 
     const projectConfiguration = readProjectConfiguration(
       tree,
       testProjectName,
     );
+    expect(projectConfiguration.targets).toBeUndefined();
+    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip adding target to project');
+  });
 
-    expect(tree.exists('code-pushup.config.ts')).toBe(false);
-
-    expect(projectConfiguration.targets?.['code-pushup']).toEqual({
-      executor: 'nx:run-commands',
-      options: {
-        command: `code-pushup autorun --no-progress --config=${join(
-          './',
-          projectConfiguration.root,
-          'code-pushup.config.ts',
-        )}`,
-      },
+  it('should skip formatting', async () => {
+    await configurationGenerator(tree, {
+      project: testProjectName,
+      skipFormat: true,
     });
+    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip formatting files');
   });
 });

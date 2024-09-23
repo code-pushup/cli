@@ -494,6 +494,24 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
+    "slug": "react-jsx-uses-vars",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "displayValue": "passed",
+    "score": 1,
+    "slug": "react-jsx-uses-react",
+    "value": 0,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "displayValue": "passed",
+    "score": 1,
     "slug": "react-hooks-rules-of-hooks",
     "value": 0,
   },
@@ -532,168 +550,6 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     "score": 0,
     "slug": "react-hooks-exhaustive-deps",
     "value": 2,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-display-name",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-no-comment-textnodes",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-no-duplicate-props",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-no-target-blank",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-no-undef",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-uses-react",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-jsx-uses-vars",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-children-prop",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-danger-with-children",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-deprecated",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-direct-mutation-state",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-find-dom-node",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-is-mounted",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-render-return-value",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-string-refs",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-unescaped-entities",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-no-unknown-property",
-    "value": 0,
-  },
-  {
-    "details": {
-      "issues": [],
-    },
-    "displayValue": "passed",
-    "score": 1,
-    "slug": "react-require-render-return",
-    "value": 0,
   },
 ]
 `;

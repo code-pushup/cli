@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import type { IcuMessage } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
@@ -87,13 +87,11 @@ export function formatTableItemPropertyValue(
       return truncateText(String(parsedItemValue), 500);
     case 'multi': // @TODO
       // @TODO log verbose first, then implement data type
-      ui().logger.info(`Format type ${chalk.bold('multi')} is not implemented`);
+      ui().logger.info(`Format type ${bold('multi')} is not implemented`);
       return '';
     case 'thumbnail': // @TODO
       // @TODO log verbose first, then implement data type
-      ui().logger.info(
-        `Format type ${chalk.bold('thumbnail')} is not implemented`,
-      );
+      ui().logger.info(`Format type ${bold('thumbnail')} is not implemented`);
       return '';
   }
   /* eslint-enable no-magic-numbers */
@@ -149,16 +147,13 @@ export function parseTableItemPropertyValue(
       return String(url);
     case 'subitems':
       // @TODO log verbose first, then implement data type
-      ui().logger.info(
-        `Value type ${chalk.bold('subitems')} is not implemented`,
-      );
+      ui().logger.info(`Value type ${bold('subitems')} is not implemented`);
       return '';
     case 'debugdata':
       // @TODO log verbose first, then implement data type
-      ui().logger.info(
-        `Value type ${chalk.bold('debugdata')} is not implemented`,
-        { silent: true },
-      );
+      ui().logger.info(`Value type ${bold('debugdata')} is not implemented`, {
+        silent: true,
+      });
       return '';
   }
   // IcuMessage

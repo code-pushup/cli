@@ -4,7 +4,7 @@ import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
 import { DEFAULT_CLI_FLAGS } from './constants';
 import { createRunnerFunction } from './runner';
-import { LighthouseCliFlags } from './types';
+import type { LighthouseCliFlags } from './types';
 import { determineAndSetLogLevel, getConfig } from './utils';
 
 // used for createRunnerMocking

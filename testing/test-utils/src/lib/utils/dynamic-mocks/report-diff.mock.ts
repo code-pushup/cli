@@ -8,7 +8,7 @@ import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
 import {
   CATEGORIES_MAP,
   CATEGORY_SLUGS,
-  CategorySlug,
+  type CategorySlug,
 } from './categories.mock';
 import {
   ESLINT_AUDITS_FIXED_SLUGS,
@@ -18,7 +18,7 @@ import {
 import {
   ESLINT_PLUGIN_GROUP_MAX_LINES,
   ESLINT_PLUGIN_META,
-  ESLintAuditSlug,
+  type ESLintAuditSlug,
 } from './eslint-plugin.mock';
 import {
   LIGHTHOUSE_AUDITS_CHANGES,
@@ -183,7 +183,7 @@ export function reportsDiffAltMock(): ReportsDiff {
         {
           slug: 'bug-prevention' satisfies CategorySlug,
           title: CATEGORIES_MAP['bug-prevention'].title,
-          scores: { before: 0.68, after: 0.63, diff: -0.05 },
+          scores: { before: 0.68, after: 0.6795, diff: -0.0005 },
         },
       ],
       unchanged: [

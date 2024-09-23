@@ -1,25 +1,15 @@
-import { join } from 'node:path';
-import {
+import ansis, { type Ansis } from 'ansis';
+import { type InlineText, md } from 'build-md';
+import type {
+  AuditDiff,
   AuditReport,
   CategoryRef,
   IssueSeverity as CliIssueSeverity,
-  Format,
   Group,
   Issue,
-  PersistConfig,
-  Report,
-  reportSchema,
 } from '@code-pushup/models';
-import {
-  ensureDirectoryExists,
-  readJsonFile,
-  readTextFile,
-} from '../file-system';
-import { md } from '../text-formats';
 import { SCORE_COLOR_RANGE } from './constants';
-import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
-
-const { image, bold: boldMd } = md;
+import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;
@@ -33,11 +23,11 @@ export function formatReportScore(score: number): string {
 export function formatScoreWithColor(
   score: number,
   options?: { skipBold?: boolean },
-): string {
+): InlineText {
   const styledNumber = options?.skipBold
     ? formatReportScore(score)
-    : boldMd(formatReportScore(score));
-  return `${scoreMarker(score)} ${styledNumber}`;
+    : md.bold(formatReportScore(score));
+  return md`${scoreMarker(score)} ${styledNumber}`;
 }
 
 export type MarkerShape = 'circle' | 'square';
@@ -78,13 +68,13 @@ export function getDiffMarker(diff: number): string {
   return '';
 }
 
-export function colorByScoreDiff(text: string, diff: number): string {
+export function colorByScoreDiff(text: string, diff: number): InlineText {
   const color = diff > 0 ? 'green' : diff < 0 ? 'red' : 'gray';
   return shieldsBadge(text, color);
 }
 
-export function shieldsBadge(text: string, color: string): string {
-  return image(
+export function shieldsBadge(text: string, color: string): InlineText {
+  return md.image(
     `https://img.shields.io/badge/${encodeURIComponent(text)}-${color}`,
     text,
   );
@@ -105,6 +95,38 @@ export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
     return '⚠️';
   }
   return 'ℹ️';
+}
+
+const MIN_NON_ZERO_RESULT = 0.1;
+
+export function roundValue(value: number): number {
+  const roundedValue = Math.round(value * 10) / 10; // round with max 1 decimal
+  if (roundedValue === 0 && value !== 0) {
+    return MIN_NON_ZERO_RESULT * Math.sign(value);
+  }
+  return roundedValue;
+}
+
+export function formatScoreChange(diff: number): InlineText {
+  const marker = getDiffMarker(diff);
+  const text = formatDiffNumber(roundValue(diff * 100));
+  return colorByScoreDiff(`${marker} ${text}`, diff);
+}
+
+export function formatValueChange({
+  values,
+  scores,
+}: Pick<AuditDiff, 'values' | 'scores'>): InlineText {
+  const marker = getDiffMarker(values.diff);
+  const percentage =
+    values.before === 0
+      ? values.diff > 0
+        ? Number.POSITIVE_INFINITY
+        : Number.NEGATIVE_INFINITY
+      : roundValue((values.diff / values.before) * 100);
+  // eslint-disable-next-line no-irregular-whitespace
+  const text = `${formatDiffNumber(percentage)} %`;
+  return colorByScoreDiff(`${marker} ${text}`, scores.diff);
 }
 
 export function calcDuration(start: number, stop?: number): number {
@@ -148,88 +170,16 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getSortableAuditByRef(
-  { slug, weight, plugin }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport {
-  const auditPlugin = plugins.find(p => p.slug === plugin);
-  if (!auditPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-  const audit = auditPlugin.audits.find(
-    ({ slug: auditSlug }) => auditSlug === slug,
-  );
-  if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
-  }
-  return {
-    ...audit,
-    weight,
-    plugin,
-  };
-}
-
-export function getSortableGroupByRef(
-  { plugin, slug, weight }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableGroup {
-  const groupPlugin = plugins.find(p => p.slug === plugin);
-  if (!groupPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-
-  const group = groupPlugin.groups?.find(
-    ({ slug: groupSlug }) => groupSlug === slug,
-  );
-  if (!group) {
-    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
-  }
-
-  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
-  const sortedAuditRefs = [...group.refs].sort((a, b) => {
-    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
-    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
-    return aIndex - bIndex;
-  });
-
-  return {
-    ...group,
-    refs: sortedAuditRefs,
-    plugin,
-    weight,
-  };
-}
-
-export function getSortedGroupAudits(
-  group: Group,
-  plugin: string,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport[] {
-  return group.refs
-    .map(ref =>
-      getSortableAuditByRef(
-        {
-          plugin,
-          slug: ref.slug,
-          weight: ref.weight,
-          type: 'audit',
-        },
-        plugins,
-      ),
-    )
-    .sort(compareCategoryAuditsAndGroups);
-}
-
 export function compareCategoryAuditsAndGroups(
   a: SortableAuditReport | SortableGroup,
   b: SortableAuditReport | SortableGroup,
 ): number {
-  if (a.weight !== b.weight) {
-    return b.weight - a.weight;
-  }
-
   if (a.score !== b.score) {
     return a.score - b.score;
+  }
+
+  if (a.weight !== b.weight) {
+    return b.weight - a.weight;
   }
 
   if ('value' in a && 'value' in b && a.value !== b.value) {
@@ -261,26 +211,6 @@ export function compareIssueSeverity(
     error: 2,
   };
   return levels[severity1] - levels[severity2];
-}
-
-type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
-
-export async function loadReport<T extends Format>(
-  options: Required<Omit<PersistConfig, 'format'>> & {
-    format: T;
-  },
-): Promise<LoadedReportFormat<T>> {
-  const { outputDir, filename, format } = options;
-  await ensureDirectoryExists(outputDir);
-  const filePath = join(outputDir, `${filename}.${format}`);
-
-  if (format === 'json') {
-    const content = await readJsonFile(filePath);
-    return reportSchema.parse(content) as LoadedReportFormat<T>;
-  }
-
-  const text = await readTextFile(filePath);
-  return text as LoadedReportFormat<T>;
 }
 
 export function throwIsNotPresentError(
@@ -332,4 +262,53 @@ export function compareIssues(a: Issue, b: Issue): number {
   }
 
   return 0;
+}
+
+// @TODO rethink implementation
+export function applyScoreColor(
+  { score, text }: { score: number; text?: string },
+  style: Ansis = ansis,
+) {
+  const formattedScore = text ?? formatReportScore(score);
+
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return text
+      ? style.green(formattedScore)
+      : style.bold(style.green(formattedScore));
+  }
+
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return text
+      ? style.yellow(formattedScore)
+      : style.bold(style.yellow(formattedScore));
+  }
+
+  return text
+    ? style.red(formattedScore)
+    : style.bold(style.red(formattedScore));
+}
+
+export function targetScoreIcon(
+  score: number,
+  targetScore?: number,
+  options: {
+    passIcon?: string;
+    failIcon?: string;
+    prefix?: string;
+    postfix?: string;
+  } = {},
+): string {
+  if (targetScore != null) {
+    const {
+      passIcon = '✅',
+      failIcon = '❌',
+      prefix = '',
+      postfix = '',
+    } = options;
+    if (score >= targetScore) {
+      return `${prefix}${passIcon}${postfix}`;
+    }
+    return `${prefix}${failIcon}${postfix}`;
+  }
+  return '';
 }

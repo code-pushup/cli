@@ -1,4 +1,4 @@
-import { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config';
 
 // Subset of Yarn v1 audit JSON type
 export type Yarnv1AuditAdvisory = {

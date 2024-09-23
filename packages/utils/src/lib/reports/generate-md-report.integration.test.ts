@@ -19,14 +19,4 @@ describe('generateMdReport', () => {
     expect(mdReport).toContain('🏷 Category');
     await expect(mdReport).toMatchFileSnapshot('__snapshots__/report.md');
   });
-
-  it('should not contain category sections when categories are empty', async () => {
-    const mdReport = generateMdReport(
-      sortReport(scoreReport({ ...reportMock(), categories: [] })),
-    );
-    expect(mdReport).not.toContain('🏷 Category');
-    await expect(mdReport).toMatchFileSnapshot(
-      '__snapshots__/report-no-categories.md',
-    );
-  });
 });

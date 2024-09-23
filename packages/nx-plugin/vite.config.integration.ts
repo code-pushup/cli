@@ -16,7 +16,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/nx-plugin/integration-tests',
-      exclude: ['mocks/**', '**/types.ts'],
+      exclude: ['mocks/**', '**/types.ts', '**/__snapshots__/**'],
     },
     environment: 'node',
     include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

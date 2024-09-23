@@ -4,7 +4,7 @@ import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
-  PersistConfig,
+  type PersistConfig,
 } from '@code-pushup/models';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
 import { yargsCli } from '../yargs-cli';
@@ -100,6 +100,32 @@ describe('collect-command', () => {
       expect.objectContaining({
         config: '/test/code-pushup.config.ts',
         plugins: [expect.objectContaining({ slug: 'cypress' })],
+      }),
+    );
+  });
+
+  it('should call collect only for the not skipped plugins', async () => {
+    await yargsCli(
+      [
+        'collect',
+        '--config=/test/code-pushup.config.ts',
+        '--skipPlugins=cypress',
+      ],
+      {
+        ...DEFAULT_CLI_CONFIGURATION,
+        commands: [yargsCollectCommandObject()],
+      },
+    ).parseAsync();
+
+    expect(readRcByPath).toHaveBeenCalledWith(
+      '/test/code-pushup.config.ts',
+      undefined,
+    );
+
+    expect(collectAndPersistReports).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: '/test/code-pushup.config.ts',
+        plugins: [expect.objectContaining({ slug: 'vitest' })],
       }),
     );
   });

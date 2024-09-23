@@ -91,6 +91,13 @@ export function objectToCliArgs<
       return value.map(v => `${prefix}${key}="${v}"`);
     }
 
+    if (typeof value === 'object') {
+      return Object.entries(value as Record<string, ArgumentValue>).flatMap(
+        // transform nested objects to the dot notation `key.subkey`
+        ([k, v]) => objectToCliArgs({ [`${key}.${k}`]: v }),
+      );
+    }
+
     if (typeof value === 'string') {
       return [`${prefix}${key}="${value}"`];
     }
@@ -102,8 +109,6 @@ export function objectToCliArgs<
     if (typeof value === 'boolean') {
       return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
-
-    // @TODO add support for nested objects `persist.filename`
 
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
@@ -130,15 +135,6 @@ export function capitalize<T extends string>(text: T): Capitalize<T> {
   return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
     1,
   )}` as Capitalize<T>;
-}
-
-export function apostrophize(text: string, upperCase?: boolean) {
-  const lastCharMatch = text.match(/(\w)\W*$/);
-  const lastChar = lastCharMatch?.[1] ?? '';
-
-  return `${text}'${
-    lastChar.toLocaleLowerCase() === 's' ? '' : upperCase ? 'S' : 's'
-  }`;
 }
 
 export function toNumberPrecision(

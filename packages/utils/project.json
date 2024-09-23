@@ -15,10 +15,6 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs utils {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -54,5 +50,5 @@
       }
     }
   },
-  "tags": ["scope:shared", "type:util"]
+  "tags": ["scope:shared", "type:util", "publishable"]
 }

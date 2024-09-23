@@ -1,11 +1,11 @@
-import {
+import type {
   AuditReport,
   CategoryRef,
   GroupRef,
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform';
-import { ScoredGroup, ScoredReport } from './types';
+import type { ScoredGroup, ScoredReport } from './types';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {

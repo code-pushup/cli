@@ -1,16 +1,14 @@
 export { exists } from '@code-pushup/models';
-export { Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
+export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff';
+export { stringifyError } from './lib/errors';
 export {
-  ProcessConfig,
   ProcessError,
-  ProcessObserver,
-  ProcessResult,
   executeProcess,
+  type ProcessConfig,
+  type ProcessObserver,
+  type ProcessResult,
 } from './lib/execute-process';
 export {
-  CrawlFileSystemOptions,
-  FileResult,
-  MultipleFileResults,
   crawlFileSystem,
   directoryExists,
   ensureDirectoryExists,
@@ -23,6 +21,9 @@ export {
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,
+  type CrawlFileSystemOptions,
+  type FileResult,
+  type MultipleFileResults,
 } from './lib/file-system';
 export { filterItemRefsBy } from './lib/filter';
 export {
@@ -44,12 +45,12 @@ export {
   toGitPath,
 } from './lib/git/git';
 export {
-  LogResult,
   getCurrentBranchOrTag,
   getHashFromTag,
   getHashes,
   getLatestCommit,
   getSemverTags,
+  type LogResult,
 } from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -57,10 +58,12 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { CliUi, Column, link, ui } from './lib/logging';
-export { ProgressBar, getProgressBar } from './lib/progress';
+export { link, ui, type CliUi, type Column } from './lib/logging';
+export { mergeConfigs } from './lib/merge-configs';
+export { getProgressBar, type ProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
+  CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
   TERMINAL_WIDTH,
@@ -70,11 +73,15 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins';
 export { generateMdReport } from './lib/reports/generate-md-report';
-export { generateMdReportsDiff } from './lib/reports/generate-md-reports-diff';
+export {
+  generateMdReportsDiff,
+  generateMdReportsDiffForMonorepo,
+} from './lib/reports/generate-md-reports-diff';
+export { loadReport } from './lib/reports/load-report';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary';
 export { scoreReport } from './lib/reports/scoring';
 export { sortReport } from './lib/reports/sorting';
-export {
+export type {
   ScoredCategoryConfig,
   ScoredGroup,
   ScoredReport,
@@ -82,13 +89,11 @@ export {
 export {
   calcDuration,
   compareIssueSeverity,
-  loadReport,
+  formatReportScore,
 } from './lib/reports/utils';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {
-  CliArgsObject,
-  apostrophize,
   capitalize,
   countOccurrences,
   distinct,
@@ -104,6 +109,14 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
+  type CliArgsObject,
 } from './lib/transform';
-export { ExcludeNullFromPropertyTypes } from './lib/types';
+export type {
+  ExcludeNullFromPropertyTypes,
+  ExtractArray,
+  ExtractArrays,
+  ItemOrArray,
+  Prettify,
+  WithRequired,
+} from './lib/types';
 export { verboseUtils } from './lib/verbose-utils';

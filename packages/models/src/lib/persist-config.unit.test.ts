@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PersistConfig, persistConfigSchema } from './persist-config';
+import { type PersistConfig, persistConfigSchema } from './persist-config';
 
 describe('persistConfigSchema', () => {
   it('should accept a valid configuration with all information', () => {

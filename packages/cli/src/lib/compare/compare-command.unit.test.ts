@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { bold } from 'ansis';
 import { compareReportFiles } from '@code-pushup/core';
 import {
   DEFAULT_PERSIST_FILENAME,
@@ -43,6 +43,29 @@ describe('compare-command', () => {
         filename: DEFAULT_PERSIST_FILENAME,
         format: DEFAULT_PERSIST_FORMAT,
       },
+      expect.any(Object),
+      undefined,
+    );
+  });
+
+  it('should forward label from command line', async () => {
+    await yargsCli(
+      [
+        'compare',
+        '--before=source-report.json',
+        '--after=target-report.json',
+        '--label=core',
+      ],
+      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
+    ).parseAsync();
+
+    expect(compareReportFiles).toHaveBeenCalledWith<
+      Parameters<typeof compareReportFiles>
+    >(
+      { before: 'source-report.json', after: 'target-report.json' },
+      expect.any(Object),
+      expect.any(Object),
+      'core',
     );
   });
 
@@ -53,9 +76,9 @@ describe('compare-command', () => {
     ).parseAsync();
 
     expect(getLogMessages(ui().logger).at(-1)).toContain(
-      `Reports diff written to ${chalk.bold(
+      `Reports diff written to ${bold(
         '.code-pushup/report-diff.json',
-      )} and ${chalk.bold('.code-pushup/report-diff.md')}`,
+      )} and ${bold('.code-pushup/report-diff.md')}`,
     );
   });
 });

@@ -7,7 +7,7 @@ import {
   summaryToDisplayValue,
   vulnerabilitiesToIssues,
 } from './transform';
-import { Vulnerability } from './types';
+import type { Vulnerability } from './types';
 
 describe('auditResultToAuditOutput', () => {
   it('should return audit output with no vulnerabilities', () => {
@@ -221,6 +221,14 @@ describe('vulnerabilitiesToDisplayValue', () => {
 });
 
 describe('vulnerabilitiesToIssues', () => {
+  const vulnerabilityDefaults: Vulnerability = {
+    name: 'verdaccio',
+    severity: 'high',
+    versionRange: '<=5.28.0',
+    fixInformation: false,
+    directDependency: true,
+  };
+
   it('should provide a vulnerability summary', () => {
     expect(
       vulnerabilitiesToIssues(
@@ -250,11 +258,12 @@ describe('vulnerabilitiesToIssues', () => {
       vulnerabilitiesToIssues(
         [
           {
+            ...vulnerabilityDefaults,
             name: 'tough-cookie',
             title: 'tough-cookie Prototype Pollution vulnerability',
             url: 'https://github.com/advisories/GHSA-72xf-g2v4-qvf3',
           },
-        ] as Vulnerability[],
+        ],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
@@ -271,16 +280,17 @@ describe('vulnerabilitiesToIssues', () => {
       vulnerabilitiesToIssues(
         [
           {
+            ...vulnerabilityDefaults,
             name: '@cypress/request',
             directDependency: 'cypress',
           },
-        ] as Vulnerability[],
+        ],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
       expect.objectContaining({
         message: expect.stringContaining(
-          "`cypress`' dependency `@cypress/request` has",
+          "`cypress`'s dependency `@cypress/request` has",
         ),
       }),
     ]);
@@ -291,10 +301,11 @@ describe('vulnerabilitiesToIssues', () => {
       vulnerabilitiesToIssues(
         [
           {
+            ...vulnerabilityDefaults,
             name: 'semver',
             directDependency: '',
           },
-        ] as Vulnerability[],
+        ],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([
@@ -309,11 +320,12 @@ describe('vulnerabilitiesToIssues', () => {
       vulnerabilitiesToIssues(
         [
           {
+            ...vulnerabilityDefaults,
             name: 'verdaccio',
             severity: 'high',
             directDependency: true,
           },
-        ] as Vulnerability[],
+        ],
         { ...defaultAuditLevelMapping, high: 'info' },
       ),
     ).toEqual<Issue[]>([
@@ -329,11 +341,12 @@ describe('vulnerabilitiesToIssues', () => {
       vulnerabilitiesToIssues(
         [
           {
+            ...vulnerabilityDefaults,
             name: 'request',
             versionRange: '*',
             directDependency: true,
           },
-        ] as Vulnerability[],
+        ],
         defaultAuditLevelMapping,
       ),
     ).toEqual<Issue[]>([

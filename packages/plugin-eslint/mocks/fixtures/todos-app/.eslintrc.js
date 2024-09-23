@@ -5,8 +5,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: 'plugin:react/recommended',
-  plugins: ['react-hooks'],
+  plugins: ['react', 'react-hooks'],
   overrides: [
     {
       env: {
@@ -21,6 +20,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
   settings: {
     react: {
@@ -58,6 +60,8 @@ module.exports = {
     'react/jsx-key': 'warn',
     'react/prop-types': 'warn',
     'react/react-in-jsx-scope': 'warn',
+    'react/jsx-uses-vars': 'warn',
+    'react/jsx-uses-react': 'error',
     // https://www.npmjs.com/package/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',

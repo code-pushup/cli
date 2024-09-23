@@ -1,6 +1,6 @@
 import { filterItemRefsBy } from '@code-pushup/utils';
-import { OnlyPluginsOptions } from './only-plugins.model';
-import { validateOnlyPluginsOption } from './only-plugins.utils';
+import type { OnlyPluginsOptions } from './only-plugins.model';
+import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';
 
 export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
   originalProcessArgs: T,
@@ -11,9 +11,10 @@ export function onlyPluginsMiddleware<T extends OnlyPluginsOptions>(
   if (originalOnlyPlugins && originalOnlyPlugins.length > 0) {
     const { verbose, plugins, onlyPlugins = [] } = originalProcessArgs;
 
-    validateOnlyPluginsOption(
+    validatePluginFilterOption(
+      'onlyPlugins',
       { plugins, categories },
-      { onlyPlugins, verbose },
+      { pluginsToFilter: onlyPlugins, verbose },
     );
 
     const validOnlyPlugins = onlyPlugins.filter(oP =>

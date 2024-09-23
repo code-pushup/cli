@@ -198,9 +198,10 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
 | **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
 | **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
+| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.     |
 
 > [!NOTE]  
-> All common options, except `--onlyPlugins`, can be specified in the configuration file as well.
+> All common options, except `--onlyPlugins` and `--skipPlugins`, can be specified in the configuration file as well.
 > CLI arguments take precedence over configuration file options.
 
 > [!NOTE]  
@@ -267,12 +268,13 @@ Usage:
 Description:
 Compare 2 reports and produce a report diff file.
 
-In addition to the [Common Command Options](#common-command-options), the following options are required:
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `compare` command:
 
-| Option         | Type     | Description                   |
-| -------------- | -------- | ----------------------------- |
-| **`--before`** | `string` | Path to source `report.json`. |
-| **`--after`**  | `string` | Path to target `report.json`. |
+| Option         | Required | Type     | Description                         |
+| -------------- | :------: | -------- | ----------------------------------- |
+| **`--before`** |   yes    | `string` | Path to source `report.json`.       |
+| **`--after`**  |   yes    | `string` | Path to target `report.json`.       |
+| **`--label`**  |    no    | `string` | Label for diff (e.g. project name). |
 
 #### `print-config` command
 
@@ -283,3 +285,17 @@ Description:
 Print the resolved configuration.
 
 Refer to the [Common Command Options](#common-command-options) for the list of available options.
+
+### `merge-diffs` command
+
+Usage:
+`code-pushup merge-diffs --files PATH_1 PATH_2 ... [options]`
+
+Description:
+Combine multiple report diffs into a single `report-diff.md`.
+
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `merge-diffs` command:
+
+| Option        | Required | Type       | Description                       |
+| ------------- | :------: | ---------- | --------------------------------- |
+| **`--files`** |   yes    | `string[]` | List of `report-diff.json` paths. |

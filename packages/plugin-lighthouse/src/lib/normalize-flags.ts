@@ -1,7 +1,7 @@
-import chalk from 'chalk';
+import { bold, yellow } from 'ansis';
 import { ui } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { DEFAULT_CLI_FLAGS, LighthouseCliFlags } from './runner';
+import { DEFAULT_CLI_FLAGS, type LighthouseCliFlags } from './runner';
 import type { LighthouseOptions } from './types';
 
 const { onlyCategories, ...originalDefaultCliFlags } = DEFAULT_CLI_FLAGS;
@@ -50,6 +50,8 @@ export function normalizeFlags(flags?: LighthouseOptions): LighthouseCliFlags {
       )
       // in code-pushup lighthouse categories are mapped as groups, therefor we had to rename "onlyCategories" to "onlyGroups" for the user of the plugin as it was confusing
       .map(([key, v]) => [key === 'onlyGroups' ? 'onlyCategories' : key, v])
+      // onlyAudits and onlyCategories cannot be empty arrays, otherwise skipAudits is ignored by lighthouse
+      .filter(([_, v]) => !(Array.isArray(v) && v.length === 0))
       // undefined | string | string[] => string[] (empty for undefined)
       .map(([key, v]) => {
         if (!REFINED_STRING_OR_STRING_ARRAY.has(key as never)) {
@@ -71,9 +73,9 @@ export function logUnsupportedFlagsInUse(
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
-      `${chalk.yellow('⚠')} Plugin ${chalk.bold(
+      `${yellow('⚠')} Plugin ${bold(
         LIGHTHOUSE_PLUGIN_SLUG,
-      )} used unsupported flags: ${chalk.bold(
+      )} used unsupported flags: ${bold(
         unsupportedFlagsInUse.slice(0, displayCount).join(', '),
       )}${postFix(unsupportedFlagsInUse.length)}`,
     );
