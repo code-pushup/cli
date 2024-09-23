@@ -36,7 +36,6 @@ export function nxRunManyNpmInstall({
           ...(registry ? { registry } : {}),
           ...(userconfig ? { userconfig } : {}),
           ...(prefix ? { prefix } : {}),
-          verbose: true,
         }),
       ],
       {
