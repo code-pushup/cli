@@ -26,6 +26,7 @@ describe('print-config', () => {
       });
 
       expect(code).toBe(0);
+      expect(stdout).toBe('');
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
