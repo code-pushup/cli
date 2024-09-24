@@ -8,7 +8,7 @@ export const configFilePath = (ext: (typeof extensions)[number]) =>
 
 describe('print-config', () => {
   it.each(extensions)(
-    'should load .%s config file with correct arguments',
+    'should load .%s config file with correct arguments.',
     async ext => {
       const { code, stdout } = await executeProcess({
         command: 'code-pushup',
