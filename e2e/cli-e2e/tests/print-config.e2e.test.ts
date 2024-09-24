@@ -21,7 +21,6 @@ describe('print-config', () => {
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
           '--onlyPlugins=coverage',
-          '--skipPlugins=eslint',
         ],
       });
 
@@ -50,7 +49,7 @@ describe('print-config', () => {
             }),
           ],
           categories: [expect.objectContaining({ slug: 'code-coverage' })],
-          onlyPlugins: ['coverage']
+          onlyPlugins: ['coverage'],
         }),
       );
     },
