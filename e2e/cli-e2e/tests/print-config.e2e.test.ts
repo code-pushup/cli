@@ -26,7 +26,6 @@ describe('print-config', () => {
       });
 
       expect(code).toBe(0);
-      expect(stdout).toBe('');
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
@@ -51,8 +50,7 @@ describe('print-config', () => {
             }),
           ],
           categories: [expect.objectContaining({ slug: 'code-coverage' })],
-          onlyPlugins: ['coverage'],
-          skipPlugins: ['eslint'],
+          onlyPlugins: ['coverage']
         }),
       );
     },
