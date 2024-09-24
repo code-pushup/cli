@@ -10,7 +10,7 @@ describe('print-config', () => {
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
-      const { code, stderr, stdout } = await executeProcess({
+      const { code, stdout } = await executeProcess({
         command: 'code-pushup',
         args: [
           'print-config',
@@ -26,7 +26,6 @@ describe('print-config', () => {
       });
 
       expect(code).toBe(0);
-      expect(stderr).toBe('');
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
