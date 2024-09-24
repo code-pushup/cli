@@ -135,6 +135,8 @@ jobs:
         run: npm ci
       - name: E2E test affected projects
         run: npx nx affected:e2e --parallel=1
+      - name: E2E test cli-e2e project (due to bugs in the setup it has to run last :( )
+        run: npx nx run cli-e2e:e2e-old
 
   build:
     runs-on: ubuntu-latest

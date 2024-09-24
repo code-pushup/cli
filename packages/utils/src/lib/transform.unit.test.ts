@@ -25,6 +25,13 @@ describe('toArray', () => {
   it('should leave array value unchanged', () => {
     expect(toArray(['*.ts', '*.js'])).toEqual(['*.ts', '*.js']);
   });
+
+  it('should handle nested arrays', () => {
+    expect(toArray([['*.ts', '*.js'], ['*.json']])).toEqual([
+      ['*.ts', '*.js'],
+      ['*.json'],
+    ]);
+  });
 });
 
 describe('objectToKeys', () => {
@@ -36,6 +43,14 @@ describe('objectToKeys', () => {
   it('should transform empty object into empty array', () => {
     const keys: never[] = objectToKeys({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of keys', () => {
+    const keys = objectToKeys({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual(['prop1', 'nestedProp1']);
   });
 });
 
@@ -72,6 +87,17 @@ describe('objectToEntries', () => {
   it('should transform empty object into empty array', () => {
     const keys: [never, never][] = objectToEntries({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of entries', () => {
+    const keys = objectToEntries({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual([
+      ['prop1', 1],
+      ['nestedProp1', { nestedKey1: 1 }],
+    ]);
   });
 });
 

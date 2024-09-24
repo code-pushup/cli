@@ -183,7 +183,7 @@ export function reportsDiffAltMock(): ReportsDiff {
         {
           slug: 'bug-prevention' satisfies CategorySlug,
           title: CATEGORIES_MAP['bug-prevention'].title,
-          scores: { before: 0.68, after: 0.63, diff: -0.05 },
+          scores: { before: 0.68, after: 0.6795, diff: -0.0005 },
         },
       ],
       unchanged: [

@@ -1,17 +1,14 @@
 export { exists } from '@code-pushup/models';
-export { type Diff, comparePairs, matchArrayItemsByKey } from './lib/diff';
+export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff';
 export { stringifyError } from './lib/errors';
 export {
-  type ProcessConfig,
   ProcessError,
+  executeProcess,
+  type ProcessConfig,
   type ProcessObserver,
   type ProcessResult,
-  executeProcess,
 } from './lib/execute-process';
 export {
-  type CrawlFileSystemOptions,
-  type FileResult,
-  type MultipleFileResults,
   crawlFileSystem,
   directoryExists,
   ensureDirectoryExists,
@@ -24,6 +21,9 @@ export {
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,
+  type CrawlFileSystemOptions,
+  type FileResult,
+  type MultipleFileResults,
 } from './lib/file-system';
 export { filterItemRefsBy } from './lib/filter';
 export {
@@ -45,12 +45,12 @@ export {
   toGitPath,
 } from './lib/git/git';
 export {
-  type LogResult,
   getCurrentBranchOrTag,
   getHashFromTag,
   getHashes,
   getLatestCommit,
   getSemverTags,
+  type LogResult,
 } from './lib/git/git.commits-and-tags';
 export { groupByStatus } from './lib/group-by-status';
 export {
@@ -58,11 +58,12 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards';
 export { logMultipleResults } from './lib/log-results';
-export { type CliUi, type Column, link, ui } from './lib/logging';
+export { link, ui, type CliUi, type Column } from './lib/logging';
 export { mergeConfigs } from './lib/merge-configs';
-export { type ProgressBar, getProgressBar } from './lib/progress';
+export { getProgressBar, type ProgressBar } from './lib/progress';
 export {
   CODE_PUSHUP_DOMAIN,
+  CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
   TERMINAL_WIDTH,
@@ -93,7 +94,6 @@ export {
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver';
 export * from './lib/text-formats';
 export {
-  type CliArgsObject,
   capitalize,
   countOccurrences,
   distinct,
@@ -109,6 +109,7 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
+  type CliArgsObject,
 } from './lib/transform';
 export type {
   ExcludeNullFromPropertyTypes,

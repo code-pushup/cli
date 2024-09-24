@@ -7,6 +7,7 @@ export const skipPluginsOption: Options = {
   type: 'array',
   default: [],
   coerce: coerceArray,
+  alias: 'P',
 };
 
 export function yargsSkipPluginsOptionsDefinition(): Record<

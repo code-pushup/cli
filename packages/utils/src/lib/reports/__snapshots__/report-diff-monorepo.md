@@ -35,9 +35,9 @@
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Enforce a maximum number of lines of code in a function](https://eslint.org/docs/latest/rules/max-lines-per-function)                               |   🟥 1 warning    |  🟩 **passed**   | ![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green) |
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Require `const` declarations for variables that are never reassigned after declared](https://eslint.org/docs/latest/rules/prefer-const)             |   🟥 1 warning    |  🟩 **passed**   | ![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green) |
 | [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Disallow missing `key` props in iterators/collection literals](https://github.com/jsx-eslint/eslint-plugin-react/tree/master/docs/rules/jsx-key.md) |   🟥 1 warning    |  🟩 **passed**   | ![↓ −100 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%92100%E2%80%89%25-green) |
-| Lighthouse                                                         | [Largest Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)                                       |     🟨 1.5 s      |   🟨 **1.4 s**   |   ![↓ −8 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928%E2%80%89%25-green)   |
-| Lighthouse                                                         | [First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)                                           |     🟨 1.2 s      |   🟨 **1.1 s**   |   ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)   |
-| Lighthouse                                                         | [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)                                                                 |     🟩 1.2 s      |   🟩 **1.1 s**   |   ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green)   |
+| Lighthouse                                                         | [Largest Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/)                                       |     🟨 1.5 s      |   🟨 **1.4 s**   | ![↓ −8.2 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928.2%E2%80%89%25-green) |
+| Lighthouse                                                         | [First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)                                           |     🟨 1.2 s      |   🟨 **1.1 s**   | ![↓ −3.6 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%923.6%E2%80%89%25-green) |
+| Lighthouse                                                         | [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)                                                                 |     🟩 1.2 s      |   🟩 **1.1 s**   | ![↓ −3.6 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%923.6%E2%80%89%25-green) |
 
 41 other audits are unchanged.
 
@@ -47,10 +47,10 @@
 
 🤨 Code PushUp report has both **improvements and regressions**.
 
-| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
-| :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
-| Bug prevention |      🟡 68       |    🟡 **63**    | ![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red) |
-| Performance    |      🟢 92       |    🟢 **94**    |   ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)   |
+| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                           🔄 Score change                            |
+| :------------- | :--------------: | :-------------: | :------------------------------------------------------------------: |
+| Performance    |      🟢 92       |    🟢 **94**    |     ![↑ +2](https://img.shields.io/badge/%E2%86%91%20%2B2-green)     |
+| Bug prevention |      🟡 68       |    🟡 **68**    | ![↓ −0.1](https://img.shields.io/badge/%E2%86%93%20%E2%88%920.1-red) |
 
 1 other category is unchanged.
 
@@ -67,12 +67,12 @@
 
 ### 🛡️ Audits
 
-| 🔌 Plugin                                                          | 🛡️ Audit                                                                                                      | 📏 Previous value | 📏 Current value |                                 🔄 Value change                                  |
-| :----------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :---------------: | :--------------: | :------------------------------------------------------------------------------: |
-| [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Disallow unused variables](https://eslint.org/docs/latest/rules/no-unused-vars)                               |     🟩 passed     |  🟥 **1 error**  | ![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red) |
-| Lighthouse                                                         | [Largest Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/) |     🟨 1.5 s      |   🟨 **1.4 s**   | ![↓ −8 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928%E2%80%89%25-green) |
-| Lighthouse                                                         | [First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)     |     🟨 1.2 s      |   🟨 **1.1 s**   | ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green) |
-| Lighthouse                                                         | [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)                           |     🟩 1.2 s      |   🟩 **1.1 s**   | ![↓ −4 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%924%E2%80%89%25-green) |
+| 🔌 Plugin                                                          | 🛡️ Audit                                                                                                      | 📏 Previous value | 📏 Current value |                                   🔄 Value change                                    |
+| :----------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :---------------: | :--------------: | :----------------------------------------------------------------------------------: |
+| [ESLint](https://www.npmjs.com/package/@code-pushup/eslint-plugin) | [Disallow unused variables](https://eslint.org/docs/latest/rules/no-unused-vars)                               |     🟩 passed     |  🟥 **1 error**  |   ![↑ +∞ %](https://img.shields.io/badge/%E2%86%91%20%2B%E2%88%9E%E2%80%89%25-red)   |
+| Lighthouse                                                         | [Largest Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/largest-contentful-paint/) |     🟨 1.5 s      |   🟨 **1.4 s**   | ![↓ −8.2 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%928.2%E2%80%89%25-green) |
+| Lighthouse                                                         | [First Contentful Paint](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/)     |     🟨 1.2 s      |   🟨 **1.1 s**   | ![↓ −3.6 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%923.6%E2%80%89%25-green) |
+| Lighthouse                                                         | [Speed Index](https://developer.chrome.com/docs/lighthouse/performance/speed-index/)                           |     🟩 1.2 s      |   🟩 **1.1 s**   | ![↓ −3.6 %](https://img.shields.io/badge/%E2%86%93%20%E2%88%923.6%E2%80%89%25-green) |
 
 49 other audits are unchanged.
 
@@ -82,10 +82,10 @@
 
 😟 Code PushUp report has **regressed**.
 
-| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
-| :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
-| Bug prevention |      🟡 68       |    🟡 **63**    | ![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red) |
-| Performance    |    _n/a (\*)_    |    🟢 **94**    |                            _n/a (\*)_                            |
+| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                           🔄 Score change                            |
+| :------------- | :--------------: | :-------------: | :------------------------------------------------------------------: |
+| Bug prevention |      🟡 68       |    🟡 **68**    | ![↓ −0.1](https://img.shields.io/badge/%E2%86%93%20%E2%88%920.1-red) |
+| Performance    |    _n/a (\*)_    |    🟢 **94**    |                              _n/a (\*)_                              |
 
 _(\*) New category._
 

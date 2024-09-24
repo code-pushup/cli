@@ -8,8 +8,8 @@ import {
 } from './utils';
 
 describe('parseNxProcessOutput', () => {
-  it('should replace NX with <↗>', () => {
-    expect(parseNxProcessOutput('NX some message')).toBe('<↗> some message');
+  it('should replace NX with <✓>', () => {
+    expect(parseNxProcessOutput('NX some message')).toBe('<✓> some message');
   });
 });
 
