@@ -71,8 +71,9 @@ export function yargsCli<T = unknown>(
     // take minimum of TERMINAL_WIDTH or full width of the terminal
     .wrap(Math.max(TERMINAL_WIDTH, cli.terminalWidth()))
     .help('help', descriptionStyle('Show help'))
-    .version('version', dim`Show version`, version)
     .alias('h', 'help')
+    .showHelpOnFail(false)
+    .version('version', dim`Show version`, version)
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);
