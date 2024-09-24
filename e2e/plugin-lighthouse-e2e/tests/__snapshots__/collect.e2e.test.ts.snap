@@ -67,7 +67,7 @@ exports[`collect report with lighthouse-plugin NPM package > should run plugin o
           "title": "Avoids deprecated APIs",
         },
         {
-          "description": "Each ARIA \`role\` supports a specific subset of \`aria-*\` attributes. Mismatching these invalidates the \`aria-*\` attributes. [Learn how to match ARIA attributes to their roles](https://dequeuniversity.com/rules/axe/4.9/aria-allowed-attr).",
+          "description": "Each ARIA \`role\` supports a specific subset of \`aria-*\` attributes. Mismatching these invalidates the \`aria-*\` attributes. [Learn how to match ARIA attributes to their roles](https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr).",
           "slug": "aria-allowed-attr",
           "title": "\`[aria-*]\` attributes match their roles",
         },
