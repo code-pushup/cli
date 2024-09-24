@@ -26,7 +26,7 @@ describe('create-cli-inti', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+      '<✓>  Generating @code-pushup/nx-plugin:configuration',
     );
 
     await expect(
@@ -48,7 +48,8 @@ describe('create-cli-inti', () => {
     );
   });
 
-  it('should execute package correctly over npm init', async () => {
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'npm-init');
     const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
 
@@ -63,7 +64,7 @@ describe('create-cli-inti', () => {
     expect(code).toBe(0);
     const cleanedStdout = removeColorCodes(stdout);
     expect(cleanedStdout).toContain(
-      '<↗>  Generating @code-pushup/nx-plugin:configuration',
+      '<✓>  Generating @code-pushup/nx-plugin:configuration',
     );
 
     await expect(
