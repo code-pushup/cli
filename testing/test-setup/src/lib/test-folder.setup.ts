@@ -13,8 +13,12 @@ export async function cleanTestFolder(dirName: string) {
 
 export async function teardownTestFolder(dirName: string) {
   try {
-    // eslint-disable-next-line no-magic-numbers
-    await rm(dirName, { recursive: true, force: true, maxRetries: 2, retryDelay: 100 });
+    await rm(dirName, {
+      recursive: true,
+      force: true,
+      maxRetries: 2,
+      retryDelay: 100,
+    });
   } catch {
     logger.error(
       `⚠️ Failed to delete test artefact ${bold(
