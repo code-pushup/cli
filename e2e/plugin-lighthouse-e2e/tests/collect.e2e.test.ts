@@ -35,7 +35,7 @@ async function setupWorkspace(cwd: string) {
         // seo category
         \`hreflang\`,
       ],
-      chromeFlags: DEFAULT_FLAGS.concat([\`--headless\`]),
+      chromeFlags: DEFAULT_FLAGS.concat([\`--headless\`, \`--verbose\`]),
     }),`,
       },
     ],
