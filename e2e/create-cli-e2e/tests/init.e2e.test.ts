@@ -9,8 +9,6 @@ import {platform} from "node:process";
 describe('create-cli-inti', () => {
   const workspaceRoot = 'tmp/e2e/create-cli-e2e';
   const baseDir = 'tmp/e2e/create-cli-e2e/__test__/init';
-  const { platform } = require('node:process');
-
 
   afterEach(async () => {
     if(platform !== 'win32') {
