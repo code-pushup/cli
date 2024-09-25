@@ -4,16 +4,13 @@ import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 import { createNpmWorkspace } from '../mocks/create-npm-workshpace';
-import {platform} from "node:process";
 
 describe('create-cli-inti', () => {
   const workspaceRoot = 'tmp/e2e/create-cli-e2e';
   const baseDir = 'tmp/e2e/create-cli-e2e/__test__/init';
 
   afterEach(async () => {
-    if(platform !== 'win32') {
-      await teardownTestFolder(baseDir);
-    }
+    await teardownTestFolder(baseDir);
   });
 
   it('should execute package correctly over npm exec', async () => {

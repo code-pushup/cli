@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     reporters: ['basic'],
     testTimeout: 60_000,
+    hookTimeout: 20_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
