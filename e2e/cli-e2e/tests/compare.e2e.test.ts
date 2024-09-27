@@ -12,7 +12,7 @@ describe('CLI compare', () => {
         'Unstaged changes found in examples/react-todos-app, please stage or commit them to prevent E2E tests interfering',
       );
     }
-    await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder('tmp/e2e/react-todos-app');
     await executeProcess({
       command: 'code-pushup',
       args: [
