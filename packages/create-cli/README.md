@@ -24,9 +24,9 @@ npm exec @code-pushup/create-cli
 It should generate the following output:
 
 ```bash
->  <↗>  Generating @code-pushup/nx-plugin:init
+>  <✓>  Generating @code-pushup/nx-plugin:init
 
->  <↗>  Generating @code-pushup/nx-plugin:configuration
+>  <✓>  Generating @code-pushup/nx-plugin:configuration
 
 CREATE code-pushup.config.ts
 ```

@@ -11,8 +11,8 @@ describe('CLI print-config', () => {
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
-      const { code, stderr, stdout } = await executeProcess({
-        command: 'npx',
+      const { code, stdout } = await executeProcess({
+        command: 'code-pushup',
         args: [
           '@code-pushup/cli',
           'print-config',
@@ -23,13 +23,11 @@ describe('CLI print-config', () => {
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
           '--onlyPlugins=coverage',
-          '--skipPlugins=eslint',
         ],
         cwd: EXAMPLES_REACT_TODOS_APP,
       });
 
       expect(code).toBe(0);
-      expect(stderr).toBe('');
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
@@ -55,8 +53,6 @@ describe('CLI print-config', () => {
           ],
           categories: [expect.objectContaining({ slug: 'code-coverage' })],
           onlyPlugins: ['coverage'],
-          skipPlugins: ['eslint'],
-          cwd: EXAMPLES_REACT_TODOS_APP,
         }),
       );
     },

@@ -16,10 +16,8 @@ export async function teardownTestFolder(dirName: string) {
     await rm(dirName, {
       recursive: true,
       force: true,
-      // eslint-disable-next-line no-magic-numbers
-      maxRetries: 3,
-      // eslint-disable-next-line no-magic-numbers
-      retryDelay: 350,
+      maxRetries: 2,
+      retryDelay: 100,
     });
   } catch {
     logger.error(

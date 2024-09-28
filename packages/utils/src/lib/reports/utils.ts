@@ -97,9 +97,19 @@ export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
   return 'ℹ️';
 }
 
+const MIN_NON_ZERO_RESULT = 0.1;
+
+export function roundValue(value: number): number {
+  const roundedValue = Math.round(value * 10) / 10; // round with max 1 decimal
+  if (roundedValue === 0 && value !== 0) {
+    return MIN_NON_ZERO_RESULT * Math.sign(value);
+  }
+  return roundedValue;
+}
+
 export function formatScoreChange(diff: number): InlineText {
   const marker = getDiffMarker(diff);
-  const text = formatDiffNumber(Math.round(diff * 1000) / 10); // round with max 1 decimal
+  const text = formatDiffNumber(roundValue(diff * 100));
   return colorByScoreDiff(`${marker} ${text}`, diff);
 }
 
@@ -113,7 +123,7 @@ export function formatValueChange({
       ? values.diff > 0
         ? Number.POSITIVE_INFINITY
         : Number.NEGATIVE_INFINITY
-      : Math.round((100 * values.diff) / values.before);
+      : roundValue((values.diff / values.before) * 100);
   // eslint-disable-next-line no-irregular-whitespace
   const text = `${formatDiffNumber(percentage)} %`;
   return colorByScoreDiff(`${marker} ${text}`, scores.diff);

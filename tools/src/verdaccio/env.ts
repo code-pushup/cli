@@ -3,7 +3,7 @@ import { bold, gray, red } from 'ansis';
 import { execFileSync, execSync } from 'node:child_process';
 import { join } from 'node:path';
 // can't import from utils
-import { objectToCliArgs } from '../../../packages/nx-plugin/src';
+import { objectToCliArgs } from '../../../packages/nx-plugin/src/executors/internal/cli';
 import {
   setupTestFolder,
   teardownTestFolder,

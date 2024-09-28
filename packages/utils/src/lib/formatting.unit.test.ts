@@ -44,6 +44,7 @@ describe('pluralize', () => {
 describe('formatBytes', () => {
   it.each([
     [0, '0 B'],
+    [-1, '0 B'],
     [1000, '1000 B'],
     [10_000, '9.77 kB'],
     [10_000_000, '9.54 MB'],
@@ -80,6 +81,10 @@ describe('formatDuration', () => {
     [1200, '1.20 s'],
   ])('should log correctly formatted duration for %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
+  });
+
+  it('should log formatted duration with 1 digit after the decimal point', () => {
+    expect(formatDuration(120.255_555, 1)).toBe('120.3 ms');
   });
 });
 

@@ -3,6 +3,7 @@ import {
   type CreateNodesContext,
   readJsonFile,
 } from '@nx/devkit';
+import { bold } from 'ansis';
 import { dirname } from 'node:path';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 import { someTargetsPresent } from '../utils';
@@ -44,6 +45,14 @@ export const createNodes: CreateNodes = [
       return {};
     }
 
+    if (!projectConfiguration.implicitDependencies && !isRootProject) {
+      throw new Error(
+        `You have to specify the needed projects as implicitDependencies in ${bold(
+          projectConfiguration.name,
+        )} to have them set up.`,
+      );
+    }
+
     return {
       projects: {
         [root]: {
@@ -52,6 +61,7 @@ export const createNodes: CreateNodes = [
             config,
             storage,
             preTargets,
+            deps: projectConfiguration.implicitDependencies,
           }),
         },
       },
@@ -63,7 +73,8 @@ function verdaccioTargets({
   port,
   config,
   storage,
-}: Required<Omit<CreateNodesOptions, 'verbose'>>) {
+  deps,
+}: Required<Omit<CreateNodesOptions, 'verbose'>> & { deps: string[] }) {
   return {
     [START_VERDACCIO_SERVER_TARGET_NAME]: {
       executor: '@nx/js:verdaccio',
@@ -73,15 +84,16 @@ function verdaccioTargets({
         storage,
       },
     },
-    ['setup-e2e-deps']: {
-      dependsOn: [
-        {
-          target: 'npm-install-e2e',
-          projects: 'dependencies',
-          params: 'forward',
-        },
-      ],
-      command: 'echo "Dependencies are ready to use!"',
+    ['setup-deps']: {
+      executor: 'nx:run-commands',
+      options: {
+        commands: [
+          `nx run-many -t publish -p ${deps?.join(',')}`,
+          // NPM install needs to be run sequentially as it can cause issues with installing dependencies multiple times
+          `nx run-many -t npm-install -p ${deps?.join(',')} --parallel=1`,
+        ],
+        parallel: false,
+      },
     },
   };
 }

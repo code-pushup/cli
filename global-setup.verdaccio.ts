@@ -8,26 +8,28 @@ import {
 
 let activeRegistry: VerdaccioEnvResult;
 const projectName = process.env['NX_TASK_TARGET_PROJECT'];
-const teardownWorkspaceRoot: boolean = projectName === 'cli-e2e' ? false : true;
-const teardownStorage: boolean = projectName === 'cli-e2e' ? true : false;
-const workspaceRoot = projectName === 'cli-e2e' ? 'examples/react-todos-app' : undefined;
 
 export async function setup() {
   await globalSetup();
 
-  activeRegistry = await nxStartVerdaccioAndSetupEnv({
-    projectName,
-    workspaceRoot
-  });
+  try {
+    activeRegistry = await nxStartVerdaccioAndSetupEnv({
+      projectName: projectName,
+      verbose: true,
+    });
+  } catch (error) {
+    console.error('Error starting local verdaccio registry:\n' + error.message);
+    throw error;
+  }
 
-  const { userconfig, workspaceRoot: prefix } = activeRegistry;
+  const { userconfig, workspaceRoot } = activeRegistry;
   await executeProcess({
     command: 'npx',
     args: objectToCliArgs({
-      _: ['nx', 'setup-e2e-deps', projectName],
+      _: ['nx', 'setup-deps', projectName],
       registry: activeRegistry.registry.url, // publish
       userconfig, // publish & install
-      prefix, // install
+      prefix: workspaceRoot, // install
     }),
     observer: { onStdout: stdout => console.info(stdout) },
   });
@@ -38,9 +40,5 @@ export async function teardown() {
   // We skip uninstalling packages as the folder is deleted anyway
 
   // comment out to see the folder and web interface
-  await nxStopVerdaccioAndTeardownEnv(
-    activeRegistry,
-    teardownWorkspaceRoot,
-    teardownStorage,
-  );
+  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }

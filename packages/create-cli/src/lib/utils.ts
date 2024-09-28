@@ -1,4 +1,5 @@
 import { readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { CODE_PUSHUP_UNICODE_LOGO } from '@code-pushup/utils';
 import {
   NX_JSON_CONTENT,
   NX_JSON_FILENAME,
@@ -45,7 +46,7 @@ export async function setupFile(
 }
 
 export function parseNxProcessOutput(output: string) {
-  return output.trim().replace('NX', '<↗>');
+  return output.trim().replace('NX', CODE_PUSHUP_UNICODE_LOGO);
 }
 
 export async function setupNxContext(): Promise<{
