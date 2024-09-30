@@ -135,9 +135,9 @@ describe('auditDetailsIssues', () => {
   it('should include source file', () => {
     expect(
       auditDetailsIssues([
-        { source: { file: '/index.js' }, severity: 'error' } as Issue,
+        { source: { file: 'src/index.js' }, severity: 'error' } as Issue,
       ])?.toString(),
-    ).toMatch('`/index.js`');
+    ).toMatch('`src/index.js`');
   });
 
   it('should include source file linked with position (VS Code)', () => {
@@ -159,7 +159,6 @@ describe('auditDetailsIssues', () => {
         { outputDir: '/.code-pushup' },
       )?.toString(),
     ).toMatch('[`/src/index.js`](../src/index.js#L4)');
-    vi.unstubAllEnvs();
   });
 
   it('should include formatted line information', () => {
