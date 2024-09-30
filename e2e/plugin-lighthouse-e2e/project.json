@@ -25,5 +25,5 @@
     "cli",
     "plugin-lighthouse"
   ],
-  "tags": ["scope:tooling", "type:e2e"]
+  "tags": ["scope:plugin", "type:e2e"]
 }
