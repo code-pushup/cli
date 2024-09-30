@@ -2,6 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { filterPluginsMiddleware } from './filter-plugins.middleware';
+import { OptionValidationError } from './validate-plugin-filter-options.utils';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -112,27 +113,6 @@ describe('filterPluginsMiddleware', () => {
     ]);
   });
 
-  it('should forward plugins and categories for a slug not present in plugins', () => {
-    const originalCategories = [
-      {
-        slug: 'c1',
-        refs: [
-          { plugin: 'p1', slug: 'a1-p1' },
-          { plugin: 'p2', slug: 'a2-p1' },
-        ],
-      },
-      { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
-    ] as CategoryConfig[];
-    const originalPlugins = [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[];
-    const { categories, plugins } = filterPluginsMiddleware({
-      onlyPlugins: ['wrong-slug'],
-      plugins: originalPlugins,
-      categories: originalCategories,
-    });
-    expect(categories).toStrictEqual(originalCategories);
-    expect(plugins).toStrictEqual(originalPlugins);
-  });
-
   it('should filter categories for slug "p1" in onlyPlugins', () => {
     const { categories } = filterPluginsMiddleware({
       onlyPlugins: ['p1'],
@@ -188,6 +168,47 @@ describe('filterPluginsMiddleware', () => {
 
     expect(loggerSpy).toHaveBeenCalledWith(
       expect.stringContaining('removed the following categories'),
+    );
+  });
+
+  it('should throw OptionValidationError for a slug not present in plugins', () => {
+    expect(() =>
+      filterPluginsMiddleware({
+        onlyPlugins: ['wrong-slug'],
+        plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
+        categories: [
+          {
+            slug: 'c1',
+            refs: [
+              { plugin: 'p1', slug: 'a1-p1' },
+              { plugin: 'p2', slug: 'a2-p1' },
+            ],
+          },
+          { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
+        ] as CategoryConfig[],
+      }),
+    ).toThrow(
+      new OptionValidationError(
+        'The --onlyPlugins argument references a plugin that does not exist: wrong-slug. Valid plugins are p1, p2.',
+      ),
+    );
+  });
+
+  it('should throw OptionValidationError when arguments filter each other out', () => {
+    expect(() => {
+      filterPluginsMiddleware({
+        plugins: [
+          { slug: 'plugin1', audits: [{ slug: 'a1-p1' }] },
+          { slug: 'plugin2', audits: [{ slug: 'a1-p2' }] },
+        ] as PluginConfig[],
+        categories: [],
+        skipPlugins: ['plugin1'],
+        onlyPlugins: ['plugin1'],
+      });
+    }).toThrow(
+      new OptionValidationError(
+        'The following plugin is specified in both --onlyPlugins and --skipPlugins: plugin1. Please choose one option.',
+      ),
     );
   });
 });

@@ -1,4 +1,6 @@
-import { toArray } from '@code-pushup/utils';
+import yargs from 'yargs';
+import { toArray, ui } from '@code-pushup/utils';
+import { OptionValidationError } from './validate-plugin-filter-options.utils';
 
 export function filterKebabCaseKeys<T extends Record<string, unknown>>(
   obj: T,
@@ -32,6 +34,11 @@ export function logErrorBeforeThrow<T extends (...args: any[]) => any>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
       return await fn(...args);
     } catch (error) {
+      if (error instanceof OptionValidationError) {
+        ui().logger.error(error.message);
+        await new Promise(resolve => process.stdout.write('', resolve));
+        yargs().exit(1, error);
+      }
       console.error(error);
       await new Promise(resolve => process.stdout.write('', resolve));
       throw error;

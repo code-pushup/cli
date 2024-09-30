@@ -1,7 +1,10 @@
 import { filterItemRefsBy } from '@code-pushup/utils';
 import type { OnlyPluginsOptions } from './only-plugins.model';
 import type { SkipPluginsOptions } from './skip-plugins.model';
-import { validatePluginFilterOption } from './validate-plugin-filter-options.utils';
+import {
+  handleConflictingPlugins,
+  validatePluginFilterOption,
+} from './validate-plugin-filter-options.utils';
 
 export function filterPluginsMiddleware<
   T extends SkipPluginsOptions & OnlyPluginsOptions,
@@ -17,6 +20,8 @@ export function filterPluginsMiddleware<
   if (skipPlugins.length === 0 && onlyPlugins.length === 0) {
     return { ...originalProcessArgs, categories };
   }
+
+  handleConflictingPlugins(onlyPlugins, skipPlugins);
 
   validatePluginFilterOption(
     'skipPlugins',
