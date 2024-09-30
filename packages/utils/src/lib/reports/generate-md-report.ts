@@ -68,7 +68,7 @@ export function auditDetailsIssues(
       if (!source.position) {
         return [severity, message, file];
       }
-      const line = formatSourceLine(source);
+      const line = formatSourceLine(source.position);
       return [severity, message, file, line];
     }),
   );

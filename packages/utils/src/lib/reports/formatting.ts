@@ -16,8 +16,7 @@ import {
   getColumnAlignments,
   rowToStringArray,
 } from '../text-formats/table';
-import { toUnixPath } from '../transform';
-import { ideEnvironment } from './ide-environment';
+import { getEnvironmentType, getGitHubBaseUrl } from './ide-environment';
 import type { MdReportOptions } from './types';
 
 export function tableSection(
@@ -81,22 +80,22 @@ export function linkToLocalSourceForIde(
 ): InlineText {
   const { file, position } = source;
   const { outputDir } = options ?? {};
-  const unixPath = toUnixPath(file);
 
   // NOT linkable
   if (!outputDir) {
-    return md.code(unixPath);
+    return md.code(file);
   }
 
-  const relativePath = pathPosix.relative(outputDir, unixPath);
-  return md.link(formatFilePosition(relativePath, position), md.code(unixPath));
+  return md.link(formatFileLink(file, position, outputDir), md.code(file));
 }
 
-export function formatSourceLine(source: SourceFileLocation): string {
-  if (!source.position) {
+export function formatSourceLine(
+  position: SourceFileLocation['position'],
+): string {
+  if (!position) {
     return '';
   }
-  const { startLine, endLine } = source.position;
+  const { startLine, endLine } = position;
   return endLine
     ? startLine === endLine
       ? `${startLine}`
@@ -104,20 +103,37 @@ export function formatSourceLine(source: SourceFileLocation): string {
     : `${startLine}`;
 }
 
-export function formatFilePosition(
+export function getGitHubLink(
   file: string,
-  position?: SourceFileLocation['position'],
+  position: SourceFileLocation['position'],
+  outputDir: string,
 ): string {
+  const baseUrl = getGitHubBaseUrl();
+  const fullPath = pathPosix.join(outputDir, file);
+
   if (!position) {
-    return file;
+    return `${baseUrl}/${fullPath}`;
   }
-  const ide = ideEnvironment();
+
   const { startLine, endLine } = position;
-  return ide === 'vscode'
-    ? `${file}#L${startLine}`
-    : ide === 'github'
-    ? endLine
-      ? `${file}#L${startLine}-L${endLine}`
-      : `${file}#L${startLine}`
-    : file;
+  const line = endLine ? `#L${startLine}-L${endLine}` : `#L${startLine}`;
+  return `${baseUrl}/${fullPath}${line}`;
+}
+
+export function formatFileLink(
+  file: string,
+  position: SourceFileLocation['position'],
+  outputDir: string,
+): string {
+  const relativePath = pathPosix.relative(outputDir, file);
+  const env = getEnvironmentType();
+
+  switch (env) {
+    case 'vscode':
+      return position ? `${relativePath}#L${position.startLine}` : relativePath;
+    case 'github':
+      return getGitHubLink(file, position, outputDir);
+    default:
+      return relativePath;
+  }
 }
