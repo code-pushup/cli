@@ -180,7 +180,6 @@ describe('getGitHubLink', () => {
   beforeEach(() => {
     vi.stubEnv('TERM_PROGRAM', '');
     vi.stubEnv('GITHUB_ACTIONS', 'true');
-    vi.stubEnv('GITHUB_ACTIONS', 'true');
     vi.stubEnv('GITHUB_SERVER_URL', 'https://github.com');
     vi.stubEnv('GITHUB_REPOSITORY', 'user/repo');
     vi.stubEnv('GITHUB_SHA', '1234567890abcdef');
@@ -252,7 +251,7 @@ describe('formatFileLink', () => {
     'should transform the file path by including position %o when running in VS Code',
     (position, expected) => {
       vi.stubEnv('TERM_PROGRAM', 'vscode');
-      vi.stubEnv('GITHUB_ACTIONS', '');
+      vi.stubEnv('GITHUB_ACTIONS', 'false');
       expect(
         formatFileLink(
           toUnixPath('src/index.ts'),
@@ -265,7 +264,7 @@ describe('formatFileLink', () => {
 
   it('should return a relative file path when the position is undefined (VS Code)', () => {
     vi.stubEnv('TERM_PROGRAM', 'vscode');
-    vi.stubEnv('GITHUB_ACTIONS', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     expect(
       formatFileLink(
         toUnixPath('src/index.ts'),
@@ -277,7 +276,7 @@ describe('formatFileLink', () => {
 
   it('should return a relative file path when the environment is neither VS Code nor GitHub', () => {
     vi.stubEnv('TERM_PROGRAM', '');
-    vi.stubEnv('GITHUB_ACTIONS', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     expect(
       formatFileLink(
         toUnixPath('src/index.ts'),
