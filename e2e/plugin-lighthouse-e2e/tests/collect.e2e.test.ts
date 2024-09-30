@@ -43,7 +43,7 @@ describe('collect report with lighthouse-plugin NPM package', () => {
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('● Largest Contentful Paint');
 
-    const report = await readJsonFile(join(outputDir, 'report.json'));
+    const report = await readJsonFile(join(cwd, '.code-pushup', 'report.json'));
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(
       omitVariableReportData(report as Report, { omitAuditData: true }),
