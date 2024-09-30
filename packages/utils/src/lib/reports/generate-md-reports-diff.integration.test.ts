@@ -3,6 +3,7 @@ import {
   COMMIT_MOCK,
   reportsDiffAddedPluginMock,
   reportsDiffAltMock,
+  reportsDiffChangedMock,
   reportsDiffMock,
   reportsDiffUnchangedMock,
 } from '@code-pushup/test-utils';
@@ -56,6 +57,12 @@ describe('generateMdReportsDiff', () => {
     await expect(
       generateMdReportsDiff(reportsDiffUnchangedMock()),
     ).toMatchFileSnapshot('__snapshots__/report-diff-unchanged.md');
+  });
+
+  it('should format Markdown comment for reports diff with changes that do not impact score', async () => {
+    await expect(
+      generateMdReportsDiff(reportsDiffChangedMock()),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-changed.md');
   });
 
   it('should format Markdown comment for reports diff with added plugin', async () => {
@@ -137,5 +144,13 @@ describe('generateMdReportsDiffForMonorepo', () => {
         { ...reportsDiffUnchangedMock(), label: 'backoffice' },
       ]),
     ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-unchanged.md');
+  });
+
+  it('should format Markdown comment with changes that do not impact score', async () => {
+    await expect(
+      generateMdReportsDiffForMonorepo([
+        { ...reportsDiffChangedMock(), label: 'web' },
+      ]),
+    ).toMatchFileSnapshot('__snapshots__/report-diff-monorepo-changed.md');
   });
 });
