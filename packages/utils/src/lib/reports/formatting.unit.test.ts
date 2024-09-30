@@ -137,7 +137,10 @@ describe('formatSourceLine', () => {
 });
 
 describe('linkToLocalSourceForIde', () => {
-  it('should not format the file path as a link when outputDir is undefined', () => {
+  it('should not format the file path as a link when outputDir is undefined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+
     expect(
       linkToLocalSourceForIde({
         file: toUnixPath('/packages/utils/src/index.ts'),
@@ -145,7 +148,9 @@ describe('linkToLocalSourceForIde', () => {
     ).toBe('`/packages/utils/src/index.ts`');
   });
 
-  it('should format the file path as a link when outputDir is defined', () => {
+  it('should format the file path as a link when outputDir is defined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     const filePath = toUnixPath('/packages/utils/src/index.ts');
     const outputDir = toUnixPath('/.code-pushup');
 
@@ -156,6 +161,7 @@ describe('linkToLocalSourceForIde', () => {
 
   it('should return a link to a specific line when startLine is provided (VS Code)', () => {
     vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     const filePath = toUnixPath('/packages/utils/src/index.ts');
     const outputDir = toUnixPath('/.code-pushup');
 
@@ -173,6 +179,7 @@ describe('linkToLocalSourceForIde', () => {
 describe('getGitHubLink', () => {
   beforeEach(() => {
     vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'true');
     vi.stubEnv('GITHUB_ACTIONS', 'true');
     vi.stubEnv('GITHUB_SERVER_URL', 'https://github.com');
     vi.stubEnv('GITHUB_REPOSITORY', 'user/repo');
