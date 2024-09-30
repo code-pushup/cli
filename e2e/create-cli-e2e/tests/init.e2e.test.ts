@@ -1,4 +1,4 @@
-import { dirname } from 'knip/dist/util/path';
+import { dirname } from 'node:path';
 import { join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-setup';
