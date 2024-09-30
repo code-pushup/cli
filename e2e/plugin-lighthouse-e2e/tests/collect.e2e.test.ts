@@ -12,7 +12,7 @@ import { executeProcess, readJsonFile } from '@code-pushup/utils';
 const defaultConfigContent = await readFile(
   join(
     process.cwd(),
-    'e2e/plugin-lighthouse-e2e/mock/fixtures/code-pushup.lh-default.config.ts',
+    'e2e/plugin-lighthouse-e2e/mocks/fixtures/code-pushup.config.lh-default.ts',
   ),
   { encoding: 'utf8' },
 );
