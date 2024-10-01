@@ -72,7 +72,7 @@ export function metaDescription(
  * @param reportLocation
  *
  * @example
- * linkToLocalSourceInIde({ file: '/src/index.ts'}, {outputDir: '/.code-pushup'}) // [/src/index.ts](../src/index.ts)
+ * linkToLocalSourceInIde({ file: 'src/index.ts' }, { outputDir: '.code-pushup' }) // [`src/index.ts`](../src/index.ts)
  */
 export function linkToLocalSourceForIde(
   source: SourceFileLocation,
@@ -103,21 +103,24 @@ export function formatSourceLine(
     : `${startLine}`;
 }
 
-export function getGitHubLink(
+export function formatGitHubLink(
   file: string,
   position: SourceFileLocation['position'],
-  outputDir: string,
 ): string {
   const baseUrl = getGitHubBaseUrl();
-  const fullPath = pathPosix.join(outputDir, file);
-
   if (!position) {
-    return `${baseUrl}/${fullPath}`;
+    return `${baseUrl}/${file}`;
   }
+  const { startLine, endLine, startColumn, endColumn } = position;
 
-  const { startLine, endLine } = position;
-  const line = endLine ? `#L${startLine}-L${endLine}` : `#L${startLine}`;
-  return `${baseUrl}/${fullPath}${line}`;
+  const start = startColumn ? `L${startLine}C${startColumn}` : `L${startLine}`;
+  const end = endLine
+    ? endColumn
+      ? `L${endLine}C${endColumn}`
+      : `L${endLine}`
+    : '';
+  const lineRange = end ? (start === end ? start : `${start}-${end}`) : start;
+  return `${baseUrl}/${file}#${lineRange}`;
 }
 
 export function formatFileLink(
@@ -132,7 +135,7 @@ export function formatFileLink(
     case 'vscode':
       return position ? `${relativePath}#L${position.startLine}` : relativePath;
     case 'github':
-      return getGitHubLink(file, position, outputDir);
+      return formatGitHubLink(file, position);
     default:
       return relativePath;
   }

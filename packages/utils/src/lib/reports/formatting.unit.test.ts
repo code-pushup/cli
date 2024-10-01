@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { toUnixPath } from '../transform';
 import {
   formatFileLink,
+  formatGitHubLink,
   formatSourceLine,
-  getGitHubLink,
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
@@ -143,27 +143,27 @@ describe('linkToLocalSourceForIde', () => {
 
     expect(
       linkToLocalSourceForIde({
-        file: toUnixPath('/packages/utils/src/index.ts'),
+        file: toUnixPath('packages/utils/src/index.ts'),
       }).toString(),
-    ).toBe('`/packages/utils/src/index.ts`');
+    ).toBe('`packages/utils/src/index.ts`');
   });
 
   it('should format the file path as a link when outputDir is defined (VS Code)', () => {
     vi.stubEnv('TERM_PROGRAM', 'vscode');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
-    const filePath = toUnixPath('/packages/utils/src/index.ts');
-    const outputDir = toUnixPath('/.code-pushup');
+    const filePath = toUnixPath('packages/utils/src/index.ts');
+    const outputDir = toUnixPath('.code-pushup');
 
     expect(
       linkToLocalSourceForIde({ file: filePath }, { outputDir }).toString(),
-    ).toBe('[`/packages/utils/src/index.ts`](../packages/utils/src/index.ts)');
+    ).toBe('[`packages/utils/src/index.ts`](../packages/utils/src/index.ts)');
   });
 
   it('should return a link to a specific line when startLine is provided (VS Code)', () => {
     vi.stubEnv('TERM_PROGRAM', 'vscode');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
-    const filePath = toUnixPath('/packages/utils/src/index.ts');
-    const outputDir = toUnixPath('/.code-pushup');
+    const filePath = toUnixPath('packages/utils/src/index.ts');
+    const outputDir = toUnixPath('.code-pushup');
 
     expect(
       linkToLocalSourceForIde(
@@ -171,12 +171,12 @@ describe('linkToLocalSourceForIde', () => {
         { outputDir },
       ).toString(),
     ).toBe(
-      '[`/packages/utils/src/index.ts`](../packages/utils/src/index.ts#L2)',
+      '[`packages/utils/src/index.ts`](../packages/utils/src/index.ts#L2)',
     );
   });
 });
 
-describe('getGitHubLink', () => {
+describe('formatGitHubLink', () => {
   beforeEach(() => {
     vi.stubEnv('TERM_PROGRAM', '');
     vi.stubEnv('GITHUB_ACTIONS', 'true');
@@ -188,38 +188,40 @@ describe('getGitHubLink', () => {
   it.each([
     [
       { startLine: 2 },
-      'https://github.com/user/repo/blob/1234567890abcdef/.code-pushup/src/index.ts#L2',
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2',
     ],
     [
       { startLine: 2, endLine: 5 },
-      'https://github.com/user/repo/blob/1234567890abcdef/.code-pushup/src/index.ts#L2-L5',
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2-L5',
     ],
     [
       { startLine: 2, startColumn: 1 },
-      'https://github.com/user/repo/blob/1234567890abcdef/.code-pushup/src/index.ts#L2',
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 5 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1-L2C5',
+    ],
+    [
+      { startLine: 2, endLine: 5, startColumn: 1, endColumn: 6 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1-L5C6',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 1 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1',
     ],
   ])(
     'should generate a GitHub repository link for the file with position %o',
     (position, expected) => {
-      expect(
-        getGitHubLink(
-          toUnixPath('src/index.ts'),
-          position,
-          toUnixPath('.code-pushup'),
-        ),
-      ).toBe(expected);
+      expect(formatGitHubLink(toUnixPath('src/index.ts'), position)).toBe(
+        expected,
+      );
     },
   );
 
   it('should generate a GitHub repository link for the file when the position is undefined', () => {
-    expect(
-      getGitHubLink(
-        toUnixPath('src/index.ts'),
-        undefined,
-        toUnixPath('.code-pushup'),
-      ),
-    ).toBe(
-      'https://github.com/user/repo/blob/1234567890abcdef/.code-pushup/src/index.ts',
+    expect(formatGitHubLink(toUnixPath('src/index.ts'), undefined)).toBe(
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts',
     );
   });
 });
@@ -239,7 +241,7 @@ describe('formatFileLink', () => {
         toUnixPath('.code-pushup'),
       ),
     ).toBe(
-      `https://github.com/user/repo/blob/1234567890abcdef/.code-pushup/src/index.ts#L2`,
+      `https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2`,
     );
   });
 

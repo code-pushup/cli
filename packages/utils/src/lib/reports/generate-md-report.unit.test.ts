@@ -142,12 +142,13 @@ describe('auditDetailsIssues', () => {
 
   it('should include source file linked with position (VS Code)', () => {
     vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     expect(
       auditDetailsIssues(
         [
           {
             source: {
-              file: '/src/index.js',
+              file: 'src/index.js',
               position: {
                 startLine: 4,
                 startColumn: 7,
@@ -156,9 +157,9 @@ describe('auditDetailsIssues', () => {
             severity: 'warning',
           } as Issue,
         ],
-        { outputDir: '/.code-pushup' },
+        { outputDir: '.code-pushup' },
       )?.toString(),
-    ).toMatch('[`/src/index.js`](../src/index.js#L4)');
+    ).toMatch('[`src/index.js`](../src/index.js#L4)');
   });
 
   it('should include formatted line information', () => {
