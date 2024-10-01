@@ -5,11 +5,10 @@
   "description": "Executes the @code-pushup/cli autorun command See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command",
   "type": "object",
   "properties": {
-    "project": {
+    "command": {
       "type": "string",
-      "description": "The name of the project.",
+      "description": "The command to run.",
       "x-prompt": "Which project should configure Code Pushup?",
-      "x-dropdown": "projects",
       "$default": {
         "$source": "argv",
         "index": 0

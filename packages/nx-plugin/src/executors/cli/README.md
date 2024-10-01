@@ -1,23 +1,39 @@
-# Autorun Executor
+# Command Executor
 
 This executor is used to run the code-pushup CLI autorun command in a Nx workspace.
 For details on the CLI command read the [CLI autorun documentation](https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command).
 
-#### @code-pushup/nx-plugin:autorun
+#### @code-pushup/nx-plugin:cli
 
 ## Usage
 
-// project.json
+Configure a target in your project json.
 
-```json
+```jsonc
+// <project-name>/project.json
 {
   "name": "my-project",
   "targets": {
     "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:autorun"
+      "executor": "@code-pushup/nx-plugin:cli"
     }
   }
 }
+```
+
+Run
+`nx run <project-name>:code-pushup`
+
+```text
+Root/
+├── .code-pushup/
+│   ├── report.json 👈 generated
+│   └── report.md 👈 generated
+├── project-name/
+│   ├── project.json
+│   ├── code-pushup.config.ts 👈 executed
+│   └── ...
+└── ...
 ```
 
 By default, the Nx plugin will derive the options from the executor config.

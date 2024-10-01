@@ -108,7 +108,7 @@ describe('createTargets', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         [targetName]: {
-          executor: `${PACKAGE_NAME}:autorun`,
+          executor: `${PACKAGE_NAME}:cli`,
         },
       }),
     );
@@ -132,7 +132,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [DEFAULT_TARGET_NAME]: {
-        executor: '@code-pushup/nx-plugin:autorun',
+        executor: '@code-pushup/nx-plugin:cli',
       },
     });
   });
@@ -157,7 +157,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       cp: {
-        executor: '@code-pushup/nx-plugin:autorun',
+        executor: '@code-pushup/nx-plugin:cli',
       },
     });
   });

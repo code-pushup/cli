@@ -1,12 +1,12 @@
-export function createCliCommand(
-  command: string,
-  args: Record<string, unknown>,
-  options?: {
-    bin: string;
-  },
-): string {
-  const { bin = '@code-pushup/cli' } = options ?? {};
-  return `npx ${bin} ${command} ${objectToCliArgs(args).join(' ')}`;
+export function createCliCommand(options?: {
+  args?: Record<string, unknown>;
+  command?: string;
+  bin?: string;
+}): string {
+  const { bin = '@code-pushup/cli', command, args } = options ?? {};
+  return `npx ${bin} ${objectToCliArgs({ _: command ?? [], ...args }).join(
+    ' ',
+  )}`;
 }
 
 type ArgumentValue = number | string | boolean | string[];
@@ -29,7 +29,9 @@ export function objectToCliArgs<
     // process/file/script
     if (key === '_') {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return Array.isArray(value) ? value : [`${value}`];
+      return (Array.isArray(value) ? value : [`${value}`]).filter(
+        v => v != null,
+      );
     }
 
     const prefix = key.length === 1 ? '-' : '--';

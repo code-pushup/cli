@@ -4,13 +4,22 @@
 
 ## Usage
 
-`nx generate configuration ...`
+`nx generate @code-pushup/nx-plugin:configuration`
 
 By default, the Nx plugin will search for existing configuration files. If they are not present it creates a `code-pushup.config.ts` and adds a target to your `project.json` file.
 
-You can specify the collection explicitly as follows:
+You can specify the project explicitly as follows:
 
-`nx g @code-pushup/nx-plugin:configuration ...`
+`nx g @code-pushup/nx-plugin:configuration <project-name>`
+
+```text
+Root/
+├── project-name/
+│   ├── project.json 👈 updated
+│   ├── code-pushup.config.ts 👈 generated
+│   └── ...
+└── ...
+```
 
 Show what will be generated without writing to disk:
 

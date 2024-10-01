@@ -3,7 +3,6 @@ import { type ExecutorContext, logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli';
 import { normalizeContext } from '../internal/context';
-import { AUTORUN_COMMAND } from './constants';
 import type { AutorunCommandExecutorOptions } from './schema';
 import { parseAutorunExecutorOptions } from './utils';
 
@@ -16,38 +15,39 @@ export type ExecutorOutput = {
 export default function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
-) {
+): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose } = terminalAndExecutorOptions;
-  const command = createCliCommand(AUTORUN_COMMAND, cliArgumentObject);
-  const commandOptions = context.cwd ? { cwd: context.cwd } : {};
+  const { dryRun, verbose, command } = terminalAndExecutorOptions;
+
+  const commandString = createCliCommand({ command, args: cliArgumentObject });
+  const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
   if (verbose) {
-    logger.info(`Run ${AUTORUN_COMMAND} executor`);
-    logger.info(`Command: ${command}`);
+    logger.info(`Run CLI executor ${command ?? ''}`);
+    logger.info(`Command: ${commandString}`);
   }
   if (dryRun) {
-    logger.warn(`DryRun execution of: ${command}`);
+    logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
       // @TODO use executeProcess instead of execSync -> non blocking, logs #761
       // eslint-disable-next-line n/no-sync
-      execSync(command, commandOptions);
+      execSync(commandString, commandStringOptions);
     } catch (error) {
       logger.error(error);
       return Promise.resolve({
         success: false,
-        command,
-        error,
+        command: commandString,
+        error: error as Error,
       });
     }
   }
 
   return Promise.resolve({
     success: true,
-    command,
-  } satisfies ExecutorOutput);
+    command: commandString,
+  });
 }
