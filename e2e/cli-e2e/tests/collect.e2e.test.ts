@@ -1,49 +1,13 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  type AuditReport,
-  type PluginReport,
-  type Report,
-  reportSchema,
-} from '@code-pushup/models';
+import { type Report, reportSchema } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
+import { omitVariableReportData } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
   const exampleAuditTitle = 'Disallow unused variables';
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const omitVariableAuditData = ({
-    score,
-    value,
-    displayValue,
-    ...auditReport
-  }: AuditReport) => auditReport;
-  const omitVariablePluginData = ({
-    date,
-    duration,
-    version,
-    audits,
-    ...pluginReport
-  }: PluginReport) =>
-    ({
-      ...pluginReport,
-      audits: audits.map(
-        pluginReport.slug === 'lighthouse' ? omitVariableAuditData : p => p,
-      ) as AuditReport[],
-    } as PluginReport);
-  const omitVariableReportData = ({
-    commit,
-    date,
-    duration,
-    version,
-    ...report
-  }: Report) => ({
-    ...report,
-    plugins: report.plugins.map(omitVariablePluginData),
-  });
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e/react-todos-app');
