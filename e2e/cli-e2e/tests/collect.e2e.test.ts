@@ -52,13 +52,8 @@ describe('CLI collect', () => {
 
   it('should run ESLint plugin and create report.json', async () => {
     const { code } = await executeProcess({
-      command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        'collect',
-        '--no-progress',
-        '--onlyPlugins=eslint',
-      ],
+      command: 'code-pushup',
+      args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
       cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
@@ -88,9 +83,8 @@ describe('CLI collect', () => {
     );
 
     const { code, stderr } = await executeProcess({
-      command: 'npx',
+      command: 'code-pushup',
       args: [
-        '@code-pushup/cli',
         'collect',
         '--no-progress',
         `--config=${configPath}`,
@@ -111,13 +105,8 @@ describe('CLI collect', () => {
 
   it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        'collect',
-        '--no-progress',
-        '--onlyPlugins=coverage',
-      ],
+      command: 'code-pushup',
+      args: ['collect', '--no-progress', '--onlyPlugins=coverage'],
       cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
@@ -126,39 +115,14 @@ describe('CLI collect', () => {
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
-
-  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        'collect',
-        '--no-progress',
-        '--onlyPlugins=lighthouse',
-      ],
-      cwd: EXAMPLES_REACT_TODOS_APP,
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        'collect',
-        '--persist.format=md',
-        '--no-progress',
-      ],
+      command: 'code-pushup',
+      args: ['collect', '--persist.format=md', '--no-progress'],
       cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
@@ -174,8 +138,8 @@ describe('CLI collect', () => {
 
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      command: 'code-pushup',
+      args: ['collect', '--no-progress'],
       cwd: EXAMPLES_REACT_TODOS_APP,
     });
 

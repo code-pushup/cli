@@ -1,9 +1,8 @@
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import { createNpmWorkspace, removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
-import { createNpmWorkspace } from '../mocks/create-npm-workshpace';
 
 describe('create-cli-inti', () => {
   const workspaceRoot = 'tmp/e2e/create-cli-e2e';
@@ -19,7 +18,12 @@ describe('create-cli-inti', () => {
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: ['exec', '@code-pushup/create-cli', `--userconfig=${userconfig}`],
+      args: [
+        'exec',
+        '@code-pushup/create-cli',
+        `--userconfig=${userconfig}`,
+        `--prefix=${dirname(userconfig)}`,
+      ],
       cwd,
     });
 
@@ -48,8 +52,7 @@ describe('create-cli-inti', () => {
     );
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should execute package correctly over npm init', async () => {
+  it('should execute package correctly over npm init', async () => {
     const cwd = join(baseDir, 'npm-init');
     const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
 
@@ -57,7 +60,12 @@ describe('create-cli-inti', () => {
 
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: ['init', '@code-pushup/cli', `--userconfig=${userconfig}`],
+      args: [
+        'init',
+        '@code-pushup/cli',
+        `--userconfig=${userconfig}`,
+        `--prefix=${dirname(userconfig)}`,
+      ],
       cwd,
     });
 
@@ -94,7 +102,12 @@ describe('create-cli-inti', () => {
 
     await executeProcess({
       command: 'npm',
-      args: ['init', '@code-pushup/cli', `--userconfig=${userconfig}`],
+      args: [
+        'init',
+        '@code-pushup/cli',
+        `--userconfig=${userconfig}`,
+        `--prefix=${dirname(userconfig)}`,
+      ],
       cwd,
     });
 

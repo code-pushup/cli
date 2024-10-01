@@ -1,20 +1,20 @@
 {
-  "name": "cli-e2e",
+  "name": "plugin-lighthouse-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "e2e/cli-e2e/src",
+  "sourceRoot": "e2e/plugin-lighthouse-e2e/src",
   "projectType": "application",
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
+        "lintFilePatterns": ["e2e/plugin-lighthouse-e2e/**/*.ts"]
       }
     },
-    "e2e-old": {
+    "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/cli-e2e/vite.config.e2e.ts"
+        "configFile": "e2e/plugin-lighthouse-e2e/vite.config.e2e.ts"
       }
     }
   },
@@ -23,11 +23,7 @@
     "utils",
     "core",
     "cli",
-    "cli",
-    "plugin-eslint",
-    "plugin-coverage",
-    "plugin-js-packages",
-    "react-todos-app"
+    "plugin-lighthouse"
   ],
-  "tags": ["scope:core", "scope:plugin", "type:e2e"]
+  "tags": ["scope:plugin", "type:e2e"]
 }
