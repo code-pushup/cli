@@ -2,61 +2,56 @@ import { simpleGit } from 'simple-git';
 import type { ReportsDiff } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
-import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 describe('CLI compare', () => {
   const git = simpleGit();
 
   beforeEach(async () => {
-    if (await git.diff(['--', EXAMPLES_REACT_TODOS_APP])) {
+    if (await git.diff(['--', 'examples/react-todos-app'])) {
       throw new Error(
         'Unstaged changes found in examples/react-todos-app, please stage or commit them to prevent E2E tests interfering',
       );
     }
     await cleanTestFolder('tmp/e2e/react-todos-app');
     await executeProcess({
-      command: 'npx',
+      command: 'code-pushup',
       args: [
-        '@code-pushup/cli',
         'collect',
         '--persist.filename=source-report',
         '--onlyPlugins=eslint',
       ],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
     await executeProcess({
       command: 'npx',
       args: ['eslint', '--fix', 'src', '--ext=js,jsx'],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
     await executeProcess({
-      command: 'npx',
+      command: 'code-pushup',
       args: [
-        '@code-pushup/cli',
         'collect',
         '--persist.filename=target-report',
         '--onlyPlugins=eslint',
       ],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
   }, 20_000);
 
   afterEach(async () => {
-    await git.checkout(['--', EXAMPLES_REACT_TODOS_APP]);
+    await git.checkout(['--', 'examples/react-todos-app']);
     await cleanTestFolder('tmp/e2e');
   });
 
-  // eslint-disable-next-line vitest/no-disabled-tests
-  it.skip('should compare report.json files and create report-diff.json and report-diff.md', async () => {
+  it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
-      command: 'npx',
+      command: 'code-pushup',
       args: [
-        '@code-pushup/cli',
         'compare',
         '--before=../../tmp/e2e/react-todos-app/source-report.json',
         '--after=../../tmp/e2e/react-todos-app/target-report.json',
       ],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(

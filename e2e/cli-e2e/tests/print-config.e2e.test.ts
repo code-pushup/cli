@@ -1,20 +1,18 @@
 import { join } from 'node:path';
 import { expect } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
-import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 export const configFilePath = (ext: (typeof extensions)[number]) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
 
-describe('CLI print-config', () => {
+describe('print-config', () => {
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
       const { code, stdout } = await executeProcess({
         command: 'code-pushup',
         args: [
-          '@code-pushup/cli',
           'print-config',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
@@ -24,7 +22,6 @@ describe('CLI print-config', () => {
           `--persist.filename=${ext}-report`,
           '--onlyPlugins=coverage',
         ],
-        cwd: EXAMPLES_REACT_TODOS_APP,
       });
 
       expect(code).toBe(0);

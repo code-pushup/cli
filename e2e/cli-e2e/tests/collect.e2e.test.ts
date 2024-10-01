@@ -8,7 +8,6 @@ import {
 } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
-import { EXAMPLES_REACT_TODOS_APP } from '../mocks/fixtures/constant';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
@@ -51,13 +50,14 @@ describe('CLI collect', () => {
   });
 
   it('should run ESLint plugin and create report.json', async () => {
-    const { code } = await executeProcess({
+    const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
+    expect(stderr).toBe('');
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
@@ -91,7 +91,6 @@ describe('CLI collect', () => {
         '--persist.outputDir=tmp/e2e',
         '--onlyPlugins=coverage',
       ],
-      cwd: EXAMPLES_REACT_TODOS_APP,
     });
 
     expect(code).toBe(0);
@@ -107,7 +106,7 @@ describe('CLI collect', () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress', '--onlyPlugins=coverage'],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
@@ -123,7 +122,7 @@ describe('CLI collect', () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--persist.format=md', '--no-progress'],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
@@ -140,7 +139,7 @@ describe('CLI collect', () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress'],
-      cwd: EXAMPLES_REACT_TODOS_APP,
+      cwd: 'examples/react-todos-app',
     });
 
     expect(code).toBe(0);
