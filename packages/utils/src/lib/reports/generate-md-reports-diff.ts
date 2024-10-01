@@ -142,16 +142,6 @@ function createCategoriesTable(
   const { changed, unchanged, added } = diff.categories;
   const { hasChanges, skipUnchanged } = options;
 
-  const columns: TableColumnObject[] = [
-    { heading: '🏷️ Category', alignment: 'left' },
-    {
-      heading: hasChanges ? '⭐ Previous score' : '⭐ Score',
-      alignment: 'center',
-    },
-    { heading: '⭐ Current score', alignment: 'center' },
-    { heading: '🔄 Score change', alignment: 'center' },
-  ];
-
   const rows: TableRow[] = [
     ...sortChanges(changed).map(category => [
       formatTitle(category),
@@ -175,6 +165,20 @@ function createCategoriesTable(
           formatScoreWithColor(category.score),
           '–',
         ])),
+  ];
+
+  if (rows.length === 0) {
+    return [[], []];
+  }
+
+  const columns: TableColumnObject[] = [
+    { heading: '🏷️ Category', alignment: 'left' },
+    {
+      heading: hasChanges ? '⭐ Previous score' : '⭐ Score',
+      alignment: 'center',
+    },
+    { heading: '⭐ Current score', alignment: 'center' },
+    { heading: '🔄 Score change', alignment: 'center' },
   ];
 
   return [

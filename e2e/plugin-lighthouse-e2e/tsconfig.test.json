@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"],
+    "target": "ES2020"
+  },
+  "include": [
+    "vite.config.e2e.ts",
+    "tests/**/*.e2e.test.ts",
+    "tests/**/*.d.ts",
+    "mocks/**/*.ts"
+  ]
+}

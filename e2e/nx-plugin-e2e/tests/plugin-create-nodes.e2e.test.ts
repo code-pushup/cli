@@ -1,5 +1,4 @@
 import type { Tree } from '@nx/devkit';
-import { rm } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
@@ -10,6 +9,7 @@ import {
   nxShowProjectJson,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
@@ -24,7 +24,7 @@ describe('nx-plugin', () => {
   });
 
   afterEach(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should add configuration target dynamically', async () => {

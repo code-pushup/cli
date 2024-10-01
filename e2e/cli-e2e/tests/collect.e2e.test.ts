@@ -46,7 +46,7 @@ describe('CLI collect', () => {
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
   beforeEach(async () => {
-    await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder('tmp/e2e/react-todos-app');
   });
 
   it('should run ESLint plugin and create report.json', async () => {
@@ -114,21 +114,6 @@ describe('CLI collect', () => {
 
     const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
 
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
-
-  it('should run Lighthouse plugin that runs lighthouse CLI and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=lighthouse'],
-      cwd: 'examples/react-todos-app',
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });

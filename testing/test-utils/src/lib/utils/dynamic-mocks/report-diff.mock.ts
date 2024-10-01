@@ -183,7 +183,7 @@ export function reportsDiffAltMock(): ReportsDiff {
         {
           slug: 'bug-prevention' satisfies CategorySlug,
           title: CATEGORIES_MAP['bug-prevention'].title,
-          scores: { before: 0.68, after: 0.63, diff: -0.05 },
+          scores: { before: 0.68, after: 0.6795, diff: -0.0005 },
         },
       ],
       unchanged: [
@@ -332,6 +332,31 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
       ],
       added: [],
       removed: [],
+    },
+  };
+}
+
+export function reportsDiffChangedMock(): ReportsDiff {
+  const originalDiff = reportsDiffUnchangedMock();
+  return {
+    ...originalDiff,
+    audits: {
+      ...originalDiff.audits,
+      changed: [
+        {
+          slug: 'no-unused-vars' satisfies ESLintAuditSlug,
+          title: ESLINT_AUDITS_MAP['no-unused-vars'].title,
+          docsUrl: ESLINT_AUDITS_MAP['no-unused-vars'].docsUrl,
+          plugin: {
+            slug: ESLINT_PLUGIN_META.slug,
+            title: ESLINT_PLUGIN_META.title,
+            docsUrl: ESLINT_PLUGIN_META.docsUrl,
+          },
+          scores: { before: 0, after: 0, diff: 0 },
+          values: { before: 12, after: 10, diff: -2 },
+          displayValues: { before: '12 warnings', after: '10 warnings' },
+        },
+      ],
     },
   };
 }

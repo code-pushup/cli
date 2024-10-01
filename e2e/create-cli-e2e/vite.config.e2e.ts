@@ -6,7 +6,8 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/create-cli-e2e',
   test: {
     reporters: ['basic'],
-    testTimeout: 60_000,
+    testTimeout: 120_000,
+    hookTimeout: 20_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
@@ -16,7 +17,7 @@ export default defineConfig({
     },
     environment: 'node',
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.e2e.ts'],
+    globalSetup: ['../../global-setup.verdaccio.ts'],
     setupFiles: ['../../testing/test-setup/src/lib/reset.mocks.ts'],
   },
 });

@@ -13,7 +13,7 @@ import startLocalRegistry, {
 import stopLocalRegistry from './tools/src/verdaccio/stop-local-registry';
 import { uniquePort } from './tools/src/verdaccio/utils';
 
-const e2eDir = join('tmp', 'e2e');
+const e2eDir = join('tmp', 'e2e', 'react-todos-app');
 const uniqueDir = join(e2eDir, `registry-${uniquePort()}`);
 
 let activeRegistry: RegistryResult;

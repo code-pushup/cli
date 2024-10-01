@@ -1,6 +1,5 @@
 import { setup as globalSetup } from './global-setup';
-import { nxRunManyNpmInstall } from './tools/src/npm/utils';
-import { findLatestVersion, nxRunManyPublish } from './tools/src/publish/utils';
+import { executeProcess, objectToCliArgs } from './packages/utils/src';
 import {
   VerdaccioEnvResult,
   nxStartVerdaccioAndSetupEnv,
@@ -8,13 +7,14 @@ import {
 } from './tools/src/verdaccio/env';
 
 let activeRegistry: VerdaccioEnvResult;
+const projectName = process.env['NX_TASK_TARGET_PROJECT'];
 
 export async function setup() {
   await globalSetup();
 
   try {
     activeRegistry = await nxStartVerdaccioAndSetupEnv({
-      projectName: process.env['NX_TASK_TARGET_PROJECT'],
+      projectName: projectName,
       verbose: true,
     });
   } catch (error) {
@@ -23,19 +23,21 @@ export async function setup() {
   }
 
   const { userconfig, workspaceRoot } = activeRegistry;
-  nxRunManyPublish({
-    registry: activeRegistry.registry.url,
-    nextVersion: findLatestVersion(),
-    userconfig,
-    parallel: 1,
+  await executeProcess({
+    command: 'npx',
+    args: objectToCliArgs({
+      _: ['nx', 'setup-deps', projectName],
+      registry: activeRegistry.registry.url, // publish
+      userconfig, // publish & install
+      prefix: workspaceRoot, // install
+    }),
+    observer: { onStdout: stdout => console.info(stdout) },
   });
-  nxRunManyNpmInstall({ prefix: workspaceRoot, userconfig, parallel: 1 });
 }
 
 export async function teardown() {
-  // potentially just skip as folder are deleted next line
-  // nxRunManyNpmUninstall({ userconfig, prefix: activeRegistry.workspaceRoot, parallel: 1 });
-
+  // NOTICE - Time saving optimization
+  // We skip uninstalling packages as the folder is deleted anyway
   // comment out to see the folder and web interface
-  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
+  // await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }

@@ -4,11 +4,11 @@
 
 ## 🏷️ Categories
 
-| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                         🔄 Score change                          |
-| :------------- | :--------------: | :-------------: | :--------------------------------------------------------------: |
-| Bug prevention |      🟡 68       |    🟡 **63**    | ![↓ −5](https://img.shields.io/badge/%E2%86%93%20%E2%88%925-red) |
-| Performance    |    _n/a (\*)_    |    🟢 **94**    |                            _n/a (\*)_                            |
-| Code style     |      🟡 54       |    🟡 **54**    |                                –                                 |
+| 🏷️ Category   | ⭐ Previous score | ⭐ Current score |                           🔄 Score change                            |
+| :------------- | :--------------: | :-------------: | :------------------------------------------------------------------: |
+| Bug prevention |      🟡 68       |    🟡 **68**    | ![↓ −0.1](https://img.shields.io/badge/%E2%86%93%20%E2%88%920.1-red) |
+| Performance    |    _n/a (\*)_    |    🟢 **94**    |                              _n/a (\*)_                              |
+| Code style     |      🟡 54       |    🟡 **54**    |                                  –                                   |
 
 _(\*) New category._
 

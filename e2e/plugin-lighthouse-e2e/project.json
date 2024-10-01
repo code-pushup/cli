@@ -1,0 +1,29 @@
+{
+  "name": "plugin-lighthouse-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/plugin-lighthouse-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/plugin-lighthouse-e2e/**/*.ts"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/plugin-lighthouse-e2e/vite.config.e2e.ts"
+      }
+    }
+  },
+  "implicitDependencies": [
+    "models",
+    "utils",
+    "core",
+    "cli",
+    "plugin-lighthouse"
+  ],
+  "tags": ["scope:plugin", "type:e2e"]
+}

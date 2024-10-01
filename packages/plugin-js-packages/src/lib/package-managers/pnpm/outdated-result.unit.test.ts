@@ -39,4 +39,39 @@ describe('pnpmToOutdatedResult', () => {
   it('should transform no dependencies to empty array', () => {
     expect(pnpmToOutdatedResult('{}')).toEqual([]);
   });
+
+  it('should filter out warnings from the input', () => {
+    /* eslint-disable no-irregular-whitespace */
+    const inputWithWarnings = `
+       WARN  Unsupported engine
+       WARN  Issue while reading file
+      {
+        "cypress": {
+          "current": "8.5.0",
+          "latest": "13.6.0",
+          "dependencyType": "devDependencies"
+        },
+        "@cypress/request": {
+          "current": "2.88.10",
+          "latest": "3.0.0",
+          "dependencyType": "devDependencies"
+        }
+      }
+    `;
+    /* eslint-enable no-irregular-whitespace */
+    expect(pnpmToOutdatedResult(inputWithWarnings)).toEqual<OutdatedResult>([
+      {
+        name: 'cypress',
+        current: '8.5.0',
+        latest: '13.6.0',
+        type: 'devDependencies',
+      },
+      {
+        name: '@cypress/request',
+        current: '2.88.10',
+        latest: '3.0.0',
+        type: 'devDependencies',
+      },
+    ]);
+  });
 });

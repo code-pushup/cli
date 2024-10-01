@@ -1,9 +1,5 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
-import lighthousePlugin, {
-  lighthouseGroupRef,
-} from '../../dist/packages/plugin-lighthouse';
 
 const eslintAuditRef = (slug, weight) => ({
   type: 'audit',
@@ -28,41 +24,8 @@ export default {
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     }),
-    await lighthousePlugin('https://codepushup.dev/', {
-      onlyAudits: [
-        // performance category
-        'largest-contentful-paint',
-        // a11y category
-        'aria-allowed-attr',
-        // best-practices category
-        'deprecations',
-        // seo category
-        'hreflang',
-      ],
-      chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-    }),
   ],
   categories: [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [lighthouseGroupRef('performance')],
-    },
-    {
-      slug: 'a11y',
-      title: 'Accessibility',
-      refs: [lighthouseGroupRef('accessibility')],
-    },
-    {
-      slug: 'best-practices',
-      title: 'Best Practices',
-      refs: [lighthouseGroupRef('best-practices')],
-    },
-    {
-      slug: 'seo',
-      title: 'SEO',
-      refs: [lighthouseGroupRef('seo')],
-    },
     {
       slug: 'code-coverage',
       title: 'Code coverage',

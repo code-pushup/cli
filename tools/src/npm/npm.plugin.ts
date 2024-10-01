@@ -67,10 +67,33 @@ function npmTargets({
       },
     },
     'npm-install': {
+      dependsOn: [
+        { project: 'dependencies', targets: 'npm-install', params: 'forward' },
+      ],
       command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
       command: `npm uninstall ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,
+    },
+    'npm-install-e2e': {
+      dependsOn: [
+        {
+          target: 'publish-e2e',
+          projects: 'self',
+          params: 'forward',
+        },
+        {
+          target: 'npm-install-e2e',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+        {
+          target: 'publish-e2e',
+          projects: 'dependencies',
+          params: 'forward',
+        },
+      ],
+      command: `npm install -D --no-fund ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
   };
 }

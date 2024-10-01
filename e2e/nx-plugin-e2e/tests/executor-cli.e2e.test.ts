@@ -7,6 +7,7 @@ import {
   generateWorkspaceAndProject,
   materializeTree,
 } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
@@ -58,7 +59,7 @@ describe('executor command', () => {
   });
 
   afterEach(async () => {
-    // await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   it('should execute no specific command by default', async () => {
