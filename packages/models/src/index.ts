@@ -2,6 +2,10 @@ export {
   type TableCellValue,
   tableCellValueSchema,
 } from './lib/implementation/schemas';
+export {
+  type SourceFileLocation,
+  sourceFileLocationSchema,
+} from './lib/source';
 
 export { type Audit, auditSchema } from './lib/audit';
 export {
