@@ -1,13 +1,13 @@
-import {copyFile} from 'node:fs/promises';
-import {join} from 'node:path';
-import {afterEach, expect} from 'vitest';
-import {type Report, reportSchema} from '@code-pushup/models';
-import {cleanTestFolder, teardownTestFolder} from '@code-pushup/test-setup';
+import { copyFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { afterEach, expect } from 'vitest';
+import { type Report, reportSchema } from '@code-pushup/models';
+import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
 import {
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
-import {executeProcess, readJsonFile} from '@code-pushup/utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 async function addCodePushupConfig(targetDir: string) {
   await cleanTestFolder(targetDir);
@@ -28,7 +28,7 @@ describe('collect report with lighthouse-plugin NPM package', () => {
     const cwd = join(baseDir, 'create-report');
     await addCodePushupConfig(cwd);
 
-    const {code, stdout} = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd,
@@ -41,7 +41,7 @@ describe('collect report with lighthouse-plugin NPM package', () => {
     const report = await readJsonFile(join(cwd, '.code-pushup', 'report.json'));
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(
-      omitVariableReportData(report as Report, {omitAuditData: true}),
+      omitVariableReportData(report as Report, { omitAuditData: true }),
     ).toMatchSnapshot();
   });
 });
