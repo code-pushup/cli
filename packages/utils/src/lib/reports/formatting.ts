@@ -96,10 +96,8 @@ export function formatSourceLine(
     return '';
   }
   const { startLine, endLine } = position;
-  return endLine
-    ? startLine === endLine
-      ? `${startLine}`
-      : `${startLine}-${endLine}`
+  return endLine && startLine !== endLine
+    ? `${startLine}-${endLine}`
     : `${startLine}`;
 }
 
@@ -112,14 +110,13 @@ export function formatGitHubLink(
     return `${baseUrl}/${file}`;
   }
   const { startLine, endLine, startColumn, endColumn } = position;
-
   const start = startColumn ? `L${startLine}C${startColumn}` : `L${startLine}`;
   const end = endLine
     ? endColumn
       ? `L${endLine}C${endColumn}`
       : `L${endLine}`
     : '';
-  const lineRange = end ? (start === end ? start : `${start}-${end}`) : start;
+  const lineRange = end && start !== end ? `${start}-${end}` : start;
   return `${baseUrl}/${file}#${lineRange}`;
 }
 
