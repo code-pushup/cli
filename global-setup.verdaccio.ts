@@ -38,6 +38,6 @@ export async function setup() {
 export async function teardown() {
   // NOTICE - Time saving optimization
   // We skip uninstalling packages as the folder is deleted anyway
-  // comment out to see the folder and web interface
-  // await nxStopVerdaccioAndTeardownEnv(activeRegistry);
+
+  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }
