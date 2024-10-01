@@ -9,17 +9,12 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-const defaultConfigContent = await readFile(
-  join(
-    process.cwd(),
+async function addCodePushupConfig(targetDir: string) {
+  await cleanTestFolder(targetDir);
+  await copyFile(
     'e2e/plugin-lighthouse-e2e/mocks/fixtures/code-pushup.config.lh-default.ts',
-  ),
-  { encoding: 'utf8' },
-);
-
-async function addCodePushupConfig(target: string) {
-  await cleanTestFolder(target);
-  await writeFile(join(target, 'code-pushup.config.ts'), defaultConfigContent);
+    join(targetDir, 'code-pushup.config.ts'),
+  );
 }
 
 describe('collect report with lighthouse-plugin NPM package', () => {
