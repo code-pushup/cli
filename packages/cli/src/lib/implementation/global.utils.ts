@@ -22,8 +22,10 @@ export function filterKebabCaseKeys<T extends Record<string, unknown>>(
     ) as T;
 }
 
-// log error and flush stdout so that Yargs doesn't suppress it
-// related issue: https://github.com/yargs/yargs/issues/2118
+// Log error and flush stdout to ensure all logs are printed
+// before Yargs exits or rethrows the error.
+// This prevents log suppression, especially in async execution.
+// Related issue: https://github.com/yargs/yargs/issues/2118
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function logErrorBeforeThrow<T extends (...args: any[]) => any>(
   fn: T,
@@ -38,10 +40,11 @@ export function logErrorBeforeThrow<T extends (...args: any[]) => any>(
         ui().logger.error(error.message);
         await new Promise(resolve => process.stdout.write('', resolve));
         yargs().exit(1, error);
+      } else {
+        console.error(error);
+        await new Promise(resolve => process.stdout.write('', resolve));
+        throw error;
       }
-      console.error(error);
-      await new Promise(resolve => process.stdout.write('', resolve));
-      throw error;
     }
   }) as T;
 }
