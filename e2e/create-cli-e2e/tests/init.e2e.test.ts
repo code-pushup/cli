@@ -114,12 +114,7 @@ describe('create-cli-inti', () => {
     await expect(
       executeProcess({
         command: 'npx',
-        args: [
-          '@code-pushup/cli',
-          'print-config',
-          `--userconfig=${userconfig}`,
-          `--prefix=${dirname(userconfig)}`,
-        ],
+        args: ['@code-pushup/cli print-config', `--userconfig=${userconfig}`],
         cwd,
       }),
     )
