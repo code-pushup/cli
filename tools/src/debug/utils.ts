@@ -97,7 +97,7 @@ export function listProcess({ pid, commandMatch }: ProcessListOption = {}): {
 export function killProcessPid(pid: number | string, command?: string): void {
   const commandString = command ? `, command: ${command}` : '';
   try {
-    // sometimes pid is NaN
+    // @TODO sometimes pid is NaN, figure out if this is caused by trying to kill a process that is already stopped
     if (Number.isNaN(Number(pid))) {
       console.info(
         `Can't kill process as pid is not a number. \nPID: ${pid} for command ${commandString}`,

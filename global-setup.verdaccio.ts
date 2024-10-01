@@ -12,9 +12,15 @@ const projectName = process.env['NX_TASK_TARGET_PROJECT'];
 export async function setup() {
   await globalSetup();
 
-  activeRegistry = await nxStartVerdaccioAndSetupEnv({
-    projectName,
-  });
+  try {
+    activeRegistry = await nxStartVerdaccioAndSetupEnv({
+      projectName: projectName,
+      verbose: true,
+    });
+  } catch (error) {
+    console.error('Error starting local verdaccio registry:\n' + error.message);
+    throw error;
+  }
 
   const { userconfig, workspaceRoot } = activeRegistry;
   await executeProcess({
@@ -32,7 +38,6 @@ export async function setup() {
 export async function teardown() {
   // NOTICE - Time saving optimization
   // We skip uninstalling packages as the folder is deleted anyway
-
   // comment out to see the folder and web interface
-  await nxStopVerdaccioAndTeardownEnv(activeRegistry);
+  // await nxStopVerdaccioAndTeardownEnv(activeRegistry);
 }
