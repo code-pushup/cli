@@ -1,11 +1,7 @@
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
-export class OptionValidationError extends Error {
-  constructor(message: string) {
-    super(`${message}`);
-  }
-}
+export class OptionValidationError extends Error {}
 
 export function validatePluginFilterOption(
   option: 'onlyPlugins' | 'skipPlugins',
