@@ -3,6 +3,9 @@
   "version": "0.51.0",
   "license": "MIT",
   "description": "Nx plugin to integrate the Code PushUp CLI into your workspace 🛠️",
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
