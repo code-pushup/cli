@@ -1,3 +1,23 @@
+## 0.51.0 (2024-10-02)
+
+### 🚀 Features
+
+- **cli:** add command option aliases ([3ae16263](https://github.com/code-pushup/cli/commit/3ae16263))
+- **nx-plugin:** update unicode logo in stdout ([1d5e3ad1](https://github.com/code-pushup/cli/commit/1d5e3ad1))
+- **utils:** support local report links ([f98b10a0](https://github.com/code-pushup/cli/commit/f98b10a0))
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** filter out warnings ([61ab0f75](https://github.com/code-pushup/cli/commit/61ab0f75))
+- **utils:** handle rounding of small trend values ([c23e38e6](https://github.com/code-pushup/cli/commit/c23e38e6))
+- **utils:** format reports with unchanged score ([cddbdd35](https://github.com/code-pushup/cli/commit/cddbdd35))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.50.0 (2024-09-10)
 
 ### 🚀 Features

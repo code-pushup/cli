@@ -1,10 +1,10 @@
 {
   "name": "@code-pushup/create-cli",
-  "version": "0.0.0",
+  "version": "0.51.0",
   "license": "MIT",
   "bin": "index.js",
   "dependencies": {
-    "@code-pushup/nx-plugin": "*",
-    "@code-pushup/utils": "*"
+    "@code-pushup/nx-plugin": "0.51.0",
+    "@code-pushup/utils": "0.51.0"
   }
 }
