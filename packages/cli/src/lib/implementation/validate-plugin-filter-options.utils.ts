@@ -1,8 +1,10 @@
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { filterItemRefsBy, ui } from '@code-pushup/utils';
 
+export class OptionValidationError extends Error {}
+
 export function validatePluginFilterOption(
-  filterOption: 'onlyPlugins' | 'skipPlugins',
+  option: 'onlyPlugins' | 'skipPlugins',
   {
     plugins,
     categories,
@@ -16,35 +18,75 @@ export function validatePluginFilterOption(
   }: { pluginsToFilter?: string[]; verbose?: boolean } = {},
 ): void {
   const pluginsToFilterSet = new Set(pluginsToFilter);
-  const missingPlugins = pluginsToFilter.filter(
+  const invalidPlugins = pluginsToFilter.filter(
     plugin => !plugins.some(({ slug }) => slug === plugin),
   );
+  const message = createValidationMessage(option, invalidPlugins, plugins);
 
-  const isSkipOption = filterOption === 'skipPlugins';
-
-  const filterFunction = (plugin: string) =>
-    isSkipOption
+  const filterFn = (plugin: string) =>
+    option === 'skipPlugins'
       ? pluginsToFilterSet.has(plugin)
       : !pluginsToFilterSet.has(plugin);
 
-  if (missingPlugins.length > 0) {
-    ui().logger.warning(
-      `The --${filterOption} argument references ${
-        missingPlugins.length === 1 ? 'a plugin that does' : 'plugins that do'
-      } not exist: ${missingPlugins.join(', ')}. The valid plugin ${
-        plugins.length === 1 ? 'slug is' : 'slugs are'
-      } ${plugins.map(({ slug }) => slug).join(', ')}.`,
-    );
+  if (
+    option === 'onlyPlugins' &&
+    pluginsToFilterSet.size > 0 &&
+    pluginsToFilterSet.size === invalidPlugins.length
+  ) {
+    throw new OptionValidationError(message);
+  }
+
+  if (invalidPlugins.length > 0) {
+    ui().logger.warning(message);
   }
 
   if (categories.length > 0 && verbose) {
     const removedCategorySlugs = filterItemRefsBy(categories, ({ plugin }) =>
-      filterFunction(plugin),
+      filterFn(plugin),
     ).map(({ slug }) => slug);
     ui().logger.info(
-      `The --${filterOption} argument removed the following categories: ${removedCategorySlugs.join(
+      `The --${option} argument removed the following categories: ${removedCategorySlugs.join(
         ', ',
       )}.`,
+    );
+  }
+}
+
+export function createValidationMessage(
+  option: 'onlyPlugins' | 'skipPlugins',
+  invalidPlugins: string[],
+  validPlugins: Pick<PluginConfig, 'slug'>[],
+): string {
+  const invalidPluginText =
+    invalidPlugins.length === 1
+      ? 'a plugin that does not exist:'
+      : 'plugins that do not exist:';
+  const invalidSlugs = invalidPlugins.join(', ');
+
+  const validPluginText =
+    validPlugins.length === 1
+      ? 'The only valid plugin is'
+      : 'Valid plugins are';
+  const validSlugs = validPlugins.map(({ slug }) => slug).join(', ');
+
+  return `The --${option} argument references ${invalidPluginText} ${invalidSlugs}. ${validPluginText} ${validSlugs}.`;
+}
+
+export function handleConflictingPlugins(
+  onlyPlugins: string[],
+  skipPlugins: string[],
+): void {
+  const conflictingPlugins = onlyPlugins.filter(plugin =>
+    skipPlugins.includes(plugin),
+  );
+
+  if (conflictingPlugins.length > 0) {
+    const conflictSubject =
+      conflictingPlugins.length > 1 ? 'plugins are' : 'plugin is';
+    const conflictingSlugs = conflictingPlugins.join(', ');
+
+    throw new OptionValidationError(
+      `The following ${conflictSubject} specified in both --onlyPlugins and --skipPlugins: ${conflictingSlugs}. Please choose one option.`,
     );
   }
 }
