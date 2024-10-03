@@ -1,6 +1,6 @@
 import type { MiddlewareFunction } from 'yargs';
 import { coreConfigMiddleware } from './implementation/core-config.middleware';
-import { filterPluginsMiddleware } from './implementation/filter-plugins.middleware';
+import { filterMiddleware } from './implementation/filter.middleware';
 
 export const middlewares = [
   {
@@ -8,8 +8,7 @@ export const middlewares = [
     applyBeforeValidation: false,
   },
   {
-    middlewareFunction:
-      filterPluginsMiddleware as unknown as MiddlewareFunction,
+    middlewareFunction: filterMiddleware as unknown as MiddlewareFunction,
     applyBeforeValidation: false,
   },
 ];

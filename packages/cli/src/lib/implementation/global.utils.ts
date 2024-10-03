@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import { toArray, ui } from '@code-pushup/utils';
-import { OptionValidationError } from './validate-plugin-filter-options.utils';
+import { OptionValidationError } from './validate-filter-options.utils';
 
 export function filterKebabCaseKeys<T extends Record<string, unknown>>(
   obj: T,
