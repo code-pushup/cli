@@ -7,13 +7,11 @@ import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './implementation/core-config.model';
+import type { FilterOptions } from './implementation/filter.model';
+import { yargsFilterOptionsDefinition } from './implementation/filter.options';
 import type { GeneralCliOptions } from './implementation/global.model';
 import type { MergeDiffsOptions } from './implementation/merge-diffs.model';
 import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options';
-import type { OnlyPluginsOptions } from './implementation/only-plugins.model';
-import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
-import type { SkipPluginsOptions } from './implementation/skip-plugins.model';
-import { yargsSkipPluginsOptionsDefinition } from './implementation/skip-plugins.options';
 import { options } from './options';
 import { yargsCli } from './yargs-cli';
 
@@ -27,31 +25,27 @@ describe('yargsCli', () => {
   });
 
   it('should parse an empty array as a default onlyPlugins option', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & OnlyPluginsOptions>(
-      [],
-      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
-    ).parseAsync();
+    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>([], {
+      options: { ...options, ...yargsFilterOptionsDefinition() },
+    }).parseAsync();
     expect(parsedArgv.onlyPlugins).toEqual([]);
   });
 
   it('should parse an empty array as a default skipPlugins option', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & SkipPluginsOptions>(
-      [],
-      { options: { ...options, ...yargsSkipPluginsOptionsDefinition() } },
-    ).parseAsync();
+    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>([], {
+      options: { ...options, ...yargsFilterOptionsDefinition() },
+    }).parseAsync();
     expect(parsedArgv.skipPlugins).toEqual([]);
   });
 
   it('should parse the overrides of skipPlugins and onlyPlugins even with different formats', async () => {
-    const parsedArgv = await yargsCli<
-      GeneralCliOptions & OnlyPluginsOptions & SkipPluginsOptions
-    >(
+    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>(
       [
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
         '--skipPlugins=coverage,eslint',
       ],
-      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
+      { options: { ...options, ...yargsFilterOptionsDefinition() } },
     ).parseAsync();
     expect(parsedArgv).toEqual(
       expect.objectContaining({
@@ -115,8 +109,7 @@ describe('yargsCli', () => {
       GeneralCliOptions &
         PersistConfigCliOptions &
         UploadConfigCliOptions &
-        OnlyPluginsOptions &
-        SkipPluginsOptions
+        FilterOptions
     >(
       [
         '--verbose',
@@ -132,7 +125,7 @@ describe('yargsCli', () => {
         '--skipPlugins=coverage',
         '--skipPlugins=eslint',
       ],
-      { options: { ...options, ...yargsOnlyPluginsOptionsDefinition() } },
+      { options: { ...options, ...yargsFilterOptionsDefinition() } },
     ).parseAsync();
     expect(parsedArgv).toEqual(
       expect.objectContaining({
