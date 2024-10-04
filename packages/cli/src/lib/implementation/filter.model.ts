@@ -5,15 +5,11 @@ import type {
   PluginConfig,
 } from '@code-pushup/models';
 
-export type FilterCliOptions = {
-  skipCategories?: string[];
-  onlyCategories?: string[];
-  skipPlugins?: string[];
-  onlyPlugins?: string[];
-};
 export type FilterOptions = Partial<GlobalOptions> &
   Pick<CoreConfig, 'categories' | 'plugins'> &
   FilterCliOptions;
+
+export type FilterCliOptions = Partial<Record<FilterOptionType, string[]>>;
 
 export type FilterOptionType =
   | 'skipCategories'
