@@ -18,17 +18,21 @@ Commands:
 
 
 Global Options:
-      --progress     Show progress bar in stdout.
+      --progress        Show progress bar in stdout.
                                              [boolean] [default: true]
-      --verbose      When true creates more verbose output. This is helpful when
-                      debugging.       [boolean] [default: false]
-      --config       Path to config file. By default it loads code-pushup.config
-                     .(ts|mjs|js).                       [string]
-      --tsconfig     Path to a TypeScript config, to be used when loading config
-                      file.                              [string]
-  -p, --onlyPlugins  List of plugins to run. If not set all plugins are run.
+      --verbose         When true creates more verbose output. This is helpful w
+                        hen debugging. [boolean] [default: false]
+      --config          Path to config file. By default it loads code-pushup.con
+                        fig.(ts|mjs|js).                 [string]
+      --tsconfig        Path to a TypeScript config, to be used when loading con
+                        fig file.                        [string]
+      --skipCategories  List of categories to skip. If not set all categories ar
+                        e run.              [array] [default: []]
+      --onlyCategories  List of categories to run. If not set all categories are
+                         run.               [array] [default: []]
+  -P, --skipPlugins     List of plugins to skip. If not set all plugins are run.
                                                  [array] [default: []]
-  -P, --skipPlugins  List of plugins to skip. If not set all plugins are run.
+  -p, --onlyPlugins     List of plugins to run. If not set all plugins are run.
                                                  [array] [default: []]
 
 Persist Options:
