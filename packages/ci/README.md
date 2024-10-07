@@ -1,11 +1,7 @@
 # ci
 
-This library was generated with [Nx](https://nx.dev).
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fci.svg)](https://www.npmjs.com/package/@code-pushup/ci)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcli)](https://npmtrends.com/@code-pushup/ci)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/ci)](https://www.npmjs.com/package/@code-pushup/ci?activeTab=dependencies)
 
-## Building
-
-Run `nx build ci` to build the library.
-
-## Running unit tests
-
-Run `nx test ci` to execute the unit tests via [Vitest](https://vitest.dev/).
+> TODO: document
