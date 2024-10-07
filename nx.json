@@ -63,9 +63,7 @@
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
-      "!{projectRoot}/zod2md.config.ts",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json"
+      "!{projectRoot}/zod2md.config.ts"
     ],
     "sharedGlobals": []
   },

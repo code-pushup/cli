@@ -1,7 +1,6 @@
 {
   "name": "@code-pushup/ci",
   "version": "0.0.1",
-  "dependencies": {},
-  "type": "commonjs",
-  "main": "./index.cjs"
+  "description": "CI automation logic for Code PushUp (provider-agnostic)",
+  "dependencies": {}
 }
