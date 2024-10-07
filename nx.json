@@ -60,7 +60,9 @@
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
-      "!{projectRoot}/zod2md.config.ts"
+      "!{projectRoot}/zod2md.config.ts",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json"
     ],
     "sharedGlobals": []
   },
@@ -114,15 +116,21 @@
     "./tools/src/debug/debug.plugin.ts",
     {
       "plugin": "./tools/src/npm/npm.plugin.ts",
-      "options": { "verbose": true }
+      "options": {
+        "verbose": true
+      }
     },
     {
       "plugin": "./tools/src/publish/publish.plugin.ts",
-      "options": { "verbose": true }
+      "options": {
+        "verbose": true
+      }
     },
     {
       "plugin": "./tools/src/verdaccio/verdaccio.plugin.ts",
-      "options": { "verbose": true }
+      "options": {
+        "verbose": true
+      }
     }
   ]
 }

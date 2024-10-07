@@ -20,6 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true,
     "paths": {
+      "@code-pushup/ci": ["packages/ci/src/index.ts"],
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],
       "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
