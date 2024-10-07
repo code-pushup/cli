@@ -12,22 +12,22 @@
         "main": "packages/ci/src/index.ts",
         "tsConfig": "packages/ci/tsconfig.lib.json",
         "assets": ["packages/ci/*.md"],
-        "generatePackageJson": true,
-        "format": ["cjs"]
+        "esbuildConfig": "esbuild.config.js"
       }
-    },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs ci {args.ver} {args.tag}",
-      "dependsOn": ["build"]
     },
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "test": {
+    "unit-test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/packages/ci"
+        "configFile": "packages/ci/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/ci/vite.config.integration.ts"
       }
     }
   },
