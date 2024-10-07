@@ -1,1 +1,1 @@
-export * from './lib/ci';
+export { runInCI } from './lib/run';
