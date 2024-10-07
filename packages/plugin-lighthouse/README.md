@@ -119,24 +119,27 @@ export default {
 
 ## Flags
 
-The plugin accepts a second optional argument, `flags`.
+The plugin accepts an optional second argument, `flags`.
 
-`flags` is the Lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80) as a JS object.
+`flags` is a JavaScript object containing Lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80).
 
-Within the flags object a couple of other external configuration files can be referenced. E.g. `configPath` , `preset` or `budgetPath` reference external `json` or JavaScript files.
+Within the `flags` object, you can reference external configuration files using options like `configPath` , `preset`, or `budgetPath`. These options allow Lighthouse to load custom configurations, audit presets, or performance budgets from external `json` or JavaScript files.
 
-For a complete list the [official documentation of CLI flags](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options)
+For a complete list of available options, refer to [the official Lighthouse documentation](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options).
 
 > [!TIP]  
-> If you are not used to work with the Lighthouse CLI you would pass flags like this:
+> If you are new to working with the Lighthouse CLI, flags can be passed like this:
 > `lighthouse https://example.com --output=json --chromeFlags='--headless=shell'`
 >
-> Now with the plugin it would look like this:
+> With the plugin, the configuration would be:
 >
 > ```ts
 > // code-pushup.config.ts
 > ...
-> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: ['--headless=shell']});
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: ['--headless=shell'],
+> });
 > ```
 
 > [!note]
@@ -149,14 +152,30 @@ For a complete list the [official documentation of CLI flags](https://github.com
 
 ## Chrome Flags for Tooling
 
-We recommend using Chrome flags for more stable runs in a tooling environment.
-The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package provides a set of flags dedicated to tooling that they also documented very well.
+We recommend using Chrome flags for more stable runs in a tooling environment. The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package offers a well-documented set of flags specifically designed to ensure reliable execution.
+
+The latest version of `@code-pushup/lighthouse-plugin` provides `DEFAULT_CHROME_FLAGS`, a pre-configured constant that includes Chrome’s default flags for stable, headless execution out of the box.
 
 > ```ts
 > // code-pushup.config.ts
-> import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
+> import { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
 > ...
-> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: DEFAULT_FLAGS });
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: DEFAULT_CHROME_FLAGS,
+> });
+> ```
+
+If additional Chrome flags are required (e.g., verbose logging or debugging), they can be appended to the default flags:
+
+> ```ts
+> // code-pushup.config.ts
+> import { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
+> ...
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: DEFAULT_CHROME_FLAGS.concat(['--verbose']),
+> });
 > ```
 
 ## Config

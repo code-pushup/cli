@@ -1,4 +1,3 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
@@ -8,6 +7,7 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import lighthousePlugin, {
+  DEFAULT_CHROME_FLAGS,
   lighthouseGroupRef,
 } from './dist/packages/plugin-lighthouse';
 import type { CategoryConfig, CoreConfig } from './packages/models/src';
@@ -109,7 +109,7 @@ export const lighthouseCoreConfig = async (
   return {
     plugins: [
       await lighthousePlugin(url, {
-        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
+        chromeFlags: DEFAULT_CHROME_FLAGS,
       }),
     ],
     categories: lighthouseCategories,

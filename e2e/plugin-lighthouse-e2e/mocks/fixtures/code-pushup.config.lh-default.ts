@@ -1,5 +1,5 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import lighthousePlugin, {
+  DEFAULT_CHROME_FLAGS,
   lighthouseGroupRef,
 } from '@code-pushup/lighthouse-plugin';
 import type { CoreConfig } from '@code-pushup/models';
@@ -18,7 +18,7 @@ export default {
         // seo category
         `hreflang`,
       ],
-      chromeFlags: DEFAULT_FLAGS.concat([`--headless`, `--verbose`]),
+      chromeFlags: DEFAULT_CHROME_FLAGS.concat([`--verbose`]),
     }),
   ],
   categories: [
