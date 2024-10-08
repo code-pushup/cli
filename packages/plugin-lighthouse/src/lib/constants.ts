@@ -1,5 +1,9 @@
+import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import { join } from 'node:path';
 import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
+
+// headless is needed to pass CI on Linux and Windows (locally it works without headless too)
+export const DEFAULT_CHROME_FLAGS = [...DEFAULT_FLAGS, '--headless'];
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_OUTPUT_PATH = join(

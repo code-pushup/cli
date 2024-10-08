@@ -7,7 +7,6 @@ import eslintPlugin, {
 } from './dist/packages/plugin-eslint';
 import jsPackagesPlugin from './dist/packages/plugin-js-packages';
 import lighthousePlugin, {
-  DEFAULT_CHROME_FLAGS,
   lighthouseGroupRef,
 } from './dist/packages/plugin-lighthouse';
 import type { CategoryConfig, CoreConfig } from './packages/models/src';
@@ -107,11 +106,7 @@ export const lighthouseCoreConfig = async (
   url: string,
 ): Promise<CoreConfig> => {
   return {
-    plugins: [
-      await lighthousePlugin(url, {
-        chromeFlags: DEFAULT_CHROME_FLAGS,
-      }),
-    ],
+    plugins: [await lighthousePlugin(url)],
     categories: lighthouseCategories,
   };
 };

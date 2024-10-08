@@ -1,10 +1,8 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import { lighthousePlugin } from './lib/lighthouse-plugin';
-
-export const DEFAULT_CHROME_FLAGS = [...DEFAULT_FLAGS, '--headless'];
 
 export { LIGHTHOUSE_REPORT_NAME } from './lib/runner';
 export {
+  DEFAULT_CHROME_FLAGS,
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_OUTPUT_PATH,
 } from './lib/constants';

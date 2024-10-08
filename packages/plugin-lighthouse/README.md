@@ -123,7 +123,7 @@ The plugin accepts an optional second argument, `flags`.
 
 `flags` is a JavaScript object containing Lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80).
 
-Within the `flags` object, you can reference external configuration files using options like `configPath` , `preset`, or `budgetPath`. These options allow Lighthouse to load custom configurations, audit presets, or performance budgets from external `json` or JavaScript files.
+Within the `flags` object, external configuration files can be referenced using options like `configPath` , `preset`, or `budgetPath`. These options allow Lighthouse to load custom configurations, audit presets, or performance budgets from external `json` or JavaScript files.
 
 For a complete list of available options, refer to [the official Lighthouse documentation](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options).
 
@@ -154,27 +154,44 @@ For a complete list of available options, refer to [the official Lighthouse docu
 
 We recommend using Chrome flags for more stable runs in a tooling environment. The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package offers a well-documented set of flags specifically designed to ensure reliable execution.
 
-The latest version of `@code-pushup/lighthouse-plugin` provides `DEFAULT_CHROME_FLAGS`, a pre-configured constant that includes Chrome’s default flags for stable, headless execution out of the box.
+The latest version of `@code-pushup/lighthouse-plugin` provides `DEFAULT_CHROME_FLAGS`, a pre-configured constant that includes Chrome’s default flags for stable, headless execution out of the box. This means you do not need to specify `chromeFlags` manually unless you want to modify them.
+
+### Default Usage
+
+If no `chromeFlags` are provided, the plugin automatically applies the default configuration:
 
 > ```ts
-> // code-pushup.config.ts
-> import { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
-> ...
+> import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+>
 > lighthousePlugin('https://example.com', {
 >   output: 'json',
->   chromeFlags: DEFAULT_CHROME_FLAGS,
+>   // Defaults to DEFAULT_CHROME_FLAGS internally
 > });
 > ```
+
+### Adding Extra Flags
 
 If additional Chrome flags are required (e.g., verbose logging or debugging), they can be appended to the default flags:
 
 > ```ts
-> // code-pushup.config.ts
-> import { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
-> ...
+> import lighthousePlugin, { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
+>
 > lighthousePlugin('https://example.com', {
 >   output: 'json',
 >   chromeFlags: DEFAULT_CHROME_FLAGS.concat(['--verbose']),
+> });
+> ```
+
+### Overriding Default Flags
+
+To completely override the default flags and provide a custom configuration:
+
+> ```ts
+> import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+>
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: ['--verbose'],
 > });
 > ```
 
