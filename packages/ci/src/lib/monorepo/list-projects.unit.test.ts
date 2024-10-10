@@ -2,20 +2,19 @@ import { vol } from 'memfs';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import type { CIConfig } from '../config';
+import { DEFAULT_SETTINGS } from '../constants';
+import type { Settings } from '../models';
 import { listMonorepoProjects } from './list-projects';
 import type { ProjectConfig } from './tools';
 
 describe('listMonorepoProjects', () => {
-  const DEFAULT_CONFIG: CIConfig = {
+  const MONOREPO_SETTINGS: Settings = {
+    ...DEFAULT_SETTINGS,
     monorepo: true,
     projects: null,
     task: 'code-pushup',
-    silent: false,
     directory: MEMFS_VOLUME,
     bin: 'npx --no-install code-pushup',
-    config: null,
-    annotations: true,
     logger: {
       error: vi.fn(),
       warn: vi.fn(),
@@ -52,7 +51,7 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(DEFAULT_CONFIG)).resolves.toEqual([
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
       { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
       { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
     ] satisfies ProjectConfig[]);
@@ -98,7 +97,7 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(DEFAULT_CONFIG)).resolves.toEqual([
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
       { name: 'api', bin: 'npx turbo run code-pushup -F api --' },
       { name: 'auth', bin: 'npx turbo run code-pushup -F auth --' },
       { name: 'backoffice', bin: 'npx turbo run code-pushup -F backoffice --' },
@@ -130,7 +129,7 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(DEFAULT_CONFIG)).resolves.toEqual([
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
       { name: 'backend', bin: 'pnpm -F backend run code-pushup' },
       { name: 'frontend', bin: 'pnpm -F frontend run code-pushup' },
       { name: '@repo/utils', bin: 'pnpm -F @repo/utils run code-pushup' },
@@ -160,7 +159,7 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(DEFAULT_CONFIG)).resolves.toEqual([
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
       { name: 'cli', bin: 'yarn workspace cli exec code-pushup' },
       { name: 'core', bin: 'yarn workspace core exec code-pushup' },
     ] satisfies ProjectConfig[]);
@@ -185,7 +184,7 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(DEFAULT_CONFIG)).resolves.toEqual([
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
       { name: 'backend', bin: 'npm -w backend exec code-pushup --' },
       { name: 'frontend', bin: 'npm -w frontend exec code-pushup --' },
     ] satisfies ProjectConfig[]);
@@ -212,7 +211,7 @@ describe('listMonorepoProjects', () => {
 
     await expect(
       listMonorepoProjects({
-        ...DEFAULT_CONFIG,
+        ...MONOREPO_SETTINGS,
         monorepo: true,
         projects: ['backend/*', 'frontend'],
       }),
@@ -251,7 +250,7 @@ describe('listMonorepoProjects', () => {
 
     await expect(
       listMonorepoProjects({
-        ...DEFAULT_CONFIG,
+        ...MONOREPO_SETTINGS,
         monorepo: true,
         projects: null,
       }),
@@ -308,7 +307,7 @@ describe('listMonorepoProjects', () => {
     );
 
     await expect(
-      listMonorepoProjects({ ...DEFAULT_CONFIG, monorepo: 'pnpm' }),
+      listMonorepoProjects({ ...MONOREPO_SETTINGS, monorepo: 'pnpm' }),
     ).resolves.toEqual([
       { name: 'backoffice', bin: 'pnpm -F backoffice exec code-pushup' },
       { name: 'frontoffice', bin: 'pnpm -F frontoffice exec code-pushup' },

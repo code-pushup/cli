@@ -1,6 +1,6 @@
 import { glob } from 'glob';
 import { join } from 'node:path';
-import type { CIConfig } from '../config';
+import type { Settings } from '../models';
 import { detectMonorepoTool } from './detect-tool';
 import { getToolHandler } from './handlers';
 import { listPackages } from './packages';
@@ -8,34 +8,21 @@ import type { MonorepoHandlerOptions, ProjectConfig } from './tools';
 
 // eslint-disable-next-line max-lines-per-function
 export async function listMonorepoProjects(
-  config: CIConfig,
+  settings: Settings,
 ): Promise<ProjectConfig[]> {
-  if (!config.monorepo) {
+  if (!settings.monorepo) {
     throw new Error('Monorepo mode not enabled');
   }
 
-  const logger = config.logger;
+  const logger = settings.logger;
 
-  const options: MonorepoHandlerOptions = {
-    task: config.task,
-    cwd: config.directory,
-    ...(!config.silent && {
-      observer: {
-        onStdout: stdout => {
-          console.info(stdout);
-        },
-        onStderr: stderr => {
-          console.warn(stderr);
-        },
-      },
-    }),
-  };
+  const options = createMonorepoHandlerOptions(settings);
 
   const tool =
-    config.monorepo === true
+    settings.monorepo === true
       ? await detectMonorepoTool(options)
-      : config.monorepo;
-  if (config.monorepo === true) {
+      : settings.monorepo;
+  if (settings.monorepo === true) {
     if (tool) {
       logger.info(`Auto-detected monorepo tool ${tool}`);
     } else {
@@ -53,22 +40,22 @@ export async function listMonorepoProjects(
     return projects;
   }
 
-  if (config.projects) {
+  if (settings.projects) {
     const directories = await glob(
-      config.projects.map(path => path.replace(/\/$/, '/')),
+      settings.projects.map(path => path.replace(/\/$/, '/')),
       { cwd: options.cwd },
     );
     logger.info(
       `Found ${
         directories.length
-      } project folders matching "${config.projects.join(
+      } project folders matching "${settings.projects.join(
         ', ',
       )}" from configuration`,
     );
     logger.debug(`Projects: ${directories.join(', ')}`);
     return directories.toSorted().map(directory => ({
       name: directory,
-      bin: config.bin,
+      bin: settings.bin,
       directory: join(options.cwd, directory),
     }));
   }
@@ -78,7 +65,26 @@ export async function listMonorepoProjects(
   logger.debug(`Projects: ${packages.map(({ name }) => name).join(', ')}`);
   return packages.map(({ name, directory }) => ({
     name,
-    bin: config.bin,
+    bin: settings.bin,
     directory,
   }));
+}
+
+function createMonorepoHandlerOptions(
+  settings: Settings,
+): MonorepoHandlerOptions {
+  return {
+    task: settings.task,
+    cwd: settings.directory,
+    ...(!settings.silent && {
+      observer: {
+        onStdout: stdout => {
+          console.info(stdout);
+        },
+        onStderr: stderr => {
+          console.warn(stderr);
+        },
+      },
+    }),
+  };
 }
