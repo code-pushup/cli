@@ -1,12 +1,11 @@
 import { glob } from 'glob';
 import { join } from 'node:path';
-import type { Settings } from '../models';
+import type { Logger, Settings } from '../models';
 import { detectMonorepoTool } from './detect-tool';
 import { getToolHandler } from './handlers';
 import { listPackages } from './packages';
 import type { MonorepoHandlerOptions, ProjectConfig } from './tools';
 
-// eslint-disable-next-line max-lines-per-function
 export async function listMonorepoProjects(
   settings: Settings,
 ): Promise<ProjectConfig[]> {
@@ -41,33 +40,19 @@ export async function listMonorepoProjects(
   }
 
   if (settings.projects) {
-    const directories = await glob(
-      settings.projects.map(path => path.replace(/\/$/, '/')),
-      { cwd: options.cwd },
-    );
-    logger.info(
-      `Found ${
-        directories.length
-      } project folders matching "${settings.projects.join(
-        ', ',
-      )}" from configuration`,
-    );
-    logger.debug(`Projects: ${directories.join(', ')}`);
-    return directories.toSorted().map(directory => ({
-      name: directory,
+    return listProjectsByGlobs({
+      patterns: settings.projects,
+      cwd: options.cwd,
       bin: settings.bin,
-      directory: join(options.cwd, directory),
-    }));
+      logger,
+    });
   }
 
-  const packages = await listPackages(options.cwd);
-  logger.info(`Found ${packages.length} NPM packages in repository`);
-  logger.debug(`Projects: ${packages.map(({ name }) => name).join(', ')}`);
-  return packages.map(({ name, directory }) => ({
-    name,
+  return listProjectsByNpmPackages({
+    cwd: options.cwd,
     bin: settings.bin,
-    directory,
-  }));
+    logger,
+  });
 }
 
 function createMonorepoHandlerOptions(
@@ -87,4 +72,50 @@ function createMonorepoHandlerOptions(
       },
     }),
   };
+}
+
+async function listProjectsByGlobs(args: {
+  patterns: string[];
+  cwd: string;
+  bin: string;
+  logger: Logger;
+}): Promise<ProjectConfig[]> {
+  const { patterns, cwd, bin, logger } = args;
+
+  const directories = await glob(
+    patterns.map(path => path.replace(/\/$/, '/')),
+    { cwd },
+  );
+
+  logger.info(
+    `Found ${directories.length} project folders matching "${patterns.join(
+      ', ',
+    )}" from configuration`,
+  );
+  logger.debug(`Projects: ${directories.join(', ')}`);
+
+  return directories.toSorted().map(directory => ({
+    name: directory,
+    bin,
+    directory: join(cwd, directory),
+  }));
+}
+
+async function listProjectsByNpmPackages(args: {
+  cwd: string;
+  bin: string;
+  logger: Logger;
+}): Promise<ProjectConfig[]> {
+  const { cwd, bin, logger } = args;
+
+  const packages = await listPackages(cwd);
+
+  logger.info(`Found ${packages.length} NPM packages in repository`);
+  logger.debug(`Projects: ${packages.map(({ name }) => name).join(', ')}`);
+
+  return packages.map(({ name, directory }) => ({
+    name,
+    bin,
+    directory,
+  }));
 }
