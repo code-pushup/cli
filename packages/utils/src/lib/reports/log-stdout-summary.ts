@@ -15,12 +15,12 @@ function log(msg = ''): void {
   ui().logger.log(msg);
 }
 
-export function logStdoutSummary(report: ScoredReport): void {
+export function logStdoutSummary(report: ScoredReport, verbose = false): void {
   const printCategories = report.categories.length > 0;
 
   log(reportToHeaderSection(report));
   log();
-  logPlugins(report);
+  logPlugins(report.plugins, verbose);
   if (printCategories) {
     logCategories(report);
   }
@@ -33,35 +33,58 @@ function reportToHeaderSection(report: ScoredReport): string {
   return `${bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
 }
 
-function logPlugins(report: ScoredReport): void {
-  const { plugins } = report;
-
+export function logPlugins(
+  plugins: ScoredReport['plugins'],
+  verbose: boolean,
+): void {
   plugins.forEach(plugin => {
     const { title, audits } = plugin;
-    log();
-    log(bold.magentaBright(`${title} audits`));
-    log();
-    audits.forEach((audit: AuditReport) => {
+    const filteredAudits = verbose
+      ? audits
+      : audits.filter(({ score }) => score !== 1);
+    const diff = audits.length - filteredAudits.length;
+
+    logAuditRows(title, filteredAudits);
+
+    if (diff > 0) {
+      const message =
+        filteredAudits.length === 0
+          ? 'All audits have perfect scores'
+          : `... ${diff} audits with perfect scores omitted for brevity ...`;
+
       ui().row([
-        {
-          text: applyScoreColor({ score: audit.score, text: '●' }),
-          width: 2,
-          padding: [0, 1, 0, 0],
-        },
-        {
-          text: audit.title,
-          // eslint-disable-next-line no-magic-numbers
-          padding: [0, 3, 0, 0],
-        },
-        {
-          text: cyanBright(audit.displayValue || `${audit.value}`),
-          // eslint-disable-next-line no-magic-numbers
-          width: 20,
-          padding: [0, 0, 0, 0],
-        },
+        { text: '●', width: 2, padding: [0, 1, 0, 0] },
+        // eslint-disable-next-line no-magic-numbers
+        { text: message, padding: [0, 3, 0, 0] },
       ]);
-    });
+    }
     log();
+  });
+}
+
+function logAuditRows(title: string, audits: AuditReport[]): void {
+  log();
+  log(bold.magentaBright(`${title} audits`));
+  log();
+  audits.forEach((audit: AuditReport) => {
+    ui().row([
+      {
+        text: applyScoreColor({ score: audit.score, text: '●' }),
+        width: 2,
+        padding: [0, 1, 0, 0],
+      },
+      {
+        text: audit.title,
+        // eslint-disable-next-line no-magic-numbers
+        padding: [0, 3, 0, 0],
+      },
+      {
+        text: cyanBright(audit.displayValue || `${audit.value}`),
+        // eslint-disable-next-line no-magic-numbers
+        width: 20,
+        padding: [0, 0, 0, 0],
+      },
+    ]);
   });
 }
 
