@@ -21,10 +21,17 @@ export type GitRefs = {
 };
 
 export type ProviderAPIClient = {
+  maxCommentChars: number;
   downloadReportArtifact: () => Promise<string>;
-  fetchComments: () => Promise<{ id: number; body: string }[]>;
-  updateComment: (id: number, body: string) => Promise<void>;
-  createComment: (body: string) => Promise<void>;
+  listComments: () => Promise<Comment[]>;
+  updateComment: (id: number, body: string) => Promise<Comment>;
+  createComment: (body: string) => Promise<Comment>;
+};
+
+export type Comment = {
+  id: number;
+  body: string;
+  url: string;
 };
 
 export type GitBranch = {
