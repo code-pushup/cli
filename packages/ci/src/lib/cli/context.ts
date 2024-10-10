@@ -1,22 +1,22 @@
-import type { CIConfig } from '../config';
+import type { Settings } from '../models';
 import type { ProjectConfig } from '../monorepo';
 
 export type CommandContext = Pick<
-  CIConfig,
+  Settings,
   'bin' | 'config' | 'directory' | 'silent'
 > & {
   project?: string;
 };
 
 export function createCommandContext(
-  config: CIConfig,
+  settings: Settings,
   project: ProjectConfig | null | undefined,
 ): CommandContext {
   return {
     project: project?.name,
-    bin: project?.bin ?? config.bin,
-    directory: project?.directory ?? config.directory,
-    config: config.config,
-    silent: config.silent,
+    bin: project?.bin ?? settings.bin,
+    directory: project?.directory ?? settings.directory,
+    config: settings.config,
+    silent: settings.silent,
   };
 }
