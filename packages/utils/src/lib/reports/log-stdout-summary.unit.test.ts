@@ -234,7 +234,7 @@ describe('logPlugins', () => {
       false,
     );
     const output = logs.join('\n');
-    expect(output).toContain('All audits have perfect scores');
+    expect(output).toContain('All 2 audits have perfect scores');
   });
 
   it('should log original audits when verbose is false and no audits have perfect scores', () => {

@@ -63,20 +63,21 @@ describe('logStdoutSummary', () => {
     const report = reportMock();
     const reportWithPerfectScores = {
       ...report,
-      plugins: report.plugins.map((plugin, index) => ({
-        ...plugin,
-        audits: plugin.audits.map(audit => ({
-          ...audit,
-          score: index === 0 ? 1 : audit.score,
-        })),
-      })),
+      plugins: report.plugins.map((plugin, index) =>
+        index > 0
+          ? plugin
+          : {
+              ...plugin,
+              audits: plugin.audits.map(audit => ({ ...audit, score: 1 })),
+            },
+      ),
     };
 
     logStdoutSummary(sortReport(scoreReport(reportWithPerfectScores)));
 
     const output = logs.join('\n');
 
-    expect(output).toContain('All audits have perfect scores');
+    expect(output).toContain('All 47 audits have perfect scores');
     await expect(removeColorCodes(output)).toMatchFileSnapshot(
       '__snapshots__/report-stdout-all-perfect-scores.txt',
     );

@@ -44,48 +44,51 @@ export function logPlugins(
       : audits.filter(({ score }) => score !== 1);
     const diff = audits.length - filteredAudits.length;
 
-    logAuditRows(title, filteredAudits);
+    logAudits(title, filteredAudits);
 
     if (diff > 0) {
-      const message =
+      const notice =
         filteredAudits.length === 0
-          ? 'All audits have perfect scores'
+          ? `... All ${diff} audits have perfect scores ...`
           : `... ${diff} audits with perfect scores omitted for brevity ...`;
-
-      ui().row([
-        { text: '●', width: 2, padding: [0, 1, 0, 0] },
-        // eslint-disable-next-line no-magic-numbers
-        { text: message, padding: [0, 3, 0, 0] },
-      ]);
+      logRow(1, notice);
     }
     log();
   });
 }
 
-function logAuditRows(title: string, audits: AuditReport[]): void {
+function logAudits(pluginTitle: string, audits: AuditReport[]): void {
   log();
-  log(bold.magentaBright(`${title} audits`));
+  log(bold.magentaBright(`${pluginTitle} audits`));
   log();
-  audits.forEach((audit: AuditReport) => {
-    ui().row([
-      {
-        text: applyScoreColor({ score: audit.score, text: '●' }),
-        width: 2,
-        padding: [0, 1, 0, 0],
-      },
-      {
-        text: audit.title,
-        // eslint-disable-next-line no-magic-numbers
-        padding: [0, 3, 0, 0],
-      },
-      {
-        text: cyanBright(audit.displayValue || `${audit.value}`),
-        // eslint-disable-next-line no-magic-numbers
-        width: 20,
-        padding: [0, 0, 0, 0],
-      },
-    ]);
+  audits.forEach(({ score, title, displayValue, value }) => {
+    logRow(score, title, displayValue || `${value}`);
   });
+}
+
+function logRow(score: number, title: string, value?: string): void {
+  ui().row([
+    {
+      text: applyScoreColor({ score, text: '●' }),
+      width: 2,
+      padding: [0, 1, 0, 0],
+    },
+    {
+      text: title,
+      // eslint-disable-next-line no-magic-numbers
+      padding: [0, 3, 0, 0],
+    },
+    ...(value
+      ? [
+          {
+            text: cyanBright(value),
+            // eslint-disable-next-line no-magic-numbers
+            width: 20,
+            padding: [0, 0, 0, 0],
+          },
+        ]
+      : []),
+  ]);
 }
 
 export function logCategories({ categories, plugins }: ScoredReport): void {
