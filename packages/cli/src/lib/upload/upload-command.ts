@@ -22,8 +22,10 @@ export function yargsUploadCommandObject() {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }
-      const { url } = await upload(options);
-      uploadSuccessfulLog(url);
+      const report = await upload(options);
+      if (report?.url) {
+        uploadSuccessfulLog(report.url);
+      }
     },
   } satisfies CommandModule;
 }

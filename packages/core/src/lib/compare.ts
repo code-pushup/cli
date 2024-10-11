@@ -1,10 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
-  PortalOperationError,
-  getPortalComparisonLink,
-} from '@code-pushup/portal-client';
-import {
   type Format,
   type PersistConfig,
   type Report,
@@ -28,6 +24,7 @@ import {
   compareCategories,
   compareGroups,
 } from './implementation/compare-scorables';
+import { loadPortalClient } from './load-portal-client';
 
 export async function compareReportFiles(
   inputPaths: Diff<string>,
@@ -119,6 +116,11 @@ async function fetchPortalComparisonLink(
   commits: NonNullable<ReportsDiff['commits']>,
 ): Promise<string | undefined> {
   const { server, apiKey, organization, project } = uploadConfig;
+  const portalClient = await loadPortalClient();
+  if (!portalClient) {
+    return;
+  }
+  const { PortalOperationError, getPortalComparisonLink } = portalClient;
   try {
     return await getPortalComparisonLink({
       server,
