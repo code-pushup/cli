@@ -28,12 +28,12 @@ export async function commentOnPR(
 
   if (prevComment) {
     const updatedComment = await api.updateComment(prevComment.id, body);
-    logger.debug(`Updated body of comment ${updatedComment.url}`);
+    logger.info(`Updated body of comment ${updatedComment.url}`);
     return updatedComment.id;
   }
 
   const createdComment = await api.createComment(body);
-  logger.debug(`Created new comment ${createdComment.url}`);
+  logger.info(`Created new comment ${createdComment.url}`);
   return createdComment.id;
 }
 

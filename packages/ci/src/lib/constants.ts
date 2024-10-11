@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: Settings = {
   config: null,
   directory: process.cwd(),
   silent: false,
+  debug: false,
   detectNewIssues: true,
   logger: console,
 };
