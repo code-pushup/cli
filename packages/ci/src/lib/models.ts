@@ -9,6 +9,7 @@ export type Options = {
   config?: string | null;
   directory?: string;
   silent?: boolean;
+  debug?: boolean;
   detectNewIssues?: boolean;
   logger?: Logger;
 };
@@ -22,7 +23,7 @@ export type GitRefs = {
 
 export type ProviderAPIClient = {
   maxCommentChars: number;
-  downloadReportArtifact: () => Promise<string>;
+  downloadReportArtifact?: () => Promise<string>;
   listComments: () => Promise<Comment[]>;
   updateComment: (id: number, body: string) => Promise<Comment>;
   createComment: (body: string) => Promise<Comment>;
@@ -46,10 +47,25 @@ export type Logger = {
   debug: (message: string) => void;
 };
 
-export type RunResult = {
+export type RunResult = StandaloneRunResult | MonorepoRunResult;
+
+export type StandaloneRunResult = Omit<ProjectRunResult, 'name'> & {
+  mode: 'standalone';
+  commentId?: number;
+};
+
+export type MonorepoRunResult = {
+  mode: 'monorepo';
+  projects: ProjectRunResult[];
+  commentId?: number;
+  diffArtifact?: ArtifactData;
+};
+
+export type ProjectRunResult = {
+  name: string;
   artifacts: {
     report: ArtifactData;
-    diff: ArtifactData;
+    diff?: ArtifactData;
   };
   newIssues?: SourceFileIssue[];
 };
