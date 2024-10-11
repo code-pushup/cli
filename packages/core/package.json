@@ -6,7 +6,14 @@
   "dependencies": {
     "@code-pushup/models": "0.51.0",
     "@code-pushup/utils": "0.51.0",
-    "@code-pushup/portal-client": "^0.9.0",
     "ansis": "^3.3.0"
+  },
+  "peerDependencies": {
+    "@code-pushup/portal-client": "^0.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@code-pushup/portal-client": {
+      "optional": true
+    }
   }
 }

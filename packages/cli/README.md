@@ -118,7 +118,26 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 ## Portal integration
 
-If you have access to the Code PushUp portal, provide credentials in order to upload reports.
+If you have access to the Code PushUp portal, you can enable report uploads by installing the `@code-pushup/portal-client` package.
+
+<details>
+<summary>Installation command for <code>npm</code>, <code>yarn</code> and <code>pnpm</code></summary>
+
+```sh
+npm install --save-dev @code-pushup/portal-client
+```
+
+```sh
+yarn add --dev @code-pushup/portal-client
+```
+
+```sh
+pnpm add --save-dev @code-pushup/portal-client
+```
+
+</details>
+
+Once the package is installed, update your configuration file to include your portal credentials:
 
 ```ts
 const config: CoreConfig = {
