@@ -3,12 +3,10 @@ import { join } from 'node:path';
 import type { PersistConfig, Report } from '@code-pushup/models';
 import {
   type MultipleFileResults,
+  type ScoredReport,
   directoryExists,
   generateMdReport,
   logMultipleFileResults,
-  logStdoutSummary,
-  scoreReport,
-  sortReport,
   ui,
 } from '@code-pushup/utils';
 
@@ -26,13 +24,10 @@ export class PersistError extends Error {
 
 export async function persistReport(
   report: Report,
+  sortedScoredReport: ScoredReport,
   options: Required<PersistConfig>,
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
-
-  const sortedScoredReport = sortReport(scoreReport(report));
-  // terminal output
-  logStdoutSummary(sortedScoredReport);
 
   // collect physical format outputs
   const results = format.map(reportType => {

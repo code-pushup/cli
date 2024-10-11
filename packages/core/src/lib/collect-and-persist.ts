@@ -3,7 +3,12 @@ import {
   type PersistConfig,
   pluginReportSchema,
 } from '@code-pushup/models';
-import { verboseUtils } from '@code-pushup/utils';
+import {
+  logStdoutSummary,
+  scoreReport,
+  sortReport,
+  verboseUtils,
+} from '@code-pushup/utils';
 import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 import type { GlobalOptions } from './types';
@@ -18,7 +23,16 @@ export async function collectAndPersistReports(
   const { exec } = verboseUtils(options.verbose);
 
   const report = await collect(options);
-  const persistResults = await persistReport(report, options.persist);
+  const sortedScoredReport = sortReport(scoreReport(report));
+  const persistResults = await persistReport(
+    report,
+    sortedScoredReport,
+    options.persist,
+  );
+
+  // terminal output
+  logStdoutSummary(sortedScoredReport, options.verbose);
+
   exec(() => {
     logPersistedResults(persistResults);
   });
