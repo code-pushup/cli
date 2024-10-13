@@ -45,6 +45,12 @@ async function addTargetToWorkspace(
         codeStrings: 'customPlugin()',
       },
     ],
+    upload: {
+      server: 'https://dummy-server.dev',
+      organization: 'dummy-organization',
+      apiKey: 'dummy-api-key',
+      project: 'dummy-project',
+    },
   });
   await materializeTree(tree, cwd);
 }
@@ -95,13 +101,13 @@ describe('executor command', () => {
     ).rejects.toThrow('');
   });
 
-  it('should execute collect executor', async () => {
+  it('should execute collect executor and add report to sub folder named by project', async () => {
     const cwd = join(baseDir, 'execute-collect-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, 'collect'],
+      command: 'nx',
+      args: ['run', `${project}:code-pushup`, 'collect'],
       cwd,
     });
 
