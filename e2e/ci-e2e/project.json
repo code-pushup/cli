@@ -1,0 +1,23 @@
+{
+  "name": "ci-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/ci-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/ci-e2e/**/*.ts"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/ci-e2e/vite.config.e2e.ts"
+      }
+    }
+  },
+  "implicitDependencies": ["models", "utils", "core", "cli", "ci"],
+  "tags": ["scope:tooling", "type:e2e"]
+}

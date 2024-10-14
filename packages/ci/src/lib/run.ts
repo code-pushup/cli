@@ -52,7 +52,7 @@ export async function runInCI(
       .map(({ artifacts: { diff } }) =>
         diff?.files.find(file => file.endsWith('.json')),
       )
-      .filter(file => file != null);
+      .filter((file): file is string => file != null);
     if (diffJsonPaths.length > 0) {
       const { mdFilePath, artifactData: diffArtifact } = await mergeDiffs(
         diffJsonPaths,
