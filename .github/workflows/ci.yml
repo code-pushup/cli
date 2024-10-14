@@ -22,7 +22,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: Audit production dependencies
-        run: npm audit --omit=dev --omit=optional
+        run: npm audit --omit=dev --omit=optional --log-level=high
 
   format:
     runs-on: ubuntu-latest
