@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "examples/react-todos-app/src",
   "projectType": "application",
+  "tags": ["scope:internal", "type:app"],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
@@ -58,7 +59,8 @@
         "production": {
           "buildTarget": "react-todos-app:build:production"
         }
-      }
+      },
+      "dependsOn": ["build"]
     },
     "run-collect": {
       "executor": "nx:run-commands",
@@ -73,6 +75,5 @@
         }
       ]
     }
-  },
-  "tags": ["scope:internal", "type:app"]
+  }
 }

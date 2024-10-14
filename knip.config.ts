@@ -48,7 +48,7 @@ const withNxStandards = (): KnipConfigPlugin => () => {
     project: ['**/*.{ts,js,tsx,jsx}'],
     ignore: ['tmp/**', 'node_modules/**'],
     commitlint: {
-      config: ['commitlint.config.js'],
+      config: ['commitlint.config.ts'],
     },
     exclude: ['duplicates'],
     entry: [

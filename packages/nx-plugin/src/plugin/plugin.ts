@@ -1,11 +1,16 @@
-import type { CreateNodes, CreateNodesContext } from '@nx/devkit';
-import type { CreateNodesResult } from 'nx/src/utils/nx-plugin';
+/* eslint-disable import/no-deprecated,deprecation/deprecation */
+import type {
+  CreateNodes,
+  CreateNodesContext,
+  CreateNodesResult,
+} from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
 import type { CreateNodesOptions } from './types';
 import { normalizedCreateNodesContext } from './utils';
 
 // name has to be "createNodes" to get picked up by Nx
+// FIXME: refactor this to use the V2 api & remove the eslint disable on the whole file
 export const createNodes: CreateNodes = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
