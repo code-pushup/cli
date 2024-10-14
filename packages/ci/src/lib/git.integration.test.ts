@@ -4,7 +4,7 @@ import { type SimpleGit, simpleGit } from 'simple-git';
 import { type ChangedFiles, listChangedFiles } from './git';
 
 describe('git diff', () => {
-  const workDir = join('tmp', 'git-utils-test');
+  const workDir = join('tmp', 'ci', 'git-utils-test');
 
   let git: SimpleGit;
 
