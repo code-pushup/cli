@@ -7,7 +7,7 @@ export default {
   persist: {
     filename: 'report-123',
   },
-  update: {
+  upload: {
     apiKey: '123',
   },
   plugins: [myPlugin({ timeout: 42 })],
