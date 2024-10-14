@@ -1,0 +1,34 @@
+{
+  "commit": {
+    "hash": "99781f731759ef36b2fb7e4a39703965904f5376",
+    "message": "Convert JS file to TS",
+    "date": "2024-10-14T09:55:21.000Z",
+    "author": "John Doe"
+  },
+  "packageName": "@code-pushup/core",
+  "version": "0.51.0",
+  "date": "2024-10-14T09:55:21.800Z",
+  "duration": 15,
+  "categories": [],
+  "plugins": [
+    {
+      "title": "TypeScript migration",
+      "slug": "ts-migration",
+      "icon": "typescript",
+      "date": "2024-10-14T09:55:21.810Z",
+      "duration": 2,
+      "audits": [
+        {
+          "slug": "ts-files",
+          "displayValue": "100% converted",
+          "value": 100,
+          "score": 1,
+          "details": {
+            "issues": []
+          },
+          "title": "Source files converted from JavaScript to TypeScript"
+        }
+      ]
+    }
+  ]
+}

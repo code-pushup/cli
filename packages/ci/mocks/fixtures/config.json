@@ -1,0 +1,21 @@
+{
+  "persist": {
+    "outputDir": ".code-pushup",
+    "filename": "report",
+    "format": ["json", "md"]
+  },
+  "categories": [],
+  "plugins": [
+    {
+      "title": "TypeScript migration",
+      "slug": "ts-migration",
+      "icon": "typescript",
+      "audits": [
+        {
+          "slug": "ts-files",
+          "title": "Source files converted from JavaScript to TypeScript"
+        }
+      ]
+    }
+  ]
+}

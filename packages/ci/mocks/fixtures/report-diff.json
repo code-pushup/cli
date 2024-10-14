@@ -1,0 +1,61 @@
+{
+  "commits": {
+    "before": {
+      "hash": "efed65b3ffab808176c4f8670d77f8d69f71490e",
+      "message": "Initial commit",
+      "date": "2024-10-14T09:00:13.000Z",
+      "author": "John Doe"
+    },
+    "after": {
+      "hash": "2f3b5365432abb7c9949aa50ff3aa8b7a02256de",
+      "message": "Convert JS file to TS",
+      "date": "2024-10-14T09:00:13.000Z",
+      "author": "John Doe"
+    }
+  },
+  "categories": {
+    "changed": [],
+    "unchanged": [],
+    "added": [],
+    "removed": []
+  },
+  "groups": {
+    "changed": [],
+    "unchanged": [],
+    "added": [],
+    "removed": []
+  },
+  "audits": {
+    "changed": [
+      {
+        "slug": "ts-files",
+        "title": "Source files converted from JavaScript to TypeScript",
+        "plugin": {
+          "slug": "ts-migration",
+          "title": "TypeScript migration"
+        },
+        "scores": {
+          "before": 0.5,
+          "after": 1,
+          "diff": 0.5
+        },
+        "values": {
+          "before": 50,
+          "after": 100,
+          "diff": 50
+        },
+        "displayValues": {
+          "before": "50% converted",
+          "after": "100% converted"
+        }
+      }
+    ],
+    "unchanged": [],
+    "added": [],
+    "removed": []
+  },
+  "packageName": "@code-pushup/core",
+  "version": "0.51.0",
+  "date": "2024-10-14T09:00:15.452Z",
+  "duration": 1
+}
