@@ -26,7 +26,7 @@ import type {
 } from './models';
 import { runInCI } from './run';
 
-describe('code-pushup action', () => {
+describe('runInCI', () => {
   const fixturesDir = join(
     fileURLToPath(dirname(import.meta.url)),
     '..',
@@ -62,8 +62,6 @@ describe('code-pushup action', () => {
   >;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     executeProcessSpy = vi
       .spyOn(utils, 'executeProcess')
       .mockImplementation(async ({ command, args }) => {
