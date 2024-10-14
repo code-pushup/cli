@@ -25,6 +25,7 @@
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "17.3.2",
     "@poppinss/cliui": "^6.4.0",
+    "@push-based/nx-verdaccio": "^0.0.0-alpha.8",
     "@swc/helpers": "0.5.3",
     "ansis": "^3.3.0",
     "build-md": "^0.4.2",
