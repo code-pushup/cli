@@ -108,6 +108,7 @@ module.exports = {
             directory: project.data.root,
           };
           packageJson.contributors = rootPackageJson.contributors;
+          packageJson.publishConfig = { access: 'public' };
           packageJson.type = 'module';
           packageJson.main = './index.js';
           packageJson.types = './src/index.d.ts';

@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { metaDescription, tableSection } from './formatting';
+import { toUnixPath } from '../transform';
+import {
+  formatFileLink,
+  formatGitHubLink,
+  formatSourceLine,
+  linkToLocalSourceForIde,
+  metaDescription,
+  tableSection,
+} from './formatting';
 
 describe('tableSection', () => {
   it('should accept a title', () => {
@@ -110,5 +118,173 @@ describe('metaDescription', () => {
     ).toBe(
       'Audit to loading performance\n\n```\nfoo\n```\n\n[📖 Docs](http://code-pushup.dev/audits/#lcp)',
     );
+  });
+});
+
+describe('formatSourceLine', () => {
+  it.each([
+    [{ startLine: 2 }, '2'],
+    [{ startLine: 2, endLine: undefined }, '2'],
+    [{ startLine: 2, endLine: 2 }, '2'],
+    [{ startLine: 2, endLine: 3 }, '2-3'],
+  ])('should format position %o as "%s"', (position, expected) => {
+    expect(formatSourceLine(position)).toBe(expected);
+  });
+
+  it('should return an empty string when the position is missing', () => {
+    expect(formatSourceLine(undefined)).toBe('');
+  });
+});
+
+describe('linkToLocalSourceForIde', () => {
+  it('should not format the file path as a link when outputDir is undefined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+
+    expect(
+      linkToLocalSourceForIde({
+        file: toUnixPath('packages/utils/src/index.ts'),
+      }).toString(),
+    ).toBe('`packages/utils/src/index.ts`');
+  });
+
+  it('should format the file path as a link when outputDir is defined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    const filePath = toUnixPath('packages/utils/src/index.ts');
+    const outputDir = toUnixPath('.code-pushup');
+
+    expect(
+      linkToLocalSourceForIde({ file: filePath }, { outputDir }).toString(),
+    ).toBe('[`packages/utils/src/index.ts`](../packages/utils/src/index.ts)');
+  });
+
+  it('should return a link to a specific line when startLine is provided (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    const filePath = toUnixPath('packages/utils/src/index.ts');
+    const outputDir = toUnixPath('.code-pushup');
+
+    expect(
+      linkToLocalSourceForIde(
+        { file: filePath, position: { startLine: 2 } },
+        { outputDir },
+      ).toString(),
+    ).toBe(
+      '[`packages/utils/src/index.ts`](../packages/utils/src/index.ts#L2)',
+    );
+  });
+});
+
+describe('formatGitHubLink', () => {
+  beforeEach(() => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'true');
+    vi.stubEnv('GITHUB_SERVER_URL', 'https://github.com');
+    vi.stubEnv('GITHUB_REPOSITORY', 'user/repo');
+    vi.stubEnv('GITHUB_SHA', '1234567890abcdef');
+  });
+
+  it.each([
+    [
+      { startLine: 2 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2',
+    ],
+    [
+      { startLine: 2, endLine: 5 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2-L5',
+    ],
+    [
+      { startLine: 2, startColumn: 1 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 5 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1-L2C5',
+    ],
+    [
+      { startLine: 2, endLine: 5, startColumn: 1, endColumn: 6 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1-L5C6',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 1 },
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2C1',
+    ],
+  ])(
+    'should generate a GitHub repository link for the file with position %o',
+    (position, expected) => {
+      expect(formatGitHubLink(toUnixPath('src/index.ts'), position)).toBe(
+        expected,
+      );
+    },
+  );
+
+  it('should generate a GitHub repository link for the file when the position is undefined', () => {
+    expect(formatGitHubLink(toUnixPath('src/index.ts'), undefined)).toBe(
+      'https://github.com/user/repo/blob/1234567890abcdef/src/index.ts',
+    );
+  });
+});
+
+describe('formatFileLink', () => {
+  it('should return a GitHub repository link when running in GitHub Actions', () => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'true');
+    vi.stubEnv('GITHUB_SERVER_URL', 'https://github.com');
+    vi.stubEnv('GITHUB_REPOSITORY', 'user/repo');
+    vi.stubEnv('GITHUB_SHA', '1234567890abcdef');
+
+    expect(
+      formatFileLink(
+        toUnixPath('src/index.ts'),
+        { startLine: 2 },
+        toUnixPath('.code-pushup'),
+      ),
+    ).toBe(
+      `https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2`,
+    );
+  });
+
+  it.each([
+    [{ startLine: 2 }, '../src/index.ts#L2'],
+    [{ startLine: 2, endLine: 5 }, '../src/index.ts#L2'],
+    [{ startLine: 2, startColumn: 1 }, '../src/index.ts#L2'],
+  ])(
+    'should transform the file path by including position %o when running in VS Code',
+    (position, expected) => {
+      vi.stubEnv('TERM_PROGRAM', 'vscode');
+      vi.stubEnv('GITHUB_ACTIONS', 'false');
+      expect(
+        formatFileLink(
+          toUnixPath('src/index.ts'),
+          position,
+          toUnixPath('.code-pushup'),
+        ),
+      ).toBe(expected);
+    },
+  );
+
+  it('should return a relative file path when the position is undefined (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    expect(
+      formatFileLink(
+        toUnixPath('src/index.ts'),
+        undefined,
+        toUnixPath('.code-pushup'),
+      ),
+    ).toBe('../src/index.ts');
+  });
+
+  it('should return a relative file path when the environment is neither VS Code nor GitHub', () => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    expect(
+      formatFileLink(
+        toUnixPath('src/index.ts'),
+        { startLine: 2, startColumn: 1 },
+        toUnixPath('.code-pushup'),
+      ),
+    ).toBe('../src/index.ts');
   });
 });

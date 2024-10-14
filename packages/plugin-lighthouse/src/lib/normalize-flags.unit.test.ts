@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { LIGHTHOUSE_OUTPUT_PATH } from './constants';
+import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
 import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
 import type { LighthouseOptions } from './types';
@@ -46,8 +46,7 @@ describe('normalizeFlags', () => {
   const normalizedDefaults = {
     verbose: false,
     saveAssets: false,
-    // needed to pass CI on linux and windows (locally it works without headless too)
-    chromeFlags: ['--headless=shell'],
+    chromeFlags: DEFAULT_CHROME_FLAGS,
     port: 0,
     hostname: '127.0.0.1',
     view: false,

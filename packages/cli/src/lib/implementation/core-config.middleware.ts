@@ -8,22 +8,16 @@ import {
   uploadConfigSchema,
 } from '@code-pushup/models';
 import type { CoreConfigCliOptions } from './core-config.model';
+import type { FilterOptions } from './filter.model';
 import type { GeneralCliOptions } from './global.model';
-import type { OnlyPluginsOptions } from './only-plugins.model';
-import type { SkipPluginsOptions } from './skip-plugins.model';
 
 export type CoreConfigMiddlewareOptions = GeneralCliOptions &
   CoreConfigCliOptions &
-  OnlyPluginsOptions &
-  SkipPluginsOptions;
+  FilterOptions;
 
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
->(
-  processArgs: T,
-): Promise<
-  GeneralCliOptions & CoreConfig & OnlyPluginsOptions & SkipPluginsOptions
-> {
+>(processArgs: T): Promise<GeneralCliOptions & CoreConfig & FilterOptions> {
   const {
     config,
     tsconfig,

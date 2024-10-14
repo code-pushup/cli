@@ -9,7 +9,7 @@ import {
   REPORT_MOCK,
   getLogMessages,
 } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
+import { scoreReport, sortReport, ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist';
 
 describe('persistReport', () => {
@@ -17,28 +17,9 @@ describe('persistReport', () => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
 
-  it('should print a summary to stdout when no format is specified`', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      outputDir: MEMFS_VOLUME,
-      filename: 'report',
-      format: [],
-    });
-    const logs = getLogMessages(ui().logger);
-    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
-  });
-
-  it('should print a summary to stdout when all formats are specified`', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      outputDir: MEMFS_VOLUME,
-      filename: 'report',
-      format: ['md', 'json'],
-    });
-    const logs = getLogMessages(ui().logger);
-    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
-  });
-
   it('should create a report in json format', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+    await persistReport(MINIMAL_REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['json'],
@@ -60,7 +41,8 @@ describe('persistReport', () => {
   });
 
   it('should create a report in md format', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+    await persistReport(MINIMAL_REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['md'],
@@ -75,7 +57,8 @@ describe('persistReport', () => {
   });
 
   it('should create a report with categories section in all formats', async () => {
-    await persistReport(REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(REPORT_MOCK));
+    await persistReport(REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       format: ['md', 'json'],
       filename: 'report',

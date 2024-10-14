@@ -19,7 +19,59 @@ ESLint audits
   never reassigned after declared
 ● Require braces around arrow function bodies               1 warning
 ● Require the use of `===` and `!==`                        1 warning
-● ... 37 audits with perfect scores omitted for brevity ...
+● Disallow `target="_blank"` attribute without              passed
+  `rel="noreferrer"`
+● Disallow assignment operators in conditional              passed
+  expressions
+● Disallow comments from being inserted as text nodes       passed
+● Disallow direct mutation of this.state                    passed
+● Disallow duplicate properties in JSX                      passed
+● Disallow invalid regular expression strings in `RegExp`   passed
+  constructors
+● Disallow loops with a body that allows only one           passed
+  iteration
+● Disallow missing displayName in a React component         passed
+  definition
+● Disallow missing React when using JSX                     passed
+● Disallow negating the left operand of relational          passed
+  operators
+● Disallow passing of children as props                     passed
+● Disallow React to be incorrectly marked as unused         passed
+● Disallow reassigning `const` variables                    passed
+● Disallow the use of `debugger`                            passed
+● Disallow the use of undeclared variables unless           passed
+  mentioned in `/*global */` comments
+● Disallow undeclared variables in JSX                      passed
+● Disallow unescaped HTML entities from appearing in        passed
+  markup
+● Disallow usage of deprecated methods                      passed
+● Disallow usage of findDOMNode                             passed
+● Disallow usage of isMounted                               passed
+● Disallow usage of the return value of ReactDOM.render     passed
+● Disallow usage of unknown DOM property                    passed
+● Disallow use of optional chaining in contexts where the   passed
+  `undefined` value is not allowed
+● Disallow using Object.assign with an object literal as    passed
+  the first argument and prefer the use of object spread
+  instead
+● Disallow using string references                          passed
+● Disallow variables used in JSX to be incorrectly marked   passed
+  as unused
+● Disallow when a DOM element is using both children and    passed
+  dangerouslySetInnerHTML
+● Enforce a maximum number of lines per file                passed
+● Enforce camelcase naming convention                       passed
+● Enforce comparing `typeof` expressions against valid      passed
+  strings
+● Enforce consistent brace style for all control            passed
+  statements
+● Enforce ES5 or ES6 class for returning value in render    passed
+  function
+● enforces the Rules of Hooks                               passed
+● Require `let` or `const` instead of `var`                 passed
+● Require calls to `isNaN()` when checking for `NaN`        passed
+● Require or disallow "Yoda" conditions                     passed
+● Require using arrow functions for callbacks               passed
 
 
 Lighthouse audits
@@ -30,7 +82,8 @@ Lighthouse audits
 ● First Contentful Paint                                    1.2 s
 ● Largest Contentful Paint                                  1.5 s
 ● Speed Index                                               1.2 s
-● ... 2 audits with perfect scores omitted for brevity ...
+● Cumulative Layout Shift                                   0
+● Total Blocking Time                                       0 ms
 
 Categories
 

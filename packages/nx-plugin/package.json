@@ -1,8 +1,11 @@
 {
   "name": "@code-pushup/nx-plugin",
-  "version": "0.29.0",
+  "version": "0.51.0",
   "license": "MIT",
   "description": "Nx plugin to integrate the Code PushUp CLI into your workspace 🛠️",
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "code-pushup.dev",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues"
@@ -16,9 +19,9 @@
     "@nx/devkit": "^17.1.3",
     "tslib": "2.6.3",
     "nx": "^17.1.3",
-    "@code-pushup/models": "*",
+    "@code-pushup/models": "0.51.0",
     "zod": "^3.22.4",
-    "@code-pushup/utils": "*"
+    "@code-pushup/utils": "0.51.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

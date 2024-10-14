@@ -1,4 +1,3 @@
-import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './dist/packages/plugin-coverage';
@@ -107,11 +106,7 @@ export const lighthouseCoreConfig = async (
   url: string,
 ): Promise<CoreConfig> => {
   return {
-    plugins: [
-      await lighthousePlugin(url, {
-        chromeFlags: DEFAULT_FLAGS.concat(['--headless']),
-      }),
-    ],
+    plugins: [await lighthousePlugin(url)],
     categories: lighthouseCategories,
   };
 };

@@ -2,6 +2,7 @@ import { lighthousePlugin } from './lib/lighthouse-plugin';
 
 export { LIGHTHOUSE_REPORT_NAME } from './lib/runner';
 export {
+  DEFAULT_CHROME_FLAGS,
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_OUTPUT_PATH,
 } from './lib/constants';

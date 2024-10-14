@@ -7,7 +7,7 @@ import {
 } from 'lighthouse';
 import { join } from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
-import { LIGHTHOUSE_OUTPUT_PATH } from '../constants';
+import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants';
 
 const { audits, categories } = defaultConfig;
 
@@ -89,8 +89,7 @@ export const DEFAULT_CLI_FLAGS = {
   // https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80
   verbose: false,
   saveAssets: false,
-  // needed to pass CI on linux and windows (locally it works without headless too)
-  chromeFlags: ['--headless=shell'],
+  chromeFlags: DEFAULT_CHROME_FLAGS,
   port: 0,
   hostname: '127.0.0.1',
   view: false,
