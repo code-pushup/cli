@@ -28,6 +28,14 @@ import type {
 } from './models';
 import { type ProjectConfig, listMonorepoProjects } from './monorepo';
 
+/**
+ * Runs Code PushUp in CI environment.
+ * @param refs Git branches (head and optional base)
+ * @param api API client for given provider
+ * @param options Additional options (e.g. monorepo mode)
+ * @param git instance of simple-git - useful for testing
+ * @returns result of run (standalone or monorepo)
+ */
 // eslint-disable-next-line max-lines-per-function
 export async function runInCI(
   refs: GitRefs,
