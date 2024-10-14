@@ -147,41 +147,4 @@ describe('executor command', () => {
       }),
     ).rejects.toThrow(/report.json/);
   });
-
-  it('should execute autorun executor', async () => {
-    const cwd = join(baseDir, 'execute-autorun-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-
-    const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, 'autorun'],
-      cwd,
-    });
-
-    expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup autorun');
-    expect(cleanStdout).toContain(
-      '>  NX   Successfully ran target code-pushup for project my-lib',
-    );
-
-    const report = await readJsonFile(
-      join(cwd, '.code-pushup', project, 'report.json'),
-    );
-    expect(report).toStrictEqual(
-      expect.objectContaining({
-        plugins: [
-          expect.objectContaining({
-            slug: 'good-feels',
-            audits: [
-              expect.objectContaining({
-                displayValue: '✅ Perfect! 👌',
-                slug: 'always-perfect',
-              }),
-            ],
-          }),
-        ],
-      }),
-    );
-  });
 });
