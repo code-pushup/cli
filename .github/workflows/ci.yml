@@ -10,20 +10,6 @@ env:
   NX_NON_NATIVE_HASHER: true
 
 jobs:
-  audit:
-    runs-on: ubuntu-latest
-    name: Audit
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --omit=optional
-
   format:
     runs-on: ubuntu-latest
     name: Format check

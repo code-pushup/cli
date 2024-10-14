@@ -25,7 +25,6 @@
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "17.3.2",
     "@poppinss/cliui": "^6.4.0",
-    "@push-based/nx-verdaccio": "^0.0.0-alpha.8",
     "@swc/helpers": "0.5.3",
     "ansis": "^3.3.0",
     "build-md": "^0.4.2",
@@ -46,6 +45,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@push-based/nx-verdaccio": "^0.0.0-alpha.9",
     "@beaussan/nx-knip": "0.0.5-13",
     "@code-pushup/eslint-config": "^0.2.1",
     "@commitlint/cli": "^17.7.1",
