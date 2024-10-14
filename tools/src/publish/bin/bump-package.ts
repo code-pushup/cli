@@ -26,7 +26,7 @@ try {
   if (version != null) {
     if (packageJson.version === version) {
       console.info(`Package version is already set to ${version}.`);
-      process.exit(0);
+      // process.exit(0);
     }
 
     console.info(
@@ -34,7 +34,11 @@ try {
     );
     writeFileSync(
       packageJsonFile,
-      JSON.stringify({ ...packageJson, version }, null, 2),
+      JSON.stringify(
+        { ...packageJson, version, description: 'E2E test' },
+        null,
+        2,
+      ),
     );
     process.exit(0);
   }
