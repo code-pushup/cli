@@ -8,7 +8,7 @@ import {
   materializeTree,
 } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import { osAgnosticPath, removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 function relativePathToCwd(testDir: string): string {
@@ -37,10 +37,12 @@ async function addTargetToWorkspace(
     plugins: [
       {
         // @TODO replace with inline plugin
-        fileImports: `import {customPlugin} from "${join(
-          relativePathToCwd(cwd),
-          pathRelativeToPackage,
-          'dist/testing/test-utils',
+        fileImports: `import {customPlugin} from "${osAgnosticPath(
+          join(
+            relativePathToCwd(cwd),
+            pathRelativeToPackage,
+            'dist/testing/test-utils',
+          ),
         )}";`,
         codeStrings: 'customPlugin()',
       },
