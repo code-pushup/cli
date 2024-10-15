@@ -51,7 +51,7 @@ Root/
 └── ...
 ```
 
-For details visit the [configuration generator docs](../../src/generators/configuration/README.md).
+For details visit the [configuration generator docs](../generators/configuration/README.md).
 
 With the configuration from above a `code-pushup` target is now present.
 
