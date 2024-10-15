@@ -1,30 +1,25 @@
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
+import { initGitRepo } from '@code-pushup/test-utils';
 import { type ChangedFiles, listChangedFiles } from './git';
 
 describe('git diff', () => {
-  const workDir = join('tmp', 'ci', 'git-utils-test');
+  const baseDir = join('tmp', 'ci', 'git-utils-test');
 
   let git: SimpleGit;
 
   beforeAll(async () => {
-    await rm(workDir, { recursive: true, force: true });
-    await mkdir(workDir, { recursive: true });
+    await rm(baseDir, { recursive: true, force: true });
+    git = await initGitRepo(simpleGit, { baseDir });
 
-    git = simpleGit(workDir);
-    await git.init();
-    await git.addConfig('user.name', 'John Doe');
-    await git.addConfig('user.email', 'john.doe@example.com');
-    await git.branch(['-M', 'main']);
-
-    await writeFile(join(workDir, 'LICENSE'), 'MIT License\n\n...');
+    await writeFile(join(baseDir, 'LICENSE'), 'MIT License\n\n...');
     await writeFile(
-      join(workDir, 'index.js'),
+      join(baseDir, 'index.js'),
       'export const sum = values => values.reduce((acc, val) => acc + val, 0)\n',
     );
     await writeFile(
-      join(workDir, 'package.json'),
+      join(baseDir, 'package.json'),
       JSON.stringify(
         { name: 'sum', type: 'module', main: 'index.js' },
         null,
@@ -35,11 +30,11 @@ describe('git diff', () => {
     await git.commit('Initial commit');
 
     await git.checkoutLocalBranch('testing');
-    await mkdir(join(workDir, 'src'));
-    await mkdir(join(workDir, 'test'));
-    await rename(join(workDir, 'index.js'), join(workDir, 'src/index.js'));
+    await mkdir(join(baseDir, 'src'));
+    await mkdir(join(baseDir, 'test'));
+    await rename(join(baseDir, 'index.js'), join(baseDir, 'src/index.js'));
     await writeFile(
-      join(workDir, 'test/index.test.js'),
+      join(baseDir, 'test/index.test.js'),
       [
         "import assert from 'node:assert'",
         "import test from 'node:test'",
@@ -53,7 +48,7 @@ describe('git diff', () => {
         .join(''),
     );
     await writeFile(
-      join(workDir, 'package.json'),
+      join(baseDir, 'package.json'),
       JSON.stringify(
         {
           name: 'sum',
@@ -70,7 +65,7 @@ describe('git diff', () => {
   });
 
   afterAll(async () => {
-    await rm(workDir, { recursive: true, force: true });
+    await rm(baseDir, { recursive: true, force: true });
   });
 
   it('should list added, modified and renamed files', async () => {
