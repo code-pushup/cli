@@ -114,6 +114,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "./tools/src/debug/debug.plugin.ts",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
@@ -125,6 +126,14 @@
           "filterByTags": ["publishable"]
         }
       }
+    },
+    {
+      "plugin": "./tools/src/publish/publish.plugin.ts",
+      "options": { "verbose": true }
+    },
+    {
+      "plugin": "./tools/src/verdaccio/verdaccio.plugin.ts",
+      "options": { "verbose": true }
     }
   ]
 }
