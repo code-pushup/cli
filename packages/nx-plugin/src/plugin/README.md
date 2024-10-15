@@ -1,6 +1,6 @@
 # @code-pushup/nx-plugin
 
-The Nx Plugin for CodePushup, an open source code quality and conformance tool.
+The Nx Plugin for [Code PushUp](https://github.com/code-pushup/cli#readme), an open source code quality and conformance tool.
 
 Why should you use this plugin?
 
