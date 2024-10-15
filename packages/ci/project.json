@@ -1,0 +1,35 @@
+{
+  "name": "ci",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ci/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/ci",
+        "main": "packages/ci/src/index.ts",
+        "tsConfig": "packages/ci/tsconfig.lib.json",
+        "assets": ["packages/ci/*.md"],
+        "esbuildConfig": "esbuild.config.js"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/ci/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/ci/vite.config.integration.ts"
+      }
+    }
+  },
+  "tags": ["scope:tooling", "type:feature", "publishable"]
+}

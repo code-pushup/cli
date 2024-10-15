@@ -1,0 +1,42 @@
+{
+  "commit": {
+    "hash": "efed65b3ffab808176c4f8670d77f8d69f71490e",
+    "message": "Initial commit",
+    "date": "2024-10-14T09:00:13.000Z",
+    "author": "John Doe"
+  },
+  "packageName": "@code-pushup/core",
+  "version": "0.51.0",
+  "date": "2024-10-14T09:00:14.969Z",
+  "duration": 14,
+  "categories": [],
+  "plugins": [
+    {
+      "title": "TypeScript migration",
+      "slug": "ts-migration",
+      "icon": "typescript",
+      "date": "2024-10-14T09:00:14.978Z",
+      "duration": 2,
+      "audits": [
+        {
+          "slug": "ts-files",
+          "displayValue": "50% converted",
+          "value": 50,
+          "score": 0.5,
+          "details": {
+            "issues": [
+              {
+                "message": "Use .ts file extension instead of .js",
+                "severity": "warning",
+                "source": {
+                  "file": "index.js"
+                }
+              }
+            ]
+          },
+          "title": "Source files converted from JavaScript to TypeScript"
+        }
+      ]
+    }
+  ]
+}
