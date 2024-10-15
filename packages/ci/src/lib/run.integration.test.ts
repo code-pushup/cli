@@ -15,6 +15,7 @@ import {
   simpleGit,
 } from 'simple-git';
 import type { MockInstance } from 'vitest';
+import { initGitRepo } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
@@ -107,18 +108,13 @@ describe('runInCI', () => {
     );
     await writeFile(join(workDir, 'index.js'), 'console.log("Hello, world!")');
 
-    git = simpleGit(workDir);
+    git = await initGitRepo(simpleGit, { baseDir: workDir });
 
     vi.spyOn(git, 'fetch').mockResolvedValue({} as FetchResult);
     vi.spyOn(git, 'diffSummary').mockResolvedValue({
       files: [{ file: 'index.ts', binary: false }],
     } as DiffResult);
     vi.spyOn(git, 'diff').mockResolvedValue('');
-
-    await git.init();
-    await git.addConfig('user.name', 'John Doe');
-    await git.addConfig('user.email', 'john.doe@example.com');
-    await git.branch(['-M', 'main']);
 
     await git.add('index.js');
     await git.add('code-pushup.config.ts');

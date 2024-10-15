@@ -4,29 +4,22 @@ import type { SimpleGit, SimpleGitFactory } from 'simple-git';
 
 export type GitConfig = { name: string; email: string };
 
-export async function emptyGitMock(
-  git: SimpleGitFactory,
+export async function initGitRepo(
+  simpleGit: SimpleGitFactory,
   opt: { baseDir: string; config?: GitConfig },
 ): Promise<SimpleGit> {
   const { baseDir, config } = opt;
   const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
   await mkdir(baseDir, { recursive: true });
-  const emptyGit = git(baseDir);
-  await emptyGit.init();
-  await emptyGit.addConfig('user.name', name);
-  await emptyGit.addConfig('user.email', email);
-  return emptyGit;
-}
-
-export async function addBranch(
-  git: SimpleGit,
-  branchName = 'master',
-): Promise<SimpleGit> {
-  await git.branch([branchName]);
+  const git = simpleGit(baseDir);
+  await git.init();
+  await git.addConfig('user.name', name);
+  await git.addConfig('user.email', email);
+  await git.branch(['-M', 'main']);
   return git;
 }
 
-export async function addUpdateFile(
+export async function commitFile(
   git: SimpleGit,
   opt?: {
     file?: { name?: string; content?: string };
@@ -41,7 +34,7 @@ export async function addUpdateFile(
     commitMsg = 'Create README',
     tagName,
   } = opt ?? {};
-  const { name = 'README.md', content = `# hello-world-${Math.random()}` } =
+  const { name = 'README.md', content = `# hello-world-${Math.random()}\n` } =
     file ?? {};
   await writeFile(join(baseDir, name), content);
   await git.add(name);

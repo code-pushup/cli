@@ -2,7 +2,7 @@ import { mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect } from 'vitest';
-import { addUpdateFile, emptyGitMock } from '@code-pushup/test-utils';
+import { commitFile, initGitRepo } from '@code-pushup/test-utils';
 import {
   getCurrentBranchOrTag,
   getHashes,
@@ -22,7 +22,7 @@ describe('getCurrentBranchOrTag', () => {
   let currentBranchOrTagGitMock: SimpleGit;
 
   beforeAll(async () => {
-    currentBranchOrTagGitMock = await emptyGitMock(simpleGit, { baseDir });
+    currentBranchOrTagGitMock = await initGitRepo(simpleGit, { baseDir });
   });
 
   afterAll(async () => {
@@ -39,21 +39,21 @@ describe('getCurrentBranchOrTag', () => {
 
   describe('with a branch and commits clean', () => {
     beforeAll(async () => {
-      await addUpdateFile(currentBranchOrTagGitMock, {
+      await commitFile(currentBranchOrTagGitMock, {
         baseDir,
         commitMsg: 'init commit msg',
       });
-      await currentBranchOrTagGitMock.checkout(['master']);
+      await currentBranchOrTagGitMock.checkout(['main']);
     });
 
     afterAll(async () => {
-      await currentBranchOrTagGitMock.checkout(['master']);
+      await currentBranchOrTagGitMock.checkout(['main']);
     });
 
     it('getCurrentBranchOrTag should log current branch', async () => {
       await expect(
         getCurrentBranchOrTag(currentBranchOrTagGitMock),
-      ).resolves.toBe('master');
+      ).resolves.toBe('main');
     });
   });
 });
@@ -63,7 +63,7 @@ describe('getLatestCommit', () => {
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
-    emptyGit = await emptyGitMock(simpleGit, { baseDir });
+    emptyGit = await initGitRepo(simpleGit, { baseDir });
   });
 
   afterAll(async () => {
@@ -72,12 +72,12 @@ describe('getLatestCommit', () => {
 
   describe('with a branch and commits clean', () => {
     beforeAll(async () => {
-      await addUpdateFile(emptyGit, { baseDir, commitMsg: 'Create README' });
-      await emptyGit.checkout(['master']);
+      await commitFile(emptyGit, { baseDir, commitMsg: 'Create README' });
+      await emptyGit.checkout(['main']);
     });
 
     afterAll(async () => {
-      await emptyGit.checkout(['master']);
+      await emptyGit.checkout(['main']);
     });
 
     it('should log latest commit', async () => {
@@ -96,7 +96,7 @@ describe('getHashes', () => {
   let gitMock: SimpleGit;
 
   beforeAll(async () => {
-    gitMock = await emptyGitMock(simpleGit, { baseDir });
+    gitMock = await initGitRepo(simpleGit, { baseDir });
   });
 
   afterAll(async () => {
@@ -106,7 +106,7 @@ describe('getHashes', () => {
   describe('without a branch and commits', () => {
     it('should throw', async () => {
       await expect(getHashes({}, gitMock)).rejects.toThrow(
-        "your current branch 'master' does not have any commits yet",
+        "your current branch 'main' does not have any commits yet",
       );
     });
   });
@@ -114,17 +114,17 @@ describe('getHashes', () => {
   describe('with a branch and commits clean', () => {
     let commits: { hash: string; message: string }[];
     beforeAll(async () => {
-      await addUpdateFile(gitMock, { baseDir, commitMsg: 'Create README' });
-      await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 1' });
-      await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 2' });
-      await addUpdateFile(gitMock, { baseDir, commitMsg: 'Update README 3' });
+      await commitFile(gitMock, { baseDir, commitMsg: 'Create README' });
+      await commitFile(gitMock, { baseDir, commitMsg: 'Update README 1' });
+      await commitFile(gitMock, { baseDir, commitMsg: 'Update README 2' });
+      await commitFile(gitMock, { baseDir, commitMsg: 'Update README 3' });
       commits = await getAllCommits(gitMock);
 
-      await gitMock.checkout(['master']);
+      await gitMock.checkout(['main']);
     });
 
     afterAll(async () => {
-      await gitMock.checkout(['master']);
+      await gitMock.checkout(['main']);
     });
 
     it('should get all commits from log if no option is passed', async () => {
@@ -178,7 +178,7 @@ describe('getSemverTags', () => {
 
   beforeAll(async () => {
     await mkdir(baseDir, { recursive: true });
-    gitSemverTagsMock = await emptyGitMock(simpleGit, { baseDir });
+    gitSemverTagsMock = await initGitRepo(simpleGit, { baseDir });
   });
 
   afterAll(async () => {
@@ -195,15 +195,15 @@ describe('getSemverTags', () => {
 
   describe('with a branch and only commits clean', () => {
     beforeAll(async () => {
-      await addUpdateFile(gitSemverTagsMock, {
+      await commitFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'Create README',
       });
-      await gitSemverTagsMock.checkout(['master']);
+      await gitSemverTagsMock.checkout(['main']);
     });
 
     afterAll(async () => {
-      await gitSemverTagsMock.checkout(['master']);
+      await gitSemverTagsMock.checkout(['main']);
     });
 
     it('should list no tags on a branch with no tags', async () => {
@@ -215,23 +215,23 @@ describe('getSemverTags', () => {
 
   describe('with a branch and tagged commits clean', () => {
     beforeAll(async () => {
-      await gitSemverTagsMock.checkout(['master']);
-      await addUpdateFile(gitSemverTagsMock, {
+      await gitSemverTagsMock.checkout(['main']);
+      await commitFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'Create README',
       });
 
-      await addUpdateFile(gitSemverTagsMock, {
+      await commitFile(gitSemverTagsMock, {
         baseDir,
         commitMsg: 'release v1',
         tagName: '1.0.0',
       });
 
-      await gitSemverTagsMock.checkout(['master']);
+      await gitSemverTagsMock.checkout(['main']);
     });
 
     afterAll(async () => {
-      await gitSemverTagsMock.checkout(['master']);
+      await gitSemverTagsMock.checkout(['main']);
     });
 
     it('should list all tags on the branch', async () => {
