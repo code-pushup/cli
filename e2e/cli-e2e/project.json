@@ -11,6 +11,11 @@
         "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
       }
     },
+    "nxv-env-setup": {
+      "options": {
+        "environmentRoot": "examples/react-todos-app"
+      }
+    },
     "e2e-old": {
       "executor": "@nx/vite:test",
       "options": {
