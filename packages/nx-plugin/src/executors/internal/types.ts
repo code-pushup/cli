@@ -26,6 +26,7 @@ export type GlobalExecutorOptions = {
     | 'autorun'
     | 'print-config'
     | 'compare'
+    | 'merge-diffs'
     | 'history';
   bin?: string;
   verbose?: boolean;
