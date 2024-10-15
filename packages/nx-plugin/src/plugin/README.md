@@ -77,7 +77,7 @@ Pass positional arguments to execute a specific command, use named arguments to 
 - `nx run <project-name>:code-pushup collect`
 - `nx run <project-name>:code-pushup upload --upload.server=https://staging.code-pushup.dev`
 
-For a full list of command visit the [CodePushup CLI documentation](../../../cli/README.md#commands).
+For a full list of command visit the [Code PushUp CLI documentation](../../../cli/README.md#commands).
 
 ## Options
 
