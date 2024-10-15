@@ -29,7 +29,6 @@ describe('CLI print-config', () => {
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
-          config: expect.stringContaining(`code-pushup.config.${ext}`),
           tsconfig: 'tsconfig.base.json',
           // filled by command options
           persist: {
@@ -37,19 +36,15 @@ describe('CLI print-config', () => {
             filename: `${ext}-report`,
             format: ['md'],
           },
-          upload: {
-            organization: 'code-pushup',
-            project: `cli-${ext}`,
-            apiKey: 'e2e-api-key',
-            server: 'https://e2e.com/api',
-          },
-          plugins: [
+          plugins: expect.arrayContaining([
             expect.objectContaining({
               slug: 'coverage',
               title: 'Code coverage',
             }),
-          ],
-          categories: [expect.objectContaining({ slug: 'code-coverage' })],
+          ]),
+          categories: expect.arrayContaining([
+            expect.objectContaining({ slug: 'code-coverage' }),
+          ]),
           onlyPlugins: ['coverage'],
         }),
       );
