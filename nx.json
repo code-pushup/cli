@@ -115,27 +115,9 @@
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {
+          "environmentsDir": "tmp/e2e",
           "targetNames": ["e2e"]
         }
-      }
-    },
-    "./tools/src/debug/debug.plugin.ts",
-    {
-      "plugin": "./tools/src/npm/npm.plugin.ts",
-      "options": {
-        "verbose": true
-      }
-    },
-    {
-      "plugin": "./tools/src/publish/publish.plugin.ts",
-      "options": {
-        "verbose": true
-      }
-    },
-    {
-      "plugin": "./tools/src/verdaccio/verdaccio.plugin.ts",
-      "options": {
-        "verbose": true
       }
     }
   ]
