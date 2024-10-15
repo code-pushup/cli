@@ -5,6 +5,7 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type Format,
 } from '@code-pushup/models';
+import { projectToFilename } from '@code-pushup/utils';
 
 export type PersistedCliFiles<T extends Format = Format> =
   PersistedCliFilesFormats<T> & {
@@ -87,10 +88,6 @@ export function findPersistedFiles(
       files: Object.values(filePaths),
     },
   };
-}
-
-export function projectToFilename(project: string): string {
-  return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
 }
 
 function createFilename(project: string | undefined): string {

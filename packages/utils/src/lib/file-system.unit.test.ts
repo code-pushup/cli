@@ -10,6 +10,7 @@ import {
   filePathToCliArg,
   findLineNumberInText,
   logMultipleFileResults,
+  projectToFilename,
 } from './file-system';
 import * as logResults from './log-results';
 
@@ -146,5 +147,16 @@ describe('filePathToCliArg', () => {
     expect(filePathToCliArg('My Project/index.js')).toBe(
       '"My Project/index.js"',
     );
+  });
+});
+
+describe('projectToFilename', () => {
+  it.each([
+    ['frontend', 'frontend'],
+    ['@code-pushup/utils', 'code-pushup-utils'],
+    ['Web API', 'Web-API'],
+    ['backend/shared/auth', 'backend-shared-auth'],
+  ])('should convert project name %p to file name %p', (project, file) => {
+    expect(projectToFilename(project)).toBe(file);
   });
 });
