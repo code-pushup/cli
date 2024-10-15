@@ -26,7 +26,6 @@ try {
   if (version != null) {
     if (packageJson.version === version) {
       console.info(`Package version is already set to ${version}.`);
-      // process.exit(0);
     }
 
     console.info(
