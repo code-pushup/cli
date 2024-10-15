@@ -1,4 +1,4 @@
-# ci
+# @code-pushup/ci
 
 [![npm](https://img.shields.io/npm/v/%40code-pushup%2Fci.svg)](https://www.npmjs.com/package/@code-pushup/ci)
 [![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcli)](https://npmtrends.com/@code-pushup/ci)
@@ -74,13 +74,13 @@ This will additionally compare reports from both source and target branches and 
 The PR flow requires interacting with the Git provider's API to post a comparison comment.
 Wrap these requests in functions and pass them in as an object which configures the provider.
 
-| Property                 | Required | Type                                             | Description                                                                                                               |
-| :----------------------- | :------: | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| `createComment`          |   yes    | `(body: string) => Promise<Comment>`             | Posts a new comment to PR                                                                                                 |
-| `updateComment`          |   yes    | `(id: number, body: string) => Promise<Comment>` | Updates existing PR comment                                                                                               |
-| `listComments`           |   yes    | `() => Promise<Comment>`                         | Fetches all comments from PR                                                                                              |
-| `maxCommentChars`        |   yes    | `number`                                         | Character limit for comment body                                                                                          |
-| `downloadReportArtifact` |    no    | `() => Promise<string \| null>`                  | Fetches previous report for base branch (returns path to downloaded `report.json`) - used as cache to speed up comparison |
+| Property                 | Required | Type                                             | Description                                                                                                              |
+| :----------------------- | :------: | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `createComment`          |   yes    | `(body: string) => Promise<Comment>`             | Posts a new comment to PR                                                                                                |
+| `updateComment`          |   yes    | `(id: number, body: string) => Promise<Comment>` | Updates existing PR comment                                                                                              |
+| `listComments`           |   yes    | `() => Promise<Comment[]>`                       | Fetches all comments from PR                                                                                             |
+| `maxCommentChars`        |   yes    | `number`                                         | Character limit for comment body                                                                                         |
+| `downloadReportArtifact` |    no    | `() => Promise<string \| null>`                  | Fetches previous report for base branch (returns path to downloaded `report.json`), used as cache to speed up comparison |
 
 A `Comment` object has the following required properties:
 
@@ -94,17 +94,19 @@ A `Comment` object has the following required properties:
 
 Optionally, you can override default options for further customization:
 
-| Property          | Type                      | Default                                                       | Description                                                                       |
-| :---------------- | :------------------------ | :------------------------------------------------------------ | :-------------------------------------------------------------------------------- |
-| `monorepo`        | `boolean \| MonorepoTool` | `false`                                                       | Enables [monorepo mode](#monorepo-mode)                                           |
-| `projects`        | `string[] \| null`        | `null`                                                        | Custom projects configuration for [monorepo mode](#monorepo-mode)                 |
-| `task`            | `string`                  | `'code-pushup'`                                               | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode) |
-| `directory`       | `string`                  | `process.cwd()`                                               | Directory in which Code PushUp CLI should run                                     |
-| `config`          | `string \| null`          | see [`@code-pushup/cli` docs](../cli/README.md#configuration) | Path to config file (`--config` option)                                           |
-| `silent`          | `boolean`                 | `false`                                                       | Toggles if logs from Code PushUp CLI are printed                                  |
-| `bin`             | `string`                  | `'npx --no-install code-pushup'`                              | Command for executing Code PushUp CLI                                             |
-| `detectNewIssues` | `boolean`                 | `true`                                                        | Toggles if new issues should be detected and returned in `newIssues` property     |
-| `logger`          | `Logger`                  | `console`                                                     | Logger for reporting progress and encountered problems                            |
+| Property          | Type                      | Default                          | Description                                                                       |
+| :---------------- | :------------------------ | :------------------------------- | :-------------------------------------------------------------------------------- |
+| `monorepo`        | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                           |
+| `projects`        | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                 |
+| `task`            | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode) |
+| `directory`       | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                     |
+| `config`          | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                           |
+| `silent`          | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                     |
+| `bin`             | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                             |
+| `detectNewIssues` | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property     |
+| `logger`          | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                            |
+
+[^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
 The `Logger` object has the following required properties:
 
@@ -120,9 +122,9 @@ The `Logger` object has the following required properties:
 By default, it is assumed that Code PushUp is set up to run on the whole repo with one command (_standalone mode_).
 If you want to run Code PushUp on multiple projects separately, you should enable [_monorepo mode_](#monorepo-mode).
 
-In standalone mode, the resolved object will include paths to report files (JSON and Markdown formats), as well as diff files, comment ID and new issues in case of PR comparisons.
-
 ### Standalone result
+
+In standalone mode, the resolved object will include paths to report files (JSON and Markdown formats), as well as diff files, comment ID and new issues in case of PR comparisons.
 
 ```ts
 const result = await runInCI(refs, api);
@@ -145,7 +147,7 @@ For monorepo setups, Code PushUp reports can be collected and compared
 individually per project. All project comparisons are then combined into a
 single PR comment.
 
-Use the `monorepo` option to active monorepo mode:
+Use the `monorepo` option to activate monorepo mode:
 
 ```ts
 await runInCI(refs, api, {
@@ -159,7 +161,7 @@ The following tools are supported out of the box:
 - [Nx](https://nx.dev/)
 - [Turborepo](https://turbo.build/)
 - [Yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/)
-- [PNPM workspace](https://pnpm.io/workspaces)
+- [pnpm workspace](https://pnpm.io/workspaces)
 - [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces)
 
 If you're using one of these tools, you can also skip auto-detection by setting
@@ -167,7 +169,7 @@ If you're using one of these tools, you can also skip auto-detection by setting
 
 If none of these tools are detected, then the fallback is to run Code PushUp in
 all folders which have a `package.json` file. If that's not what you want, then
-you can also configure folder patterns using the `projects` option (supports glob patterns):
+you can also configure folder patterns using the `projects` option (supports globs):
 
 ```ts
 await runInCI(refs, api, {
