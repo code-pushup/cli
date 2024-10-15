@@ -54,7 +54,10 @@ describe('CLI collect', () => {
       command: 'npx',
       args: [
         '@code-pushup/cli',
-         'collect', '--no-progress', '--onlyPlugins=eslint'],
+        'collect',
+        '--no-progress',
+        '--onlyPlugins=eslint',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
@@ -130,7 +133,12 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--persist.format=md', '--no-progress'],
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--persist.format=md',
+        '--no-progress',
+      ],
       cwd: 'examples/react-todos-app',
     });
 
