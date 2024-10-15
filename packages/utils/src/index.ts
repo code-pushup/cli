@@ -18,6 +18,7 @@ export {
   importModule,
   logMultipleFileResults,
   pluginWorkDir,
+  projectToFilename,
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,

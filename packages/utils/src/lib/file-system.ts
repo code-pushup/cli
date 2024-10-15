@@ -87,6 +87,7 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
 export function pluginWorkDir(slug: string): string {
   return join('node_modules', '.code-pushup', slug);
 }
+
 export type CrawlFileSystemOptions<T> = {
   directory: string;
   pattern?: string | RegExp;
@@ -132,4 +133,8 @@ export function findLineNumberInText(
 export function filePathToCliArg(path: string): string {
   // needs to be escaped if spaces included
   return `"${path}"`;
+}
+
+export function projectToFilename(project: string): string {
+  return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
 }
