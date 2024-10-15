@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -217,19 +218,19 @@ describe('listMonorepoProjects', () => {
       }),
     ).resolves.toEqual([
       {
-        name: 'backend/api',
+        name: join('backend', 'api'),
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/backend/api`,
+        directory: join(MEMFS_VOLUME, 'backend', 'api'),
       },
       {
-        name: 'backend/auth',
+        name: join('backend', 'auth'),
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/backend/auth`,
+        directory: join(MEMFS_VOLUME, 'backend', 'auth'),
       },
       {
         name: 'frontend',
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/frontend`,
+        directory: join(MEMFS_VOLUME, 'frontend'),
       },
     ] satisfies ProjectConfig[]);
   });
@@ -258,22 +259,22 @@ describe('listMonorepoProjects', () => {
       {
         name: 'my-app',
         bin: 'npx --no-install code-pushup',
-        directory: MEMFS_VOLUME,
+        directory: join(MEMFS_VOLUME),
       },
       {
         name: 'migrate',
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/scripts/db/migrate`,
+        directory: join(MEMFS_VOLUME, 'scripts', 'db', 'migrate'),
       },
       {
         name: 'seed',
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/scripts/db/seed`,
+        directory: join(MEMFS_VOLUME, 'scripts', 'db', 'seed'),
       },
       {
         name: 'generate-token',
         bin: 'npx --no-install code-pushup',
-        directory: `${MEMFS_VOLUME}/scripts/generate-token`,
+        directory: join(MEMFS_VOLUME, 'scripts', 'generate-token'),
       },
     ] satisfies ProjectConfig[]);
   });
