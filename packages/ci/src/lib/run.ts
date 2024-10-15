@@ -6,11 +6,11 @@ import { stringifyError } from '@code-pushup/utils';
 import {
   type CommandContext,
   type PersistedCliFiles,
-  collect,
-  compare,
   createCommandContext,
-  mergeDiffs,
-  printConfig,
+  runCollect,
+  runCompare,
+  runMergeDiffs,
+  runPrintConfig,
 } from './cli';
 import { commentOnPR } from './comment';
 import { DEFAULT_SETTINGS } from './constants';
@@ -62,7 +62,7 @@ export async function runInCI(
       )
       .filter((file): file is string => file != null);
     if (diffJsonPaths.length > 0) {
-      const { mdFilePath, artifactData: diffArtifact } = await mergeDiffs(
+      const { mdFilePath, artifactData: diffArtifact } = await runMergeDiffs(
         diffJsonPaths,
         createCommandContext(settings, projects[0]),
       );
@@ -123,7 +123,7 @@ async function runOnProject(args: {
   }
 
   const { jsonFilePath: currReportPath, artifactData: reportArtifact } =
-    await collect(ctx);
+    await runCollect(ctx);
   const currReport = await fs.readFile(currReportPath, 'utf8');
   logger.debug(`Collected current report at ${currReportPath}`);
 
@@ -154,7 +154,7 @@ async function runOnProject(args: {
   await fs.writeFile(prevPath, prevReport);
   logger.debug(`Saved reports to ${currPath} and ${prevPath}`);
 
-  const comparisonFiles = await compare(
+  const comparisonFiles = await runCompare(
     { before: prevPath, after: currPath, label: project?.name },
     ctx,
   );
@@ -217,7 +217,7 @@ async function collectPreviousReport(args: {
     logger.info(`Switched to base branch ${base.ref}`);
 
     try {
-      await printConfig({ ...ctx, silent: !settings.debug });
+      await runPrintConfig({ ...ctx, silent: !settings.debug });
       logger.debug(
         `Executing print-config verified code-pushup installed in base branch ${base.ref}`,
       );
@@ -229,7 +229,7 @@ async function collectPreviousReport(args: {
       return null;
     }
 
-    const { jsonFilePath: prevReportPath } = await collect(ctx);
+    const { jsonFilePath: prevReportPath } = await runCollect(ctx);
     const prevReport = await fs.readFile(prevReportPath, 'utf8');
     logger.debug(`Collected previous report at ${prevReportPath}`);
 
