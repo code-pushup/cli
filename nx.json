@@ -117,6 +117,9 @@
         "environments": {
           "environmentsDir": "tmp/e2e",
           "targetNames": ["e2e"]
+        },
+        "packages": {
+          "filterByTags": ["publishable"]
         }
       }
     }
