@@ -8,7 +8,6 @@
     "command": {
       "type": "string",
       "description": "The command to run.",
-      "x-prompt": "Which project should configure Code Pushup?",
       "$default": {
         "$source": "argv",
         "index": 0
