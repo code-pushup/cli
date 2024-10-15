@@ -28,6 +28,9 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
+    "nxv-env-setup": {
+      "executor": "@push-based/nx-verdaccio:env-setup"
+    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
@@ -116,7 +119,7 @@
       "options": {
         "environments": {
           "environmentsDir": "tmp/e2e",
-          "targetNames": ["e2e"]
+          "targetNames": ["e2e", "e2e-old"]
         },
         "packages": {
           "filterByTags": ["publishable"]
