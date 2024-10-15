@@ -2,6 +2,14 @@
   "name": "@code-pushup/cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
+    "start-verdaccio-server": {
+      "executor": "@nx/js:verdaccio",
+      "options": {
+        "port": 4873,
+        "config": ".verdaccio/config.yml",
+        "storage": "tmp/local-registry/storage"
+      }
+    },
     "code-pushup": {
       "command": "npx dist/packages/cli",
       "dependsOn": [
