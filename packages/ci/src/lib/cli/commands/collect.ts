@@ -6,7 +6,7 @@ import {
   persistedCliFiles,
 } from '../persist';
 
-export async function collect({
+export async function runCollect({
   bin,
   config,
   directory,

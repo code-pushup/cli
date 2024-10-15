@@ -1,7 +1,7 @@
 import { executeProcess } from '@code-pushup/utils';
 import type { CommandContext } from '../context';
 
-export async function printConfig({
+export async function runPrintConfig({
   bin,
   config,
   directory,

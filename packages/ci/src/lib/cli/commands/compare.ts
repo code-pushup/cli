@@ -12,7 +12,7 @@ type CompareOptions = {
   label?: string;
 };
 
-export async function compare(
+export async function runCompare(
   { before, after, label }: CompareOptions,
   { bin, config, directory, silent, project }: CommandContext,
 ): Promise<PersistedCliFiles> {

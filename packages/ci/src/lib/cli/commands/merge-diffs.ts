@@ -6,7 +6,7 @@ import {
   persistedCliFiles,
 } from '../persist';
 
-export async function mergeDiffs(
+export async function runMergeDiffs(
   files: string[],
   { bin, config, directory, silent }: CommandContext,
 ): Promise<PersistedCliFiles<'md'>> {
