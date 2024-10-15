@@ -30,7 +30,14 @@ describe('CI package', () => {
     'mocks',
     'fixtures',
   );
-  const workDir = join(process.cwd(), 'tmp', 'ci-e2e', 'test-repo');
+  const workDir = join(
+    process.cwd(),
+    'tmp',
+    'e2e',
+    'ci-e2e',
+    '__test__',
+    'ci-test-repo',
+  );
   const outputDir = join(workDir, '.code-pushup');
 
   const options = {
