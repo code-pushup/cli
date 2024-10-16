@@ -1,3 +1,23 @@
+## 0.52.0 (2024-10-16)
+
+### 🚀 Features
+
+- skip perfect scores in stdout summary ([f423c6c4](https://github.com/code-pushup/cli/commit/f423c6c4))
+- make portal-client dependency optional ([18822a85](https://github.com/code-pushup/cli/commit/18822a85))
+- **ci:** move in monorepo code from github-action ([a9c51d98](https://github.com/code-pushup/cli/commit/a9c51d98))
+- **ci:** move in code from github-action for issues, git diff and commands ([bad87239](https://github.com/code-pushup/cli/commit/bad87239))
+- **ci:** move in code for posting comment, generalized to any provider ([b61d6747](https://github.com/code-pushup/cli/commit/b61d6747))
+- **ci:** move in main run functions from github-action and adapt ([697948eb](https://github.com/code-pushup/cli/commit/697948eb))
+- **cli:** handle invalid plugin filter options ([9d756826](https://github.com/code-pushup/cli/commit/9d756826))
+- **cli:** add skip and only category filters ([149f54b2](https://github.com/code-pushup/cli/commit/149f54b2))
+- **plugin-lighthouse:** export default Chrome flags ([2518b6ca](https://github.com/code-pushup/cli/commit/2518b6ca))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.51.0 (2024-10-02)
 
 ### 🚀 Features

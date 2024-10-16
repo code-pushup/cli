@@ -1,3 +1,4 @@
+import { rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { setup as globalSetup } from './global-setup';
 import { setupTestFolder, teardownTestFolder } from './testing/test-setup/src';
@@ -35,6 +36,7 @@ export async function setup() {
 
   // package publish
   const { registry } = activeRegistry.registryData;
+  await writeFile('.npmrc', `@code-pushup:registry=${registry}`);
   try {
     console.info('Publish packages');
     nxRunManyPublish({
@@ -64,5 +66,6 @@ export async function teardown() {
     stopLocalRegistry(stop);
     nxRunManyNpmUninstall({ parallel: 1 });
   }
+  await rm('.npmrc');
   await teardownTestFolder(e2eDir);
 }
