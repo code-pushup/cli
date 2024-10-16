@@ -1,17 +1,17 @@
-import {
-  type AuditReport as PortalAudit,
-  type CategoryConfig as PortalCategory,
+import type {
+  AuditReport as PortalAudit,
+  CategoryConfig as PortalCategory,
   CategoryConfigRefType as PortalCategoryRefType,
-  type GroupConfig as PortalGroup,
-  type AuditReportIssue as PortalIssue,
+  GroupConfig as PortalGroup,
+  AuditReportIssue as PortalIssue,
   IssueSeverity as PortalIssueSeverity,
   IssueSourceType as PortalIssueSourceType,
-  type PluginReport as PortalPlugin,
-  type AuditReportTable as PortalTable,
+  PluginReport as PortalPlugin,
+  AuditReportTable as PortalTable,
   TableAlignment as PortalTableAlignment,
-  type AuditReportTableCell as PortalTableCell,
-  type AuditReportTableColumn as PortalTableColumn,
-  type SaveReportMutationVariables,
+  AuditReportTableCell as PortalTableCell,
+  AuditReportTableColumn as PortalTableColumn,
+  SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
 import type {
   AuditReport,
@@ -98,7 +98,7 @@ export function issueToGQL(issue: Issue): PortalIssue {
     message: issue.message,
     severity: issueSeverityToGQL(issue.severity),
     ...(issue.source?.file && {
-      sourceType: PortalIssueSourceType.SourceCode,
+      sourceType: safeEnum<PortalIssueSourceType>('SourceCode'),
       sourceFilePath: issue.source.file,
       sourceStartLine: issue.source.position?.startLine,
       sourceStartColumn: issue.source.position?.startColumn,
@@ -154,30 +154,41 @@ function categoryRefTypeToGQL(
 ): PortalCategoryRefType {
   switch (type) {
     case 'audit':
-      return PortalCategoryRefType.Audit;
+      return safeEnum<PortalCategoryRefType>('Audit');
     case 'group':
-      return PortalCategoryRefType.Group;
+      return safeEnum<PortalCategoryRefType>('Group');
   }
 }
 
 function issueSeverityToGQL(severity: IssueSeverity): PortalIssueSeverity {
   switch (severity) {
     case 'info':
-      return PortalIssueSeverity.Info;
+      return safeEnum<PortalIssueSeverity>('Info');
     case 'error':
-      return PortalIssueSeverity.Error;
+      return safeEnum<PortalIssueSeverity>('Error');
     case 'warning':
-      return PortalIssueSeverity.Warning;
+      return safeEnum<PortalIssueSeverity>('Warning');
   }
 }
 
 function tableAlignmentToGQL(alignment: TableAlignment): PortalTableAlignment {
   switch (alignment) {
     case 'left':
-      return PortalTableAlignment.Left;
+      return safeEnum<PortalTableAlignment>('Left');
     case 'center':
-      return PortalTableAlignment.Center;
+      return safeEnum<PortalTableAlignment>('Center');
     case 'right':
-      return PortalTableAlignment.Right;
+      return safeEnum<PortalTableAlignment>('Right');
   }
+}
+
+// validates enum value string, workaround for nominal typing
+function safeEnum<
+  T extends
+    | PortalCategoryRefType
+    | PortalIssueSeverity
+    | PortalIssueSourceType
+    | PortalTableAlignment,
+>(value: `${T}`): T {
+  return value as T;
 }
