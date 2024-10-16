@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
-  "homepage": "code-pushup.dev",
+  "homepage": "https://code-pushup.dev",
   "bugs": {
-    "url": "https://github.com/code-pushup/cli/issues"
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug"
   },
   "repository": {
     "type": "git",
@@ -126,6 +126,28 @@
     "@nx/nx-darwin-x64": "^16.10.0",
     "@nx/nx-linux-x64-gnu": "16.7.4"
   },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "automation",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "build tools",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "CI integration",
+    "code management",
+    "actionable feedback",
+    "trend analysis",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring"
+  ],
   "config": {
     "commitizen": {
       "path": "@commitlint/cz-commitlint"
