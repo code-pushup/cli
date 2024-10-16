@@ -3,6 +3,42 @@
   "version": "0.53.0",
   "license": "MIT",
   "description": "Code PushUp plugin for detecting problems in source code using ESLint.📋",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-eslint#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20eslint-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-eslint"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "ESLint",
+    "JavaScript",
+    "TypeScript",
+    "plugin",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring",
+    "code quality",
+    "conformance",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "actionable feedback",
+    "trend analysis"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/utils": "0.53.0",
     "@code-pushup/models": "0.53.0",

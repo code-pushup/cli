@@ -2,6 +2,31 @@
   "name": "@code-pushup/ci",
   "version": "0.53.0",
   "description": "CI automation logic for Code PushUp (provider-agnostic)",
+  "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/ci#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20ci\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/ci"
+  },
+  "keywords": [
+    "Code PushUp",
+    "CI integration",
+    "automation",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/models": "0.53.0",
     "@code-pushup/utils": "0.53.0",
