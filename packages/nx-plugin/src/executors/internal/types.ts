@@ -20,6 +20,14 @@ export type ProjectExecutorOnlyOptions = {
  * CLI types that apply globally for all commands.
  */
 export type GlobalExecutorOptions = {
+  command?:
+    | 'collect'
+    | 'upload'
+    | 'autorun'
+    | 'print-config'
+    | 'compare'
+    | 'merge-diffs'
+    | 'history';
   bin?: string;
   verbose?: boolean;
   progress?: boolean;

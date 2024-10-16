@@ -8,7 +8,7 @@ export function createExecutorTarget(options?: {
 }): TargetConfiguration<ProjectPrefixOptions> {
   const { bin = PACKAGE_NAME, projectPrefix } = options ?? {};
   return {
-    executor: `${bin}:autorun`,
+    executor: `${bin}:cli`,
     ...(projectPrefix
       ? {
           options: {
