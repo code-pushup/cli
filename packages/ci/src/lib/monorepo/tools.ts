@@ -20,3 +20,7 @@ export type ProjectConfig = {
   bin: string;
   directory?: string;
 };
+
+export function isMonorepoTool(value: string): value is MonorepoTool {
+  return MONOREPO_TOOLS.includes(value as MonorepoTool);
+}
