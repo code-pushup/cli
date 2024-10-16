@@ -622,7 +622,7 @@ Assign weights based on what influence each audit and group should have on the o
 
 ```typescript
 // code-pushup.config.ts
-import { CoreConfig } from '@code-pushup/core';
+import type { CoreConfig } from '@code-pushup/core';
 
 export default {
   // ...

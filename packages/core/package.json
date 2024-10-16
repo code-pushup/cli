@@ -3,6 +3,43 @@
   "version": "0.53.0",
   "license": "MIT",
   "description": "Core business logic for the used by the Code PushUp CLI",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20core\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "automation",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "build tools",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "CI integration",
+    "code management",
+    "actionable feedback",
+    "trend analysis",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/models": "0.53.0",
     "@code-pushup/utils": "0.53.0",
