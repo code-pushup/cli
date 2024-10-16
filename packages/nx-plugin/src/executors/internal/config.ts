@@ -56,7 +56,7 @@ export function uploadConfig(
   return {
     ...(projectName
       ? {
-          project: applyPrefix ? `${prefix}${projectName}` : projectName, // provide correct project
+          project: applyPrefix ? `${prefix}${projectName}` : projectName,
         }
       : {}),
     ...parseEnv(process.env),

@@ -146,7 +146,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: {
         configurations: {},
-        executor: `@code-pushup/nx-plugin:autorun`,
+        executor: `@code-pushup/nx-plugin:cli`,
         options: {},
       },
     });
@@ -174,15 +174,24 @@ describe('nx-plugin', () => {
           codeStrings: 'customPlugin()',
         },
       ],
+      upload: {
+        server: 'http://staging.code-pushup.dev',
+        organization: 'code-pushup',
+        apiKey: '12345678',
+      },
     });
 
     await materializeTree(tree, cwd);
 
-    const { stdout } = await executeProcess({
+    const { stdout, stderr } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
     });
+
+    const cleanStderr = removeColorCodes(stderr);
+    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
+    expect(cleanStderr).toContain('DryRun execution of: npx @code-pushup/cli');
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
@@ -208,7 +217,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: 'XYZ:autorun',
+        executor: 'XYZ:cli',
       }),
     });
   });
@@ -231,7 +240,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       ['code-pushup']: expect.objectContaining({
-        executor: `@code-pushup/nx-plugin:autorun`,
+        executor: `@code-pushup/nx-plugin:cli`,
         options: {
           projectPrefix: 'cli',
         },
