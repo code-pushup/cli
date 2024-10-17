@@ -18,13 +18,6 @@
       }
     }
   },
-  "implicitDependencies": [
-    "test-utils",
-    "models",
-    "utils",
-    "core",
-    "cli",
-    "nx-plugin"
-  ],
+  "implicitDependencies": ["test-utils", "nx-plugin"],
   "tags": ["scope:tooling", "type:e2e"]
 }
