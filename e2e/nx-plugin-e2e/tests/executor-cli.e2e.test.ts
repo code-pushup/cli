@@ -138,7 +138,7 @@ describe('executor command', () => {
   });
 
   it('should execute upload executor to throw if no report is present', async () => {
-    const cwd = join(baseDir, 'execute-upload-command');
+    const cwd = join(baseDir, 'execute-upload-command-with-error');
     await addTargetToWorkspace(tree, { cwd, project });
 
     await expect(
