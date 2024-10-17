@@ -1,10 +1,10 @@
 {
   "name": "@code-pushup/ci",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "description": "CI automation logic for Code PushUp (provider-agnostic)",
   "dependencies": {
-    "@code-pushup/models": "0.52.0",
-    "@code-pushup/utils": "0.52.0",
+    "@code-pushup/models": "0.53.0",
+    "@code-pushup/utils": "0.53.0",
     "glob": "^10.4.5",
     "simple-git": "^3.20.0",
     "yaml": "^2.5.1"

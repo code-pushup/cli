@@ -1,3 +1,19 @@
+## 0.53.0 (2024-10-17)
+
+### 🚀 Features
+
+- **ci:** add useful exports ([844d529c](https://github.com/code-pushup/cli/commit/844d529c))
+- **utils:** support GitLab report links ([27d8a657](https://github.com/code-pushup/cli/commit/27d8a657))
+
+### 🩹 Fixes
+
+- **core:** avoid portal-client import for enum conversions ([1a68636f](https://github.com/code-pushup/cli/commit/1a68636f))
+
+### ❤️ Thank You
+
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.52.0 (2024-10-16)
 
 ### 🚀 Features

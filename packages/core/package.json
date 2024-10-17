@@ -1,11 +1,11 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "license": "MIT",
   "description": "Core business logic for the used by the Code PushUp CLI",
   "dependencies": {
-    "@code-pushup/models": "0.52.0",
-    "@code-pushup/utils": "0.52.0",
+    "@code-pushup/models": "0.53.0",
+    "@code-pushup/utils": "0.53.0",
     "ansis": "^3.3.0"
   },
   "peerDependencies": {
