@@ -3,6 +3,7 @@ import { toUnixPath } from '../transform';
 import {
   formatFileLink,
   formatGitHubLink,
+  formatGitLabLink,
   formatSourceLine,
   linkToLocalSourceForIde,
   metaDescription,
@@ -226,6 +227,57 @@ describe('formatGitHubLink', () => {
   });
 });
 
+describe('formatGitLabLink', () => {
+  beforeEach(() => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    vi.stubEnv('GITLAB_CI', 'true');
+    vi.stubEnv('CI_SERVER_URL', 'https://gitlab.com');
+    vi.stubEnv('CI_PROJECT_PATH', 'user/repo');
+    vi.stubEnv('CI_COMMIT_SHA', '1234567890abcdef');
+  });
+
+  it.each([
+    [
+      { startLine: 2 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2',
+    ],
+    [
+      { startLine: 2, endLine: 5 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2-5',
+    ],
+    [
+      { startLine: 2, startColumn: 1 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 5 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2',
+    ],
+    [
+      { startLine: 2, endLine: 5, startColumn: 1, endColumn: 6 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2-5',
+    ],
+    [
+      { startLine: 2, endLine: 2, startColumn: 1, endColumn: 1 },
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2',
+    ],
+  ])(
+    'should generate a GitLab repository link for the file with position %o',
+    (position, expected) => {
+      expect(formatGitLabLink(toUnixPath('src/index.ts'), position)).toBe(
+        expected,
+      );
+    },
+  );
+
+  it('should generate a GitLab repository link for the file when the position is undefined', () => {
+    expect(formatGitLabLink(toUnixPath('src/index.ts'), undefined)).toBe(
+      'https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts',
+    );
+  });
+});
+
 describe('formatFileLink', () => {
   it('should return a GitHub repository link when running in GitHub Actions', () => {
     vi.stubEnv('TERM_PROGRAM', '');
@@ -242,6 +294,25 @@ describe('formatFileLink', () => {
       ),
     ).toBe(
       `https://github.com/user/repo/blob/1234567890abcdef/src/index.ts#L2`,
+    );
+  });
+
+  it('should return a GitLab repository link when running in GitLab CI/CD', () => {
+    vi.stubEnv('TERM_PROGRAM', '');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
+    vi.stubEnv('GITLAB_CI', 'true');
+    vi.stubEnv('CI_SERVER_URL', 'https://gitlab.com');
+    vi.stubEnv('CI_PROJECT_PATH', 'user/repo');
+    vi.stubEnv('CI_COMMIT_SHA', '1234567890abcdef');
+
+    expect(
+      formatFileLink(
+        toUnixPath('src/index.ts'),
+        { startLine: 2 },
+        toUnixPath('.code-pushup'),
+      ),
+    ).toBe(
+      `https://gitlab.com/user/repo/-/blob/1234567890abcdef/src/index.ts#L2`,
     );
   });
 
@@ -276,9 +347,10 @@ describe('formatFileLink', () => {
     ).toBe('../src/index.ts');
   });
 
-  it('should return a relative file path when the environment is neither VS Code nor GitHub', () => {
+  it('should return a relative file path when the environment is neither VS Code nor GitHub, nor GitLab', () => {
     vi.stubEnv('TERM_PROGRAM', '');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
+    vi.stubEnv('GITLAB_CI', 'false');
     expect(
       formatFileLink(
         toUnixPath('src/index.ts'),

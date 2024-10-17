@@ -16,7 +16,11 @@ import {
   getColumnAlignments,
   rowToStringArray,
 } from '../text-formats/table';
-import { getEnvironmentType, getGitHubBaseUrl } from './ide-environment';
+import {
+  getEnvironmentType,
+  getGitHubBaseUrl,
+  getGitLabBaseUrl,
+} from './environment-type';
 import type { MdReportOptions } from './types';
 
 export function tableSection(
@@ -120,6 +124,20 @@ export function formatGitHubLink(
   return `${baseUrl}/${file}#${lineRange}`;
 }
 
+export function formatGitLabLink(
+  file: string,
+  position: SourceFileLocation['position'],
+): string {
+  const baseUrl = getGitLabBaseUrl();
+  if (!position) {
+    return `${baseUrl}/${file}`;
+  }
+  const { startLine, endLine } = position;
+  const lineRange =
+    endLine && startLine !== endLine ? `${startLine}-${endLine}` : startLine;
+  return `${baseUrl}/${file}#L${lineRange}`;
+}
+
 export function formatFileLink(
   file: string,
   position: SourceFileLocation['position'],
@@ -133,6 +151,8 @@ export function formatFileLink(
       return position ? `${relativePath}#L${position.startLine}` : relativePath;
     case 'github':
       return formatGitHubLink(file, position);
+    case 'gitlab':
+      return formatGitLabLink(file, position);
     default:
       return relativePath;
   }
