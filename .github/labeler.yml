@@ -10,6 +10,18 @@
   - changed-files:
       - any-glob-to-any-file: 'packages/models/src/**'
 
+🧩 utils:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/utils/src/**'
+
+🧩 ci:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/ci/src/**'
+
+🧩 create-cli:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/create-cli/src/**'
+
 🧩 nx-plugin:
   - changed-files:
       - any-glob-to-any-file: 'packages/nx-plugin/src/**'
@@ -17,10 +29,6 @@
 🧩 eslint-plugin:
   - changed-files:
       - any-glob-to-any-file: 'packages/plugin-eslint/src/**'
-
-🧩 lighthouse-plugin:
-  - changed-files:
-      - any-glob-to-any-file: 'packages/plugin-lighthouse/src/**'
 
 🧩 coverage-plugin:
   - changed-files:
@@ -30,9 +38,9 @@
   - changed-files:
       - any-glob-to-any-file: 'packages/plugin-js-packages/src/**'
 
-🧩 utils:
+🧩 lighthouse-plugin:
   - changed-files:
-      - any-glob-to-any-file: 'packages/utils/src/**'
+      - any-glob-to-any-file: 'packages/plugin-lighthouse/src/**'
 
 🔬 testing:
   - changed-files:

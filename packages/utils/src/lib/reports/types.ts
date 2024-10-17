@@ -34,4 +34,10 @@ export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
 
 export type MdReportOptions = Pick<PersistConfig, 'outputDir'>;
 
-export type IdeEnvironment = 'vscode' | 'github' | 'other';
+export const SUPPORTED_ENVIRONMENTS = [
+  'vscode',
+  'github',
+  'gitlab',
+  'other',
+] as const;
+export type EnvironmentType = (typeof SUPPORTED_ENVIRONMENTS)[number];
