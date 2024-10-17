@@ -14,8 +14,9 @@ describe('CLI compare', () => {
     }
     await cleanTestFolder('tmp/e2e/react-todos-app');
     await executeProcess({
-      command: 'code-pushup',
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'collect',
         '--persist.filename=source-report',
         '--onlyPlugins=eslint',
@@ -28,8 +29,9 @@ describe('CLI compare', () => {
       cwd: 'examples/react-todos-app',
     });
     await executeProcess({
-      command: 'code-pushup',
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'collect',
         '--persist.filename=target-report',
         '--onlyPlugins=eslint',
@@ -45,8 +47,9 @@ describe('CLI compare', () => {
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
-      command: 'code-pushup',
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'compare',
         '--before=../../tmp/e2e/react-todos-app/source-report.json',
         '--after=../../tmp/e2e/react-todos-app/target-report.json',
