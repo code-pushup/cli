@@ -156,7 +156,7 @@ describe('executor command', () => {
           '--persist.outputDir=not-existing',
           'upload',
         ],
-        cwd
+        cwd,
       }),
     ).rejects.toThrow(/report.json/);
   });
