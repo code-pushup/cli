@@ -21,7 +21,7 @@ export const filenameRegex = /^(?!.*[ \\/:*?"<>|]).+$/;
  * @param strings
  */
 export function hasDuplicateStrings(strings: string[]): string[] | false {
-  const sortedStrings = [...strings].sort();
+  const sortedStrings = strings.toSorted();
   const duplStrings = sortedStrings.filter(
     (item, index) => index !== 0 && item === sortedStrings[index - 1],
   );
