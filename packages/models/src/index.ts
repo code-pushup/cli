@@ -27,6 +27,7 @@ export { type CoreConfig, coreConfigSchema } from './lib/core-config';
 export {
   type Group,
   type GroupRef,
+  type GroupMeta,
   groupRefSchema,
   groupSchema,
 } from './lib/group';
