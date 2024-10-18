@@ -143,7 +143,7 @@ describe('executor command', () => {
     await executeProcess({
       command: 'npm',
       args: ['install', '--save-dev', '@code-pushup/portal-client'],
-      cwd,
+      cwd: baseDir,
     });
 
     await expect(
@@ -156,7 +156,7 @@ describe('executor command', () => {
           '--persist.outputDir=not-existing',
           'upload',
         ],
-        cwd,
+        cwd
       }),
     ).rejects.toThrow(/report.json/);
   });
