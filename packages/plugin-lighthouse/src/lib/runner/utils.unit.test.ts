@@ -239,7 +239,7 @@ describe('toAuditOutputs', () => {
             score: 0,
             numericValue: 0,
             displayValue: '0 ms',
-          } as Result),
+          }) as Result,
       ),
     );
     expect(getLogMessages(ui().logger)).toHaveLength(0);
@@ -256,7 +256,7 @@ describe('toAuditOutputs', () => {
             score: 0,
             numericValue: 0,
             displayValue: '0 ms',
-          } as Result),
+          }) as Result,
       ),
       { verbose: true },
     );

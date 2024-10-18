@@ -17,7 +17,7 @@ Register the plugin in your `nx.json`
 // nx.json
 {
   "name": "my-project",
-  "plugins": ["tools/publish/publish.plugin.ts"]
+  "plugins": ["tools/publish/publish.plugin.ts"],
 }
 ```
 
@@ -46,10 +46,10 @@ Example:
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
         "publishScript": "publish-package.ts",
-        "publishableTargets": ["add-to-npm-registry"]
-      }
-    }
-  ]
+        "publishableTargets": ["add-to-npm-registry"],
+      },
+    },
+  ],
 }
 ```
 

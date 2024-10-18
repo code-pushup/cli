@@ -75,6 +75,7 @@ export async function runInCI(
         diffArtifact,
       };
     }
+    return { mode: 'monorepo', projects: projectResults };
   }
 
   logger.info('Running Code PushUp in standalone project mode');

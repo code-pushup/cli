@@ -21,7 +21,7 @@ export const filenameRegex = /^(?!.*[ \\/:*?"<>|]).+$/;
  * @param strings
  */
 export function hasDuplicateStrings(strings: string[]): string[] | false {
-  const sortedStrings = [...strings].sort();
+  const sortedStrings = strings.toSorted();
   const duplStrings = sortedStrings.filter(
     (item, index) => index !== 0 && item === sortedStrings[index - 1],
   );
@@ -89,10 +89,11 @@ export function getMissingRefsForCategories(
       .filter(({ type }) => type === 'group')
       .map(({ plugin, slug }) => `${plugin}#${slug} (group)`),
   );
-  const groupRefsFromPlugins = plugins.flatMap(({ groups, slug: pluginSlug }) =>
-    Array.isArray(groups)
-      ? groups.map(({ slug }) => `${pluginSlug}#${slug} (group)`)
-      : [],
+  const groupRefsFromPlugins = plugins.flatMap(
+    ({ groups, slug: pluginSlug }) =>
+      Array.isArray(groups)
+        ? groups.map(({ slug }) => `${pluginSlug}#${slug} (group)`)
+        : [],
   );
   const missingGroupRefs = hasMissingStrings(
     groupRefsFromCategory,

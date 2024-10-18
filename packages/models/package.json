@@ -1,8 +1,33 @@
 {
   "name": "@code-pushup/models",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "license": "MIT",
   "description": "Model definitions and validators for the Code PushUp CLI",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/models#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20models\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/models"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "type definition",
+    "validators",
+    "models"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "dependencies": {
     "zod": "^3.22.1",
     "vscode-material-icons": "^0.1.0"

@@ -32,7 +32,7 @@ describe('CLI collect', () => {
       audits: audits.map(
         pluginReport.slug === 'lighthouse' ? omitVariableAuditData : p => p,
       ) as AuditReport[],
-    } as PluginReport);
+    }) as PluginReport;
   const omitVariableReportData = ({
     commit,
     date,

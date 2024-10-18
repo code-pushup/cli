@@ -15,7 +15,7 @@ Why should you use this plugin?
 // nx.json
 {
   //...
-  "plugins": ["@code-pushup/nx-plugin"]
+  "plugins": ["@code-pushup/nx-plugin"],
 }
 ```
 
@@ -29,10 +29,10 @@ or with options:
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "projectPrefix": "cli"
-      }
-    }
-  ]
+        "projectPrefix": "cli",
+      },
+    },
+  ],
 }
 ```
 

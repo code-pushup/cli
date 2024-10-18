@@ -1,5 +1,5 @@
 import {
-  KnipConfigPlugin,
+  type KnipConfigPlugin,
   combineNxKnipPlugins,
   withEsbuildApps,
   withEsbuildPublishableLibs,
@@ -48,7 +48,7 @@ const withNxStandards = (): KnipConfigPlugin => () => {
     project: ['**/*.{ts,js,tsx,jsx}'],
     ignore: ['tmp/**', 'node_modules/**'],
     commitlint: {
-      config: ['commitlint.config.js'],
+      config: ['commitlint.config.mjs'],
     },
     exclude: ['duplicates'],
     entry: [

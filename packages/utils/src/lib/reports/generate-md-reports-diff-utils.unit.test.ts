@@ -212,7 +212,7 @@ describe('compareDiffsBy', () => {
       },
     ] as ReportsDiff[];
     expect(
-      [...diffs].sort((a, b) => compareDiffsBy('categories', a, b)),
+      diffs.toSorted((a, b) => compareDiffsBy('categories', a, b)),
     ).toEqual([diffs[1], diffs[0], diffs[2]]);
   });
 
@@ -247,7 +247,7 @@ describe('compareDiffsBy', () => {
         },
       },
     ] as ReportsDiff[];
-    expect([...diffs].sort((a, b) => compareDiffsBy('audits', a, b))).toEqual([
+    expect(diffs.toSorted((a, b) => compareDiffsBy('audits', a, b))).toEqual([
       diffs[1],
       diffs[3],
       diffs[2],

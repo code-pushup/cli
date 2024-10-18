@@ -13,11 +13,11 @@ export function filterKebabCaseKeys<T extends Record<string, unknown>>(
         (typeof value === 'object' && Array.isArray(obj[key]))
           ? { ...acc, [key]: value }
           : typeof value === 'object' && !Array.isArray(value) && value != null
-          ? {
-              ...acc,
-              [key]: filterKebabCaseKeys(value as Record<string, unknown>),
-            }
-          : { ...acc, [key]: value },
+            ? {
+                ...acc,
+                [key]: filterKebabCaseKeys(value as Record<string, unknown>),
+              }
+            : { ...acc, [key]: value },
       {},
     ) as T;
 }

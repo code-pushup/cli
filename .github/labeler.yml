@@ -76,5 +76,5 @@
           - 'esbuild.config.js'
           - '.github/ISSUE_TEMPLATE/**'
           - '.husky/**'
-          - 'commitlint.config.js'
+          - 'commitlint.config.mjs'
           - '.verdaccio/config.yml'
