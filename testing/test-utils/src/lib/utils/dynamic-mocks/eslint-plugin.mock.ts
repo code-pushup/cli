@@ -47,7 +47,7 @@ export function eslintPluginConfigMock(outputDir = 'tmp'): PluginConfig {
         description,
         title,
         docsUrl,
-      } satisfies Audit),
+      }) satisfies Audit,
   );
   return {
     ...ESLINT_PLUGIN_META,

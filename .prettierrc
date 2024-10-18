@@ -2,6 +2,7 @@
   "singleQuote": true,
   "arrowParens": "avoid",
   "trailingComma": "all",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
     "^@code-pushup/portal-client$",
     "^@code-pushup/(.*)$",

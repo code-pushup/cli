@@ -39,9 +39,8 @@ describe('createRunnerConfig', () => {
 
     await createRunnerConfig('executeRunner.ts', pluginConfig);
 
-    const config = await readJsonFile<FinalCoveragePluginConfig>(
-      PLUGIN_CONFIG_PATH,
-    );
+    const config =
+      await readJsonFile<FinalCoveragePluginConfig>(PLUGIN_CONFIG_PATH);
     expect(config).toStrictEqual(pluginConfig);
   });
 });

@@ -534,7 +534,9 @@ describe('generateMdReport', () => {
     // report title
     expect(md).toMatch('# Code PushUp Report');
     // categories section heading
-    expect(md).toMatch(/\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/);
+    expect(md).toMatch(
+      /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
+    );
     // categories section heading
     expect(md).toMatch('## 🏷 Categories');
     // audits heading

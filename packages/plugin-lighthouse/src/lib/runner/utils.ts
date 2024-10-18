@@ -50,8 +50,8 @@ function formatBaseAuditOutput(lhrAudit: Result): AuditOutput {
           ? 'passed'
           : 'failed'
         : score
-        ? `${formatReportScore(score)}%`
-        : undefined),
+          ? `${formatReportScore(score)}%`
+          : undefined),
   };
 }
 

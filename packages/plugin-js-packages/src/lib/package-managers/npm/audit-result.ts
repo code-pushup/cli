@@ -17,7 +17,7 @@ export function npmToAuditResult(output: string): AuditResult {
         name: name.toString(),
         severity: detail.severity,
         versionRange: detail.range,
-        directDependency: detail.isDirect ? true : detail.effects[0] ?? '',
+        directDependency: detail.isDirect ? true : (detail.effects[0] ?? ''),
         fixInformation: npmToFixInformation(detail.fixAvailable),
         ...(advisory != null && {
           title: advisory.title,
