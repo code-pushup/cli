@@ -1,11 +1,11 @@
 import { md } from 'build-md';
-import { type ReleaseType, clean, diff, neq } from 'semver';
+import { clean, diff, neq } from 'semver';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
 import type { DependencyGroup, PackageManagerId } from '../../config';
 import { dependencyGroupToLong } from '../../constants';
 import { RELEASE_TYPES, outdatedSeverity } from './constants';
-import type { OutdatedResult } from './types';
+import type { OutdatedResult, PackageVersion } from './types';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,
@@ -64,7 +64,7 @@ export function calculateOutdatedScore(
   return totalDeps > 0 ? (totalDeps - majorOutdated) / totalDeps : 1;
 }
 
-export function outdatedToDisplayValue(stats: Record<ReleaseType, number>) {
+export function outdatedToDisplayValue(stats: PackageVersion) {
   const total = Object.values(stats).reduce((acc, value) => acc + value, 0);
 
   const versionBreakdown = RELEASE_TYPES.map(version =>

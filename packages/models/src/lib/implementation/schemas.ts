@@ -119,8 +119,6 @@ export const fileNameSchema = z
 /** Schema for a positiveInt */
 export const positiveIntSchema = z.number().int().positive();
 
-export const nonnegativeIntSchema = z.number().int().nonnegative();
-
 export const nonnegativeNumberSchema = z.number().nonnegative();
 
 export function packageVersionSchema<TRequired extends boolean>(options?: {

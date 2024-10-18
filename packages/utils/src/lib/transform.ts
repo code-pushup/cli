@@ -25,10 +25,6 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
-export function exists<T>(value: T): value is NonNullable<T> {
-  return value != null;
-}
-
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return [...new Set(array)];
 }

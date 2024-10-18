@@ -14,7 +14,12 @@ const withIgnoreMockInLibs = () =>
   withLibraryMapper({
     mapperFn: ({ rootFolder }) => {
       return {
-        ignore: [rootFolder + '/mocks/**', rootFolder + '/perf/**'],
+        ignore: [
+          rootFolder + '/perf/**',
+          '**/mock/**',
+          '**/mocks/**',
+          '**/__snapshots__/**',
+        ],
         entry: [rootFolder + '/src/bin.ts', rootFolder + '/perf/**/index.ts'],
       };
     },
@@ -27,6 +32,7 @@ const withExamplePlugins = (): KnipConfigPlugin => () => {
       'examples/plugins/src/index.ts',
       'packages/plugin-lighthouse/src/index.ts',
     ],
+    ignore: ['examples/**/constants.ts'],
   };
 };
 
@@ -51,42 +57,38 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       config: ['commitlint.config.mjs'],
     },
     exclude: ['duplicates'],
+    ignoreExportsUsedInFile: true,
     entry: [
+      '**/index.ts',
+
       // unknown why this is needed, it should be picked up by knip from the vitest setup files
-      'testing/test-utils/src/index.ts',
-      'testing/test-utils/src/lib/fixtures/configs/*.ts',
-      'testing/test-setup/src/index.ts',
-      'testing/test-setup/src/lib/**/*.{js,mjs,ts,cjs,mts,cts}',
-      'global-setup.ts',
-      'global-setup.e2e.ts',
-      'examples/react-todos-app/code-pushup.config.js',
-      'examples/plugins/code-pushup.config.ts',
-      'testing/test-utils/src/lib/fixtures/configs/code-pushup.config.js',
-      'testing/test-utils/src/lib/fixtures/configs/code-pushup.empty.config.js',
-      'examples/plugins/src/package-json/src/index.ts',
+      'testing/test-{setup,utils}/src/lib/**/*.{js,mjs,ts,cjs,mts,cts}',
+      'global-setup.*.ts',
+
       // missing knip plugin for now, so this is in the root entry
       'packages/models/zod2md.config.ts',
-      'code-pushup.config.ts',
+      '**/code-pushup.*.{js,mjs,ts,cjs,mts,cts}',
+      '**/vite.config.*.ts',
+      '**/*.d.ts',
       'esbuild.config.js',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
     ],
     ignoreDependencies: [
-      'prettier',
       '@swc/helpers',
       '@swc/cli',
       '@nx/plugin',
       '@nx/workspace',
-      // Same issue as the other vitest related, it should be picked up by knip from the vitest setup files
-      // 'global-setup.ts',
-      // 'global-setup.e2e.ts',
+      '@nx/jest',
+      '@nx/eslint',
 
-      // Knip should be able to pick up this
+      // Knip does not pick up this as it is used for TS execution
       'tsx',
+
       // Not a npm library, and resolved in a different typescript path than the global import one
       '@example/custom-plugin',
 
-      // Prettier magic resolve is not picked up by knip
-      '@trivago/prettier-plugin-sort-imports',
+      '@code-pushup/models',
+      '@code-pushup/utils',
     ],
   };
 };
