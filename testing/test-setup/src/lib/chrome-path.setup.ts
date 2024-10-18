@@ -14,10 +14,7 @@ beforeEach(async () => {
         error instanceof Error &&
         error.message.includes('No Chrome installations found.')
       ) {
-        const chromium = (await import('chromium' as string)) as Record<
-          'path',
-          string
-        >;
+        const chromium = await import('chromium');
         console.info(
           `${error.message} Using chromium from node_modules instead: ${chromium.path}`,
         );
