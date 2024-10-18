@@ -141,18 +141,19 @@ describe('executor command', () => {
     const cwd = join(baseDir, 'execute-upload-command-with-error');
     await addTargetToWorkspace(tree, { cwd, project });
 
-    await expect(
-      executeProcess({
-        command: 'npx',
-        args: [
-          'nx',
-          'run',
-          `${project}:code-pushup`,
-          '--persist.outputDir=not-existing',
-          'upload',
-        ],
-        cwd,
-      }),
-    ).rejects.toThrow(/report.json/);
+    const result = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'run',
+        `${project}:code-pushup`,
+        '--persist.outputDir=not-existing',
+        'upload',
+      ],
+      cwd,
+    });
+    //).rejects.toThrow(/report.json/);
+
+    expect(result).toBe({});
   });
 });
