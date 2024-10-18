@@ -10,7 +10,7 @@ Register this plugin in your `nx.json` to leverage a set of generators and execu
 // nx.json
 {
   //...
-  "plugins": ["@code-pushup/nx-plugin"]
+  "plugins": ["@code-pushup/nx-plugin"],
 }
 ```
 

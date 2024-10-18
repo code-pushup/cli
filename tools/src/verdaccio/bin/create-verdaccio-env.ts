@@ -11,7 +11,9 @@ const argv = yargs(hideBin(process.argv))
     verbose: { type: 'boolean' },
     projectName: { type: 'string', demandOption: true },
     port: { type: 'string' },
-  } satisfies Partial<Record<keyof StartVerdaccioAndSetupEnvOptions, Options>>).argv;
+  } satisfies Partial<
+    Record<keyof StartVerdaccioAndSetupEnvOptions, Options>
+  >).argv;
 
 (async () => {
   await nxStartVerdaccioAndSetupEnv(argv as StartVerdaccioAndSetupEnvOptions);

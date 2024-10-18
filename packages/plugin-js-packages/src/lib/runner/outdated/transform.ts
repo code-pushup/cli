@@ -32,13 +32,16 @@ export function outdatedResultToAuditOutput(
     neq(dep.current, dep.latest),
   );
 
-  const outdatedStats = outdatedDependencies.reduce((acc, dep) => {
-    const outdatedLevel = diff(dep.current, dep.latest);
-    if (outdatedLevel == null) {
-      return acc;
-    }
-    return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
-  }, objectFromEntries(RELEASE_TYPES.map(versionType => [versionType, 0])));
+  const outdatedStats = outdatedDependencies.reduce(
+    (acc, dep) => {
+      const outdatedLevel = diff(dep.current, dep.latest);
+      if (outdatedLevel == null) {
+        return acc;
+      }
+      return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
+    },
+    objectFromEntries(RELEASE_TYPES.map(versionType => [versionType, 0])),
+  );
 
   const issues =
     outdatedDependencies.length === 0

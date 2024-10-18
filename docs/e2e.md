@@ -102,7 +102,7 @@ Root/
 // nx.json
 {
   // ...
-  "plugins": ["tools/src/npm/npm.plugin.ts", "tools/src/publish/publish.plugin.ts", "tools/src/verdaccio/verdaccio.plugin.ts"]
+  "plugins": ["tools/src/npm/npm.plugin.ts", "tools/src/publish/publish.plugin.ts", "tools/src/verdaccio/verdaccio.plugin.ts"],
 }
 ```
 
@@ -115,10 +115,10 @@ Root/
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/<project-name>-e2e/vite.config.e2e.ts"
-      }
-    }
-  }
+        "configFile": "e2e/<project-name>-e2e/vite.config.e2e.ts",
+      },
+    },
+  },
 }
 ```
 

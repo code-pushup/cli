@@ -10,7 +10,7 @@ Register the plugin in your `nx.json`
 // nx.json
 {
   //...
-  "plugins": ["tools/src/debug/debug.plugin.ts"]
+  "plugins": ["tools/src/debug/debug.plugin.ts"],
 }
 ```
 
@@ -34,10 +34,10 @@ Example:
     {
       "plugin": "tools/src/debug/debug.plugin.ts",
       "options": {
-        "tsconfig": "tools/tsconfig.tools.json"
-      }
-    }
-  ]
+        "tsconfig": "tools/tsconfig.tools.json",
+      },
+    },
+  ],
 }
 ```
 

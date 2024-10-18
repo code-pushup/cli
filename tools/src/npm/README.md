@@ -20,7 +20,7 @@ Register the plugin in your `nx.json`
 // nx.json
 {
   //...
-  "plugins": ["tools/npm/npm.plugin.ts"]
+  "plugins": ["tools/npm/npm.plugin.ts"],
 }
 ```
 
@@ -49,10 +49,10 @@ Example:
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
         "npmCheckScript": "check-package-range.ts",
-        "publishableTargets": ["add-to-npm-registry"]
-      }
-    }
-  ]
+        "publishableTargets": ["add-to-npm-registry"],
+      },
+    },
+  ],
 }
 ```
 
