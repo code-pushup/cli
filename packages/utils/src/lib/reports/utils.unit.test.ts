@@ -179,9 +179,9 @@ describe('countWeightedRefs', () => {
 describe('compareIssueSeverity', () => {
   it('should order severities in logically ascending order when used as compareFn with .sort()', () => {
     const severityArr: IssueSeverity[] = ['error', 'info', 'warning'];
-    expect([...severityArr].sort(compareIssueSeverity)).toEqual<
-      IssueSeverity[]
-    >(['info', 'warning', 'error']);
+    expect(severityArr.toSorted(compareIssueSeverity)).toEqual<IssueSeverity[]>(
+      ['info', 'warning', 'error'],
+    );
   });
 });
 
@@ -193,7 +193,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { weight: 0, score: 0.7 },
       { weight: 10, score: 1 },
     ] as SortableAuditReport[];
-    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
+    expect(mockAudits.toSorted(compareCategoryAuditsAndGroups)).toEqual([
       { weight: 0, score: 0.1 },
       { weight: 0, score: 0.7 },
       { weight: 10, score: 1 },
@@ -208,7 +208,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
     ] as SortableAuditReport[];
-    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
+    expect(mockAudits.toSorted(compareCategoryAuditsAndGroups)).toEqual([
       { score: 0, value: 1 },
       { score: 0.7, value: 1 },
       { score: 0.7, value: 0 },
@@ -223,7 +223,7 @@ describe('compareCategoryAuditsAndGroups', () => {
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
     ] as SortableAuditReport[];
-    expect([...mockAudits].sort(compareCategoryAuditsAndGroups)).toEqual([
+    expect(mockAudits.toSorted(compareCategoryAuditsAndGroups)).toEqual([
       { value: 1, title: 'c' },
       { value: 1, title: 'd' },
       { value: 0, title: 'a' },
@@ -262,7 +262,7 @@ describe('sortAudits', () => {
       { score: 0.7, value: 0 },
       { score: 0, value: 1 },
     ] as AuditReport[];
-    const sortedAudits = [...mockAudits].sort(compareAudits);
+    const sortedAudits = mockAudits.toSorted(compareAudits);
     expect(sortedAudits).toEqual([
       { score: 0, value: 1 },
       { score: 0.7, value: 1 },
@@ -278,7 +278,7 @@ describe('sortAudits', () => {
       { value: 0, title: 'a' },
       { value: 1, title: 'd' },
     ] as AuditReport[];
-    const sortedAudits = [...mockAudits].sort(compareAudits);
+    const sortedAudits = mockAudits.toSorted(compareAudits);
     expect(sortedAudits).toEqual([
       { value: 1, title: 'c' },
       { value: 1, title: 'd' },
@@ -323,7 +323,7 @@ describe('sortAuditIssues', () => {
       { severity: 'error', source: { file: 'a' } },
       { severity: 'info', source: { file: 'b' } },
     ] as Issue[];
-    const sortedIssues = [...mockIssues].sort(compareIssues);
+    const sortedIssues = mockIssues.toSorted(compareIssues);
     expect(sortedIssues).toEqual([
       { severity: 'error', source: { file: 'a' } },
       { severity: 'error', source: { file: 'c' } },
@@ -339,7 +339,7 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
     ] as Issue[];
-    const sortedIssues = [...mockIssues].sort(compareIssues);
+    const sortedIssues = mockIssues.toSorted(compareIssues);
     expect(sortedIssues).toEqual([
       { severity: 'info', source: { file: 'a', position: { startLine: 2 } } },
       { severity: 'info', source: { file: 'b', position: { startLine: 1 } } },
@@ -360,7 +360,7 @@ describe('sortAuditIssues', () => {
       { severity: 'info', source: { file: 'b' } },
       { severity: 'error' },
     ] as Issue[];
-    const sortedIssues = [...mockIssues].sort(compareIssues);
+    const sortedIssues = mockIssues.toSorted(compareIssues);
     expect(sortedIssues).toEqual([
       { severity: 'error' },
       {
