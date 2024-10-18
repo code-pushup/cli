@@ -144,7 +144,7 @@ describe('executor command', () => {
     await expect(
       executeProcess({
         command: 'npx',
-        args: ['nx', 'run', `${project}:code-pushup`, 'upload'],
+        args: ['nx', 'run', `${project}:code-pushup`, '--persist.outputDir=not-existing', 'upload'],
         cwd,
       }),
     ).rejects.toThrow(/report.json/);
