@@ -70,7 +70,7 @@ function npmTargets({
       dependsOn: [
         { project: 'dependencies', targets: 'npm-install', params: 'forward' },
       ],
-      command: `npm install -D ${packageName}@{args.pkgVersion} --prefix={args.prefix} --userconfig={args.userconfig}`,
+      command: `npm install -D ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,
     },
     'npm-uninstall': {
       command: `npm uninstall ${packageName} --prefix={args.prefix} --userconfig={args.userconfig}`,

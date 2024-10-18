@@ -18,12 +18,6 @@
       }
     }
   },
-  "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
-    "cli",
-    "plugin-lighthouse"
-  ],
+  "implicitDependencies": ["cli", "plugin-lighthouse"],
   "tags": ["scope:plugin", "type:e2e"]
 }
