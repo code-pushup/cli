@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/create-cli",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "license": "MIT",
   "bin": "index.js",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/create-cli#readme",
@@ -28,7 +28,7 @@
   "main": "./index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
-    "@code-pushup/nx-plugin": "0.53.0",
-    "@code-pushup/utils": "0.53.0"
+    "@code-pushup/nx-plugin": "0.53.1",
+    "@code-pushup/utils": "0.53.1"
   }
 }
