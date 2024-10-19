@@ -75,7 +75,7 @@ export function getSortableGroupByRef(
   }
 
   const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
-  const sortedAuditRefs = [...group.refs].sort((a, b) => {
+  const sortedAuditRefs = group.refs.toSorted((a, b) => {
     const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
     const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
     return aIndex - bIndex;
@@ -115,7 +115,7 @@ export function sortReport(report: ScoredReport): ScoredReport {
       compareCategoryAuditsAndGroups,
     );
 
-    const sortedRefs = [...category.refs].sort((a, b) => {
+    const sortedRefs = category.refs.toSorted((a, b) => {
       const aIndex = sortedAuditsAndGroups.findIndex(
         ref => ref.slug === a.slug && ref.plugin === a.plugin,
       );
@@ -144,13 +144,13 @@ function sortPlugins(
 ) {
   return plugins.map(plugin => ({
     ...plugin,
-    audits: [...plugin.audits].sort(compareAudits).map(audit =>
+    audits: plugin.audits.toSorted(compareAudits).map(audit =>
       audit.details?.issues
         ? {
             ...audit,
             details: {
               ...audit.details,
-              issues: [...audit.details.issues].sort(compareIssues),
+              issues: audit.details.issues.toSorted(compareIssues),
             },
           }
         : audit,

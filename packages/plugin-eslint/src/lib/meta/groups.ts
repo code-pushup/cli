@@ -85,5 +85,5 @@ export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
     ),
   );
 
-  return [...groups].sort((a, b) => a.slug.localeCompare(b.slug));
+  return groups.toSorted((a, b) => a.slug.localeCompare(b.slug));
 }

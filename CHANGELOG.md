@@ -1,3 +1,18 @@
+## 0.53.1 (2024-10-18)
+
+### 🚀 Features
+
+- add keywords for NPM to display ([17a0c498](https://github.com/code-pushup/cli/commit/17a0c498))
+
+### 🩹 Fixes
+
+- **ci:** handle monorepo mode in non-PR flow ([d7ba5a3f](https://github.com/code-pushup/cli/commit/d7ba5a3f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
 ## 0.53.0 (2024-10-17)
 
 ### 🚀 Features

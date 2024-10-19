@@ -1,4 +1,4 @@
-import * as Benchmark from 'benchmark';
+import Benchmark from 'benchmark';
 import type { Report } from '@code-pushup/models';
 import { scoreReport } from '../../src/lib/reports/scoring';
 import { scoreReportOptimized0 } from './optimized0';
@@ -34,6 +34,7 @@ const PROCESS_ARGUMENT_NUM_GROUPS_P2 = Number.parseInt(
   10,
 );
 
+// eslint-disable-next-line import/no-named-as-default-member
 const suite = new Benchmark.Suite('report-scoring');
 
 const AUDIT_PREFIX = 'a-';
@@ -131,8 +132,18 @@ function minimalReport(opt?: MinimalReportOptions): Report {
   const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;
   const numGroupRefs2 = opt?.numGroupRefs2 ?? NUM_GROUPS_P2;
 
+  const date = new Date();
+
   return {
-    date: '2022-01-01',
+    date: date.toISOString(),
+    packageName: 'perf-benchmark',
+    version: '0',
+    commit: {
+      date: date,
+      message: 'perf: benchmark score report',
+      author: 'me',
+      hash: 'mock_hash',
+    },
     duration: 0,
     categories: [
       {

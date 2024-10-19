@@ -1,15 +1,52 @@
 {
   "name": "@code-pushup/cli",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "license": "MIT",
   "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
+  "homepage": "https://code-pushup.dev",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20cli\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "automation",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "build tools",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "CI integration",
+    "code management",
+    "actionable feedback",
+    "trend analysis",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "bin": {
     "code-pushup": "index.js"
   },
   "dependencies": {
-    "@code-pushup/models": "0.53.0",
-    "@code-pushup/core": "0.53.0",
-    "@code-pushup/utils": "0.53.0",
+    "@code-pushup/models": "0.53.1",
+    "@code-pushup/core": "0.53.1",
+    "@code-pushup/utils": "0.53.1",
     "yargs": "^17.7.2",
     "ansis": "^3.3.0",
     "simple-git": "^3.20.0"

@@ -98,7 +98,7 @@ type Change = {
 };
 
 export function sortChanges<T extends Change>(changes: T[]): T[] {
-  return [...changes].sort(
+  return changes.toSorted(
     (a, b) =>
       Math.abs(b.scores.diff) - Math.abs(a.scores.diff) ||
       Math.abs(b.values?.diff ?? 0) - Math.abs(a.values?.diff ?? 0),

@@ -1,10 +1,43 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "description": "Code PushUp plugin for tracking code coverage ☂",
+  "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-coverage#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20coverage-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-coverage"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "plugin",
+    "automation",
+    "developer tools",
+    "conformance",
+    "code coverage",
+    "unit tests",
+    "testing",
+    "KPI tracking",
+    "automated feedback",
+    "regression guard",
+    "actionable feedback",
+    "audit",
+    "score monitoring"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./src/index.d.ts",
   "dependencies": {
-    "@code-pushup/models": "0.53.0",
-    "@code-pushup/utils": "0.53.0",
+    "@code-pushup/models": "0.53.1",
+    "@code-pushup/utils": "0.53.1",
     "ansis": "^3.3.0",
     "parse-lcov": "^1.0.4",
     "zod": "^3.22.4"
