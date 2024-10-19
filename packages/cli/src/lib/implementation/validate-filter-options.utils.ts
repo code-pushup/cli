@@ -18,8 +18,8 @@ export function validateFilterOption(
   const validItems = isCategoryOption(option)
     ? categories
     : isPluginOption(option)
-    ? plugins
-    : [];
+      ? plugins
+      : [];
   const invalidItems = itemsToFilter.filter(
     item => !validItems.some(({ slug }) => slug === item),
   );
@@ -94,8 +94,8 @@ export function getItemType(option: FilterOptionType, count: number): string {
   const itemType = isCategoryOption(option)
     ? 'category'
     : isPluginOption(option)
-    ? 'plugin'
-    : 'item';
+      ? 'plugin'
+      : 'item';
   return pluralize(itemType, count);
 }
 

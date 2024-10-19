@@ -3,7 +3,7 @@ import { findAllDependencies } from './traverse-graph';
 
 describe('findAllDependencies', () => {
   const mockProjectGraph = (dependencies: ProjectGraph['dependencies']) =>
-    ({ dependencies } as ProjectGraph);
+    ({ dependencies }) as ProjectGraph;
 
   it('should return empty array when a project has no dependencies', () => {
     expect(

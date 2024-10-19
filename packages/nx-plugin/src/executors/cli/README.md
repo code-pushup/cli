@@ -15,9 +15,9 @@ Configure a target in your project json.
   "name": "my-project",
   "targets": {
     "code-pushup": {
-      "executor": "@code-pushup/nx-plugin:cli"
-    }
-  }
+      "executor": "@code-pushup/nx-plugin:cli",
+    },
+  },
 }
 ```
 
@@ -54,11 +54,11 @@ The following things happen:
       "options": {
         "projectPrefix": "cli", // upload.project = cli-my-project
         "verbose": true,
-        "progress": false
+        "progress": false,
         // persist and upload options as defined in CoreConfig
-      }
-    }
-  }
+      },
+    },
+  },
 }
 ```
 

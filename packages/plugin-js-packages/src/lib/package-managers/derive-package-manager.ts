@@ -32,9 +32,8 @@ export async function derivePackageManagerInPackageJson(
 export async function derivePackageManager(
   currentDir = process.cwd(),
 ): Promise<PackageManagerId> {
-  const pkgManagerFromPackageJson = await derivePackageManagerInPackageJson(
-    currentDir,
-  );
+  const pkgManagerFromPackageJson =
+    await derivePackageManagerInPackageJson(currentDir);
   if (pkgManagerFromPackageJson) {
     return pkgManagerFromPackageJson;
   }

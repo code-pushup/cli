@@ -45,7 +45,7 @@ Register the plugin in your `nx.json`
 // nx.json
 {
   "name": "my-project",
-  "plugins": ["tools/verdaccio/verdaccio.plugin.ts"]
+  "plugins": ["tools/verdaccio/verdaccio.plugin.ts"],
 }
 ```
 
@@ -72,10 +72,10 @@ Example:
       "plugin": "tools/verdaccio/verdaccio.plugin.ts",
       "options": {
         "tsconfig": "tools/tsconfig.tools.json",
-        "verbose": true
-      }
-    }
-  ]
+        "verbose": true,
+      },
+    },
+  ],
 }
 ```
 

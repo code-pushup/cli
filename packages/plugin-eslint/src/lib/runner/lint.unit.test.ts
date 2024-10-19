@@ -17,7 +17,7 @@ class MockESLint {
               'max-lines': ['warn', 500],
               '@typescript-eslint/no-explicit-any': 'error',
             },
-      } as Linter.Config),
+      }) as Linter.Config,
   );
 }
 
