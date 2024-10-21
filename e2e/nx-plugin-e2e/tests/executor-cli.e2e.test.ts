@@ -108,8 +108,8 @@ describe('executor command', () => {
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
-      command: 'nx',
-      args: ['run', `${project}:code-pushup`, 'collect'],
+      command: 'npx',
+      args: ['nx', 'run', `${project}:code-pushup`, 'collect'],
       cwd,
     });
 
@@ -140,11 +140,6 @@ describe('executor command', () => {
   it('should execute upload executor to throw if no report is present', async () => {
     const cwd = join(baseDir, 'execute-upload-command-with-error');
     await addTargetToWorkspace(tree, { cwd, project });
-    await executeProcess({
-      command: 'npm',
-      args: ['install', '--save-dev', '@code-pushup/portal-client'],
-      cwd: baseDir,
-    });
 
     await expect(
       executeProcess({
