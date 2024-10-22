@@ -255,6 +255,21 @@ describe('logPlugins', () => {
     expect(output).toContain('Audit 1');
     expect(output).toContain('Audit 2');
   });
+
+  it('should not truncate a perfect audit in non-verbose mode when it is the only audit available', () => {
+    logPlugins(
+      [
+        {
+          title: 'Best Practices',
+          slug: 'best-practices',
+          audits: [{ title: 'Audit 1', score: 1, value: 100 }],
+        },
+      ] as ScoredReport['plugins'],
+      false,
+    );
+    const output = logs.join('\n');
+    expect(output).toContain('Audit 1');
+  });
 });
 
 describe('binaryIconPrefix', () => {
