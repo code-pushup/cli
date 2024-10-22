@@ -39,9 +39,10 @@ export function logPlugins(
 ): void {
   plugins.forEach(plugin => {
     const { title, audits } = plugin;
-    const filteredAudits = verbose
-      ? audits
-      : audits.filter(({ score }) => score !== 1);
+    const filteredAudits =
+      verbose || audits.length === 1
+        ? audits
+        : audits.filter(({ score }) => score !== 1);
     const diff = audits.length - filteredAudits.length;
 
     logAudits(title, filteredAudits);
