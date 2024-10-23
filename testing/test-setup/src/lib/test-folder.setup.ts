@@ -19,7 +19,7 @@ export async function teardownTestFolder(dirName: string) {
       maxRetries: 2,
       retryDelay: 100,
     });
-  } catch (error: unknown) {
+  } catch {
     logger.warn(
       `⚠️ Failed to delete test artefact ${bold(
         dirName,
