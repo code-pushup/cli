@@ -20,10 +20,10 @@ export async function teardownTestFolder(dirName: string) {
       retryDelay: 100,
     });
   } catch {
-    logger.error(
+    logger.warn(
       `⚠️ Failed to delete test artefact ${bold(
         dirName,
-      )} :(. ️The folder is still in the file system!`,
+      )} so the folder is still in the file system!\nIt may require a deletion before running e2e tests again.`,
     );
   }
 }
