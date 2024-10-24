@@ -1,6 +1,14 @@
-import { type Tree, updateProjectConfiguration } from '@nx/devkit';
+import {
+  type Tree,
+  addDependenciesToPackageJson,
+  readJsonFile as readPackageJsonFile,
+  removeDependenciesFromPackageJson,
+  updateProjectConfiguration,
+} from '@nx/devkit';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
+import type { PackageJson } from 'nx/src/utils/package-json';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
@@ -57,17 +65,36 @@ async function addTargetToWorkspace(
   await materializeTree(tree, cwd);
 }
 
+const getPortalClientVersion = (): string => {
+  const projectRoot = join(fileURLToPath(import.meta.url), '../../../../');
+  const packageJsonPath = join(projectRoot, 'package.json');
+  return (
+    readPackageJsonFile<PackageJson>(packageJsonPath).dependencies?.[
+      '@code-pushup/portal-client'
+    ] || '^0.9.0'
+  );
+};
+
 describe('executor command', () => {
   let tree: Tree;
   const project = 'my-lib';
   const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/executor/cli';
+  const portalClientVersion = getPortalClientVersion();
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
+
+    // @code-pushup/portal-client is required by the executor to handle the upload in tests
+    addDependenciesToPackageJson(
+      tree,
+      { '@code-pushup/portal-client': portalClientVersion },
+      {},
+    );
   });
 
   afterEach(async () => {
     await teardownTestFolder(baseDir);
+    removeDependenciesFromPackageJson(tree, ['@code-pushup/portal-client'], []);
   });
 
   it('should execute no specific command by default', async () => {
