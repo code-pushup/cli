@@ -88,6 +88,25 @@ describe('Nx helpers', () => {
         },
       ] satisfies ESLintTarget[]);
     });
+
+    it('should exclude specified projects and return only eslintrc and patterns of a remaining project', async () => {
+      await expect(
+        eslintConfigFromAllNxProjects({ exclude: ['cli', 'core', 'utils'] }),
+      ).resolves.toEqual([
+        {
+          eslintrc: './packages/nx-plugin/.eslintrc.json',
+          patterns: [
+            'packages/nx-plugin/**/*.ts',
+            'packages/nx-plugin/package.json',
+            'packages/nx-plugin/generators.json',
+            'packages/nx-plugin/src/*.spec.ts',
+            'packages/nx-plugin/src/*.cy.ts',
+            'packages/nx-plugin/src/*.stories.ts',
+            'packages/nx-plugin/src/.storybook/main.ts',
+          ],
+        },
+      ] satisfies ESLintTarget[]);
+    });
   });
 
   describe('create config from target Nx project and its dependencies', () => {

@@ -59,7 +59,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
    If you're using an Nx monorepo, additional helper functions are provided to simplify your configuration:
 
-   - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromAllNxProjects` helper:
+   - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromAllNxProjects` helper. You can exclude specific projects if needed by passing their names in the exclude option:
 
      ```js
      import eslintPlugin, { eslintConfigFromAllNxProjects } from '@code-pushup/eslint-plugin';
@@ -67,7 +67,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      export default {
        plugins: [
          // ...
-         await eslintPlugin(await eslintConfigFromAllNxProjects()),
+         await eslintPlugin(await eslintConfigFromAllNxProjects({ exclude: ['server'] })),
        ],
      };
      ```
