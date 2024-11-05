@@ -111,6 +111,18 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    {
+      "plugin": "@push-based/nx-verdaccio",
+      "options": {
+        "environments": {
+          "environmentsDir": "tmp/e2e",
+          "targetNames": ["e2e"]
+        },
+        "packages": {
+          "filterByTags": ["publishable"]
+        }
+      }
+    },
     "./tools/src/debug/debug.plugin.ts",
     {
       "plugin": "./tools/src/npm/npm.plugin.ts",
