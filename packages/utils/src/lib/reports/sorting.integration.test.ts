@@ -57,8 +57,10 @@ describe('sortReport', () => {
 
   it('should sort a report with no categories', () => {
     const sortedReport = sortReport(
-      scoreReport({ ...REPORT_MOCK, categories: [] }),
+      scoreReport({ ...REPORT_MOCK, categories: undefined }),
     );
-    expect(sortedReport).toEqual(expect.objectContaining({ categories: [] }));
+    expect(sortedReport).toEqual(
+      expect.objectContaining({ categories: undefined }),
+    );
   });
 });

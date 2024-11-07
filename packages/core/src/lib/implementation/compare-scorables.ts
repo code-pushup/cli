@@ -26,8 +26,8 @@ export function compareCategories(
   reports: ReportsToCompare,
 ): ReportsDiff['categories'] {
   const { pairs, added, removed } = matchArrayItemsByKey({
-    before: reports.before.categories,
-    after: reports.after.categories,
+    before: reports.before.categories ?? [],
+    after: reports.after.categories ?? [],
     key: 'slug',
   });
   const { changed, unchanged } = comparePairs(

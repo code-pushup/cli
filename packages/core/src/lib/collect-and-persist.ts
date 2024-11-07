@@ -13,8 +13,9 @@ import { collect } from './implementation/collect';
 import { logPersistedResults, persistReport } from './implementation/persist';
 import type { GlobalOptions } from './types';
 
-export type CollectAndPersistReportsOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'>
+export type CollectAndPersistReportsOptions = Pick<
+  CoreConfig,
+  'plugins' | 'categories'
 > & { persist: Required<PersistConfig> } & Partial<GlobalOptions>;
 
 export async function collectAndPersistReports(

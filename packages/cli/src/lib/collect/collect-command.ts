@@ -24,7 +24,7 @@ export function yargsCollectCommandObject(): CommandModule {
       await collectAndPersistReports(options);
       collectSuccessfulLog();
 
-      if (options.categories.length === 0) {
+      if (!options.categories || options.categories.length === 0) {
         renderConfigureCategoriesHint();
       }
 

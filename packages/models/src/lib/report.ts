@@ -75,8 +75,8 @@ export const reportSchema = packageVersionSchema({
   .merge(
     z.object(
       {
-        categories: z.array(categoryConfigSchema),
         plugins: z.array(pluginReportSchema).min(1),
+        categories: z.array(categoryConfigSchema).optional(),
         commit: commitSchema
           .describe('Git commit for which report was collected')
           .nullable(),
@@ -85,12 +85,10 @@ export const reportSchema = packageVersionSchema({
     ),
   )
   .refine(
-    report => !getMissingRefsForCategories(report.categories, report.plugins),
-    report => ({
-      message: missingRefsForCategoriesErrorMsg(
-        report.categories,
-        report.plugins,
-      ),
+    ({ plugins, categories }) =>
+      !getMissingRefsForCategories(plugins, categories),
+    ({ plugins, categories }) => ({
+      message: missingRefsForCategoriesErrorMsg(plugins, categories),
     }),
   );
 

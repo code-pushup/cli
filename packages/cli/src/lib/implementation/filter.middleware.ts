@@ -1,4 +1,4 @@
-import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type { CoreConfig } from '@code-pushup/models';
 import { filterItemRefsBy } from '@code-pushup/utils';
 import type { FilterOptions, Filterables } from './filter.model';
 import {
@@ -12,7 +12,7 @@ export function filterMiddleware<T extends FilterOptions>(
 ): T {
   const {
     plugins,
-    categories = [],
+    categories,
     skipCategories = [],
     onlyCategories = [],
     skipPlugins = [],
@@ -26,7 +26,7 @@ export function filterMiddleware<T extends FilterOptions>(
     skipPlugins.length === 0 &&
     onlyPlugins.length === 0
   ) {
-    return { ...originalProcessArgs, categories };
+    return originalProcessArgs;
   }
 
   handleConflictingOptions('categories', onlyCategories, skipCategories);
@@ -44,9 +44,11 @@ export function filterMiddleware<T extends FilterOptions>(
     onlyPlugins,
     verbose,
   );
-  const finalCategories = filterItemRefsBy(filteredCategories, ref =>
-    filteredPlugins.some(plugin => plugin.slug === ref.plugin),
-  );
+  const finalCategories = filteredCategories
+    ? filterItemRefsBy(filteredCategories, ref =>
+        filteredPlugins.some(plugin => plugin.slug === ref.plugin),
+      )
+    : filteredCategories;
 
   validateFinalState(
     { categories: finalCategories, plugins: filteredPlugins },
@@ -80,8 +82,12 @@ function applyCategoryFilters(
   skipCategories: string[],
   onlyCategories: string[],
   verbose: boolean,
-): CategoryConfig[] {
-  if (skipCategories.length === 0 && onlyCategories.length === 0) {
+): CoreConfig['categories'] {
+  if (
+    (skipCategories.length === 0 && onlyCategories.length === 0) ||
+    !categories ||
+    categories.length === 0
+  ) {
     return categories;
   }
   validateFilterOption(
@@ -102,7 +108,7 @@ function applyPluginFilters(
   skipPlugins: string[],
   onlyPlugins: string[],
   verbose: boolean,
-): PluginConfig[] {
+): CoreConfig['plugins'] {
   const filteredPlugins = filterPluginsFromCategories({
     categories,
     plugins,
@@ -126,11 +132,12 @@ function applyPluginFilters(
 function filterPluginsFromCategories({
   categories,
   plugins,
-}: Filterables): PluginConfig[] {
+}: Filterables): CoreConfig['plugins'] {
+  if (!categories || categories.length === 0) {
+    return plugins;
+  }
   const validPluginSlugs = new Set(
     categories.flatMap(category => category.refs.map(ref => ref.plugin)),
   );
-  return categories.length > 0
-    ? plugins.filter(plugin => validPluginSlugs.has(plugin.slug))
-    : plugins;
+  return plugins.filter(plugin => validPluginSlugs.has(plugin.slug));
 }

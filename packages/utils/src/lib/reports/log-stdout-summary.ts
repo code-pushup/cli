@@ -16,20 +16,21 @@ function log(msg = ''): void {
 }
 
 export function logStdoutSummary(report: ScoredReport, verbose = false): void {
-  const printCategories = report.categories.length > 0;
-
-  log(reportToHeaderSection(report));
+  const { plugins, categories, packageName, version } = report;
+  log(reportToHeaderSection({ packageName, version }));
   log();
-  logPlugins(report.plugins, verbose);
-  if (printCategories) {
-    logCategories(report);
+  logPlugins(plugins, verbose);
+  if (categories && categories.length > 0) {
+    logCategories({ plugins, categories });
   }
   log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
   log();
 }
 
-function reportToHeaderSection(report: ScoredReport): string {
-  const { packageName, version } = report;
+function reportToHeaderSection({
+  packageName,
+  version,
+}: Pick<ScoredReport, 'packageName' | 'version'>): string {
   return `${bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
 }
 
@@ -92,7 +93,10 @@ function logRow(score: number, title: string, value?: string): void {
   ]);
 }
 
-export function logCategories({ categories, plugins }: ScoredReport): void {
+export function logCategories({
+  plugins,
+  categories,
+}: Required<Pick<ScoredReport, 'plugins' | 'categories'>>): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
 
   const rows = categories.map(({ title, score, refs, isBinary }) => [

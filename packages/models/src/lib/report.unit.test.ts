@@ -219,7 +219,6 @@ describe('reportSchema', () => {
         packageName: 'cli',
         version: '1.0.1',
         plugins: [],
-        categories: [],
       }),
     ).toThrow('too_small');
   });

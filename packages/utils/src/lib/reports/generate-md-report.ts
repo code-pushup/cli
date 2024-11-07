@@ -13,7 +13,11 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
-import type { MdReportOptions, ScoredReport } from './types';
+import type {
+  MdReportOptions,
+  ScoredCategoryConfig,
+  ScoredReport,
+} from './types';
 import { formatReportScore, scoreMarker, severityMarker } from './utils';
 
 export function auditDetailsAuditValue({
@@ -26,19 +30,25 @@ export function auditDetailsAuditValue({
   )} (score: ${formatReportScore(score)})`;
 }
 
+function hasCategories(
+  report: ScoredReport,
+): report is ScoredReport & { categories: ScoredCategoryConfig[] } {
+  return !!report.categories && report.categories.length > 0;
+}
+
 export function generateMdReport(
   report: ScoredReport,
   options?: MdReportOptions,
 ): string {
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, REPORT_HEADLINE_TEXT)
-    .$if(report.categories.length > 0, doc =>
-      doc.$concat(
-        categoriesOverviewSection(report),
-        categoriesDetailsSection(report),
-      ),
+    .$concat(
+      ...(hasCategories(report)
+        ? [categoriesOverviewSection(report), categoriesDetailsSection(report)]
+        : []),
+      auditsSection(report, options),
+      aboutSection(report),
     )
-    .$concat(auditsSection(report, options), aboutSection(report))
     .rule()
     .paragraph(md`${FOOTER_PREFIX} ${md.link(README_LINK, 'Code PushUp')}`)
     .toString();
@@ -179,7 +189,7 @@ export function reportMetaTable({
         md.code(version),
         formatDuration(duration),
         plugins.length.toString(),
-        categories.length.toString(),
+        (categories?.length ?? 0).toString(),
         plugins.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
       ],
     ],

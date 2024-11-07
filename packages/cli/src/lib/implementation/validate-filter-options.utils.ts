@@ -11,7 +11,7 @@ export class OptionValidationError extends Error {}
 
 export function validateFilterOption(
   option: FilterOptionType,
-  { plugins, categories }: Filterables,
+  { plugins, categories = [] }: Filterables,
   { itemsToFilter, verbose }: { itemsToFilter: string[]; verbose: boolean },
 ): void {
   const itemsToFilterSet = new Set(itemsToFilter);
@@ -59,9 +59,9 @@ export function validateFinalState(
   filteredItems: Filterables,
   originalItems: Filterables,
 ): void {
-  const { categories: filteredCategories, plugins: filteredPlugins } =
+  const { categories: filteredCategories = [], plugins: filteredPlugins } =
     filteredItems;
-  const { categories: originalCategories, plugins: originalPlugins } =
+  const { categories: originalCategories = [], plugins: originalPlugins } =
     originalItems;
   if (
     filteredCategories.length === 0 &&

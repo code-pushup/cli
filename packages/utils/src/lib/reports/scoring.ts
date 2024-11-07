@@ -62,7 +62,7 @@ export function scoreReport(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategories = report.categories.map(category => ({
+  const scoredCategories = report.categories?.map(category => ({
     ...category,
     score: calculateScore(category.refs, catScoreFn),
   }));

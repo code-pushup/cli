@@ -8,7 +8,6 @@ describe('collect', () => {
   it('should execute with valid options', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
     const report = await collect({
-      categories: [],
       ...MINIMAL_CONFIG_MOCK,
       verbose: true,
       progress: false,

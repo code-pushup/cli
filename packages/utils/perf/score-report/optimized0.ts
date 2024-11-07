@@ -78,7 +78,7 @@ export function scoreReportOptimized0(report: Report): ScoredReport {
   const allScoredAudits = scoredPlugins.flatMap(({ audits }) => audits);
   const allScoredGroups = scoredPlugins.flatMap(({ groups }) => groups);
 
-  const scoredCategories = report.categories.map(category => ({
+  const scoredCategories = report.categories?.map(category => ({
     ...category,
     score: calculateScore(
       category.refs,

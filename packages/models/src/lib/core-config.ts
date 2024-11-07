@@ -32,13 +32,10 @@ export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
 export function refineCoreConfig(schema: typeof unrefinedCoreConfigSchema) {
   // categories point to existing audit or group refs
   return schema.refine(
-    coreCfg =>
-      !getMissingRefsForCategories(coreCfg.categories ?? [], coreCfg.plugins),
-    coreCfg => ({
-      message: missingRefsForCategoriesErrorMsg(
-        coreCfg.categories ?? [],
-        coreCfg.plugins,
-      ),
+    ({ plugins, categories }) =>
+      !getMissingRefsForCategories(plugins, categories),
+    ({ plugins, categories }) => ({
+      message: missingRefsForCategoriesErrorMsg(plugins, categories),
     }),
   ) as unknown as typeof unrefinedCoreConfigSchema;
 }

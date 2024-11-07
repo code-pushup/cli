@@ -1,9 +1,5 @@
 import type { GlobalOptions } from '@code-pushup/core';
-import type {
-  CategoryConfig,
-  CoreConfig,
-  PluginConfig,
-} from '@code-pushup/models';
+import type { CoreConfig } from '@code-pushup/models';
 
 export type FilterOptions = Partial<GlobalOptions> &
   Pick<CoreConfig, 'categories' | 'plugins'> &
@@ -17,7 +13,4 @@ export type FilterOptionType =
   | 'skipPlugins'
   | 'onlyPlugins';
 
-export type Filterables = {
-  categories: CategoryConfig[];
-  plugins: PluginConfig[];
-};
+export type Filterables = Pick<CoreConfig, 'plugins' | 'categories'>;
