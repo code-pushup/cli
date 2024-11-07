@@ -80,7 +80,6 @@ export const auditDiffSchema = scorableWithPluginDiffSchema.merge(
         z.object({
           diff: z
             .number()
-            .int()
             .describe('Value change (`values.after - values.before`)'),
         }),
       )
