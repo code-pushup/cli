@@ -140,7 +140,7 @@ async function runOnProject(args: {
   }
 
   logger.info(
-    `PR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
+    `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
   const prevReport = await collectPreviousReport({ ...args, base, ctx });
@@ -236,7 +236,7 @@ async function collectPreviousReport(args: {
     logger.debug(`Collected previous report at ${prevReportPath}`);
 
     await git.checkout(['-f', '-']);
-    logger.info('Switched back to PR branch');
+    logger.info('Switched back to PR/MR branch');
 
     return prevReport;
   }
@@ -267,7 +267,7 @@ async function findNewIssues(args: {
   logger.debug(
     `Found ${issues.length} relevant issues for ${
       Object.keys(changedFiles).length
-    } changed files and created GitHub annotations`,
+    } changed files`,
   );
 
   return issues;
