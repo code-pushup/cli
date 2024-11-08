@@ -11,7 +11,6 @@ export const MINIMAL_REPORT_MOCK: Report = {
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
   commit: COMMIT_MOCK,
-  categories: [],
   plugins: [
     {
       slug: 'eslint',

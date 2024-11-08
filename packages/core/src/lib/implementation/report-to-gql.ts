@@ -35,7 +35,7 @@ export function reportToGQL(
     commandStartDate: report.date,
     commandDuration: report.duration,
     plugins: report.plugins.map(pluginToGQL),
-    categories: report.categories.map(categoryToGQL),
+    categories: (report.categories ?? []).map(categoryToGQL),
   };
 }
 

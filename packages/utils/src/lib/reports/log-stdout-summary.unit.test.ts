@@ -61,7 +61,7 @@ describe('logCategories', () => {
       },
     ] as ScoredReport['plugins'];
 
-    logCategories({ categories, plugins } as ScoredReport);
+    logCategories({ plugins, categories });
 
     const output = logs.join('\n');
 
@@ -105,7 +105,7 @@ describe('logCategories', () => {
       },
     ] as ScoredReport['plugins'];
 
-    logCategories({ categories, plugins } as ScoredReport);
+    logCategories({ plugins, categories });
 
     const output = logs.join('\n');
 
@@ -149,7 +149,7 @@ describe('logCategories', () => {
       },
     ] as ScoredReport['plugins'];
 
-    logCategories({ categories, plugins } as ScoredReport);
+    logCategories({ plugins, categories });
 
     const output = logs.join('\n');
 

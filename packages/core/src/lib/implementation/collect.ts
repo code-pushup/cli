@@ -4,9 +4,7 @@ import { name, version } from '../../../package.json';
 import type { GlobalOptions } from '../types';
 import { executePlugins } from './execute-plugin';
 
-export type CollectOptions = Required<
-  Pick<CoreConfig, 'plugins' | 'categories'>
-> &
+export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> &
   Partial<GlobalOptions>;
 
 /**

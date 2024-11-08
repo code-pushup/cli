@@ -1,5 +1,9 @@
-import type { Report } from '@code-pushup/models';
-import { getAuditImpactValue, issuesMatch } from './issues';
+import type { CategoryRef, Report } from '@code-pushup/models';
+import {
+  calculateGroupImpact,
+  getAuditImpactValue,
+  issuesMatch,
+} from './issues';
 
 describe('issues comparison', () => {
   it('should match issues with exact same metadata', () => {
@@ -270,5 +274,71 @@ describe('issues sorting', () => {
         } as Report,
       ),
     ).toBe(0.09); // 1% + 8% = 9%
+  });
+
+  it('should return 0 when there are no categories', () => {
+    expect(
+      getAuditImpactValue(
+        {
+          audit: {
+            slug: 'react-jsx-key',
+            title: 'Disallow missing `key` props in iterators',
+          },
+          plugin: { slug: 'eslint', title: 'ESLint' },
+        },
+        {
+          plugins: [
+            {
+              slug: 'eslint',
+              groups: [
+                {
+                  slug: 'suggestions',
+                  refs: [{ slug: 'mock-rule', weight: 1 }],
+                },
+              ],
+            },
+          ],
+        } as Report,
+      ),
+    ).toBe(0);
+  });
+});
+
+describe('calculateGroupImpact', () => {
+  const mockAudit = {
+    slug: 'react-jsx-key',
+    title: 'Disallow missing `key` props in iterators',
+  };
+  const mockCategoryRef = {
+    type: 'group',
+    plugin: 'eslint',
+    slug: 'suggestions',
+    weight: 1,
+  } as CategoryRef;
+
+  const mockReport = {
+    plugins: [
+      {
+        slug: 'eslint',
+        groups: [
+          {
+            slug: 'suggestions',
+            refs: [
+              ...Array.from({ length: 9 }).map((_, i) => ({
+                slug: `mock-rule-${i}`,
+                weight: 1,
+              })),
+              { slug: 'react-jsx-key', weight: 1 },
+            ],
+          },
+        ],
+      },
+    ],
+  } as Report;
+
+  it('should calculate correct impact for audit in group', () => {
+    expect(calculateGroupImpact(mockCategoryRef, mockAudit, mockReport)).toBe(
+      0.1,
+    );
   });
 });

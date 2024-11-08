@@ -91,7 +91,7 @@ export function getSortableGroupByRef(
 
 export function sortReport(report: ScoredReport): ScoredReport {
   const { categories, plugins } = report;
-  const sortedCategories = categories.map(category => {
+  const sortedCategories = categories?.map(category => {
     const { audits, groups } = category.refs.reduce(
       (
         acc: {

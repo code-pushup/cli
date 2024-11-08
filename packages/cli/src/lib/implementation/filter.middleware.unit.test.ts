@@ -22,7 +22,6 @@ describe('filterMiddleware', () => {
       }),
     ).toStrictEqual({
       plugins: [{ slug: 'p1', audits: [{ slug: 'a1-p1' }] }],
-      categories: [],
     });
   });
 
@@ -89,7 +88,6 @@ describe('filterMiddleware', () => {
       const { plugins } = filterMiddleware({
         ...option,
         plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
-        categories: [],
       });
       expect(plugins).toStrictEqual([expect.objectContaining(expected)]);
     },

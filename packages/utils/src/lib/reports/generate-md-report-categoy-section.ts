@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 export function categoriesOverviewSection(
-  report: Pick<ScoredReport, 'categories' | 'plugins'>,
+  report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
 ): MarkdownDocument {
   const { categories, plugins } = report;
   return new MarkdownDocument().table(
@@ -36,7 +36,7 @@ export function categoriesOverviewSection(
 }
 
 export function categoriesDetailsSection(
-  report: Pick<ScoredReport, 'categories' | 'plugins'>,
+  report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
 ): MarkdownDocument {
   const { categories, plugins } = report;
 

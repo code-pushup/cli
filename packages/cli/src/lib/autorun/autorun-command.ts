@@ -41,7 +41,7 @@ export function yargsAutorunCommandObject() {
       await collectAndPersistReports(optionsWithFormat);
       collectSuccessfulLog();
 
-      if (options.categories.length === 0) {
+      if (!options.categories || options.categories.length === 0) {
         renderConfigureCategoriesHint();
       }
 

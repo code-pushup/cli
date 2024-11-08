@@ -144,7 +144,7 @@ describe('parsing values from CLI and middleware', () => {
     });
   });
 
-  it('should set empty array for categories if not given in config file', async () => {
+  it('should keep categories undefined if not given in config file', async () => {
     const { categories } = await yargsCli<CoreConfig>(
       ['--config=./no-category.config.ts'],
       {
@@ -153,7 +153,7 @@ describe('parsing values from CLI and middleware', () => {
       },
     ).parseAsync();
 
-    expect(categories).toEqual([]);
+    expect(categories).toBeUndefined();
   });
 
   it('should accept an upload configuration with CLI overrides', async () => {

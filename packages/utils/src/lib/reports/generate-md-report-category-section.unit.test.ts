@@ -45,7 +45,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-any', type: 'audit' }],
           },
         ],
-      } as ScoredReport).toString(),
+      } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
   });
 
@@ -67,7 +67,7 @@ describe('categoriesOverviewSection', () => {
             refs: [{ slug: 'no-let', type: 'audit' }],
           },
         ],
-      } as ScoredReport).toString(),
+      } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
   });
 });
@@ -211,7 +211,7 @@ describe('categoriesDetailsSection', () => {
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport).toString(),
+      } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
   });
 
@@ -234,7 +234,7 @@ describe('categoriesDetailsSection', () => {
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport).toString(),
+      } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
   });
 
@@ -257,7 +257,7 @@ describe('categoriesDetailsSection', () => {
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
-      } as ScoredReport).toString(),
+      } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
   });
 });
