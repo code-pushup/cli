@@ -101,14 +101,16 @@ export async function runInCI(
   return { mode: 'standalone', artifacts, newIssues };
 }
 
-// eslint-disable-next-line max-lines-per-function
-async function runOnProject(args: {
+type RunOnProjectArgs = {
   project: ProjectConfig | null;
   refs: GitRefs;
   api: ProviderAPIClient;
   settings: Settings;
   git: SimpleGit;
-}): Promise<ProjectRunResult> {
+};
+
+// eslint-disable-next-line max-lines-per-function
+async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
   const {
     project,
     refs: { head, base },
@@ -188,18 +190,24 @@ async function runOnProject(args: {
   return { ...diffOutput, newIssues };
 }
 
-async function collectPreviousReport(args: {
-  project: ProjectConfig | null;
+type CollectPreviousReportArgs = RunOnProjectArgs & {
   base: GitBranch;
-  api: ProviderAPIClient;
-  settings: Settings;
   ctx: CommandContext;
-  git: SimpleGit;
-}): Promise<string | null> {
+};
+
+async function collectPreviousReport(
+  args: CollectPreviousReportArgs,
+): Promise<string | null> {
   const { project, base, api, settings, ctx, git } = args;
   const logger = settings.logger;
 
-  const cachedBaseReport = await api.downloadReportArtifact?.(project?.name);
+  const cachedBaseReport = await api
+    .downloadReportArtifact?.(project?.name)
+    .catch((error: unknown) => {
+      logger.warn(
+        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
+      );
+    });
   if (api.downloadReportArtifact != null) {
     logger.info(
       `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
