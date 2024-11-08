@@ -85,10 +85,10 @@ export const reportSchema = packageVersionSchema({
     ),
   )
   .refine(
-    ({ plugins, categories }) =>
-      !getMissingRefsForCategories(plugins, categories),
-    ({ plugins, categories }) => ({
-      message: missingRefsForCategoriesErrorMsg(plugins, categories),
+    ({ categories, plugins }) =>
+      !getMissingRefsForCategories(categories, plugins),
+    ({ categories, plugins }) => ({
+      message: missingRefsForCategoriesErrorMsg(categories, plugins),
     }),
   );
 

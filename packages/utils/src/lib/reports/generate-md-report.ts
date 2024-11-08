@@ -13,11 +13,7 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section';
-import type {
-  MdReportOptions,
-  ScoredCategoryConfig,
-  ScoredReport,
-} from './types';
+import type { MdReportOptions, ScoredReport } from './types';
 import { formatReportScore, scoreMarker, severityMarker } from './utils';
 
 export function auditDetailsAuditValue({
@@ -32,7 +28,7 @@ export function auditDetailsAuditValue({
 
 function hasCategories(
   report: ScoredReport,
-): report is ScoredReport & { categories: ScoredCategoryConfig[] } {
+): report is ScoredReport & Required<Pick<ScoredReport, 'categories'>> {
   return !!report.categories && report.categories.length > 0;
 }
 

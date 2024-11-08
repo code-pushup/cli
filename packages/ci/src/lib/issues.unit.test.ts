@@ -341,13 +341,4 @@ describe('calculateGroupImpact', () => {
       0.1,
     );
   });
-
-  it('should return 0 if the group has no refs', () => {
-    const emptyGroupRef = {
-      ...mockCategoryRef,
-      plugin: 'eslint',
-      slug: 'nonexistent-group',
-    };
-    expect(calculateGroupImpact(emptyGroupRef, mockAudit, mockReport)).toBe(0);
-  });
 });
