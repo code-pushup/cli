@@ -74,13 +74,13 @@ This will additionally compare reports from both source and target branches and 
 The PR flow requires interacting with the Git provider's API to post a comparison comment.
 Wrap these requests in functions and pass them in as an object which configures the provider.
 
-| Property                 | Required | Type                                             | Description                                                                                                              |
-| :----------------------- | :------: | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| `createComment`          |   yes    | `(body: string) => Promise<Comment>`             | Posts a new comment to PR                                                                                                |
-| `updateComment`          |   yes    | `(id: number, body: string) => Promise<Comment>` | Updates existing PR comment                                                                                              |
-| `listComments`           |   yes    | `() => Promise<Comment[]>`                       | Fetches all comments from PR                                                                                             |
-| `maxCommentChars`        |   yes    | `number`                                         | Character limit for comment body                                                                                         |
-| `downloadReportArtifact` |    no    | `() => Promise<string \| null>`                  | Fetches previous report for base branch (returns path to downloaded `report.json`), used as cache to speed up comparison |
+| Property                 | Required | Type                                             | Description                                                                                                          |
+| :----------------------- | :------: | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `createComment`          |   yes    | `(body: string) => Promise<Comment>`             | Posts a new comment to PR                                                                                            |
+| `updateComment`          |   yes    | `(id: number, body: string) => Promise<Comment>` | Updates existing PR comment                                                                                          |
+| `listComments`           |   yes    | `() => Promise<Comment[]>`                       | Fetches all comments from PR                                                                                         |
+| `maxCommentChars`        |   yes    | `number`                                         | Character limit for comment body                                                                                     |
+| `downloadReportArtifact` |    no    | `(project?: string) => Promise<string \| null>`  | Fetches previous (root/project) `report.json` for base branch and returns path, used as cache to speed up comparison |
 
 A `Comment` object has the following required properties:
 

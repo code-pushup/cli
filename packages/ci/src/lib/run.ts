@@ -189,16 +189,17 @@ async function runOnProject(args: {
 }
 
 async function collectPreviousReport(args: {
+  project: ProjectConfig | null;
   base: GitBranch;
   api: ProviderAPIClient;
   settings: Settings;
   ctx: CommandContext;
   git: SimpleGit;
 }): Promise<string | null> {
-  const { base, api, settings, ctx, git } = args;
+  const { project, base, api, settings, ctx, git } = args;
   const logger = settings.logger;
 
-  const cachedBaseReport = await api.downloadReportArtifact?.();
+  const cachedBaseReport = await api.downloadReportArtifact?.(project?.name);
   if (api.downloadReportArtifact != null) {
     logger.info(
       `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
