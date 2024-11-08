@@ -44,7 +44,7 @@ export type ProviderAPIClient = {
 };
 
 /**
- * PR comment from {@link ProviderAPIClient}
+ * PR/MR comment from {@link ProviderAPIClient}
  */
 export type Comment = {
   id: number;
