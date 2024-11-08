@@ -14,10 +14,10 @@
 
 This package exports **provider-agnostic core logic for running Code PushUp in CI pipelines**. It serves as the base for the following provider integrations:
 
-|                |                                                                                   |
-| :------------- | :-------------------------------------------------------------------------------- |
-| GitHub Actions | [`code-pushup/github-action`](https://github.com/marketplace/actions/code-pushup) |
-| GitLab CI/CD   | _coming soon_                                                                     |
+|                |                                                                                                     |
+| :------------- | :-------------------------------------------------------------------------------------------------- |
+| GitHub Actions | [`code-pushup/github-action`](https://github.com/marketplace/actions/code-pushup)                   |
+| GitLab CI/CD   | [`code-pushup/gitlab-pipelines-template`](https://gitlab.com/code-pushup/gitlab-pipelines-template) |
 
 ## Setup
 
