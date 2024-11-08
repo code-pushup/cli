@@ -1,3 +1,24 @@
+## 0.54.0 (2024-11-08)
+
+### 🚀 Features
+
+- **plugin-eslint:** add exclude option for Nx projects ([e9560f56](https://github.com/code-pushup/cli/commit/e9560f56))
+
+### 🩹 Fixes
+
+- **ci:** pass project name to downloadReportArtifact ([647f7e28](https://github.com/code-pushup/cli/commit/647f7e28))
+- **ci:** improve misleading logs ([cfece081](https://github.com/code-pushup/cli/commit/cfece081))
+- **ci:** catch errors from downloadReportArtifact - log warning and proceed ([3df4a71a](https://github.com/code-pushup/cli/commit/3df4a71a))
+- **models:** allow non-integers in audit values diff ([61d49ea4](https://github.com/code-pushup/cli/commit/61d49ea4))
+- **plugin-eslint,plugin-coverage:** future-proof version range of nx peer deps ([52afea5a](https://github.com/code-pushup/cli/commit/52afea5a))
+- **utils:** always log single perfect audit ([d8a7eb25](https://github.com/code-pushup/cli/commit/d8a7eb25))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.53.1 (2024-10-18)
 
 ### 🚀 Features

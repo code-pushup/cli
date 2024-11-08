@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/eslint-plugin",
-  "version": "0.53.1",
+  "version": "0.54.0",
   "license": "MIT",
   "description": "Code PushUp plugin for detecting problems in source code using ESLint.📋",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-eslint#readme",
@@ -40,8 +40,8 @@
   "main": "./index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
-    "@code-pushup/utils": "0.53.1",
-    "@code-pushup/models": "0.53.1",
+    "@code-pushup/utils": "0.54.0",
+    "@code-pushup/models": "0.54.0",
     "eslint": "^8.46.0",
     "zod": "^3.22.4"
   },
