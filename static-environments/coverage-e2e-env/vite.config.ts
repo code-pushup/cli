@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import {dirname} from 'node:path';
-import {fileURLToPath} from 'node:url';
-import {defineConfig} from 'vite';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: fileURLToPath(dirname(import.meta.url)),
@@ -20,6 +20,6 @@ export default defineConfig({
       include: ['src/**/*.{js,mjs}'],
     },
     environment: 'node',
-    include: ['src/**/*.{test,spec}.{js,mjs}']
+    include: ['src/**/*.{test,spec}.{js,mjs}'],
   },
 });

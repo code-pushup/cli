@@ -2,7 +2,20 @@
 
 exports[`collect report with coverage-plugin NPM package > should run Code coverage plugin that runs coverage tool and creates report.json 1`] = `
 {
-  "categories": [],
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
   "packageName": "@code-pushup/core",
   "plugins": [
     {
@@ -39,27 +52,17 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
                 "source": {
                   "file": "static-environments/coverage-e2e-env/src/index.mjs",
                   "position": {
-                    "startLine": 11,
-                  },
-                },
-              },
-              {
-                "message": "1st branch is not taken in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
-                  "position": {
-                    "startLine": 15,
+                    "startLine": 10,
                   },
                 },
               },
             ],
           },
-          "displayValue": "50 %",
-          "score": 0.5,
+          "displayValue": "66.7 %",
+          "score": 0.6667,
           "slug": "branch-coverage",
           "title": "Branch coverage",
-          "value": 50,
+          "value": 66.66666666666666,
         },
         {
           "description": "Measures how many lines of code were executed in at least one test.",
@@ -77,23 +80,23 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
                 },
               },
               {
-                "message": "Lines 12-13 are not covered in any test case.",
+                "message": "Lines 11-12 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
                   "file": "static-environments/coverage-e2e-env/src/index.mjs",
                   "position": {
-                    "endLine": 13,
-                    "startLine": 12,
+                    "endLine": 12,
+                    "startLine": 11,
                   },
                 },
               },
             ],
           },
-          "displayValue": "75 %",
-          "score": 0.75,
+          "displayValue": "73.3 %",
+          "score": 0.7333,
           "slug": "line-coverage",
           "title": "Line coverage",
-          "value": 75,
+          "value": 73.33333333333333,
         },
       ],
       "description": "Official Code PushUp code coverage plugin.",

@@ -1,5 +1,3 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
   type AuditReport,
   type PluginReport,
@@ -53,59 +51,6 @@ describe('CLI collect', () => {
     const { code, stderr } = await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
-      cwd: 'examples/react-todos-app',
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
-
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
-
-  it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
-    /**
-     * The stats passed in the fixture are as follows
-     * 3 files: one partially covered, one with no coverage, one with full coverage
-     * Functions:  2 +  1 +  2 found |   1 +  0 +  2 covered (60% coverage)
-     * Branches:  10 +  2 +  5 found |   8 +  0 +  5 covered (76% coverage)
-     * Lines:     10 +  5 + 10 found |   7 +  0 + 10 covered (68% coverage)
-     */
-
-    const configPath = join(
-      fileURLToPath(dirname(import.meta.url)),
-      '..',
-      'mocks',
-      'fixtures',
-      'code-pushup.config.ts',
-    );
-
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: [
-        'collect',
-        '--no-progress',
-        `--config=${configPath}`,
-        '--persist.outputDir=tmp/e2e',
-        '--onlyPlugins=coverage',
-      ],
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile(join('tmp', 'e2e', 'report.json'));
-
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
-
-  it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=coverage'],
       cwd: 'examples/react-todos-app',
     });
 

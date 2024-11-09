@@ -1,13 +1,11 @@
+import { join } from 'node:path';
 import coveragePlugin from '@code-pushup/coverage-plugin';
+import type { CoreConfig } from '@code-pushup/models';
 
 export default {
   plugins: [
     await coveragePlugin({
-      reports: ['coverage/lcov.info'],
-      coverageToolCommand: {
-        command: 'npx',
-        args: ['vitest', 'run', '--coverage'],
-      },
+      reports: [join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info')],
     }),
   ],
   categories: [
@@ -24,4 +22,4 @@ export default {
       ],
     },
   ],
-};
+} satisfies CoreConfig;
