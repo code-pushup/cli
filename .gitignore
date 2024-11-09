@@ -33,8 +33,6 @@ node_modules
 /connect.lock
 /coverage
 /examples/react-todos-app/coverage
-/examples/react-todos-app/package.json
-/examples/react-todos-app/package-lock.json
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log

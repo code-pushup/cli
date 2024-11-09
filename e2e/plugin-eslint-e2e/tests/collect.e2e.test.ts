@@ -6,10 +6,10 @@ import { omitVariableReportData } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('collect report with eslint-plugin NPM package', () => {
-  const baseDir = 'static-environments/eslint-e2e-env';
+  const baseDir = 'static-environments/eslint-e2e-env/__tests__';
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    // await teardownTestFolder(baseDir);
   });
 
   it('should run ESLint plugin and create report.json', async () => {
@@ -18,6 +18,7 @@ describe('collect report with eslint-plugin NPM package', () => {
       args: [
         '@code-pushup/cli',
         'collect',
+        `--persist.outputDir=${join(baseDir, '.code-pushup')}`,
         '--no-progress',
         '--onlyPlugins=eslint',
       ],

@@ -4,9 +4,8 @@ import { executeProcess } from '@code-pushup/utils';
 describe('CLI help', () => {
   it('should print help with help command', async () => {
     const { code, stdout, stderr } = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', 'help'],
-      cwd: 'examples/react-todos-app',
+      command: 'code-pushup',
+      args: ['help'],
     });
     expect(code).toBe(0);
     expect(stderr).toBe('');
@@ -15,14 +14,12 @@ describe('CLI help', () => {
 
   it('should produce the same output to stdout for both help argument and help command', async () => {
     const helpArgResult = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', 'help'],
-      cwd: 'examples/react-todos-app',
+      command: 'code-pushup',
+      args: ['help'],
     });
     const helpCommandResult = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', '--help'],
-      cwd: 'examples/react-todos-app',
+      command: 'code-pushup',
+      args: ['--help'],
     });
     expect(helpArgResult.code).toBe(0);
     expect(helpCommandResult.code).toBe(0);
