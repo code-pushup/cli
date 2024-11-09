@@ -1,4 +1,4 @@
-import eslintPlugin from '../../dist/packages/plugin-eslint';
+import eslintPlugin from '@code-pushup/eslint-plugin';
 
 export default {
   plugins: [

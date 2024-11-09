@@ -8,7 +8,7 @@
       "command": "npx eslint --config static-environments/eslint-e2e-env/.eslintrc.json static-environments/eslint-e2e-env/src"
     },
     "run-collect": {
-      "command": "npx ../../dist/packages/cli collect",
+      "command": "npx @code-pushup/cli collect",
       "options": {
         "cwd": "static-environments/eslint-e2e-env"
       }

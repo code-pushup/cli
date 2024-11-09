@@ -1,1 +1,3 @@
-export const test = 42;
+function random() {
+  return '42';
+}
