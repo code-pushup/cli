@@ -16,7 +16,7 @@
         "environmentRoot": "examples/react-todos-app"
       }
     },
-    "e2e-old": {
+    "e2e": {
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "e2e/cli-e2e/vite.config.e2e.ts",
