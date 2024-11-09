@@ -32,7 +32,6 @@ export async function coreConfigMiddleware<
   const {
     persist: rcPersist,
     upload: rcUpload,
-    categories: rcCategories,
     ...remainingRcConfig
   } = importedRc;
   const upload =
@@ -56,7 +55,6 @@ export async function coreConfigMiddleware<
       ),
     },
     ...(upload != null && { upload }),
-    categories: rcCategories ?? [],
     ...remainingRcConfig,
     ...remainingCliOptions,
   };

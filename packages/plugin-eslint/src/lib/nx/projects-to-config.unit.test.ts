@@ -1,52 +1,10 @@
-import type {
-  ProjectGraph,
-  ProjectGraphDependency,
-  ProjectGraphProjectNode,
-} from '@nx/devkit';
 import { vol } from 'memfs';
 import type { MockInstance } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, toProjectGraph } from '@code-pushup/test-utils';
 import type { ESLintPluginConfig, ESLintTarget } from '../config';
 import { nxProjectsToConfig } from './projects-to-config';
 
 describe('nxProjectsToConfig', () => {
-  const toProjectGraph = (
-    nodes: ProjectGraphProjectNode[],
-    dependencies?: Record<string, string[]>,
-  ): ProjectGraph => ({
-    nodes: Object.fromEntries(
-      nodes.map(node => [
-        node.name,
-        {
-          ...node,
-          data: {
-            targets: {
-              lint: {
-                options: {
-                  lintFilePatterns: `${node.data.root}/**/*.ts`,
-                },
-              },
-            },
-            sourceRoot: `${node.data.root}/src`,
-            ...node.data,
-          },
-        },
-      ]),
-    ),
-    dependencies: Object.fromEntries(
-      nodes.map(node => [
-        node.name,
-        dependencies?.[node.name]?.map(
-          (target): ProjectGraphDependency => ({
-            source: node.name,
-            target,
-            type: 'static',
-          }),
-        ) ?? [],
-      ]),
-    ),
-  });
-
   let cwdSpy: MockInstance<[], string>;
 
   beforeAll(() => {

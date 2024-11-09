@@ -119,7 +119,7 @@
       "options": {
         "environments": {
           "environmentsDir": "tmp/e2e",
-          "targetNames": ["e2e-old"]
+          "targetNames": ["e2e-old", "e2e"]
         },
         "packages": {
           "filterByTags": ["publishable"]

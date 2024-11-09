@@ -101,14 +101,16 @@ export async function runInCI(
   return { mode: 'standalone', artifacts, newIssues };
 }
 
-// eslint-disable-next-line max-lines-per-function
-async function runOnProject(args: {
+type RunOnProjectArgs = {
   project: ProjectConfig | null;
   refs: GitRefs;
   api: ProviderAPIClient;
   settings: Settings;
   git: SimpleGit;
-}): Promise<ProjectRunResult> {
+};
+
+// eslint-disable-next-line max-lines-per-function
+async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
   const {
     project,
     refs: { head, base },
@@ -140,7 +142,7 @@ async function runOnProject(args: {
   }
 
   logger.info(
-    `PR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
+    `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
   const prevReport = await collectPreviousReport({ ...args, base, ctx });
@@ -188,17 +190,24 @@ async function runOnProject(args: {
   return { ...diffOutput, newIssues };
 }
 
-async function collectPreviousReport(args: {
+type CollectPreviousReportArgs = RunOnProjectArgs & {
   base: GitBranch;
-  api: ProviderAPIClient;
-  settings: Settings;
   ctx: CommandContext;
-  git: SimpleGit;
-}): Promise<string | null> {
-  const { base, api, settings, ctx, git } = args;
+};
+
+async function collectPreviousReport(
+  args: CollectPreviousReportArgs,
+): Promise<string | null> {
+  const { project, base, api, settings, ctx, git } = args;
   const logger = settings.logger;
 
-  const cachedBaseReport = await api.downloadReportArtifact?.();
+  const cachedBaseReport = await api
+    .downloadReportArtifact?.(project?.name)
+    .catch((error: unknown) => {
+      logger.warn(
+        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
+      );
+    });
   if (api.downloadReportArtifact != null) {
     logger.info(
       `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
@@ -235,7 +244,7 @@ async function collectPreviousReport(args: {
     logger.debug(`Collected previous report at ${prevReportPath}`);
 
     await git.checkout(['-f', '-']);
-    logger.info('Switched back to PR branch');
+    logger.info('Switched back to PR/MR branch');
 
     return prevReport;
   }
@@ -266,7 +275,7 @@ async function findNewIssues(args: {
   logger.debug(
     `Found ${issues.length} relevant issues for ${
       Object.keys(changedFiles).length
-    } changed files and created GitHub annotations`,
+    } changed files`,
   );
 
   return issues;

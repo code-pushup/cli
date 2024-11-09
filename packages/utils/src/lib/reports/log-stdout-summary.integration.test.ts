@@ -37,9 +37,9 @@ describe('logStdoutSummary', () => {
     );
   });
 
-  it('should not contain category section when categories are empty', async () => {
+  it('should not contain category section when categories are missing', async () => {
     logStdoutSummary(
-      sortReport(scoreReport({ ...reportMock(), categories: [] })),
+      sortReport(scoreReport({ ...reportMock(), categories: undefined })),
     );
     const output = logs.join('\n');
 

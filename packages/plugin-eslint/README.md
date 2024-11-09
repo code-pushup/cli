@@ -72,6 +72,12 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      };
      ```
 
+     You can also exclude specific projects if needed by passing their names in the `exclude` option:
+
+     ```js
+     await eslintConfigFromAllNxProjects({ exclude: ['server'] });
+     ```
+
    - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProjectAndDeps` helper and pass in in your project name:
 
      ```js

@@ -328,7 +328,7 @@ describe('runInCI', () => {
         expect.stringContaining(diffMdString),
       );
       expect(api.createComment).not.toHaveBeenCalled();
-      expect(api.downloadReportArtifact).toHaveBeenCalledWith();
+      expect(api.downloadReportArtifact).toHaveBeenCalledWith(undefined);
 
       expect(utils.executeProcess).toHaveBeenCalledTimes(2);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {

@@ -13,9 +13,7 @@ export type HistoryOnlyOptions = {
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins'> & Required<Pick<CoreConfig, 'categories'>>
-> & {
+export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
   persist: Required<PersistConfig>;
   upload?: Required<UploadConfig>;
 } & HistoryOnlyOptions &

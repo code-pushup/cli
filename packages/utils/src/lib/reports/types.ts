@@ -17,7 +17,7 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   plugins: (Omit<PluginReport, 'groups'> & {
     groups?: ScoredGroup[];
   })[];
-  categories: ScoredCategoryConfig[];
+  categories?: ScoredCategoryConfig[];
 };
 
 export type SortableGroup = ScoredGroup & {

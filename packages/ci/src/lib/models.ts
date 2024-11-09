@@ -37,14 +37,14 @@ export type GitRefs = {
  */
 export type ProviderAPIClient = {
   maxCommentChars: number;
-  downloadReportArtifact?: () => Promise<string | null>;
+  downloadReportArtifact?: (project?: string) => Promise<string | null>;
   listComments: () => Promise<Comment[]>;
   updateComment: (id: number, body: string) => Promise<Comment>;
   createComment: (body: string) => Promise<Comment>;
 };
 
 /**
- * PR comment from {@link ProviderAPIClient}
+ * PR/MR comment from {@link ProviderAPIClient}
  */
 export type Comment = {
   id: number;

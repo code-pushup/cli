@@ -30,7 +30,6 @@ describe('history', () => {
       format: ['json'],
     },
     plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
-    categories: [],
   };
   it('should check out all passed commits and reset to initial branch or tag', async () => {
     await history(historyBaseOptions, ['abc', 'def']);

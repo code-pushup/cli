@@ -46,7 +46,6 @@ describe('collectAndPersistReports', () => {
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
     const nonVerboseConfig: CollectAndPersistReportsOptions = {
-      categories: [],
       ...MINIMAL_CONFIG_MOCK,
       persist: {
         outputDir: 'output',
@@ -69,7 +68,6 @@ describe('collectAndPersistReports', () => {
         date: expect.stringMatching(ISO_STRING_REGEXP),
         duration: 666,
         commit: expect.any(Object),
-        categories: expect.any(Array),
         plugins: expect.any(Array),
       },
       sortedScoredReport,
@@ -87,7 +85,6 @@ describe('collectAndPersistReports', () => {
   it('should call collect and persistReport with correct parameters in verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
     const verboseConfig: CollectAndPersistReportsOptions = {
-      categories: [],
       ...MINIMAL_CONFIG_MOCK,
       persist: {
         outputDir: 'output',

@@ -106,7 +106,6 @@ describe('validateFilterOption', () => {
           { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
           { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
         ] as PluginConfig[],
-        categories: [],
       },
       { itemsToFilter: ['p1'], verbose: false },
     );
@@ -145,7 +144,6 @@ describe('validateFilterOption', () => {
             { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
             { slug: 'p3', audits: [{ slug: 'a1-p3' }] },
           ] as PluginConfig[],
-          categories: [],
         },
         { itemsToFilter: ['p4', 'p5'], verbose: false },
       );
@@ -165,12 +163,12 @@ describe('validateFilterOption', () => {
     expect(() => {
       validateFilterOption(
         'skipPlugins',
-        { plugins: allPlugins, categories: [] },
+        { plugins: allPlugins },
         { itemsToFilter: ['plugin1'], verbose: false },
       );
       validateFilterOption(
         'onlyPlugins',
-        { plugins: allPlugins, categories: [] },
+        { plugins: allPlugins },
         { itemsToFilter: ['plugin3'], verbose: false },
       );
     }).toThrow(
@@ -319,6 +317,21 @@ describe('validateFinalState', () => {
     expect(() => {
       validateFinalState(filteredItems, originalItems);
     }).toThrow(expect.any(OptionValidationError));
+  });
+
+  it('should perform validation without throwing an error when categories are missing', () => {
+    const filteredItems = {
+      plugins: [{ slug: 'p1', audits: [{ slug: 'a1-p1' }] }] as PluginConfig[],
+    };
+    const originalItems = {
+      plugins: [
+        { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
+        { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
+      ] as PluginConfig[],
+    };
+    expect(() => {
+      validateFinalState(filteredItems, originalItems);
+    }).not.toThrow();
   });
 });
 

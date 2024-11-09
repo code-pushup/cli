@@ -551,8 +551,8 @@ describe('generateMdReport', () => {
     expect(md).toMatch('Made with ❤ by [Code PushUp]');
   });
 
-  it('should skip categories section if empty', () => {
-    const md = generateMdReport({ ...baseScoredReport, categories: [] });
+  it('should skip categories section when categories are missing', () => {
+    const md = generateMdReport({ ...baseScoredReport, categories: undefined });
     expect(md).not.toMatch('## 🏷 Categories');
     expect(md).toMatch('# Code PushUp Report\n\n## 🛡️ Audits');
   });

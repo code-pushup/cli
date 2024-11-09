@@ -1,6 +1,7 @@
 import type {
   Audit,
   AuditReport,
+  CategoryRef,
   Issue,
   PluginMeta,
   Report,
@@ -151,6 +152,9 @@ export function getAuditImpactValue(
   { audit, plugin }: IssueContext,
   report: Report,
 ): number {
+  if (!report.categories) {
+    return 0;
+  }
   return report.categories
     .map((category): number => {
       const weights = category.refs.map((ref): number => {
@@ -163,16 +167,7 @@ export function getAuditImpactValue(
             return ref.slug === audit.slug ? ref.weight : 0;
 
           case 'group':
-            const group = report.plugins
-              .find(({ slug }) => slug === ref.plugin)
-              ?.groups?.find(({ slug }) => slug === ref.slug);
-            if (!group?.refs.length) {
-              return 0;
-            }
-            const groupRatio =
-              (group.refs.find(({ slug }) => slug === audit.slug)?.weight ??
-                0) / group.refs.reduce((acc, { weight }) => acc + weight, 0);
-            return ref.weight * groupRatio;
+            return calculateGroupImpact(ref, audit, report);
         }
       });
 
@@ -182,4 +177,21 @@ export function getAuditImpactValue(
       );
     })
     .reduce((acc, value) => acc + value, 0);
+}
+
+export function calculateGroupImpact(
+  ref: CategoryRef,
+  audit: Audit,
+  report: Report,
+): number {
+  const group = report.plugins
+    .find(({ slug }) => slug === ref.plugin)
+    ?.groups?.find(({ slug }) => slug === ref.slug);
+  if (!group?.refs.length) {
+    return 0;
+  }
+  const groupRatio =
+    (group.refs.find(({ slug }) => slug === audit.slug)?.weight ?? 0) /
+    group.refs.reduce((acc, { weight }) => acc + weight, 0);
+  return ref.weight * groupRatio;
 }

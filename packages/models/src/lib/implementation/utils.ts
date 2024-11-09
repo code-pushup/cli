@@ -64,10 +64,10 @@ export function exists<T>(value: T): value is NonNullable<T> {
  * @returns Array of missing references.
  */
 export function getMissingRefsForCategories(
-  categories: CategoryConfig[],
+  categories: CategoryConfig[] | undefined,
   plugins: PluginConfig[] | PluginReport[],
 ) {
-  if (categories.length === 0) {
+  if (!categories || categories.length === 0) {
     return false;
   }
 
@@ -108,7 +108,7 @@ export function getMissingRefsForCategories(
 }
 
 export function missingRefsForCategoriesErrorMsg(
-  categories: CategoryConfig[],
+  categories: CategoryConfig[] | undefined,
   plugins: PluginConfig[] | PluginReport[],
 ) {
   const missingRefs = getMissingRefsForCategories(categories, plugins);
