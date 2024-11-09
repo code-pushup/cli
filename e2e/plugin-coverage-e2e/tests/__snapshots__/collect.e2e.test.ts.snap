@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`collect report with coverage-plugin NPM package > should run Code coverage plugin that runs coverage tool and creates report.json 1`] = `
+{
+  "categories": [],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Function untested is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "66.7 %",
+          "score": 0.6667,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 66.66666666666666,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "position": {
+                    "startLine": 11,
+                  },
+                },
+              },
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "position": {
+                    "startLine": 15,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "50 %",
+          "score": 0.5,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 50,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Lines 2-3 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "position": {
+                    "endLine": 3,
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Lines 12-13 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "position": {
+                    "endLine": 13,
+                    "startLine": 12,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "75 %",
+          "score": 0.75,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 75,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
