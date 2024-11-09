@@ -5,7 +5,7 @@ import type { CoreConfig } from '@code-pushup/models';
 export default {
   plugins: [
     await coveragePlugin({
-      reports: [join('e2e', 'cli-e2e', 'mocks', 'fixtures', 'lcov.info')],
+      reports: [join('mocks', 'fixtures', 'lcov.info')],
     }),
   ],
   categories: [

@@ -1,0 +1,17 @@
+{
+  "name": "coverage-e2e-env",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@code-pushup/coverage-plugin": "^0.54.0",
+    "@code-pushup/models": "^0.54.0",
+    "@code-pushup/utils": "^0.54.0"
+  },
+  "description": ""
+}

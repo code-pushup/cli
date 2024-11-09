@@ -1,5 +1,4 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { afterEach } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { teardownTestFolder } from '@code-pushup/test-setup';
