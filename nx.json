@@ -29,20 +29,7 @@
       "dependsOn": ["^build"]
     },
     "nxv-env-setup": {
-      "cache": true,
-      "inputs": [
-        "{projectRoot}/project.json",
-        {
-          "runtime": "node --version"
-        },
-        {
-          "runtime": "npm --version"
-        },
-        {
-          "externalDependencies": ["verdaccio"]
-        },
-        "^production"
-      ]
+      "executor": "@push-based/nx-verdaccio:env-setup"
     },
     "@nx/vite:test": {
       "cache": true,
