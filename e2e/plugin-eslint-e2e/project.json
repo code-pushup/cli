@@ -1,0 +1,29 @@
+{
+  "name": "plugin-eslint-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/plugin-eslint-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/plugin-eslint-e2e/**/*.ts"]
+      }
+    },
+    "nxv-env-setup": {
+      "options": {
+        "environmentRoot": "examples/eslint-example-app"
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/plugin-eslint-e2e/vite.config.e2e.ts",
+        "environmentRoot": "examples/eslint-example-app"
+      }
+    }
+  },
+  "implicitDependencies": ["cli", "plugin-eslint", "eslint-e2e-env"],
+  "tags": ["scope:plugin", "type:e2e"]
+}
