@@ -11,17 +11,20 @@
         "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
       }
     },
+    "nxv-env-setup": {
+      "options": {
+        "environmentRoot": "examples/react-todos-app"
+      }
+    },
     "e2e-old": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/cli-e2e/vite.config.e2e.ts"
+        "configFile": "e2e/cli-e2e/vite.config.e2e.ts",
+        "environmentRoot": "examples/react-todos-app"
       }
     }
   },
   "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
     "cli",
     "plugin-eslint",
     "plugin-coverage",

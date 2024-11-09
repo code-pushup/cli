@@ -1,5 +1,5 @@
-import coveragePlugin from '../../dist/packages/plugin-coverage';
-import eslintPlugin from '../../dist/packages/plugin-eslint';
+import coveragePlugin from '@code-pushup/coverage-plugin';
+import eslintPlugin from '@code-pushup/eslint-plugin';
 
 const eslintAuditRef = (slug, weight) => ({
   type: 'audit',
@@ -21,7 +21,7 @@ export default {
       },
     }),
     await eslintPlugin({
-      eslintrc: '.eslintrc.js',
+      eslintrc: '.eslintrc.json',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     }),
   ],
