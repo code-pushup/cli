@@ -5,8 +5,8 @@ export default {
     await coveragePlugin({
       reports: ['coverage/lcov.info'],
       coverageToolCommand: {
-        command: 'npx',
-        args: ['vitest', 'run', '--coverage'],
+        command: 'npm',
+        args: ['run', 'test'],
       },
     }),
   ],
