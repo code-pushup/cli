@@ -3,19 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "static-environments/eslint-e2e-env/src",
   "projectType": "library",
-  "targets": {
-    "lint": {
-      "command": "npx eslint src",
-      "options": {
-        "cwd": "static-environments/eslint-e2e-env"
-      }
-    },
-    "run-collect": {
-      "command": "npx @code-pushup/cli collect",
-      "options": {
-        "cwd": "static-environments/eslint-e2e-env"
-      }
-    }
-  },
+  "targets": {},
   "tags": ["scope:internal", "type:feature"]
 }
