@@ -6,7 +6,7 @@ import { omitVariableReportData } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('collect report with eslint-plugin NPM package', () => {
-  const baseDir = 'eslint-e2e-env/__test__';
+  const baseDir = 'static-environments/eslint-e2e-env';
 
   afterEach(async () => {
     await teardownTestFolder(baseDir);
