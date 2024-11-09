@@ -9,6 +9,9 @@
       },
       "parserOptions": {
         "sourceType": "script"
+      },
+      "rules": {
+        "no-unused-vars": "error"
       }
     }
   ]

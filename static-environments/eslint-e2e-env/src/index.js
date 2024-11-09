@@ -1,3 +1,3 @@
-function random() {
+function random(unused) {
   return '42';
 }

@@ -5,7 +5,10 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "command": "npx eslint --config static-environments/eslint-e2e-env/.eslintrc.json static-environments/eslint-e2e-env/src"
+      "command": "npx eslint src",
+      "options": {
+        "cwd": "static-environments/eslint-e2e-env"
+      }
     },
     "run-collect": {
       "command": "npx @code-pushup/cli collect",
