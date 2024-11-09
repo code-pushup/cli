@@ -14,14 +14,6 @@ describe('collect report with coverage-plugin NPM package', () => {
   });
 
   it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
-    /**
-     * The stats passed in the fixture are as follows
-     * 3 files: one partially covered, one with no coverage, one with full coverage
-     * Functions:  2 +  1 +  2 found |   1 +  0 +  2 covered (60% coverage)
-     * Branches:  10 +  2 +  5 found |   8 +  0 +  5 covered (76% coverage)
-     * Lines:     10 +  5 + 10 found |   7 +  0 + 10 covered (68% coverage)
-     */
-
     const { code, stderr } = await executeProcess({
       command: 'npx',
       args: [
