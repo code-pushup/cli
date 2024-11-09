@@ -13,14 +13,14 @@
     },
     "nxv-env-setup": {
       "options": {
-        "environmentRoot": "examples/eslint-example-app"
+        "environmentRoot": "static-environments/eslint-e2e-env"
       }
     },
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "e2e/plugin-eslint-e2e/vite.config.e2e.ts",
-        "environmentRoot": "examples/eslint-example-app"
+        "environmentRoot": "static-environments/eslint-e2e-env"
       }
     }
   },
