@@ -1,4 +1,5 @@
-import type { PluginConfig } from '@code-pushup/models';
+import type {PluginConfig} from '@code-pushup/models';
+import {readFile} from "node:fs/promises";
 
 export const dummyPluginSlug = 'dummy-plugin';
 
@@ -8,20 +9,38 @@ export const dummyAudit = {
   title: 'Dummy Audit',
   description: 'A dummy audit to test the cli.',
 };
+
+export const dummyCategory = {
+  slug: 'dummy-category',
+  title: 'Dummy Category',
+  refs: [
+    {
+      type: 'audit',
+      plugin: dummyPluginSlug,
+      slug: dummyAuditSlug,
+      weight: 1
+    }
+  ]
+};
+
+
 export function create(): PluginConfig {
   return {
     slug: dummyPluginSlug,
     title: 'Dummy Plugin',
     icon: 'folder-javascript',
     description: 'A dummy plugin to test the cli.',
-    runner: () => [
-      {
-        ...dummyAudit,
-        slug: dummyAuditSlug,
-        score: 1,
-        value: 0,
-      },
-    ],
+    runner: async () => {
+      const itemCount = JSON.parse(await readFile('items.json', 'utf-8')).length;
+      return [
+        {
+          ...dummyAudit,
+          slug: dummyAuditSlug,
+          score: itemCount < 10 ? itemCount / 10 : 1,
+          value: itemCount,
+        },
+      ]
+    },
     audits: [dummyAudit],
   };
 }

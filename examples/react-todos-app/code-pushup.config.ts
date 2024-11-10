@@ -1,4 +1,4 @@
-import dummyPlugin, {dummyAudit, dummyPluginSlug} from "./dummy.plugin";
+import dummyPlugin, {dummyCategory} from "./dummy.plugin";
 
 export default {
   persist: {
@@ -6,17 +6,6 @@ export default {
   },
   plugins: [dummyPlugin()],
   categories: [
-    {
-      slug: 'dummy-category',
-      title: 'Dummy Category',
-      refs: [
-        {
-          type: 'audit',
-          plugin: dummyPluginSlug,
-          audit: dummyAudit.slug,
-          weight: 1
-        }
-      ]
-    }
+    dummyCategory
   ],
 };
