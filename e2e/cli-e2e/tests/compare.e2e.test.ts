@@ -1,9 +1,9 @@
-import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { simpleGit } from 'simple-git';
-import type { ReportsDiff } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/test-setup';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import {readFile, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {simpleGit} from 'simple-git';
+import type {ReportsDiff} from '@code-pushup/models';
+import {cleanTestFolder} from '@code-pushup/test-setup';
+import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const envRoot = join('examples', 'react-todos-app');
@@ -34,7 +34,7 @@ describe('CLI compare', () => {
   }, 20_000);
 
   afterEach(async () => {
-    await git.checkout(['--', 'examples/react-todos-app']);
+    await git.checkout(['--', envRoot]);
     // await cleanTestFolder('tmp/e2e');
   });
 
@@ -43,14 +43,14 @@ describe('CLI compare', () => {
       command: 'code-pushup',
       args: [
         'compare',
-        '--before=../../tmp/e2e/react-todos-app/source-report.json',
-        '--after=../../tmp/e2e/react-todos-app/target-report.json',
+        `--before=${join(envRoot, '.code-pushup', 'source-report.json')}`,
+        `--after=${join(envRoot, '.code-pushup', 'target-report.json')}`,
       ],
       cwd: envRoot,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
-      'tmp/e2e/react-todos-app/report-diff.json',
+      join(envRoot, '.code-pushup', 'report-diff.json')
     );
     expect(reportsDiff).toMatchSnapshot({
       commits: expect.any(Object),
@@ -60,7 +60,7 @@ describe('CLI compare', () => {
     });
 
     const reportsDiffMd = await readTextFile(
-      'tmp/e2e/react-todos-app/report-diff.md',
+      join(envRoot, '.code-pushup', 'report-diff.md')
     );
     // commits are variable, replace SHAs with placeholders
     const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');
