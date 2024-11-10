@@ -5,6 +5,7 @@ import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const git = simpleGit();
+  const dummyPluginSlug = 'dummy-plugin';
 
   beforeEach(async () => {
     if (await git.diff(['--', 'examples/react-todos-app'])) {
@@ -17,8 +18,7 @@ describe('CLI compare', () => {
       command: 'code-pushup',
       args: [
         'collect',
-        '--persist.filename=source-report',
-        '--onlyPlugins=eslint',
+        '--persist.filename=source-report'
       ],
       cwd: 'examples/react-todos-app',
     });
@@ -31,8 +31,7 @@ describe('CLI compare', () => {
       command: 'code-pushup',
       args: [
         'collect',
-        '--persist.filename=target-report',
-        '--onlyPlugins=eslint',
+        '--persist.filename=target-report'
       ],
       cwd: 'examples/react-todos-app',
     });
