@@ -17,8 +17,8 @@ describe('CLI compare', () => {
     }
     await cleanTestFolder(join(envRoot, '.code-pushup'));
     await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--persist.filename=source-report'],
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--persist.filename=source-report'],
       cwd: envRoot,
     });
     // adding items to create a report diff
@@ -27,8 +27,8 @@ describe('CLI compare', () => {
     await writeFile(itemsFile, JSON.stringify([...items, 4, 5, 6, 7], null, 2));
 
     await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--persist.filename=target-report'],
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--persist.filename=target-report'],
       cwd: envRoot,
     });
   }, 20_000);
@@ -40,8 +40,9 @@ describe('CLI compare', () => {
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
-      command: 'code-pushup',
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'compare',
         `--before=${join('.code-pushup', 'source-report.json')}`,
         `--after=${join('.code-pushup', 'target-report.json')}`,

@@ -7,6 +7,7 @@ export const configFilePath = (ext: (typeof extensions)[number]) =>
   join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
 
 describe('print-config', () => {
+  const envRoot = 'examples/react-todos-app';
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
@@ -22,6 +23,7 @@ describe('print-config', () => {
           `--persist.filename=${ext}-report`,
           '--onlyPlugins=coverage',
         ],
+        cwd: envRoot,
       });
 
       expect(code).toBe(0);

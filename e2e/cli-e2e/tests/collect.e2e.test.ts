@@ -6,8 +6,8 @@ import { executeProcess, readTextFile } from '@code-pushup/utils';
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
   const dummyAuditTitle = 'Dummy Audit';
-  const envRoot = 'static-environments/eslint-e2e-env';
-  const baseDir = join(envRoot, '__tests__');
+  const envRoot = 'examples/react-todos-app';
+  const baseDir = join(envRoot, '.code-pushup');
 
   afterEach(async () => {
     await teardownTestFolder(baseDir);
@@ -19,17 +19,20 @@ describe('CLI collect', () => {
 
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--persist.format=md', '--no-progress'],
-      cwd: 'examples/react-todos-app',
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        '--no-progress',
+        'collect',
+        '--persist.format=md',
+      ],
+      cwd: envRoot,
     });
 
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile(
-      'examples/react-todos-app/.code-pushup/report.md',
-    );
+    const md = await readTextFile(join(envRoot, '.code-pushup/report.md'));
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(dummyPluginTitle);
@@ -38,9 +41,9 @@ describe('CLI collect', () => {
 
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress'],
-      cwd: 'examples/react-todos-app',
+      command: 'npx',
+      args: ['@code-pushup/cli', '--no-progress', 'collect'],
+      cwd: envRoot,
     });
 
     expect(code).toBe(0);
