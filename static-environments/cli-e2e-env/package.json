@@ -9,11 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@code-pushup/cli": "^0.54.0",
-    "@code-pushup/core": "^0.54.0",
-    "@code-pushup/models": "^0.54.0",
-    "@code-pushup/utils": "^0.54.0"
-  },
+  "dependencies": {},
   "description": ""
 }
