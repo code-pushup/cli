@@ -1,0 +1,59 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CLI compare > should compare report.json files and create report-diff.json and report-diff.md 1`] = `
+{
+  "audits": {
+    "added": [],
+    "changed": [
+      {
+        "displayValues": {},
+        "plugin": {
+          "slug": "dummy-plugin",
+          "title": "Dummy Plugin",
+        },
+        "scores": {
+          "after": 0.7,
+          "before": 0.3,
+          "diff": 0.39999999999999997,
+        },
+        "slug": "dummy-audit",
+        "title": "Dummy Audit",
+        "values": {
+          "after": 7,
+          "before": 3,
+          "diff": 4,
+        },
+      },
+    ],
+    "removed": [],
+    "unchanged": [],
+  },
+  "categories": {
+    "added": [],
+    "changed": [
+      {
+        "scores": {
+          "after": 0.7,
+          "before": 0.3,
+          "diff": 0.39999999999999997,
+        },
+        "slug": "dummy-category",
+        "title": "Dummy Category",
+      },
+    ],
+    "removed": [],
+    "unchanged": [],
+  },
+  "commits": Any<Object>,
+  "date": Any<String>,
+  "duration": Any<Number>,
+  "groups": {
+    "added": [],
+    "changed": [],
+    "removed": [],
+    "unchanged": [],
+  },
+  "packageName": "@code-pushup/core",
+  "version": Any<String>,
+}
+`;

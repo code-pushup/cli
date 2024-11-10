@@ -1,7 +1,7 @@
-import {cleanTestFolder, teardownTestFolder} from '@code-pushup/test-setup';
-import {executeProcess, readTextFile} from '@code-pushup/utils';
-import {join} from "node:path";
-import {afterEach} from "vitest";
+import { join } from 'node:path';
+import { afterEach } from 'vitest';
+import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
+import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
@@ -27,7 +27,9 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile('examples/react-todos-app/.code-pushup/report.md');
+    const md = await readTextFile(
+      'examples/react-todos-app/.code-pushup/report.md',
+    );
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(dummyPluginTitle);

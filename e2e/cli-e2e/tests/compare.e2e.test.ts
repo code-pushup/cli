@@ -1,9 +1,9 @@
-import {readFile, writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
-import {simpleGit} from 'simple-git';
-import type {ReportsDiff} from '@code-pushup/models';
-import {cleanTestFolder} from '@code-pushup/test-setup';
-import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { simpleGit } from 'simple-git';
+import type { ReportsDiff } from '@code-pushup/models';
+import { cleanTestFolder } from '@code-pushup/test-setup';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const envRoot = join('examples', 'react-todos-app');
@@ -15,7 +15,7 @@ describe('CLI compare', () => {
         `Unstaged changes found in ${envRoot}, please stage or commit them to prevent E2E tests interfering`,
       );
     }
-    await cleanTestFolder('tmp/e2e/react-todos-app');
+    await cleanTestFolder(join(envRoot, '.code-pushup'));
     await executeProcess({
       command: 'code-pushup',
       args: ['collect', '--persist.filename=source-report'],
@@ -35,7 +35,7 @@ describe('CLI compare', () => {
 
   afterEach(async () => {
     await git.checkout(['--', envRoot]);
-    // await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder('tmp/e2e');
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
@@ -43,14 +43,14 @@ describe('CLI compare', () => {
       command: 'code-pushup',
       args: [
         'compare',
-        `--before=${join(envRoot, '.code-pushup', 'source-report.json')}`,
-        `--after=${join(envRoot, '.code-pushup', 'target-report.json')}`,
+        `--before=${join('.code-pushup', 'source-report.json')}`,
+        `--after=${join('.code-pushup', 'target-report.json')}`,
       ],
       cwd: envRoot,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
-      join(envRoot, '.code-pushup', 'report-diff.json')
+      join(envRoot, '.code-pushup', 'report-diff.json'),
     );
     expect(reportsDiff).toMatchSnapshot({
       commits: expect.any(Object),
@@ -60,7 +60,7 @@ describe('CLI compare', () => {
     });
 
     const reportsDiffMd = await readTextFile(
-      join(envRoot, '.code-pushup', 'report-diff.md')
+      join(envRoot, '.code-pushup', 'report-diff.md'),
     );
     // commits are variable, replace SHAs with placeholders
     const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');
