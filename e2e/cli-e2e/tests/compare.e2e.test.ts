@@ -7,15 +7,17 @@ import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const envRoot = join('static-environments', 'cli-e2e-env');
+  const srcDir = join(envRoot, '.code-pushup');
   const git = simpleGit();
 
   beforeEach(async () => {
-    await cleanTestFolder(join(envRoot, '.code-pushup'));
+    await cleanTestFolder(srcDir);
     await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--persist.filename=source-report'],
       cwd: envRoot,
     });
+
     // adding items to create a report diff
     const itemsFile = join(envRoot, 'src', 'items.json');
     const items = JSON.parse((await readFile(itemsFile)).toString());
@@ -30,7 +32,7 @@ describe('CLI compare', () => {
 
   afterEach(async () => {
     await git.checkout(['--', envRoot]);
-    await cleanTestFolder('tmp/e2e');
+    await cleanTestFolder(srcDir);
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {

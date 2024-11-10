@@ -3,11 +3,11 @@ import { expect } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
+const envRoot = join('static-environments', 'cli-e2e-env');
 export const configFilePath = (ext: (typeof extensions)[number]) =>
-  join(process.cwd(), `examples/react-todos-app/code-pushup.config.${ext}`);
+  join(process.cwd(), envRoot, `code-pushup.config.${ext}`);
 
 describe('CLI print-config', () => {
-  const envRoot = join('static-environments', 'cli-e2e-env');
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
