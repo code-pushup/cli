@@ -6,7 +6,7 @@ import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
-  const envRoot = join('examples', 'react-todos-app');
+  const envRoot = join('static-environments', 'cli-e2e-env');
   const git = simpleGit();
 
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe('CLI compare', () => {
       cwd: envRoot,
     });
     // adding items to create a report diff
-    const itemsFile = join(envRoot, 'items.json');
+    const itemsFile = join(envRoot, 'src', 'items.json');
     const items = JSON.parse((await readFile(itemsFile)).toString());
     await writeFile(itemsFile, JSON.stringify([...items, 4, 5, 6, 7], null, 2));
 

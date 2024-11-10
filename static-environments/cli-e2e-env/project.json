@@ -1,7 +1,7 @@
 {
-  "name": "react-todos-app",
+  "name": "cli-e2e-env",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples/react-todos-app/src",
+  "sourceRoot": "static-environments/cli-e2e-env/src",
   "projectType": "application",
   "targets": {
     "build": {

@@ -1,8 +1,9 @@
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
+import {join} from "node:path";
 
 describe('CLI help', () => {
-  const envRoot = 'examples/react-todos-app';
+  const envRoot = join('static-environments', 'cli-e2e-env');
 
   it('should print help with help command', async () => {
     const { code, stdout, stderr } = await executeProcess({

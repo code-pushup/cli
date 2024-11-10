@@ -13,12 +13,12 @@
     },
     "nxv-e2e": {
       "options": {
-        "environmentRoot": "examples/react-todos-app"
+        "environmentRoot": "static-environments/cli-e2e-env"
       }
     },
     "nxv-env-setup": {
       "options": {
-        "environmentRoot": "examples/react-todos-app"
+        "environmentRoot": "static-environments/cli-e2e-env"
       }
     },
     "e2e": {
@@ -28,6 +28,6 @@
       }
     }
   },
-  "implicitDependencies": ["cli", "react-todos-app"],
+  "implicitDependencies": ["cli", "cli-e2e-env"],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }

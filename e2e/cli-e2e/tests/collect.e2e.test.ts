@@ -6,7 +6,7 @@ import { executeProcess, readTextFile } from '@code-pushup/utils';
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
   const dummyAuditTitle = 'Dummy Audit';
-  const envRoot = 'examples/react-todos-app';
+  const envRoot = join('static-environments', 'cli-e2e-env');
   const baseDir = join(envRoot, '.code-pushup');
 
   afterEach(async () => {
