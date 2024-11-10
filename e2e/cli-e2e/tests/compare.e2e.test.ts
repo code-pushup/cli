@@ -1,16 +1,18 @@
-import { simpleGit } from 'simple-git';
-import type { ReportsDiff } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/test-setup';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import {simpleGit} from 'simple-git';
+import type {ReportsDiff} from '@code-pushup/models';
+import {cleanTestFolder} from '@code-pushup/test-setup';
+import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
+import {readFile, writeFile} from "node:fs/promises";
+import {join} from "node:path";
 
 describe('CLI compare', () => {
+  const envRoot = join('examples', 'react-todos-app');
   const git = simpleGit();
-  const dummyPluginSlug = 'dummy-plugin';
 
   beforeEach(async () => {
-    if (await git.diff(['--', 'examples/react-todos-app'])) {
+    if (await git.diff(['--', envRoot])) {
       throw new Error(
-        'Unstaged changes found in examples/react-todos-app, please stage or commit them to prevent E2E tests interfering',
+        `Unstaged changes found in ${envRoot}, please stage or commit them to prevent E2E tests interfering`,
       );
     }
     await cleanTestFolder('tmp/e2e/react-todos-app');
@@ -20,20 +22,20 @@ describe('CLI compare', () => {
         'collect',
         '--persist.filename=source-report'
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: envRoot,
     });
-    await executeProcess({
-      command: 'npx',
-      args: ['eslint', '--fix', 'src', '--ext=js,jsx'],
-      cwd: 'examples/react-todos-app',
-    });
+    // adding items to create a report diff
+    const itemsFile = join(envRoot, 'items.json');
+    const items = JSON.parse((await readFile(itemsFile)).toString());
+    await writeFile(itemsFile, JSON.stringify([...items, 4,5,6,7], null, 2));
+
     await executeProcess({
       command: 'code-pushup',
       args: [
         'collect',
         '--persist.filename=target-report'
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: envRoot,
     });
   }, 20_000);
 
@@ -50,7 +52,7 @@ describe('CLI compare', () => {
         '--before=../../tmp/e2e/react-todos-app/source-report.json',
         '--after=../../tmp/e2e/react-todos-app/target-report.json',
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: envRoot,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
