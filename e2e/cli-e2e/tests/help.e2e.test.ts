@@ -1,6 +1,6 @@
+import { join } from 'node:path';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import {join} from "node:path";
 
 describe('CLI help', () => {
   const envRoot = join('static-environments', 'cli-e2e-env');
