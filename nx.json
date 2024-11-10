@@ -109,7 +109,6 @@
           "filterByTags": ["publishable"]
         }
       }
-    },
-    "./tools/src/debug/debug.plugin.ts"
+    }
   ]
 }
