@@ -4,67 +4,11 @@
   "sourceRoot": "static-environments/cli-e2e-env/src",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/examples/react-todos-app"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
-      }
-    },
-    "serve": {
-      "executor": "@nx/vite:dev-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "react-todos-app:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "react-todos-app:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "react-todos-app:build:production",
-          "hmr": false
-        }
-      }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "configFile": "examples/react-todos-app/vite.config.ts",
-        "reportsDirectory": "../../coverage/react-todos-app"
-      }
-    },
-    "preview": {
-      "executor": "@nx/vite:preview-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "react-todos-app:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "react-todos-app:build:development"
-        },
-        "production": {
-          "buildTarget": "react-todos-app:build:production"
-        }
-      }
-    },
     "run-collect": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ../../dist/packages/cli collect --no-progress",
-        "cwd": "examples/react-todos-app"
+        "command": "npx @code-pushup/cli collect --no-progress",
+        "cwd": "static-environments/cli-e2e-env"
       },
       "dependsOn": [
         {
