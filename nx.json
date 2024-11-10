@@ -28,6 +28,7 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
+    "nxv-e2e": {},
     "nxv-env-setup": {
       "executor": "@push-based/nx-verdaccio:env-setup"
     },

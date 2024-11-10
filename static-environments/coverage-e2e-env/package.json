@@ -8,10 +8,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
+    "@code-pushup/core": "^0.54.0",
     "@code-pushup/coverage-plugin": "^0.54.0",
     "@code-pushup/models": "^0.54.0",
     "@code-pushup/utils": "^0.54.0"
-  },
-  "description": ""
+  }
 }
