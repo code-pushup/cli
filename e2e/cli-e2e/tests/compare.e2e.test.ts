@@ -10,11 +10,6 @@ describe('CLI compare', () => {
   const git = simpleGit();
 
   beforeEach(async () => {
-    if (await git.diff(['--', envRoot])) {
-      throw new Error(
-        `Unstaged changes found in ${envRoot}, please stage or commit them to prevent E2E tests interfering`,
-      );
-    }
     await cleanTestFolder(join(envRoot, '.code-pushup'));
     await executeProcess({
       command: 'npx',
