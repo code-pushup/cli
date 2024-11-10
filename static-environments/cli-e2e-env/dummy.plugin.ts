@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type { PluginConfig } from '@code-pushup/models';
-import {join} from "benchmark";
+import {join} from "node:path";
 
 export const dummyPluginSlug = 'dummy-plugin';
 
