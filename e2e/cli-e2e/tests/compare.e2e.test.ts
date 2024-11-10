@@ -1,9 +1,9 @@
-import {simpleGit} from 'simple-git';
-import type {ReportsDiff} from '@code-pushup/models';
-import {cleanTestFolder} from '@code-pushup/test-setup';
-import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
-import {readFile, writeFile} from "node:fs/promises";
-import {join} from "node:path";
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { simpleGit } from 'simple-git';
+import type { ReportsDiff } from '@code-pushup/models';
+import { cleanTestFolder } from '@code-pushup/test-setup';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const envRoot = join('examples', 'react-todos-app');
@@ -18,30 +18,24 @@ describe('CLI compare', () => {
     await cleanTestFolder('tmp/e2e/react-todos-app');
     await executeProcess({
       command: 'code-pushup',
-      args: [
-        'collect',
-        '--persist.filename=source-report'
-      ],
+      args: ['collect', '--persist.filename=source-report'],
       cwd: envRoot,
     });
     // adding items to create a report diff
     const itemsFile = join(envRoot, 'items.json');
     const items = JSON.parse((await readFile(itemsFile)).toString());
-    await writeFile(itemsFile, JSON.stringify([...items, 4,5,6,7], null, 2));
+    await writeFile(itemsFile, JSON.stringify([...items, 4, 5, 6, 7], null, 2));
 
     await executeProcess({
       command: 'code-pushup',
-      args: [
-        'collect',
-        '--persist.filename=target-report'
-      ],
+      args: ['collect', '--persist.filename=target-report'],
       cwd: envRoot,
     });
   }, 20_000);
 
   afterEach(async () => {
     await git.checkout(['--', 'examples/react-todos-app']);
-    await cleanTestFolder('tmp/e2e');
+    // await cleanTestFolder('tmp/e2e');
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
