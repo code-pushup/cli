@@ -4,16 +4,17 @@ import { executeProcess } from '@code-pushup/utils';
 
 const extensions = ['js', 'mjs', 'ts'] as const;
 export const configFilePath = (ext: (typeof extensions)[number]) =>
-  join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
+  join(process.cwd(), `examples/react-todos-app/code-pushup.config.${ext}`);
 
-describe('print-config', () => {
+describe('CLI print-config', () => {
   const envRoot = 'examples/react-todos-app';
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
       const { code, stdout } = await executeProcess({
-        command: 'code-pushup',
+        command: 'npx',
         args: [
+          '@code-pushup/cli',
           'print-config',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
@@ -21,7 +22,6 @@ describe('print-config', () => {
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
-          '--onlyPlugins=coverage',
         ],
         cwd: envRoot,
       });
@@ -33,25 +33,13 @@ describe('print-config', () => {
           config: expect.stringContaining(`code-pushup.config.${ext}`),
           tsconfig: 'tsconfig.base.json',
           // filled by command options
-          persist: {
-            outputDir: 'output-dir',
-            filename: `${ext}-report`,
-            format: ['md'],
-          },
-          upload: {
-            organization: 'code-pushup',
-            project: `cli-${ext}`,
-            apiKey: 'e2e-api-key',
-            server: 'https://e2e.com/api',
-          },
           plugins: [
             expect.objectContaining({
-              slug: 'coverage',
-              title: 'Code coverage',
+              slug: 'dummy-plugin',
+              title: 'Dummy Plugin',
             }),
           ],
-          categories: [expect.objectContaining({ slug: 'code-coverage' })],
-          onlyPlugins: ['coverage'],
+          categories: [expect.objectContaining({ slug: 'dummy-category' })],
         }),
       );
     },

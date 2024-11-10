@@ -28,6 +28,6 @@
       }
     }
   },
-  "implicitDependencies": ["models", "utils", "core", "cli", "react-todos-app"],
+  "implicitDependencies": ["cli", "react-todos-app"],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }
