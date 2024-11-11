@@ -14,10 +14,7 @@ describe('collect report with eslint-plugin NPM package', () => {
   });
 
   it('should run ESLint plugin and create report.json', async () => {
-    const outputDir = relative(
-      envRoot,
-      join(baseDir, '.code-pushup'),
-    );
+    const outputDir = relative(envRoot, join(baseDir, '.code-pushup'));
     const { code, stderr } = await executeProcess({
       command: 'npx',
       args: [

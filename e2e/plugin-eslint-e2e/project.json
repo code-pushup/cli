@@ -28,6 +28,6 @@
       }
     }
   },
-  "implicitDependencies": ["cli", "plugin-eslint", "eslint-e2e-env"],
+  "implicitDependencies": ["cli", "plugin-eslint"],
   "tags": ["scope:plugin", "type:e2e"]
 }
