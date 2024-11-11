@@ -1,0 +1,8 @@
+{
+  "name": "eslint-e2e-env",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "static-environments/eslint-e2e-env/src",
+  "projectType": "library",
+  "targets": {},
+  "tags": ["scope:internal", "type:feature"]
+}
