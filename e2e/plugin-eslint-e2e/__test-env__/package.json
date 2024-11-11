@@ -1,7 +1,6 @@
 {
   "name": "__test-env__",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@code-pushup/models": "^0.54.0"
-  }
+    "@code-pushup/eslint-plugin": "^0.54.0",
+    "@code-pushup/models": "^0.54.0",
+    "@code-pushup/utils": "^0.54.0"
+  },
+  "description": ""
 }
