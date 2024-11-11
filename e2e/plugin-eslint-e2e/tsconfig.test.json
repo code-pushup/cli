@@ -5,6 +5,9 @@
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"],
     "target": "ES2020"
   },
+  "exclude": [
+    "__test-env__"
+  ],
   "include": [
     "vite.config.e2e.ts",
     "tests/**/*.e2e.test.ts",
