@@ -13,12 +13,12 @@
     },
     "nxv-e2e": {
       "options": {
-        "environmentRoot": "static-environments/coverage-e2e-env"
+        "environmentRoot": "e2e/plugin-coverage-e2e/__test-env__"
       }
     },
     "nxv-env-setup": {
       "options": {
-        "environmentRoot": "static-environments/coverage-e2e-env"
+        "environmentRoot": "e2e/plugin-coverage-e2e/__test-env__"
       }
     },
     "e2e": {
@@ -28,6 +28,6 @@
       }
     }
   },
-  "implicitDependencies": ["cli", "plugin-coverage", "coverage-e2e-env"],
+  "implicitDependencies": ["cli", "plugin-coverage"],
   "tags": ["scope:plugin", "type:e2e"]
 }

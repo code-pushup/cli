@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { get42, isEven, untested } from './index';
+import { get42, isEven, untested } from './index.mjs';
 
 describe('get42', () => {
   it('should return 42', async () => {

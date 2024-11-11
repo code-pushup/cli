@@ -1,6 +1,6 @@
 {
   "name": "coverage-e2e-env",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "static-environments/coverage-e2e-env/src",
   "projectType": "library",
   "targets": {},

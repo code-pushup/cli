@@ -6,11 +6,11 @@ import { omitVariableReportData } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('collect report with coverage-plugin NPM package', () => {
-  const envRoot = 'static-environments/coverage-e2e-env';
-  const baseDir = join(envRoot, '__tests__');
+  const envRoot = 'e2e/plugin-coverage-e2e/__test-env__';
+  const coverageDir = join(envRoot, '.code-pushup');
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(coverageDir);
   });
 
   it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
