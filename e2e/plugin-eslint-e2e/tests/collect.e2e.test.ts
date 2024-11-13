@@ -1,3 +1,4 @@
+import { cp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
@@ -6,8 +7,17 @@ import { omitVariableReportData } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('collect report with eslint-plugin NPM package', () => {
-  const envRoot = 'e2e/plugin-eslint-e2e/__test-env__';
+  const fixturesDir = join('e2e', 'plugin-eslint-e2e', 'mocks', 'fixtures');
+  const envRoot = join('tmp', 'plugin-eslint-e2e', '__test-env__');
   const outputDir = join(envRoot, '.code-pushup');
+
+  beforeAll(async () => {
+    await cp(fixturesDir, envRoot, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await rm(envRoot, { recursive: true, force: true });
+  });
 
   afterEach(async () => {
     await teardownTestFolder(outputDir);

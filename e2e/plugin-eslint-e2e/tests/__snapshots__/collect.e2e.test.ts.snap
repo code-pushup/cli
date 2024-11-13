@@ -42,7 +42,7 @@ exports[`collect report with eslint-plugin NPM package > should run ESLint plugi
                 "message": "'unusedFn' is defined but never used.",
                 "severity": "error",
                 "source": {
-                  "file": "static-environments/eslint-e2e-env/src/index.js",
+                  "file": "tmp/plugin-eslint-e2e/__test-env__/src/index.js",
                   "position": {
                     "endColumn": 18,
                     "endLine": 1,
@@ -68,7 +68,7 @@ exports[`collect report with eslint-plugin NPM package > should run ESLint plugi
                 "message": "Unexpected console statement.",
                 "severity": "warning",
                 "source": {
-                  "file": "static-environments/eslint-e2e-env/src/index.js",
+                  "file": "tmp/plugin-eslint-e2e/__test-env__/src/index.js",
                   "position": {
                     "endColumn": 14,
                     "endLine": 6,

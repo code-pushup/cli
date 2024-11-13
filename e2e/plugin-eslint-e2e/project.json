@@ -13,12 +13,12 @@
     },
     "nxv-e2e": {
       "options": {
-        "environmentRoot": "e2e/plugin-eslint-e2e/__test-env__"
+        "environmentRoot": "tmp/plugin-eslint-e2e/__test-env__"
       }
     },
     "nxv-env-setup": {
       "options": {
-        "environmentRoot": "e2e/plugin-eslint-e2e/__test-env__"
+        "environmentRoot": "tmp/plugin-eslint-e2e/__test-env__"
       }
     },
     "e2e": {
