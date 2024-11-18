@@ -11,16 +11,6 @@
         "lintFilePatterns": ["e2e/plugin-eslint-e2e/**/*.ts"]
       }
     },
-    "nxv-e2e": {
-      "options": {
-        "environmentRoot": "tmp/plugin-eslint-e2e/__test-env__"
-      }
-    },
-    "nxv-env-setup": {
-      "options": {
-        "environmentRoot": "tmp/plugin-eslint-e2e/__test-env__"
-      }
-    },
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
