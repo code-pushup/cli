@@ -1,8 +1,4 @@
-import type {
-  AuditReport,
-  PluginReport,
-  Report,
-} from '@code-pushup/models';
+import type { AuditReport, PluginReport, Report } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
