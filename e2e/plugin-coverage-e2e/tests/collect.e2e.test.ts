@@ -10,7 +10,7 @@ describe('collect report with coverage-plugin NPM package', () => {
   const envRoot = 'tmp/e2e/plugin-coverage-e2e';
   const fixtureDir = join('e2e', 'plugin-coverage-e2e', 'mocks', 'fixtures');
   const basicDir = join(envRoot, 'basic-setup');
-  const existingDir = join(envRoot, 'existing-setup');
+  const existingDir = join(envRoot, 'existing-report');
 
   beforeAll(async () => {
     await cp(fixtureDir, envRoot, { recursive: true });

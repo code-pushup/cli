@@ -25,10 +25,20 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
           "details": {
             "issues": [
               {
-                "message": "Function untested is not called in any test case.",
+                "message": "Function formatReportScore is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Function sortReport is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/not-covered/sorting.ts",
                   "position": {
                     "startLine": 1,
                   },
@@ -36,67 +46,97 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
               },
             ],
           },
-          "displayValue": "66.7 %",
-          "score": 0.6667,
+          "displayValue": "60 %",
+          "score": 0.6,
           "slug": "function-coverage",
           "title": "Function coverage",
-          "value": 66.66666666666666,
+          "value": 60,
         },
         {
           "description": "Measures how many branches were executed after conditional statements in at least one test.",
           "details": {
             "issues": [
               {
-                "message": "1st branch is not taken in any test case.",
+                "message": "2nd branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 6,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/partly-covered/utils.ts",
                   "position": {
                     "startLine": 10,
                   },
                 },
               },
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
             ],
           },
-          "displayValue": "66.7 %",
-          "score": 0.6667,
+          "displayValue": "76.5 %",
+          "score": 0.7647,
           "slug": "branch-coverage",
           "title": "Branch coverage",
-          "value": 66.66666666666666,
+          "value": 76.47058823529412,
         },
         {
           "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
               {
-                "message": "Lines 2-3 are not covered in any test case.",
+                "message": "Lines 7-9 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/partly-covered/utils.ts",
                   "position": {
-                    "endLine": 3,
-                    "startLine": 2,
+                    "endLine": 9,
+                    "startLine": 7,
                   },
                 },
               },
               {
-                "message": "Lines 11-12 are not covered in any test case.",
+                "message": "Lines 1-5 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/index.mjs",
+                  "file": "tmp/e2e/plugin-coverage-e2e/existing-report/src/lib/not-covered/sorting.ts",
                   "position": {
-                    "endLine": 12,
-                    "startLine": 11,
+                    "endLine": 5,
+                    "startLine": 1,
                   },
                 },
               },
             ],
           },
-          "displayValue": "73.3 %",
-          "score": 0.7333,
+          "displayValue": "68 %",
+          "score": 0.68,
           "slug": "line-coverage",
           "title": "Line coverage",
-          "value": 73.33333333333333,
+          "value": 68,
         },
       ],
       "description": "Official Code PushUp code coverage plugin.",
@@ -156,20 +196,10 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
           "details": {
             "issues": [
               {
-                "message": "Function formatReportScore is not called in any test case.",
+                "message": "Function untested is not called in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/partly-covered/utils.ts",
-                  "position": {
-                    "startLine": 2,
-                  },
-                },
-              },
-              {
-                "message": "Function sortReport is not called in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/not-covered/sorting.ts",
+                  "file": "tmp/e2e/plugin-coverage-e2e/basic-setup/src/index.mjs",
                   "position": {
                     "startLine": 1,
                   },
@@ -177,97 +207,67 @@ exports[`collect report with coverage-plugin NPM package > should run Code cover
               },
             ],
           },
-          "displayValue": "60 %",
-          "score": 0.6,
+          "displayValue": "66.7 %",
+          "score": 0.6667,
           "slug": "function-coverage",
           "title": "Function coverage",
-          "value": 60,
+          "value": 66.66666666666666,
         },
         {
           "description": "Measures how many branches were executed after conditional statements in at least one test.",
           "details": {
             "issues": [
               {
-                "message": "2nd branch is not taken in any test case.",
+                "message": "1st branch is not taken in any test case.",
                 "severity": "error",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/partly-covered/utils.ts",
-                  "position": {
-                    "startLine": 6,
-                  },
-                },
-              },
-              {
-                "message": "2nd branch is not taken in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/partly-covered/utils.ts",
+                  "file": "tmp/e2e/plugin-coverage-e2e/basic-setup/src/index.mjs",
                   "position": {
                     "startLine": 10,
                   },
                 },
               },
-              {
-                "message": "1st branch is not taken in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/not-covered/sorting.ts",
-                  "position": {
-                    "startLine": 7,
-                  },
-                },
-              },
-              {
-                "message": "2nd branch is not taken in any test case.",
-                "severity": "error",
-                "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/not-covered/sorting.ts",
-                  "position": {
-                    "startLine": 7,
-                  },
-                },
-              },
             ],
           },
-          "displayValue": "76.5 %",
-          "score": 0.7647,
+          "displayValue": "66.7 %",
+          "score": 0.6667,
           "slug": "branch-coverage",
           "title": "Branch coverage",
-          "value": 76.47058823529412,
+          "value": 66.66666666666666,
         },
         {
           "description": "Measures how many lines of code were executed in at least one test.",
           "details": {
             "issues": [
               {
-                "message": "Lines 7-9 are not covered in any test case.",
+                "message": "Lines 2-3 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/partly-covered/utils.ts",
+                  "file": "tmp/e2e/plugin-coverage-e2e/basic-setup/src/index.mjs",
                   "position": {
-                    "endLine": 9,
-                    "startLine": 7,
+                    "endLine": 3,
+                    "startLine": 2,
                   },
                 },
               },
               {
-                "message": "Lines 1-5 are not covered in any test case.",
+                "message": "Lines 11-12 are not covered in any test case.",
                 "severity": "warning",
                 "source": {
-                  "file": "static-environments/coverage-e2e-env/src/lib/not-covered/sorting.ts",
+                  "file": "tmp/e2e/plugin-coverage-e2e/basic-setup/src/index.mjs",
                   "position": {
-                    "endLine": 5,
-                    "startLine": 1,
+                    "endLine": 12,
+                    "startLine": 11,
                   },
                 },
               },
             ],
           },
-          "displayValue": "68 %",
-          "score": 0.68,
+          "displayValue": "73.3 %",
+          "score": 0.7333,
           "slug": "line-coverage",
           "title": "Line coverage",
-          "value": 68,
+          "value": 73.33333333333333,
         },
       ],
       "description": "Official Code PushUp code coverage plugin.",
