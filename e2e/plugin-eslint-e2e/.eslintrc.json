@@ -1,0 +1,12 @@
+{
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*", "code-pushup.config*.ts"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["e2e/plugin-eslint-e2e/tsconfig.*?.json"]
+      }
+    }
+  ]
+}
