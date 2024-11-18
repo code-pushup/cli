@@ -1,11 +1,10 @@
-import {
-  type AuditReport,
-  type PluginReport,
-  type Report,
-  reportSchema,
+import type {
+  AuditReport,
+  PluginReport,
+  Report,
 } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
