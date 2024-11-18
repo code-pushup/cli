@@ -32,7 +32,7 @@
       "executor": "@push-based/nx-verdaccio:env-teardown"
     },
     "nxv-env-setup": {
-      "cache": true,
+      "cache": false,
       "executor": "@push-based/nx-verdaccio:env-setup"
     },
     "@nx/vite:test": {

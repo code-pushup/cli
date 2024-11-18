@@ -1,13 +1,32 @@
+import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
-import { expect } from 'vitest';
+import { beforeAll, expect } from 'vitest';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { executeProcess } from '@code-pushup/utils';
 
-const extensions = ['js', 'mjs', 'ts'] as const;
-const envRoot = join('static-environments', 'cli-e2e-env');
-export const configFilePath = (ext: (typeof extensions)[number]) =>
-  join(process.cwd(), envRoot, `code-pushup.config.${ext}`);
-
 describe('CLI print-config', () => {
+  const extensions = ['js', 'mjs', 'ts'] as const;
+  const fixtureDummyDir = join(
+    'e2e',
+    'cli-e2e',
+    'mocks',
+    'fixtures',
+    'dummy-setup',
+  );
+  const envRoot = join('tmp', 'e2e', 'cli-e2e');
+  const testFileDir = join(envRoot, 'print-config');
+  const testFileDummySetup = join(testFileDir, 'dummy-setup');
+  const configFilePath = (ext: (typeof extensions)[number]) =>
+    join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
+
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, testFileDummySetup, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await teardownTestFolder(testFileDummySetup);
+  });
+
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
@@ -23,7 +42,7 @@ describe('CLI print-config', () => {
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
         ],
-        cwd: envRoot,
+        cwd: testFileDummySetup,
       });
 
       expect(code).toBe(0);

@@ -1,38 +1,55 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { cp, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { simpleGit } from 'simple-git';
+import { afterEach, beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/test-setup';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
-  const envRoot = join('static-environments', 'cli-e2e-env');
-  const srcDir = join(envRoot, '.code-pushup');
-  const git = simpleGit();
+  const fixtureDummyDir = join(
+    'e2e',
+    'cli-e2e',
+    'mocks',
+    'fixtures',
+    'dummy-setup',
+  );
+
+  const envRoot = join('tmp', 'e2e', 'cli-e2e');
+  const testFileDir = join(envRoot, 'compare');
+  const dummyDir = join(testFileDir, 'dummy-setup');
+  const dummyOutputDir = join(dummyDir, '.code-pushup');
+
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, dummyDir, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await teardownTestFolder(dummyDir);
+  });
 
   beforeEach(async () => {
-    await cleanTestFolder(srcDir);
+    // create report before
     await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--persist.filename=source-report'],
-      cwd: envRoot,
+      cwd: dummyDir,
     });
 
     // adding items to create a report diff
-    const itemsFile = join(envRoot, 'src', 'items.json');
+    const itemsFile = join(dummyDir, 'src', 'items.json');
     const items = JSON.parse((await readFile(itemsFile)).toString());
     await writeFile(itemsFile, JSON.stringify([...items, 4, 5, 6, 7], null, 2));
 
     await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--persist.filename=target-report'],
-      cwd: envRoot,
+      cwd: dummyDir,
     });
   }, 20_000);
 
+  // create report after
   afterEach(async () => {
-    await git.checkout(['--', envRoot]);
-    await cleanTestFolder(srcDir);
+    await teardownTestFolder(dummyOutputDir);
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
@@ -44,11 +61,11 @@ describe('CLI compare', () => {
         `--before=${join('.code-pushup', 'source-report.json')}`,
         `--after=${join('.code-pushup', 'target-report.json')}`,
       ],
-      cwd: envRoot,
+      cwd: dummyDir,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
-      join(envRoot, '.code-pushup', 'report-diff.json'),
+      join(dummyOutputDir, 'report-diff.json'),
     );
     expect(reportsDiff).toMatchSnapshot({
       commits: expect.any(Object),
@@ -58,7 +75,7 @@ describe('CLI compare', () => {
     });
 
     const reportsDiffMd = await readTextFile(
-      join(envRoot, '.code-pushup', 'report-diff.md'),
+      join(dummyOutputDir, 'report-diff.md'),
     );
     // commits are variable, replace SHAs with placeholders
     const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');

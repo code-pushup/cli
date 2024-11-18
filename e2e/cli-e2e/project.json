@@ -11,16 +11,6 @@
         "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
       }
     },
-    "nxv-e2e": {
-      "options": {
-        "environmentRoot": "static-environments/cli-e2e-env"
-      }
-    },
-    "nxv-env-setup": {
-      "options": {
-        "environmentRoot": "static-environments/cli-e2e-env"
-      }
-    },
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
@@ -28,6 +18,6 @@
       }
     }
   },
-  "implicitDependencies": ["cli", "cli-e2e-env"],
+  "implicitDependencies": ["cli"],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }

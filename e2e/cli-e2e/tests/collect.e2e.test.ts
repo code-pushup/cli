@@ -1,20 +1,34 @@
+import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach } from 'vitest';
-import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
   const dummyAuditTitle = 'Dummy Audit';
-  const envRoot = join('static-environments', 'cli-e2e-env');
-  const baseDir = join(envRoot, '.code-pushup');
+  const fixtureDummyDir = join(
+    'e2e',
+    'cli-e2e',
+    'mocks',
+    'fixtures',
+    'dummy-setup',
+  );
+  const envRoot = join('tmp', 'e2e', 'cli-e2e');
+  const testFileDir = join(envRoot, 'collect');
+  const dummyDir = join(testFileDir, 'dummy-setup');
+  const dummyOutputDir = join(dummyDir, '.code-pushup');
 
-  afterEach(async () => {
-    await teardownTestFolder(baseDir);
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, dummyDir, { recursive: true });
   });
 
-  beforeEach(async () => {
-    await cleanTestFolder(baseDir);
+  afterAll(async () => {
+    await teardownTestFolder(dummyDir);
+  });
+
+  afterEach(async () => {
+    await teardownTestFolder(dummyOutputDir);
   });
 
   it('should create report.md', async () => {
@@ -26,13 +40,13 @@ describe('CLI collect', () => {
         'collect',
         '--persist.format=md',
       ],
-      cwd: envRoot,
+      cwd: dummyDir,
     });
 
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile(join(envRoot, '.code-pushup/report.md'));
+    const md = await readTextFile(join(dummyOutputDir, 'report.md'));
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(dummyPluginTitle);
@@ -43,7 +57,7 @@ describe('CLI collect', () => {
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', '--no-progress', 'collect'],
-      cwd: envRoot,
+      cwd: dummyDir,
     });
 
     expect(code).toBe(0);

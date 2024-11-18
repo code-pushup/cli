@@ -3,7 +3,7 @@ import { removeColorCodes } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI help', () => {
-  const envRoot = join('static-environments', 'cli-e2e-env');
+  const envRoot = join('tmp', 'e2e', 'cli-e2e');
 
   it('should print help with help command', async () => {
     const { code, stdout, stderr } = await executeProcess({
