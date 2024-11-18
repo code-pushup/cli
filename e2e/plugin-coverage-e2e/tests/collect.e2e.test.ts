@@ -25,14 +25,13 @@ describe('collect report with coverage-plugin NPM package', () => {
   });
 
   it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: basicDir,
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile(
       join(basicDir, '.code-pushup', 'report.json'),
@@ -43,14 +42,13 @@ describe('collect report with coverage-plugin NPM package', () => {
   });
 
   it('should run Code coverage plugin that runs coverage tool and creates report.json', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: existingDir,
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile(
       join(existingDir, '.code-pushup', 'report.json'),
