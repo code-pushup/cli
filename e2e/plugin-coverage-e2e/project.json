@@ -11,16 +11,6 @@
         "lintFilePatterns": ["e2e/plugin-coverage-e2e/**/*.ts"]
       }
     },
-    "nxv-e2e": {
-      "options": {
-        "environmentRoot": "e2e/plugin-coverage-e2e/__test-env__"
-      }
-    },
-    "nxv-env-setup": {
-      "options": {
-        "environmentRoot": "e2e/plugin-coverage-e2e/__test-env__"
-      }
-    },
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
