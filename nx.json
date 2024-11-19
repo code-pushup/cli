@@ -28,6 +28,10 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
+    "nxv-e2e": {},
+    "nxv-env-setup": {
+      "executor": "@push-based/nx-verdaccio:env-setup"
+    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
@@ -68,23 +72,7 @@
     "appsDir": "examples",
     "libsDir": "packages"
   },
-  "generators": {
-    "@nx/react": {
-      "application": {
-        "style": "css",
-        "linter": "eslint",
-        "bundler": "vite",
-        "babel": true
-      },
-      "component": {
-        "style": "css"
-      },
-      "library": {
-        "style": "css",
-        "linter": "eslint"
-      }
-    }
-  },
+  "generators": {},
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "fixed",
