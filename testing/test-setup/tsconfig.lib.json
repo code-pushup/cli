@@ -5,6 +5,12 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": []
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "vite.config.unit.ts",
+    "src/**/*.unit.test.ts",
+    "src/**/*.integration.test.ts"
+  ]
 }

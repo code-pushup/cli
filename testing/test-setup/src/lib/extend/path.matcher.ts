@@ -124,6 +124,7 @@ expect.extend({
           expected,
         };
   },
+
   toEndWithPath(actual: string, expected: string): SyncExpectationResult {
     const normalizedReceived = osAgnosticPath(actual);
     const normalizedExpected = osAgnosticPath(expected);
