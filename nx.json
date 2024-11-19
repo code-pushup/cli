@@ -28,13 +28,6 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
-    "nxv-e2e": {
-      "executor": "@push-based/nx-verdaccio:env-teardown"
-    },
-    "nxv-env-setup": {
-      "cache": false,
-      "executor": "@push-based/nx-verdaccio:env-setup"
-    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
