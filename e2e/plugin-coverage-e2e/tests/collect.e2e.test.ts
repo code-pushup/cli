@@ -16,8 +16,8 @@ describe('collect report with coverage-plugin NPM package', () => {
     await cp(fixtureDir, envRoot, { recursive: true });
   });
   afterAll(async () => {
-    await teardownTestFolder(join(basicDir));
-    await teardownTestFolder(join(existingDir));
+    await teardownTestFolder(basicDir);
+    await teardownTestFolder(existingDir);
   });
   afterEach(async () => {
     await teardownTestFolder(join(basicDir, '.code-pushup'));
