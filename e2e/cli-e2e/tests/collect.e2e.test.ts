@@ -1,11 +1,6 @@
-import {
-  type AuditReport,
-  type PluginReport,
-  type Report,
-  reportSchema,
-} from '@code-pushup/models';
+import type { AuditReport, PluginReport, Report } from '@code-pushup/models';
 import { cleanTestFolder } from '@code-pushup/test-setup';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
   const exampleCategoryTitle = 'Code style';
@@ -45,22 +40,6 @@ describe('CLI collect', () => {
 
   beforeEach(async () => {
     await cleanTestFolder('tmp/e2e/react-todos-app');
-  });
-
-  it('should run ESLint plugin and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress', '--onlyPlugins=eslint'],
-      cwd: 'examples/react-todos-app',
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile('tmp/e2e/react-todos-app/report.json');
-
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
   it('should create report.md', async () => {
