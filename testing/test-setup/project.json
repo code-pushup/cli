@@ -15,6 +15,12 @@
         "esbuildConfig": "esbuild.config.js"
       }
     },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "testing/test-setup/vite.config.unit.ts"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
