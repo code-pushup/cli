@@ -7,5 +7,5 @@ declare module 'vitest' {
     toStartWithPath(path: string): void;
     toContainPath(path: string): void;
     toEndWithPath(path: string): void;
-  }
+  };
 }
