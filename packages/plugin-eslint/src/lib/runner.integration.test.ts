@@ -52,8 +52,8 @@ describe('executeRunner', () => {
     expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
   });
 
-  it('should execute runner with inline config using @code-pushup/eslint-config', async () => {
-    await createPluginConfig({ extends: '@code-pushup' });
+  it('should execute runner with custom config using @code-pushup/eslint-config', async () => {
+    await createPluginConfig('code-pushup.eslintrc.yml');
     await executeRunner();
 
     const json = await readJsonFile<AuditOutput[]>(RUNNER_OUTPUT_PATH);

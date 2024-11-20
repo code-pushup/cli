@@ -1,5 +1,4 @@
-import type { ESLint } from 'eslint';
-import { type ZodType, z } from 'zod';
+import { z } from 'zod';
 import { toArray } from '@code-pushup/utils';
 
 const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
@@ -7,15 +6,7 @@ const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
     'Lint target files. May contain file paths, directory paths or glob patterns',
 });
 
-const eslintrcSchema = z.union(
-  [
-    z.string({ description: 'Path to ESLint config file' }),
-    z.record(z.string(), z.unknown(), {
-      description: 'ESLint config object',
-    }) as ZodType<ESLint.ConfigData>,
-  ],
-  { description: 'ESLint config as file path or inline object' },
-);
+const eslintrcSchema = z.string({ description: 'Path to ESLint config file' });
 
 const eslintTargetObjectSchema = z.object({
   eslintrc: eslintrcSchema.optional(),

@@ -3,11 +3,8 @@ import type { ESLintTarget } from './config';
 
 export function setupESLint(eslintrc: ESLintTarget['eslintrc']) {
   return new ESLint({
-    ...(typeof eslintrc === 'string' && { overrideConfigFile: eslintrc }),
-    ...(typeof eslintrc === 'object' && {
-      baseConfig: eslintrc,
-      useEslintrc: false,
-    }),
+    overrideConfigFile: eslintrc,
+    useEslintrc: !eslintrc,
     errorOnUnmatchedPattern: false,
   });
 }
