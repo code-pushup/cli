@@ -96,6 +96,7 @@ describe('lint', () => {
     await lint(config);
     expect(ESLint).toHaveBeenCalledWith<ConstructorParameters<typeof ESLint>>({
       overrideConfigFile: '.eslintrc.js',
+      useEslintrc: false,
       errorOnUnmatchedPattern: false,
     });
 
