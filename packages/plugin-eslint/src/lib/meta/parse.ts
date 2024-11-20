@@ -1,4 +1,5 @@
 import type { Linter, Rule } from 'eslint';
+import { toArray } from '@code-pushup/utils';
 
 export type RuleData = {
   ruleId: string;
@@ -30,4 +31,10 @@ export function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {
     case 'error':
       return false;
   }
+}
+
+export function optionsFromRuleEntry(
+  entry: Linter.RuleEntry<unknown[]>,
+): unknown[] {
+  return toArray(entry).slice(1);
 }

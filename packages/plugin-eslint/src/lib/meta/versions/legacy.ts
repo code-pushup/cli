@@ -2,7 +2,7 @@ import type { ESLint, Linter } from 'eslint';
 import { distinct, exists, toArray, ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config';
 import { setupESLint } from '../../setup';
-import { type RuleData, isRuleOff } from '../parse';
+import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse';
 
 export async function loadRulesForLegacyConfig({
   eslintrc,
@@ -40,7 +40,7 @@ export async function loadRulesForLegacyConfig({
         ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
         return null;
       }
-      const options = toArray(ruleEntry).slice(1);
+      const options = optionsFromRuleEntry(ruleEntry);
       return {
         ruleId,
         meta,
