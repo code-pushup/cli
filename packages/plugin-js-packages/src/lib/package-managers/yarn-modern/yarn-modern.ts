@@ -31,6 +31,7 @@ export const yarnv2PackageManager: PackageManager = {
     ],
     supportedDepGroups: ['prod', 'dev'], // Yarn v2 does not support audit for optional dependencies
     unifyResult: yarnv2ToAuditResult,
+    ignoreExitCode: true,
   },
   outdated: {
     commandArgs: COMMON_OUTDATED_ARGS,
