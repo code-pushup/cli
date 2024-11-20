@@ -2,22 +2,32 @@ import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { omitVariableReportData } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  omitVariableReportData,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-describe('collect report with eslint-plugin NPM package', () => {
+describe('PLUGIN collect report with eslint-plugin NPM package', () => {
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'collect',
+  );
+  const oldVersionDir = join(testFileDir, 'old-version');
+  const oldVersionOutputDir = join(oldVersionDir, '.code-pushup');
+
   const fixturesOldVersionDir = join(
     'e2e',
-    'plugin-eslint-e2e',
+    nxTargetProject(),
     'mocks',
     'fixtures',
     'old-version',
   );
-  const envRoot = join('tmp', 'e2e', 'plugin-eslint-e2e');
-  const oldVersionDir = join(envRoot, 'old-version');
-  const oldVersionOutputDir = join(oldVersionDir, '.code-pushup');
-
   beforeAll(async () => {
     await cp(fixturesOldVersionDir, oldVersionDir, { recursive: true });
   });

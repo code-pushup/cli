@@ -1,7 +1,9 @@
 import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
+import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
@@ -9,13 +11,17 @@ describe('CLI collect', () => {
   const dummyAuditTitle = 'Dummy Audit';
   const fixtureDummyDir = join(
     'e2e',
-    'cli-e2e',
+    nxTargetProject(),
     'mocks',
     'fixtures',
     'dummy-setup',
   );
-  const envRoot = join('tmp', 'e2e', 'cli-e2e');
-  const testFileDir = join(envRoot, 'collect');
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'collect',
+  );
   const dummyDir = join(testFileDir, 'dummy-setup');
   const dummyOutputDir = join(dummyDir, '.code-pushup');
 

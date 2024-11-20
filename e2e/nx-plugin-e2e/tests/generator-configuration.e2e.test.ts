@@ -6,27 +6,37 @@ import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
   generateWorkspaceAndProject,
   materializeTree,
+  nxTargetProject,
 } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('nx-plugin g configuration', () => {
   let tree: Tree;
   const project = 'my-lib';
   const projectRoot = join('libs', project);
-  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/configuration';
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'generators-configuration',
+  );
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
   });
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should generate code-pushup.config.ts file and add target to project.json', async () => {
-    const cwd = join(baseDir, 'configure');
+    const cwd = join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
     const { code, stdout, stderr } = await executeProcess({
@@ -76,7 +86,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should NOT create a code-pushup.config.ts file if one already exists', async () => {
-    const cwd = join(baseDir, 'configure-config-existing');
+    const cwd = join(testFileDir, 'configure-config-existing');
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
 
@@ -116,7 +126,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
-    const cwd = join(baseDir, 'configure-skip-config');
+    const cwd = join(testFileDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -161,7 +171,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
-    const cwd = join(baseDir, 'configure-skip-target');
+    const cwd = join(testFileDir, 'configure-skip-target');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -205,7 +215,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should inform about dry run', async () => {
-    const cwd = join(baseDir, 'configure');
+    const cwd = join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
     const { stderr } = await executeProcess({

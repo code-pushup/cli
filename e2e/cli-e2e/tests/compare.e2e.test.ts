@@ -2,20 +2,26 @@ import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
+import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
   const fixtureDummyDir = join(
     'e2e',
-    'cli-e2e',
+    nxTargetProject(),
     'mocks',
     'fixtures',
     'existing-reports',
   );
 
-  const envRoot = join('tmp', 'e2e', 'cli-e2e');
-  const testFileDir = join(envRoot, '__test__', 'compare');
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'compare',
+  );
   const existingDir = join(testFileDir, 'existing-reports');
   const existingOutputDir = join(existingDir, '.code-pushup');
 

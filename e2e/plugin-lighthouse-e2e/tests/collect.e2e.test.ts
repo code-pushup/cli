@@ -1,45 +1,50 @@
-import { copyFile } from 'node:fs/promises';
+import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach, expect } from 'vitest';
+import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
-import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-async function addCodePushupConfig(targetDir: string) {
-  await cleanTestFolder(targetDir);
-  await copyFile(
-    'e2e/plugin-lighthouse-e2e/mocks/fixtures/code-pushup.config.lh-default.ts',
-    join(targetDir, 'code-pushup.config.ts'),
+describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'collect',
   );
-}
+  const defaultSetupDir = join(testFileDir, 'default-setup');
 
-describe('collect report with lighthouse-plugin NPM package', () => {
-  const baseDir = 'tmp/e2e/plugin-lighthouse-e2e/__test__';
+  const fixturesDir = join('e2e', nxTargetProject(), 'mocks/fixtures');
+  beforeAll(async () => {
+    await cp(fixturesDir, testFileDir, { recursive: true });
+  });
 
-  afterEach(async () => {
-    await teardownTestFolder(baseDir);
+  afterAll(async () => {
+    // await teardownTestFolder(testFileDir);
   });
 
   it('should run plugin over CLI and creates report.json', async () => {
-    const cwd = join(baseDir, 'create-report');
-    await addCodePushupConfig(cwd);
-
     const { code, stdout } = await executeProcess({
       command: 'npx',
       // verbose exposes audits with perfect scores that are hidden in the default stdout
       args: ['@code-pushup/cli', 'collect', '--no-progress', '--verbose'],
-      cwd,
+      cwd: defaultSetupDir,
     });
 
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('● Largest Contentful Paint');
 
-    const report = await readJsonFile(join(cwd, '.code-pushup', 'report.json'));
+    const report = await readJsonFile(
+      join(defaultSetupDir, '.code-pushup', 'report.json'),
+    );
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(
       omitVariableReportData(report as Report, { omitAuditData: true }),

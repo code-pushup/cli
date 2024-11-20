@@ -1,5 +1,307 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`PLUGIN collect report with coverage-plugin NPM package > should run Code coverage plugin that runs coverage tool and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Function formatReportScore is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Function sortReport is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "60 %",
+          "score": 0.6,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 60,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 6,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "startLine": 10,
+                  },
+                },
+              },
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "2nd branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "76.5 %",
+          "score": 0.7647,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 76.47058823529412,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Lines 7-9 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/partly-covered/utils.ts",
+                  "position": {
+                    "endLine": 9,
+                    "startLine": 7,
+                  },
+                },
+              },
+              {
+                "message": "Lines 1-5 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/existing-report/src/lib/not-covered/sorting.ts",
+                  "position": {
+                    "endLine": 5,
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "68 %",
+          "score": 0.68,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 68,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
+exports[`PLUGIN collect report with coverage-plugin NPM package > should run Code coverage plugin which collects passed results and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Function untested is not called in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/basic-setup/src/index.mjs",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "66.7 %",
+          "score": 0.6667,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 66.66666666666666,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "1st branch is not taken in any test case.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/basic-setup/src/index.mjs",
+                  "position": {
+                    "startLine": 10,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "66.7 %",
+          "score": 0.6667,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 66.66666666666666,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "issues": [
+              {
+                "message": "Lines 2-3 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/basic-setup/src/index.mjs",
+                  "position": {
+                    "endLine": 3,
+                    "startLine": 2,
+                  },
+                },
+              },
+              {
+                "message": "Lines 11-12 are not covered in any test case.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-coverage-e2e/__test__/collect/basic-setup/src/index.mjs",
+                  "position": {
+                    "endLine": 12,
+                    "startLine": 11,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "73.3 %",
+          "score": 0.7333,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 73.33333333333333,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
 exports[`collect report with coverage-plugin NPM package > should run Code coverage plugin that runs coverage tool and creates report.json 1`] = `
 {
   "categories": [

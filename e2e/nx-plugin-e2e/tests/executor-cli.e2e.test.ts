@@ -6,9 +6,15 @@ import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
   generateWorkspaceAndProject,
   materializeTree,
+  nxTargetProject,
 } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { osAgnosticPath, removeColorCodes } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  osAgnosticPath,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 function relativePathToCwd(testDir: string): string {
@@ -61,18 +67,23 @@ async function addTargetToWorkspace(
 describe('executor command', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/executor/cli';
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'executor-cli',
+  );
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
   });
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should execute no specific command by default', async () => {
-    const cwd = join(baseDir, 'execute-default-command');
+    const cwd = join(testFileDir, 'execute-default-command');
     await addTargetToWorkspace(tree, { cwd, project });
     const { stdout, code } = await executeProcess({
       command: 'npx',
@@ -86,7 +97,7 @@ describe('executor command', () => {
   });
 
   it('should execute print-config executor', async () => {
-    const cwd = join(baseDir, 'execute-print-config-command');
+    const cwd = join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -105,7 +116,7 @@ describe('executor command', () => {
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
-    const cwd = join(baseDir, 'execute-collect-command');
+    const cwd = join(testFileDir, 'execute-collect-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({

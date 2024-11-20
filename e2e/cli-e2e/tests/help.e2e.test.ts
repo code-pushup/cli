@@ -1,9 +1,13 @@
 import { join } from 'node:path';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI help', () => {
-  const envRoot = join('tmp', 'e2e', 'cli-e2e');
+  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
 
   it('should print help with help command', async () => {
     const { code, stdout, stderr } = await executeProcess({

@@ -1,19 +1,25 @@
 import { dirname, join, relative } from 'node:path';
 import { afterEach, expect } from 'vitest';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { createNpmWorkspace, removeColorCodes } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  createNpmWorkspace,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('create-cli-inti', () => {
-  const workspaceRoot = 'tmp/e2e/create-cli-e2e';
-  const baseDir = 'tmp/e2e/create-cli-e2e/__test__/init';
+  const workspaceRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const testFileDir = join(workspaceRoot, TEST_OUTPUT_DIR, 'init');
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should execute package correctly over npm exec', async () => {
-    const cwd = join(baseDir, 'npm-exec');
+    const cwd = join(testFileDir, 'npm-exec');
     const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
@@ -53,7 +59,7 @@ describe('create-cli-inti', () => {
   });
 
   it('should execute package correctly over npm init', async () => {
-    const cwd = join(baseDir, 'npm-init');
+    const cwd = join(testFileDir, 'npm-init');
     const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
 
     await createNpmWorkspace(cwd);
@@ -95,7 +101,7 @@ describe('create-cli-inti', () => {
   });
 
   it('should produce an executable setup when running npm init', async () => {
-    const cwd = join(baseDir, 'npm-init-executable');
+    const cwd = join(testFileDir, 'npm-init-executable');
     const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
 
     await createNpmWorkspace(cwd);

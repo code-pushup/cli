@@ -1,20 +1,27 @@
 import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeAll, expect } from 'vitest';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
+import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI print-config', () => {
   const extensions = ['js', 'mjs', 'ts'] as const;
   const fixtureDummyDir = join(
     'e2e',
-    'cli-e2e',
+    nxTargetProject(),
     'mocks',
     'fixtures',
     'dummy-setup',
   );
-  const envRoot = join('tmp', 'e2e', 'cli-e2e');
-  const testFileDir = join(envRoot, 'print-config');
+
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'print-config',
+  );
   const testFileDummySetup = join(testFileDir, 'dummy-setup');
   const configFilePath = (ext: (typeof extensions)[number]) =>
     join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
