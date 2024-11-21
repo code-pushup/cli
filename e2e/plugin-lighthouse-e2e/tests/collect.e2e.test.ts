@@ -27,7 +27,7 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
   });
 
   afterAll(async () => {
-    // await teardownTestFolder(testFileDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should run plugin over CLI and creates report.json', async () => {
