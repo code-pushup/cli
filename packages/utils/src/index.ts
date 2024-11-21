@@ -15,6 +15,7 @@ export {
   fileExists,
   filePathToCliArg,
   findLineNumberInText,
+  findNearestFile,
   importModule,
   logMultipleFileResults,
   pluginWorkDir,
