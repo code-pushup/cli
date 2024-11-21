@@ -14,7 +14,7 @@ import {
 
 export async function loadRulesForFlatConfig({
   eslintrc,
-}: ESLintTarget): Promise<RuleData[]> {
+}: Pick<ESLintTarget, 'eslintrc'>): Promise<RuleData[]> {
   const config = eslintrc
     ? await loadConfigByPath(eslintrc)
     : await loadConfigByDefaultLocation();
@@ -48,7 +48,7 @@ async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
   throw new Error(
     [
       `ESLint config file not found - expected ${flatConfigFileNames.join('/')} in ${process.cwd()} or some parent directory`,
-      'If your ESLint config is a non-standard location, use the `eslintrc` parameter to specify the path.',
+      'If your ESLint config is in a non-standard location, use the `eslintrc` parameter to specify the path.',
     ].join('\n'),
   );
 }
