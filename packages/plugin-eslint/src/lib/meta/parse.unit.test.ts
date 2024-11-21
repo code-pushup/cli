@@ -1,4 +1,5 @@
-import { parseRuleId } from './parse';
+import type { Linter } from 'eslint';
+import { isRuleOff, optionsFromRuleEntry, parseRuleId } from './parse';
 
 describe('parseRuleId', () => {
   it.each([
@@ -28,5 +29,57 @@ describe('parseRuleId', () => {
     },
   ])('$ruleId => name: $name, plugin: $plugin', ({ ruleId, name, plugin }) => {
     expect(parseRuleId(ruleId)).toEqual({ name, plugin });
+  });
+});
+
+describe('isRuleOff', () => {
+  type TestCase = { entry: Linter.RuleEntry; expected: boolean };
+
+  it.each<TestCase>([
+    { entry: 'off', expected: true },
+    { entry: 'warn', expected: false },
+    { entry: 'error', expected: false },
+  ])(
+    'should return $expected for string severity $entry',
+    ({ entry, expected }) => {
+      expect(isRuleOff(entry)).toBe(expected);
+    },
+  );
+
+  it.each<TestCase>([
+    { entry: 0, expected: true },
+    { entry: 1, expected: false },
+    { entry: 2, expected: false },
+  ])(
+    'should return $expected for numeric severity $entry',
+    ({ entry, expected }) => {
+      expect(isRuleOff(entry)).toBe(expected);
+    },
+  );
+
+  it.each<TestCase>([
+    { entry: [0], expected: true },
+    { entry: ['off'], expected: true },
+    { entry: ['warn', { max: 10 }], expected: false },
+    { entry: [2, { ignore: /^_/ }], expected: false },
+  ])(
+    'should return $expected for array entry $entry',
+    ({ entry, expected }) => {
+      expect(isRuleOff(entry)).toBe(expected);
+    },
+  );
+});
+
+describe('optionsFromRuleEntry', () => {
+  it('should return options from array entry', () => {
+    expect(optionsFromRuleEntry(['warn', { max: 10 }])).toEqual([{ max: 10 }]);
+  });
+
+  it('should return empty options for non-array entry', () => {
+    expect(optionsFromRuleEntry('error')).toEqual([]);
+  });
+
+  it('should return empty options for array entry with severity only', () => {
+    expect(optionsFromRuleEntry(['warn'])).toEqual([]);
   });
 });
