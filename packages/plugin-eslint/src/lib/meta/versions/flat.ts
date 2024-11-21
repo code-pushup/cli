@@ -2,7 +2,7 @@ import type { Linter, Rule } from 'eslint';
 // eslint-disable-next-line import/no-deprecated
 import { builtinRules } from 'eslint/use-at-your-own-risk';
 import { isAbsolute, join } from 'node:path';
-import { exists, fileExists, toArray, ui } from '@code-pushup/utils';
+import { exists, findNearestFile, toArray, ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config';
 import { jsonHash } from '../hash';
 import {
@@ -41,14 +41,16 @@ async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
     'eslint.config.mjs',
     'eslint.config.cjs',
   ];
-  // eslint-disable-next-line functional/no-loop-statements
-  for (const name of flatConfigFileNames) {
-    if (await fileExists(name)) {
-      return loadConfigByPath(name);
-    }
+  const configPath = await findNearestFile(flatConfigFileNames);
+  if (configPath) {
+    return loadConfigByPath(configPath);
   }
-  // TODO: walk up directories
-  throw new Error('ESLint config file not found');
+  throw new Error(
+    [
+      `ESLint config file not found - expected ${flatConfigFileNames.join('/')} in ${process.cwd()} or some parent directory`,
+      'If your ESLint config is a non-standard location, use the `eslintrc` parameter to specify the path.',
+    ].join('\n'),
+  );
 }
 
 async function loadConfigByPath(path: string): Promise<FlatConfig> {
