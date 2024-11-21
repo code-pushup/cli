@@ -19,7 +19,7 @@ export function parseRuleId(ruleId: string): { plugin?: string; name: string } {
 }
 
 export function isRuleOff(entry: Linter.RuleEntry<unknown[]>): boolean {
-  const level: Linter.RuleLevel = Array.isArray(entry) ? entry[0] : entry;
+  const level = Array.isArray(entry) ? entry[0] : entry;
 
   switch (level) {
     case 0:
