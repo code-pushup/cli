@@ -1,9 +1,9 @@
-import {
+import type {
   CustomAsymmetricPathMatchers,
   CustomPathMatchers,
-} from './lib/extend/path.matcher.types';
+} from './lib/extend/path.matcher';
 
 declare module 'vitest' {
   type Assertion<T = unknown> = CustomPathMatchers<T>;
-  type AsymmetricMatchersContaining = CustomAsymmetricPathMatchers;
+  type AsymmetricMatchersContaining = CustomAsymmetricPathMatchers<T>;
 }

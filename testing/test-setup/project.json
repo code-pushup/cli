@@ -1,6 +1,6 @@
 {
   "name": "test-setup",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "testing/test-setup/src",
   "projectType": "library",
   "targets": {
@@ -11,7 +11,7 @@
         "outputPath": "dist/testing/test-setup",
         "main": "testing/test-setup/src/index.ts",
         "tsConfig": "testing/test-setup/tsconfig.lib.json",
-        "assets": ["testing/test-setup/*.md"],
+        "assets": ["testing/test-setup/*.md", "testing/test-setup/*.d.ts"],
         "esbuildConfig": "esbuild.config.js"
       }
     },
