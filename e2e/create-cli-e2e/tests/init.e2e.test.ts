@@ -20,16 +20,10 @@ describe('create-cli-inti', () => {
 
   it('should execute package correctly over npm exec', async () => {
     const cwd = join(testFileDir, 'npm-exec');
-    const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: [
-        'exec',
-        '@code-pushup/create-cli',
-        `--userconfig=${userconfig}`,
-        `--prefix=${dirname(userconfig)}`,
-      ],
+      args: ['exec', '@code-pushup/create-cli'],
       cwd,
     });
 
@@ -60,18 +54,11 @@ describe('create-cli-inti', () => {
 
   it('should execute package correctly over npm init', async () => {
     const cwd = join(testFileDir, 'npm-init');
-    const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
-
     await createNpmWorkspace(cwd);
 
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: [
-        'init',
-        '@code-pushup/cli',
-        `--userconfig=${userconfig}`,
-        `--prefix=${dirname(userconfig)}`,
-      ],
+      args: ['init', '@code-pushup/cli'],
       cwd,
     });
 
@@ -102,25 +89,18 @@ describe('create-cli-inti', () => {
 
   it('should produce an executable setup when running npm init', async () => {
     const cwd = join(testFileDir, 'npm-init-executable');
-    const userconfig = relative(cwd, join(workspaceRoot, '.npmrc'));
-
     await createNpmWorkspace(cwd);
 
     await executeProcess({
       command: 'npm',
-      args: [
-        'init',
-        '@code-pushup/cli',
-        `--userconfig=${userconfig}`,
-        `--prefix=${dirname(userconfig)}`,
-      ],
+      args: ['init', '@code-pushup/cli'],
       cwd,
     });
 
     await expect(
       executeProcess({
         command: 'npx',
-        args: ['@code-pushup/cli print-config', `--userconfig=${userconfig}`],
+        args: ['@code-pushup/cli print-config'],
         cwd,
       }),
     )

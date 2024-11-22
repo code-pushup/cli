@@ -18,13 +18,6 @@
       }
     }
   },
-  "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
-    "cli",
-    "nx-plugin",
-    "create-cli"
-  ],
+  "implicitDependencies": ["create-cli"],
   "tags": ["scope:tooling", "type:e2e"]
 }
