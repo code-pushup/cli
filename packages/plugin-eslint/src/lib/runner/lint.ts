@@ -15,7 +15,8 @@ export async function lint({
   patterns,
 }: ESLintTarget): Promise<LinterOutput> {
   const results = await executeLint({ eslintrc, patterns });
-  const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslintrc, results);
+  const eslint = await setupESLint(eslintrc);
+  const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslint, results);
   return { results, ruleOptionsPerFile };
 }
 
@@ -45,11 +46,9 @@ async function executeLint({
 }
 
 function loadRuleOptionsPerFile(
-  eslintrc: ESLintTarget['eslintrc'],
+  eslint: ESLint,
   results: ESLint.LintResult[],
 ): Promise<RuleOptionsPerFile> {
-  const eslint = setupESLint(eslintrc);
-
   return results.reduce(async (acc, { filePath, messages }) => {
     const filesMap = await acc;
     const config = (await eslint.calculateConfigForFile(
