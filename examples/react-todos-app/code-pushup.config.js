@@ -1,4 +1,3 @@
-import coveragePlugin from '../../dist/packages/plugin-coverage';
 import eslintPlugin from '../../dist/packages/plugin-eslint';
 
 const eslintAuditRef = (slug, weight) => ({
@@ -13,31 +12,12 @@ export default {
     outputDir: '../../tmp/e2e/react-todos-app',
   },
   plugins: [
-    await coveragePlugin({
-      reports: ['../../coverage/react-todos-app/lcov.info'],
-      coverageToolCommand: {
-        command: 'npx',
-        args: ['vitest', 'run', '--coverage'],
-      },
-    }),
     await eslintPlugin({
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     }),
   ],
   categories: [
-    {
-      slug: 'code-coverage',
-      title: 'Code coverage',
-      refs: [
-        {
-          type: 'group',
-          plugin: 'coverage',
-          slug: 'coverage',
-          weight: 1,
-        },
-      ],
-    },
     {
       slug: 'bug-prevention',
       title: 'Bug prevention',
@@ -60,7 +40,6 @@ export default {
         eslintAuditRef('react-hooks-exhaustive-deps', 2),
       ],
     },
-
     {
       slug: 'code-style',
       title: 'Code style',
