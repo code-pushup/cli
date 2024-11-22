@@ -2,6 +2,7 @@ import type { Linter, Rule } from 'eslint';
 // eslint-disable-next-line import/no-deprecated
 import { builtinRules } from 'eslint/use-at-your-own-risk';
 import { isAbsolute, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { exists, findNearestFile, toArray, ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config';
 import { jsonHash } from '../hash';
@@ -54,9 +55,9 @@ async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
 }
 
 async function loadConfigByPath(path: string): Promise<FlatConfig> {
-  const mod = (await import(
-    isAbsolute(path) ? path : join(process.cwd(), path)
-  )) as FlatConfig | { default: FlatConfig };
+  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
+  const url = pathToFileURL(absolutePath).toString();
+  const mod = (await import(url)) as FlatConfig | { default: FlatConfig };
   return 'default' in mod ? mod.default : mod;
 }
 
