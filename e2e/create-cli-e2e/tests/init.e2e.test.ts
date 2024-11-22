@@ -1,14 +1,9 @@
-import { dirname, join, relative } from 'node:path';
-import { afterEach, expect } from 'vitest';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  createNpmWorkspace,
-  removeColorCodes,
-} from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import {join} from 'node:path';
+import {afterEach, expect} from 'vitest';
+import {nxTargetProject} from '@code-pushup/test-nx-utils';
+import {teardownTestFolder} from '@code-pushup/test-setup';
+import {createNpmWorkspace, E2E_ENVIRONMENTS_DIR, removeColorCodes, TEST_OUTPUT_DIR,} from '@code-pushup/test-utils';
+import {executeProcess, readJsonFile, readTextFile} from '@code-pushup/utils';
 
 describe('create-cli-inti', () => {
   const workspaceRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
@@ -53,7 +48,7 @@ describe('create-cli-inti', () => {
   });
 
   it('should execute package correctly over npm init', async () => {
-    const cwd = join(testFileDir, 'npm-init');
+    const cwd = join(testFileDir, 'npm-init-setup');
     await createNpmWorkspace(cwd);
 
     const { code, stdout } = await executeProcess({
