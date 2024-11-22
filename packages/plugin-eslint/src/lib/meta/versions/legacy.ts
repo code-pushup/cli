@@ -8,7 +8,7 @@ export async function loadRulesForLegacyConfig({
   eslintrc,
   patterns,
 }: ESLintTarget): Promise<RuleData[]> {
-  const eslint = setupESLint(eslintrc);
+  const eslint = await setupESLint(eslintrc);
 
   const configs = await toArray(patterns).reduce(
     async (acc, pattern) => [
