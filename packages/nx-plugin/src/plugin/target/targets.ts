@@ -1,7 +1,7 @@
-import { ProjectConfiguration } from '@nx/devkit';
+import type { ProjectConfiguration } from '@nx/devkit';
 import { readdir } from 'node:fs/promises';
 import { CP_TARGET_NAME } from '../constants';
-import { NormalizedCreateNodesOptions } from '../types';
+import type { NormalizedCreateNodesOptions } from '../types';
 import { createConfigurationTarget } from './configuration-target';
 import { CODE_PUSHUP_CONFIG_REGEX } from './constants';
 import { createExecutorTarget } from './executor-target';

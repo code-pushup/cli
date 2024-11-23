@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as targets from './target/targets';
 import {

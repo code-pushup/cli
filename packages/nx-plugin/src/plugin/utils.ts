@@ -1,9 +1,9 @@
-import { ProjectConfiguration } from '@nx/devkit';
+import type { ProjectConfiguration } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { CP_TARGET_NAME } from './constants';
 import { createTargets } from './target/targets';
-import { CreateNodesOptions, NormalizedCreateNodesOptions } from './types';
+import type { CreateNodesOptions, NormalizedCreateNodesOptions } from './types';
 
 export function normalizeCreateNodesOptions(
   options: unknown = {},
@@ -18,10 +18,10 @@ export function normalizeCreateNodesOptions(
 export async function loadProjectConfiguration(
   projectConfigurationFile: string,
 ): Promise<ProjectConfiguration> {
-  const projectConfiguration: ProjectConfiguration = await readFile(
+  const projectConfiguration = (await readFile(
     join(process.cwd(), projectConfigurationFile),
     'utf8',
-  ).then(JSON.parse);
+  ).then(JSON.parse)) as Omit<ProjectConfiguration, 'root'> & { root?: string };
   if (
     !('name' in projectConfiguration) ||
     typeof projectConfiguration.name !== 'string'
@@ -30,7 +30,7 @@ export async function loadProjectConfiguration(
   }
   return {
     ...projectConfiguration,
-    root: projectConfiguration?.root ?? dirname(projectConfigurationFile),
+    root: projectConfiguration.root ?? dirname(projectConfigurationFile),
   };
 }
 

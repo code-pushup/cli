@@ -1,4 +1,4 @@
-import { ProjectConfiguration } from '@nx/devkit';
+import type { ProjectConfiguration } from '@nx/devkit';
 import { vol } from 'memfs';
 import { rm } from 'node:fs/promises';
 import { afterEach, beforeEach, expect } from 'vitest';
@@ -40,7 +40,6 @@ describe('createTargets', () => {
   });
 
   it('should return configuration targets for empty project without code-pushup config and consider targetName', async () => {
-    const projectName = 'plugin-my-plugin';
     const targetName = 'cp';
     await expect(
       createTargets(projectConfig, { targetName }),

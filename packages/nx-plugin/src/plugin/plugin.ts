@@ -13,7 +13,7 @@ export const createNodes: CreateNodes = [
   async (
     projectConfigurationFile: string,
     createNodesOptions: unknown,
-    context: CreateNodesContext,
+    _: CreateNodesContext,
   ): Promise<CreateNodesResult> => {
     const projectJson = await loadProjectConfiguration(
       projectConfigurationFile,
