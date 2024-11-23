@@ -7,29 +7,31 @@ import {
   normalizeCreateNodesOptions,
 } from './utils';
 
-// name has to be "createNodes" to get picked up by Nx
-export const createNodes: CreateNodes = [
-  `**/${PROJECT_JSON_FILE_NAME}`,
-  async (
-    projectConfigurationFile: string,
-    createNodesOptions: unknown,
-    _: CreateNodesContext,
-  ): Promise<CreateNodesResult> => {
-    const projectJson = await loadProjectConfiguration(
-      projectConfigurationFile,
-    );
-    const createOptions = normalizeCreateNodesOptions(createNodesOptions);
+type FileMatcher = `${string}${typeof PROJECT_JSON_FILE_NAME}`;
 
-    const { targets } = await createProjectConfiguration(
-      projectJson,
-      createOptions,
-    );
-    return {
-      projects: {
-        [projectJson.root]: {
-          targets,
-        },
+// name has to be "createNodes" to get picked up by Nx
+export const createNodes = [
+  `**/${PROJECT_JSON_FILE_NAME}` as FileMatcher,
+  createNodesV1Fn,
+] satisfies CreateNodes;
+
+export async function createNodesV1Fn(
+  projectConfigurationFile: string,
+  createNodesOptions: unknown,
+  _: CreateNodesContext,
+): Promise<CreateNodesResult> {
+  const projectJson = await loadProjectConfiguration(projectConfigurationFile);
+  const createOptions = normalizeCreateNodesOptions(createNodesOptions);
+
+  const { targets } = await createProjectConfiguration(
+    projectJson,
+    createOptions,
+  );
+  return {
+    projects: {
+      [projectJson.root]: {
+        targets,
       },
-    };
-  },
-];
+    },
+  };
+}
