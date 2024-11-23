@@ -223,7 +223,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
-    const cwd = join(baseDir, 'configuration-option-bin');
+    const cwd = join(baseDir, 'configuration-option-project-prefix');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
