@@ -53,13 +53,6 @@ async function addTargetToWorkspace(
         codeStrings: 'customPlugin()',
       },
     ],
-    // The upload test is skipped as it requires the @code-pushup/portal-client dependency
-    upload: {
-      server: 'https://dummy-server.dev',
-      organization: 'dummy-organization',
-      apiKey: 'dummy-api-key',
-      project: 'dummy-project',
-    },
   });
   await materializeTree(tree, cwd);
 }

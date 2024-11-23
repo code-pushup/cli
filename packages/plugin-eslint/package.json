@@ -42,11 +42,11 @@
   "dependencies": {
     "@code-pushup/utils": "0.54.0",
     "@code-pushup/models": "0.54.0",
-    "eslint": "^8.46.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@nx/devkit": ">=17.0.0"
+    "@nx/devkit": ">=17.0.0",
+    "eslint": "^8.46.0 || ^9.0.0"
   },
   "peerDependenciesMeta": {
     "@nx/devkit": {

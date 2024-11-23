@@ -1,7 +1,7 @@
 import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { formatBytes } from './formatting';
 import { logMultipleResults } from './log-results';
 import { ui } from './logging';
@@ -118,6 +118,27 @@ export async function crawlFileSystem<T = string>(
 
   const resultsNestedArray = await Promise.all(promises);
   return resultsNestedArray.flat() as T[];
+}
+
+export async function findNearestFile(
+  fileNames: string[],
+  cwd = process.cwd(),
+): Promise<string | undefined> {
+  // eslint-disable-next-line functional/no-loop-statements
+  for (
+    // eslint-disable-next-line functional/no-let
+    let directory = cwd;
+    directory !== dirname(directory);
+    directory = dirname(directory)
+  ) {
+    // eslint-disable-next-line functional/no-loop-statements
+    for (const file of fileNames) {
+      if (await fileExists(join(directory, file))) {
+        return join(directory, file);
+      }
+    }
+  }
+  return undefined;
 }
 
 export function findLineNumberInText(

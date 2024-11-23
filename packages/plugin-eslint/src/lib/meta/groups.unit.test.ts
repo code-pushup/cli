@@ -1,6 +1,6 @@
 import type { Group } from '@code-pushup/models';
 import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
-import type { RuleData } from './rules';
+import type { RuleData } from './parse';
 
 const eslintRules: RuleData[] = [
   {

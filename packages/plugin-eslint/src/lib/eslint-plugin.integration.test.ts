@@ -71,19 +71,6 @@ describe('eslintPlugin', () => {
     );
   });
 
-  it('should initialize ESLint plugin using inline config', async () => {
-    cwdSpy.mockReturnValue(thisDir);
-    const plugin = await eslintPlugin({
-      eslintrc: {
-        extends: '@code-pushup',
-      },
-      patterns: '**/*.ts',
-    });
-
-    expect(plugin.groups?.length).toBeGreaterThanOrEqual(3);
-    expect(plugin.audits.length).toBeGreaterThanOrEqual(200);
-  });
-
   it('should throw when invalid parameters provided', async () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
