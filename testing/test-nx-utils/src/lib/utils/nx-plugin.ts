@@ -7,6 +7,7 @@ import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 
 /**
+ * @TODO replace this with a better testing approach
  * Unit Testing helper for the createNodes function of a Nx plugin.
  * This function will create files over `memfs` from testCfg.matchingFilesData
  * and invoke the createNodes function on each of the files provided including potential createNodeOptions.
@@ -41,9 +42,10 @@ export async function invokeCreateNodesOnVirtualFiles<
   vol.fromJSON(matchingFilesData, MEMFS_VOLUME);
 
   const results = await Promise.all(
-    Object.keys(matchingFilesData).map(file =>
-      createNodes[1](file, createNodeOptions, context),
-    ),
+    Object.keys(matchingFilesData)
+      // @TODO this will fail for plugins with a different matcher
+      .filter(f => f.endsWith('project.json'))
+      .map(file => createNodes[1](file, createNodeOptions, context)),
   );
 
   const result: NonNullable<CreateNodesResult['projects']> = {};

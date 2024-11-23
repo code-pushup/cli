@@ -20,10 +20,37 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     vol.reset();
   });
 
+  it('should normalize context of project.json with missing root property', async () => {
+    const projectRoot = '.';
+    const matchingFilesData = {
+      [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
+        name: '@org/empty-root',
+      })}`,
+    };
+
+    await expect(
+      invokeCreateNodesOnVirtualFiles(
+        createNodes,
+        context,
+        {},
+        { matchingFilesData },
+      ),
+    ).resolves.toStrictEqual({
+      [projectRoot]: {
+        targets: {
+          [`${CP_TARGET_NAME}--configuration`]: {
+            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="@org/empty-root"`,
+          },
+        },
+      },
+    });
+  });
+
   it('should normalize context and use it to create the configuration target on ROOT project', async () => {
     const projectRoot = '.';
     const matchingFilesData = {
       [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
+        root: projectRoot,
         name: '@org/empty-root',
       })}`,
     };
@@ -50,6 +77,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     const projectRoot = 'apps/my-app';
     const matchingFilesData = {
       [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
+        root: projectRoot,
         name: '@org/empty-root',
       })}`,
     };
@@ -76,6 +104,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     const projectRoot = '.';
     const matchingFilesData = {
       [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
+        root: projectRoot,
         name: '@org/empty-root',
       })}`,
       [`${projectRoot}/code-pushup.config.ts`]: '{}',
@@ -108,6 +137,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     const projectRoot = 'apps/my-app';
     const matchingFilesData = {
       [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
+        root: projectRoot,
         name: '@org/empty-root',
       })}`,
       [`${projectRoot}/code-pushup.config.ts`]: '{}',

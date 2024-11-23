@@ -1,9 +1,11 @@
 import type { CreateNodes, CreateNodesContext } from '@nx/devkit';
 import type { CreateNodesResult } from 'nx/src/utils/nx-plugin';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
-import { createTargets } from './target/targets';
-import type { CreateNodesOptions } from './types';
-import { normalizedCreateNodesContext } from './utils';
+import {
+  createProjectConfiguration,
+  loadProjectConfiguration,
+  normalizeCreateNodesOptions,
+} from './utils';
 
 // name has to be "createNodes" to get picked up by Nx
 export const createNodes: CreateNodes = [
@@ -13,17 +15,19 @@ export const createNodes: CreateNodes = [
     createNodesOptions: unknown,
     context: CreateNodesContext,
   ): Promise<CreateNodesResult> => {
-    const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
-    const normalizedContext = await normalizedCreateNodesContext(
-      context,
+    const projectJson = await loadProjectConfiguration(
       projectConfigurationFile,
-      parsedCreateNodesOptions,
     );
+    const createOptions = normalizeCreateNodesOptions(createNodesOptions);
 
+    const { targets } = await createProjectConfiguration(
+      projectJson,
+      createOptions,
+    );
     return {
       projects: {
-        [normalizedContext.projectRoot]: {
-          targets: await createTargets(normalizedContext),
+        [projectJson.root]: {
+          targets,
         },
       },
     };

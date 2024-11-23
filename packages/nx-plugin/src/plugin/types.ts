@@ -13,8 +13,13 @@ export type ProjectConfigurationWithName = WithRequired<
   'name'
 >;
 
+export type NormalizedCreateNodesOptions = Omit<
+  CreateNodesOptions,
+  'targetName'
+> &
+  Required<Pick<CreateNodesOptions, 'targetName'>>;
 export type NormalizedCreateNodesContext = CreateNodesContext & {
   projectJson: ProjectConfigurationWithName;
   projectRoot: string;
-  createOptions: CreateNodesOptions;
+  createOptions: NormalizedCreateNodesOptions;
 };

@@ -1,19 +1,17 @@
+import { ProjectConfiguration } from '@nx/devkit';
 import { readdir } from 'node:fs/promises';
 import { CP_TARGET_NAME } from '../constants';
-import type { NormalizedCreateNodesContext } from '../types';
+import { NormalizedCreateNodesOptions } from '../types';
 import { createConfigurationTarget } from './configuration-target';
 import { CODE_PUSHUP_CONFIG_REGEX } from './constants';
 import { createExecutorTarget } from './executor-target';
 
 export async function createTargets(
-  normalizedContext: NormalizedCreateNodesContext,
+  projectConfig: ProjectConfiguration,
+  options: NormalizedCreateNodesOptions,
 ) {
-  const {
-    targetName = CP_TARGET_NAME,
-    bin,
-    projectPrefix,
-  } = normalizedContext.createOptions;
-  const rootFiles = await readdir(normalizedContext.projectRoot);
+  const { targetName = CP_TARGET_NAME, bin, projectPrefix } = options;
+  const rootFiles = await readdir(projectConfig.root);
   return rootFiles.some(filename => filename.match(CODE_PUSHUP_CONFIG_REGEX))
     ? {
         [targetName]: createExecutorTarget({ bin, projectPrefix }),
@@ -22,7 +20,7 @@ export async function createTargets(
       {
         [`${targetName}--configuration`]: createConfigurationTarget({
           targetName,
-          projectName: normalizedContext.projectJson.name,
+          projectName: projectConfig.name,
           bin,
         }),
       };

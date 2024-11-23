@@ -1,38 +1,49 @@
-import type { CreateNodesContext } from '@nx/devkit';
+import { ProjectConfiguration } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { CP_TARGET_NAME } from './constants';
-import type {
-  CreateNodesOptions,
-  NormalizedCreateNodesContext,
-  ProjectConfigurationWithName,
-} from './types';
+import { createTargets } from './target/targets';
+import { CreateNodesOptions, NormalizedCreateNodesOptions } from './types';
 
-export async function normalizedCreateNodesContext(
-  context: CreateNodesContext,
+export function normalizeCreateNodesOptions(
+  options: unknown = {},
+): NormalizedCreateNodesOptions {
+  const { targetName = CP_TARGET_NAME } = options as CreateNodesOptions;
+  return {
+    ...(options as CreateNodesOptions),
+    targetName,
+  };
+}
+
+export async function loadProjectConfiguration(
   projectConfigurationFile: string,
-  createOptions: CreateNodesOptions = {},
-): Promise<NormalizedCreateNodesContext> {
-  const projectRoot = dirname(projectConfigurationFile);
-
-  try {
-    const projectJson = JSON.parse(
-      (await readFile(projectConfigurationFile)).toString(),
-    ) as ProjectConfigurationWithName;
-
-    const { targetName = CP_TARGET_NAME } = createOptions;
-    return {
-      ...context,
-      projectJson,
-      projectRoot,
-      createOptions: {
-        ...createOptions,
-        targetName,
-      },
-    };
-  } catch {
-    throw new Error(
-      `Error parsing project.json file ${projectConfigurationFile}.`,
-    );
+): Promise<ProjectConfiguration> {
+  const projectConfiguration: ProjectConfiguration = await readFile(
+    join(process.cwd(), projectConfigurationFile),
+    'utf8',
+  ).then(JSON.parse);
+  if (
+    !('name' in projectConfiguration) ||
+    typeof projectConfiguration.name !== 'string'
+  ) {
+    throw new Error('Project name is required');
   }
+  return {
+    ...projectConfiguration,
+    root: projectConfiguration?.root ?? dirname(projectConfigurationFile),
+  };
+}
+
+export async function createProjectConfiguration(
+  projectConfiguration: ProjectConfiguration,
+  options: CreateNodesOptions,
+): Promise<
+  Pick<ProjectConfiguration, 'targets'> &
+    Partial<Pick<ProjectConfiguration, 'namedInputs'>>
+> {
+  const normalizeOptions = normalizeCreateNodesOptions(options);
+  return {
+    namedInputs: {},
+    targets: await createTargets(projectConfiguration, normalizeOptions),
+  };
 }
