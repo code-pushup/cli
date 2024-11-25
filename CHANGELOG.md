@@ -1,3 +1,27 @@
+## 0.55.0 (2024-11-25)
+
+### 🚀 Features
+
+- **ci:** accept custom output directory, with project name interpolation ([db3fcced](https://github.com/code-pushup/cli/commit/db3fcced))
+- **plugin-eslint:** drop inline object support for eslintrc (incompatible with flat config) ([ead1c0ad](https://github.com/code-pushup/cli/commit/ead1c0ad))
+- **plugin-eslint:** implement rules loader for flat config ([e9edf0c0](https://github.com/code-pushup/cli/commit/e9edf0c0))
+- **plugin-eslint:** detect version of config format ([a618bf29](https://github.com/code-pushup/cli/commit/a618bf29))
+- **plugin-eslint:** search for flat config files in parent directories ([3e45ac07](https://github.com/code-pushup/cli/commit/3e45ac07))
+- **plugin-eslint:** move eslint to peer deps, add v9 to supported range ([953e3c76](https://github.com/code-pushup/cli/commit/953e3c76))
+- **utils:** implement and test helper function to find nearest file ([2acdb2d8](https://github.com/code-pushup/cli/commit/2acdb2d8))
+
+### 🩹 Fixes
+
+- **plugin-eslint:** remove unsupported parameter for ESLint 9+ ([4b889d66](https://github.com/code-pushup/cli/commit/4b889d66))
+- **plugin-eslint:** use LegacyESLint if ESLINT_USE_FLAT_CONFIG=false in v9 ([e9352808](https://github.com/code-pushup/cli/commit/e9352808))
+- **plugin-eslint:** ensure file url scheme needed for dynamic imports on Windows ([91c7678c](https://github.com/code-pushup/cli/commit/91c7678c))
+- **plugin-js-packages:** add ignoreExitCode option for yarn v2 package manager ([#878](https://github.com/code-pushup/cli/pull/878))
+
+### ❤️ Thank You
+
+- Edouard Maleix
+- Matěj Chalk
+
 ## 0.54.0 (2024-11-08)
 
 ### 🚀 Features
