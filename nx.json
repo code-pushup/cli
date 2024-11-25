@@ -98,7 +98,6 @@
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
-
         "environments": {
           "environmentsDir": "tmp/e2e",
           "targetNames": ["e2e"]
@@ -108,6 +107,5 @@
         }
       }
     }
-  ],
-  "useInferencePlugins": false
+  ]
 }
