@@ -1,61 +1,52 @@
-import { simpleGit } from 'simple-git';
+import { cp } from 'node:fs/promises';
+import { join } from 'node:path';
+import { beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/test-setup';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
+import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
-  const git = simpleGit();
+  const fixtureDummyDir = join(
+    'e2e',
+    nxTargetProject(),
+    'mocks',
+    'fixtures',
+    'existing-reports',
+  );
 
-  beforeEach(async () => {
-    if (await git.diff(['--', 'examples/react-todos-app'])) {
-      throw new Error(
-        'Unstaged changes found in examples/react-todos-app, please stage or commit them to prevent E2E tests interfering',
-      );
-    }
-    await cleanTestFolder('tmp/e2e/react-todos-app');
-    await executeProcess({
-      command: 'code-pushup',
-      args: [
-        'collect',
-        '--persist.filename=source-report',
-        '--onlyPlugins=eslint',
-      ],
-      cwd: 'examples/react-todos-app',
-    });
-    await executeProcess({
-      command: 'npx',
-      args: ['eslint', '--fix', 'src', '--ext=js,jsx'],
-      cwd: 'examples/react-todos-app',
-    });
-    await executeProcess({
-      command: 'code-pushup',
-      args: [
-        'collect',
-        '--persist.filename=target-report',
-        '--onlyPlugins=eslint',
-      ],
-      cwd: 'examples/react-todos-app',
-    });
-  }, 20_000);
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'compare',
+  );
+  const existingDir = join(testFileDir, 'existing-reports');
+  const existingOutputDir = join(existingDir, '.code-pushup');
 
-  afterEach(async () => {
-    await git.checkout(['--', 'examples/react-todos-app']);
-    await cleanTestFolder('tmp/e2e');
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, existingDir, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await teardownTestFolder(existingDir);
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
-      command: 'code-pushup',
+      command: 'npx',
       args: [
+        '@code-pushup/cli',
         'compare',
-        '--before=../../tmp/e2e/react-todos-app/source-report.json',
-        '--after=../../tmp/e2e/react-todos-app/target-report.json',
+        `--before=${join('.code-pushup', 'source-report.json')}`,
+        `--after=${join('.code-pushup', 'target-report.json')}`,
       ],
-      cwd: 'examples/react-todos-app',
+      cwd: existingDir,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
-      'tmp/e2e/react-todos-app/report-diff.json',
+      join(existingOutputDir, 'report-diff.json'),
     );
     expect(reportsDiff).toMatchSnapshot({
       commits: expect.any(Object),
@@ -65,7 +56,7 @@ describe('CLI compare', () => {
     });
 
     const reportsDiffMd = await readTextFile(
-      'tmp/e2e/react-todos-app/report-diff.md',
+      join(existingOutputDir, 'report-diff.md'),
     );
     // commits are variable, replace SHAs with placeholders
     const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');

@@ -1,11 +1,4 @@
-import {
-  copyFile,
-  mkdir,
-  readFile,
-  rename,
-  rm,
-  writeFile,
-} from 'node:fs/promises';
+import { cp, readFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -14,6 +7,7 @@ import {
   type SimpleGit,
   simpleGit,
 } from 'simple-git';
+import { afterEach } from 'vitest';
 import {
   type Comment,
   type GitRefs,
@@ -22,7 +16,14 @@ import {
   type RunResult,
   runInCI,
 } from '@code-pushup/ci';
-import { initGitRepo } from '@code-pushup/test-utils';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  TEST_SNAPSHOTS_DIR,
+  initGitRepo,
+} from '@code-pushup/test-utils';
 
 describe('CI package', () => {
   const fixturesDir = join(
@@ -30,33 +31,27 @@ describe('CI package', () => {
     '..',
     'mocks',
     'fixtures',
-  );
-  const workDir = join(
-    process.cwd(),
-    'tmp',
-    'e2e',
-    'ci-e2e',
-    '__test__',
     'ci-test-repo',
   );
-  const outputDir = join(workDir, '.code-pushup');
+  const ciSetupRepoDir = join(
+    process.cwd(),
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'ci-test-repo',
+  );
+  const outputDir = join(ciSetupRepoDir, '.code-pushup');
 
   const options = {
-    directory: workDir,
+    directory: ciSetupRepoDir,
   } satisfies Options;
 
   let git: SimpleGit;
 
   beforeEach(async () => {
-    await rm(workDir, { recursive: true, force: true });
-    await mkdir(workDir, { recursive: true });
-    await copyFile(
-      join(fixturesDir, 'code-pushup.config.ts'),
-      join(workDir, 'code-pushup.config.ts'),
-    );
-    await writeFile(join(workDir, 'index.js'), 'console.log("Hello, world!")');
+    await cp(fixturesDir, ciSetupRepoDir, { recursive: true });
 
-    git = await initGitRepo(simpleGit, { baseDir: workDir });
+    git = await initGitRepo(simpleGit, { baseDir: ciSetupRepoDir });
 
     vi.spyOn(git, 'fetch').mockResolvedValue({} as FetchResult);
     vi.spyOn(git, 'diffSummary').mockResolvedValue({
@@ -69,8 +64,12 @@ describe('CI package', () => {
     await git.commit('Initial commit');
   });
 
+  afterEach(async () => {
+    await teardownTestFolder(ciSetupRepoDir);
+  });
+
   afterAll(async () => {
-    await rm(workDir, { recursive: true, force: true });
+    await teardownTestFolder(ciSetupRepoDir);
   });
 
   describe('push event', () => {
@@ -138,7 +137,10 @@ describe('CI package', () => {
     beforeEach(async () => {
       await git.checkoutLocalBranch('feature-1');
 
-      await rename(join(workDir, 'index.js'), join(workDir, 'index.ts'));
+      await rename(
+        join(ciSetupRepoDir, 'index.js'),
+        join(ciSetupRepoDir, 'index.ts'),
+      );
 
       await git.add('index.ts');
       await git.commit('Convert JS file to TS');
@@ -177,7 +179,7 @@ describe('CI package', () => {
       const md = await mdPromise;
       await expect(
         md.replace(/[\da-f]{40}/g, '`<commit-sha>`'),
-      ).toMatchFileSnapshot('__snapshots__/report-diff.md');
+      ).toMatchFileSnapshot(join(TEST_SNAPSHOTS_DIR, 'report-diff.md'));
     });
   });
 });

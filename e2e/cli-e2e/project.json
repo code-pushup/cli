@@ -11,22 +11,13 @@
         "lintFilePatterns": ["e2e/cli-e2e/**/*.ts"]
       }
     },
-    "e2e-old": {
+    "e2e": {
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "e2e/cli-e2e/vite.config.e2e.ts"
       }
     }
   },
-  "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
-    "cli",
-    "plugin-eslint",
-    "plugin-coverage",
-    "plugin-js-packages",
-    "react-todos-app"
-  ],
+  "implicitDependencies": ["cli"],
   "tags": ["scope:core", "scope:plugin", "type:e2e"]
 }

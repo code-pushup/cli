@@ -1,69 +1,69 @@
-import type { AuditReport, PluginReport, Report } from '@code-pushup/models';
-import { cleanTestFolder } from '@code-pushup/test-setup';
+import { cp } from 'node:fs/promises';
+import { join } from 'node:path';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
+import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
-  const exampleCategoryTitle = 'Code style';
-  const exampleAuditTitle = 'Disallow unused variables';
+  const dummyPluginTitle = 'Dummy Plugin';
+  const dummyAuditTitle = 'Dummy Audit';
+  const fixtureDummyDir = join(
+    'e2e',
+    nxTargetProject(),
+    'mocks',
+    'fixtures',
+    'dummy-setup',
+  );
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'collect',
+  );
+  const dummyDir = join(testFileDir, 'dummy-setup');
+  const dummyOutputDir = join(dummyDir, '.code-pushup');
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const omitVariableAuditData = ({
-    score,
-    value,
-    displayValue,
-    ...auditReport
-  }: AuditReport) => auditReport;
-  const omitVariablePluginData = ({
-    date,
-    duration,
-    version,
-    audits,
-    ...pluginReport
-  }: PluginReport) =>
-    ({
-      ...pluginReport,
-      audits: audits.map(
-        pluginReport.slug === 'lighthouse' ? omitVariableAuditData : p => p,
-      ) as AuditReport[],
-    }) as PluginReport;
-  const omitVariableReportData = ({
-    commit,
-    date,
-    duration,
-    version,
-    ...report
-  }: Report) => ({
-    ...report,
-    plugins: report.plugins.map(omitVariablePluginData),
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, dummyDir, { recursive: true });
   });
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  beforeEach(async () => {
-    await cleanTestFolder('tmp/e2e/react-todos-app');
+  afterAll(async () => {
+    await teardownTestFolder(dummyDir);
+  });
+
+  afterEach(async () => {
+    await teardownTestFolder(dummyOutputDir);
   });
 
   it('should create report.md', async () => {
     const { code, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--persist.format=md', '--no-progress'],
-      cwd: 'examples/react-todos-app',
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        '--no-progress',
+        'collect',
+        '--persist.format=md',
+      ],
+      cwd: dummyDir,
     });
 
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile('tmp/e2e/react-todos-app/report.md');
+    const md = await readTextFile(join(dummyOutputDir, 'report.md'));
 
     expect(md).toContain('# Code PushUp Report');
-    expect(md).toContain(exampleCategoryTitle);
-    expect(md).toContain(exampleAuditTitle);
+    expect(md).toContain(dummyPluginTitle);
+    expect(md).toContain(dummyAuditTitle);
   });
 
   it('should print report summary to stdout', async () => {
     const { code, stdout, stderr } = await executeProcess({
-      command: 'code-pushup',
-      args: ['collect', '--no-progress'],
-      cwd: 'examples/react-todos-app',
+      command: 'npx',
+      args: ['@code-pushup/cli', '--no-progress', 'collect'],
+      cwd: dummyDir,
     });
 
     expect(code).toBe(0);
@@ -71,7 +71,7 @@ describe('CLI collect', () => {
 
     expect(stdout).toContain('Code PushUp Report');
     expect(stdout).not.toContain('Generated reports');
-    expect(stdout).toContain(exampleCategoryTitle);
-    expect(stdout).toContain(exampleAuditTitle);
+    expect(stdout).toContain(dummyPluginTitle);
+    expect(stdout).toContain(dummyAuditTitle);
   });
 });
