@@ -94,19 +94,22 @@ A `Comment` object has the following required properties:
 
 Optionally, you can override default options for further customization:
 
-| Property          | Type                      | Default                          | Description                                                                       |
-| :---------------- | :------------------------ | :------------------------------- | :-------------------------------------------------------------------------------- |
-| `monorepo`        | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                           |
-| `projects`        | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                 |
-| `task`            | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode) |
-| `directory`       | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                     |
-| `config`          | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                           |
-| `silent`          | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                     |
-| `bin`             | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                             |
-| `detectNewIssues` | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property     |
-| `logger`          | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                            |
+| Property          | Type                      | Default                          | Description                                                                          |
+| :---------------- | :------------------------ | :------------------------------- | :----------------------------------------------------------------------------------- |
+| `monorepo`        | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                              |
+| `projects`        | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                    |
+| `task`            | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)    |
+| `directory`       | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                        |
+| `config`          | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                              |
+| `silent`          | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                        |
+| `bin`             | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                |
+| `detectNewIssues` | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property        |
+| `logger`          | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                               |
+| `output`          | `string`                  | `'.code-pushup'`                 | Directory where Code PushUp reports will be created (interpolates project name [^2]) |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
+
+[^2]: In monorepo mode, any occurrence of `{project}` in the `output` path will be replaced with a project name. This separation of folders per project (e.g. `output: '.code-pushup/{project}'`) may be useful for caching purposes.
 
 The `Logger` object has the following required properties:
 
