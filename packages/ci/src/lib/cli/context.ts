@@ -3,7 +3,7 @@ import type { ProjectConfig } from '../monorepo';
 
 export type CommandContext = Pick<
   Settings,
-  'bin' | 'config' | 'directory' | 'silent'
+  'bin' | 'config' | 'directory' | 'silent' | 'output'
 > & {
   project?: string;
 };
@@ -18,5 +18,6 @@ export function createCommandContext(
     directory: project?.directory ?? settings.directory,
     config: settings.config,
     silent: settings.silent,
+    output: settings.output.replaceAll('{project}', project?.name ?? ''),
   };
 }

@@ -12,12 +12,13 @@ export async function runCollect({
   directory,
   silent,
   project,
+  output,
 }: CommandContext): Promise<PersistedCliFiles> {
   const { stdout } = await executeProcess({
     command: bin,
     args: [
       ...(config ? [`--config=${config}`] : []),
-      ...persistCliOptions({ directory, project }),
+      ...persistCliOptions({ directory, project, output }),
     ],
     cwd: directory,
   });
@@ -25,5 +26,5 @@ export async function runCollect({
     console.info(stdout);
   }
 
-  return persistedCliFiles({ directory, project });
+  return persistedCliFiles({ directory, project, output });
 }
