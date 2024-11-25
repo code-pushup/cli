@@ -1,5 +1,9 @@
-import type { CreateNodes, CreateNodesContext } from '@nx/devkit';
-import type { CreateNodesResult } from 'nx/src/utils/nx-plugin';
+/* eslint-disable deprecation/deprecation,import/no-deprecated */
+import type {
+  CreateNodes,
+  CreateNodesContext,
+  CreateNodesResult,
+} from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
 import type { CreateNodesOptions } from './types';
