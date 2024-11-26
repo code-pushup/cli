@@ -92,8 +92,6 @@ describe('Nx helpers', () => {
           eslintrc: './packages/nx-plugin/.eslintrc.json',
           patterns: [
             'packages/nx-plugin/**/*.ts',
-            'packages/nx-plugin/package.json',
-            'packages/nx-plugin/generators.json',
             'packages/nx-plugin/*.spec.ts',
             'packages/nx-plugin/*.cy.ts',
             'packages/nx-plugin/*.stories.ts',
