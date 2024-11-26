@@ -90,7 +90,7 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(osAgnosticPath(executorOptions.persist?.outputDir)).toBe(
+    expect(osAgnosticPath(executorOptions?.persist?.outputDir)).toBe(
       osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });

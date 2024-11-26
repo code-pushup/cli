@@ -2,16 +2,25 @@ import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { omitVariableReportData } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  omitVariableReportData,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-describe('collect report with eslint-plugin NPM package', () => {
+describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   const fixturesDir = join('e2e', 'plugin-eslint-e2e', 'mocks', 'fixtures');
   const fixturesFlatConfigDir = join(fixturesDir, 'flat-config');
   const fixturesLegacyConfigDir = join(fixturesDir, 'legacy-config');
 
-  const envRoot = join('tmp', 'e2e', 'plugin-eslint-e2e');
+  const envRoot = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+  );
   const flatConfigDir = join(envRoot, 'flat-config');
   const legacyConfigDir = join(envRoot, 'legacy-config');
   const flatConfigOutputDir = join(flatConfigDir, '.code-pushup');

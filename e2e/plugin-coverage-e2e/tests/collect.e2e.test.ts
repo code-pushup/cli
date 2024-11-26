@@ -2,18 +2,25 @@ import { cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { omitVariableReportData } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  omitVariableReportData,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-describe('collect report with coverage-plugin NPM package', () => {
-  const envRoot = 'tmp/e2e/plugin-coverage-e2e';
-  const fixtureDir = join('e2e', 'plugin-coverage-e2e', 'mocks', 'fixtures');
-  const basicDir = join(envRoot, 'basic-setup');
-  const existingDir = join(envRoot, 'existing-report');
+describe('PLUGIN collect report with coverage-plugin NPM package', () => {
+  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const testFileDir = join(envRoot, TEST_OUTPUT_DIR, 'collect');
 
+  const basicDir = join(testFileDir, 'basic-setup');
+  const existingDir = join(testFileDir, 'existing-report');
+
+  const fixtureDir = join('e2e', nxTargetProject(), 'mocks', 'fixtures');
   beforeAll(async () => {
-    await cp(fixtureDir, envRoot, { recursive: true });
+    await cp(fixtureDir, testFileDir, { recursive: true });
   });
   afterAll(async () => {
     await teardownTestFolder(basicDir);

@@ -5,26 +5,36 @@ import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
   materializeTree,
+  nxTargetProject,
 } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/generators/init';
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'generators-init',
+  );
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
   });
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should inform about dry run when used on init generator', async () => {
-    const cwd = join(baseDir, 'dry-run');
+    const cwd = join(testFileDir, 'dry-run');
     await materializeTree(tree, cwd);
 
     const { stderr } = await executeProcess({
@@ -40,7 +50,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should update packages.json and configure nx.json', async () => {
-    const cwd = join(baseDir, 'nx-update');
+    const cwd = join(testFileDir, 'nx-update');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -89,7 +99,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should skip packages.json update if --skipPackageJson is given', async () => {
-    const cwd = join(baseDir, 'skip-packages');
+    const cwd = join(testFileDir, 'skip-packages');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({

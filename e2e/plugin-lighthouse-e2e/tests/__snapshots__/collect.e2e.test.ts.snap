@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`collect report with lighthouse-plugin NPM package > should run plugin over CLI and creates report.json 1`] = `
+exports[`PLUGIN collect report with lighthouse-plugin NPM package > should run plugin over CLI and creates report.json 1`] = `
 {
   "categories": [
     {

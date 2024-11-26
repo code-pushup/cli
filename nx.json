@@ -106,25 +106,6 @@
           "filterByTags": ["publishable"]
         }
       }
-    },
-    "./tools/src/debug/debug.plugin.ts",
-    {
-      "plugin": "./tools/src/npm/npm.plugin.ts",
-      "options": {
-        "verbose": true
-      }
-    },
-    {
-      "plugin": "./tools/src/publish/publish.plugin.ts",
-      "options": {
-        "verbose": true
-      }
-    },
-    {
-      "plugin": "./tools/src/verdaccio/verdaccio.plugin.ts",
-      "options": {
-        "verbose": true
-      }
     }
   ]
 }

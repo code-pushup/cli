@@ -7,28 +7,38 @@ import {
   generateWorkspaceAndProject,
   materializeTree,
   nxShowProjectJson,
+  nxTargetProject,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
-import { removeColorCodes } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  removeColorCodes,
+} from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('nx-plugin', () => {
   let tree: Tree;
   const project = 'my-lib';
   const projectRoot = join('libs', project);
-  const baseDir = 'tmp/e2e/nx-plugin-e2e/__test__/plugin/create-nodes';
+  const testFileDir = join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'plugin-create-nodes',
+  );
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
   });
 
   afterEach(async () => {
-    await teardownTestFolder(baseDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should add configuration target dynamically', async () => {
-    const cwd = join(baseDir, 'add-configuration-dynamically');
+    const cwd = join(testFileDir, 'add-configuration-dynamically');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     await materializeTree(tree, cwd);
 
@@ -49,7 +59,7 @@ describe('nx-plugin', () => {
   });
 
   it('should execute dynamic configuration target', async () => {
-    const cwd = join(baseDir, 'execute-dynamic-configuration');
+    const cwd = join(testFileDir, 'execute-dynamic-configuration');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
     });
@@ -73,7 +83,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option targetName in configuration target', async () => {
-    const cwd = join(baseDir, 'configuration-option-target-name');
+    const cwd = join(testFileDir, 'configuration-option-target-name');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -92,7 +102,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option bin in configuration target', async () => {
-    const cwd = join(baseDir, 'configuration-option-bin');
+    const cwd = join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -115,7 +125,7 @@ describe('nx-plugin', () => {
   });
 
   it('should NOT add config targets dynamically if the project is configured', async () => {
-    const cwd = join(baseDir, 'configuration-already-configured');
+    const cwd = join(testFileDir, 'configuration-already-configured');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
@@ -134,7 +144,7 @@ describe('nx-plugin', () => {
   });
 
   it('should add executor target dynamically if the project is configured', async () => {
-    const cwd = join(baseDir, 'add-executor-dynamically');
+    const cwd = join(testFileDir, 'add-executor-dynamically');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
@@ -155,7 +165,7 @@ describe('nx-plugin', () => {
   });
 
   it('should execute dynamic executor target', async () => {
-    const cwd = join(baseDir, 'execute-dynamic-executor');
+    const cwd = join(testFileDir, 'execute-dynamic-executor');
     const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
@@ -200,7 +210,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option bin in executor target', async () => {
-    const cwd = join(baseDir, 'configuration-option-bin');
+    const cwd = join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -223,7 +233,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
-    const cwd = join(baseDir, 'configuration-option-project-prefix');
+    const cwd = join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -249,7 +259,7 @@ describe('nx-plugin', () => {
   });
 
   it('should NOT add targets dynamically if plugin is not registered', async () => {
-    const cwd = join(baseDir, 'plugin-not-registered');
+    const cwd = join(testFileDir, 'plugin-not-registered');
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(cwd, project);
