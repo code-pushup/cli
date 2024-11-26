@@ -52,6 +52,7 @@ describe('nx-plugin', () => {
         options: {
           command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
+        parallelism: true,
       },
     });
 
@@ -158,6 +159,7 @@ describe('nx-plugin', () => {
         configurations: {},
         executor: `@code-pushup/nx-plugin:cli`,
         options: {},
+        parallelism: true,
       },
     });
 
