@@ -10,7 +10,10 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
-describe('create-cli-inti', () => {
+const fakeCacheFolderName = () =>
+  `fake-cache-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+
+describe('create-cli-init', () => {
   const workspaceRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
   const testFileDir = join(workspaceRoot, TEST_OUTPUT_DIR, 'init');
 
@@ -23,7 +26,12 @@ describe('create-cli-inti', () => {
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: ['exec', '@code-pushup/create-cli'],
+      args: [
+        'exec',
+        '--yes',
+        `--cache=${fakeCacheFolderName()}`,
+        '@code-pushup/create-cli',
+      ],
       cwd,
     });
 
@@ -58,7 +66,12 @@ describe('create-cli-inti', () => {
 
     const { code, stdout } = await executeProcess({
       command: 'npm',
-      args: ['init', '@code-pushup/cli'],
+      args: [
+        'init',
+        '--yes',
+        `--cache=${fakeCacheFolderName()}`,
+        '@code-pushup/cli',
+      ],
       cwd,
     });
 
@@ -87,13 +100,18 @@ describe('create-cli-inti', () => {
     );
   });
 
-  it('should produce an executable setup when running npm init', async () => {
-    const cwd = join(testFileDir, 'npm-init-executable');
+  it('should produce an executable setup when running npm exec', async () => {
+    const cwd = join(testFileDir, 'npm-executable');
     await createNpmWorkspace(cwd);
 
     await executeProcess({
       command: 'npm',
-      args: ['init', '@code-pushup/cli'],
+      args: [
+        'exec',
+        '--yes',
+        `--cache=${fakeCacheFolderName()}`,
+        '@code-pushup/create-cli',
+      ],
       cwd,
     });
 
