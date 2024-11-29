@@ -1,3 +1,14 @@
+## 0.56.0 (2024-11-29)
+
+### 🚀 Features
+
+- **ci:** add nxProjectsFilter option, forwards custom filters to Nx CLI ([93a6a428](https://github.com/code-pushup/cli/commit/93a6a428))
+- **plugin-eslint:** support new config format in nx helpers ([effd5d26](https://github.com/code-pushup/cli/commit/effd5d26))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.55.0 (2024-11-25)
 
 ### 🚀 Features
