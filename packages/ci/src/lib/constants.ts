@@ -13,4 +13,5 @@ export const DEFAULT_SETTINGS: Settings = {
   detectNewIssues: true,
   logger: console,
   output: DEFAULT_PERSIST_OUTPUT_DIR,
+  nxProjectsFilter: '--with-target={task}',
 };

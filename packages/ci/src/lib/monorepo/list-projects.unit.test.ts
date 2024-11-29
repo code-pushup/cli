@@ -14,6 +14,7 @@ describe('listMonorepoProjects', () => {
     monorepo: true,
     projects: null,
     task: 'code-pushup',
+    nxProjectsFilter: '--with-target={task}',
     directory: MEMFS_VOLUME,
     bin: 'npx --no-install code-pushup',
     logger: {
@@ -56,6 +57,15 @@ describe('listMonorepoProjects', () => {
       { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
       { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
     ] satisfies ProjectConfig[]);
+
+    expect(utils.executeProcess).toHaveBeenCalledWith<
+      Parameters<(typeof utils)['executeProcess']>
+    >({
+      command: 'npx',
+      args: ['nx', 'show', 'projects', '--with-target=code-pushup', '--json'],
+      cwd: process.cwd(),
+      observer: expect.any(Object),
+    });
   });
 
   it('should detect projects in Turborepo which have code-pushup command', async () => {

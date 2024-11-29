@@ -1,5 +1,10 @@
 import { join } from 'node:path';
-import { executeProcess, fileExists, stringifyError } from '@code-pushup/utils';
+import {
+  executeProcess,
+  fileExists,
+  stringifyError,
+  toArray,
+} from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools';
 
 export const nxHandler: MonorepoToolHandler = {
@@ -9,24 +14,28 @@ export const nxHandler: MonorepoToolHandler = {
       (await fileExists(join(options.cwd, 'nx.json'))) &&
       (
         await executeProcess({
-          ...options,
           command: 'npx',
           args: ['nx', 'report'],
+          cwd: options.cwd,
+          observer: options.observer,
         })
       ).code === 0
     );
   },
   async listProjects(options) {
     const { stdout } = await executeProcess({
-      ...options,
       command: 'npx',
       args: [
         'nx',
         'show',
         'projects',
-        `--with-target=${options.task}`,
+        ...toArray(options.nxProjectsFilter).map(arg =>
+          arg.replaceAll('{task}', options.task),
+        ),
         '--json',
       ],
+      cwd: options.cwd,
+      observer: options.observer,
     });
     const projects = parseProjects(stdout);
     return projects.map(project => ({

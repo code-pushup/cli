@@ -13,6 +13,7 @@ export type MonorepoHandlerOptions = {
   task: string;
   cwd: string;
   observer?: ProcessObserver;
+  nxProjectsFilter: string | string[];
 };
 
 export type ProjectConfig = {

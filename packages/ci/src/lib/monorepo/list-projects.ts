@@ -61,6 +61,7 @@ function createMonorepoHandlerOptions(
   return {
     task: settings.task,
     cwd: settings.directory,
+    nxProjectsFilter: settings.nxProjectsFilter,
     ...(!settings.silent && {
       observer: {
         onStdout: stdout => {
