@@ -1,8 +1,9 @@
 import type { ProjectConfiguration, ProjectGraph } from '@nx/devkit';
 import type { ESLintTarget } from '../config';
+import { detectConfigVersion } from '../meta';
 import {
-  findCodePushupEslintrc,
-  getEslintConfig,
+  findCodePushupEslintConfig,
+  findEslintConfig,
   getLintFilePatterns,
 } from './utils';
 
@@ -21,21 +22,15 @@ export async function nxProjectsToConfig(
     .filter(predicate) // apply predicate
     .sort((a, b) => a.root.localeCompare(b.root));
 
+  const format = await detectConfigVersion();
+
   return Promise.all(
     projects.map(
       async (project): Promise<ESLintTarget> => ({
         eslintrc:
-          (await findCodePushupEslintrc(project)) ?? getEslintConfig(project),
-        patterns: [
-          ...getLintFilePatterns(project),
-          // HACK: ESLint.calculateConfigForFile won't find rules included only for subsets of *.ts when globs used
-          // so we explicitly provide additional patterns used by @code-pushup/eslint-config to ensure those rules are included
-          // this workaround won't be necessary once flat configs are stable (much easier to find all rules)
-          `${project.sourceRoot}/*.spec.ts`, // jest/* and vitest/* rules
-          `${project.sourceRoot}/*.cy.ts`, // cypress/* rules
-          `${project.sourceRoot}/*.stories.ts`, // storybook/* rules
-          `${project.sourceRoot}/.storybook/main.ts`, // storybook/no-uninstalled-addons rule
-        ],
+          (await findCodePushupEslintConfig(project, format)) ??
+          (await findEslintConfig(project, format)),
+        patterns: getLintFilePatterns(project, format),
       }),
     ),
   );
