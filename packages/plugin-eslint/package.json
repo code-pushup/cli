@@ -37,7 +37,6 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/utils": "0.56.0",
