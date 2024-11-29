@@ -11,8 +11,7 @@
         "outputPath": "dist/packages/cli",
         "main": "packages/cli/src/index.ts",
         "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["packages/cli/*.md"]
       }
     },
     "lint": {

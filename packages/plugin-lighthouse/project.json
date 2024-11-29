@@ -11,8 +11,7 @@
         "outputPath": "dist/packages/plugin-lighthouse",
         "main": "packages/plugin-lighthouse/src/index.ts",
         "tsConfig": "packages/plugin-lighthouse/tsconfig.lib.json",
-        "assets": ["packages/plugin-lighthouse/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["packages/plugin-lighthouse/*.md"]
       }
     },
     "lint": {

@@ -12,8 +12,7 @@
         "main": "packages/plugin-eslint/src/index.ts",
         "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
         "assets": ["packages/plugin-eslint/*.md"],
-        "additionalEntryPoints": ["packages/plugin-eslint/src/bin.ts"],
-        "esbuildConfig": "esbuild.config.js"
+        "additionalEntryPoints": ["packages/plugin-eslint/src/bin.ts"]
       }
     },
     "lint": {
