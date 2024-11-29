@@ -12,8 +12,7 @@
         "main": "packages/plugin-coverage/src/index.ts",
         "tsConfig": "packages/plugin-coverage/tsconfig.lib.json",
         "additionalEntryPoints": ["packages/plugin-coverage/src/bin.ts"],
-        "assets": ["packages/plugin-coverage/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["packages/plugin-coverage/*.md"]
       }
     },
     "lint": {

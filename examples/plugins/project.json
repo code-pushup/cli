@@ -11,8 +11,7 @@
         "outputPath": "dist/examples/plugins",
         "main": "examples/plugins/src/index.ts",
         "tsConfig": "examples/plugins/tsconfig.lib.json",
-        "assets": ["examples/plugins/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["examples/plugins/*.md"]
       }
     },
     "lint": {

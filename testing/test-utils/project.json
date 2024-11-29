@@ -11,8 +11,7 @@
         "outputPath": "dist/testing/test-utils",
         "main": "testing/test-utils/src/index.ts",
         "tsConfig": "testing/test-utils/tsconfig.lib.json",
-        "assets": ["testing/test-utils/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["testing/test-utils/*.md"]
       }
     },
     "lint": {
