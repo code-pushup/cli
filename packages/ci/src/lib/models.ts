@@ -9,6 +9,7 @@ export type Options = {
   monorepo?: boolean | MonorepoTool;
   projects?: string[] | null;
   task?: string;
+  nxProjectsFilter?: string | string[];
   bin?: string;
   config?: string | null;
   directory?: string;
