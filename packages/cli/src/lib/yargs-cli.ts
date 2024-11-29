@@ -16,8 +16,8 @@ import {
   formatObjectValue,
   headerStyle,
   titleStyle,
-} from './implementation/formatting';
-import { logErrorBeforeThrow } from './implementation/global.utils';
+} from './implementation/formatting.js';
+import { logErrorBeforeThrow } from './implementation/global.utils.js';
 
 export const yargsDecorator = {
   'Commands:': `${green('Commands')}:`,

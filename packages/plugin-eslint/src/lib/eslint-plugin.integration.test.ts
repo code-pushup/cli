@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
-import { eslintPlugin } from './eslint-plugin';
+import { eslintPlugin } from './eslint-plugin.js';
 
 describe('eslintPlugin', () => {
   const thisDir = fileURLToPath(dirname(import.meta.url));
@@ -18,8 +18,8 @@ describe('eslintPlugin', () => {
     ...plugin,
     runner: {
       ...(plugin.runner as RunnerConfig),
-      args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(arg.replace(thisDir, '<dirname>')),
+      args: (plugin.runner as RunnerConfig).args?.map(() =>
+        toUnixPath('<dirname>/bin.js'),
       ),
       outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },

@@ -1,6 +1,6 @@
-import type { ESLintTarget } from '../config';
-import { filterProjectGraph } from './filter-project-graph';
-import { nxProjectsToConfig } from './projects-to-config';
+import type { ESLintTarget } from '../config.js';
+import { filterProjectGraph } from './filter-project-graph.js';
+import { nxProjectsToConfig } from './projects-to-config.js';
 
 /**
  * Finds all Nx projects in workspace and converts their lint configurations to Code PushUp ESLint plugin parameters.

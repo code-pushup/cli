@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isSemver, normalizeSemver, sortSemvers } from './semver';
+import { isSemver, normalizeSemver, sortSemvers } from './semver.js';
 
 describe('isSemver', () => {
   it.each([

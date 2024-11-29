@@ -1,5 +1,5 @@
 import type { CategoryConfig } from '@code-pushup/models';
-import { eslintAuditRefMock } from './eslint-plugin.mock';
+import { eslintAuditRefMock } from './eslint-plugin.mock.js';
 
 export const CATEGORIES_MAP = {
   performance: {

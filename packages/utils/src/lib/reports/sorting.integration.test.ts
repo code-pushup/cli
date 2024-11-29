@@ -1,6 +1,6 @@
 import { REPORT_MOCK } from '@code-pushup/test-utils';
-import { scoreReport } from './scoring';
-import { sortReport } from './sorting';
+import { scoreReport } from './scoring.js';
+import { sortReport } from './sorting.js';
 
 describe('sortReport', () => {
   it('should sort the audits and audit groups in categories, plugin audits and audit issues', () => {

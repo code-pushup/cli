@@ -8,11 +8,11 @@ import {
   type PackageCommand,
   type PackageManagerId,
   dependencyGroups,
-} from './config';
-import { dependencyDocs, dependencyGroupWeights } from './constants';
-import { packageManagers } from './package-managers';
-import { createRunnerConfig } from './runner';
-import { normalizeConfig } from './utils';
+} from './config.js';
+import { dependencyDocs, dependencyGroupWeights } from './constants.js';
+import { packageManagers } from './package-managers/index.js';
+import { createRunnerConfig } from './runner/index.js';
+import { normalizeConfig } from './utils.js';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -39,6 +39,7 @@ export async function jsPackagesPlugin(
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
 

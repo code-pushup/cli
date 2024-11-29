@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { RunnerConfig } from '@code-pushup/models';
-import { coveragePlugin } from './coverage-plugin';
+import { coveragePlugin } from './coverage-plugin.js';
 
 vi.mock('./runner/index.ts', () => ({
   createRunnerConfig: vi.fn().mockReturnValue({

@@ -6,9 +6,9 @@ import {
   md,
 } from 'build-md';
 import type { ReportsDiff } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats';
-import { toArray } from '../transform';
-import type { WithRequired } from '../types';
+import { HIERARCHY } from '../text-formats/index.js';
+import { toArray } from '../transform.js';
+import type { WithRequired } from '../types.js';
 import {
   changesToDiffOutcomes,
   compareDiffsBy,
@@ -21,14 +21,14 @@ import {
   sortChanges,
   summarizeDiffOutcomes,
   summarizeUnchanged,
-} from './generate-md-reports-diff-utils';
-import type { DiffOutcome } from './types';
+} from './generate-md-reports-diff-utils.js';
+import type { DiffOutcome } from './types.js';
 import {
   formatScoreChange,
   formatScoreWithColor,
   formatValueChange,
   scoreMarker,
-} from './utils';
+} from './utils.js';
 
 export function generateMdReportsDiff(diff: ReportsDiff): string {
   return new MarkdownDocument()

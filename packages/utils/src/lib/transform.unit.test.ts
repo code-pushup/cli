@@ -15,7 +15,7 @@ import {
   toNumberPrecision,
   toOrdinal,
   toUnixPath,
-} from './transform';
+} from './transform.js';
 
 describe('toArray', () => {
   it('should transform non-array value into array with single value', () => {

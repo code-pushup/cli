@@ -1,6 +1,6 @@
 import { ESLint } from 'eslint';
 import { fileExists } from '@code-pushup/utils';
-import type { ConfigFormat } from './formats';
+import type { ConfigFormat } from './formats.js';
 
 // relevant ESLint docs:
 // - https://eslint.org/docs/latest/use/configure/configuration-files

@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { issueToGQL, tableToGQL } from './report-to-gql';
+import { issueToGQL, tableToGQL } from './report-to-gql.js';
 
 describe('issueToGQL', () => {
   it('transforms issue to GraphQL input type', () => {

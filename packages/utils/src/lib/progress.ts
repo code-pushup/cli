@@ -1,6 +1,6 @@
 import { black, bold, gray, green } from 'ansis';
 import { type CtorOptions, MultiProgressBars } from 'multi-progress-bars';
-import { TERMINAL_WIDTH } from './reports/constants';
+import { TERMINAL_WIDTH } from './reports/constants.js';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;

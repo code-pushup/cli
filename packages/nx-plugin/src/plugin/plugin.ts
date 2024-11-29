@@ -4,10 +4,10 @@ import type {
   CreateNodesContext,
   CreateNodesResult,
 } from '@nx/devkit';
-import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
-import { createTargets } from './target/targets';
-import type { CreateNodesOptions } from './types';
-import { normalizedCreateNodesContext } from './utils';
+import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { createTargets } from './target/targets.js';
+import type { CreateNodesOptions } from './types.js';
+import { normalizedCreateNodesContext } from './utils.js';
 
 // name has to be "createNodes" to get picked up by Nx
 export const createNodes: CreateNodes = [

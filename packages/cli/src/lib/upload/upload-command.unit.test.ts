@@ -7,9 +7,9 @@ import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/test-utils';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './upload-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsUploadCommandObject } from './upload-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =

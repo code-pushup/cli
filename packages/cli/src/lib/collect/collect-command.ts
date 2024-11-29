@@ -5,11 +5,11 @@ import {
   collectAndPersistReports,
 } from '@code-pushup/core';
 import { link, ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 export function yargsCollectCommandObject(): CommandModule {
   const command = 'collect';

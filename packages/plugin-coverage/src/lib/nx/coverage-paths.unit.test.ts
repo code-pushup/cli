@@ -4,14 +4,14 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { CoverageResult } from '../config';
+import type { CoverageResult } from '../config.js';
 import {
   type JestCoverageConfig,
   type VitestCoverageConfig,
   getCoveragePathForJest,
   getCoveragePathForVitest,
   getCoveragePathsForTarget,
-} from './coverage-paths';
+} from './coverage-paths.js';
 
 vi.mock('bundle-require', () => ({
   bundleRequire: vi.fn().mockImplementation((options: { filepath: string }) => {

@@ -9,11 +9,11 @@ import {
   safeCheckout,
   ui,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
-import { yargsFilterOptionsDefinition } from '../implementation/filter.options';
-import type { HistoryCliOptions } from './history.model';
-import { yargsHistoryOptionsDefinition } from './history.options';
-import { normalizeHashOptions } from './utils';
+import { CLI_NAME } from '../constants.js';
+import { yargsFilterOptionsDefinition } from '../implementation/filter.options.js';
+import type { HistoryCliOptions } from './history.model.js';
+import { yargsHistoryOptionsDefinition } from './history.options.js';
+import { normalizeHashOptions } from './utils.js';
 
 const command = 'history';
 async function handler(args: unknown) {

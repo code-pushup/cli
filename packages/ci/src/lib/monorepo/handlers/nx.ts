@@ -5,7 +5,7 @@ import {
   stringifyError,
   toArray,
 } from '@code-pushup/utils';
-import type { MonorepoToolHandler } from '../tools';
+import type { MonorepoToolHandler } from '../tools.js';
 
 export const nxHandler: MonorepoToolHandler = {
   tool: 'nx',

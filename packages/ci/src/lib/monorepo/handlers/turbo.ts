@@ -1,9 +1,9 @@
 import { join } from 'node:path';
 import { fileExists, readJsonFile } from '@code-pushup/utils';
-import type { MonorepoToolHandler } from '../tools';
-import { npmHandler } from './npm';
-import { pnpmHandler } from './pnpm';
-import { yarnHandler } from './yarn';
+import type { MonorepoToolHandler } from '../tools.js';
+import { npmHandler } from './npm.js';
+import { pnpmHandler } from './pnpm.js';
+import { yarnHandler } from './yarn.js';
 
 const WORKSPACE_HANDLERS = [pnpmHandler, yarnHandler, npmHandler];
 

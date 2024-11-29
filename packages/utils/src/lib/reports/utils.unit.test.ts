@@ -1,8 +1,12 @@
 import type { Ansis } from 'ansis';
 import { type Mock, describe, expect, it } from 'vitest';
 import type { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
-import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import { SCORE_COLOR_RANGE } from './constants.js';
+import type {
+  ScoredReport,
+  SortableAuditReport,
+  SortableGroup,
+} from './types.js';
 import {
   MARKERS,
   type MarkerShape,
@@ -25,7 +29,7 @@ import {
   scoreMarker,
   severityMarker,
   targetScoreIcon,
-} from './utils';
+} from './utils.js';
 
 describe('formatReportScore', () => {
   it.each([

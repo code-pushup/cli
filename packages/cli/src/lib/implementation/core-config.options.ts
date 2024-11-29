@@ -2,7 +2,7 @@ import type { Options } from 'yargs';
 import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
-} from './core-config.model';
+} from './core-config.model.js';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
   keyof (PersistConfigCliOptions & UploadConfigCliOptions),

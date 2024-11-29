@@ -1,7 +1,7 @@
 import { ESLint } from 'eslint';
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { detectConfigVersion } from './detect';
+import { detectConfigVersion } from './detect.js';
 
 describe('detectConfigVersion', () => {
   beforeEach(() => {

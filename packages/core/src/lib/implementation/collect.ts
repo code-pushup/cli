@@ -1,8 +1,8 @@
 import type { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
 import { name, version } from '../../../package.json';
-import type { GlobalOptions } from '../types';
-import { executePlugins } from './execute-plugin';
+import type { GlobalOptions } from '../types.js';
+import { executePlugins } from './execute-plugin.js';
 
 export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> &
   Partial<GlobalOptions>;

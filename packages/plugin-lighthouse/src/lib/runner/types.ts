@@ -1,4 +1,4 @@
-import type { LighthouseOptions } from '../types';
+import type { LighthouseOptions } from '../types.js';
 
 export type NormalizedFlags = {
   // normalized

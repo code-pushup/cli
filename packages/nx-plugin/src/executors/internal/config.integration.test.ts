@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
-import { ENV } from '../../../mock/fixtures/env';
-import { uploadConfig } from './config';
-import * as env from './env';
+import { ENV } from '../../../mock/fixtures/env.js';
+import { uploadConfig } from './config.js';
+import * as env from './env.js';
 
 describe('uploadConfig', () => {
   const processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});

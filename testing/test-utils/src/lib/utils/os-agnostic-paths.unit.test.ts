@@ -7,7 +7,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { osAgnosticPath } from './os-agnostic-paths';
+import { osAgnosticPath } from './os-agnostic-paths.js';
 
 describe('osAgnosticPath', () => {
   const cwdSpy: MockInstance<[], string> = vi.spyOn(process, 'cwd');

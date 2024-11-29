@@ -1,12 +1,12 @@
 import type { CreateNodesContext } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { CP_TARGET_NAME } from './constants';
+import { CP_TARGET_NAME } from './constants.js';
 import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
   ProjectConfigurationWithName,
-} from './types';
+} from './types.js';
 
 export async function normalizedCreateNodesContext(
   context: CreateNodesContext,

@@ -14,7 +14,7 @@ import {
   lighthouseGroupRef,
   validateAudits,
   validateOnlyCategories,
-} from './utils';
+} from './utils.js';
 
 describe('lighthouseAuditRef', () => {
   it('should return valid lighthouse group with weight 1 by default', () => {

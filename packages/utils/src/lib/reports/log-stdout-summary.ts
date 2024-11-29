@@ -1,15 +1,19 @@
 import { bold, cyan, cyanBright, green, red } from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
-import { ui } from '../logging';
+import { ui } from '../logging.js';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   REPORT_HEADLINE_TEXT,
   REPORT_RAW_OVERVIEW_TABLE_HEADERS,
   TERMINAL_WIDTH,
-} from './constants';
-import type { ScoredReport } from './types';
-import { applyScoreColor, countCategoryAudits, targetScoreIcon } from './utils';
+} from './constants.js';
+import type { ScoredReport } from './types.js';
+import {
+  applyScoreColor,
+  countCategoryAudits,
+  targetScoreIcon,
+} from './utils.js';
 
 function log(msg = ''): void {
   ui().logger.log(msg);

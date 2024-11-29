@@ -12,8 +12,8 @@ import {
   findNearestFile,
   logMultipleFileResults,
   projectToFilename,
-} from './file-system';
-import * as logResults from './log-results';
+} from './file-system.js';
+import * as logResults from './log-results.js';
 
 describe('ensureDirectoryExists', () => {
   it('should create a nested folder', async () => {

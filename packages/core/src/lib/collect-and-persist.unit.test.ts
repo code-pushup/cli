@@ -16,9 +16,12 @@ import * as utils from '@code-pushup/utils';
 import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
-} from './collect-and-persist';
-import { collect } from './implementation/collect';
-import { logPersistedResults, persistReport } from './implementation/persist';
+} from './collect-and-persist.js';
+import { collect } from './implementation/collect.js';
+import {
+  logPersistedResults,
+  persistReport,
+} from './implementation/persist.js';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue(MINIMAL_REPORT_MOCK),

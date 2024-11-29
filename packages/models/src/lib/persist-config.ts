@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { fileNameSchema, filePathSchema } from './implementation/schemas';
+import { fileNameSchema, filePathSchema } from './implementation/schemas.js';
 
 export const formatSchema = z.enum(['json', 'md']);
 export type Format = z.infer<typeof formatSchema>;

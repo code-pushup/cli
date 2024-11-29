@@ -1,6 +1,6 @@
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { factorOf, pluralizeToken } from '@code-pushup/utils';
-import type { PackageJson, SourceResult } from './types';
+import type { PackageJson, SourceResult } from './types.js';
 
 export function baseAuditOutput(slug: string): AuditOutput {
   return {

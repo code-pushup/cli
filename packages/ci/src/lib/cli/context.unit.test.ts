@@ -1,5 +1,5 @@
-import { DEFAULT_SETTINGS } from '../constants';
-import { type CommandContext, createCommandContext } from './context';
+import { DEFAULT_SETTINGS } from '../constants.js';
+import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
   it('should pick CLI-related settings in standalone mode', () => {

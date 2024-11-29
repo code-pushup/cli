@@ -1,5 +1,5 @@
-import type { ESLintTarget } from '../config';
-import { nxProjectsToConfig } from './projects-to-config';
+import type { ESLintTarget } from '../config.js';
+import { nxProjectsToConfig } from './projects-to-config.js';
 
 /**
  * Accepts a target Nx project, converts its lint configuration to Code PushUp ESLint plugin parameters.

@@ -8,24 +8,24 @@ import {
   readJsonFile,
   readTextFile,
 } from '@code-pushup/utils';
-import { pluginSlug } from './constants';
+import { pluginSlug } from './constants.js';
 import {
   type RequiredDependencies,
   dependenciesAudit,
   dependenciesAuditMeta,
-} from './integration/dependencies.audit';
-import { licenseAudit, licenseAuditMeta } from './integration/license.audit';
-import { typeAudit, typeAuditInfoMeta } from './integration/type.audit';
+} from './integration/dependencies.audit.js';
+import { licenseAudit, licenseAuditMeta } from './integration/license.audit.js';
+import { typeAudit, typeAuditInfoMeta } from './integration/type.audit.js';
 import type {
   PackageJson,
   SourceResult,
   SourceResults,
-} from './integration/types';
+} from './integration/types.js';
 import {
   documentationGroup,
   performanceGroup,
   versionControlGroup,
-} from './scoring';
+} from './scoring.js';
 
 export type PluginOptions = {
   directory: string;

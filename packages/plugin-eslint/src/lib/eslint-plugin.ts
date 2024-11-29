@@ -2,9 +2,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
-import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config';
-import { listAuditsAndGroups } from './meta';
-import { createRunnerConfig } from './runner';
+import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
+import { listAuditsAndGroups } from './meta/index.js';
+import { createRunnerConfig } from './runner/index.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -35,6 +35,7 @@ export async function eslintPlugin(
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
 

@@ -1,9 +1,9 @@
 import {
   type JSPackagesPluginConfig,
   jsPackagesPluginConfigSchema,
-} from './config';
-import { packageManagers } from './package-managers';
-import { derivePackageManager } from './package-managers/derive-package-manager';
+} from './config.js';
+import { derivePackageManager } from './package-managers/derive-package-manager.js';
+import { packageManagers } from './package-managers/index.js';
 
 export async function normalizeConfig(config?: JSPackagesPluginConfig) {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(

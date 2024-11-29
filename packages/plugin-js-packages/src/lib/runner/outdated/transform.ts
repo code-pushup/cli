@@ -2,10 +2,10 @@ import { md } from 'build-md';
 import { clean, diff, neq } from 'semver';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
-import type { DependencyGroup, PackageManagerId } from '../../config';
-import { dependencyGroupToLong } from '../../constants';
-import { RELEASE_TYPES, outdatedSeverity } from './constants';
-import type { OutdatedResult, PackageVersion } from './types';
+import type { DependencyGroup, PackageManagerId } from '../../config.js';
+import { dependencyGroupToLong } from '../../constants.js';
+import { RELEASE_TYPES, outdatedSeverity } from './constants.js';
+import type { OutdatedResult, PackageVersion } from './types.js';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,

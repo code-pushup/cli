@@ -10,7 +10,7 @@ import {
   PluginOutputMissingAuditError,
   executePlugin,
   executePlugins,
-} from './execute-plugin';
+} from './execute-plugin.js';
 
 describe('executePlugin', () => {
   it('should execute a valid plugin config', async () => {

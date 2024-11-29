@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCoverage, mergeConsecutiveNumbers } from './utils';
+import { calculateCoverage, mergeConsecutiveNumbers } from './utils.js';
 
 describe('calculateCoverage', () => {
   it('should calculate coverage for one type of report', () => {

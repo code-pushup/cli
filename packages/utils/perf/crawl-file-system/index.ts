@@ -3,8 +3,8 @@ import { join } from 'node:path';
 import {
   type CrawlFileSystemOptions,
   crawlFileSystem,
-} from '../../src/lib/file-system';
-import { crawlFileSystemFsWalk } from './fs-walk';
+} from '../../src/lib/file-system.js';
+import { crawlFileSystemFsWalk } from './fs-walk.js';
 
 const PROCESS_ARGUMENT_TARGET_DIRECTORY =
   process.argv

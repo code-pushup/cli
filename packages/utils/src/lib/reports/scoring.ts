@@ -4,8 +4,8 @@ import type {
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { deepClone } from '../transform';
-import type { ScoredGroup, ScoredReport } from './types';
+import { deepClone } from '../transform.js';
+import type { ScoredGroup, ScoredReport } from './types.js';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {

@@ -8,9 +8,9 @@ import {
   type UploadConfig,
 } from '@code-pushup/models';
 import { CORE_CONFIG_MOCK, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
-import { yargsCli } from '../yargs-cli';
-import { coreConfigMiddleware } from './core-config.middleware';
-import { yargsCoreConfigOptionsDefinition } from './core-config.options';
+import { yargsCli } from '../yargs-cli.js';
+import { coreConfigMiddleware } from './core-config.middleware.js';
+import { yargsCoreConfigOptionsDefinition } from './core-config.options.js';
 
 vi.mock('@code-pushup/core', async () => {
   const core = await vi.importActual('@code-pushup/core');

@@ -1,7 +1,7 @@
 import type {
   PackageJson,
   SourceResult,
-} from '../src/package-json/src/integration/types';
+} from '../src/package-json/src/integration/types.js';
 
 export const packageJsonName = 'package.json';
 export const packageJson: PackageJson = {

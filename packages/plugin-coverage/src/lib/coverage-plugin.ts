@@ -7,9 +7,9 @@ import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
-} from './config';
-import { createRunnerConfig } from './runner';
-import { coverageDescription, coverageTypeWeightMapper } from './utils';
+} from './config.js';
+import { createRunnerConfig } from './runner/index.js';
+import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
 /**
  * Instantiates Code PushUp code coverage plugin for core config.
@@ -57,6 +57,7 @@ export async function coveragePlugin(
 
   const runnerScriptPath = join(
     fileURLToPath(dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
 

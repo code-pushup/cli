@@ -10,7 +10,7 @@ import {
   fileSizeIssues,
   infoMessage,
   runnerFunction,
-} from './file-size.plugin';
+} from './file-size.plugin.js';
 
 const outputDir = 'test';
 const projectJson = JSON.stringify(

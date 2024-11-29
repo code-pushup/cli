@@ -11,11 +11,11 @@ import {
   runCompare,
   runMergeDiffs,
   runPrintConfig,
-} from './cli';
-import { commentOnPR } from './comment';
-import { DEFAULT_SETTINGS } from './constants';
-import { listChangedFiles } from './git';
-import { type SourceFileIssue, filterRelevantIssues } from './issues';
+} from './cli/index.js';
+import { commentOnPR } from './comment.js';
+import { DEFAULT_SETTINGS } from './constants.js';
+import { listChangedFiles } from './git.js';
+import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
   GitBranch,
   GitRefs,
@@ -25,8 +25,8 @@ import type {
   ProviderAPIClient,
   RunResult,
   Settings,
-} from './models';
-import { type ProjectConfig, listMonorepoProjects } from './monorepo';
+} from './models.js';
+import { type ProjectConfig, listMonorepoProjects } from './monorepo/index.js';
 
 /**
  * Runs Code PushUp in CI environment.

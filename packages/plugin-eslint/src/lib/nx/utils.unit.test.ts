@@ -4,7 +4,7 @@ import {
   findCodePushupEslintConfig,
   findEslintConfig,
   getLintFilePatterns,
-} from './utils';
+} from './utils.js';
 
 describe('findCodePushupEslintConfig', () => {
   describe('flat config format', () => {

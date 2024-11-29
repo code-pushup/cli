@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileExists } from '@code-pushup/utils';
-import type { PackageManagerId } from '../config';
-import { deriveYarnVersion } from './derive-yarn';
+import type { PackageManagerId } from '../config.js';
+import { deriveYarnVersion } from './derive-yarn.js';
 
 export async function derivePackageManagerInPackageJson(
   currentDir = process.cwd(),

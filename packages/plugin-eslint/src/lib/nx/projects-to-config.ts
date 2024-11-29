@@ -1,11 +1,11 @@
 import type { ProjectConfiguration, ProjectGraph } from '@nx/devkit';
-import type { ESLintTarget } from '../config';
+import type { ESLintTarget } from '../config.js';
 import { detectConfigVersion } from '../meta';
 import {
   findCodePushupEslintConfig,
   findEslintConfig,
   getLintFilePatterns,
-} from './utils';
+} from './utils.js';
 
 export async function nxProjectsToConfig(
   projectGraph: ProjectGraph,

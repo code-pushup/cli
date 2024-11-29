@@ -23,8 +23,8 @@ import {
   compareAudits,
   compareCategories,
   compareGroups,
-} from './implementation/compare-scorables';
-import { loadPortalClient } from './load-portal-client';
+} from './implementation/compare-scorables.js';
+import { loadPortalClient } from './load-portal-client.js';
 
 export async function compareReportFiles(
   inputPaths: Diff<string>,

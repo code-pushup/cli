@@ -5,13 +5,13 @@ import { type MockInstance, describe, expect, it } from 'vitest';
 import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
-import type { ESLintTarget } from './config';
-import { listAuditsAndGroups } from './meta';
+import type { ESLintTarget } from './config.js';
+import { listAuditsAndGroups } from './meta/index.js';
 import {
   RUNNER_OUTPUT_PATH,
   createRunnerConfig,
   executeRunner,
-} from './runner';
+} from './runner/index.js';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;

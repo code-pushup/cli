@@ -1,4 +1,4 @@
-import { stringifyError } from './errors';
+import { stringifyError } from './errors.js';
 
 describe('stringifyError', () => {
   it('should use only message from plain Error instance', () => {

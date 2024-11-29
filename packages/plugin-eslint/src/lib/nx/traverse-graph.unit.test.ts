@@ -1,5 +1,5 @@
 import type { ProjectGraph } from '@nx/devkit';
-import { findAllDependencies } from './traverse-graph';
+import { findAllDependencies } from './traverse-graph.js';
 
 describe('findAllDependencies', () => {
   const mockProjectGraph = (dependencies: ProjectGraph['dependencies']) =>
