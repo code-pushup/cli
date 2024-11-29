@@ -1,19 +1,19 @@
 import 'dotenv/config';
 import { z } from 'zod';
+import { mergeConfigs } from '@code-pushup/utils';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
-} from './code-pushup.preset';
+} from './code-pushup.preset.js';
 import {
   fileSizePlugin,
   fileSizeRecommendedRefs,
   packageJsonDocumentationGroupRef,
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
-} from './dist/examples/plugins';
-import { mergeConfigs } from './dist/packages/utils';
+} from './examples/plugins/src/index.js';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment

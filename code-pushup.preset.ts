@@ -1,15 +1,15 @@
 import coveragePlugin, {
   getNxCoveragePaths,
-} from './dist/packages/plugin-coverage';
+} from '@code-pushup/coverage-plugin';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
-} from './dist/packages/plugin-eslint';
-import jsPackagesPlugin from './dist/packages/plugin-js-packages';
+} from '@code-pushup/eslint-plugin';
+import jsPackagesPlugin from '@code-pushup/js-packages-plugin';
 import lighthousePlugin, {
   lighthouseGroupRef,
-} from './dist/packages/plugin-lighthouse';
-import type { CategoryConfig, CoreConfig } from './packages/models/src';
+} from '@code-pushup/lighthouse-plugin';
+import type { CategoryConfig, CoreConfig } from '@code-pushup/models';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
