@@ -1,5 +1,5 @@
 import type { AuditOutputs } from '@code-pushup/models';
-import type { CoverageType } from './config';
+import type { CoverageType } from './config.js';
 
 export const coverageDescription: Record<CoverageType, string> = {
   branch:

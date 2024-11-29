@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits';
-import { sourceFileLocationSchema } from './source';
+import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits.js';
+import { sourceFileLocationSchema } from './source.js';
 
 export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
   description: 'Severity level',

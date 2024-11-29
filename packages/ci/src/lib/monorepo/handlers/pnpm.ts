@@ -6,8 +6,8 @@ import {
   hasScript,
   listPackages,
   readRootPackageJson,
-} from '../packages';
-import type { MonorepoToolHandler } from '../tools';
+} from '../packages.js';
+import type { MonorepoToolHandler } from '../tools.js';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 

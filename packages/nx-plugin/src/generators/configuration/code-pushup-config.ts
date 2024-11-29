@@ -2,14 +2,14 @@ import { type Tree, generateFiles, logger } from '@nx/devkit';
 import { join } from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { ItemOrArray } from '@code-pushup/utils';
-import type { ExecutableCode } from './types';
+import type { ExecutableCode } from './types.js';
 import {
   formatArrayToJSArray,
   formatArrayToLinesOfJsString,
   formatObjectToFormattedJsString,
   normalizeExecutableCode,
   normalizeItemOrArray,
-} from './utils';
+} from './utils.js';
 
 export const DEFAULT_IMPORTS = [
   "import type { CoreConfig } from '@code-pushup/models';",

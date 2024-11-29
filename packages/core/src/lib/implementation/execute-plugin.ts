@@ -16,8 +16,8 @@ import {
   logMultipleResults,
   pluralizeToken,
 } from '@code-pushup/utils';
-import { normalizeAuditOutputs } from '../normalize';
-import { executeRunnerConfig, executeRunnerFunction } from './runner';
+import { normalizeAuditOutputs } from '../normalize.js';
+import { executeRunnerConfig, executeRunnerFunction } from './runner.js';
 
 /**
  * Error thrown when plugin output is invalid.

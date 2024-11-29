@@ -16,7 +16,7 @@ import {
   reportMock,
 } from '@code-pushup/test-utils';
 import { type Diff, fileExists, readJsonFile } from '@code-pushup/utils';
-import { compareReportFiles, compareReports } from './compare';
+import { compareReportFiles, compareReports } from './compare.js';
 
 describe('compareReportFiles', () => {
   const commitShas = {

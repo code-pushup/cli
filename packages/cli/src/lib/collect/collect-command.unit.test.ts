@@ -6,9 +6,9 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type PersistConfig,
 } from '@code-pushup/models';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsCollectCommandObject } from './collect-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsCollectCommandObject } from './collect-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =

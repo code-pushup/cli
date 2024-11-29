@@ -4,31 +4,31 @@ import type {
   CategoryDiff,
   ReportsDiff,
 } from '@code-pushup/models';
-import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
+import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock.js';
 import {
   CATEGORIES_MAP,
   CATEGORY_SLUGS,
   type CategorySlug,
-} from './categories.mock';
+} from './categories.mock.js';
 import {
   ESLINT_AUDITS_FIXED_SLUGS,
   ESLINT_AUDITS_MAP,
   ESLINT_AUDIT_SLUGS,
-} from './eslint-audits.mock';
+} from './eslint-audits.mock.js';
 import {
   ESLINT_PLUGIN_GROUP_MAX_LINES,
   ESLINT_PLUGIN_META,
   type ESLintAuditSlug,
-} from './eslint-plugin.mock';
+} from './eslint-plugin.mock.js';
 import {
   LIGHTHOUSE_AUDITS_CHANGES,
   LIGHTHOUSE_AUDITS_MAP,
   LIGHTHOUSE_AUDIT_SLUGS,
-} from './lighthouse-audits.mock';
+} from './lighthouse-audits.mock.js';
 import {
   LH_PLUGIN_GROUP_PERFORMANCE,
   LH_PLUGIN_META,
-} from './lighthouse-plugin.mock';
+} from './lighthouse-plugin.mock.js';
 
 export function reportsDiffMock(): ReportsDiff {
   return {

@@ -1,5 +1,5 @@
 import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
-import type { Settings } from './models';
+import type { Settings } from './models.js';
 
 export const DEFAULT_SETTINGS: Settings = {
   monorepo: false,

@@ -5,7 +5,7 @@ import {
   groupRefSchema,
   groupSchema,
   groupsSchema,
-} from './group';
+} from './group.js';
 
 describe('groupRefSchema', () => {
   it('should accept a valid group reference', () => {

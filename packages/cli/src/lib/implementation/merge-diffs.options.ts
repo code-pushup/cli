@@ -1,5 +1,5 @@
 import type { Options } from 'yargs';
-import type { MergeDiffsOptions } from './merge-diffs.model';
+import type { MergeDiffsOptions } from './merge-diffs.model.js';
 
 export function yargsMergeDiffsOptionsDefinition(): Record<
   keyof MergeDiffsOptions,

@@ -1,5 +1,5 @@
 import { expect } from 'vitest';
-import { createExecutorTarget } from './executor-target';
+import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {
   it('should return executor target without project name', () => {

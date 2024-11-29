@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterItemRefsBy } from './filter';
+import { filterItemRefsBy } from './filter.js';
 
 describe('filterItemsWithRefBy', () => {
   it('should return the filtered list based on the given filterFn', () => {

@@ -1,5 +1,5 @@
 import { type Entry, walkStream } from '@nodelib/fs.walk';
-import type { CrawlFileSystemOptions } from '../../src';
+import type { CrawlFileSystemOptions } from '../../src/index.js';
 
 // from https://github.com/webpro/knip/pull/426
 export function crawlFileSystemFsWalk<T = string>(

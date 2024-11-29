@@ -1,9 +1,9 @@
 import { type CoreConfig, coreConfigSchema } from '@code-pushup/models';
-import { categoryConfigsMock } from './categories.mock';
-import { eslintPluginConfigMock } from './eslint-plugin.mock';
-import { lighthousePluginConfigMock } from './lighthouse-plugin.mock';
-import { persistConfigMock } from './persist-config.mock';
-import { auditReportMock, pluginConfigMock } from './plugin-config.mock';
+import { categoryConfigsMock } from './categories.mock.js';
+import { eslintPluginConfigMock } from './eslint-plugin.mock.js';
+import { lighthousePluginConfigMock } from './lighthouse-plugin.mock.js';
+import { persistConfigMock } from './persist-config.mock.js';
+import { auditReportMock, pluginConfigMock } from './plugin-config.mock.js';
 
 export function configMock(outputDir = 'tmp'): CoreConfig {
   return coreConfigSchema.parse({

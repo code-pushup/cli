@@ -1,4 +1,4 @@
-import { type EnvironmentType, SUPPORTED_ENVIRONMENTS } from './types';
+import { type EnvironmentType, SUPPORTED_ENVIRONMENTS } from './types.js';
 
 const environmentChecks: Record<EnvironmentType, () => boolean> = {
   vscode: () => process.env['TERM_PROGRAM'] === 'vscode',

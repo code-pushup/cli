@@ -1,6 +1,6 @@
-import type { AuditResult, Vulnerability } from '../../runner/audit/types';
-import { getVulnerabilitiesTotal } from '../../runner/audit/utils';
-import type { Yarnv2AuditResultJson } from './types';
+import type { AuditResult, Vulnerability } from '../../runner/audit/types.js';
+import { getVulnerabilitiesTotal } from '../../runner/audit/utils.js';
+import type { Yarnv2AuditResultJson } from './types.js';
 
 export function yarnv2ToAuditResult(output: string): AuditResult {
   const yarnv2Audit = JSON.parse(output) as Yarnv2AuditResultJson;

@@ -7,13 +7,16 @@ import {
 import type {
   OutdatedDependency,
   OutdatedResult,
-} from '../../runner/outdated/types';
-import { REQUIRED_OUTDATED_FIELDS, outdatedtoFieldMapper } from './constants';
+} from '../../runner/outdated/types.js';
+import {
+  REQUIRED_OUTDATED_FIELDS,
+  outdatedtoFieldMapper,
+} from './constants.js';
 import {
   type Yarnv1FieldName,
   type Yarnv1OutdatedResultJson,
   yarnv1FieldNames,
-} from './types';
+} from './types.js';
 
 export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
   const yarnv1Outdated = fromJsonLines<Yarnv1OutdatedResultJson>(output);

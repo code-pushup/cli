@@ -1,11 +1,11 @@
 import type { CoreConfig } from '@code-pushup/models';
 import { filterItemRefsBy } from '@code-pushup/utils';
-import type { FilterOptions, Filterables } from './filter.model';
+import type { FilterOptions, Filterables } from './filter.model.js';
 import {
   handleConflictingOptions,
   validateFilterOption,
   validateFinalState,
-} from './validate-filter-options.utils';
+} from './validate-filter-options.utils.js';
 
 export function filterMiddleware<T extends FilterOptions>(
   originalProcessArgs: T,

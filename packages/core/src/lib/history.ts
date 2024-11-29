@@ -4,9 +4,9 @@ import type {
   UploadConfig,
 } from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
-import { collectAndPersistReports } from './collect-and-persist';
-import type { GlobalOptions } from './types';
-import { upload } from './upload';
+import { collectAndPersistReports } from './collect-and-persist.js';
+import type { GlobalOptions } from './types.js';
+import { upload } from './upload.js';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;

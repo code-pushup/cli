@@ -1,5 +1,5 @@
 import type { Linter } from 'eslint';
-import { isRuleOff, optionsFromRuleEntry, parseRuleId } from './parse';
+import { isRuleOff, optionsFromRuleEntry, parseRuleId } from './parse.js';
 
 describe('parseRuleId', () => {
   it.each([

@@ -1,8 +1,8 @@
 import type { ESLint, Linter, Rule } from 'eslint';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { RuleData } from '../parse';
-import { loadRulesForFlatConfig } from './flat';
+import type { RuleData } from '../parse.js';
+import { loadRulesForFlatConfig } from './flat.js';
 
 describe('loadRulesForFlatConfig', () => {
   const workDir = join(

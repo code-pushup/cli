@@ -3,7 +3,7 @@ import {
   type TableCellValue,
   tableCellValueSchema,
   weightSchema,
-} from './schemas';
+} from './schemas.js';
 
 describe('primitiveValueSchema', () => {
   it('should accept a valid union', () => {

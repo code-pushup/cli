@@ -1,14 +1,14 @@
 import type { PluginConfig } from '@code-pushup/models';
 import { name, version } from '../../package.json';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { normalizeFlags } from './normalize-flags';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import { normalizeFlags } from './normalize-flags.js';
 import {
   LIGHTHOUSE_GROUPS,
   LIGHTHOUSE_NAVIGATION_AUDITS,
   createRunnerFunction,
-} from './runner';
-import type { LighthouseOptions } from './types';
-import { filterAuditsAndGroupsByOnlyOptions } from './utils';
+} from './runner/index.js';
+import type { LighthouseOptions } from './types.js';
+import { filterAuditsAndGroupsByOnlyOptions } from './utils.js';
 
 export function lighthousePlugin(
   url: string,

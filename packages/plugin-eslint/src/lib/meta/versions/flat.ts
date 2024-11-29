@@ -4,14 +4,14 @@ import { builtinRules } from 'eslint/use-at-your-own-risk';
 import { isAbsolute, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { exists, findNearestFile, toArray, ui } from '@code-pushup/utils';
-import type { ESLintTarget } from '../../config';
-import { jsonHash } from '../hash';
+import type { ESLintTarget } from '../../config.js';
+import { jsonHash } from '../hash.js';
 import {
   type RuleData,
   isRuleOff,
   optionsFromRuleEntry,
   parseRuleId,
-} from '../parse';
+} from '../parse.js';
 
 export async function loadRulesForFlatConfig({
   eslintrc,

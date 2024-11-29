@@ -2,9 +2,9 @@ import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { formatBytes } from './formatting';
-import { logMultipleResults } from './log-results';
-import { ui } from './logging';
+import { formatBytes } from './formatting.js';
+import { logMultipleResults } from './log-results.js';
+import { ui } from './logging.js';
 
 export async function readTextFile(path: string): Promise<string> {
   const buffer = await readFile(path);

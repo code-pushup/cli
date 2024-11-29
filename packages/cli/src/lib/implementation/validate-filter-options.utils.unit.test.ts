@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import type { FilterOptionType } from './filter.model';
+import type { FilterOptionType } from './filter.model.js';
 import {
   OptionValidationError,
   createValidationMessage,
@@ -10,7 +10,7 @@ import {
   handleConflictingOptions,
   validateFilterOption,
   validateFinalState,
-} from './validate-filter-options.utils';
+} from './validate-filter-options.utils.js';
 
 describe('validateFilterOption', () => {
   it.each([

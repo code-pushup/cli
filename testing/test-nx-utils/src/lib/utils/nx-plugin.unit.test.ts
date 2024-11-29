@@ -3,7 +3,7 @@ import { describe, expect } from 'vitest';
 import {
   createNodesContext,
   invokeCreateNodesOnVirtualFiles,
-} from './nx-plugin';
+} from './nx-plugin.js';
 
 describe('createNodesContext', () => {
   it('should return a context with the provided options', () => {

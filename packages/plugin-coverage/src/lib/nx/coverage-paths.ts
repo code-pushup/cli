@@ -9,7 +9,7 @@ import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { bold } from 'ansis';
 import { isAbsolute, join } from 'node:path';
 import { importModule, ui } from '@code-pushup/utils';
-import type { CoverageResult } from '../config';
+import type { CoverageResult } from '../config.js';
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default

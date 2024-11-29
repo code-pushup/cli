@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
-import { packageJson, packageResult } from '../../../../mocks/constants';
+import { packageJson, packageResult } from '../../../../mocks/constants.js';
 import {
   assertDependency,
   dependenciesAudit,
   packageNotInstalledIssue,
-} from './dependencies.audit';
+} from './dependencies.audit.js';
 
 describe('packageNotInstalledIssue', () => {
   it.each([

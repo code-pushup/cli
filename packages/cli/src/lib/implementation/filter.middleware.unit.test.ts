@@ -1,7 +1,7 @@
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
-import { filterMiddleware } from './filter.middleware';
-import { OptionValidationError } from './validate-filter-options.utils';
+import { filterMiddleware } from './filter.middleware.js';
+import { OptionValidationError } from './validate-filter-options.utils.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =

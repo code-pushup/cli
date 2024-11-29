@@ -5,8 +5,8 @@ import * as utils from '@code-pushup/utils';
 import {
   derivePackageManager,
   derivePackageManagerInPackageJson,
-} from './derive-package-manager';
-import * as deriveYarn from './derive-yarn';
+} from './derive-package-manager.js';
+import * as deriveYarn from './derive-yarn.js';
 
 describe('derivePackageManagerInPackageJson', () => {
   const fileExistsSpy = vi.spyOn(utils, 'fileExists');

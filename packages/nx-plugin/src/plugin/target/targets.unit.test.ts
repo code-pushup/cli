@@ -2,10 +2,10 @@ import { vol } from 'memfs';
 import { rm } from 'node:fs/promises';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
-import { CP_TARGET_NAME } from '../constants';
-import type { NormalizedCreateNodesContext } from '../types';
-import { createTargets } from './targets';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
+import { CP_TARGET_NAME } from '../constants.js';
+import type { NormalizedCreateNodesContext } from '../types.js';
+import { createTargets } from './targets.js';
 
 describe('createTargets', () => {
   beforeEach(async () => {

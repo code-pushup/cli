@@ -1,5 +1,5 @@
 import { bold, gray } from 'ansis';
-import { getProgressBar } from '../../../../dist/packages/utils/index.js';
+import { getProgressBar } from '../../../../dist/packages/utils/index.js.js';
 
 const _arg = (name, fallback = '') =>
   process.argv

@@ -1,2 +1,2 @@
-export { packageManagers } from './package-managers';
-export type { PackageManager } from './types';
+export { packageManagers } from './package-managers.js';
+export type { PackageManager } from './types.js';

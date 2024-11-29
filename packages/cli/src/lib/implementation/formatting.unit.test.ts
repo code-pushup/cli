@@ -6,7 +6,7 @@ import {
   formatObjectValue,
   headerStyle,
   titleStyle,
-} from './formatting';
+} from './formatting.js';
 
 describe('titleStyle', () => {
   it('should return a string with green color', () => {

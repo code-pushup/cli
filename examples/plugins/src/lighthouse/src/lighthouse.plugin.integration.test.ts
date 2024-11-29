@@ -5,9 +5,9 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { corePerfGroupRefs } from './constants';
-import { audits, PLUGIN_SLUG as slug } from './index';
-import { create } from './lighthouse.plugin';
+import { corePerfGroupRefs } from './constants.js';
+import { audits, PLUGIN_SLUG as slug } from './index.js';
+import { create } from './lighthouse.plugin.js';
 
 describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {

@@ -2,12 +2,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
-import type { ESLintTarget } from './config';
+import type { ESLintTarget } from './config.js';
+import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
 import {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProjectAndDeps,
-} from './nx';
-import { eslintConfigFromNxProject } from './nx/find-project-without-deps';
+} from './nx/index.js';
 
 const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
 type Project = (typeof ALL_PROJECTS)[number];

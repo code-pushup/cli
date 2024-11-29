@@ -6,7 +6,7 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
-import { calcDuration } from './reports/utils';
+import { calcDuration } from './reports/utils.js';
 
 /**
  * Represents the process result.

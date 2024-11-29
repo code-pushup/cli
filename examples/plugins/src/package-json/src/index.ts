@@ -1,8 +1,8 @@
-export { pluginSlug, audits } from './constants';
+export { pluginSlug, audits } from './constants.js';
 export {
   performanceGroupRef,
   documentationGroupRef,
   versionControlGroupRef,
   recommendedRefs,
-} from './scoring';
-export { create, type PluginOptions } from './package-json.plugin';
+} from './scoring.js';
+export { create, type PluginOptions } from './package-json.plugin.js';

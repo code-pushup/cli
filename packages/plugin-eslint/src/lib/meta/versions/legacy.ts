@@ -1,8 +1,8 @@
 import type { ESLint, Linter } from 'eslint';
 import { distinct, exists, toArray, ui } from '@code-pushup/utils';
-import type { ESLintTarget } from '../../config';
-import { setupESLint } from '../../setup';
-import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse';
+import type { ESLintTarget } from '../../config.js';
+import { setupESLint } from '../../setup.js';
+import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse.js';
 
 export async function loadRulesForLegacyConfig({
   eslintrc,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
-import { applyMaxScoreAboveThreshold } from './utils';
+import { applyMaxScoreAboveThreshold } from './utils.js';
 
 describe('applyMaxScoreAboveThreshold', () => {
   it('should transform score above threshold to maximum', () => {
