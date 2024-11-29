@@ -76,7 +76,7 @@ describe('nx-plugin', () => {
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
-      `>  NX   Successfully ran target code-pushup--configuration for project ${project}`,
+      `Successfully ran target code-pushup--configuration for project ${project}`,
     );
     await expect(
       readTextFile(join(cwd, projectRoot, 'code-pushup.config.ts')),
@@ -187,7 +187,7 @@ describe('nx-plugin', () => {
         },
       ],
       upload: {
-        server: 'http://staging.code-pushup.dev',
+        server: 'https://api.staging.code-pushup.dev/graphql',
         organization: 'code-pushup',
         apiKey: '12345678',
       },
