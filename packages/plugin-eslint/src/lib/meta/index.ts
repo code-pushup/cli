@@ -4,6 +4,8 @@ import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
 import { listRules } from './rules';
 import { ruleToAudit } from './transform';
 
+export { detectConfigVersion, type ConfigFormat } from './versions';
+
 export async function listAuditsAndGroups(
   targets: ESLintTarget[],
 ): Promise<{ audits: Audit[]; groups: Group[] }> {
