@@ -5,7 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/create-cli",
@@ -39,7 +39,7 @@
     },
     "exec-node": {
       "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/index.js",
+      "command": "node ./dist/packages/create-cli/src/index.js",
       "options": {}
     },
     "exec-npm": {
