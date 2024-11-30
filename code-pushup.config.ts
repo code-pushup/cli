@@ -7,13 +7,6 @@ import {
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
 } from './code-pushup.preset.js';
-import {
-  fileSizePlugin,
-  fileSizeRecommendedRefs,
-  packageJsonDocumentationGroupRef,
-  packageJsonPerformanceGroupRef,
-  packageJsonPlugin,
-} from './examples/plugins/src/index.js';
 import type { CoreConfig } from './packages/models/src';
 
 // load upload configuration from environment
@@ -35,31 +28,7 @@ const config: CoreConfig = {
     },
   }),
 
-  plugins: [
-    fileSizePlugin({
-      directory: './dist/packages',
-      pattern: /\.js$/,
-      budget: 174_080, // 170 kB
-    }),
-
-    packageJsonPlugin({
-      directory: './dist/packages',
-      license: 'MIT',
-      type: 'module',
-    }),
-  ],
-
-  categories: [
-    {
-      slug: 'custom-checks',
-      title: 'Custom checks',
-      refs: [
-        ...fileSizeRecommendedRefs,
-        packageJsonPerformanceGroupRef,
-        packageJsonDocumentationGroupRef,
-      ],
-    },
-  ],
+  plugins: [],
 };
 
 export default mergeConfigs(
