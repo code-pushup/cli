@@ -42,6 +42,7 @@
   "dependencies": {
     "@code-pushup/models": "0.56.0",
     "@code-pushup/utils": "0.56.0",
+    "tslib": "^2.6.2",
     "ansis": "^3.3.0"
   },
   "peerDependencies": {

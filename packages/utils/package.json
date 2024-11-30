@@ -34,6 +34,7 @@
     "esbuild": "^0.19.2",
     "multi-progress-bars": "^5.0.3",
     "semver": "^7.6.0",
+    "tslib": "^2.6.2",
     "simple-git": "^3.20.0"
   }
 }
