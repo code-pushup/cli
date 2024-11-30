@@ -15,7 +15,6 @@ export * from './lib/utils/commit.mock.js';
 export * from './lib/utils/core-config.mock.js';
 export * from './lib/utils/minimal-config.mock.js';
 export * from './lib/utils/report.mock.js';
-export * from './lib/fixtures/configs/custom-plugin.js';
 
 // dynamic mocks
 export * from './lib/utils/dynamic-mocks/categories.mock.js';
