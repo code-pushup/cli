@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -50,8 +50,8 @@ export async function jsPackagesPlugin(
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
     docsUrl: packageManager.docs.homepage,
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     audits: createAudits(packageManager.slug, checks, depGroups),
     groups: createGroups(packageManager.slug, checks, depGroups),
     runner: await createRunnerConfig(runnerScriptPath, {

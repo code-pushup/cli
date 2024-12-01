@@ -1,6 +1,6 @@
 import type { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
-import { name, version } from '../../../package.json';
+import packageJson from '../../../package.json' with { type: 'json' };
 import type { GlobalOptions } from '../types.js';
 import { executePlugins } from './execute-plugin.js';
 
@@ -19,8 +19,8 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const pluginOutputs = await executePlugins(plugins, options);
   return {
     commit,
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     date,
     duration: calcDuration(start),
     categories,

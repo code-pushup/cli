@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerConfig } from './runner/index.js';
@@ -45,8 +45,8 @@ export async function eslintPlugin(
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
 
     audits,
     groups,

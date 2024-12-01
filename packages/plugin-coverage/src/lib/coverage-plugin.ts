@@ -2,7 +2,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
-import { name, version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import {
   type CoveragePluginConfig,
   type CoverageType,
@@ -67,8 +67,8 @@ export async function coveragePlugin(
     icon: 'folder-coverage-open',
     description: 'Official Code PushUp code coverage plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     audits,
     groups: [group],
     runner: await createRunnerConfig(runnerScriptPath, coverageConfig),

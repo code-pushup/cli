@@ -9,7 +9,7 @@ import yargs, {
 } from 'yargs';
 import { type PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
-import { version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import {
   descriptionStyle,
   formatNestedValues,
@@ -73,7 +73,7 @@ export function yargsCli<T = unknown>(
     .help('help', descriptionStyle('Show help'))
     .alias('h', 'help')
     .showHelpOnFail(false)
-    .version('version', dim`Show version`, version)
+    .version('version', dim`Show version`, packageJson.version)
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);
