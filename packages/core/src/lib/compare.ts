@@ -17,7 +17,7 @@ import {
   scoreReport,
   ui,
 } from '@code-pushup/utils';
-import { name as packageName, version } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 import {
   type ReportsToCompare,
   compareAudits,
@@ -92,8 +92,8 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
     categories,
     groups,
     audits,
-    packageName,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     date,
     duration,
   };
