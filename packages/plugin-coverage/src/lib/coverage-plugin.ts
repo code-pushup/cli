@@ -1,8 +1,8 @@
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
-import packageJson from '../../package.json' with { type: 'json' };
 import {
   type CoveragePluginConfig,
   type CoverageType,
@@ -60,6 +60,10 @@ export async function coveragePlugin(
     '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'coverage',

@@ -1,4 +1,5 @@
 import { writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import {
   type Format,
@@ -17,7 +18,6 @@ import {
   scoreReport,
   ui,
 } from '@code-pushup/utils';
-import packageJson from '../../package.json' with { type: 'json' };
 import {
   type ReportsToCompare,
   compareAudits,
@@ -86,6 +86,10 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
   const audits = compareAudits(scoredReports);
 
   const duration = calcDuration(start);
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     commits,

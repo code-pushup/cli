@@ -1,6 +1,6 @@
+import { createRequire } from 'node:module';
 import type { CoreConfig, Report } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
-import packageJson from '../../../package.json' with { type: 'json' };
 import type { GlobalOptions } from '../types.js';
 import { executePlugins } from './execute-plugin.js';
 
@@ -17,6 +17,9 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const start = performance.now();
   const commit = await getLatestCommit();
   const pluginOutputs = await executePlugins(plugins, options);
+  const packageJson = createRequire(import.meta.url)(
+    '../../../package.json',
+  ) as typeof import('../../../package.json');
   return {
     commit,
     packageName: packageJson.name,

@@ -1,7 +1,7 @@
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import packageJson from '../../package.json' with { type: 'json' };
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -42,6 +42,10 @@ export async function jsPackagesPlugin(
     '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'js-packages',

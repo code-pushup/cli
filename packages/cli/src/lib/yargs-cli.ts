@@ -1,5 +1,7 @@
 /* eslint-disable max-lines-per-function */
+
 import { blue, dim, green } from 'ansis';
+import { createRequire } from 'node:module';
 import yargs, {
   type Argv,
   type CommandModule,
@@ -9,7 +11,6 @@ import yargs, {
 } from 'yargs';
 import { type PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
-import packageJson from '../../package.json' with { type: 'json' };
 import {
   descriptionStyle,
   formatNestedValues,
@@ -64,6 +65,10 @@ export function yargsCli<T = unknown>(
   const groups = cfg.groups ?? {};
   const examples = cfg.examples ?? [];
   const cli = yargs(argv);
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   // setup yargs
   cli
