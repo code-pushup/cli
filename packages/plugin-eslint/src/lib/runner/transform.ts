@@ -8,7 +8,7 @@ import {
   truncateIssueMessage,
   ui,
 } from '@code-pushup/utils';
-import { ruleIdToSlug } from '../meta/hash.js';
+import { ruleIdToSlug } from '../meta/index.js';
 import type { LinterOutput } from './types.js';
 
 type LintIssue = Linter.LintMessage & {
