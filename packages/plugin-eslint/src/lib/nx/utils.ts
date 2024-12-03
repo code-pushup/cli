@@ -1,7 +1,7 @@
 import type { ProjectConfiguration } from '@nx/devkit';
 import { join } from 'node:path';
 import { fileExists, toArray } from '@code-pushup/utils';
-import type { ConfigFormat } from '../meta';
+import type { ConfigFormat } from '../meta/index.js';
 
 const ESLINT_CONFIG_EXTENSIONS: Record<ConfigFormat, string[]> = {
   // https://eslint.org/docs/latest/use/configure/configuration-files#configuration-file-formats

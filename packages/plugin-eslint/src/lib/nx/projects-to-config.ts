@@ -1,6 +1,6 @@
 import type { ProjectConfiguration, ProjectGraph } from '@nx/devkit';
 import type { ESLintTarget } from '../config.js';
-import { detectConfigVersion } from '../meta';
+import { detectConfigVersion } from '../meta/index.js';
 import {
   findCodePushupEslintConfig,
   findEslintConfig,

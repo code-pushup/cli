@@ -4,7 +4,8 @@ import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups.js';
 import { listRules } from './rules.js';
 import { ruleToAudit } from './transform.js';
 
-export { detectConfigVersion, type ConfigFormat } from './versions';
+export { ruleIdToSlug } from './hash.js';
+export { detectConfigVersion, type ConfigFormat } from './versions/index.js';
 
 export async function listAuditsAndGroups(
   targets: ESLintTarget[],
