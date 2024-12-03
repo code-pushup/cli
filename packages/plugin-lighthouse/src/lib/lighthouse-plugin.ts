@@ -1,5 +1,5 @@
+import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
-import packageJson from '../../package.json' with { type: 'json' };
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { normalizeFlags } from './normalize-flags.js';
 import {
@@ -22,6 +22,10 @@ export function lighthousePlugin(
     LIGHTHOUSE_GROUPS,
     { skipAudits, onlyAudits, onlyCategories },
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,

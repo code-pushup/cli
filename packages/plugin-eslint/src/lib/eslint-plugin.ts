@@ -1,7 +1,7 @@
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
-import packageJson from '../../package.json' with { type: 'json' };
 import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerConfig } from './runner/index.js';
@@ -38,6 +38,10 @@ export async function eslintPlugin(
     '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'eslint',
