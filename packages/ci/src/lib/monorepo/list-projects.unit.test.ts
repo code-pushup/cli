@@ -5,8 +5,10 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import { DEFAULT_SETTINGS } from '../constants.js';
 import type { Settings } from '../models.js';
-import { listMonorepoProjects } from './list-projects.js';
-import type { ProjectConfig } from './tools.js';
+import {
+  type MonorepoProjects,
+  listMonorepoProjects,
+} from './list-projects.js';
 
 describe('listMonorepoProjects', () => {
   const MONOREPO_SETTINGS: Settings = {
@@ -53,10 +55,14 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
-      { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
-      { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
-    ] satisfies ProjectConfig[]);
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
+      tool: 'nx',
+      projects: [
+        { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
+        { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
 
     expect(utils.executeProcess).toHaveBeenCalledWith<
       Parameters<(typeof utils)['executeProcess']>
@@ -96,24 +102,28 @@ describe('listMonorepoProjects', () => {
         'e2e/package.json': pkgJsonContent({
           name: 'e2e',
         }),
-        'frontend/backoffice/package.json': pkgJsonContent({
-          name: 'backoffice',
+        'frontend/cms/package.json': pkgJsonContent({
+          name: 'cms',
           scripts: { 'code-pushup': 'code-pushup --no-progress' },
         }),
-        'frontend/website/package.json': pkgJsonContent({
-          name: 'website',
+        'frontend/web/package.json': pkgJsonContent({
+          name: 'web',
           scripts: { 'code-pushup': 'code-pushup --no-progress' },
         }),
       },
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
-      { name: 'api', bin: 'npx turbo run code-pushup -F api --' },
-      { name: 'auth', bin: 'npx turbo run code-pushup -F auth --' },
-      { name: 'backoffice', bin: 'npx turbo run code-pushup -F backoffice --' },
-      { name: 'website', bin: 'npx turbo run code-pushup -F website --' },
-    ] satisfies ProjectConfig[]);
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
+      tool: 'turbo',
+      projects: [
+        { name: 'api', bin: 'npx turbo run code-pushup --filter=api --' },
+        { name: 'auth', bin: 'npx turbo run code-pushup --filter=auth --' },
+        { name: 'cms', bin: 'npx turbo run code-pushup --filter=cms --' },
+        { name: 'web', bin: 'npx turbo run code-pushup --filter=web --' },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
   });
 
   it('should detect packages in PNPM workspace with code-pushup script', async () => {
@@ -140,11 +150,24 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
-      { name: 'backend', bin: 'pnpm -F backend run code-pushup' },
-      { name: 'frontend', bin: 'pnpm -F frontend run code-pushup' },
-      { name: '@repo/utils', bin: 'pnpm -F @repo/utils run code-pushup' },
-    ] satisfies ProjectConfig[]);
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
+      tool: 'pnpm',
+      projects: [
+        {
+          name: 'backend',
+          bin: 'pnpm --filter=backend run code-pushup',
+        },
+        {
+          name: 'frontend',
+          bin: 'pnpm --filter=frontend run code-pushup',
+        },
+        {
+          name: '@repo/utils',
+          bin: 'pnpm --filter=@repo/utils run code-pushup',
+        },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
   });
 
   it('should detect Yarn workspaces with code-pushup installed individually', async () => {
@@ -170,10 +193,14 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
-      { name: 'cli', bin: 'yarn workspace cli exec code-pushup' },
-      { name: 'core', bin: 'yarn workspace core exec code-pushup' },
-    ] satisfies ProjectConfig[]);
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
+      tool: 'yarn',
+      projects: [
+        { name: 'cli', bin: 'yarn workspace cli exec code-pushup' },
+        { name: 'core', bin: 'yarn workspace core exec code-pushup' },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
   });
 
   it('should detect NPM workspaces when code-pushup installed at root level', async () => {
@@ -195,10 +222,20 @@ describe('listMonorepoProjects', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual([
-      { name: 'backend', bin: 'npm -w backend exec code-pushup --' },
-      { name: 'frontend', bin: 'npm -w frontend exec code-pushup --' },
-    ] satisfies ProjectConfig[]);
+    await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
+      tool: 'npm',
+      projects: [
+        {
+          name: 'backend',
+          bin: 'npm --workspace=backend exec code-pushup --',
+        },
+        {
+          name: 'frontend',
+          bin: 'npm --workspace=frontend exec code-pushup --',
+        },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
   });
 
   it('should list folders matching globs passed as input when no tool detected', async () => {
@@ -226,23 +263,26 @@ describe('listMonorepoProjects', () => {
         monorepo: true,
         projects: ['backend/*', 'frontend'],
       }),
-    ).resolves.toEqual([
-      {
-        name: join('backend', 'api'),
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'backend', 'api'),
-      },
-      {
-        name: join('backend', 'auth'),
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'backend', 'auth'),
-      },
-      {
-        name: 'frontend',
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'frontend'),
-      },
-    ] satisfies ProjectConfig[]);
+    ).resolves.toEqual({
+      tool: null,
+      projects: [
+        {
+          name: join('backend', 'api'),
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'backend', 'api'),
+        },
+        {
+          name: join('backend', 'auth'),
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'backend', 'auth'),
+        },
+        {
+          name: 'frontend',
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'frontend'),
+        },
+      ],
+    } satisfies MonorepoProjects);
   });
 
   it('should list all folders with a package.json when no tool detected and no patterns provided', async () => {
@@ -265,28 +305,31 @@ describe('listMonorepoProjects', () => {
         monorepo: true,
         projects: null,
       }),
-    ).resolves.toEqual([
-      {
-        name: 'my-app',
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME),
-      },
-      {
-        name: 'migrate',
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'scripts', 'db', 'migrate'),
-      },
-      {
-        name: 'seed',
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'scripts', 'db', 'seed'),
-      },
-      {
-        name: 'generate-token',
-        bin: 'npx --no-install code-pushup',
-        directory: join(MEMFS_VOLUME, 'scripts', 'generate-token'),
-      },
-    ] satisfies ProjectConfig[]);
+    ).resolves.toEqual({
+      tool: null,
+      projects: [
+        {
+          name: 'my-app',
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME),
+        },
+        {
+          name: 'migrate',
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'scripts', 'db', 'migrate'),
+        },
+        {
+          name: 'seed',
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'scripts', 'db', 'seed'),
+        },
+        {
+          name: 'generate-token',
+          bin: 'npx --no-install code-pushup',
+          directory: join(MEMFS_VOLUME, 'scripts', 'generate-token'),
+        },
+      ],
+    } satisfies MonorepoProjects);
   });
 
   it('should prefer tool provided as input (PNPM) over tool which would be auto-detected otherwise (Turborepo)', async () => {
@@ -319,11 +362,27 @@ describe('listMonorepoProjects', () => {
 
     await expect(
       listMonorepoProjects({ ...MONOREPO_SETTINGS, monorepo: 'pnpm' }),
-    ).resolves.toEqual([
-      { name: 'backoffice', bin: 'pnpm -F backoffice exec code-pushup' },
-      { name: 'frontoffice', bin: 'pnpm -F frontoffice exec code-pushup' },
-      { name: '@repo/models', bin: 'pnpm -F @repo/models exec code-pushup' },
-      { name: '@repo/ui', bin: 'pnpm -F @repo/ui exec code-pushup' },
-    ] satisfies ProjectConfig[]);
+    ).resolves.toEqual({
+      tool: 'pnpm',
+      projects: [
+        {
+          name: 'backoffice',
+          bin: 'pnpm --filter=backoffice exec code-pushup',
+        },
+        {
+          name: 'frontoffice',
+          bin: 'pnpm --filter=frontoffice exec code-pushup',
+        },
+        {
+          name: '@repo/models',
+          bin: 'pnpm --filter=@repo/models exec code-pushup',
+        },
+        {
+          name: '@repo/ui',
+          bin: 'pnpm --filter=@repo/ui exec code-pushup',
+        },
+      ],
+      runManyCommand: expect.any(Function),
+    } satisfies MonorepoProjects);
   });
 });

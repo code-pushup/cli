@@ -4,55 +4,80 @@ import type { Logger, Settings } from '../models.js';
 import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
 import { listPackages } from './packages.js';
-import type { MonorepoHandlerOptions, ProjectConfig } from './tools.js';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoTool,
+  ProjectConfig,
+} from './tools.js';
+
+export type MonorepoProjects = {
+  tool: MonorepoTool | null;
+  projects: ProjectConfig[];
+  runManyCommand?: (onlyProjects?: string[]) => string | Promise<string>;
+};
 
 export async function listMonorepoProjects(
   settings: Settings,
-): Promise<ProjectConfig[]> {
-  if (!settings.monorepo) {
-    throw new Error('Monorepo mode not enabled');
-  }
-
+): Promise<MonorepoProjects> {
   const logger = settings.logger;
-
   const options = createMonorepoHandlerOptions(settings);
 
-  const tool =
-    settings.monorepo === true
-      ? await detectMonorepoTool(options)
-      : settings.monorepo;
-  if (settings.monorepo === true) {
-    if (tool) {
-      logger.info(`Auto-detected monorepo tool ${tool}`);
-    } else {
-      logger.info("Couldn't auto-detect any supported monorepo tool");
-    }
-  } else {
-    logger.info(`Using monorepo tool "${tool}" from inputs`);
-  }
+  const tool = await resolveMonorepoTool(settings, options);
 
   if (tool) {
     const handler = getToolHandler(tool);
     const projects = await handler.listProjects(options);
     logger.info(`Found ${projects.length} projects in ${tool} monorepo`);
     logger.debug(`Projects: ${projects.map(({ name }) => name).join(', ')}`);
-    return projects;
+    return {
+      tool,
+      projects,
+      runManyCommand: onlyProjects =>
+        handler.createRunManyCommand(options, onlyProjects),
+    };
   }
 
   if (settings.projects) {
-    return listProjectsByGlobs({
+    const projects = await listProjectsByGlobs({
       patterns: settings.projects,
       cwd: options.cwd,
       bin: settings.bin,
       logger,
     });
+    return { tool, projects };
   }
 
-  return listProjectsByNpmPackages({
+  const projects = await listProjectsByNpmPackages({
     cwd: options.cwd,
     bin: settings.bin,
     logger,
   });
+  return { tool, projects };
+}
+
+async function resolveMonorepoTool(
+  settings: Settings,
+  options: MonorepoHandlerOptions,
+): Promise<MonorepoTool | null> {
+  if (!settings.monorepo) {
+    // shouldn't happen, handled by caller
+    throw new Error('Monorepo mode not enabled');
+  }
+  const logger = settings.logger;
+
+  if (typeof settings.monorepo === 'string') {
+    logger.info(`Using monorepo tool "${settings.monorepo}" from inputs`);
+    return settings.monorepo;
+  }
+
+  const tool = await detectMonorepoTool(options);
+  if (tool) {
+    logger.info(`Auto-detected monorepo tool ${tool}`);
+  } else {
+    logger.info("Couldn't auto-detect any supported monorepo tool");
+  }
+
+  return tool;
 }
 
 function createMonorepoHandlerOptions(
@@ -61,6 +86,7 @@ function createMonorepoHandlerOptions(
   return {
     task: settings.task,
     cwd: settings.directory,
+    parallel: false, // TODO: add to settings
     nxProjectsFilter: settings.nxProjectsFilter,
     ...(!settings.silent && {
       observer: {

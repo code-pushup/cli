@@ -9,6 +9,7 @@ import type { MonorepoToolHandler } from '../tools.js';
 
 export const nxHandler: MonorepoToolHandler = {
   tool: 'nx',
+
   async isConfigured(options) {
     return (
       (await fileExists(join(options.cwd, 'nx.json'))) &&
@@ -18,10 +19,12 @@ export const nxHandler: MonorepoToolHandler = {
           args: ['nx', 'report'],
           cwd: options.cwd,
           observer: options.observer,
+          ignoreExitCode: true,
         })
       ).code === 0
     );
   },
+
   async listProjects(options) {
     const { stdout } = await executeProcess({
       command: 'npx',
@@ -42,6 +45,19 @@ export const nxHandler: MonorepoToolHandler = {
       name: project,
       bin: `npx nx run ${project}:${options.task} --`,
     }));
+  },
+
+  createRunManyCommand(options, onlyProjects) {
+    return [
+      'npx',
+      'nx',
+      'run-many', // TODO: allow affected instead of run-many?
+      `--targets=${options.task}`,
+      // TODO: add options.nxRunManyFilter? (e.g. --exclude=...)
+      ...(onlyProjects ? [`--projects=${onlyProjects.join(',')}`] : []),
+      `--parallel=${options.parallel}`,
+      '--',
+    ].join(' ');
   },
 };
 
