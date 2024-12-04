@@ -50,7 +50,7 @@ export async function runInCI(
 
   if (settings.monorepo) {
     logger.info('Running Code PushUp in monorepo mode');
-    const projects = await listMonorepoProjects(settings);
+    const { projects } = await listMonorepoProjects(settings);
     const projectResults = await projects.reduce<Promise<ProjectRunResult[]>>(
       async (acc, project) => [
         ...(await acc),
