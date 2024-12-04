@@ -8,6 +8,7 @@ import type { MonorepoTool } from './monorepo/index.js';
  */
 export type Options = {
   monorepo?: boolean | MonorepoTool;
+  parallel?: boolean | number;
   projects?: string[] | null;
   task?: string;
   nxProjectsFilter?: string | string[];
