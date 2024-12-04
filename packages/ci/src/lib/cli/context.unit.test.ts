@@ -1,4 +1,3 @@
-import { DEFAULT_SETTINGS } from '../constants.js';
 import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
@@ -13,6 +12,7 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
+          nxProjectsFilter: '--with-target={task}',
           output: '.code-pushup',
           projects: null,
           silent: false,
@@ -21,12 +21,10 @@ describe('createCommandContext', () => {
         null,
       ),
     ).toStrictEqual<CommandContext>({
-      project: undefined,
       bin: 'npx --no-install code-pushup',
       directory: '/test',
       config: null,
       silent: false,
-      output: '.code-pushup',
     });
   });
 
@@ -41,6 +39,7 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
+          nxProjectsFilter: '--with-target={task}',
           output: '.code-pushup',
           projects: null,
           silent: false,
@@ -53,49 +52,10 @@ describe('createCommandContext', () => {
         },
       ),
     ).toStrictEqual<CommandContext>({
-      project: 'ui',
       bin: 'yarn code-pushup',
       directory: '/test/ui',
       config: null,
       silent: false,
-      output: '.code-pushup',
     });
-  });
-
-  it('should interpolate project name in output path for monorepo project', () => {
-    expect(
-      createCommandContext(
-        {
-          ...DEFAULT_SETTINGS,
-          output: '.code-pushup/{project}',
-        },
-        {
-          name: 'website',
-          bin: 'npx nx run website:code-pushup --',
-        },
-      ),
-    ).toEqual(
-      expect.objectContaining<Partial<CommandContext>>({
-        project: 'website',
-        bin: 'npx nx run website:code-pushup --',
-        output: '.code-pushup/website',
-      }),
-    );
-  });
-
-  it('should omit {project} placeholder in output path when in standalone mode', () => {
-    expect(
-      createCommandContext(
-        {
-          ...DEFAULT_SETTINGS,
-          output: '.code-pushup/{project}',
-        },
-        undefined,
-      ),
-    ).toEqual(
-      expect.objectContaining<Partial<CommandContext>>({
-        output: '.code-pushup/',
-      }),
-    );
   });
 });

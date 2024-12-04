@@ -87,13 +87,10 @@ describe('CI package', () => {
         ),
       ).resolves.toEqual({
         mode: 'standalone',
-        artifacts: {
+        files: {
           report: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report.json'),
-              join(outputDir, 'report.md'),
-            ],
+            json: join(outputDir, 'report.json'),
+            md: join(outputDir, 'report.md'),
           },
         },
       } satisfies RunResult);
@@ -156,20 +153,14 @@ describe('CI package', () => {
         mode: 'standalone',
         commentId: comment.id,
         newIssues: [],
-        artifacts: {
+        files: {
           report: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report.json'),
-              join(outputDir, 'report.md'),
-            ],
+            json: join(outputDir, 'report.json'),
+            md: join(outputDir, 'report.md'),
           },
           diff: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report-diff.json'),
-              join(outputDir, 'report-diff.md'),
-            ],
+            json: join(outputDir, 'report-diff.json'),
+            md: join(outputDir, 'report-diff.md'),
           },
         },
       } satisfies RunResult);

@@ -1,4 +1,4 @@
-import { executeProcess } from '@code-pushup/utils';
+import { executeProcess, stringifyError } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
 
 export async function runPrintConfig({
@@ -6,7 +6,7 @@ export async function runPrintConfig({
   config,
   directory,
   silent,
-}: CommandContext): Promise<void> {
+}: CommandContext): Promise<unknown> {
   const { stdout } = await executeProcess({
     command: bin,
     args: [...(config ? [`--config=${config}`] : []), 'print-config'],
@@ -14,5 +14,12 @@ export async function runPrintConfig({
   });
   if (!silent) {
     console.info(stdout);
+  }
+  try {
+    return JSON.parse(stdout) as unknown;
+  } catch (error) {
+    throw new Error(
+      `Error parsing output of print-config command - ${stringifyError(error)}`,
+    );
   }
 }

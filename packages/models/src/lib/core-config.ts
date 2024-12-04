@@ -37,7 +37,7 @@ export function refineCoreConfig(schema: typeof unrefinedCoreConfigSchema) {
     ({ categories, plugins }) => ({
       message: missingRefsForCategoriesErrorMsg(categories, plugins),
     }),
-  ) as unknown as typeof unrefinedCoreConfigSchema;
+  );
 }
 
-export type CoreConfig = z.infer<typeof unrefinedCoreConfigSchema>;
+export type CoreConfig = z.infer<typeof coreConfigSchema>;
