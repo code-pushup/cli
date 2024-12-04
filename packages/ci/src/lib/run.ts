@@ -1,17 +1,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import type { Report, ReportsDiff } from '@code-pushup/models';
+import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
 import {
   type CommandContext,
-  type PersistedCliFiles,
   createCommandContext,
+  persistedFilesFromConfig,
   runCollect,
   runCompare,
   runMergeDiffs,
   runPrintConfig,
 } from './cli/index.js';
+import { parsePersistConfig } from './cli/persist.js';
 import { commentOnPR } from './comment.js';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { listChangedFiles } from './git.js';
@@ -21,6 +22,7 @@ import type {
   GitRefs,
   Logger,
   Options,
+  OutputFiles,
   ProjectRunResult,
   ProviderAPIClient,
   RunResult,
@@ -57,48 +59,44 @@ export async function runInCI(
       Promise.resolve([]),
     );
     const diffJsonPaths = projectResults
-      .map(({ artifacts: { diff } }) =>
-        diff?.files.find(file => file.endsWith('.json')),
-      )
+      .map(({ files }) => files.diff?.json)
       .filter((file): file is string => file != null);
     if (diffJsonPaths.length > 0) {
-      const { mdFilePath, artifactData: diffArtifact } = await runMergeDiffs(
+      const diffPath = await runMergeDiffs(
         diffJsonPaths,
         createCommandContext(settings, projects[0]),
       );
-      logger.debug(`Merged ${diffJsonPaths.length} diffs into ${mdFilePath}`);
-      const commentId = await commentOnPR(mdFilePath, api, logger);
+      logger.debug(`Merged ${diffJsonPaths.length} diffs into ${diffPath}`);
+      const commentId = await commentOnPR(diffPath, api, logger);
       return {
         mode: 'monorepo',
         projects: projectResults,
         commentId,
-        diffArtifact,
+        diffPath,
       };
     }
     return { mode: 'monorepo', projects: projectResults };
   }
 
   logger.info('Running Code PushUp in standalone project mode');
-  const { artifacts, newIssues } = await runOnProject({
+  const { files, newIssues } = await runOnProject({
     project: null,
     settings,
     api,
     refs,
     git,
   });
-  const commentMdPath = artifacts.diff?.files.find(file =>
-    file.endsWith('.md'),
-  );
+  const commentMdPath = files.diff?.md;
   if (commentMdPath) {
     const commentId = await commentOnPR(commentMdPath, api, logger);
     return {
       mode: 'standalone',
-      artifacts,
+      files,
       commentId,
       newIssues,
     };
   }
-  return { mode: 'standalone', artifacts, newIssues };
+  return { mode: 'standalone', files, newIssues };
 }
 
 type RunOnProjectArgs = {
@@ -125,15 +123,20 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const { jsonFilePath: currReportPath, artifactData: reportArtifact } =
-    await runCollect(ctx);
-  const currReport = await fs.readFile(currReportPath, 'utf8');
-  logger.debug(`Collected current report at ${currReportPath}`);
+  const config = await printPersistConfig(ctx, settings);
+  logger.debug(
+    `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
+  );
+
+  await runCollect(ctx);
+  const reportFiles = persistedFilesFromConfig(config, ctx);
+  const currReport = await fs.readFile(reportFiles.json, 'utf8');
+  logger.debug(`Collected current report at ${reportFiles.json}`);
 
   const noDiffOutput = {
     name: project?.name ?? '-',
-    artifacts: {
-      report: reportArtifact,
+    files: {
+      report: reportFiles,
     },
   } satisfies ProjectRunResult;
 
@@ -157,20 +160,24 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
   await fs.writeFile(prevPath, prevReport);
   logger.debug(`Saved reports to ${currPath} and ${prevPath}`);
 
-  const comparisonFiles = await runCompare(
+  await runCompare(
     { before: prevPath, after: currPath, label: project?.name },
     ctx,
   );
+  const comparisonFiles = persistedFilesFromConfig(config, {
+    directory: ctx.directory,
+    isDiff: true,
+  });
   logger.info('Compared reports and generated diff files');
   logger.debug(
-    `Generated diff files at ${comparisonFiles.jsonFilePath} and ${comparisonFiles.mdFilePath}`,
+    `Generated diff files at ${comparisonFiles.json} and ${comparisonFiles.md}`,
   );
 
   const diffOutput = {
     ...noDiffOutput,
-    artifacts: {
-      ...noDiffOutput.artifacts,
-      diff: comparisonFiles.artifactData,
+    files: {
+      ...noDiffOutput.files,
+      diff: comparisonFiles,
     },
   } satisfies ProjectRunResult;
 
@@ -221,47 +228,69 @@ async function collectPreviousReport(
 
   if (cachedBaseReport) {
     return fs.readFile(cachedBaseReport, 'utf8');
-  } else {
-    await git.fetch('origin', base.ref, ['--depth=1']);
-    await git.checkout(['-f', base.ref]);
-    logger.info(`Switched to base branch ${base.ref}`);
-
-    try {
-      await runPrintConfig({ ...ctx, silent: !settings.debug });
-      logger.debug(
-        `Executing print-config verified code-pushup installed in base branch ${base.ref}`,
-      );
-    } catch (error) {
-      logger.debug(`Error from print-config - ${stringifyError(error)}`);
-      logger.info(
-        `Executing print-config failed, assuming code-pushup not installed in base branch ${base.ref} and skipping comparison`,
-      );
-      return null;
-    }
-
-    const { jsonFilePath: prevReportPath } = await runCollect(ctx);
-    const prevReport = await fs.readFile(prevReportPath, 'utf8');
-    logger.debug(`Collected previous report at ${prevReportPath}`);
-
-    await git.checkout(['-f', '-']);
-    logger.info('Switched back to PR/MR branch');
-
-    return prevReport;
   }
+
+  await git.fetch('origin', base.ref, ['--depth=1']);
+  await git.checkout(['-f', base.ref]);
+  logger.info(`Switched to base branch ${base.ref}`);
+
+  const config = await checkPrintConfig(args);
+  if (!config) {
+    return null;
+  }
+
+  await runCollect(ctx);
+  const { json: prevReportPath } = persistedFilesFromConfig(config, ctx);
+  const prevReport = await fs.readFile(prevReportPath, 'utf8');
+  logger.debug(`Collected previous report at ${prevReportPath}`);
+
+  await git.checkout(['-f', '-']);
+  logger.info('Switched back to PR/MR branch');
+
+  return prevReport;
+}
+
+async function checkPrintConfig(
+  args: CollectPreviousReportArgs,
+): Promise<Pick<CoreConfig, 'persist'> | null> {
+  const { ctx, base, settings } = args;
+  const { logger } = settings;
+
+  try {
+    const config = await printPersistConfig(ctx, settings);
+    logger.debug(
+      `Executing print-config verified code-pushup installed in base branch ${base.ref}`,
+    );
+    return config;
+  } catch (error) {
+    logger.debug(`Error from print-config - ${stringifyError(error)}`);
+    logger.info(
+      `Executing print-config failed, assuming code-pushup not installed in base branch ${base.ref} and skipping comparison`,
+    );
+    return null;
+  }
+}
+
+async function printPersistConfig(
+  ctx: CommandContext,
+  settings: Settings,
+): Promise<Pick<CoreConfig, 'persist'>> {
+  const json = await runPrintConfig({ ...ctx, silent: !settings.debug });
+  return parsePersistConfig(json);
 }
 
 async function findNewIssues(args: {
   base: GitBranch;
   currReport: string;
   prevReport: string;
-  comparisonFiles: PersistedCliFiles;
+  comparisonFiles: OutputFiles;
   logger: Logger;
   git: SimpleGit;
 }): Promise<SourceFileIssue[]> {
   const { base, currReport, prevReport, comparisonFiles, logger, git } = args;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
-  const reportsDiff = await fs.readFile(comparisonFiles.jsonFilePath, 'utf8');
+  const reportsDiff = await fs.readFile(comparisonFiles.json, 'utf8');
   const changedFiles = await listChangedFiles(
     { base: 'FETCH_HEAD', head: 'HEAD' },
     git,

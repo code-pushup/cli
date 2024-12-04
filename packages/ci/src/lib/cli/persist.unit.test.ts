@@ -1,152 +1,120 @@
 import { join } from 'node:path';
-import {
-  type PersistedCliFiles,
-  findPersistedFiles,
-  persistCliOptions,
-  persistedCliFiles,
-} from './persist.js';
+import type { CoreConfig } from '@code-pushup/models';
+import { parsePersistConfig, persistedFilesFromConfig } from './persist.js';
 
-describe('persistCliOptions', () => {
-  it('should create CLI arguments for standalone project', () => {
-    expect(
-      persistCliOptions({
-        directory: process.cwd(),
-        output: '.code-pushup',
-      }),
-    ).toEqual([
-      `--persist.outputDir=${join(process.cwd(), '.code-pushup')}`,
-      '--persist.filename=report',
-      '--persist.format=json',
-      '--persist.format=md',
-    ]);
-  });
-
-  it('should create CLI arguments for monorepo project', () => {
-    expect(
-      persistCliOptions({
-        project: 'utils',
-        directory: process.cwd(),
-        output: '.code-pushup',
-      }),
-    ).toEqual([
-      `--persist.outputDir=${join(process.cwd(), '.code-pushup')}`,
-      '--persist.filename=utils-report',
-      '--persist.format=json',
-      '--persist.format=md',
-    ]);
-  });
-});
-
-describe('persistedCliFiles', () => {
-  it('should determine persisted files for standalone report', () => {
-    expect(
-      persistedCliFiles({
-        directory: process.cwd(),
-        output: '.code-pushup',
-      }),
-    ).toEqual<PersistedCliFiles>({
-      jsonFilePath: join(process.cwd(), '.code-pushup/report.json'),
-      mdFilePath: join(process.cwd(), '.code-pushup/report.md'),
-      artifactData: {
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [
-          join(process.cwd(), '.code-pushup/report.json'),
-          join(process.cwd(), '.code-pushup/report.md'),
-        ],
-      },
+describe('persistedFilesFromConfig', () => {
+  it('should return default report paths when no config is set', () => {
+    expect(persistedFilesFromConfig({}, { directory: process.cwd() })).toEqual({
+      json: join(process.cwd(), '.code-pushup', 'report.json'),
+      md: join(process.cwd(), '.code-pushup', 'report.md'),
     });
   });
 
-  it('should determine persisted files for monorepo report', () => {
+  it('should return default diff paths when no config is set', () => {
     expect(
-      persistedCliFiles({
-        directory: process.cwd(),
-        output: '.code-pushup/auth',
-        project: 'auth',
-      }),
-    ).toEqual<PersistedCliFiles>({
-      jsonFilePath: join(process.cwd(), '.code-pushup/auth/auth-report.json'),
-      mdFilePath: join(process.cwd(), '.code-pushup/auth/auth-report.md'),
-      artifactData: {
-        rootDir: join(process.cwd(), '.code-pushup/auth'),
-        files: [
-          join(process.cwd(), '.code-pushup/auth/auth-report.json'),
-          join(process.cwd(), '.code-pushup/auth/auth-report.md'),
-        ],
-      },
+      persistedFilesFromConfig(
+        { persist: {} },
+        { directory: process.cwd(), isDiff: true },
+      ),
+    ).toEqual({
+      json: join(process.cwd(), '.code-pushup', 'report-diff.json'),
+      md: join(process.cwd(), '.code-pushup', 'report-diff.md'),
     });
   });
 
-  it('should determine persisted files for diff in Markdown format only', () => {
+  it('should return diff paths with filename from config', () => {
     expect(
-      persistedCliFiles({
-        directory: process.cwd(),
-        output: '.code-pushup',
-        isDiff: true,
-        formats: ['md'],
-      }),
-    ).toEqual<PersistedCliFiles<'md'>>({
-      mdFilePath: join(process.cwd(), '.code-pushup/report-diff.md'),
-      artifactData: {
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [join(process.cwd(), '.code-pushup/report-diff.md')],
-      },
+      persistedFilesFromConfig(
+        { persist: { filename: 'merged-report' } },
+        { directory: process.cwd(), isDiff: true },
+      ),
+    ).toEqual({
+      json: join(process.cwd(), '.code-pushup', 'merged-report-diff.json'),
+      md: join(process.cwd(), '.code-pushup', 'merged-report-diff.md'),
+    });
+  });
+
+  it('should return report paths with outputDir from config', () => {
+    expect(
+      persistedFilesFromConfig(
+        { persist: { outputDir: 'tmp' } },
+        { directory: process.cwd() },
+      ),
+    ).toEqual({
+      json: join(process.cwd(), 'tmp', 'report.json'),
+      md: join(process.cwd(), 'tmp', 'report.md'),
+    });
+  });
+
+  it('should append relative outputDir to working directory', () => {
+    expect(
+      persistedFilesFromConfig(
+        { persist: { outputDir: 'tmp' } },
+        { directory: join(process.cwd(), 'backend') },
+      ),
+    ).toEqual({
+      json: join(process.cwd(), 'backend', 'tmp', 'report.json'),
+      md: join(process.cwd(), 'backend', 'tmp', 'report.md'),
+    });
+  });
+
+  it('should ignore working directory when absolute outputDir in config', () => {
+    expect(
+      persistedFilesFromConfig(
+        { persist: { outputDir: join(process.cwd(), 'tmp') } },
+        { directory: join(process.cwd(), 'backend') },
+      ),
+    ).toEqual({
+      json: join(process.cwd(), 'tmp', 'report.json'),
+      md: join(process.cwd(), 'tmp', 'report.md'),
     });
   });
 });
 
-describe('findPersistedFiles', () => {
-  it('should find report files in artifact data for standalone project', () => {
-    expect(
-      findPersistedFiles({
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [
-          'report-diff.json',
-          'report-diff.md',
-          'report.json',
-          'report.md',
-        ],
-      }),
-    ).toEqual<PersistedCliFiles>({
-      jsonFilePath: join(process.cwd(), '.code-pushup/report.json'),
-      mdFilePath: join(process.cwd(), '.code-pushup/report.md'),
-      artifactData: {
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [
-          join(process.cwd(), '.code-pushup/report.json'),
-          join(process.cwd(), '.code-pushup/report.md'),
-        ],
+describe('parsePersistConfig', () => {
+  it('should validate only persist config', async () => {
+    await expect(
+      parsePersistConfig({
+        persist: {
+          outputDir: '.code-pushup',
+          filename: 'report',
+          format: ['json', 'md'],
+        },
+        // missing props (slug, etc.)
+        plugins: [{ title: 'some plugin', audits: [{ title: 'some audit' }] }],
+      } as CoreConfig),
+    ).resolves.toEqual({
+      persist: {
+        outputDir: '.code-pushup',
+        filename: 'report',
+        format: ['json', 'md'],
       },
     });
   });
 
-  it('should find report files in artifact data for monorepo project', () => {
-    expect(
-      findPersistedFiles({
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [
-          'backend-report-diff.json',
-          'backend-report-diff.md',
-          'backend-report.json',
-          'backend-report.md',
-          'frontend-report-diff.json',
-          'frontend-report-diff.md',
-          'frontend-report.json',
-          'frontend-report.md',
-          'report-diff.md',
-        ],
-        project: 'frontend',
-      }),
-    ).toEqual<PersistedCliFiles>({
-      jsonFilePath: join(process.cwd(), '.code-pushup/frontend-report.json'),
-      mdFilePath: join(process.cwd(), '.code-pushup/frontend-report.md'),
-      artifactData: {
-        rootDir: join(process.cwd(), '.code-pushup'),
-        files: [
-          join(process.cwd(), '.code-pushup/frontend-report.json'),
-          join(process.cwd(), '.code-pushup/frontend-report.md'),
-        ],
-      },
+  it('should accept missing persist config', async () => {
+    await expect(parsePersistConfig({})).resolves.toEqual({});
+  });
+
+  it('should accept empty persist config', async () => {
+    await expect(parsePersistConfig({ persist: {} })).resolves.toEqual({
+      persist: {},
     });
+  });
+
+  it('should accept partial persist config', async () => {
+    await expect(
+      parsePersistConfig({ persist: { outputDir: 'tmp' } }),
+    ).resolves.toEqual({
+      persist: { outputDir: 'tmp' },
+    });
+  });
+
+  it('should error if persist config is invalid', async () => {
+    await expect(
+      parsePersistConfig({ persist: { format: ['json', 'html'] } }),
+    ).rejects.toThrow(
+      /^Invalid persist config - ZodError:.*Invalid enum value. Expected 'json' \| 'md', received 'html'/s,
+    );
   });
 });
