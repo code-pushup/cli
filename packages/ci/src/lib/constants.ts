@@ -1,4 +1,3 @@
-import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 import type { Settings } from './models.js';
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +11,5 @@ export const DEFAULT_SETTINGS: Settings = {
   debug: false,
   detectNewIssues: true,
   logger: console,
-  output: DEFAULT_PERSIST_OUTPUT_DIR,
   nxProjectsFilter: '--with-target={task}',
 };
