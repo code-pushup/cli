@@ -143,26 +143,23 @@ describe('runInCI', () => {
         ),
       ).resolves.toEqual({
         mode: 'standalone',
-        artifacts: {
+        files: {
           report: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report.json'),
-              join(outputDir, 'report.md'),
-            ],
+            json: join(outputDir, 'report.json'),
+            md: join(outputDir, 'report.md'),
           },
         },
       } satisfies RunResult);
 
-      expect(utils.executeProcess).toHaveBeenCalledTimes(1);
-      expect(utils.executeProcess).toHaveBeenCalledWith({
+      expect(utils.executeProcess).toHaveBeenCalledTimes(2);
+      expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
         command: options.bin,
-        args: [
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
-          '--persist.format=json',
-          '--persist.format=md',
-        ],
+        args: ['print-config'],
+        cwd: workDir,
+      } satisfies utils.ProcessConfig);
+      expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
+        command: options.bin,
+        args: ['--persist.format=json', '--persist.format=md'],
         cwd: workDir,
       } satisfies utils.ProcessConfig);
 
@@ -214,20 +211,14 @@ describe('runInCI', () => {
         mode: 'standalone',
         commentId: mockComment.id,
         newIssues: [],
-        artifacts: {
+        files: {
           report: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report.json'),
-              join(outputDir, 'report.md'),
-            ],
+            json: join(outputDir, 'report.json'),
+            md: join(outputDir, 'report.md'),
           },
           diff: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report-diff.json'),
-              join(outputDir, 'report-diff.md'),
-            ],
+            json: join(outputDir, 'report-diff.json'),
+            md: join(outputDir, 'report-diff.md'),
           },
         },
       } satisfies RunResult);
@@ -238,40 +229,33 @@ describe('runInCI', () => {
       );
       expect(api.updateComment).not.toHaveBeenCalled();
 
-      expect(utils.executeProcess).toHaveBeenCalledTimes(4);
+      expect(utils.executeProcess).toHaveBeenCalledTimes(5);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
-        command: options.bin,
-        args: [
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
-          '--persist.format=json',
-          '--persist.format=md',
-        ],
-        cwd: workDir,
-      } satisfies utils.ProcessConfig);
-      expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
         command: options.bin,
         args: ['print-config'],
         cwd: workDir,
       } satisfies utils.ProcessConfig);
+      expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
+        command: options.bin,
+        args: ['--persist.format=json', '--persist.format=md'],
+        cwd: workDir,
+      } satisfies utils.ProcessConfig);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
         command: options.bin,
-        args: [
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
-          '--persist.format=json',
-          '--persist.format=md',
-        ],
+        args: ['print-config'],
         cwd: workDir,
       } satisfies utils.ProcessConfig);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
+        command: options.bin,
+        args: ['--persist.format=json', '--persist.format=md'],
+        cwd: workDir,
+      } satisfies utils.ProcessConfig);
+      expect(utils.executeProcess).toHaveBeenNthCalledWith(5, {
         command: options.bin,
         args: [
           'compare',
           `--before=${join(outputDir, 'prev-report.json')}`,
           `--after=${join(outputDir, 'curr-report.json')}`,
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
           '--persist.format=json',
           '--persist.format=md',
         ],
@@ -304,20 +288,14 @@ describe('runInCI', () => {
         mode: 'standalone',
         commentId: mockComment.id,
         newIssues: [],
-        artifacts: {
+        files: {
           report: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report.json'),
-              join(outputDir, 'report.md'),
-            ],
+            json: join(outputDir, 'report.json'),
+            md: join(outputDir, 'report.md'),
           },
           diff: {
-            rootDir: outputDir,
-            files: [
-              join(outputDir, 'report-diff.json'),
-              join(outputDir, 'report-diff.md'),
-            ],
+            json: join(outputDir, 'report-diff.json'),
+            md: join(outputDir, 'report-diff.md'),
           },
         },
       } satisfies RunResult);
@@ -330,25 +308,23 @@ describe('runInCI', () => {
       expect(api.createComment).not.toHaveBeenCalled();
       expect(api.downloadReportArtifact).toHaveBeenCalledWith(undefined);
 
-      expect(utils.executeProcess).toHaveBeenCalledTimes(2);
+      expect(utils.executeProcess).toHaveBeenCalledTimes(3);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
         command: options.bin,
-        args: [
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
-          '--persist.format=json',
-          '--persist.format=md',
-        ],
+        args: ['print-config'],
         cwd: workDir,
       } satisfies utils.ProcessConfig);
       expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
+        command: options.bin,
+        args: ['--persist.format=json', '--persist.format=md'],
+        cwd: workDir,
+      } satisfies utils.ProcessConfig);
+      expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
         command: options.bin,
         args: [
           'compare',
           `--before=${join(outputDir, 'prev-report.json')}`,
           `--after=${join(outputDir, 'curr-report.json')}`,
-          `--persist.outputDir=${outputDir}`,
-          '--persist.filename=report',
           '--persist.format=json',
           '--persist.format=md',
         ],
