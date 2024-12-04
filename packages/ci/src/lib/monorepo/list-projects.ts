@@ -86,7 +86,7 @@ function createMonorepoHandlerOptions(
   return {
     task: settings.task,
     cwd: settings.directory,
-    parallel: false, // TODO: add to settings
+    parallel: settings.parallel,
     nxProjectsFilter: settings.nxProjectsFilter,
     ...(!settings.silent && {
       observer: {

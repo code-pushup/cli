@@ -97,6 +97,7 @@ Optionally, you can override default options for further customization:
 | Property           | Type                      | Default                          | Description                                                                                                                                              |
 | :----------------- | :------------------------ | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `monorepo`         | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                                                                                                  |
+| `parallel`         | `boolean \| number`       | `false`                          | Enables parallel execution in [monorepo mode](#monorepo-mode)                                                                                            |
 | `projects`         | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                                                                                        |
 | `task`             | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)                                                                        |
 | `nxProjectsFilter` | `string \| string[]`      | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
@@ -190,6 +191,27 @@ can override the name using the `task` option:
 await runInCI(refs, api, {
   monorepo: 'nx',
   task: 'analyze', // custom Nx target
+});
+```
+
+### Parallel tasks
+
+By default, tasks are run sequentially for each project in the monorepo.
+The `parallel` option enables parallel execution for tools which support it (Nx, Turborepo, PNPM, Yarn 2+).
+
+```ts
+await runInCI(refs, api, {
+  monorepo: true,
+  parallel: true,
+});
+```
+
+The maximum number of concurrent tasks can be set by passing in a number instead of a boolean:
+
+```ts
+await runInCI(refs, api, {
+  monorepo: true,
+  parallel: 3,
 });
 ```
 
