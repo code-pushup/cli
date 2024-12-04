@@ -39,7 +39,7 @@ export const turboHandler: MonorepoToolHandler = {
       }
     }
     throw new Error(
-      `Package manager for Turborepo not found, expected one of ${WORKSPACE_HANDLERS.map(
+      `Package manager with workspace configuration not found in Turborepo, expected one of ${WORKSPACE_HANDLERS.map(
         ({ tool }) => tool,
       ).join('/')}`,
     );
