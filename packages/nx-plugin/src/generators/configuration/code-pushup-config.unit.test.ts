@@ -168,8 +168,8 @@ describe('generateCodePushupConfig options', () => {
       upload: {
         organization: 'code-pushup',
         project: 'cli',
-        server: 'https://code-pushup.dev/portal',
-        apiKey: '12345678',
+        server: 'https://api.staging.code-pushup.dev/graphql',
+        apiKey: 'cp_12345678',
       },
     });
     expect(generateFilesSpy).toHaveBeenCalledWith(
@@ -180,8 +180,8 @@ describe('generateCodePushupConfig options', () => {
         upload: formatObjectToFormattedJsString({
           organization: 'code-pushup',
           project: 'cli',
-          server: 'https://code-pushup.dev/portal',
-          apiKey: '12345678',
+          server: 'https://api.staging.code-pushup.dev/graphql',
+          apiKey: 'cp_12345678',
         }),
       }),
     );
