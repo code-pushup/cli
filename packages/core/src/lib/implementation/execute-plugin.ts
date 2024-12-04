@@ -156,18 +156,14 @@ export async function executePlugins(
 
   const progressBar = progress ? getProgressBar('Run plugins') : null;
 
-  const pluginsResult = await plugins.reduce(
-    async (acc, pluginCfg) => [
-      ...(await acc),
-      wrapProgress(pluginCfg, plugins.length, progressBar),
-    ],
-    Promise.resolve([] as Promise<PluginReport>[]),
+  const pluginsResult = plugins.map(pluginCfg =>
+    wrapProgress(pluginCfg, plugins.length, progressBar),
   );
-
-  progressBar?.endProgress('Done running plugins');
 
   const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
   const results = await Promise.allSettled(pluginsResult);
+
+  progressBar?.endProgress('Done running plugins');
 
   logMultipleResults(results, 'Plugins', undefined, errorsTransform);
 
