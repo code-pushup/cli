@@ -56,7 +56,6 @@ export const pnpmHandler: MonorepoToolHandler = {
       '--recursive',
       `--workspace-concurrency=${workspaceConcurrency}`,
       ...(onlyProjects?.map(project => `--filter=${project}`) ?? []),
-      'run',
       options.task,
     ].join(' ');
   },
