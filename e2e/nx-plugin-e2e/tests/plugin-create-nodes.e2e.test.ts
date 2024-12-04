@@ -1,5 +1,5 @@
 import type { Tree } from '@nx/devkit';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -17,6 +17,7 @@ import {
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
+import { INLINE_PLUGIN } from './inline-plugin.js';
 
 describe('nx-plugin', () => {
   let tree: Tree;
@@ -45,7 +46,7 @@ describe('nx-plugin', () => {
     const { code, projectJson } = await nxShowProjectJson(cwd, project);
     expect(code).toBe(0);
 
-    expect(projectJson.targets).toStrictEqual({
+    expect(projectJson.targets).toEqual({
       ['code-pushup--configuration']: {
         configurations: {},
         executor: 'nx:run-commands',
@@ -168,28 +169,21 @@ describe('nx-plugin', () => {
 
   it('should execute dynamic executor target', async () => {
     const cwd = join(testFileDir, 'execute-dynamic-executor');
-    const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
     });
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root, {
-      fileImports: `import type {CoreConfig} from "@code-pushup/models";`,
       plugins: [
         {
-          // @TODO replace with inline plugin
-          fileImports: `import {customPlugin} from "${join(
-            relative(join(process.cwd(), cwd), process.cwd()),
-            pathRelativeToPackage,
-            'dist/testing/test-utils',
-          )}";`,
-          codeStrings: 'customPlugin()',
+          fileImports: '',
+          codeStrings: INLINE_PLUGIN,
         },
       ],
       upload: {
         server: 'https://api.staging.code-pushup.dev/graphql',
         organization: 'code-pushup',
-        apiKey: '12345678',
+        apiKey: 'cp_12345678',
       },
     });
 
