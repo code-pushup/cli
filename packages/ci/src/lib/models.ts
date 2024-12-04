@@ -18,7 +18,6 @@ export type Options = {
   debug?: boolean;
   detectNewIssues?: boolean;
   logger?: Logger;
-  output?: string;
 };
 
 /**
