@@ -33,7 +33,10 @@ export async function listMonorepoProjects(
       tool,
       projects,
       runManyCommand: onlyProjects =>
-        handler.createRunManyCommand(options, onlyProjects),
+        handler.createRunManyCommand(options, {
+          all: projects,
+          ...(onlyProjects?.length && { only: onlyProjects }),
+        }),
     };
   }
 

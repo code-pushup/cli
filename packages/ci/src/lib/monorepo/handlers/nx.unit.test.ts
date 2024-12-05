@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import type { MonorepoHandlerOptions, ProjectConfig } from '../tools';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoHandlerProjectsContext,
+  ProjectConfig,
+} from '../tools';
 import { nxHandler } from './nx';
 
 describe('nxHandler', () => {
@@ -113,27 +117,46 @@ describe('nxHandler', () => {
   });
 
   describe('createRunManyCommand', () => {
-    it('should run script for all projects sequentially by default', () => {
-      expect(nxHandler.createRunManyCommand(options)).toBe(
-        'npx nx run-many --targets=code-pushup --parallel=false --',
+    const projects: MonorepoHandlerProjectsContext = {
+      all: [
+        { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
+        { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
+      ],
+    };
+
+    it('should run script for all listed projects sequentially by default', () => {
+      expect(nxHandler.createRunManyCommand(options, projects)).toBe(
+        'npx nx run-many --targets=code-pushup --parallel=false --projects=backend,frontend --',
       );
     });
 
     it('should set parallel flag with default number of tasks', () => {
       expect(
-        nxHandler.createRunManyCommand({ ...options, parallel: true }),
-      ).toBe('npx nx run-many --targets=code-pushup --parallel=true --');
+        nxHandler.createRunManyCommand(
+          { ...options, parallel: true },
+          projects,
+        ),
+      ).toBe(
+        'npx nx run-many --targets=code-pushup --parallel=true --projects=backend,frontend --',
+      );
     });
 
     it('should set parallel flag with custom number of tasks', () => {
-      expect(nxHandler.createRunManyCommand({ ...options, parallel: 5 })).toBe(
-        'npx nx run-many --targets=code-pushup --parallel=5 --',
+      expect(
+        nxHandler.createRunManyCommand({ ...options, parallel: 5 }, projects),
+      ).toBe(
+        'npx nx run-many --targets=code-pushup --parallel=5 --projects=backend,frontend --',
       );
     });
 
     it('should filter projects by list of project names', () => {
-      expect(nxHandler.createRunManyCommand(options, ['web', 'cms'])).toBe(
-        'npx nx run-many --targets=code-pushup --projects=web,cms --parallel=false --',
+      expect(
+        nxHandler.createRunManyCommand(options, {
+          ...projects,
+          only: ['frontend'],
+        }),
+      ).toBe(
+        'npx nx run-many --targets=code-pushup --parallel=false --projects=frontend --',
       );
     });
   });

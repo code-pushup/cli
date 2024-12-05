@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { MonorepoHandlerOptions, ProjectConfig } from '../tools';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoHandlerProjectsContext,
+  ProjectConfig,
+} from '../tools';
 import { turboHandler } from './turbo';
 
 describe('turboHandler', () => {
@@ -158,27 +162,46 @@ describe('turboHandler', () => {
   });
 
   describe('createRunManyCommand', () => {
+    const projects: MonorepoHandlerProjectsContext = {
+      all: [
+        { name: 'api', bin: 'npx turbo run code-pushup --filter=api --' },
+        { name: 'cms', bin: 'npx turbo run code-pushup --filter=cms --' },
+        { name: 'web', bin: 'npx turbo run code-pushup --filter=web --' },
+      ],
+    };
+
     it('should run script for all projects sequentially by default', () => {
-      expect(turboHandler.createRunManyCommand(options)).toBe(
+      expect(turboHandler.createRunManyCommand(options, projects)).toBe(
         'npx turbo run code-pushup --concurrency=1 --',
       );
     });
 
     it('should set parallel flag with default number of jobs', () => {
       expect(
-        turboHandler.createRunManyCommand({ ...options, parallel: true }),
+        turboHandler.createRunManyCommand(
+          { ...options, parallel: true },
+          projects,
+        ),
       ).toBe('npx turbo run code-pushup --concurrency=10 --');
     });
 
     it('should set parallel flag with custom number of jobs', () => {
       expect(
-        turboHandler.createRunManyCommand({ ...options, parallel: 5 }),
+        turboHandler.createRunManyCommand(
+          { ...options, parallel: 5 },
+          projects,
+        ),
       ).toBe('npx turbo run code-pushup --concurrency=5 --');
     });
 
     it('should filter projects by list of project names', () => {
-      expect(turboHandler.createRunManyCommand(options, ['web', 'cms'])).toBe(
-        'npx turbo run code-pushup --filter=web --filter=cms --concurrency=1 --',
+      expect(
+        turboHandler.createRunManyCommand(options, {
+          ...projects,
+          only: ['cms', 'web'],
+        }),
+      ).toBe(
+        'npx turbo run code-pushup --filter=cms --filter=web --concurrency=1 --',
       );
     });
   });

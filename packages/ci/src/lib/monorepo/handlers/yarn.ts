@@ -35,7 +35,7 @@ export const yarnHandler: MonorepoToolHandler = {
       }));
   },
 
-  async createRunManyCommand(options, onlyProjects) {
+  async createRunManyCommand(options, projects) {
     const { stdout } = await executeProcess({ command: 'yarn', args: ['-v'] });
     const isV1 = stdout.startsWith('1.');
 
@@ -52,7 +52,7 @@ export const yarnHandler: MonorepoToolHandler = {
       ...(typeof options.parallel === 'number'
         ? [`--jobs=${options.parallel}`]
         : []),
-      ...(onlyProjects?.map(project => `--include=${project}`) ?? ['--all']),
+      ...(projects.only?.map(project => `--include=${project}`) ?? ['--all']),
       options.task,
     ].join(' ');
   },

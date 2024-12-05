@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { MonorepoHandlerOptions, ProjectConfig } from '../tools';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoHandlerProjectsContext,
+  ProjectConfig,
+} from '../tools';
 import { npmHandler } from './npm';
 
 describe('npmHandler', () => {
@@ -169,8 +173,15 @@ describe('npmHandler', () => {
   });
 
   describe('createRunManyCommand', () => {
+    const projects: MonorepoHandlerProjectsContext = {
+      all: [
+        { name: 'api', bin: 'npm --workspace=api run code-pushup --' },
+        { name: 'ui', bin: 'npm --workspace=ui run code-pushup --' },
+      ],
+    };
+
     it('should create command to run npm script for all workspaces', () => {
-      expect(npmHandler.createRunManyCommand(options)).toBe(
+      expect(npmHandler.createRunManyCommand(options, projects)).toBe(
         'npm run code-pushup --workspaces --if-present --',
       );
     });
