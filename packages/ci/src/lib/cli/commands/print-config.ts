@@ -15,9 +15,19 @@ export async function runPrintConfig({
   if (!silent) {
     console.info(stdout);
   }
+
+  // workaround for 1st lines like `> nx run utils:code-pushup -- print-config`
+  const lines = stdout.split(/\r?\n/);
+  const jsonLines = lines.slice(lines.indexOf('{'), lines.indexOf('}') + 1);
+  const stdoutSanitized = jsonLines.join('\n');
+
   try {
-    return JSON.parse(stdout) as unknown;
+    return JSON.parse(stdoutSanitized) as unknown;
   } catch (error) {
+    if (silent) {
+      console.info('Invalid output from print-config:');
+      console.info(stdout);
+    }
     throw new Error(
       `Error parsing output of print-config command - ${stringifyError(error)}`,
     );
