@@ -1,7 +1,6 @@
-import { cp, readFile, rename } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { type FetchResult, type SimpleGit, simpleGit } from 'simple-git';
+import { readFile, rename } from 'node:fs/promises';
+import { join } from 'node:path';
+import type { SimpleGit } from 'simple-git';
 import { afterEach } from 'vitest';
 import {
   type Comment,
@@ -11,54 +10,22 @@ import {
   type RunResult,
   runInCI,
 } from '@code-pushup/ci';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  TEST_SNAPSHOTS_DIR,
-  initGitRepo,
-} from '@code-pushup/test-utils';
+import { TEST_SNAPSHOTS_DIR } from '@code-pushup/test-utils';
+import { type TestRepo, setupTestRepo } from '../mocks/setup';
 
 describe('CI package', () => {
-  const fixturesDir = join(
-    fileURLToPath(dirname(import.meta.url)),
-    '..',
-    'mocks',
-    'fixtures',
-    'ci-test-repo',
-  );
-  const ciSetupRepoDir = join(
-    process.cwd(),
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-    'ci-test-repo',
-  );
-  const outputDir = join(ciSetupRepoDir, '.code-pushup');
-
-  const options = {
-    directory: ciSetupRepoDir,
-  } satisfies Options;
-
+  let repo: TestRepo;
   let git: SimpleGit;
+  let options: Options;
 
   beforeEach(async () => {
-    await cp(fixturesDir, ciSetupRepoDir, { recursive: true });
-
-    git = await initGitRepo(simpleGit, { baseDir: ciSetupRepoDir });
-
-    await git.add('index.js');
-    await git.add('code-pushup.config.ts');
-    await git.commit('Initial commit');
+    repo = await setupTestRepo('ci-test-repo');
+    git = repo.git;
+    options = { directory: repo.baseDir };
   });
 
   afterEach(async () => {
-    await teardownTestFolder(ciSetupRepoDir);
-  });
-
-  afterAll(async () => {
-    await teardownTestFolder(ciSetupRepoDir);
+    await repo.cleanup();
   });
 
   describe('push event', () => {
@@ -78,13 +45,13 @@ describe('CI package', () => {
         mode: 'standalone',
         files: {
           report: {
-            json: join(outputDir, 'report.json'),
-            md: join(outputDir, 'report.md'),
+            json: join(repo.outputDir, 'report.json'),
+            md: join(repo.outputDir, 'report.md'),
           },
         },
       } satisfies RunResult);
 
-      const jsonPromise = readFile(join(outputDir, 'report.json'), 'utf8');
+      const jsonPromise = readFile(join(repo.outputDir, 'report.json'), 'utf8');
       await expect(jsonPromise).resolves.toBeTruthy();
       const report = JSON.parse(await jsonPromise) as Report;
       expect(report).toEqual(
@@ -123,28 +90,9 @@ describe('CI package', () => {
     beforeEach(async () => {
       await git.checkoutLocalBranch('feature-1');
 
-      // git fetch and FETCH_HEAD must be simulated because of missing remote
-      const originalDiffSummary = git.diffSummary.bind(git);
-      const originalDiff = git.diff.bind(git);
-      vi.spyOn(git, 'fetch').mockResolvedValue({} as FetchResult);
-      vi.spyOn(git, 'diffSummary').mockImplementation(args =>
-        originalDiffSummary(
-          (args as unknown as string[]).map(arg =>
-            arg === 'FETCH_HEAD' ? 'feature-1' : arg,
-          ),
-        ),
-      );
-      vi.spyOn(git, 'diff').mockImplementation(args =>
-        originalDiff(
-          (args as string[]).map(arg =>
-            arg === 'FETCH_HEAD' ? 'feature-1' : arg,
-          ),
-        ),
-      );
-
       await rename(
-        join(ciSetupRepoDir, 'index.js'),
-        join(ciSetupRepoDir, 'index.ts'),
+        join(repo.baseDir, 'index.js'),
+        join(repo.baseDir, 'index.ts'),
       );
 
       await git.add('index.ts');
@@ -163,17 +111,20 @@ describe('CI package', () => {
         newIssues: [],
         files: {
           report: {
-            json: join(outputDir, 'report.json'),
-            md: join(outputDir, 'report.md'),
+            json: join(repo.outputDir, 'report.json'),
+            md: join(repo.outputDir, 'report.md'),
           },
           diff: {
-            json: join(outputDir, 'report-diff.json'),
-            md: join(outputDir, 'report-diff.md'),
+            json: join(repo.outputDir, 'report-diff.json'),
+            md: join(repo.outputDir, 'report-diff.md'),
           },
         },
       } satisfies RunResult);
 
-      const mdPromise = readFile(join(outputDir, 'report-diff.md'), 'utf8');
+      const mdPromise = readFile(
+        join(repo.outputDir, 'report-diff.md'),
+        'utf8',
+      );
       await expect(mdPromise).resolves.toBeTruthy();
       const md = await mdPromise;
       await expect(
