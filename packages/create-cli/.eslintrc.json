@@ -1,6 +1,6 @@
 {
   "extends": ["../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": ["!**/*", "*.config*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
