@@ -44,7 +44,7 @@ export const pnpmHandler: MonorepoToolHandler = {
       }));
   },
 
-  createRunManyCommand(options, onlyProjects) {
+  createRunManyCommand(options, projects) {
     const workspaceConcurrency: number =
       options.parallel === true
         ? DEFAULT_WORKSPACE_CONCURRENCY
@@ -55,7 +55,7 @@ export const pnpmHandler: MonorepoToolHandler = {
       'pnpm',
       '--recursive',
       `--workspace-concurrency=${workspaceConcurrency}`,
-      ...(onlyProjects?.map(project => `--filter=${project}`) ?? []),
+      ...(projects.only?.map(project => `--filter=${project}`) ?? []),
       options.task,
     ].join(' ');
   },

@@ -47,15 +47,16 @@ export const nxHandler: MonorepoToolHandler = {
     }));
   },
 
-  createRunManyCommand(options, onlyProjects) {
+  createRunManyCommand(options, projects) {
+    const projectNames: string[] =
+      projects.only ?? projects.all.map(({ name }) => name);
     return [
       'npx',
       'nx',
-      'run-many', // TODO: allow affected instead of run-many?
+      'run-many',
       `--targets=${options.task}`,
-      // TODO: add options.nxRunManyFilter? (e.g. --exclude=...)
-      ...(onlyProjects ? [`--projects=${onlyProjects.join(',')}`] : []),
       `--parallel=${options.parallel}`,
+      `--projects=${projectNames.join(',')}`,
       '--',
     ].join(' ');
   },
