@@ -44,13 +44,16 @@ describe('CI - standalone mode', () => {
         mode: 'standalone',
         files: {
           report: {
-            json: join(repo.outputDir, 'report.json'),
-            md: join(repo.outputDir, 'report.md'),
+            json: join(repo.baseDir, '.code-pushup/report.json'),
+            md: join(repo.baseDir, '.code-pushup/report.md'),
           },
         },
       } satisfies RunResult);
 
-      const jsonPromise = readFile(join(repo.outputDir, 'report.json'), 'utf8');
+      const jsonPromise = readFile(
+        join(repo.baseDir, '.code-pushup/report.json'),
+        'utf8',
+      );
       await expect(jsonPromise).resolves.toBeTruthy();
       const report = JSON.parse(await jsonPromise) as Report;
       expect(report).toEqual(
@@ -98,18 +101,18 @@ describe('CI - standalone mode', () => {
         newIssues: [],
         files: {
           report: {
-            json: join(repo.outputDir, 'report.json'),
-            md: join(repo.outputDir, 'report.md'),
+            json: join(repo.baseDir, '.code-pushup/report.json'),
+            md: join(repo.baseDir, '.code-pushup/report.md'),
           },
           diff: {
-            json: join(repo.outputDir, 'report-diff.json'),
-            md: join(repo.outputDir, 'report-diff.md'),
+            json: join(repo.baseDir, '.code-pushup/report-diff.json'),
+            md: join(repo.baseDir, '.code-pushup/report-diff.md'),
           },
         },
       } satisfies RunResult);
 
       const mdPromise = readFile(
-        join(repo.outputDir, 'report-diff.md'),
+        join(repo.baseDir, '.code-pushup/report-diff.md'),
         'utf8',
       );
       await expect(mdPromise).resolves.toBeTruthy();
