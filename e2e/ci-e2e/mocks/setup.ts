@@ -30,7 +30,6 @@ export async function setupTestRepo(folder: string) {
     TEST_OUTPUT_DIR,
     folder,
   );
-  const outputDir = join(baseDir, '.code-pushup');
 
   await cp(fixturesDir, baseDir, { recursive: true });
 
@@ -43,7 +42,6 @@ export async function setupTestRepo(folder: string) {
   return {
     git,
     baseDir,
-    outputDir,
     cleanup: () => teardownTestFolder(baseDir),
   };
 }
