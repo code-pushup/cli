@@ -12,13 +12,13 @@ import { TEST_SNAPSHOTS_DIR } from '@code-pushup/test-utils';
 import { MOCK_API, MOCK_COMMENT } from '../mocks/api';
 import { type TestRepo, setupTestRepo } from '../mocks/setup';
 
-describe('CI package', () => {
+describe('CI - standalone mode', () => {
   let repo: TestRepo;
   let git: SimpleGit;
   let options: Options;
 
   beforeEach(async () => {
-    repo = await setupTestRepo('ci-test-repo');
+    repo = await setupTestRepo('basic');
     git = repo.git;
     options = { directory: repo.baseDir };
   });
