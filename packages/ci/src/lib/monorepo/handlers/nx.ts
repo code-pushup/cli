@@ -41,7 +41,7 @@ export const nxHandler: MonorepoToolHandler = {
       observer: options.observer,
     });
     const projects = parseProjects(stdout);
-    return projects.map(project => ({
+    return projects.toSorted().map(project => ({
       name: project,
       bin: `npx nx run ${project}:${options.task} --`,
     }));
