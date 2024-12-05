@@ -1,12 +1,7 @@
 import { cp, readFile, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  type DiffResult,
-  type FetchResult,
-  type SimpleGit,
-  simpleGit,
-} from 'simple-git';
+import { type FetchResult, type SimpleGit, simpleGit } from 'simple-git';
 import { afterEach } from 'vitest';
 import {
   type Comment,
@@ -52,12 +47,6 @@ describe('CI package', () => {
     await cp(fixturesDir, ciSetupRepoDir, { recursive: true });
 
     git = await initGitRepo(simpleGit, { baseDir: ciSetupRepoDir });
-
-    vi.spyOn(git, 'fetch').mockResolvedValue({} as FetchResult);
-    vi.spyOn(git, 'diffSummary').mockResolvedValue({
-      files: [{ file: 'index.ts', binary: false }],
-    } as DiffResult);
-    vi.spyOn(git, 'diff').mockResolvedValue('');
 
     await git.add('index.js');
     await git.add('code-pushup.config.ts');
@@ -133,6 +122,25 @@ describe('CI package', () => {
 
     beforeEach(async () => {
       await git.checkoutLocalBranch('feature-1');
+
+      // git fetch and FETCH_HEAD must be simulated because of missing remote
+      const originalDiffSummary = git.diffSummary.bind(git);
+      const originalDiff = git.diff.bind(git);
+      vi.spyOn(git, 'fetch').mockResolvedValue({} as FetchResult);
+      vi.spyOn(git, 'diffSummary').mockImplementation(args =>
+        originalDiffSummary(
+          (args as unknown as string[]).map(arg =>
+            arg === 'FETCH_HEAD' ? 'feature-1' : arg,
+          ),
+        ),
+      );
+      vi.spyOn(git, 'diff').mockImplementation(args =>
+        originalDiff(
+          (args as string[]).map(arg =>
+            arg === 'FETCH_HEAD' ? 'feature-1' : arg,
+          ),
+        ),
+      );
 
       await rename(
         join(ciSetupRepoDir, 'index.js'),
