@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["code-pushup.config.ts"],
+  "ignorePatterns": ["*.config*"],
   "overrides": [
     {
       "files": ["*.js"],
