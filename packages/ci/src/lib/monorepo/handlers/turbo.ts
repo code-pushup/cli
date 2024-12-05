@@ -45,7 +45,7 @@ export const turboHandler: MonorepoToolHandler = {
     );
   },
 
-  createRunManyCommand(options, onlyProjects) {
+  createRunManyCommand(options, projects) {
     const concurrency: number =
       options.parallel === true
         ? DEFAULT_CONCURRENCY
@@ -57,7 +57,7 @@ export const turboHandler: MonorepoToolHandler = {
       'turbo',
       'run',
       options.task,
-      ...(onlyProjects?.map(project => `--filter=${project}`) ?? []),
+      ...(projects.only?.map(project => `--filter=${project}`) ?? []),
       `--concurrency=${concurrency}`,
       '--',
     ].join(' ');

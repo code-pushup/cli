@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { MonorepoHandlerOptions, ProjectConfig } from '../tools';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoHandlerProjectsContext,
+  ProjectConfig,
+} from '../tools';
 import { pnpmHandler } from './pnpm';
 
 describe('pnpmHandler', () => {
@@ -160,27 +164,43 @@ describe('pnpmHandler', () => {
   });
 
   describe('createRunManyCommand', () => {
+    const projects: MonorepoHandlerProjectsContext = {
+      all: [
+        { name: 'backend', bin: 'pnpm --filter=backend run code-pushup' },
+        { name: 'frontend', bin: 'pnpm --filter=frontend run code-pushup' },
+        { name: 'shared', bin: 'pnpm --filter=shared run code-pushup' },
+      ],
+    };
+
     it('should run script for all workspace packages sequentially by default', () => {
-      expect(pnpmHandler.createRunManyCommand(options)).toBe(
+      expect(pnpmHandler.createRunManyCommand(options, projects)).toBe(
         'pnpm --recursive --workspace-concurrency=1 code-pushup',
       );
     });
 
     it('should set parallel flag with default number of jobs', () => {
       expect(
-        pnpmHandler.createRunManyCommand({ ...options, parallel: true }),
+        pnpmHandler.createRunManyCommand(
+          { ...options, parallel: true },
+          projects,
+        ),
       ).toBe('pnpm --recursive --workspace-concurrency=4 code-pushup');
     });
 
     it('should set parallel flag with custom number of jobs', () => {
       expect(
-        pnpmHandler.createRunManyCommand({ ...options, parallel: 5 }),
+        pnpmHandler.createRunManyCommand({ ...options, parallel: 5 }, projects),
       ).toBe('pnpm --recursive --workspace-concurrency=5 code-pushup');
     });
 
     it('should filter workspace packages by list of project names', () => {
-      expect(pnpmHandler.createRunManyCommand(options, ['core', 'utils'])).toBe(
-        'pnpm --recursive --workspace-concurrency=1 --filter=core --filter=utils code-pushup',
+      expect(
+        pnpmHandler.createRunManyCommand(options, {
+          ...projects,
+          only: ['frontend', 'shared'],
+        }),
+      ).toBe(
+        'pnpm --recursive --workspace-concurrency=1 --filter=frontend --filter=shared code-pushup',
       );
     });
   });

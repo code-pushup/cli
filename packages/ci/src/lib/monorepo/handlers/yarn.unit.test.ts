@@ -2,7 +2,11 @@ import { vol } from 'memfs';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import type { MonorepoHandlerOptions, ProjectConfig } from '../tools';
+import type {
+  MonorepoHandlerOptions,
+  MonorepoHandlerProjectsContext,
+  ProjectConfig,
+} from '../tools';
 import { yarnHandler } from './yarn';
 
 describe('yarnHandler', () => {
@@ -171,6 +175,14 @@ describe('yarnHandler', () => {
   });
 
   describe('createRunManyCommand', () => {
+    const projects: MonorepoHandlerProjectsContext = {
+      all: [
+        { name: 'api', bin: 'yarn workspace api run code-pushup' },
+        { name: 'cms', bin: 'yarn workspace cms run code-pushup' },
+        { name: 'web', bin: 'yarn workspace web run code-pushup' },
+      ],
+    };
+
     // eslint-disable-next-line vitest/max-nested-describe
     describe('classic Yarn (v1)', () => {
       beforeEach(() => {
@@ -180,9 +192,9 @@ describe('yarnHandler', () => {
       });
 
       it('should run script for all workspaces sequentially', async () => {
-        await expect(yarnHandler.createRunManyCommand(options)).resolves.toBe(
-          'yarn workspaces run code-pushup',
-        );
+        await expect(
+          yarnHandler.createRunManyCommand(options, projects),
+        ).resolves.toBe('yarn workspaces run code-pushup');
       });
     });
 
@@ -195,20 +207,26 @@ describe('yarnHandler', () => {
       });
 
       it('should run script for all workspaces sequentially by default', async () => {
-        await expect(yarnHandler.createRunManyCommand(options)).resolves.toBe(
-          'yarn workspaces foreach --all code-pushup',
-        );
+        await expect(
+          yarnHandler.createRunManyCommand(options, projects),
+        ).resolves.toBe('yarn workspaces foreach --all code-pushup');
       });
 
       it('should set parallel flag with default number of jobs', async () => {
         await expect(
-          yarnHandler.createRunManyCommand({ ...options, parallel: true }),
+          yarnHandler.createRunManyCommand(
+            { ...options, parallel: true },
+            projects,
+          ),
         ).resolves.toBe('yarn workspaces foreach --parallel --all code-pushup');
       });
 
       it('should set parallel flag with custom number of jobs', async () => {
         await expect(
-          yarnHandler.createRunManyCommand({ ...options, parallel: 5 }),
+          yarnHandler.createRunManyCommand(
+            { ...options, parallel: 5 },
+            projects,
+          ),
         ).resolves.toBe(
           'yarn workspaces foreach --parallel --jobs=5 --all code-pushup',
         );
@@ -216,9 +234,12 @@ describe('yarnHandler', () => {
 
       it('should filter workspaces by list of project names', async () => {
         await expect(
-          yarnHandler.createRunManyCommand(options, ['core', 'utils']),
+          yarnHandler.createRunManyCommand(options, {
+            ...projects,
+            only: ['api', 'cms'],
+          }),
         ).resolves.toBe(
-          'yarn workspaces foreach --include=core --include=utils code-pushup',
+          'yarn workspaces foreach --include=api --include=cms code-pushup',
         );
       });
     });

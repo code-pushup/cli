@@ -9,7 +9,7 @@ export type MonorepoToolHandler = {
   listProjects: (options: MonorepoHandlerOptions) => Promise<ProjectConfig[]>;
   createRunManyCommand: (
     options: MonorepoHandlerOptions,
-    onlyProjects?: string[],
+    projects: MonorepoHandlerProjectsContext,
   ) => string | Promise<string>;
 };
 
@@ -19,6 +19,11 @@ export type MonorepoHandlerOptions = {
   parallel: boolean | number;
   observer?: ProcessObserver;
   nxProjectsFilter: string | string[];
+};
+
+export type MonorepoHandlerProjectsContext = {
+  only?: string[];
+  all: ProjectConfig[];
 };
 
 export type ProjectConfig = {
