@@ -25,6 +25,7 @@ describe('CI - monorepo mode (npm workspaces)', () => {
     options = {
       monorepo: true,
       directory: repo.baseDir,
+      silent: true, // comment out for debugging
     };
   });
 

@@ -20,7 +20,10 @@ describe('CI - standalone mode', () => {
   beforeEach(async () => {
     repo = await setupTestRepo('basic');
     git = repo.git;
-    options = { directory: repo.baseDir };
+    options = {
+      directory: repo.baseDir,
+      silent: true, // comment out for debugging
+    };
   });
 
   afterEach(async () => {
