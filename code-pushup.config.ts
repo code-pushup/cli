@@ -7,7 +7,7 @@ import {
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
 } from './code-pushup.preset.js';
-import type { CoreConfig } from './packages/models/src';
+import type { CoreConfig } from './packages/models/src/index.js';
 
 // load upload configuration from environment
 const envSchema = z.object({
