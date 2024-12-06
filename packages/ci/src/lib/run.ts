@@ -156,6 +156,7 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
   const reportsDir = path.join(settings.directory, '.code-pushup');
   const currPath = path.join(reportsDir, 'curr-report.json');
   const prevPath = path.join(reportsDir, 'prev-report.json');
+  await fs.mkdir(reportsDir, { recursive: true });
   await fs.writeFile(currPath, currReport);
   await fs.writeFile(prevPath, prevReport);
   logger.debug(`Saved reports to ${currPath} and ${prevPath}`);

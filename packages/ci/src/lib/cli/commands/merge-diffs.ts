@@ -10,7 +10,7 @@ export async function runMergeDiffs(
   files: string[],
   { bin, config, directory, silent }: CommandContext,
 ): Promise<string> {
-  const outputDir = join(process.cwd(), DEFAULT_PERSIST_OUTPUT_DIR);
+  const outputDir = join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
   const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
 
   const { stdout } = await executeProcess({
