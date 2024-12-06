@@ -1,7 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
+import {
+  type CoreConfig,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  type Report,
+  type ReportsDiff,
+} from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
 import {
   type CommandContext,
@@ -62,12 +67,19 @@ export async function runInCI(
       .map(({ files }) => files.diff?.json)
       .filter((file): file is string => file != null);
     if (diffJsonPaths.length > 0) {
-      const diffPath = await runMergeDiffs(
+      const tmpDiffPath = await runMergeDiffs(
         diffJsonPaths,
         createCommandContext(settings, projects[0]),
       );
-      logger.debug(`Merged ${diffJsonPaths.length} diffs into ${diffPath}`);
-      const commentId = await commentOnPR(diffPath, api, logger);
+      logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
+      const diffPath = path.join(
+        settings.directory,
+        DEFAULT_PERSIST_OUTPUT_DIR,
+        path.basename(tmpDiffPath),
+      );
+      await fs.cp(tmpDiffPath, diffPath);
+      logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
+      const commentId = await commentOnPR(tmpDiffPath, api, logger);
       return {
         mode: 'monorepo',
         projects: projectResults,
