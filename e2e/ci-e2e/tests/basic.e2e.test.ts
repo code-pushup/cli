@@ -119,7 +119,7 @@ describe('CI - standalone mode', () => {
       const md = await mdPromise;
       await expect(
         md.replace(/[\da-f]{40}/g, '`<commit-sha>`'),
-      ).toMatchFileSnapshot(join(TEST_SNAPSHOTS_DIR, 'report-diff.md'));
+      ).toMatchFileSnapshot(join(TEST_SNAPSHOTS_DIR, 'basic-report-diff.md'));
     });
   });
 });
