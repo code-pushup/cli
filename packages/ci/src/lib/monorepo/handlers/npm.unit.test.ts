@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -88,11 +89,13 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'npm --workspace=backend run code-pushup --',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'npm run code-pushup --',
         },
         {
           name: 'shared',
-          bin: 'npm --workspace=shared run code-pushup --',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'npm run code-pushup --',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -124,11 +127,13 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'npm --workspace=backend exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'npm exec code-pushup --',
         },
         {
           name: 'shared',
-          bin: 'npm --workspace=shared exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'npm exec code-pushup --',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -158,15 +163,18 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'npm --workspace=backend exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'npm exec code-pushup --',
         },
         {
           name: 'frontend',
-          bin: 'npm --workspace=frontend exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          bin: 'npm exec code-pushup --',
         },
         {
           name: 'shared',
-          bin: 'npm --workspace=shared exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'npm exec code-pushup --',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -175,8 +183,16 @@ describe('npmHandler', () => {
   describe('createRunManyCommand', () => {
     const projects: MonorepoHandlerProjectsContext = {
       all: [
-        { name: 'api', bin: 'npm --workspace=api run code-pushup --' },
-        { name: 'ui', bin: 'npm --workspace=ui run code-pushup --' },
+        {
+          name: 'api',
+          directory: join(MEMFS_VOLUME, 'api'),
+          bin: 'npm run code-pushup --',
+        },
+        {
+          name: 'ui',
+          directory: join(MEMFS_VOLUME, 'ui'),
+          bin: 'npm run code-pushup --',
+        },
       ],
     };
 

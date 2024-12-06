@@ -27,11 +27,12 @@ export const npmHandler: MonorepoToolHandler = {
           hasCodePushUpDependency(packageJson) ||
           hasCodePushUpDependency(rootPackageJson),
       )
-      .map(({ name, packageJson }) => ({
+      .map(({ name, directory, packageJson }) => ({
         name,
+        directory,
         bin: hasScript(packageJson, options.task)
-          ? `npm --workspace=${name} run ${options.task} --`
-          : `npm --workspace=${name} exec ${options.task} --`,
+          ? `npm run ${options.task} --`
+          : `npm exec ${options.task} --`,
       }));
   },
 
