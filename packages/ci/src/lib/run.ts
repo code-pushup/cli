@@ -77,8 +77,10 @@ export async function runInCI(
         DEFAULT_PERSIST_OUTPUT_DIR,
         path.basename(tmpDiffPath),
       );
-      await fs.cp(tmpDiffPath, diffPath);
-      logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
+      if (tmpDiffPath !== diffPath) {
+        await fs.cp(tmpDiffPath, diffPath);
+        logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
+      }
       const commentId = await commentOnPR(tmpDiffPath, api, logger);
       return {
         mode: 'monorepo',
