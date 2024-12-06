@@ -203,7 +203,6 @@ describe('yarnHandler', () => {
       ],
     };
 
-    // eslint-disable-next-line vitest/max-nested-describe
     describe('classic Yarn (v1)', () => {
       beforeEach(() => {
         vi.spyOn(utils, 'executeProcess').mockResolvedValue({
@@ -218,7 +217,6 @@ describe('yarnHandler', () => {
       });
     });
 
-    // eslint-disable-next-line vitest/max-nested-describe
     describe('modern Yarn (v2+)', () => {
       beforeEach(() => {
         vi.spyOn(utils, 'executeProcess').mockResolvedValue({
