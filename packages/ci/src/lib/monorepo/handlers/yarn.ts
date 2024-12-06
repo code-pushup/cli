@@ -27,11 +27,12 @@ export const yarnHandler: MonorepoToolHandler = {
           hasCodePushUpDependency(packageJson) ||
           hasCodePushUpDependency(rootPackageJson),
       )
-      .map(({ name, packageJson }) => ({
+      .map(({ name, directory, packageJson }) => ({
         name,
+        directory,
         bin: hasScript(packageJson, options.task)
-          ? `yarn workspace ${name} run ${options.task}`
-          : `yarn workspace ${name} exec ${options.task}`,
+          ? `yarn run ${options.task}`
+          : `yarn exec ${options.task}`,
       }));
   },
 

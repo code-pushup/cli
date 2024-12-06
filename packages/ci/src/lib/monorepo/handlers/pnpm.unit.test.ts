@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -82,11 +83,13 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'pnpm --filter=backend run code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'pnpm run code-pushup',
         },
         {
           name: 'shared',
-          bin: 'pnpm --filter=shared run code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'pnpm run code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -115,11 +118,13 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'pnpm --filter=backend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: 'shared',
-          bin: 'pnpm --filter=shared exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'pnpm exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -149,15 +154,18 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'pnpm --filter=backend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: 'frontend',
-          bin: 'pnpm --filter=frontend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: 'shared',
-          bin: 'pnpm --filter=shared exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'pnpm exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -166,9 +174,21 @@ describe('pnpmHandler', () => {
   describe('createRunManyCommand', () => {
     const projects: MonorepoHandlerProjectsContext = {
       all: [
-        { name: 'backend', bin: 'pnpm --filter=backend run code-pushup' },
-        { name: 'frontend', bin: 'pnpm --filter=frontend run code-pushup' },
-        { name: 'shared', bin: 'pnpm --filter=shared run code-pushup' },
+        {
+          name: 'backend',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'pnpm run code-pushup',
+        },
+        {
+          name: 'frontend',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          bin: 'pnpm run code-pushup',
+        },
+        {
+          name: 'shared',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'pnpm run code-pushup',
+        },
       ],
     };
 

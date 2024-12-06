@@ -32,9 +32,10 @@ export const turboHandler: MonorepoToolHandler = {
         const projects = await handler.listProjects(options);
         return projects
           .filter(({ bin }) => bin.includes(`run ${options.task}`)) // must have package.json script
-          .map(({ name }) => ({
+          .map(({ name, directory }) => ({
             name,
-            bin: `npx turbo run ${options.task} --filter=${name} --`,
+            directory,
+            bin: `npx turbo run ${options.task} --`,
           }));
       }
     }

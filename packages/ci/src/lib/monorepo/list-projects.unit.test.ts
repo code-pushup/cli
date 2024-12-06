@@ -117,10 +117,26 @@ describe('listMonorepoProjects', () => {
     await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
       tool: 'turbo',
       projects: [
-        { name: 'api', bin: 'npx turbo run code-pushup --filter=api --' },
-        { name: 'auth', bin: 'npx turbo run code-pushup --filter=auth --' },
-        { name: 'cms', bin: 'npx turbo run code-pushup --filter=cms --' },
-        { name: 'web', bin: 'npx turbo run code-pushup --filter=web --' },
+        {
+          name: 'api',
+          directory: join(MEMFS_VOLUME, 'backend', 'api'),
+          bin: 'npx turbo run code-pushup --',
+        },
+        {
+          name: 'auth',
+          directory: join(MEMFS_VOLUME, 'backend', 'auth'),
+          bin: 'npx turbo run code-pushup --',
+        },
+        {
+          name: 'cms',
+          directory: join(MEMFS_VOLUME, 'frontend', 'cms'),
+          bin: 'npx turbo run code-pushup --',
+        },
+        {
+          name: 'web',
+          directory: join(MEMFS_VOLUME, 'frontend', 'web'),
+          bin: 'npx turbo run code-pushup --',
+        },
       ],
       runManyCommand: expect.any(Function),
     } satisfies MonorepoProjects);
@@ -155,15 +171,18 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backend',
-          bin: 'pnpm --filter=backend run code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'pnpm run code-pushup',
         },
         {
           name: 'frontend',
-          bin: 'pnpm --filter=frontend run code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          bin: 'pnpm run code-pushup',
         },
         {
           name: '@repo/utils',
-          bin: 'pnpm --filter=@repo/utils run code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'utils'),
+          bin: 'pnpm run code-pushup',
         },
       ],
       runManyCommand: expect.any(Function),
@@ -196,8 +215,16 @@ describe('listMonorepoProjects', () => {
     await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
       tool: 'yarn',
       projects: [
-        { name: 'cli', bin: 'yarn workspace cli exec code-pushup' },
-        { name: 'core', bin: 'yarn workspace core exec code-pushup' },
+        {
+          name: 'cli',
+          directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+          bin: 'yarn exec code-pushup',
+        },
+        {
+          name: 'core',
+          directory: join(MEMFS_VOLUME, 'packages', 'core'),
+          bin: 'yarn exec code-pushup',
+        },
       ],
       runManyCommand: expect.any(Function),
     } satisfies MonorepoProjects);
@@ -227,11 +254,13 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backend',
-          bin: 'npm --workspace=backend exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'packages', 'backend'),
+          bin: 'npm exec code-pushup --',
         },
         {
           name: 'frontend',
-          bin: 'npm --workspace=frontend exec code-pushup --',
+          directory: join(MEMFS_VOLUME, 'packages', 'frontend'),
+          bin: 'npm exec code-pushup --',
         },
       ],
       runManyCommand: expect.any(Function),
@@ -367,19 +396,23 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backoffice',
-          bin: 'pnpm --filter=backoffice exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backoffice'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: 'frontoffice',
-          bin: 'pnpm --filter=frontoffice exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontoffice'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: '@repo/models',
-          bin: 'pnpm --filter=@repo/models exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'packages', 'models'),
+          bin: 'pnpm exec code-pushup',
         },
         {
           name: '@repo/ui',
-          bin: 'pnpm --filter=@repo/ui exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'packages', 'ui'),
+          bin: 'pnpm exec code-pushup',
         },
       ],
       runManyCommand: expect.any(Function),
