@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -90,11 +91,13 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'yarn workspace backend run code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'yarn run code-pushup',
         },
         {
           name: 'shared',
-          bin: 'yarn workspace shared run code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'yarn run code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -126,11 +129,13 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'yarn workspace backend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'yarn exec code-pushup',
         },
         {
           name: 'shared',
-          bin: 'yarn workspace shared exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'yarn exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -160,15 +165,18 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          bin: 'yarn workspace backend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          bin: 'yarn exec code-pushup',
         },
         {
           name: 'frontend',
-          bin: 'yarn workspace frontend exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          bin: 'yarn exec code-pushup',
         },
         {
           name: 'shared',
-          bin: 'yarn workspace shared exec code-pushup',
+          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          bin: 'yarn exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
     });
@@ -177,9 +185,21 @@ describe('yarnHandler', () => {
   describe('createRunManyCommand', () => {
     const projects: MonorepoHandlerProjectsContext = {
       all: [
-        { name: 'api', bin: 'yarn workspace api run code-pushup' },
-        { name: 'cms', bin: 'yarn workspace cms run code-pushup' },
-        { name: 'web', bin: 'yarn workspace web run code-pushup' },
+        {
+          name: 'api',
+          directory: join(MEMFS_VOLUME, 'api'),
+          bin: 'yarn run code-pushup',
+        },
+        {
+          name: 'cms',
+          directory: join(MEMFS_VOLUME, 'cms'),
+          bin: 'yarn run code-pushup',
+        },
+        {
+          name: 'web',
+          directory: join(MEMFS_VOLUME, 'web'),
+          bin: 'yarn run code-pushup',
+        },
       ],
     };
 

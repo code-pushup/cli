@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -135,11 +136,13 @@ describe('turboHandler', () => {
         await expect(turboHandler.listProjects(options)).resolves.toEqual([
           {
             name: '@example/cli',
-            bin: 'npx turbo run code-pushup --filter=@example/cli --',
+            directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+            bin: 'npx turbo run code-pushup --',
           },
           {
             name: '@example/core',
-            bin: 'npx turbo run code-pushup --filter=@example/core --',
+            directory: join(MEMFS_VOLUME, 'packages', 'core'),
+            bin: 'npx turbo run code-pushup --',
           },
         ] satisfies ProjectConfig[]);
       },
@@ -164,9 +167,21 @@ describe('turboHandler', () => {
   describe('createRunManyCommand', () => {
     const projects: MonorepoHandlerProjectsContext = {
       all: [
-        { name: 'api', bin: 'npx turbo run code-pushup --filter=api --' },
-        { name: 'cms', bin: 'npx turbo run code-pushup --filter=cms --' },
-        { name: 'web', bin: 'npx turbo run code-pushup --filter=web --' },
+        {
+          name: 'api',
+          directory: join(MEMFS_VOLUME, 'api'),
+          bin: 'npx turbo run code-pushup --',
+        },
+        {
+          name: 'cms',
+          directory: join(MEMFS_VOLUME, 'cms'),
+          bin: 'npx turbo run code-pushup --',
+        },
+        {
+          name: 'web',
+          directory: join(MEMFS_VOLUME, 'web'),
+          bin: 'npx turbo run code-pushup --',
+        },
       ],
     };
 

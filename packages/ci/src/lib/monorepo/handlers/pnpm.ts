@@ -36,11 +36,12 @@ export const pnpmHandler: MonorepoToolHandler = {
           hasCodePushUpDependency(packageJson) ||
           hasCodePushUpDependency(rootPackageJson),
       )
-      .map(({ name, packageJson }) => ({
+      .map(({ name, directory, packageJson }) => ({
         name,
+        directory,
         bin: hasScript(packageJson, options.task)
-          ? `pnpm --filter=${name} run ${options.task}`
-          : `pnpm --filter=${name} exec ${options.task}`,
+          ? `pnpm run ${options.task}`
+          : `pnpm exec ${options.task}`,
       }));
   },
 
