@@ -38,7 +38,7 @@ describe('git diff', () => {
       [
         "import assert from 'node:assert'",
         "import test from 'node:test'",
-        "import { sum } from '../src/index.js.js'",
+        "import { sum } from '../src/index.js'",
         '',
         "test('should sum all numbers', () => {",
         '  assert.strictEqual(sum([1, 2, 3, 4]), 10)',
