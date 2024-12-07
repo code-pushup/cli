@@ -26,7 +26,6 @@
     "access": "public"
   },
   "type": "module",
-  "types": "./src/index.d.ts",
   "dependencies": {
     "zod": "^3.22.1",
     "tslib": "^2.6.2",

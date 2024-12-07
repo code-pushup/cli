@@ -33,7 +33,6 @@
     "access": "public"
   },
   "type": "module",
-  "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/models": "0.56.0",
     "@code-pushup/utils": "0.56.0",
