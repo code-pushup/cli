@@ -28,7 +28,6 @@
   "type": "module",
   "dependencies": {
     "zod": "^3.22.1",
-    "tslib": "^2.6.2",
     "vscode-material-icons": "^0.1.0"
   }
 }

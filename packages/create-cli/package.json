@@ -27,7 +27,6 @@
   "type": "module",
   "dependencies": {
     "@code-pushup/nx-plugin": "0.56.0",
-    "@code-pushup/utils": "0.56.0",
-    "tslib": "^2.6.2"
+    "@code-pushup/utils": "0.56.0"
   }
 }
