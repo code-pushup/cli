@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { z } from 'zod';
-import { mergeConfigs } from '@code-pushup/utils';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,
@@ -8,6 +7,7 @@ import {
   lighthouseCoreConfig,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
+import { mergeConfigs } from './packages/utils/src/index.js';
 
 // load upload configuration from environment
 const envSchema = z.object({
