@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-
 import { blue, dim, green } from 'ansis';
 import { createRequire } from 'node:module';
 import yargs, {
