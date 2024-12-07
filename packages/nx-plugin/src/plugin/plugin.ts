@@ -1,5 +1,5 @@
-/* eslint-disable deprecation/deprecation,import/no-deprecated */
 import type {
+  // eslint-disable-next-line import/no-deprecated
   CreateNodes,
   CreateNodesContext,
   CreateNodesResult,
@@ -10,6 +10,7 @@ import type { CreateNodesOptions } from './types.js';
 import { normalizedCreateNodesContext } from './utils.js';
 
 // name has to be "createNodes" to get picked up by Nx
+// eslint-disable-next-line import/no-deprecated,deprecation/deprecation
 export const createNodes: CreateNodes = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
