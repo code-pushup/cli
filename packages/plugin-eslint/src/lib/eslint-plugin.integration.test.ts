@@ -18,8 +18,8 @@ describe('eslintPlugin', () => {
     ...plugin,
     runner: {
       ...(plugin.runner as RunnerConfig),
-      args: (plugin.runner as RunnerConfig).args?.map(() =>
-        toUnixPath('<dirname>/bin.js'),
+      args: (plugin.runner as RunnerConfig).args?.map(arg =>
+        toUnixPath(arg.replace(dirname(thisDir), '<dirname>')),
       ),
       outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },
