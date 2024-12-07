@@ -30,7 +30,6 @@
     "@code-pushup/utils": "0.56.0",
     "glob": "^10.4.5",
     "simple-git": "^3.20.0",
-    "tslib": "^2.6.2",
     "yaml": "^2.5.1"
   }
 }
