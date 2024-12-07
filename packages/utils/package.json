@@ -23,7 +23,6 @@
     "access": "public"
   },
   "type": "module",
-  "types": "./src/index.d.ts",
   "dependencies": {
     "@code-pushup/models": "0.56.0",
     "@isaacs/cliui": "^8.0.2",
