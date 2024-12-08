@@ -19,7 +19,7 @@ import {
   dependencyGroups,
 } from '../config.js';
 import { dependencyGroupToLong } from '../constants.js';
-import { packageManagers } from '../package-managers/index.js';
+import { packageManagers } from '../package-managers/package-managers.js';
 import { auditResultToAuditOutput } from './audit/transform.js';
 import type { AuditResult } from './audit/types.js';
 import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants.js';

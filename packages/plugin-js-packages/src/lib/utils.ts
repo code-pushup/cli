@@ -3,7 +3,7 @@ import {
   jsPackagesPluginConfigSchema,
 } from './config.js';
 import { derivePackageManager } from './package-managers/derive-package-manager.js';
-import { packageManagers } from './package-managers/index.js';
+import { packageManagers } from './package-managers/package-managers.js';
 
 export async function normalizeConfig(config?: JSPackagesPluginConfig) {
   const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(

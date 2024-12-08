@@ -5,8 +5,8 @@ import { normalizeFlags } from './normalize-flags.js';
 import {
   LIGHTHOUSE_GROUPS,
   LIGHTHOUSE_NAVIGATION_AUDITS,
-  createRunnerFunction,
-} from './runner/index.js';
+} from './runner/constants.js';
+import { createRunnerFunction } from './runner/runner.js';
 import type { LighthouseOptions } from './types.js';
 import { filterAuditsAndGroupsByOnlyOptions } from './utils.js';
 

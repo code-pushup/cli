@@ -1,6 +1,6 @@
 import { lighthousePlugin } from './lib/lighthouse-plugin.js';
 
-export { LIGHTHOUSE_REPORT_NAME } from './lib/runner/index.js';
+export { LIGHTHOUSE_REPORT_NAME } from './lib/runner/constants.js';
 export {
   DEFAULT_CHROME_FLAGS,
   LIGHTHOUSE_PLUGIN_SLUG,
