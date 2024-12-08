@@ -4,12 +4,12 @@ import {
   metaSchema,
   scorableSchema,
   weightedRefSchema,
-} from './implementation/schemas';
+} from './implementation/schemas.js';
 import {
   errorItems,
   exists,
   hasDuplicateStrings,
-} from './implementation/utils';
+} from './implementation/utils.js';
 
 export const groupRefSchema = weightedRefSchema(
   'Weighted reference to a group',

@@ -1,6 +1,6 @@
 import type { IssueSeverity } from '@code-pushup/models';
-import type { DependencyGroup, PackageAuditLevel } from './config';
-import type { DependencyGroupLong } from './runner/outdated/types';
+import type { DependencyGroup, PackageAuditLevel } from './config.js';
+import type { DependencyGroupLong } from './runner/outdated/types.js';
 
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,

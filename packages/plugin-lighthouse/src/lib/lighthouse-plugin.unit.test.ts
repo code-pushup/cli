@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
-import { lighthousePlugin } from './lighthouse-plugin';
+import { lighthousePlugin } from './lighthouse-plugin.js';
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {

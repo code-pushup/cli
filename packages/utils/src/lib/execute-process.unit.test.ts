@@ -1,7 +1,7 @@
 import { ChildProcess } from 'node:child_process';
 import { describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
-import { type ProcessObserver, executeProcess } from './execute-process';
+import { type ProcessObserver, executeProcess } from './execute-process.js';
 
 describe('executeProcess', () => {
   const spyObserver: ProcessObserver = {

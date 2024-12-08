@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { readRcByPath } from './read-rc-file';
+import { readRcByPath } from './read-rc-file.js';
 
 describe('readRcByPath', () => {
   const configDirPath = join(

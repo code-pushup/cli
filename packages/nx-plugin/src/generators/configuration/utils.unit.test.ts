@@ -4,7 +4,7 @@ import {
   formatArrayToLinesOfJsString,
   normalizeExecutableCode,
   normalizeItemOrArray,
-} from './utils';
+} from './utils.js';
 
 describe('formatArrayToJSArray', () => {
   it('should return array as JS', () => {

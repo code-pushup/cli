@@ -1,6 +1,6 @@
-import type { CategoryConfig } from '../category-config';
-import type { PluginConfig } from '../plugin-config';
-import type { PluginReport } from '../report';
+import type { CategoryConfig } from '../category-config.js';
+import type { PluginConfig } from '../plugin-config.js';
+import type { PluginReport } from '../report.js';
 
 /**
  * Regular expression to validate a slug for categories, plugins and audits.

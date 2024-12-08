@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { filePathSchema, positiveIntSchema } from './implementation/schemas';
+import { filePathSchema, positiveIntSchema } from './implementation/schemas.js';
 
 export const sourceFileLocationSchema = z.object(
   {

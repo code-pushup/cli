@@ -6,7 +6,7 @@ import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/test-utils';
-import { upload } from './upload';
+import { upload } from './upload.js';
 
 describe('upload', () => {
   beforeEach(() => {

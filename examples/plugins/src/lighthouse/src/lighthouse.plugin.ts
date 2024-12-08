@@ -16,9 +16,12 @@ import {
   PLUGIN_SLUG,
   audits,
   categoryCorePerfGroup,
-} from './constants';
-import type { LighthouseCliOptions, PluginOptions } from './types';
-import { getLighthouseCliArguments, lhrDetailsToIssueDetails } from './utils';
+} from './constants.js';
+import type { LighthouseCliOptions, PluginOptions } from './types.js';
+import {
+  getLighthouseCliArguments,
+  lhrDetailsToIssueDetails,
+} from './utils.js';
 
 /**
  * @example

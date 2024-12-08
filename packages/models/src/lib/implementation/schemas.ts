@@ -4,8 +4,8 @@ import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
   MAX_TITLE_LENGTH,
-} from './limits';
-import { filenameRegex, slugRegex } from './utils';
+} from './limits.js';
+import { filenameRegex, slugRegex } from './utils.js';
 
 export const tableCellValueSchema = z
   .union([z.string(), z.number(), z.boolean(), z.null()])

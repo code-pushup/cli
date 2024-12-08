@@ -6,9 +6,9 @@ import {
   filePathToCliArg,
   toArray,
 } from '@code-pushup/utils';
-import type { ESLintTarget } from '../config';
-import { setupESLint } from '../setup';
-import type { LinterOutput, RuleOptionsPerFile } from './types';
+import type { ESLintTarget } from '../config.js';
+import { setupESLint } from '../setup.js';
+import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
 export async function lint({
   eslintrc,

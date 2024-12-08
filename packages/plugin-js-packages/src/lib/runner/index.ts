@@ -17,14 +17,14 @@ import {
   type PackageJsonPaths,
   type PackageManagerId,
   dependencyGroups,
-} from '../config';
-import { dependencyGroupToLong } from '../constants';
-import { packageManagers } from '../package-managers';
-import { auditResultToAuditOutput } from './audit/transform';
-import type { AuditResult } from './audit/types';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
-import { outdatedResultToAuditOutput } from './outdated/transform';
-import { findAllPackageJson, getTotalDependencies } from './utils';
+} from '../config.js';
+import { dependencyGroupToLong } from '../constants.js';
+import { packageManagers } from '../package-managers/package-managers.js';
+import { auditResultToAuditOutput } from './audit/transform.js';
+import type { AuditResult } from './audit/types.js';
+import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants.js';
+import { outdatedResultToAuditOutput } from './outdated/transform.js';
+import { findAllPackageJson, getTotalDependencies } from './utils.js';
 
 export async function createRunnerConfig(
   scriptPath: string,

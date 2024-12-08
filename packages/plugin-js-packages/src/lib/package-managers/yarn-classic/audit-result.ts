@@ -1,11 +1,11 @@
 import { fromJsonLines } from '@code-pushup/utils';
-import type { AuditResult, Vulnerability } from '../../runner/audit/types';
-import { filterAuditResult } from '../../runner/utils';
+import type { AuditResult, Vulnerability } from '../../runner/audit/types.js';
+import { filterAuditResult } from '../../runner/utils.js';
 import type {
   Yarnv1AuditAdvisory,
   Yarnv1AuditResultJson,
   Yarnv1AuditSummary,
-} from './types';
+} from './types.js';
 
 export function yarnv1ToAuditResult(output: string): AuditResult {
   const yarnv1Result = fromJsonLines<Yarnv1AuditResultJson>(output);

@@ -1,9 +1,9 @@
 // Yarn v2 does not currently audit optional dependencies
-import type { DependencyGroup } from '../../config';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import type { PackageManager } from '../types';
-import { yarnv2ToAuditResult } from './audit-result';
-import { yarnv2ToOutdatedResult } from './outdated-result';
+import type { DependencyGroup } from '../../config.js';
+import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
+import type { PackageManager } from '../types.js';
+import { yarnv2ToAuditResult } from './audit-result.js';
+import { yarnv2ToOutdatedResult } from './outdated-result.js';
 
 // see https://github.com/yarnpkg/berry/blob/master/packages/plugin-npm-cli/sources/npmAuditTypes.ts#L5
 const yarnv2EnvironmentOptions: Record<DependencyGroup, string> = {

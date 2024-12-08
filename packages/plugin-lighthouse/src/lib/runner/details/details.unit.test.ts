@@ -5,7 +5,7 @@ import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { logUnsupportedDetails, toAuditDetails } from './details';
+import { logUnsupportedDetails, toAuditDetails } from './details.js';
 
 describe('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {

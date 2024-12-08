@@ -4,7 +4,7 @@ import {
   findPersistedFiles,
   persistCliOptions,
   persistedCliFiles,
-} from './persist';
+} from './persist.js';
 
 describe('persistCliOptions', () => {
   it('should create CLI arguments for standalone project', () => {

@@ -1,6 +1,6 @@
 import { type LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
 import { type Commit, commitSchema } from '@code-pushup/models';
-import { isSemver } from '../semver';
+import { isSemver } from '../semver.js';
 
 export async function getLatestCommit(
   git = simpleGit(),

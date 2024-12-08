@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getLighthouseCliArguments } from './utils';
+import { getLighthouseCliArguments } from './utils.js';
 
 describe('getLighthouseCliArguments', () => {
   it('should parse valid options', () => {

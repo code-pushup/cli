@@ -9,9 +9,12 @@ import {
   sortReport,
   verboseUtils,
 } from '@code-pushup/utils';
-import { collect } from './implementation/collect';
-import { logPersistedResults, persistReport } from './implementation/persist';
-import type { GlobalOptions } from './types';
+import { collect } from './implementation/collect.js';
+import {
+  logPersistedResults,
+  persistReport,
+} from './implementation/persist.js';
+import type { GlobalOptions } from './types.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,

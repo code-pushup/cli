@@ -4,7 +4,7 @@ import type {
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import type { ScoredGroup, ScoredReport } from '../../src/lib/reports/types';
+import type { ScoredGroup, ScoredReport } from '../../src/lib/reports/types.js';
 
 function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {

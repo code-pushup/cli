@@ -8,8 +8,12 @@ import type {
   Group,
   Issue,
 } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
-import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import { SCORE_COLOR_RANGE } from './constants.js';
+import type {
+  ScoredReport,
+  SortableAuditReport,
+  SortableGroup,
+} from './types.js';
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;

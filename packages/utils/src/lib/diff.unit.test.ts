@@ -1,4 +1,4 @@
-import { comparePairs, matchArrayItemsByKey } from './diff';
+import { comparePairs, matchArrayItemsByKey } from './diff.js';
 
 describe('matchArrayItemsByKey', () => {
   it('should pair up items by key string', () => {

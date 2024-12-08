@@ -1,6 +1,10 @@
 import type { SimpleGit, StatusResult } from 'simple-git';
 import { describe, expect } from 'vitest';
-import { GitStatusError, formatGitPath, guardAgainstLocalChanges } from './git';
+import {
+  GitStatusError,
+  formatGitPath,
+  guardAgainstLocalChanges,
+} from './git.js';
 
 describe('guardAgainstLocalChanges', () => {
   it('should throw if no files are present', async () => {

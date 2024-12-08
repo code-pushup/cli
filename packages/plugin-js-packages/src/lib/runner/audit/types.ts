@@ -1,4 +1,4 @@
-import type { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config.js';
 
 // Unified Audit result type
 export type Vulnerability = {

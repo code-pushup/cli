@@ -6,7 +6,7 @@ import {
   auditReportSchema,
   pluginReportSchema,
   reportSchema,
-} from './report';
+} from './report.js';
 
 describe('auditReportSchema', () => {
   it('should accept a valid audit report with all entities', () => {

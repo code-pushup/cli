@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { yarnv2ToOutdatedResult } from './outdated-result';
-import type { Yarnv2OutdatedResultJson } from './types';
+import { yarnv2ToOutdatedResult } from './outdated-result.js';
+import type { Yarnv2OutdatedResultJson } from './types.js';
 
 describe('yarnv2ToOutdatedResult', () => {
   it('should transform Yarn v2 outdated to unified outdated result', () => {

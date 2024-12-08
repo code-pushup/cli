@@ -208,7 +208,7 @@ of `AuditOutputs`:
 // file-size.plugin.ts
 import { AuditOutput } from '@code-pushup/models';
 import { crawlFileSystem, pluralizeToken } from '@code-pushup/utils';
-import { RunnerFunction } from './plugin-config-runner';
+import { RunnerFunction } from './plugin-config-runner.js';
 
 // ...
 
@@ -496,7 +496,7 @@ We will extend the `fileSizeAuditOutput` with `details` show which files exceed 
 // ...
 import { basename } from 'path';
 import { formatBytes } from '@code-pushup/utils';
-import { AuditOutput } from './plugin-process-output';
+import { AuditOutput } from './plugin-process-output.js';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
   // ...

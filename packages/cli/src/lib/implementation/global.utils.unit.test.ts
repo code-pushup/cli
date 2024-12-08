@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ui } from '@code-pushup/utils';
-import { filterKebabCaseKeys, logErrorBeforeThrow } from './global.utils';
-import { OptionValidationError } from './validate-filter-options.utils';
+import { filterKebabCaseKeys, logErrorBeforeThrow } from './global.utils.js';
+import { OptionValidationError } from './validate-filter-options.utils.js';
 
 describe('filterKebabCaseKeys', () => {
   it('should filter root level kebab-case keys', () => {

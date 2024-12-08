@@ -10,18 +10,18 @@ import type {
   SourceFileLocation,
   Table,
 } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats';
+import { HIERARCHY } from '../text-formats/index.js';
 import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
-} from '../text-formats/table';
+} from '../text-formats/table.js';
 import {
   getEnvironmentType,
   getGitHubBaseUrl,
   getGitLabBaseUrl,
-} from './environment-type';
-import type { MdReportOptions } from './types';
+} from './environment-type.js';
+import type { MdReportOptions } from './types.js';
 
 export function tableSection(
   tableData: Table,

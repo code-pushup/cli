@@ -3,10 +3,10 @@ import {
   nonnegativeNumberSchema,
   scoreSchema,
   slugSchema,
-} from './implementation/schemas';
-import { errorItems, hasDuplicateStrings } from './implementation/utils';
-import { issueSchema } from './issue';
-import { tableSchema } from './table';
+} from './implementation/schemas.js';
+import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
+import { issueSchema } from './issue.js';
+import { tableSchema } from './table.js';
 
 export const auditValueSchema =
   nonnegativeNumberSchema.describe('Raw numeric value');

@@ -7,7 +7,7 @@ import {
   pluralizeToken,
   slugify,
   truncateText,
-} from './formatting';
+} from './formatting.js';
 
 describe('slugify', () => {
   it.each([

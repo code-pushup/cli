@@ -1,20 +1,20 @@
 import { z } from 'zod';
-import { auditSchema } from './audit';
-import { auditOutputSchema } from './audit-output';
-import { categoryConfigSchema } from './category-config';
-import { commitSchema } from './commit';
-import { type Group, groupSchema } from './group';
+import { auditOutputSchema } from './audit-output.js';
+import { auditSchema } from './audit.js';
+import { categoryConfigSchema } from './category-config.js';
+import { commitSchema } from './commit.js';
+import { type Group, groupSchema } from './group.js';
 import {
   executionMetaSchema,
   packageVersionSchema,
-} from './implementation/schemas';
+} from './implementation/schemas.js';
 import {
   errorItems,
   getMissingRefsForCategories,
   hasMissingStrings,
   missingRefsForCategoriesErrorMsg,
-} from './implementation/utils';
-import { pluginMetaSchema } from './plugin-config';
+} from './implementation/utils.js';
+import { pluginMetaSchema } from './plugin-config.js';
 
 export const auditReportSchema = auditSchema.merge(auditOutputSchema);
 export type AuditReport = z.infer<typeof auditReportSchema>;

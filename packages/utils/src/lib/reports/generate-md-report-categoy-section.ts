@@ -1,17 +1,17 @@
 import { type InlineText, MarkdownDocument, md } from 'build-md';
 import type { AuditReport } from '@code-pushup/models';
-import { slugify } from '../formatting';
-import { HIERARCHY } from '../text-formats';
-import { metaDescription } from './formatting';
-import { getSortableAuditByRef, getSortableGroupByRef } from './sorting';
-import type { ScoredGroup, ScoredReport } from './types';
+import { slugify } from '../formatting.js';
+import { HIERARCHY } from '../text-formats/index.js';
+import { metaDescription } from './formatting.js';
+import { getSortableAuditByRef, getSortableGroupByRef } from './sorting.js';
+import type { ScoredGroup, ScoredReport } from './types.js';
 import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
   scoreMarker,
   targetScoreIcon,
-} from './utils';
+} from './utils.js';
 
 export function categoriesOverviewSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,

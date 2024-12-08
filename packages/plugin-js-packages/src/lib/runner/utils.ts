@@ -5,13 +5,13 @@ import {
   objectToKeys,
   readJsonFile,
 } from '@code-pushup/utils';
-import type { AuditResult, Vulnerability } from './audit/types';
+import type { AuditResult, Vulnerability } from './audit/types.js';
 import {
   type DependencyGroupLong,
   type DependencyTotals,
   type PackageJson,
   dependencyGroupLong,
-} from './outdated/types';
+} from './outdated/types.js';
 
 export function filterAuditResult(
   result: AuditResult,

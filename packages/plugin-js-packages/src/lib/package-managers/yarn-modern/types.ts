@@ -1,6 +1,6 @@
 // Subset of Yarn v2+ audit JSON type
-import type { PackageAuditLevel } from '../../config';
-import type { DependencyGroupLong } from '../../runner/outdated/types';
+import type { PackageAuditLevel } from '../../config.js';
+import type { DependencyGroupLong } from '../../runner/outdated/types.js';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type Yarnv2AuditAdvisory = {

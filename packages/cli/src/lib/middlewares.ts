@@ -1,6 +1,6 @@
 import type { MiddlewareFunction } from 'yargs';
-import { coreConfigMiddleware } from './implementation/core-config.middleware';
-import { filterMiddleware } from './implementation/filter.middleware';
+import { coreConfigMiddleware } from './implementation/core-config.middleware.js';
+import { filterMiddleware } from './implementation/filter.middleware.js';
 
 export const middlewares = [
   {

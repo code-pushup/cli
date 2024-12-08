@@ -7,10 +7,10 @@ import {
   pluginWorkDir,
   readJsonFile,
 } from '@code-pushup/utils';
-import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config';
-import { lint } from './lint';
-import { lintResultsToAudits, mergeLinterOutputs } from './transform';
-import type { LinterOutput } from './types';
+import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
+import { lint } from './lint.js';
+import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
+import type { LinterOutput } from './types.js';
 
 export const WORKDIR = pluginWorkDir('eslint');
 export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');

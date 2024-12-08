@@ -1,7 +1,7 @@
 import * as process from 'node:process';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { describe, expect } from 'vitest';
-import { executorContext, registerPluginInWorkspace } from './nx';
+import { executorContext, registerPluginInWorkspace } from './nx.js';
 
 describe('executorContext', () => {
   it('should create context for given project name', () => {

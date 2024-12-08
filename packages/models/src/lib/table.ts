@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { tableCellValueSchema } from './implementation/schemas';
+import { tableCellValueSchema } from './implementation/schemas.js';
 
 export const tableAlignmentSchema = z.enum(['left', 'center', 'right'], {
   description: 'Cell alignment',

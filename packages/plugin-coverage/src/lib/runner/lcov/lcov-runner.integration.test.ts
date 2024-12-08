@@ -2,7 +2,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
-import { lcovResultsToAuditOutputs } from './lcov-runner';
+import { lcovResultsToAuditOutputs } from './lcov-runner.js';
 
 describe('lcovResultsToAuditOutputs', () => {
   it('should correctly convert lcov results to AuditOutputs and prepend project paths', async () => {

@@ -12,14 +12,14 @@ import {
   updateNxJson,
 } from '@nx/devkit';
 import type { PackageJson } from 'nx/src/utils/package-json';
-import { PACKAGE_NAME } from '../../internal/constants';
+import { PACKAGE_NAME } from '../../internal/constants.js';
 import {
   cpCliVersion,
   cpModelVersion,
   cpNxPluginVersion,
   cpUtilsVersion,
-} from '../../internal/versions';
-import type { InitGeneratorSchema } from './schema';
+} from '../../internal/versions.js';
+import type { InitGeneratorSchema } from './schema.js';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson<PackageJson>(host, 'package.json');

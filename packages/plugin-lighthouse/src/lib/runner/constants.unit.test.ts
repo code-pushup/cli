@@ -1,6 +1,9 @@
 import { expect } from 'vitest';
 import { auditSchema, groupSchema } from '@code-pushup/models';
-import { LIGHTHOUSE_GROUPS, LIGHTHOUSE_NAVIGATION_AUDITS } from './constants';
+import {
+  LIGHTHOUSE_GROUPS,
+  LIGHTHOUSE_NAVIGATION_AUDITS,
+} from './constants.js';
 
 describe('constants', () => {
   it.each(LIGHTHOUSE_NAVIGATION_AUDITS.map(a => [a.slug, a]))(

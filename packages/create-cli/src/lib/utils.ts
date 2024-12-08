@@ -6,7 +6,7 @@ import {
   PROJECT_JSON_CONTENT,
   PROJECT_JSON_FILENAME,
   PROJECT_NAME,
-} from './constants';
+} from './constants.js';
 
 export type SetupResult = {
   filename: string;

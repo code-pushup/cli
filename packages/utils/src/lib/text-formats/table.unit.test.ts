@@ -6,7 +6,7 @@ import {
   getColumnAlignmentForKeyAndIndex,
   getColumnAlignments,
   rowToStringArray,
-} from './table';
+} from './table.js';
 
 describe('rowToStringArray', () => {
   it('should throw if data shape is incorrect', () => {

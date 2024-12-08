@@ -11,7 +11,7 @@ import {
   reportsDiffUnchangedMock,
 } from '@code-pushup/test-utils';
 import { fileExists, ui } from '@code-pushup/utils';
-import { mergeDiffs } from './merge-diffs';
+import { mergeDiffs } from './merge-diffs.js';
 
 describe('mergeDiffs', () => {
   const diffPaths = {

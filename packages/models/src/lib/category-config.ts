@@ -4,8 +4,8 @@ import {
   scorableSchema,
   slugSchema,
   weightedRefSchema,
-} from './implementation/schemas';
-import { errorItems, hasDuplicateStrings } from './implementation/utils';
+} from './implementation/schemas.js';
+import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
 
 export const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',

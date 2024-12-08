@@ -1,6 +1,6 @@
 import type { HistoryOptions } from '@code-pushup/core';
 import { getHashFromTag, isSemver } from '@code-pushup/utils';
-import type { HistoryCliOptions } from './history.model';
+import type { HistoryCliOptions } from './history.model.js';
 
 export async function normalizeHashOptions(
   processArgs: HistoryCliOptions & HistoryOptions,

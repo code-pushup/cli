@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeContext } from './context';
+import { normalizeContext } from './context.js';
 
 describe('normalizeContext', () => {
   it('should normalizeContext', () => {

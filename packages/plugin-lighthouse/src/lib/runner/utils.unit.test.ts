@@ -13,13 +13,13 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { unsupportedDetailTypes } from './details/details';
+import { unsupportedDetailTypes } from './details/details.js';
 import {
   determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
-} from './utils';
+} from './utils.js';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {

@@ -10,8 +10,8 @@ import {
   it,
   vi,
 } from 'vitest';
-import { MEMFS_VOLUME } from '../constants';
-import { ensureDirectoryExists } from './file-system';
+import { MEMFS_VOLUME } from '../constants.js';
+import { ensureDirectoryExists } from './file-system.js';
 
 vi.mock('fs', async () => {
   const memfs: typeof import('memfs') = await vi.importActual('memfs');

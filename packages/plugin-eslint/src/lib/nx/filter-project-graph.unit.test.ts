@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { toProjectGraph } from '@code-pushup/test-utils';
-import { filterProjectGraph } from './filter-project-graph';
+import { filterProjectGraph } from './filter-project-graph.js';
 
 describe('filterProjectGraph', () => {
   it('should exclude specified projects from nodes', () => {

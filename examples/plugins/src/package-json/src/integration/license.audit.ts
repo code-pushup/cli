@@ -1,11 +1,11 @@
 import type { Audit, AuditOutput, Issue } from '@code-pushup/models';
-import type { SourceResults } from './types';
+import type { SourceResults } from './types.js';
 import {
   assertPropertyEmpty,
   assertPropertyEqual,
   baseAuditOutput,
   scoreByErrorIssues,
-} from './utils';
+} from './utils.js';
 
 const licenseAuditSlug = 'package-license';
 export const licenseAuditMeta: Audit = {

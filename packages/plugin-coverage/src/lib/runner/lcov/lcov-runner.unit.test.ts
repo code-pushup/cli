@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { parseLcovFiles } from './lcov-runner';
+import { parseLcovFiles } from './lcov-runner.js';
 
 describe('parseLcovFiles', () => {
   const UTILS_REPORT = `

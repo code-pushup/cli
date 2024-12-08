@@ -5,7 +5,7 @@ import {
   categoriesSchema,
   categoryConfigSchema,
   categoryRefSchema,
-} from './category-config';
+} from './category-config.js';
 
 describe('categoryRefSchema', () => {
   it('should accept a valid category reference audit', () => {

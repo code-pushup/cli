@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { packageResult } from '../../../../mocks/constants';
-import { licenseAudit } from './license.audit';
+import { packageResult } from '../../../../mocks/constants.js';
+import { licenseAudit } from './license.audit.js';
 
 describe('licenseAudit', () => {
   it('should pass if not configured', () => {

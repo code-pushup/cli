@@ -7,7 +7,7 @@ import {
 } from 'lighthouse';
 import { join } from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
-import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants';
+import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants.js';
 
 const { audits, categories } = defaultConfig;
 

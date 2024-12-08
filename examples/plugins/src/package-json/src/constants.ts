@@ -1,6 +1,6 @@
-import { dependenciesAuditMeta } from './integration/dependencies.audit';
-import { licenseAuditMeta } from './integration/license.audit';
-import { typeAuditInfoMeta } from './integration/type.audit';
+import { dependenciesAuditMeta } from './integration/dependencies.audit.js';
+import { licenseAuditMeta } from './integration/license.audit.js';
+import { typeAuditInfoMeta } from './integration/type.audit.js';
 
 export const pluginSlug = 'package-json';
 export const audits = [

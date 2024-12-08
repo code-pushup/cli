@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as utils from '@code-pushup/utils';
 import type { ProcessResult } from '@code-pushup/utils';
-import { deriveYarnVersion } from './derive-yarn';
+import { deriveYarnVersion } from './derive-yarn.js';
 
 describe('deriveYarnVersion', () => {
   const executeProcessSpy = vi.spyOn(utils, 'executeProcess');

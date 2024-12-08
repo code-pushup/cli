@@ -6,9 +6,9 @@ import {
   updateProjectConfiguration,
 } from '@nx/devkit';
 import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
-import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
-import { generateCodePushupConfig } from './code-pushup-config';
-import type { ConfigurationGeneratorOptions } from './schema';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
+import { generateCodePushupConfig } from './code-pushup-config.js';
+import type { ConfigurationGeneratorOptions } from './schema.js';
 
 export async function configurationGenerator(
   tree: Tree,

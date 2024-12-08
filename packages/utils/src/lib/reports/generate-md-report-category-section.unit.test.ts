@@ -6,8 +6,8 @@ import {
   categoriesOverviewSection,
   categoryGroupItem,
   categoryRef,
-} from './generate-md-report-categoy-section';
-import type { ScoredGroup, ScoredReport } from './types';
+} from './generate-md-report-categoy-section.js';
+import type { ScoredGroup, ScoredReport } from './types.js';
 
 // === Categories Overview Section
 

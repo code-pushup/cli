@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ProcessResult } from '@code-pushup/utils';
 import * as utils from '@code-pushup/utils';
-import { initCodePushup, nxPluginGenerator } from './init';
-import * as createUtils from './utils';
+import { initCodePushup, nxPluginGenerator } from './init.js';
+import * as createUtils from './utils.js';
 
 describe('nxPluginGenerator', () => {
   it('should create valid command', () => {

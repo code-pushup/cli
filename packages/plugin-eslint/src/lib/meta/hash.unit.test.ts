@@ -1,4 +1,4 @@
-import { jsonHash, ruleIdToSlug } from './hash';
+import { jsonHash, ruleIdToSlug } from './hash.js';
 
 describe('ruleIdToSlug', () => {
   it('should leave core rule unchanged', () => {

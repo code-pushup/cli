@@ -1,9 +1,9 @@
-import type { MonorepoTool, MonorepoToolHandler } from '../tools';
-import { npmHandler } from './npm';
-import { nxHandler } from './nx';
-import { pnpmHandler } from './pnpm';
-import { turboHandler } from './turbo';
-import { yarnHandler } from './yarn';
+import type { MonorepoTool, MonorepoToolHandler } from '../tools.js';
+import { npmHandler } from './npm.js';
+import { nxHandler } from './nx.js';
+import { pnpmHandler } from './pnpm.js';
+import { turboHandler } from './turbo.js';
+import { yarnHandler } from './yarn.js';
 
 export const MONOREPO_TOOL_HANDLERS = [
   nxHandler,

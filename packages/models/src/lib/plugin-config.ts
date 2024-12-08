@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { pluginAuditsSchema } from './audit';
-import { groupsSchema } from './group';
+import { pluginAuditsSchema } from './audit.js';
+import { groupsSchema } from './group.js';
 import {
   materialIconSchema,
   metaSchema,
   packageVersionSchema,
   slugSchema,
-} from './implementation/schemas';
-import { errorItems, hasMissingStrings } from './implementation/utils';
-import { runnerConfigSchema, runnerFunctionSchema } from './runner-config';
+} from './implementation/schemas.js';
+import { errorItems, hasMissingStrings } from './implementation/utils.js';
+import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
 
 export const pluginMetaSchema = packageVersionSchema()
   .merge(

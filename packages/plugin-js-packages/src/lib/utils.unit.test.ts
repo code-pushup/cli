@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeConfig } from './utils';
+import { normalizeConfig } from './utils.js';
 
 describe('normalizeConfig', () => {
   it('should return checks object', async () => {

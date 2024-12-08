@@ -3,7 +3,7 @@ import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
-} from './config';
+} from './config.js';
 
 describe('coveragePluginConfigSchema', () => {
   it('accepts a code coverage configuration with all entities', () => {

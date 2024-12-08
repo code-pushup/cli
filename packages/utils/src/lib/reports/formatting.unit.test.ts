@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toUnixPath } from '../transform';
+import { toUnixPath } from '../transform.js';
 import {
   formatFileLink,
   formatGitHubLink,
@@ -8,7 +8,7 @@ import {
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
-} from './formatting';
+} from './formatting.js';
 
 describe('tableSection', () => {
   it('should accept a title', () => {

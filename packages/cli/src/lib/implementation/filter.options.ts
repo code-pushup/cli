@@ -1,6 +1,6 @@
 import type { Options } from 'yargs';
-import type { FilterCliOptions } from './filter.model';
-import { coerceArray } from './global.utils';
+import type { FilterCliOptions } from './filter.model.js';
+import { coerceArray } from './global.utils.js';
 
 export const skipCategoriesOption: Options = {
   describe: 'List of categories to skip. If not set all categories are run.',

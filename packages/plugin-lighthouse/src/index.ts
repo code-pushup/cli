@@ -1,16 +1,16 @@
-import { lighthousePlugin } from './lib/lighthouse-plugin';
+import { lighthousePlugin } from './lib/lighthouse-plugin.js';
 
-export { LIGHTHOUSE_REPORT_NAME } from './lib/runner';
+export { LIGHTHOUSE_REPORT_NAME } from './lib/runner/constants.js';
 export {
   DEFAULT_CHROME_FLAGS,
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_OUTPUT_PATH,
-} from './lib/constants';
+} from './lib/constants.js';
 export {
   lighthouseAuditRef,
   lighthouseGroupRef,
   type LighthouseGroupSlugs,
-} from './lib/utils';
-export type { LighthouseOptions } from './lib/types';
-export { lighthousePlugin } from './lib/lighthouse-plugin';
+} from './lib/utils.js';
+export type { LighthouseOptions } from './lib/types.js';
+export { lighthousePlugin } from './lib/lighthouse-plugin.js';
 export default lighthousePlugin;

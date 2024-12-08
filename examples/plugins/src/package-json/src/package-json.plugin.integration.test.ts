@@ -8,14 +8,14 @@ import {
   pluginReportSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { audits, pluginSlug as slug } from './constants';
-import { type PluginOptions, create } from './package-json.plugin';
+import { audits, pluginSlug as slug } from './constants.js';
+import { type PluginOptions, create } from './package-json.plugin.js';
 import {
   documentationGroupRef,
   performanceGroupRef,
   recommendedRefs,
   versionControlGroupRef,
-} from './scoring';
+} from './scoring.js';
 
 describe('create-package-json', () => {
   const baseOptions: PluginOptions = {

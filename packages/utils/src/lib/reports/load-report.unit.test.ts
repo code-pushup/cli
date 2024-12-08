@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import type { Report } from '@code-pushup/models';
 import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
-import { loadReport } from './load-report';
+import { loadReport } from './load-report.js';
 
 describe('loadReport', () => {
   it('should load a valid JSON report', async () => {

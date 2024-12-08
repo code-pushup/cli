@@ -5,8 +5,8 @@ import {
   type TableRowObject,
   tableSchema,
 } from '@code-pushup/models';
-import { formatTableItemPropertyValue } from './item-value';
-import { LighthouseAuditDetailsParsingError } from './utils';
+import { formatTableItemPropertyValue } from './item-value.js';
+import { LighthouseAuditDetailsParsingError } from './utils.js';
 
 export function parseTableToAuditDetailsTable(
   details: Details.Table,

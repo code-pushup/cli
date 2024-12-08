@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import type { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { jsPackagesPlugin } from './js-packages-plugin';
+import { jsPackagesPlugin } from './js-packages-plugin.js';
 
 vi.mock('./runner/index.ts', () => ({
   createRunnerConfig: vi.fn().mockReturnValue({

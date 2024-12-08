@@ -1,5 +1,5 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -12,21 +12,16 @@ import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
-  osAgnosticPath,
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-
-function relativePathToCwd(testDir: string): string {
-  return relative(join(process.cwd(), testDir), process.cwd());
-}
+import { INLINE_PLUGIN } from './inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
 ) {
   const { cwd, project } = options;
-  const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
   const projectCfg = readProjectConfiguration(tree, project);
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
@@ -39,18 +34,10 @@ async function addTargetToWorkspace(
   });
   const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
-    fileImports: `import type {CoreConfig} from "@code-pushup/models";`,
     plugins: [
       {
-        // @TODO replace with inline plugin
-        fileImports: `import {customPlugin} from "${osAgnosticPath(
-          join(
-            relativePathToCwd(cwd),
-            pathRelativeToPackage,
-            'dist/testing/test-utils',
-          ),
-        )}";`,
-        codeStrings: 'customPlugin()',
+        fileImports: '',
+        codeStrings: INLINE_PLUGIN,
       },
     ],
   });

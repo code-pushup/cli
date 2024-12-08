@@ -1,7 +1,7 @@
 import isaacs_cliui from '@isaacs/cliui';
 import { cliui } from '@poppinss/cliui';
 import { underline } from 'ansis';
-import { TERMINAL_WIDTH } from './reports/constants';
+import { TERMINAL_WIDTH } from './reports/constants.js';
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;

@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { groupByStatus } from './group-by-status';
+import { groupByStatus } from './group-by-status.js';
 
 describe('groupByStatus', () => {
   it('should group results by status', () => {

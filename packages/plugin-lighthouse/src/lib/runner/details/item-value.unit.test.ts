@@ -9,7 +9,7 @@ import {
   parseNodeValue,
   parseSimpleItemValue,
   parseTableItemPropertyValue,
-} from './item-value';
+} from './item-value.js';
 
 describe('parseNodeValue', () => {
   it('should parse selector of node', () => {

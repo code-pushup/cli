@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
-import { ui } from './logging';
-import { verboseUtils } from './verbose-utils';
+import { ui } from './logging.js';
+import { verboseUtils } from './verbose-utils.js';
 
 describe('verbose-utils', () => {
   it('exec should be off by default', () => {

@@ -1,5 +1,5 @@
 import type { Audit } from '@code-pushup/models';
-import { ruleToAudit } from './transform';
+import { ruleToAudit } from './transform.js';
 
 describe('ruleToAudit', () => {
   it('built-in rule without custom options', () => {

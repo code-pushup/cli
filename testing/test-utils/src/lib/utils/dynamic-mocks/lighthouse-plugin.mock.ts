@@ -10,8 +10,8 @@ import {
   LIGHTHOUSE_AUDITS_CHANGES,
   LIGHTHOUSE_AUDITS_MAP,
   LIGHTHOUSE_AUDIT_SLUGS,
-} from './lighthouse-audits.mock';
-import { echoRunnerConfigMock } from './runner-config.mock';
+} from './lighthouse-audits.mock.js';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export const LH_PLUGIN_GROUP_PERFORMANCE: Group = {
   slug: 'performance',

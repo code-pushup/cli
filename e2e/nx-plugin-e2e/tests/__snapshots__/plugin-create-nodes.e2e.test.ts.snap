@@ -6,6 +6,7 @@ exports[`nx-plugin > should NOT add config targets dynamically if the project is
     "configurations": {},
     "executor": "@code-pushup/nx-plugin:cli",
     "options": {},
+    "parallelism": true,
   },
 }
 `;
@@ -18,6 +19,7 @@ exports[`nx-plugin > should add configuration target dynamically 1`] = `
     "options": {
       "command": "nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="my-lib"",
     },
+    "parallelism": true,
   },
 }
 `;
@@ -28,6 +30,7 @@ exports[`nx-plugin > should add executor target dynamically if the project is co
     "configurations": {},
     "executor": "@code-pushup/nx-plugin:cli",
     "options": {},
+    "parallelism": true,
   },
 }
 `;

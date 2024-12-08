@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { OutdatedResult } from '../../runner/outdated/types';
-import { pnpmToOutdatedResult } from './outdated-result';
-import type { PnpmOutdatedResultJson } from './types';
+import type { OutdatedResult } from '../../runner/outdated/types.js';
+import { pnpmToOutdatedResult } from './outdated-result.js';
+import type { PnpmOutdatedResultJson } from './types.js';
 
 describe('pnpmToOutdatedResult', () => {
   it('should transform PNPM outdated to unified outdated result', () => {

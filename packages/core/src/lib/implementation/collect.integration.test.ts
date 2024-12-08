@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
 import { commitSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME, MINIMAL_CONFIG_MOCK } from '@code-pushup/test-utils';
-import { collect } from './collect';
+import { collect } from './collect.js';
 
 describe('collect', () => {
   it('should execute with valid options', async () => {

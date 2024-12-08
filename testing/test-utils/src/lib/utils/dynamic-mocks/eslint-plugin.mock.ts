@@ -11,8 +11,8 @@ import {
   ESLINT_AUDITS_FIXED_SLUGS,
   ESLINT_AUDITS_MAP,
   ESLINT_AUDIT_SLUGS,
-} from './eslint-audits.mock';
-import { echoRunnerConfigMock } from './runner-config.mock';
+} from './eslint-audits.mock.js';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export const ESLINT_PLUGIN_GROUP_MAX_LINES: Group = {
   slug: 'max-line-limitation',

@@ -24,8 +24,8 @@ import type {
   Options,
   ProviderAPIClient,
   RunResult,
-} from './models';
-import { runInCI } from './run';
+} from './models.js';
+import { runInCI } from './run.js';
 
 describe('runInCI', () => {
   const fixturesDir = join(

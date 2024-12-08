@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
-import type { FileResult } from './file-system';
-import { logMultipleResults, logPromiseResults } from './log-results';
-import { ui } from './logging';
+import type { FileResult } from './file-system.js';
+import { logMultipleResults, logPromiseResults } from './log-results.js';
+import { ui } from './logging.js';
 
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();

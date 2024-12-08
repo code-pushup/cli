@@ -10,7 +10,7 @@ import {
   getLogMessages,
 } from '@code-pushup/test-utils';
 import { scoreReport, sortReport, ui } from '@code-pushup/utils';
-import { logPersistedResults, persistReport } from './persist';
+import { logPersistedResults, persistReport } from './persist.js';
 
 describe('persistReport', () => {
   beforeEach(() => {

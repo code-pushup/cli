@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
-import { defaultAuditLevelMapping } from '../../constants';
+import { defaultAuditLevelMapping } from '../../constants.js';
 import {
   auditResultToAuditOutput,
   calculateAuditScore,
   summaryToDisplayValue,
   vulnerabilitiesToIssues,
-} from './transform';
-import type { Vulnerability } from './types';
+} from './transform.js';
+import type { Vulnerability } from './types.js';
 
 describe('auditResultToAuditOutput', () => {
   it('should return audit output with no vulnerabilities', () => {

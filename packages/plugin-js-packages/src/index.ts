@@ -1,4 +1,4 @@
-import { jsPackagesPlugin } from './lib/js-packages-plugin';
+import { jsPackagesPlugin } from './lib/js-packages-plugin.js';
 
 export default jsPackagesPlugin;
-export type { JSPackagesPluginConfig } from './lib/config';
+export type { JSPackagesPluginConfig } from './lib/config.js';

@@ -1,10 +1,10 @@
 import { executeProcess } from '@code-pushup/utils';
-import type { CommandContext } from '../context';
+import type { CommandContext } from '../context.js';
 import {
   type PersistedCliFiles,
   persistCliOptions,
   persistedCliFiles,
-} from '../persist';
+} from '../persist.js';
 
 export async function runMergeDiffs(
   files: string[],

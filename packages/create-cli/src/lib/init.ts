@@ -7,7 +7,7 @@ import {
   parseNxProcessOutput,
   setupNxContext,
   teardownNxContext,
-} from './utils';
+} from './utils.js';
 
 export function nxPluginGenerator(
   generator: 'init' | 'configuration',

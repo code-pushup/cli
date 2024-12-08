@@ -1,11 +1,11 @@
-import type { ESLintTarget } from '../../config';
-import type { RuleData } from '../parse';
-import { loadRulesForFlatConfig } from './flat';
-import type { ConfigFormat } from './formats';
-import { loadRulesForLegacyConfig } from './legacy';
+import type { ESLintTarget } from '../../config.js';
+import type { RuleData } from '../parse.js';
+import { loadRulesForFlatConfig } from './flat.js';
+import type { ConfigFormat } from './formats.js';
+import { loadRulesForLegacyConfig } from './legacy.js';
 
-export { detectConfigVersion } from './detect';
-export type { ConfigFormat } from './formats';
+export { detectConfigVersion } from './detect.js';
+export type { ConfigFormat } from './formats.js';
 
 export function selectRulesLoader(
   version: ConfigFormat,

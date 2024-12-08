@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import type { CoreConfig, Format } from '@code-pushup/models';
-import { yargsHistoryOptionsDefinition } from './history/history.options';
-import type { CompareOptions } from './implementation/compare.model';
-import { yargsCompareOptionsDefinition } from './implementation/compare.options';
+import { yargsHistoryOptionsDefinition } from './history/history.options.js';
+import type { CompareOptions } from './implementation/compare.model.js';
+import { yargsCompareOptionsDefinition } from './implementation/compare.options.js';
 import type {
   PersistConfigCliOptions,
   UploadConfigCliOptions,
-} from './implementation/core-config.model';
-import type { FilterOptions } from './implementation/filter.model';
-import { yargsFilterOptionsDefinition } from './implementation/filter.options';
-import type { GeneralCliOptions } from './implementation/global.model';
-import type { MergeDiffsOptions } from './implementation/merge-diffs.model';
-import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options';
-import { options } from './options';
-import { yargsCli } from './yargs-cli';
+} from './implementation/core-config.model.js';
+import type { FilterOptions } from './implementation/filter.model.js';
+import { yargsFilterOptionsDefinition } from './implementation/filter.options.js';
+import type { GeneralCliOptions } from './implementation/global.model.js';
+import type { MergeDiffsOptions } from './implementation/merge-diffs.model.js';
+import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options.js';
+import { options } from './options.js';
+import { yargsCli } from './yargs-cli.js';
 
 describe('yargsCli', () => {
   it('should provide correct default values for global options', async () => {

@@ -5,8 +5,8 @@ import {
   hasScript,
   hasWorkspacesEnabled,
   listWorkspaces,
-} from '../packages';
-import type { MonorepoToolHandler } from '../tools';
+} from '../packages.js';
+import type { MonorepoToolHandler } from '../tools.js';
 
 export const yarnHandler: MonorepoToolHandler = {
   tool: 'yarn',

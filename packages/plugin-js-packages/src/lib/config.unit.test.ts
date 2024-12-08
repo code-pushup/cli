@@ -5,7 +5,7 @@ import {
   type JSPackagesPluginConfig,
   fillAuditLevelMapping,
   jsPackagesPluginConfigSchema,
-} from './config';
+} from './config.js';
 
 describe('jsPackagesPluginConfigSchema', () => {
   it('should accept a JS package configuration with all entities', () => {

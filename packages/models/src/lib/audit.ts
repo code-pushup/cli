@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { metaSchema, slugSchema } from './implementation/schemas';
-import { errorItems, hasDuplicateStrings } from './implementation/utils';
+import { metaSchema, slugSchema } from './implementation/schemas.js';
+import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
 
 export const auditSchema = z
   .object({

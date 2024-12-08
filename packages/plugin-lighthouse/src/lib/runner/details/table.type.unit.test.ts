@@ -6,8 +6,8 @@ import {
   parseTableEntry,
   parseTableRow,
   parseTableToAuditDetailsTable,
-} from './table.type';
-import { LighthouseAuditDetailsParsingError } from './utils';
+} from './table.type.js';
+import { LighthouseAuditDetailsParsingError } from './utils.js';
 
 describe('parseTableToAuditDetails', () => {
   it('should render complete details of type table', () => {

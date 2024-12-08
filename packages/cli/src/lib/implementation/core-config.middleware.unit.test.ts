@@ -3,10 +3,10 @@ import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   coreConfigMiddleware,
   normalizeFormats,
-} from './core-config.middleware';
-import type { CoreConfigCliOptions } from './core-config.model';
-import type { FilterOptions } from './filter.model';
-import type { GeneralCliOptions } from './global.model';
+} from './core-config.middleware.js';
+import type { CoreConfigCliOptions } from './core-config.model.js';
+import type { FilterOptions } from './filter.model.js';
+import type { GeneralCliOptions } from './global.model.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =

@@ -1,14 +1,14 @@
+import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { normalizeFlags } from './normalize-flags';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import { normalizeFlags } from './normalize-flags.js';
 import {
   LIGHTHOUSE_GROUPS,
   LIGHTHOUSE_NAVIGATION_AUDITS,
-  createRunnerFunction,
-} from './runner';
-import type { LighthouseOptions } from './types';
-import { filterAuditsAndGroupsByOnlyOptions } from './utils';
+} from './runner/constants.js';
+import { createRunnerFunction } from './runner/runner.js';
+import type { LighthouseOptions } from './types.js';
+import { filterAuditsAndGroupsByOnlyOptions } from './utils.js';
 
 export function lighthousePlugin(
   url: string,
@@ -23,10 +23,14 @@ export function lighthousePlugin(
     { skipAudits, onlyAudits, onlyCategories },
   );
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     title: 'Lighthouse',
     icon: 'lighthouse',
     audits,

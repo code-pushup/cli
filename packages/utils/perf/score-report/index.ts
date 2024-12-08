@@ -1,10 +1,10 @@
 import Benchmark from 'benchmark';
 import type { Report } from '@code-pushup/models';
-import { scoreReport } from '../../src/lib/reports/scoring';
-import { scoreReportOptimized0 } from './optimized0';
-import { scoreReportOptimized1 } from './optimized1';
-import { scoreReportOptimized2 } from './optimized2';
-import { scoreReportOptimized3 } from './optimized3';
+import { scoreReport } from '../../src/lib/reports/scoring.js';
+import { scoreReportOptimized0 } from './optimized0.js';
+import { scoreReportOptimized1 } from './optimized1.js';
+import { scoreReportOptimized2 } from './optimized2.js';
+import { scoreReportOptimized3 } from './optimized3.js';
 
 type MinimalReportOptions = {
   numAuditsP1?: number;

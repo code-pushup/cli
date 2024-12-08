@@ -1,8 +1,8 @@
 import type Result from 'lighthouse/types/lhr/lhr';
 import { type Issue, MAX_ISSUE_MESSAGE_LENGTH } from '@code-pushup/models';
 import { objectToCliArgs, toArray } from '@code-pushup/utils';
-import { LIGHTHOUSE_REPORT_NAME } from './constants';
-import type { LighthouseCliOptions } from './types';
+import { LIGHTHOUSE_REPORT_NAME } from './constants.js';
+import type { LighthouseCliOptions } from './types.js';
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,

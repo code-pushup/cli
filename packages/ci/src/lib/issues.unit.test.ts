@@ -3,7 +3,7 @@ import {
   calculateGroupImpact,
   getAuditImpactValue,
   issuesMatch,
-} from './issues';
+} from './issues.js';
 
 describe('issues comparison', () => {
   it('should match issues with exact same metadata', () => {

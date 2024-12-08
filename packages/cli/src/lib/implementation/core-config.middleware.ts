@@ -7,9 +7,9 @@ import {
   type Format,
   uploadConfigSchema,
 } from '@code-pushup/models';
-import type { CoreConfigCliOptions } from './core-config.model';
-import type { FilterOptions } from './filter.model';
-import type { GeneralCliOptions } from './global.model';
+import type { CoreConfigCliOptions } from './core-config.model.js';
+import type { FilterOptions } from './filter.model.js';
+import type { GeneralCliOptions } from './global.model.js';
 
 export type CoreConfigMiddlewareOptions = GeneralCliOptions &
   CoreConfigCliOptions &

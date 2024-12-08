@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import type { MockInstance } from 'vitest';
 import { MEMFS_VOLUME, toProjectGraph } from '@code-pushup/test-utils';
-import type { ESLintPluginConfig, ESLintTarget } from '../config';
-import { nxProjectsToConfig } from './projects-to-config';
+import type { ESLintPluginConfig, ESLintTarget } from '../config.js';
+import { nxProjectsToConfig } from './projects-to-config.js';
 
 describe('nxProjectsToConfig', () => {
   let cwdSpy: MockInstance<[], string>;

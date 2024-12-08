@@ -4,7 +4,7 @@ import {
   type AuditOutputs,
   auditOutputSchema,
   auditOutputsSchema,
-} from './audit-output';
+} from './audit-output.js';
 
 describe('auditOutputSchema', () => {
   it('should accept a valid audit output without details', () => {

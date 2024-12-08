@@ -3,7 +3,7 @@ import { logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import runAutorunExecutor from './executor';
+import runAutorunExecutor from './executor.js';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');

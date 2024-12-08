@@ -1,11 +1,11 @@
 import type { CommandModule } from 'yargs';
-import { yargsAutorunCommandObject } from './autorun/autorun-command';
-import { yargsCollectCommandObject } from './collect/collect-command';
-import { yargsCompareCommandObject } from './compare/compare-command';
-import { yargsHistoryCommandObject } from './history/history-command';
-import { yargsMergeDiffsCommandObject } from './merge-diffs/merge-diffs-command';
-import { yargsConfigCommandObject } from './print-config/print-config-command';
-import { yargsUploadCommandObject } from './upload/upload-command';
+import { yargsAutorunCommandObject } from './autorun/autorun-command.js';
+import { yargsCollectCommandObject } from './collect/collect-command.js';
+import { yargsCompareCommandObject } from './compare/compare-command.js';
+import { yargsHistoryCommandObject } from './history/history-command.js';
+import { yargsMergeDiffsCommandObject } from './merge-diffs/merge-diffs-command.js';
+import { yargsConfigCommandObject } from './print-config/print-config-command.js';
+import { yargsUploadCommandObject } from './upload/upload-command.js';
 
 export const commands: CommandModule[] = [
   {

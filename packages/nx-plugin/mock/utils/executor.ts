@@ -1,4 +1,4 @@
-import type { NormalizedExecutorContext } from '../../src/executors/internal/context';
+import type { NormalizedExecutorContext } from '../../src/executors/internal/context.js';
 
 export function normalizedExecutorContext(
   nameOrOpt: string | { projectName: string },

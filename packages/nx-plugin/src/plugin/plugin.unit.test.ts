@@ -2,9 +2,9 @@ import type { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
 import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';
-import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants';
-import { CP_TARGET_NAME } from './constants';
-import { createNodes } from './plugin';
+import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { CP_TARGET_NAME } from './constants.js';
+import { createNodes } from './plugin.js';
 
 describe('@code-pushup/nx-plugin/plugin', () => {
   let context: CreateNodesContext;

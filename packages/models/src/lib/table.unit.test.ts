@@ -12,7 +12,7 @@ import {
   tableRowObjectSchema,
   tableRowPrimitiveSchema,
   tableSchema,
-} from './table';
+} from './table.js';
 
 describe('tableAlignmentSchema', () => {
   it('should accept a valid enum', () => {

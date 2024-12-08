@@ -1,6 +1,6 @@
-import { commands } from '../src/lib/commands';
-import { middlewares } from '../src/lib/middlewares';
-import { options } from '../src/lib/options';
+import { commands } from '../src/lib/commands.js';
+import { middlewares } from '../src/lib/middlewares.js';
+import { options } from '../src/lib/options.js';
 
 export const DEFAULT_CLI_CONFIGURATION = {
   usageMessage: 'Code PushUp CLI',

@@ -4,7 +4,7 @@ import {
   compareAudits,
   compareCategories,
   compareGroups,
-} from './compare-scorables';
+} from './compare-scorables.js';
 
 describe('compareCategories', () => {
   it('should match categories by slug and check for equal scores', () => {

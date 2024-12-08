@@ -1,5 +1,5 @@
-import type { Settings } from '../models';
-import type { ProjectConfig } from '../monorepo';
+import type { Settings } from '../models.js';
+import type { ProjectConfig } from '../monorepo/index.js';
 
 export type CommandContext = Pick<
   Settings,

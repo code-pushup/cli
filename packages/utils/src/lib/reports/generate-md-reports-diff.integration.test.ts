@@ -10,7 +10,7 @@ import {
 import {
   generateMdReportsDiff,
   generateMdReportsDiffForMonorepo,
-} from './generate-md-reports-diff';
+} from './generate-md-reports-diff.js';
 
 describe('generateMdReportsDiff', () => {
   it('should format Markdown comment for improved reports diff', async () => {

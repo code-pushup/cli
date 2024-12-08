@@ -13,7 +13,7 @@ import {
   create,
   recommendedRefs,
   pluginSlug as slug,
-} from './file-size.plugin';
+} from './file-size.plugin.js';
 
 const projectJson = JSON.stringify(
   {

@@ -2,13 +2,13 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { AuditResult, Vulnerability } from './audit/types';
-import type { DependencyTotals, PackageJson } from './outdated/types';
+import type { AuditResult, Vulnerability } from './audit/types.js';
+import type { DependencyTotals, PackageJson } from './outdated/types.js';
 import {
   filterAuditResult,
   findAllPackageJson,
   getTotalDependencies,
-} from './utils';
+} from './utils.js';
 
 describe('findAllPackageJson', () => {
   beforeEach(() => {

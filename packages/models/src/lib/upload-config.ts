@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { slugSchema, urlSchema } from './implementation/schemas';
+import { slugSchema, urlSchema } from './implementation/schemas.js';
 
 export const uploadConfigSchema = z.object({
   server: urlSchema.describe('URL of deployed portal API'),

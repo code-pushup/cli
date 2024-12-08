@@ -3,8 +3,8 @@ import {
   auditDisplayValueSchema,
   auditOutputSchema,
   auditValueSchema,
-} from './audit-output';
-import { commitSchema } from './commit';
+} from './audit-output.js';
+import { commitSchema } from './commit.js';
 import {
   docsUrlSchema,
   executionMetaSchema,
@@ -13,8 +13,8 @@ import {
   slugSchema,
   titleSchema,
   urlSchema,
-} from './implementation/schemas';
-import { pluginMetaSchema } from './plugin-config';
+} from './implementation/schemas.js';
+import { pluginMetaSchema } from './plugin-config.js';
 
 function makeComparisonSchema<T extends ZodTypeAny>(schema: T) {
   const sharedDescription = schema.description || 'Result';

@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
 import { createNodesContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { normalizedCreateNodesContext } from './utils';
+import { normalizedCreateNodesContext } from './utils.js';
 
 describe('normalizedCreateNodesContext', () => {
   it('should provide workspaceRoot', async () => {

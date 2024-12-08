@@ -9,7 +9,7 @@ import {
   ensureDirectoryExists,
   readJsonFile,
   readTextFile,
-} from '../file-system';
+} from '../file-system.js';
 
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
 

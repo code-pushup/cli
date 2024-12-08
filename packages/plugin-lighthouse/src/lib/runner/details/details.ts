@@ -4,9 +4,9 @@ import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import type { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
-import { PLUGIN_SLUG } from '../constants';
-import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
-import { parseTableToAuditDetailsTable } from './table.type';
+import { PLUGIN_SLUG } from '../constants.js';
+import { parseOpportunityToAuditDetailsTable } from './opportunity.type.js';
+import { parseTableToAuditDetailsTable } from './table.type.js';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,

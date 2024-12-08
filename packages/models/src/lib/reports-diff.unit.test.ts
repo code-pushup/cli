@@ -1,4 +1,4 @@
-import { type ReportsDiff, reportsDiffSchema } from './reports-diff';
+import { type ReportsDiff, reportsDiffSchema } from './reports-diff.js';
 
 describe('reportsDiffSchema', () => {
   it('should parse valid reports diff', () => {

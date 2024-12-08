@@ -10,7 +10,7 @@ import {
   type RunnerResult,
   executeRunnerConfig,
   executeRunnerFunction,
-} from './runner';
+} from './runner.js';
 
 describe('executeRunnerConfig', () => {
   beforeEach(() => {

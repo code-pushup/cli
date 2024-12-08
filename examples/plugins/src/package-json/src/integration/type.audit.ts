@@ -1,11 +1,11 @@
 import type { AuditOutput, Issue } from '@code-pushup/models';
-import type { PackageJson, SourceResult, SourceResults } from './types';
+import type { PackageJson, SourceResult, SourceResults } from './types.js';
 import {
   assertPropertyEmpty,
   assertPropertyEqual,
   baseAuditOutput,
   scoreByErrorIssues,
-} from './utils';
+} from './utils.js';
 
 const typeAuditSlug = 'package-type';
 export const typeAuditInfoMeta = {

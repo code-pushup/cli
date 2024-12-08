@@ -12,7 +12,7 @@ import {
   adjustFileName,
   adjustLine,
   isFileChanged,
-} from './git';
+} from './git.js';
 
 export type SourceFileIssue = Required<Issue> & IssueContext;
 

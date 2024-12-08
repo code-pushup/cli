@@ -5,7 +5,7 @@ import {
   parseNxProcessOutput,
   setupNxContext,
   teardownNxContext,
-} from './utils';
+} from './utils.js';
 
 describe('parseNxProcessOutput', () => {
   it('should replace NX with <✓>', () => {

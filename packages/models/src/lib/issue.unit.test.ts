@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type Issue, issueSchema } from './issue';
+import { type Issue, issueSchema } from './issue.js';
 
 describe('issueSchema', () => {
   it('should accept a valid issue without source file information', () => {
