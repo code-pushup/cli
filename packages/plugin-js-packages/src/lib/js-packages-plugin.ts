@@ -10,7 +10,7 @@ import {
   dependencyGroups,
 } from './config.js';
 import { dependencyDocs, dependencyGroupWeights } from './constants.js';
-import { packageManagers } from './package-managers/index.js';
+import { packageManagers } from './package-managers/package-managers';
 import { createRunnerConfig } from './runner/index.js';
 import { normalizeConfig } from './utils.js';
 

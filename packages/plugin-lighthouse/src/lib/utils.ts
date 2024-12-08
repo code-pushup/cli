@@ -1,7 +1,7 @@
 import type { Audit, CategoryRef, Group } from '@code-pushup/models';
 import { filterItemRefsBy, toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
-import type { LighthouseCliFlags } from './runner/index.js';
+import type { LighthouseCliFlags } from './runner/types';
 
 export type LighthouseGroupSlugs =
   | 'performance'
