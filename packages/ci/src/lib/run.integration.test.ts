@@ -1,8 +1,16 @@
-import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import {
+  copyFile,
+  cp,
+  mkdir,
+  readFile,
+  rename,
+  writeFile,
+} from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import type { MockInstance } from 'vitest';
+import type { CoreConfig } from '@code-pushup/models';
 import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
 import { initGitRepo, simulateGitFetch } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -14,6 +22,7 @@ import type {
   ProviderAPIClient,
   RunResult,
 } from './models.js';
+import type { MonorepoTool } from './monorepo/index.js';
 import { runInCI } from './run.js';
 
 describe('runInCI', () => {
@@ -25,7 +34,7 @@ describe('runInCI', () => {
     'fixtures',
   );
   const reportsDir = join(fixturesDir, 'outputs');
-  const workDir = join('tmp', 'ci', 'run-test');
+  const workDir = join(process.cwd(), 'tmp', 'ci', 'run-test');
 
   const fixturePaths = {
     reports: {
@@ -77,38 +86,60 @@ describe('runInCI', () => {
     Promise<utils.ProcessResult>
   >;
 
+  async function simulateCodePushUpExecution({
+    command,
+    args,
+    cwd,
+  }: utils.ProcessConfig): Promise<utils.ProcessResult> {
+    const nxMatch = command.match(/nx run (\w+):code-pushup/);
+    const outputDir = nxMatch
+      ? join(workDir, `packages/${nxMatch[1]}/.code-pushup`)
+      : join(cwd as string, '.code-pushup');
+    await mkdir(outputDir, { recursive: true });
+    let stdout = '';
+
+    switch (args![0]) {
+      case 'compare':
+        const diffs = fixturePaths.diffs.project;
+        await copyFile(diffs.json, join(outputDir, 'report-diff.json'));
+        await copyFile(diffs.md, join(outputDir, 'report-diff.md'));
+        break;
+
+      case 'print-config':
+        stdout = await readFile(fixturePaths.config, 'utf8');
+        if (nxMatch) {
+          // simulate effect of custom persist.outputDir per Nx project
+          const config = JSON.parse(stdout) as CoreConfig;
+          // eslint-disable-next-line functional/immutable-data
+          config.persist!.outputDir = outputDir;
+          stdout = JSON.stringify(config, null, 2);
+        }
+        break;
+
+      case 'merge-diffs': // not tested here
+        break;
+
+      default:
+        const kind =
+          (await git.branch()).current === 'main' ? 'before' : 'after';
+        const reports = fixturePaths.reports[kind];
+        await copyFile(reports.json, join(outputDir, 'report.json'));
+        await copyFile(reports.md, join(outputDir, 'report.md'));
+        break;
+    }
+
+    return { code: 0, stdout, stderr: '' } as utils.ProcessResult;
+  }
+
   beforeEach(async () => {
+    const originalExecuteProcess = utils.executeProcess;
     executeProcessSpy = vi
       .spyOn(utils, 'executeProcess')
-      .mockImplementation(async ({ command, args, cwd }) => {
-        const outputDir = join(cwd as string, '.code-pushup');
-        if (command.includes('code-pushup')) {
-          await mkdir(outputDir, { recursive: true });
-          let stdout = '';
-          switch (args![0]) {
-            case 'compare':
-              const diffs = fixturePaths.diffs.project;
-              await copyFile(diffs.json, join(outputDir, 'report-diff.json'));
-              await copyFile(diffs.md, join(outputDir, 'report-diff.md'));
-              break;
-            case 'print-config':
-              stdout = await readFile(fixturePaths.config, 'utf8');
-              break;
-            case 'merge-diffs': // not tested here
-              break;
-            default:
-              const kind =
-                (await git.branch()).current === 'main' ? 'before' : 'after';
-              const reports = fixturePaths.reports[kind];
-              await copyFile(reports.json, join(outputDir, 'report.json'));
-              await copyFile(reports.md, join(outputDir, 'report.md'));
-              break;
-          }
-          return { code: 0, stdout, stderr: '' } as utils.ProcessResult;
+      .mockImplementation(cfg => {
+        if (cfg.command.includes('code-pushup')) {
+          return simulateCodePushUpExecution(cfg);
         }
-        throw new Error(
-          `Unexpected executeProcess call: ${command} ${args?.join(' ') ?? ''}`,
-        );
+        return originalExecuteProcess(cfg);
       });
 
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(workDir);
@@ -322,6 +353,89 @@ describe('runInCI', () => {
             '--persist.format=md',
           ],
           cwd: workDir,
+        } satisfies utils.ProcessConfig);
+
+        expect(logger.error).not.toHaveBeenCalled();
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe.each<[MonorepoTool, string]>([
+    ['nx', expect.stringMatching(/^npx nx run \w+:code-pushup --$/)],
+    ['turbo', 'npx turbo run code-pushup --'],
+    ['pnpm', 'pnpm run code-pushup'],
+    ['yarn', 'yarn run code-pushup'],
+    ['npm', 'npm run code-pushup --'],
+  ])('monorepo mode - %s', (tool, bin) => {
+    beforeEach(async () => {
+      const monorepoDir = join(fixturesDir, 'monorepos', 'tools', tool);
+      await cp(monorepoDir, workDir, { recursive: true });
+      await git.add('.');
+      await git.commit(`Create packages in ${tool} monorepo`);
+    });
+
+    describe('push event', () => {
+      beforeEach(async () => {
+        await git.checkout('main');
+      });
+
+      it('should collect reports for all projects', async () => {
+        await expect(
+          runInCI(
+            { head: { ref: 'main', sha: await git.revparse('main') } },
+            {} as ProviderAPIClient,
+            { ...options, monorepo: tool },
+            git,
+          ),
+        ).resolves.toEqual({
+          mode: 'monorepo',
+          projects: [
+            {
+              name: 'cli',
+              files: {
+                report: {
+                  json: join(workDir, 'packages/cli/.code-pushup/report.json'),
+                  md: join(workDir, 'packages/cli/.code-pushup/report.md'),
+                },
+              },
+            },
+            {
+              name: 'core',
+              files: {
+                report: {
+                  json: join(workDir, 'packages/core/.code-pushup/report.json'),
+                  md: join(workDir, 'packages/core/.code-pushup/report.md'),
+                },
+              },
+            },
+            {
+              name: 'utils',
+              files: {
+                report: {
+                  json: join(
+                    workDir,
+                    'packages/utils/.code-pushup/report.json',
+                  ),
+                  md: join(workDir, 'packages/utils/.code-pushup/report.md'),
+                },
+              },
+            },
+          ],
+        } satisfies RunResult);
+
+        expect(executeProcessSpy.mock.calls.length).toBeGreaterThanOrEqual(6);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: ['print-config'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: ['--persist.format=json', '--persist.format=md'],
+          cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
