@@ -52,6 +52,9 @@ describe('runInCI', () => {
         json: join(reportsDir, 'diff-project.json'),
         md: join(reportsDir, 'diff-project.md'),
       },
+      merged: {
+        md: join(reportsDir, 'diff-merged.md'),
+      },
     },
     config: join(reportsDir, 'config.json'),
   };
@@ -116,7 +119,14 @@ describe('runInCI', () => {
         }
         break;
 
-      case 'merge-diffs': // not tested here
+      case 'merge-diffs':
+        await copyFile(
+          fixturePaths.diffs.merged.md,
+          join(
+            nxMatch ? workDir : (cwd as string),
+            '.code-pushup/merged-report-diff.md',
+          ),
+        );
         break;
 
       default:
@@ -427,6 +437,11 @@ describe('runInCI', () => {
         } satisfies RunResult);
 
         expect(executeProcessSpy.mock.calls.length).toBeGreaterThanOrEqual(6);
+        expect(
+          executeProcessSpy.mock.calls.filter(([cfg]) =>
+            cfg.command.includes('code-pushup'),
+          ),
+        ).toHaveLength(6); // 3 projects: 1 autorun, 1 print-config
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: bin,
           args: ['print-config'],
@@ -435,6 +450,172 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: bin,
           args: ['--persist.format=json', '--persist.format=md'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+
+        expect(logger.error).not.toHaveBeenCalled();
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
+      });
+    });
+
+    describe('pull request event', () => {
+      let refs: GitRefs;
+      let diffMdString: string;
+
+      beforeEach(async () => {
+        await git.checkoutLocalBranch('feature-1');
+
+        await writeFile(join(workDir, 'README.md'), '# Hello, world\n');
+        await git.add('README.md');
+        await git.commit('Create README');
+
+        refs = {
+          head: { ref: 'feature-1', sha: await git.revparse('feature-1') },
+          base: { ref: 'main', sha: await git.revparse('main') },
+        };
+
+        diffMdString = await readFile(fixturePaths.diffs.merged.md, 'utf8');
+      });
+
+      it('should collect and compare reports for all projects and comment merged diff', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn().mockResolvedValue(mockComment),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+          downloadReportArtifact: vi.fn().mockImplementation(async project => {
+            if (project === 'utils') {
+              // simulates a project which has no cached report
+              return null;
+            }
+            const downloadPath = join(workDir, 'downloaded-report.json');
+            await copyFile(fixturePaths.reports.before.json, downloadPath);
+            return downloadPath;
+          }),
+        };
+
+        await expect(
+          runInCI(refs, api, { ...options, monorepo: tool }, git),
+        ).resolves.toEqual({
+          mode: 'monorepo',
+          commentId: mockComment.id,
+          diffPath: join(workDir, '.code-pushup/merged-report-diff.md'),
+          projects: [
+            {
+              name: 'cli',
+              files: {
+                report: {
+                  json: join(workDir, 'packages/cli/.code-pushup/report.json'),
+                  md: join(workDir, 'packages/cli/.code-pushup/report.md'),
+                },
+                diff: {
+                  json: join(
+                    workDir,
+                    'packages/cli/.code-pushup/report-diff.json',
+                  ),
+                  md: join(workDir, 'packages/cli/.code-pushup/report-diff.md'),
+                },
+              },
+              newIssues: [],
+            },
+            {
+              name: 'core',
+              files: {
+                report: {
+                  json: join(workDir, 'packages/core/.code-pushup/report.json'),
+                  md: join(workDir, 'packages/core/.code-pushup/report.md'),
+                },
+                diff: {
+                  json: join(
+                    workDir,
+                    'packages/core/.code-pushup/report-diff.json',
+                  ),
+                  md: join(
+                    workDir,
+                    'packages/core/.code-pushup/report-diff.md',
+                  ),
+                },
+              },
+              newIssues: [],
+            },
+            {
+              name: 'utils',
+              files: {
+                report: {
+                  json: join(
+                    workDir,
+                    'packages/utils/.code-pushup/report.json',
+                  ),
+                  md: join(workDir, 'packages/utils/.code-pushup/report.md'),
+                },
+                diff: {
+                  json: join(
+                    workDir,
+                    'packages/utils/.code-pushup/report-diff.json',
+                  ),
+                  md: join(
+                    workDir,
+                    'packages/utils/.code-pushup/report-diff.md',
+                  ),
+                },
+              },
+              newIssues: [],
+            },
+          ],
+        } satisfies RunResult);
+
+        await expect(
+          readFile(join(workDir, '.code-pushup/merged-report-diff.md'), 'utf8'),
+        ).resolves.toBe(diffMdString);
+
+        expect(api.listComments).toHaveBeenCalledWith();
+        expect(api.createComment).toHaveBeenCalledWith(
+          expect.stringContaining(diffMdString),
+        );
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        // 2 cached projects: 1 autorun, 1 print-config, 1 compare
+        // 1 uncached project: 2 autoruns, 2 print-configs, 1 compare
+        // 1 merge-diffs
+        expect(
+          executeProcessSpy.mock.calls.filter(([cfg]) =>
+            cfg.command.includes('code-pushup'),
+          ),
+        ).toHaveLength(12);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: ['print-config'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: ['--persist.format=json', '--persist.format=md'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: [
+            'compare',
+            expect.stringMatching(/^--before=.*prev-report.json$/),
+            expect.stringMatching(/^--after=.*curr-report.json$/),
+            expect.stringMatching(/^--label=\w+$/),
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: bin,
+          args: [
+            'merge-diffs',
+            `--files=${join(workDir, 'packages/cli/.code-pushup/report-diff.json')}`,
+            `--files=${join(workDir, 'packages/core/.code-pushup/report-diff.json')}`,
+            `--files=${join(workDir, 'packages/utils/.code-pushup/report-diff.json')}`,
+            expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
+            '--persist.filename=merged-report',
+          ],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
 
