@@ -381,7 +381,7 @@ describe('runInCI', () => {
     ['npm', 'npm run code-pushup --'],
   ])('monorepo mode - %s', (tool, bin) => {
     beforeEach(async () => {
-      const monorepoDir = join(fixturesDir, 'monorepos', 'tools', tool);
+      const monorepoDir = join(fixturesDir, 'monorepos', tool);
       await cp(monorepoDir, workDir, { recursive: true });
       await git.add('.');
       await git.commit(`Create packages in ${tool} monorepo`);
