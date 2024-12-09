@@ -1,0 +1,6 @@
+{
+  "name": "core",
+  "scripts": {
+    "code-pushup": "code-pushup"
+  }
+}
