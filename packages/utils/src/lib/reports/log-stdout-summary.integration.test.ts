@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes, reportMock } from '@code-pushup/test-utils';
-import { ui } from '../logging';
-import { logStdoutSummary } from './log-stdout-summary';
-import { scoreReport } from './scoring';
-import { sortReport } from './sorting';
+import { ui } from '../logging.js';
+import { logStdoutSummary } from './log-stdout-summary.js';
+import { scoreReport } from './scoring.js';
+import { sortReport } from './sorting.js';
 
 describe('logStdoutSummary', () => {
   let logs: string[];

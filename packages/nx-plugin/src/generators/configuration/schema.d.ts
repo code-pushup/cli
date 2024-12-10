@@ -1,4 +1,4 @@
-import type { DynamicTargetOptions } from '../../internal/types';
+import type { DynamicTargetOptions } from '../../internal/types.js';
 
 export type ConfigurationGeneratorOptions = {
   project: string;

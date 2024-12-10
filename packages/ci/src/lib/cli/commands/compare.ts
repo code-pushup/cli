@@ -1,10 +1,10 @@
 import { executeProcess } from '@code-pushup/utils';
-import type { CommandContext } from '../context';
+import type { CommandContext } from '../context.js';
 import {
   type PersistedCliFiles,
   persistCliOptions,
   persistedCliFiles,
-} from '../persist';
+} from '../persist.js';
 
 type CompareOptions = {
   before: string;
@@ -14,7 +14,7 @@ type CompareOptions = {
 
 export async function runCompare(
   { before, after, label }: CompareOptions,
-  { bin, config, directory, silent, project }: CommandContext,
+  { bin, config, directory, silent, project, output }: CommandContext,
 ): Promise<PersistedCliFiles> {
   const { stdout } = await executeProcess({
     command: bin,
@@ -24,7 +24,7 @@ export async function runCompare(
       `--after=${after}`,
       ...(label ? [`--label=${label}`] : []),
       ...(config ? [`--config=${config}`] : []),
-      ...persistCliOptions({ directory, project }),
+      ...persistCliOptions({ directory, project, output }),
     ],
     cwd: directory,
   });
@@ -32,5 +32,5 @@ export async function runCompare(
     console.info(stdout);
   }
 
-  return persistedCliFiles({ directory, isDiff: true, project });
+  return persistedCliFiles({ directory, isDiff: true, project, output });
 }

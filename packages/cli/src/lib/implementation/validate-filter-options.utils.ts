@@ -5,7 +5,7 @@ import {
   pluralize,
   ui,
 } from '@code-pushup/utils';
-import type { FilterOptionType, Filterables } from './filter.model';
+import type { FilterOptionType, Filterables } from './filter.model.js';
 
 export class OptionValidationError extends Error {}
 

@@ -1,4 +1,4 @@
-import type { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config.js';
 
 /* eslint-disable no-magic-numbers */
 export const auditScoreModifiers: Record<PackageAuditLevel, number> = {

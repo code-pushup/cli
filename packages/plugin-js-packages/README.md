@@ -78,8 +78,8 @@ It supports the following package managers:
          refs: [
            {
              type: 'group',
-             plugin: 'npm-audit', // replace prefix with your package manager
-             slug: 'js-packages',
+             slug: 'npm-audit', // replace prefix with your package manager
+             plugin: 'js-packages',
              weight: 1,
            },
          ],
@@ -90,8 +90,8 @@ It supports the following package managers:
          refs: [
            {
              type: 'group',
-             plugin: 'npm-outdated', // replace prefix with your package manager
-             slug: 'js-packages',
+             slug: 'npm-outdated', // replace prefix with your package manager
+             plugin: 'js-packages',
              weight: 1,
            },
            // ...

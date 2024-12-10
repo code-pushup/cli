@@ -1,10 +1,10 @@
 import { objectToKeys } from '@code-pushup/utils';
-import type { DependencyGroup } from '../../config';
-import { filterAuditResult } from '../../runner/utils';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import type { AuditResults, PackageManager } from '../types';
-import { pnpmToAuditResult } from './audit-result';
-import { pnpmToOutdatedResult } from './outdated-result';
+import type { DependencyGroup } from '../../config.js';
+import { filterAuditResult } from '../../runner/utils.js';
+import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
+import type { AuditResults, PackageManager } from '../types.js';
+import { pnpmToAuditResult } from './audit-result.js';
+import { pnpmToOutdatedResult } from './outdated-result.js';
 
 const pnpmDependencyOptions: Record<DependencyGroup, string[]> = {
   prod: ['--prod', '--no-optional'],

@@ -1,7 +1,7 @@
 import { isAbsolute, join, relative } from 'node:path';
 import { type StatusResult, simpleGit } from 'simple-git';
-import { ui } from '../logging';
-import { toUnixPath } from '../transform';
+import { ui } from '../logging.js';
+import { toUnixPath } from '../transform.js';
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
   return git.revparse('--show-toplevel');

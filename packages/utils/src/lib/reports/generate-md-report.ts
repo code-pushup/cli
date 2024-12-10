@@ -1,20 +1,24 @@
 import { type InlineText, MarkdownDocument, md } from 'build-md';
 import type { AuditReport, Issue, Report } from '@code-pushup/models';
-import { formatDate, formatDuration } from '../formatting';
-import { HIERARCHY } from '../text-formats';
-import { FOOTER_PREFIX, README_LINK, REPORT_HEADLINE_TEXT } from './constants';
+import { formatDate, formatDuration } from '../formatting.js';
+import { HIERARCHY } from '../text-formats/index.js';
+import {
+  FOOTER_PREFIX,
+  README_LINK,
+  REPORT_HEADLINE_TEXT,
+} from './constants.js';
 import {
   formatSourceLine,
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
-} from './formatting';
+} from './formatting.js';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
-} from './generate-md-report-categoy-section';
-import type { MdReportOptions, ScoredReport } from './types';
-import { formatReportScore, scoreMarker, severityMarker } from './utils';
+} from './generate-md-report-categoy-section.js';
+import type { MdReportOptions, ScoredReport } from './types.js';
+import { formatReportScore, scoreMarker, severityMarker } from './utils.js';
 
 export function auditDetailsAuditValue({
   score,

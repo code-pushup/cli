@@ -1,9 +1,9 @@
-import { details } from './html/details';
-import { bold, code, italic } from './html/font-style';
-import { link } from './html/link';
-import { table } from './html/table';
+import { details } from './html/details.js';
+import { bold, code, italic } from './html/font-style.js';
+import { link } from './html/link.js';
+import { table } from './html/table.js';
 
-export { NEW_LINE, SPACE, TAB, HIERARCHY } from './constants';
+export { NEW_LINE, SPACE, TAB, HIERARCHY } from './constants.js';
 
 export const html = {
   bold,

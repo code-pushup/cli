@@ -10,10 +10,10 @@ import {
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
-import type { FinalCoveragePluginConfig } from '../config';
-import { applyMaxScoreAboveThreshold } from '../utils';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
-import { lcovResultsToAuditOutputs } from './lcov/lcov-runner';
+import type { FinalCoveragePluginConfig } from '../config.js';
+import { applyMaxScoreAboveThreshold } from '../utils.js';
+import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants.js';
+import { lcovResultsToAuditOutputs } from './lcov/lcov-runner.js';
 
 export async function executeRunner(): Promise<void> {
   const { reports, coverageToolCommand, coverageTypes } =

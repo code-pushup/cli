@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
 import { reportMock } from '@code-pushup/test-utils';
-import { generateMdReport } from './generate-md-report';
-import { scoreReport } from './scoring';
-import { sortReport } from './sorting';
+import { generateMdReport } from './generate-md-report.js';
+import { scoreReport } from './scoring.js';
+import { sortReport } from './sorting.js';
 
 describe('generateMdReport', () => {
   beforeEach(() => {

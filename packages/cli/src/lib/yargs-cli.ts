@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { blue, dim, green } from 'ansis';
+import { createRequire } from 'node:module';
 import yargs, {
   type Argv,
   type CommandModule,
@@ -9,15 +10,14 @@ import yargs, {
 } from 'yargs';
 import { type PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
-import { version } from '../../package.json';
 import {
   descriptionStyle,
   formatNestedValues,
   formatObjectValue,
   headerStyle,
   titleStyle,
-} from './implementation/formatting';
-import { logErrorBeforeThrow } from './implementation/global.utils';
+} from './implementation/formatting.js';
+import { logErrorBeforeThrow } from './implementation/global.utils.js';
 
 export const yargsDecorator = {
   'Commands:': `${green('Commands')}:`,
@@ -65,6 +65,10 @@ export function yargsCli<T = unknown>(
   const examples = cfg.examples ?? [];
   const cli = yargs(argv);
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   // setup yargs
   cli
     .updateLocale(yargsDecorator)
@@ -73,7 +77,7 @@ export function yargsCli<T = unknown>(
     .help('help', descriptionStyle('Show help'))
     .alias('h', 'help')
     .showHelpOnFail(false)
-    .version('version', dim`Show version`, version)
+    .version('version', dim`Show version`, packageJson.version)
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);

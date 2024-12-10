@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "ignorePatterns": ["*.config*"],
+  "overrides": [
+    {
+      "files": ["*.js"],
+      "env": {
+        "node": true
+      },
+      "parserOptions": {
+        "sourceType": "script"
+      },
+      "rules": {
+        "no-unused-vars": "error",
+        "no-console": "warn",
+        "no-undef": "error"
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config.js';
 
 export function getVulnerabilitiesTotal(
   summary: Record<PackageAuditLevel, number>,

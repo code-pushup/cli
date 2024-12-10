@@ -1,7 +1,7 @@
 import type { Audit } from '@code-pushup/models';
 import { truncateDescription, truncateTitle } from '@code-pushup/utils';
-import { ruleIdToSlug } from './hash';
-import type { RuleData } from './rules';
+import { ruleIdToSlug } from './hash.js';
+import type { RuleData } from './parse.js';
 
 export function ruleToAudit({ ruleId, meta, options }: RuleData): Audit {
   const name = ruleId.split('/').at(-1) ?? ruleId;

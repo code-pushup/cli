@@ -1,8 +1,8 @@
 import type { Rule } from 'eslint';
 import type { Group, GroupRef } from '@code-pushup/models';
 import { objectToKeys, slugify } from '@code-pushup/utils';
-import { ruleIdToSlug } from './hash';
-import { type RuleData, parseRuleId } from './rules';
+import { ruleIdToSlug } from './hash.js';
+import { type RuleData, parseRuleId } from './parse.js';
 
 type RuleType = NonNullable<Rule.RuleMetaData['type']>;
 

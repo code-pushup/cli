@@ -2,7 +2,7 @@ import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { initGitRepo } from '@code-pushup/test-utils';
-import { type ChangedFiles, listChangedFiles } from './git';
+import { type ChangedFiles, listChangedFiles } from './git.js';
 
 describe('git diff', () => {
   const baseDir = join('tmp', 'ci', 'git-utils-test');

@@ -3,21 +3,14 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
-      "command": "npx dist/packages/cli",
-      "dependsOn": [
-        {
-          "projects": [
-            "cli",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
-            "plugin-lighthouse",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
-      ]
+      }
     }
   }
 }

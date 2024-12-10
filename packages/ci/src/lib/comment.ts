@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import type { Logger, ProviderAPIClient } from './models';
+import type { Logger, ProviderAPIClient } from './models.js';
 
 export async function commentOnPR(
   mdPath: string,

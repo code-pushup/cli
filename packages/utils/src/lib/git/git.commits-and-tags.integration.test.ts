@@ -8,7 +8,7 @@ import {
   getHashes,
   getLatestCommit,
   getSemverTags,
-} from './git.commits-and-tags';
+} from './git.commits-and-tags.js';
 
 async function getAllCommits(git: SimpleGit) {
   return (await git.log()).all.map(({ hash, message }) => ({

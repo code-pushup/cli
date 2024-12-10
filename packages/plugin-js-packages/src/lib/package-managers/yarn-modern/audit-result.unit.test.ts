@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { AuditResult } from '../../runner/audit/types';
-import { yarnv2ToAuditResult } from './audit-result';
-import type { Yarnv2AuditResultJson } from './types';
+import type { AuditResult } from '../../runner/audit/types.js';
+import { yarnv2ToAuditResult } from './audit-result.js';
+import type { Yarnv2AuditResultJson } from './types.js';
 
 describe('yarnv2ToAuditResult', () => {
   it('should transform Yarn v2 audit to unified audit result', () => {

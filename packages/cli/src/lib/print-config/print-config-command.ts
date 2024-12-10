@@ -1,6 +1,6 @@
 import type { CommandModule } from 'yargs';
 import { ui } from '@code-pushup/utils';
-import { filterKebabCaseKeys } from '../implementation/global.utils';
+import { filterKebabCaseKeys } from '../implementation/global.utils.js';
 
 export function yargsConfigCommandObject() {
   const command = 'print-config';

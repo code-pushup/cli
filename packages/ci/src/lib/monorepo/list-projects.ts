@@ -1,10 +1,10 @@
 import { glob } from 'glob';
 import { join } from 'node:path';
-import type { Logger, Settings } from '../models';
-import { detectMonorepoTool } from './detect-tool';
-import { getToolHandler } from './handlers';
-import { listPackages } from './packages';
-import type { MonorepoHandlerOptions, ProjectConfig } from './tools';
+import type { Logger, Settings } from '../models.js';
+import { detectMonorepoTool } from './detect-tool.js';
+import { getToolHandler } from './handlers/index.js';
+import { listPackages } from './packages.js';
+import type { MonorepoHandlerOptions, ProjectConfig } from './tools.js';
 
 export async function listMonorepoProjects(
   settings: Settings,
@@ -61,6 +61,7 @@ function createMonorepoHandlerOptions(
   return {
     task: settings.task,
     cwd: settings.directory,
+    nxProjectsFilter: settings.nxProjectsFilter,
     ...(!settings.silent && {
       observer: {
         onStdout: stdout => {

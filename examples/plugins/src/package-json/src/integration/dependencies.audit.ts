@@ -5,8 +5,8 @@ import type {
   DependencyType,
   SourceResult,
   SourceResults,
-} from './types';
-import { filterSeverityError, pluralizePackage } from './utils';
+} from './types.js';
+import { filterSeverityError, pluralizePackage } from './utils.js';
 
 export type RequiredDependencies = DependencyMap;
 

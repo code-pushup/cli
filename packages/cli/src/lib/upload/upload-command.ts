@@ -2,11 +2,11 @@ import { bold, gray } from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { type UploadOptions, upload } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   renderIntegratePortalHint,
   uploadSuccessfulLog,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 export function yargsUploadCommandObject() {
   const command = 'upload';

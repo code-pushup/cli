@@ -1,4 +1,4 @@
-import { bold, code, italic } from './font-style';
+import { bold, code, italic } from './font-style.js';
 
 describe('bold', () => {
   it('should return bold text', () => {

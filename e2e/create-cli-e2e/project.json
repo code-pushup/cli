@@ -14,17 +14,11 @@
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
+        "keepServerRunning": true,
         "configFile": "e2e/create-cli-e2e/vite.config.e2e.ts"
       }
     }
   },
-  "implicitDependencies": [
-    "models",
-    "utils",
-    "core",
-    "cli",
-    "nx-plugin",
-    "create-cli"
-  ],
+  "implicitDependencies": ["create-cli"],
   "tags": ["scope:tooling", "type:e2e"]
 }

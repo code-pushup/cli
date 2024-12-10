@@ -9,13 +9,13 @@ import type {
   ScoredReport,
   SortableAuditReport,
   SortableGroup,
-} from './types';
+} from './types.js';
 import {
   compareAudits,
   compareCategoryAuditsAndGroups,
   compareIssues,
   throwIsNotPresentError,
-} from './utils';
+} from './utils.js';
 
 export function getSortableAuditByRef(
   { slug, weight, plugin }: CategoryRef,

@@ -9,7 +9,7 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from '../../dist/examples/plugins';
+} from '../../dist/examples/plugins/index.js';
 
 /**
  * Run it with:

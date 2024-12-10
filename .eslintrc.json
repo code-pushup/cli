@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
+  "ignorePatterns": ["**/*", "*.config*"],
   "plugins": ["@nx"],
   "overrides": [
     {
@@ -91,14 +91,21 @@
       "rules": {
         "vitest/consistent-test-filename": [
           "warn",
-          { "pattern": ".*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$" }
-        ]
+          {
+            "pattern": ".*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$"
+          }
+        ],
+        "@typescript-eslint/no-extra-semi": "error",
+        "no-extra-semi": "off"
       }
     },
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript", "@code-pushup"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-extra-semi": "error",
+        "no-extra-semi": "off"
+      }
     },
     {
       "files": "*.json",

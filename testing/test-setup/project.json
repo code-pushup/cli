@@ -5,14 +5,13 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/testing/test-setup",
         "main": "testing/test-setup/src/index.ts",
         "tsConfig": "testing/test-setup/tsconfig.lib.json",
-        "assets": ["testing/test-setup/*.md", "testing/test-setup/*.d.ts"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["testing/test-setup/*.md"]
       }
     },
     "unit-test": {

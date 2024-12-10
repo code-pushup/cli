@@ -2,9 +2,9 @@ import {
   yargsCoreConfigOptionsDefinition,
   yargsPersistConfigOptionsDefinition,
   yargsUploadConfigOptionsDefinition,
-} from './implementation/core-config.options';
-import { yargsFilterOptionsDefinition } from './implementation/filter.options';
-import { yargsGlobalOptionsDefinition } from './implementation/global.options';
+} from './implementation/core-config.options.js';
+import { yargsFilterOptionsDefinition } from './implementation/filter.options.js';
+import { yargsGlobalOptionsDefinition } from './implementation/global.options.js';
 
 export const options = {
   ...yargsGlobalOptionsDefinition(),

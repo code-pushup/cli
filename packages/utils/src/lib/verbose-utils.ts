@@ -1,4 +1,4 @@
-import { ui } from './logging';
+import { ui } from './logging.js';
 
 function getLogVerbose(verbose = false) {
   return (msg: string) => {

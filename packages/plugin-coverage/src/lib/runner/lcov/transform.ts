@@ -1,10 +1,10 @@
 import type { LCOVRecord } from 'parse-lcov';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { toNumberPrecision, toOrdinal } from '@code-pushup/utils';
-import type { CoverageType } from '../../config';
-import { INVALID_FUNCTION_NAME } from '../constants';
-import type { LCOVStat } from './types';
-import { calculateCoverage, mergeConsecutiveNumbers } from './utils';
+import type { CoverageType } from '../../config.js';
+import { INVALID_FUNCTION_NAME } from '../constants.js';
+import type { LCOVStat } from './types.js';
+import { calculateCoverage, mergeConsecutiveNumbers } from './utils.js';
 
 export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {
   const validRecord = removeEmptyReport(record);

@@ -1,4 +1,5 @@
 import { writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import {
   type Format,
@@ -17,14 +18,13 @@ import {
   scoreReport,
   ui,
 } from '@code-pushup/utils';
-import { name as packageName, version } from '../../package.json';
 import {
   type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,
-} from './implementation/compare-scorables';
-import { loadPortalClient } from './load-portal-client';
+} from './implementation/compare-scorables.js';
+import { loadPortalClient } from './load-portal-client.js';
 
 export async function compareReportFiles(
   inputPaths: Diff<string>,
@@ -87,13 +87,17 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 
   const duration = calcDuration(start);
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   return {
     commits,
     categories,
     groups,
     audits,
-    packageName,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     date,
     duration,
   };

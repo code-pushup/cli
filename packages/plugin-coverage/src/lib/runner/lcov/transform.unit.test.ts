@@ -1,14 +1,14 @@
 import type { LCOVRecord } from 'parse-lcov';
 import { describe, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
-import { INVALID_FUNCTION_NAME } from '../constants';
+import { INVALID_FUNCTION_NAME } from '../constants.js';
 import {
   lcovCoverageToAuditOutput,
   lcovReportToBranchStat,
   lcovReportToFunctionStat,
   lcovReportToLineStat,
-} from './transform';
-import type { LCOVStat } from './types';
+} from './transform.js';
+import type { LCOVStat } from './types.js';
 
 const lcovRecordMock: LCOVRecord = {
   file: 'cli.ts',

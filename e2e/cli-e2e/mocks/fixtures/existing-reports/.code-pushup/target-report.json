@@ -1,0 +1,45 @@
+{
+  "commit": {
+    "hash": "11f3153b8df2f5e651a1c72d3ddde3a0f400b8a2",
+    "message": "Merge branch 'main' into split-compare-e2e",
+    "date": "2024-11-19T14:28:43.000Z",
+    "author": "Michael"
+  },
+  "packageName": "@code-pushup/core",
+  "version": "0.54.0",
+  "date": "2024-11-19T14:51:03.174Z",
+  "duration": 63,
+  "categories": [
+    {
+      "slug": "dummy-category",
+      "refs": [
+        {
+          "slug": "dummy-audit",
+          "weight": 1,
+          "type": "audit",
+          "plugin": "dummy-plugin"
+        }
+      ],
+      "title": "Dummy Category"
+    }
+  ],
+  "plugins": [
+    {
+      "title": "Dummy Plugin",
+      "slug": "dummy-plugin",
+      "icon": "folder-javascript",
+      "date": "2024-11-19T14:51:03.212Z",
+      "duration": 1,
+      "audits": [
+        {
+          "slug": "dummy-audit",
+          "value": 7,
+          "score": 0.7,
+          "title": "Dummy Audit",
+          "description": "A dummy audit to test the cli."
+        }
+      ],
+      "description": "A dummy plugin to test the cli."
+    }
+  ]
+}

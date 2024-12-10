@@ -70,7 +70,6 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       '**/code-pushup.*.{js,mjs,ts,cjs,mts,cts}',
       '**/vite.config.*.ts',
       '**/*.d.ts',
-      'esbuild.config.js',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
     ],
     ignoreDependencies: [

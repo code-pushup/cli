@@ -1,8 +1,8 @@
 import { ESLint, type Linter } from 'eslint';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import type { ESLintPluginConfig } from '../config';
-import { lint } from './lint';
+import type { ESLintPluginConfig } from '../config.js';
+import { lint } from './lint.js';
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(

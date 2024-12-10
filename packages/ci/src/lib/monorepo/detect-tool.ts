@@ -1,5 +1,5 @@
-import { MONOREPO_TOOL_HANDLERS } from './handlers';
-import type { MonorepoHandlerOptions, MonorepoTool } from './tools';
+import { MONOREPO_TOOL_HANDLERS } from './handlers/index.js';
+import type { MonorepoHandlerOptions, MonorepoTool } from './tools.js';
 
 export async function detectMonorepoTool(
   options: MonorepoHandlerOptions,

@@ -1,12 +1,12 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
-import { ui } from '../logging';
+import { ui } from '../logging.js';
 import {
   binaryIconPrefix,
   logCategories,
   logPlugins,
-} from './log-stdout-summary';
-import type { ScoredReport } from './types';
+} from './log-stdout-summary.js';
+import type { ScoredReport } from './types.js';
 
 describe('logCategories', () => {
   let logs: string[];

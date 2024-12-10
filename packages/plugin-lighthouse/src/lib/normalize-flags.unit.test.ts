@@ -3,10 +3,10 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants';
-import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
-import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
-import type { LighthouseOptions } from './types';
+import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants.js';
+import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags.js';
+import { LIGHTHOUSE_REPORT_NAME } from './runner/constants.js';
+import type { LighthouseOptions } from './types.js';
 
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {

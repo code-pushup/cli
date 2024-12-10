@@ -2,13 +2,13 @@ import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
-import { toUnixPath } from '../transform';
+import { toUnixPath } from '../transform.js';
 import {
   getGitRoot,
   guardAgainstLocalChanges,
   safeCheckout,
   toGitPath,
-} from './git';
+} from './git.js';
 
 describe('git utils in a git repo', () => {
   const baseDir = join(process.cwd(), 'tmp', 'git-tests');

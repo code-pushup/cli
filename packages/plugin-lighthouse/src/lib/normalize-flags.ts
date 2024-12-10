@@ -1,8 +1,9 @@
 import { bold, yellow } from 'ansis';
 import { ui } from '@code-pushup/utils';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { DEFAULT_CLI_FLAGS, type LighthouseCliFlags } from './runner';
-import type { LighthouseOptions } from './types';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import { DEFAULT_CLI_FLAGS } from './runner/constants.js';
+import type { LighthouseCliFlags } from './runner/types';
+import type { LighthouseOptions } from './types.js';
 
 const { onlyCategories, ...originalDefaultCliFlags } = DEFAULT_CLI_FLAGS;
 export const DEFAULT_LIGHTHOUSE_OPTIONS = {

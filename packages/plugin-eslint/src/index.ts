@@ -1,8 +1,8 @@
-import { eslintPlugin } from './lib/eslint-plugin';
+import { eslintPlugin } from './lib/eslint-plugin.js';
 
 export default eslintPlugin;
 
-export type { ESLintPluginConfig } from './lib/config';
+export type { ESLintPluginConfig } from './lib/config.js';
 
 export {
   eslintConfigFromNxProjectAndDeps,
@@ -10,4 +10,4 @@ export {
   eslintConfigFromNxProjects,
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
-} from './lib/nx';
+} from './lib/nx/index.js';

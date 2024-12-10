@@ -7,7 +7,7 @@ import {
   auditSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { echoRunnerConfigMock } from './runner-config.mock';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export function pluginConfigMock(
   auditOutputs: AuditReport[],

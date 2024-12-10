@@ -1,9 +1,10 @@
 import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
+import type { Command } from '../internal/types.js';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
-} from './utils';
+} from './utils.js';
 
 describe('parseAutorunExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
@@ -93,4 +94,62 @@ describe('parseAutorunExecutorOptions', () => {
       osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
+
+  it.each<Command | undefined>(['upload', 'autorun', undefined])(
+    'should include upload config for command %s',
+    command => {
+      const projectName = 'my-app';
+      const executorOptions = parseAutorunExecutorOptions(
+        {
+          command,
+          upload: {
+            organization: 'code-pushup',
+          },
+        },
+        {
+          projectName,
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'my-app',
+            root: 'root',
+          },
+        },
+      );
+
+      expect(executorOptions).toEqual(
+        expect.objectContaining({
+          upload: expect.any(Object),
+        }),
+      );
+    },
+  );
+
+  it.each<Command>(['collect'])(
+    'should not include upload config for command %s',
+    command => {
+      const projectName = 'my-app';
+      const executorOptions = parseAutorunExecutorOptions(
+        {
+          command,
+          upload: {
+            organization: 'code-pushup',
+          },
+        },
+        {
+          projectName,
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'my-app',
+            root: 'root',
+          },
+        },
+      );
+
+      expect(executorOptions).toEqual(
+        expect.not.objectContaining({
+          upload: expect.any(Object),
+        }),
+      );
+    },
+  );
 });

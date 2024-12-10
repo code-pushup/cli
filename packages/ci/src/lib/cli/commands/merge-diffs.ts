@@ -1,14 +1,14 @@
 import { executeProcess } from '@code-pushup/utils';
-import type { CommandContext } from '../context';
+import type { CommandContext } from '../context.js';
 import {
   type PersistedCliFiles,
   persistCliOptions,
   persistedCliFiles,
-} from '../persist';
+} from '../persist.js';
 
 export async function runMergeDiffs(
   files: string[],
-  { bin, config, directory, silent }: CommandContext,
+  { bin, config, directory, silent, output }: CommandContext,
 ): Promise<PersistedCliFiles<'md'>> {
   const { stdout } = await executeProcess({
     command: bin,
@@ -16,7 +16,7 @@ export async function runMergeDiffs(
       'merge-diffs',
       ...files.map(file => `--files=${file}`),
       ...(config ? [`--config=${config}`] : []),
-      ...persistCliOptions({ directory }),
+      ...persistCliOptions({ directory, output }),
     ],
     cwd: directory,
   });
@@ -24,5 +24,10 @@ export async function runMergeDiffs(
     console.info(stdout);
   }
 
-  return persistedCliFiles({ directory, isDiff: true, formats: ['md'] });
+  return persistedCliFiles({
+    directory,
+    isDiff: true,
+    formats: ['md'],
+    output,
+  });
 }

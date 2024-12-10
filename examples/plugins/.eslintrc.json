@@ -1,6 +1,6 @@
 {
   "extends": ["../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*", "code-pushup.config.ts"],
+  "ignorePatterns": ["!**/*", "*.config*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],

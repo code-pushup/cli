@@ -1,5 +1,5 @@
-import type { SourceFileIssue } from './issues';
-import type { MonorepoTool } from './monorepo';
+import type { SourceFileIssue } from './issues.js';
+import type { MonorepoTool } from './monorepo/index.js';
 
 /**
  * Customization options for {@link runInCI}
@@ -9,6 +9,7 @@ export type Options = {
   monorepo?: boolean | MonorepoTool;
   projects?: string[] | null;
   task?: string;
+  nxProjectsFilter?: string | string[];
   bin?: string;
   config?: string | null;
   directory?: string;
@@ -16,6 +17,7 @@ export type Options = {
   debug?: boolean;
   detectNewIssues?: boolean;
   logger?: Logger;
+  output?: string;
 };
 
 /**

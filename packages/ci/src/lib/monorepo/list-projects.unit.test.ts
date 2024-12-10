@@ -3,10 +3,10 @@ import { join } from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import { DEFAULT_SETTINGS } from '../constants';
-import type { Settings } from '../models';
-import { listMonorepoProjects } from './list-projects';
-import type { ProjectConfig } from './tools';
+import { DEFAULT_SETTINGS } from '../constants.js';
+import type { Settings } from '../models.js';
+import { listMonorepoProjects } from './list-projects.js';
+import type { ProjectConfig } from './tools.js';
 
 describe('listMonorepoProjects', () => {
   const MONOREPO_SETTINGS: Settings = {
@@ -14,6 +14,7 @@ describe('listMonorepoProjects', () => {
     monorepo: true,
     projects: null,
     task: 'code-pushup',
+    nxProjectsFilter: '--with-target={task}',
     directory: MEMFS_VOLUME,
     bin: 'npx --no-install code-pushup',
     logger: {
@@ -56,6 +57,15 @@ describe('listMonorepoProjects', () => {
       { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
       { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
     ] satisfies ProjectConfig[]);
+
+    expect(utils.executeProcess).toHaveBeenCalledWith<
+      Parameters<(typeof utils)['executeProcess']>
+    >({
+      command: 'npx',
+      args: ['nx', 'show', 'projects', '--with-target=code-pushup', '--json'],
+      cwd: process.cwd(),
+      observer: expect.any(Object),
+    });
   });
 
   it('should detect projects in Turborepo which have code-pushup command', async () => {
