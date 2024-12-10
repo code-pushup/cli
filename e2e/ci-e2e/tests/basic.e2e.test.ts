@@ -9,8 +9,8 @@ import {
   runInCI,
 } from '@code-pushup/ci';
 import { TEST_SNAPSHOTS_DIR } from '@code-pushup/test-utils';
-import { MOCK_API, MOCK_COMMENT } from '../mocks/api';
-import { type TestRepo, setupTestRepo } from '../mocks/setup';
+import { MOCK_API, MOCK_COMMENT } from '../mocks/api.js';
+import { type TestRepo, setupTestRepo } from '../mocks/setup.js';
 
 describe('CI - standalone mode', () => {
   let repo: TestRepo;
