@@ -7,8 +7,8 @@ import type {
   MonorepoHandlerOptions,
   MonorepoHandlerProjectsContext,
   ProjectConfig,
-} from '../tools';
-import { yarnHandler } from './yarn';
+} from '../tools.js';
+import { yarnHandler } from './yarn.js';
 
 describe('yarnHandler', () => {
   const options = {

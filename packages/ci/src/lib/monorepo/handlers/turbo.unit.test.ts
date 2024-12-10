@@ -6,8 +6,8 @@ import type {
   MonorepoHandlerOptions,
   MonorepoHandlerProjectsContext,
   ProjectConfig,
-} from '../tools';
-import { turboHandler } from './turbo';
+} from '../tools.js';
+import { turboHandler } from './turbo.js';
 
 describe('turboHandler', () => {
   const options = {
