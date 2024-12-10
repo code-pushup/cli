@@ -6,8 +6,8 @@ import type {
   MonorepoHandlerOptions,
   MonorepoHandlerProjectsContext,
   ProjectConfig,
-} from '../tools';
-import { npmHandler } from './npm';
+} from '../tools.js';
+import { npmHandler } from './npm.js';
 
 describe('npmHandler', () => {
   const options = {

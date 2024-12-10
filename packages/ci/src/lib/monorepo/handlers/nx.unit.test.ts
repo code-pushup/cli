@@ -5,8 +5,8 @@ import type {
   MonorepoHandlerOptions,
   MonorepoHandlerProjectsContext,
   ProjectConfig,
-} from '../tools';
-import { nxHandler } from './nx';
+} from '../tools.js';
+import { nxHandler } from './nx.js';
 
 describe('nxHandler', () => {
   const options: MonorepoHandlerOptions = {

@@ -10,7 +10,7 @@ import {
   listPackages,
   listWorkspaces,
   readRootPackageJson,
-} from './packages';
+} from './packages.js';
 
 const pkgJsonContent = (content: PackageJson) =>
   JSON.stringify(content, null, 2);
