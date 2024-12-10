@@ -2,6 +2,22 @@ import type { SyncExpectationResult } from '@vitest/expect';
 import { expect } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 
+export type CustomPathMatchers = {
+  toMatchPath: (path: string) => void;
+  toStartWithPath: (path: string) => void;
+  toContainPath: (path: string) => void;
+  toEndWithPath: (path: string) => void;
+};
+
+export type CustomAsymmetricPathMatchers = {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  pathToMatch: (path: string) => any;
+  pathToStartWith: (path: string) => any;
+  pathToContain: (path: string) => any;
+  pathToEndWith: (path: string) => any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+};
+
 expect.extend({
   toMatchPath(actual: string, expected: string): SyncExpectationResult {
     const normalizedReceived = osAgnosticPath(actual);
