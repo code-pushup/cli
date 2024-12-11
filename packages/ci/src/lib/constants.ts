@@ -2,7 +2,7 @@ import type { Settings } from './models.js';
 
 export const DEFAULT_SETTINGS: Settings = {
   monorepo: false,
-  parallel: false, // TODO: default to true once battle-tested?
+  parallel: false,
   projects: null,
   task: 'code-pushup',
   bin: 'npx --no-install code-pushup',

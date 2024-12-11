@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
@@ -7,7 +8,11 @@ import {
   type Report,
   type ReportsDiff,
 } from '@code-pushup/models';
-import { stringifyError } from '@code-pushup/utils';
+import {
+  type ExcludeNullableProps,
+  hasNoNullableProps,
+  stringifyError,
+} from '@code-pushup/utils';
 import {
   type CommandContext,
   createCommandContext,
@@ -34,6 +39,7 @@ import type {
   Settings,
 } from './models.js';
 import { type ProjectConfig, listMonorepoProjects } from './monorepo/index.js';
+import type { MonorepoProjects } from './monorepo/list-projects.js';
 
 /**
  * Runs Code PushUp in CI environment.
@@ -54,30 +60,35 @@ export async function runInCI(
     ...options,
   };
 
+  const env: RunEnv = { refs, api, settings, git };
+
   if (settings.monorepo) {
-    return runInMonorepoMode(refs, api, settings, git);
+    return runInMonorepoMode(env);
   }
 
-  return runInStandaloneMode(refs, api, settings, git);
+  return runInStandaloneMode(env);
 }
 
-async function runInStandaloneMode(
-  refs: GitRefs,
-  api: ProviderAPIClient,
-  settings: Settings,
-  git: SimpleGit,
-): Promise<RunResult> {
-  settings.logger.info('Running Code PushUp in standalone project mode');
-  const { files, newIssues } = await runOnProject({
-    project: null,
-    settings,
+type RunEnv = {
+  refs: GitRefs;
+  api: ProviderAPIClient;
+  settings: Settings;
+  git: SimpleGit;
+};
+
+async function runInStandaloneMode(env: RunEnv): Promise<RunResult> {
+  const {
     api,
-    refs,
-    git,
-  });
+    settings: { logger },
+  } = env;
+
+  logger.info('Running Code PushUp in standalone project mode');
+
+  const { files, newIssues } = await runOnProject(null, env);
+
   const commentMdPath = files.diff?.md;
   if (commentMdPath) {
-    const commentId = await commentOnPR(commentMdPath, api, settings.logger);
+    const commentId = await commentOnPR(commentMdPath, api, logger);
     return {
       mode: 'standalone',
       files,
@@ -88,22 +99,17 @@ async function runInStandaloneMode(
   return { mode: 'standalone', files, newIssues };
 }
 
-async function runInMonorepoMode(
-  refs: GitRefs,
-  api: ProviderAPIClient,
-  settings: Settings,
-  git: SimpleGit,
-): Promise<RunResult> {
+async function runInMonorepoMode(env: RunEnv): Promise<RunResult> {
+  const { api, settings } = env;
   const { logger, directory } = settings;
+
   logger.info('Running Code PushUp in monorepo mode');
-  const { projects } = await listMonorepoProjects(settings);
-  const projectResults = await projects.reduce<Promise<ProjectRunResult[]>>(
-    async (acc, project) => [
-      ...(await acc),
-      await runOnProject({ project, settings, refs, api, git }),
-    ],
-    Promise.resolve([]),
-  );
+
+  const { projects, runManyCommand } = await listMonorepoProjects(settings);
+  const projectResults = runManyCommand
+    ? await runProjectsInBulk(projects, runManyCommand, env)
+    : await runProjectsIndividually(projects, env);
+
   const diffJsonPaths = projectResults
     .map(({ files }) => files.diff?.json)
     .filter((file): file is string => file != null);
@@ -130,25 +136,204 @@ async function runInMonorepoMode(
       diffPath,
     };
   }
+
   return { mode: 'monorepo', projects: projectResults };
 }
 
-type RunOnProjectArgs = {
-  project: ProjectConfig | null;
-  refs: GitRefs;
-  api: ProviderAPIClient;
-  settings: Settings;
-  git: SimpleGit;
-};
+function runProjectsIndividually(
+  projects: ProjectConfig[],
+  env: RunEnv,
+): Promise<ProjectRunResult[]> {
+  env.settings.logger.info(
+    `Running on ${projects.length} projects individually`,
+  );
+  return projects.reduce<Promise<ProjectRunResult[]>>(
+    async (acc, project) => [...(await acc), await runOnProject(project, env)],
+    Promise.resolve([]),
+  );
+}
 
 // eslint-disable-next-line max-lines-per-function
-async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
+async function runProjectsInBulk(
+  projects: ProjectConfig[],
+  runManyCommand: NonNullable<MonorepoProjects['runManyCommand']>,
+  env: RunEnv,
+): Promise<ProjectRunResult[]> {
   const {
-    project,
+    refs: { base },
+    settings,
+  } = env;
+  const logger = settings.logger;
+
+  logger.info(
+    `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
+  );
+
+  await collectMany(runManyCommand, env);
+
+  const currProjectReports = await Promise.all(
+    projects.map(async project => {
+      const ctx = createCommandContext(settings, project);
+      const config = await printPersistConfig(ctx, settings);
+      const reports = persistedFilesFromConfig(config, ctx);
+      return { project, reports, config, ctx };
+    }),
+  );
+  logger.debug(
+    `Loaded ${currProjectReports.length} persist configs by running print-config command for each project`,
+  );
+
+  if (base == null) {
+    return currProjectReports.map(
+      ({ project, reports }): ProjectRunResult => ({
+        name: project.name,
+        files: { report: reports },
+      }),
+    );
+  }
+
+  const projectReportsWithCache = await Promise.all(
+    currProjectReports.map(async ({ project, ctx, reports, config }) => {
+      const args = { project, base, ctx, env };
+      return {
+        ...args,
+        config,
+        currReport: await fs.readFile(reports.json, 'utf8'),
+        prevReport: await loadCachedBaseReport(args),
+      };
+    }),
+  );
+  const uncachedProjectReports = projectReportsWithCache.filter(
+    ({ prevReport }) => !prevReport,
+  );
+  logger.info(
+    `${projects.length - uncachedProjectReports.length} out of ${projects.length} projects loaded previous report from artifact cache`,
+  );
+
+  const collectedPrevReports = await collectPreviousReports(
+    base,
+    uncachedProjectReports,
+    runManyCommand,
+    env,
+  );
+
+  const projectsToCompare = projectReportsWithCache
+    .map(args => ({
+      ...args,
+      prevReport: args.prevReport || collectedPrevReports[args.project.name],
+    }))
+    .filter(hasNoNullableProps);
+
+  const projectComparisons = await projectsToCompare.reduce<
+    Promise<Record<string, CompareReportsResult>>
+  >(
+    async (acc, args) => ({
+      ...(await acc),
+      [args.project.name]: await compareReports(args),
+    }),
+    Promise.resolve({}),
+  );
+
+  return currProjectReports.map(({ project, reports }): ProjectRunResult => {
+    const comparison = projectComparisons[project.name];
+    return {
+      name: project.name,
+      files: {
+        report: reports,
+        ...(comparison && { diff: comparison.files }),
+      },
+      ...(comparison?.newIssues && { newIssues: comparison.newIssues }),
+    };
+  });
+}
+
+async function collectPreviousReports(
+  base: GitBranch,
+  uncachedProjectReports: ExcludeNullableProps<BaseReportArgs>[],
+  runManyCommand: NonNullable<MonorepoProjects['runManyCommand']>,
+  env: RunEnv,
+): Promise<Record<string, string>> {
+  const {
+    settings: { logger },
+  } = env;
+
+  if (uncachedProjectReports.length === 0) {
+    return {};
+  }
+
+  return runInBaseBranch(base, env, async () => {
+    const uncachedProjectConfigs = await Promise.all(
+      uncachedProjectReports.map(async args => ({
+        name: args.project.name,
+        ctx: args.ctx,
+        config: await checkPrintConfig(args),
+      })),
+    );
+
+    const validProjectConfigs =
+      uncachedProjectConfigs.filter(hasNoNullableProps);
+    const onlyProjects = validProjectConfigs.map(({ name }) => name);
+    const invalidProjects = uncachedProjectConfigs
+      .map(({ name }) => name)
+      .filter(name => !onlyProjects.includes(name));
+    if (invalidProjects.length > 0) {
+      logger.debug(
+        `Printing config failed for ${invalidProjects.length} projects - ${invalidProjects.join(', ')}`,
+      );
+      logger.info(
+        `Skipping ${invalidProjects.length} projects which aren't configured in base branch ${base.ref}`,
+      );
+    }
+
+    if (onlyProjects.length > 0) {
+      logger.info(
+        `Collecting previous reports for ${onlyProjects.length} projects`,
+      );
+      await collectMany(runManyCommand, env, onlyProjects);
+    }
+
+    const projectFiles = validProjectConfigs.map(
+      async ({ name, ctx, config }) =>
+        [
+          name,
+          await fs.readFile(persistedFilesFromConfig(config, ctx).json, 'utf8'),
+        ] as const,
+    );
+
+    return Object.fromEntries(await Promise.all(projectFiles));
+  });
+}
+
+async function collectMany(
+  runManyCommand: NonNullable<MonorepoProjects['runManyCommand']>,
+  env: RunEnv,
+  onlyProjects?: string[],
+): Promise<void> {
+  const { settings } = env;
+  const command = await runManyCommand(onlyProjects);
+  const ctx: CommandContext = {
+    ...createCommandContext(settings, null),
+    bin: command,
+  };
+
+  await runCollect(ctx);
+
+  const countText = onlyProjects
+    ? `${onlyProjects.length} previous`
+    : 'all current';
+  settings.logger.debug(
+    `Collected ${countText} reports using command \`${command}\``,
+  );
+}
+
+async function runOnProject(
+  project: ProjectConfig | null,
+  env: RunEnv,
+): Promise<ProjectRunResult> {
+  const {
     refs: { head, base },
     settings,
-    git,
-  } = args;
+  } = env;
   const logger = settings.logger;
 
   const ctx = createCommandContext(settings, project);
@@ -182,10 +367,52 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
     `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
-  const prevReport = await collectPreviousReport({ ...args, base, ctx });
+  const prevReport = await collectPreviousReport({ project, env, base, ctx });
   if (!prevReport) {
     return noDiffOutput;
   }
+
+  const compareArgs = { project, env, base, config, currReport, prevReport };
+  const { files: diffFiles, newIssues } = await compareReports(compareArgs);
+
+  return {
+    ...noDiffOutput,
+    files: {
+      ...noDiffOutput.files,
+      diff: diffFiles,
+    },
+    ...(newIssues && { newIssues }),
+  };
+}
+
+type CompareReportsArgs = {
+  project: ProjectConfig | null;
+  env: RunEnv;
+  base: GitBranch;
+  currReport: string;
+  prevReport: string;
+  config: Pick<CoreConfig, 'persist'>;
+};
+
+type CompareReportsResult = {
+  files: OutputFiles;
+  newIssues?: SourceFileIssue[];
+};
+
+async function compareReports(
+  args: CompareReportsArgs,
+): Promise<CompareReportsResult> {
+  const {
+    project,
+    env: { settings, git },
+    base,
+    currReport,
+    prevReport,
+    config,
+  } = args;
+  const logger = settings.logger;
+
+  const ctx = createCommandContext(settings, project);
 
   const reportsDir = path.join(settings.directory, '.code-pushup');
   const currPath = path.join(reportsDir, 'curr-report.json');
@@ -208,16 +435,8 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
     `Generated diff files at ${comparisonFiles.json} and ${comparisonFiles.md}`,
   );
 
-  const diffOutput = {
-    ...noDiffOutput,
-    files: {
-      ...noDiffOutput.files,
-      diff: comparisonFiles,
-    },
-  } satisfies ProjectRunResult;
-
   if (!settings.detectNewIssues) {
-    return diffOutput;
+    return { files: comparisonFiles };
   }
 
   const newIssues = await findNewIssues({
@@ -229,19 +448,50 @@ async function runOnProject(args: RunOnProjectArgs): Promise<ProjectRunResult> {
     git,
   });
 
-  return { ...diffOutput, newIssues };
+  return { files: comparisonFiles, newIssues };
 }
 
-type CollectPreviousReportArgs = RunOnProjectArgs & {
+type BaseReportArgs = {
+  project: ProjectConfig | null;
+  env: RunEnv;
   base: GitBranch;
   ctx: CommandContext;
 };
 
 async function collectPreviousReport(
-  args: CollectPreviousReportArgs,
+  args: BaseReportArgs,
 ): Promise<string | null> {
-  const { project, base, api, settings, ctx, git } = args;
-  const logger = settings.logger;
+  const { ctx, env, base } = args;
+
+  const cachedBaseReport = await loadCachedBaseReport(args);
+  if (cachedBaseReport) {
+    return cachedBaseReport;
+  }
+
+  return runInBaseBranch(base, env, async () => {
+    const config = await checkPrintConfig(args);
+    if (!config) {
+      return null;
+    }
+
+    await runCollect(ctx);
+    const { json: prevReportPath } = persistedFilesFromConfig(config, ctx);
+    const prevReport = await fs.readFile(prevReportPath, 'utf8');
+    env.settings.logger.debug(`Collected previous report at ${prevReportPath}`);
+    return prevReport;
+  });
+}
+
+async function loadCachedBaseReport(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    project,
+    env: {
+      api,
+      settings: { logger },
+    },
+  } = args;
 
   const cachedBaseReport = await api
     .downloadReportArtifact?.(project?.name)
@@ -264,43 +514,55 @@ async function collectPreviousReport(
   if (cachedBaseReport) {
     return fs.readFile(cachedBaseReport, 'utf8');
   }
+  return null;
+}
+
+async function runInBaseBranch<T>(
+  base: GitBranch,
+  env: RunEnv,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const {
+    git,
+    settings: { logger },
+  } = env;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
   await git.checkout(['-f', base.ref]);
   logger.info(`Switched to base branch ${base.ref}`);
 
-  const config = await checkPrintConfig(args);
-  if (!config) {
-    return null;
-  }
-
-  await runCollect(ctx);
-  const { json: prevReportPath } = persistedFilesFromConfig(config, ctx);
-  const prevReport = await fs.readFile(prevReportPath, 'utf8');
-  logger.debug(`Collected previous report at ${prevReportPath}`);
+  const result = await fn();
 
   await git.checkout(['-f', '-']);
   logger.info('Switched back to PR/MR branch');
 
-  return prevReport;
+  return result;
 }
 
 async function checkPrintConfig(
-  args: CollectPreviousReportArgs,
+  args: BaseReportArgs,
 ): Promise<Pick<CoreConfig, 'persist'> | null> {
-  const { ctx, base, settings } = args;
+  const {
+    project,
+    ctx,
+    base,
+    env: { settings },
+  } = args;
   const { logger } = settings;
 
+  const operation = project
+    ? `Executing print-config for project ${project.name}`
+    : 'Executing print-config';
   try {
     const config = await printPersistConfig(ctx, settings);
     logger.debug(
-      `Executing print-config verified code-pushup installed in base branch ${base.ref}`,
+      `${operation} verified code-pushup installed in base branch ${base.ref}`,
     );
     return config;
   } catch (error) {
     logger.debug(`Error from print-config - ${stringifyError(error)}`);
     logger.info(
-      `Executing print-config failed, assuming code-pushup not installed in base branch ${base.ref} and skipping comparison`,
+      `${operation} failed, assuming code-pushup not installed in base branch ${base.ref} and skipping comparison`,
     );
     return null;
   }
