@@ -40,13 +40,6 @@ export {
   truncateTitle,
 } from './lib/formatting.js';
 export {
-  formatGitPath,
-  getGitRoot,
-  guardAgainstLocalChanges,
-  safeCheckout,
-  toGitPath,
-} from './lib/git/git.js';
-export {
   getCurrentBranchOrTag,
   getHashFromTag,
   getHashes,
@@ -54,10 +47,18 @@ export {
   getSemverTags,
   type LogResult,
 } from './lib/git/git.commits-and-tags.js';
+export {
+  formatGitPath,
+  getGitRoot,
+  guardAgainstLocalChanges,
+  safeCheckout,
+  toGitPath,
+} from './lib/git/git.js';
 export { groupByStatus } from './lib/group-by-status.js';
 export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  hasNoNullableProps,
 } from './lib/guards.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { link, ui, type CliUi, type Column } from './lib/logging.js';
@@ -114,7 +115,7 @@ export {
   type CliArgsObject,
 } from './lib/transform.js';
 export type {
-  ExcludeNullFromPropertyTypes,
+  ExcludeNullableProps,
   ExtractArray,
   ExtractArrays,
   ItemOrArray,

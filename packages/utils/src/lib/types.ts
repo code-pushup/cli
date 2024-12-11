@@ -1,5 +1,5 @@
-export type ExcludeNullFromPropertyTypes<T> = {
-  [P in keyof T]: Exclude<T[P], null>;
+export type ExcludeNullableProps<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
 };
 
 export type ItemOrArray<T> = T | T[];
