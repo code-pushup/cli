@@ -43,56 +43,31 @@ import { type ProjectConfig, listMonorepoProjects } from './monorepo/index.js';
  * @param git instance of simple-git - useful for testing
  * @returns result of run (standalone or monorepo)
  */
-// eslint-disable-next-line max-lines-per-function
 export async function runInCI(
   refs: GitRefs,
   api: ProviderAPIClient,
   options?: Options,
   git: SimpleGit = simpleGit(),
 ): Promise<RunResult> {
-  const settings: Settings = { ...DEFAULT_SETTINGS, ...options };
-  const logger = settings.logger;
+  const settings: Settings = {
+    ...DEFAULT_SETTINGS,
+    ...options,
+  };
 
   if (settings.monorepo) {
-    logger.info('Running Code PushUp in monorepo mode');
-    const { projects } = await listMonorepoProjects(settings);
-    const projectResults = await projects.reduce<Promise<ProjectRunResult[]>>(
-      async (acc, project) => [
-        ...(await acc),
-        await runOnProject({ project, settings, refs, api, git }),
-      ],
-      Promise.resolve([]),
-    );
-    const diffJsonPaths = projectResults
-      .map(({ files }) => files.diff?.json)
-      .filter((file): file is string => file != null);
-    if (diffJsonPaths.length > 0) {
-      const tmpDiffPath = await runMergeDiffs(
-        diffJsonPaths,
-        createCommandContext(settings, projects[0]),
-      );
-      logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
-      const diffPath = path.join(
-        settings.directory,
-        DEFAULT_PERSIST_OUTPUT_DIR,
-        path.basename(tmpDiffPath),
-      );
-      if (tmpDiffPath !== diffPath) {
-        await fs.cp(tmpDiffPath, diffPath);
-        logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
-      }
-      const commentId = await commentOnPR(tmpDiffPath, api, logger);
-      return {
-        mode: 'monorepo',
-        projects: projectResults,
-        commentId,
-        diffPath,
-      };
-    }
-    return { mode: 'monorepo', projects: projectResults };
+    return runInMonorepoMode(refs, api, settings, git);
   }
 
-  logger.info('Running Code PushUp in standalone project mode');
+  return runInStandaloneMode(refs, api, settings, git);
+}
+
+async function runInStandaloneMode(
+  refs: GitRefs,
+  api: ProviderAPIClient,
+  settings: Settings,
+  git: SimpleGit,
+): Promise<RunResult> {
+  settings.logger.info('Running Code PushUp in standalone project mode');
   const { files, newIssues } = await runOnProject({
     project: null,
     settings,
@@ -102,7 +77,7 @@ export async function runInCI(
   });
   const commentMdPath = files.diff?.md;
   if (commentMdPath) {
-    const commentId = await commentOnPR(commentMdPath, api, logger);
+    const commentId = await commentOnPR(commentMdPath, api, settings.logger);
     return {
       mode: 'standalone',
       files,
@@ -111,6 +86,51 @@ export async function runInCI(
     };
   }
   return { mode: 'standalone', files, newIssues };
+}
+
+async function runInMonorepoMode(
+  refs: GitRefs,
+  api: ProviderAPIClient,
+  settings: Settings,
+  git: SimpleGit,
+): Promise<RunResult> {
+  const { logger, directory } = settings;
+  logger.info('Running Code PushUp in monorepo mode');
+  const { projects } = await listMonorepoProjects(settings);
+  const projectResults = await projects.reduce<Promise<ProjectRunResult[]>>(
+    async (acc, project) => [
+      ...(await acc),
+      await runOnProject({ project, settings, refs, api, git }),
+    ],
+    Promise.resolve([]),
+  );
+  const diffJsonPaths = projectResults
+    .map(({ files }) => files.diff?.json)
+    .filter((file): file is string => file != null);
+  if (diffJsonPaths.length > 0) {
+    const tmpDiffPath = await runMergeDiffs(
+      diffJsonPaths,
+      createCommandContext(settings, projects[0]),
+    );
+    logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
+    const diffPath = path.join(
+      directory,
+      DEFAULT_PERSIST_OUTPUT_DIR,
+      path.basename(tmpDiffPath),
+    );
+    if (tmpDiffPath !== diffPath) {
+      await fs.cp(tmpDiffPath, diffPath);
+      logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
+    }
+    const commentId = await commentOnPR(tmpDiffPath, api, logger);
+    return {
+      mode: 'monorepo',
+      projects: projectResults,
+      commentId,
+      diffPath,
+    };
+  }
+  return { mode: 'monorepo', projects: projectResults };
 }
 
 type RunOnProjectArgs = {
