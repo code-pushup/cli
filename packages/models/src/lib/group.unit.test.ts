@@ -69,7 +69,7 @@ describe('groupSchema', () => {
         title: 'Empty group',
         refs: [],
       } satisfies Group),
-    ).toThrow('In a category there has to be at least one ref');
+    ).toThrow('In category empty-group, there has to be at least one ref');
   });
 
   it('should throw for duplicate group references', () => {

@@ -25,13 +25,16 @@ export const groupMetaSchema = metaSchema({
 });
 export type GroupMeta = z.infer<typeof groupMetaSchema>;
 
-export const groupSchema = scorableSchema(
-  'A group aggregates a set of audits into a single score which can be referenced from a category. ' +
-    'E.g. the group slug "performance" groups audits and can be referenced in a category',
-  groupRefSchema,
-  getDuplicateRefsInGroups,
-  duplicateRefsInGroupsErrorMsg,
-).merge(groupMetaSchema);
+export const groupSchema = z.intersection(
+  scorableSchema(
+    'A group aggregates a set of audits into a single score which can be referenced from a category. ' +
+      'E.g. the group slug "performance" groups audits and can be referenced in a category',
+    groupRefSchema,
+    getDuplicateRefsInGroups,
+    duplicateRefsInGroupsErrorMsg,
+  ),
+  groupMetaSchema,
+);
 export type Group = z.infer<typeof groupSchema>;
 
 export const groupsSchema = z

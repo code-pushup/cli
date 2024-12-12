@@ -38,7 +38,7 @@ export const slugSchema = z
       'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
   })
   .max(MAX_SLUG_LENGTH, {
-    message: `slug can be max ${MAX_SLUG_LENGTH} characters long`,
+    message: `The slug can be max ${MAX_SLUG_LENGTH} characters long`,
   });
 
 /**  Schema for a general description property */
@@ -105,7 +105,7 @@ export function metaSchema(options?: {
 export const filePathSchema = z
   .string()
   .trim()
-  .min(1, { message: 'path is invalid' });
+  .min(1, { message: 'The path is invalid' });
 
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
@@ -114,7 +114,7 @@ export const fileNameSchema = z
   .regex(filenameRegex, {
     message: `The filename has to be valid`,
   })
-  .min(1, { message: 'file name is invalid' });
+  .min(1, { message: 'The file name is invalid' });
 
 /** Schema for a positiveInt */
 export const positiveIntSchema = z.number().int().positive();
@@ -167,26 +167,43 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   duplicateCheckFn: (metrics: z.infer<T>[]) => false | string[],
   duplicateMessageFn: (metrics: z.infer<T>[]) => string,
 ) {
-  return z.object(
-    {
-      slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
-      refs: z
-        .array(refSchema)
-        .min(1)
-        // refs are unique
-        .refine(
-          refs => !duplicateCheckFn(refs),
-          refs => ({
-            message: duplicateMessageFn(refs),
-          }),
-        )
-        // categories weights are correct
-        .refine(hasNonZeroWeightedRef, () => ({
-          message:
-            'In a category there has to be at least one ref with weight > 0',
-        })),
-    },
-    { description },
+  return (
+    z
+      .object(
+        {
+          slug: slugSchema.describe(
+            'Human-readable unique ID, e.g. "performance"',
+          ),
+          refs: z
+            .array(refSchema)
+            .min(1)
+            // refs are unique
+            .refine(
+              refs => !duplicateCheckFn(refs),
+              refs => ({
+                message: duplicateMessageFn(refs),
+              }),
+            ),
+        },
+        { description },
+      )
+      // category weights are correct
+      .superRefine(({ slug, refs }, ctx) => {
+        if (refs.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `In category ${slug}, there has to be at least one ref`,
+            path: ['refs'],
+          });
+        } else if (!hasNonZeroWeightedRef(refs)) {
+          const affectedRefs = refs.map(ref => ref.slug).join(', ');
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `In category ${slug}, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
+            path: ['refs'],
+          });
+        }
+      })
   );
 }
 
