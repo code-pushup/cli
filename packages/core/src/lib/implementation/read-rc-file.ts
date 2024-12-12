@@ -1,40 +1,17 @@
-import { bold, red } from 'ansis';
+import { bold } from 'ansis';
 import path, { join } from 'node:path';
-import {
-  type MessageBuilder,
-  fromError,
-  isZodErrorLike,
-} from 'zod-validation-error';
+import { fromError, isZodErrorLike } from 'zod-validation-error';
 import {
   CONFIG_FILE_NAME,
   type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';
-import { fileExists, importModule } from '@code-pushup/utils';
-
-function formatErrorPath(errorPath: (string | number)[]): string {
-  return errorPath
-    .map((key, index) => {
-      if (typeof key === 'number') {
-        return `[${key}]`;
-      }
-      return index > 0 ? `.${key}` : key;
-    })
-    .join('');
-}
-
-const coreConfigMessageBuilder: MessageBuilder = issues =>
-  issues
-    .map(issue => {
-      const formattedMessage = red(`${bold(issue.code)}: ${issue.message}`);
-      const formattedPath = formatErrorPath(issue.path);
-      if (formattedPath) {
-        return `Validation error at ${bold(formattedPath)}\n${formattedMessage}\n`;
-      }
-      return `${formattedMessage}\n`;
-    })
-    .join('\n');
+import {
+  coreConfigMessageBuilder,
+  fileExists,
+  importModule,
+} from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {

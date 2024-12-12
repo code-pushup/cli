@@ -167,43 +167,28 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   duplicateCheckFn: (metrics: z.infer<T>[]) => false | string[],
   duplicateMessageFn: (metrics: z.infer<T>[]) => string,
 ) {
-  return (
-    z
-      .object(
-        {
-          slug: slugSchema.describe(
-            'Human-readable unique ID, e.g. "performance"',
-          ),
-          refs: z
-            .array(refSchema)
-            .min(1)
-            // refs are unique
-            .refine(
-              refs => !duplicateCheckFn(refs),
-              refs => ({
-                message: duplicateMessageFn(refs),
-              }),
-            ),
-        },
-        { description },
-      )
-      // category weights are correct
-      .superRefine(({ slug, refs }, ctx) => {
-        if (refs.length === 0) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `In category ${slug}, there has to be at least one ref`,
-            path: ['refs'],
-          });
-        } else if (!hasNonZeroWeightedRef(refs)) {
-          const affectedRefs = refs.map(ref => ref.slug).join(', ');
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `In category ${slug}, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
-            path: ['refs'],
-          });
-        }
-      })
+  return z.object(
+    {
+      slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
+      refs: z
+        .array(refSchema)
+        .min(1, { message: 'In a category, there has to be at least one ref' })
+        // refs are unique
+        .refine(
+          refs => !duplicateCheckFn(refs),
+          refs => ({
+            message: duplicateMessageFn(refs),
+          }),
+        )
+        // category weights are correct
+        .refine(hasNonZeroWeightedRef, refs => {
+          const affectedRefs = refs.map(ref => `"${ref.slug}"`).join(', ');
+          return {
+            message: `In a category, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
+          };
+        }),
+    },
+    { description },
   );
 }
 

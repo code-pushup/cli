@@ -23,14 +23,13 @@ export const categoryRefSchema = weightedRefSchema(
 );
 export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
-export const categoryConfigSchema = z
-  .intersection(
-    scorableSchema(
-      'Category with a score calculated from audits and groups from various plugins',
-      categoryRefSchema,
-      getDuplicateRefsInCategoryMetrics,
-      duplicateRefsInCategoryMetricsErrorMsg,
-    ),
+export const categoryConfigSchema = scorableSchema(
+  'Category with a score calculated from audits and groups from various plugins',
+  categoryRefSchema,
+  getDuplicateRefsInCategoryMetrics,
+  duplicateRefsInCategoryMetricsErrorMsg,
+)
+  .merge(
     metaSchema({
       titleDescription: 'Category Title',
       docsUrlDescription: 'Category docs URL',
@@ -38,7 +37,7 @@ export const categoryConfigSchema = z
       description: 'Meta info for category',
     }),
   )
-  .and(
+  .merge(
     z.object({
       isBinary: z
         .boolean({

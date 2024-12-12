@@ -129,7 +129,7 @@ describe('categoryConfigSchema', () => {
         title: 'This category is empty for now',
         refs: [],
       } satisfies CategoryConfig),
-    ).toThrow('In category in-progress, there has to be at least one ref');
+    ).toThrow('In a category, there has to be at least one ref');
   });
 
   it('should throw for duplicate category references', () => {
@@ -176,7 +176,7 @@ describe('categoryConfigSchema', () => {
         ],
       } satisfies CategoryConfig),
     ).toThrow(
-      'In category informational, there has to be at least one ref with weight > 0. Affected refs: functional/immutable-data, lighthouse-experimental',
+      /In a category, there has to be at least one ref with weight > 0. Affected refs: \\"functional\/immutable-data\\", \\"lighthouse-experimental\\"/,
     );
   });
 });

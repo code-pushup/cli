@@ -57,7 +57,7 @@ describe('lighthousePlugin-config-object', () => {
     });
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      'In category best-practices, there has to be at least one ref with weight > 0. Affected refs: csp-xss',
+      /In a category, there has to be at least one ref with weight > 0. Affected refs: \\"csp-xss\\"/,
     );
   });
 });
