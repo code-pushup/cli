@@ -80,8 +80,8 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
   let ext = '';
   // eslint-disable-next-line functional/no-loop-statements
   for (const extension of SUPPORTED_CONFIG_FILE_FORMATS) {
-    const path = `${CONFIG_FILE_NAME}.${extension}`;
-    const exists = await fileExists(path);
+    const filePath = `${CONFIG_FILE_NAME}.${extension}`;
+    const exists = await fileExists(filePath);
 
     if (exists) {
       ext = extension;
