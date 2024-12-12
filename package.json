@@ -43,7 +43,8 @@
     "vscode-material-icons": "^0.1.1",
     "yaml": "^2.5.1",
     "yargs": "^17.7.2",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
     "@beaussan/nx-knip": "^0.0.5-15",

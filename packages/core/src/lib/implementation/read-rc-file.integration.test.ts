@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { readRcByPath } from './read-rc-file.js';
+import { ConfigValidationError, readRcByPath } from './read-rc-file.js';
 
 describe('readRcByPath', () => {
   const configDirPath = join(
@@ -69,7 +69,7 @@ describe('readRcByPath', () => {
   it('should throw if the configuration is empty', async () => {
     await expect(
       readRcByPath(join(configDirPath, 'code-pushup.empty.config.js')),
-    ).rejects.toThrow(`"code": "invalid_type",`);
+    ).rejects.toThrow(expect.any(ConfigValidationError));
   });
 
   it('should throw if the configuration is invalid', async () => {
