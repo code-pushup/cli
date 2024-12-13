@@ -93,7 +93,6 @@ function findRuleMeta(
 }
 
 function findBuiltinRuleMeta(name: string): Rule.RuleMetaData | undefined {
-  // eslint-disable-next-line deprecation/deprecation
   const rule = builtinRules.get(name);
   return rule?.meta;
 }
