@@ -9,7 +9,7 @@ export type RuleData = {
 
 export function parseRuleId(ruleId: string): { plugin?: string; name: string } {
   const i = ruleId.lastIndexOf('/');
-  if (i < 0) {
+  if (i === -1) {
     return { name: ruleId };
   }
   return {

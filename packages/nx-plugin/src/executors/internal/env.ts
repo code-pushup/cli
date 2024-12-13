@@ -16,7 +16,7 @@ type UploadEnvVars = z.infer<typeof envSchema>;
 
 export function parseEnv(env: unknown = {}): Partial<UploadConfig> {
   const upload: UploadEnvVars = envSchema.parse(env);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
   return Object.fromEntries(
     Object.entries(upload).map(([envKey, value]) => {
       switch (envKey) {

@@ -2,7 +2,6 @@
 import type { PackageAuditLevel } from '../../config.js';
 import type { DependencyGroupLong } from '../../runner/outdated/types.js';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type Yarnv2AuditAdvisory = {
   module_name: string;
   severity: PackageAuditLevel;
@@ -12,7 +11,6 @@ export type Yarnv2AuditAdvisory = {
   url: string;
   findings: { paths: string[] }[]; // TODO indirect?
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type Yarnv2AuditResultJson = {
   advisories: Record<string, Yarnv2AuditAdvisory>;

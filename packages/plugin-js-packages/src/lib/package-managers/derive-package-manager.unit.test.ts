@@ -16,6 +16,7 @@ describe('derivePackageManagerInPackageJson', () => {
     fileExistsSpy.mockClear();
     executeProcessSpy.mockClear();
   });
+
   afterAll(() => {
     executeProcessSpy.mockRestore();
   });
@@ -105,6 +106,7 @@ describe('derivePackageManager', () => {
     fileExistsSpy.mockClear();
     deriveYarnVersionSpy.mockClear();
   });
+
   afterAll(() => {
     fileExistsSpy.mockRestore();
     deriveYarnVersionSpy.mockRestore();

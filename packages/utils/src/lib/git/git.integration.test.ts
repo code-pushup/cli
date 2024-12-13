@@ -59,7 +59,7 @@ describe('git utils in a git repo', () => {
 
     it('should convert relative Windows path to relative Git path', async () => {
       await expect(
-        toGitPath('Backend\\API\\Startup.cs', emptyGit),
+        toGitPath(String.raw`Backend\API\Startup.cs`, emptyGit),
       ).resolves.toBe('../../Backend/API/Startup.cs');
     });
 

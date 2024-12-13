@@ -46,6 +46,7 @@ describe('parseAutorunExecutorOnlyOptions', () => {
 
 describe('parseAutorunExecutorOptions', () => {
   let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+
   beforeAll(() => {
     processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
   });

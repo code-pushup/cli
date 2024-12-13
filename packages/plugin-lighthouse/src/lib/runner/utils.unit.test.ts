@@ -386,6 +386,7 @@ describe('getConfig', () => {
 
 describe('determineAndSetLogLevel', () => {
   const debugLib = debug as { enabled: (flag: string) => boolean };
+
   beforeEach(() => {
     log.setLevel('info');
   });

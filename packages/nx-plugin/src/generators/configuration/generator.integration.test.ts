@@ -20,6 +20,7 @@ describe('addTargetToProject', () => {
       root: 'test-app',
     });
   });
+
   afterEach(() => {
     //reset tree
     tree.delete(testProjectName);

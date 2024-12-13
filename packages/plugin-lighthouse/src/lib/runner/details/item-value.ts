@@ -58,7 +58,6 @@ export function formatTableItemPropertyValue(
 
   const parsedItemValue = parseTableItemPropertyValue(itemValue);
 
-  /* eslint-disable no-magic-numbers */
   switch (itemValueFormat) {
     case 'bytes':
       return formatBytes(Number(parsedItemValue));
@@ -94,7 +93,6 @@ export function formatTableItemPropertyValue(
       ui().logger.info(`Format type ${bold('thumbnail')} is not implemented`);
       return '';
   }
-  /* eslint-enable no-magic-numbers */
 
   return itemValue;
 }

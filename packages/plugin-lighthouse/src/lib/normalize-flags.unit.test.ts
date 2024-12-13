@@ -18,6 +18,7 @@ describe('logUnsupportedFlagsInUse', () => {
       )} used unsupported flags: ${bold('list-all-audits')}`,
     );
   });
+
   it('should log only 3 details of unsupported entries', () => {
     const unsupportedFlags = {
       'list-all-audits': true,
@@ -56,6 +57,7 @@ describe('normalizeFlags', () => {
     output: ['json'],
     outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
+
   it('should fill defaults with undefined flags', () => {
     expect(normalizeFlags()).toStrictEqual(normalizedDefaults);
   });

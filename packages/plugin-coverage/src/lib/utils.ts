@@ -23,10 +23,8 @@ export function applyMaxScoreAboveThreshold(
   );
 }
 
-/* eslint-disable no-magic-numbers */
 export const coverageTypeWeightMapper: Record<CoverageType, number> = {
   function: 6,
   branch: 3,
   line: 1,
 };
-/* eslint-enable no-magic-numbers */

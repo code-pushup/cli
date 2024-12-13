@@ -1,5 +1,4 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
-// eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';

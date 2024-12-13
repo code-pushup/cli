@@ -30,7 +30,7 @@ export function yargsHistoryOptionsDefinition(): Record<
       // https://git-scm.com/docs/git-log#Documentation/git-log.txt---max-countltnumbergt
       describe: 'Number of steps in history',
       type: 'number',
-      // eslint-disable-next-line no-magic-numbers
+
       default: 5,
     },
     from: {

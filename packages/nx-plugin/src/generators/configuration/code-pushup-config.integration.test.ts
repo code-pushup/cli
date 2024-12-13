@@ -37,7 +37,7 @@ describe('generateCodePushupConfig options', () => {
     });
 
     await formatFiles(tree);
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
     expect(
       tree.read(join(projectRoot, 'code-pushup.config.ts'))?.toString(),
     ).toMatchFileSnapshot('__snapshots__/root-code-pushup.config.ts');

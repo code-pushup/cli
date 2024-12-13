@@ -33,7 +33,7 @@ export function getLighthouseCliArguments(
 
   // handle chrome flags
   // eslint-disable-next-line functional/no-let
-  let chromeFlags: Array<string> = [];
+  let chromeFlags: string[] = [];
   if (headless) {
     chromeFlags = [...chromeFlags, `--headless=${headless}`];
   }
@@ -43,7 +43,7 @@ export function getLighthouseCliArguments(
   if (chromeFlags.length > 0) {
     argsObj = {
       ...argsObj,
-      ['chrome-flags']: chromeFlags.join(' '),
+      'chrome-flags': chromeFlags.join(' '),
     };
   }
 

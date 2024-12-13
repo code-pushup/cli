@@ -51,7 +51,7 @@ export function filterLogs(
   const { from, to, maxCount } = opt;
   const finIndex = <T>(tagName?: string, fallback?: T) => {
     const idx = allTags.indexOf(tagName ?? '');
-    if (idx > -1) {
+    if (idx !== -1) {
       return idx;
     }
     return fallback;
