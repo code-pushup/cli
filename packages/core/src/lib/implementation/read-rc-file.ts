@@ -8,9 +8,9 @@ import {
   coreConfigSchema,
 } from '@code-pushup/models';
 import {
-  coreConfigMessageBuilder,
   fileExists,
   importModule,
+  zodErrorMessageBuilder,
 } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
@@ -44,7 +44,7 @@ export async function readRcByPath(
     return coreConfigSchema.parse(cfg);
   } catch (error) {
     const validationError = fromError(error, {
-      messageBuilder: coreConfigMessageBuilder,
+      messageBuilder: zodErrorMessageBuilder,
     });
     throw isZodErrorLike(error)
       ? new ConfigValidationError(filepath, validationError.message)

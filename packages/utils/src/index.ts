@@ -122,4 +122,4 @@ export type {
   WithRequired,
 } from './lib/types.js';
 export { verboseUtils } from './lib/verbose-utils.js';
-export { coreConfigMessageBuilder } from './lib/zod-validation.js';
+export { zodErrorMessageBuilder } from './lib/zod-validation.js';

@@ -182,7 +182,7 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
         )
         // category weights are correct
         .refine(hasNonZeroWeightedRef, refs => {
-          const affectedRefs = refs.map(ref => `"${ref.slug}"`).join(', ');
+          const affectedRefs = refs.map(ref => ref.slug).join(', ');
           return {
             message: `In a category, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
           };

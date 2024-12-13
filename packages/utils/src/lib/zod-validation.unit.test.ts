@@ -8,7 +8,7 @@ describe('formatErrorPath', () => {
     [['categories'], 'categories'],
     [[], ''],
     [['path', 5], 'path[5]'],
-  ])('formats error path correctly for $input', (input, expected) => {
+  ])('should format error path %j as %j', (input, expected) => {
     expect(formatErrorPath(input)).toBe(expected);
   });
 });

@@ -176,7 +176,7 @@ describe('categoryConfigSchema', () => {
         ],
       } satisfies CategoryConfig),
     ).toThrow(
-      /In a category, there has to be at least one ref with weight > 0. Affected refs: \\"functional\/immutable-data\\", \\"lighthouse-experimental\\"/,
+      'In a category, there has to be at least one ref with weight > 0. Affected refs: functional/immutable-data, lighthouse-experimental',
     );
   });
 });

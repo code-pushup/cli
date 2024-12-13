@@ -12,7 +12,7 @@ export function formatErrorPath(errorPath: (string | number)[]): string {
     .join('');
 }
 
-export const coreConfigMessageBuilder: MessageBuilder = issues =>
+export const zodErrorMessageBuilder: MessageBuilder = issues =>
   issues
     .map(issue => {
       const formattedMessage = red(`${bold(issue.code)}: ${issue.message}`);
