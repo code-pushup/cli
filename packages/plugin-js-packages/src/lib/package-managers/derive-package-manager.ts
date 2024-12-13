@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { fileExists } from '@code-pushup/utils';
 import type { PackageManagerId } from '../config.js';
 import { deriveYarnVersion } from './derive-yarn.js';
@@ -7,9 +7,9 @@ import { deriveYarnVersion } from './derive-yarn.js';
 export async function derivePackageManagerInPackageJson(
   currentDir = process.cwd(),
 ) {
-  if (await fileExists(join(currentDir, 'package.json'))) {
+  if (await fileExists(path.join(currentDir, 'package.json'))) {
     const content = JSON.parse(
-      (await readFile(join('package.json'))).toString(),
+      (await readFile(path.join('package.json'))).toString(),
     ) as { packageManager?: string };
     const { packageManager: packageManagerData = '' } = content;
 
@@ -39,11 +39,11 @@ export async function derivePackageManager(
   }
 
   // Check for lock files
-  if (await fileExists(join(currentDir, 'package-lock.json'))) {
+  if (await fileExists(path.join(currentDir, 'package-lock.json'))) {
     return 'npm';
-  } else if (await fileExists(join(currentDir, 'pnpm-lock.yaml'))) {
+  } else if (await fileExists(path.join(currentDir, 'pnpm-lock.yaml'))) {
     return 'pnpm';
-  } else if (await fileExists(join(currentDir, 'yarn.lock'))) {
+  } else if (await fileExists(path.join(currentDir, 'yarn.lock'))) {
     const yarnVersion = await deriveYarnVersion();
     if (yarnVersion) {
       return yarnVersion;

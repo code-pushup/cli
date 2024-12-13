@@ -1,12 +1,12 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type { CoreConfig } from '@code-pushup/models';
 import { parsePersistConfig, persistedFilesFromConfig } from './persist.js';
 
 describe('persistedFilesFromConfig', () => {
   it('should return default report paths when no config is set', () => {
     expect(persistedFilesFromConfig({}, { directory: process.cwd() })).toEqual({
-      json: join(process.cwd(), '.code-pushup', 'report.json'),
-      md: join(process.cwd(), '.code-pushup', 'report.md'),
+      json: path.join(process.cwd(), '.code-pushup', 'report.json'),
+      md: path.join(process.cwd(), '.code-pushup', 'report.md'),
     });
   });
 
@@ -17,8 +17,8 @@ describe('persistedFilesFromConfig', () => {
         { directory: process.cwd(), isDiff: true },
       ),
     ).toEqual({
-      json: join(process.cwd(), '.code-pushup', 'report-diff.json'),
-      md: join(process.cwd(), '.code-pushup', 'report-diff.md'),
+      json: path.join(process.cwd(), '.code-pushup', 'report-diff.json'),
+      md: path.join(process.cwd(), '.code-pushup', 'report-diff.md'),
     });
   });
 
@@ -29,8 +29,8 @@ describe('persistedFilesFromConfig', () => {
         { directory: process.cwd(), isDiff: true },
       ),
     ).toEqual({
-      json: join(process.cwd(), '.code-pushup', 'merged-report-diff.json'),
-      md: join(process.cwd(), '.code-pushup', 'merged-report-diff.md'),
+      json: path.join(process.cwd(), '.code-pushup', 'merged-report-diff.json'),
+      md: path.join(process.cwd(), '.code-pushup', 'merged-report-diff.md'),
     });
   });
 
@@ -41,8 +41,8 @@ describe('persistedFilesFromConfig', () => {
         { directory: process.cwd() },
       ),
     ).toEqual({
-      json: join(process.cwd(), 'tmp', 'report.json'),
-      md: join(process.cwd(), 'tmp', 'report.md'),
+      json: path.join(process.cwd(), 'tmp', 'report.json'),
+      md: path.join(process.cwd(), 'tmp', 'report.md'),
     });
   });
 
@@ -50,23 +50,23 @@ describe('persistedFilesFromConfig', () => {
     expect(
       persistedFilesFromConfig(
         { persist: { outputDir: 'tmp' } },
-        { directory: join(process.cwd(), 'backend') },
+        { directory: path.join(process.cwd(), 'backend') },
       ),
     ).toEqual({
-      json: join(process.cwd(), 'backend', 'tmp', 'report.json'),
-      md: join(process.cwd(), 'backend', 'tmp', 'report.md'),
+      json: path.join(process.cwd(), 'backend', 'tmp', 'report.json'),
+      md: path.join(process.cwd(), 'backend', 'tmp', 'report.md'),
     });
   });
 
   it('should ignore working directory when absolute outputDir in config', () => {
     expect(
       persistedFilesFromConfig(
-        { persist: { outputDir: join(process.cwd(), 'tmp') } },
-        { directory: join(process.cwd(), 'backend') },
+        { persist: { outputDir: path.join(process.cwd(), 'tmp') } },
+        { directory: path.join(process.cwd(), 'backend') },
       ),
     ).toEqual({
-      json: join(process.cwd(), 'tmp', 'report.json'),
-      md: join(process.cwd(), 'tmp', 'report.md'),
+      json: path.join(process.cwd(), 'tmp', 'report.json'),
+      md: path.join(process.cwd(), 'tmp', 'report.md'),
     });
   });
 });

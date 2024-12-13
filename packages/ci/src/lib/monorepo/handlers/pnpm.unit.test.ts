@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -83,12 +83,12 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'pnpm run code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'pnpm run code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -118,12 +118,12 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'pnpm exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -154,17 +154,17 @@ describe('pnpmHandler', () => {
       await expect(pnpmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontend'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'pnpm exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -176,17 +176,17 @@ describe('pnpmHandler', () => {
       all: [
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'pnpm run code-pushup',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontend'),
           bin: 'pnpm run code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'pnpm run code-pushup',
         },
       ],

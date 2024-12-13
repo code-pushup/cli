@@ -5,7 +5,7 @@ import {
   readProjectConfiguration,
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
 import { addTargetToProject, configurationGenerator } from './generator.js';
@@ -116,7 +116,7 @@ describe('configurationGenerator', () => {
     readProjectConfiguration(tree, testProjectName);
 
     expect(
-      tree.read(join('libs', testProjectName, 'code-pushup.config.ts')),
+      tree.read(path.join('libs', testProjectName, 'code-pushup.config.ts')),
     ).toBeNull();
     expect(loggerInfoSpy).toHaveBeenCalledWith('Skip config file creation');
   });

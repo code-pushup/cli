@@ -1,5 +1,5 @@
 import { bold } from 'ansis';
-import path, { join } from 'node:path';
+import path from 'node:path';
 import { fromError, isZodErrorLike } from 'zod-validation-error';
 import {
   CONFIG_FILE_NAME,
@@ -75,7 +75,7 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
   }
 
   return readRcByPath(
-    join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`),
+    path.join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`),
     tsconfig,
   );
 }

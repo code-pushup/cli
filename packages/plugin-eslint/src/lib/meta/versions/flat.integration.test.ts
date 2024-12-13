@@ -1,11 +1,11 @@
 import type { ESLint, Linter, Rule } from 'eslint';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { RuleData } from '../parse.js';
 import { loadRulesForFlatConfig } from './flat.js';
 
 describe('loadRulesForFlatConfig', () => {
-  const workDir = join(
+  const workDir = path.join(
     process.cwd(),
     'tmp',
     'plugin-eslint',
@@ -29,7 +29,7 @@ describe('loadRulesForFlatConfig', () => {
       },
     };
     await writeFile(
-      join(workDir, 'eslint.config.js'),
+      path.join(workDir, 'eslint.config.js'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 
@@ -102,7 +102,7 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'code-pushup.eslint.config.js'),
+      path.join(workDir, 'code-pushup.eslint.config.js'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 
@@ -152,7 +152,7 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'eslint.config.cjs'),
+      path.join(workDir, 'eslint.config.cjs'),
       `module.exports = ${JSON.stringify(config, null, 2)}`,
     );
 
@@ -185,7 +185,7 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'eslint.config.mjs'),
+      path.join(workDir, 'eslint.config.mjs'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 

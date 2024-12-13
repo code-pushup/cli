@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -91,12 +91,12 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'yarn run code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'yarn run code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -129,12 +129,12 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'yarn exec code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'yarn exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -165,17 +165,17 @@ describe('yarnHandler', () => {
       await expect(yarnHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'yarn exec code-pushup',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontend'),
           bin: 'yarn exec code-pushup',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'yarn exec code-pushup',
         },
       ] satisfies ProjectConfig[]);
@@ -187,17 +187,17 @@ describe('yarnHandler', () => {
       all: [
         {
           name: 'api',
-          directory: join(MEMFS_VOLUME, 'api'),
+          directory: path.join(MEMFS_VOLUME, 'api'),
           bin: 'yarn run code-pushup',
         },
         {
           name: 'cms',
-          directory: join(MEMFS_VOLUME, 'cms'),
+          directory: path.join(MEMFS_VOLUME, 'cms'),
           bin: 'yarn run code-pushup',
         },
         {
           name: 'web',
-          directory: join(MEMFS_VOLUME, 'web'),
+          directory: path.join(MEMFS_VOLUME, 'web'),
           bin: 'yarn run code-pushup',
         },
       ],

@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
@@ -127,9 +127,9 @@ export async function compareReports(
 
   const ctx = createCommandContext(settings, project);
 
-  const reportsDir = join(settings.directory, '.code-pushup');
-  const currPath = join(reportsDir, 'curr-report.json');
-  const prevPath = join(reportsDir, 'prev-report.json');
+  const reportsDir = path.join(settings.directory, '.code-pushup');
+  const currPath = path.join(reportsDir, 'curr-report.json');
+  const prevPath = path.join(reportsDir, 'prev-report.json');
   await mkdir(reportsDir, { recursive: true });
   await writeFile(currPath, currReport);
   await writeFile(prevPath, prevReport);

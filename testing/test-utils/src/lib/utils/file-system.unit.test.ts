@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   type MockInstance,
   afterEach,
@@ -36,7 +36,7 @@ describe('ensureDirectoryExists', () => {
   it('should create a nested folder', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
 
-    const dir = join(MEMFS_VOLUME, 'sub', 'dir');
+    const dir = path.join(MEMFS_VOLUME, 'sub', 'dir');
 
     await ensureDirectoryExists(dir);
     await expect(
@@ -52,7 +52,7 @@ describe('ensureDirectoryExists', () => {
       MEMFS_VOLUME,
     );
 
-    const dir = join(MEMFS_VOLUME, 'sub');
+    const dir = path.join(MEMFS_VOLUME, 'sub');
 
     await ensureDirectoryExists(dir);
     await expect(

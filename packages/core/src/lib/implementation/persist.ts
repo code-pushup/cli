@@ -1,5 +1,5 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PersistConfig, Report } from '@code-pushup/models';
 import {
   type MultipleFileResults,
@@ -58,7 +58,7 @@ export async function persistReport(
   return Promise.allSettled(
     results.map(result =>
       persistResult(
-        join(outputDir, `${filename}.${result.format}`),
+        path.join(outputDir, `${filename}.${result.format}`),
         result.content,
       ),
     ),

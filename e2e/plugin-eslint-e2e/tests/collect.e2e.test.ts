@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -12,19 +12,24 @@ import {
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with eslint-plugin NPM package', () => {
-  const fixturesDir = join('e2e', 'plugin-eslint-e2e', 'mocks', 'fixtures');
-  const fixturesFlatConfigDir = join(fixturesDir, 'flat-config');
-  const fixturesLegacyConfigDir = join(fixturesDir, 'legacy-config');
+  const fixturesDir = path.join(
+    'e2e',
+    'plugin-eslint-e2e',
+    'mocks',
+    'fixtures',
+  );
+  const fixturesFlatConfigDir = path.join(fixturesDir, 'flat-config');
+  const fixturesLegacyConfigDir = path.join(fixturesDir, 'legacy-config');
 
-  const envRoot = join(
+  const envRoot = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
   );
-  const flatConfigDir = join(envRoot, 'flat-config');
-  const legacyConfigDir = join(envRoot, 'legacy-config');
-  const flatConfigOutputDir = join(flatConfigDir, '.code-pushup');
-  const legacyConfigOutputDir = join(legacyConfigDir, '.code-pushup');
+  const flatConfigDir = path.join(envRoot, 'flat-config');
+  const legacyConfigDir = path.join(envRoot, 'legacy-config');
+  const flatConfigOutputDir = path.join(flatConfigDir, '.code-pushup');
+  const legacyConfigOutputDir = path.join(legacyConfigDir, '.code-pushup');
 
   beforeAll(async () => {
     await cp(fixturesFlatConfigDir, flatConfigDir, { recursive: true });
@@ -51,7 +56,9 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const report = await readJsonFile(join(flatConfigOutputDir, 'report.json'));
+    const report = await readJsonFile(
+      path.join(flatConfigOutputDir, 'report.json'),
+    );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
@@ -69,7 +76,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
     expect(stderr).toBe('');
 
     const report = await readJsonFile(
-      join(legacyConfigOutputDir, 'report.json'),
+      path.join(legacyConfigOutputDir, 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();

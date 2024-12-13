@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import * as YAML from 'yaml';
 import { fileExists, readTextFile } from '@code-pushup/utils';
 import {
@@ -16,13 +16,13 @@ export const pnpmHandler: MonorepoToolHandler = {
 
   async isConfigured(options) {
     return (
-      (await fileExists(join(options.cwd, WORKSPACE_FILE))) &&
-      (await fileExists(join(options.cwd, 'package.json')))
+      (await fileExists(path.join(options.cwd, WORKSPACE_FILE))) &&
+      (await fileExists(path.join(options.cwd, 'package.json')))
     );
   },
 
   async listProjects(options) {
-    const yaml = await readTextFile(join(options.cwd, WORKSPACE_FILE));
+    const yaml = await readTextFile(path.join(options.cwd, WORKSPACE_FILE));
     const workspace = YAML.parse(yaml) as { packages?: string[] };
     const packages = await listPackages(options.cwd, workspace.packages);
     const rootPackageJson = await readRootPackageJson(options.cwd);

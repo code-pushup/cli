@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type {
   FetchResult,
   Response,
@@ -42,7 +42,7 @@ export async function commitFile(
   } = opt ?? {};
   const { name = 'README.md', content = `# hello-world-${Math.random()}\n` } =
     file ?? {};
-  await writeFile(join(baseDir, name), content);
+  await writeFile(path.join(baseDir, name), content);
   await git.add(name);
   if (tagName) {
     await git.tag([tagName]);

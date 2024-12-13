@@ -1,5 +1,5 @@
 import { readFile, rename } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import { afterEach } from 'vitest';
 import {
@@ -53,11 +53,14 @@ describe('CI - monorepo mode (npm workspaces)', () => {
             name: '@example/cli',
             files: {
               report: {
-                json: join(
+                json: path.join(
                   repo.baseDir,
                   'packages/cli/.code-pushup/report.json',
                 ),
-                md: join(repo.baseDir, 'packages/cli/.code-pushup/report.md'),
+                md: path.join(
+                  repo.baseDir,
+                  'packages/cli/.code-pushup/report.md',
+                ),
               },
             },
           },
@@ -66,7 +69,7 @@ describe('CI - monorepo mode (npm workspaces)', () => {
 
       await expect(
         readJsonFile(
-          join(repo.baseDir, 'packages/cli/.code-pushup/report.json'),
+          path.join(repo.baseDir, 'packages/cli/.code-pushup/report.json'),
         ),
       ).resolves.toEqual(
         expect.objectContaining({
@@ -92,16 +95,16 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       await git.checkoutLocalBranch('feature-1');
 
       await rename(
-        join(repo.baseDir, 'packages/cli/src/bin.js'),
-        join(repo.baseDir, 'packages/cli/src/bin.ts'),
+        path.join(repo.baseDir, 'packages/cli/src/bin.js'),
+        path.join(repo.baseDir, 'packages/cli/src/bin.ts'),
       );
       await rename(
-        join(repo.baseDir, 'packages/core/src/index.js'),
-        join(repo.baseDir, 'packages/core/src/index.ts'),
+        path.join(repo.baseDir, 'packages/core/src/index.js'),
+        path.join(repo.baseDir, 'packages/core/src/index.ts'),
       );
       await rename(
-        join(repo.baseDir, 'packages/core/code-pushup.config.js'),
-        join(repo.baseDir, 'packages/core/code-pushup.config.ts'),
+        path.join(repo.baseDir, 'packages/core/code-pushup.config.js'),
+        path.join(repo.baseDir, 'packages/core/code-pushup.config.ts'),
       );
 
       await git.add('.');
@@ -117,24 +120,27 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       await expect(runInCI(refs, MOCK_API, options, git)).resolves.toEqual({
         mode: 'monorepo',
         commentId: MOCK_COMMENT.id,
-        diffPath: join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
+        diffPath: path.join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
         projects: expect.arrayContaining<ProjectRunResult>([
           {
             name: '@example/core',
             files: {
               report: {
-                json: join(
+                json: path.join(
                   repo.baseDir,
                   'packages/core/.code-pushup/report.json',
                 ),
-                md: join(repo.baseDir, 'packages/core/.code-pushup/report.md'),
+                md: path.join(
+                  repo.baseDir,
+                  'packages/core/.code-pushup/report.md',
+                ),
               },
               diff: {
-                json: join(
+                json: path.join(
                   repo.baseDir,
                   'packages/core/.code-pushup/report-diff.json',
                 ),
-                md: join(
+                md: path.join(
                   repo.baseDir,
                   'packages/core/.code-pushup/report-diff.md',
                 ),
@@ -146,7 +152,7 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       } satisfies RunResult);
 
       const mdPromise = readFile(
-        join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
+        path.join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
         'utf8',
       );
       await expect(mdPromise).resolves.toBeTruthy();
@@ -154,7 +160,7 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       await expect(
         md.replace(/[\da-f]{40}/g, '`<commit-sha>`'),
       ).toMatchFileSnapshot(
-        join(TEST_SNAPSHOTS_DIR, 'npm-workspaces-report-diff.md'),
+        path.join(TEST_SNAPSHOTS_DIR, 'npm-workspaces-report-diff.md'),
       );
     });
   });

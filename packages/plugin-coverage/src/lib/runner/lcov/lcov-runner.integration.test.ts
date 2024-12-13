@@ -1,4 +1,4 @@
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
@@ -15,8 +15,8 @@ describe('lcovResultsToAuditOutputs', () => {
     const results = await lcovResultsToAuditOutputs(
       [
         {
-          resultsPath: join(
-            fileURLToPath(dirname(import.meta.url)),
+          resultsPath: path.join(
+            fileURLToPath(path.dirname(import.meta.url)),
             '..',
             '..',
             '..',
@@ -36,8 +36,8 @@ describe('lcovResultsToAuditOutputs', () => {
     const results = await lcovResultsToAuditOutputs(
       [
         {
-          resultsPath: join(
-            fileURLToPath(dirname(import.meta.url)),
+          resultsPath: path.join(
+            fileURLToPath(path.dirname(import.meta.url)),
             '..',
             '..',
             '..',

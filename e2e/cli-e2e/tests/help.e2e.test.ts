@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
@@ -7,7 +7,7 @@ import {
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI help', () => {
-  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
 
   it('should print help with help command', async () => {
     const { code, stdout, stderr } = await executeProcess({

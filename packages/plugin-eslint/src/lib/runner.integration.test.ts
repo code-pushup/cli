@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
 import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
@@ -24,8 +24,8 @@ describe('executeRunner', () => {
     await createRunnerConfig('bin.js', audits, targets);
   };
 
-  const appDir = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const appDir = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     '..',
     'mocks',
@@ -69,7 +69,7 @@ describe('executeRunner', () => {
               message:
                 'Filename is not in kebab case. Rename it to `use-todos.js`.',
               source: expect.objectContaining<Issue['source']>({
-                file: join(appDir, 'src', 'hooks', 'useTodos.js'),
+                file: path.join(appDir, 'src', 'hooks', 'useTodos.js'),
               }),
             },
           ]),

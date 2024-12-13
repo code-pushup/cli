@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import type { AuditOutputs } from '@code-pushup/models';
 import { exists, readTextFile, toUnixNewlines, ui } from '@code-pushup/utils';
@@ -71,7 +71,7 @@ export async function parseLcovFiles(
         file:
           typeof result === 'string' || result.pathToProject == null
             ? record.file
-            : join(result.pathToProject, record.file),
+            : path.join(result.pathToProject, record.file),
       }));
     }),
   );

@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { executeProcess, fileExists } from '@code-pushup/utils';
 import {
   hasCodePushUpDependency,
@@ -13,7 +13,7 @@ export const yarnHandler: MonorepoToolHandler = {
 
   async isConfigured(options) {
     return (
-      (await fileExists(join(options.cwd, 'yarn.lock'))) &&
+      (await fileExists(path.join(options.cwd, 'yarn.lock'))) &&
       (await hasWorkspacesEnabled(options.cwd))
     );
   },

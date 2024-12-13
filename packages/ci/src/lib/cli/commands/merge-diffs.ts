@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_OUTPUT_DIR,
@@ -10,7 +10,7 @@ export async function runMergeDiffs(
   files: string[],
   { bin, config, directory, silent }: CommandContext,
 ): Promise<string> {
-  const outputDir = join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
+  const outputDir = path.join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
   const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
 
   const { stdout } = await executeProcess({
@@ -28,5 +28,5 @@ export async function runMergeDiffs(
     console.info(stdout);
   }
 
-  return join(outputDir, `${filename}-diff.md`);
+  return path.join(outputDir, `${filename}-diff.md`);
 }

@@ -1,5 +1,5 @@
 import { bold, yellow } from 'ansis';
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
@@ -55,7 +55,7 @@ describe('normalizeFlags', () => {
     // custom overwrites in favour of the plugin
     quiet: true,
     output: ['json'],
-    outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
+    outputPath: path.join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
 
   it('should fill defaults with undefined flags', () => {

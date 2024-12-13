@@ -1,4 +1,4 @@
-import { isAbsolute, join } from 'node:path';
+import path from 'node:path';
 import { z } from 'zod';
 import {
   type CoreConfig,
@@ -21,13 +21,15 @@ export function persistedFilesFromConfig(
     } = {},
   } = config;
 
-  const dir = isAbsolute(outputDir) ? outputDir : join(directory, outputDir);
+  const dir = path.isAbsolute(outputDir)
+    ? outputDir
+    : path.join(directory, outputDir);
   const name = isDiff ? `${filename}-diff` : filename;
 
   return objectFromEntries(
     DEFAULT_PERSIST_FORMAT.map(format => [
       format,
-      join(dir, `${name}.${format}`),
+      path.join(dir, `${name}.${format}`),
     ]),
   );
 }

@@ -1,5 +1,5 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
-import { join } from 'node:path';
+import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -47,7 +47,7 @@ async function addTargetToWorkspace(
 describe('executor command', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
@@ -63,7 +63,7 @@ describe('executor command', () => {
   });
 
   it('should execute no specific command by default', async () => {
-    const cwd = join(testFileDir, 'execute-default-command');
+    const cwd = path.join(testFileDir, 'execute-default-command');
     await addTargetToWorkspace(tree, { cwd, project });
     const { stdout, code } = await executeProcess({
       command: 'npx',
@@ -77,7 +77,7 @@ describe('executor command', () => {
   });
 
   it('should execute print-config executor', async () => {
-    const cwd = join(testFileDir, 'execute-print-config-command');
+    const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -91,12 +91,12 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
 
     await expect(() =>
-      readJsonFile(join(cwd, '.code-pushup', project, 'report.json')),
+      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
     ).rejects.toThrow('');
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
-    const cwd = join(testFileDir, 'execute-collect-command');
+    const cwd = path.join(testFileDir, 'execute-collect-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -110,7 +110,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
     const report = await readJsonFile(
-      join(cwd, '.code-pushup', project, 'report.json'),
+      path.join(cwd, '.code-pushup', project, 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({

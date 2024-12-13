@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { parseEnv } from './env.js';
 import type {
@@ -18,7 +18,7 @@ export function globalConfig(
   return {
     verbose: !!verbose,
     progress: !!progress,
-    config: config ?? join(projectRoot, 'code-pushup.config.ts'),
+    config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
   };
 }
 
@@ -31,7 +31,7 @@ export function persistConfig(
   const { name: projectName = '' } = projectConfig ?? {};
   const {
     format,
-    outputDir = join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
+    outputDir = path.join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename,
   } = options;
 

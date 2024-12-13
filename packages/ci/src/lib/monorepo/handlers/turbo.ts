@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { fileExists, readJsonFile } from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools.js';
 import { npmHandler } from './npm.js';
@@ -15,7 +15,7 @@ export const turboHandler: MonorepoToolHandler = {
   tool: 'turbo',
 
   async isConfigured(options) {
-    const configPath = join(options.cwd, 'turbo.json');
+    const configPath = path.join(options.cwd, 'turbo.json');
     return (
       (await fileExists(configPath)) &&
       options.task in (await readJsonFile<TurboConfig>(configPath)).tasks

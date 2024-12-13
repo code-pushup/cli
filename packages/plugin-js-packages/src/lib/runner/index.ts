@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import path from 'node:path';
 import type { RunnerConfig } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
@@ -30,7 +30,7 @@ export async function createRunnerConfig(
   scriptPath: string,
   config: FinalJSPackagesPluginConfig,
 ): Promise<RunnerConfig> {
-  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
+  await ensureDirectoryExists(path.dirname(PLUGIN_CONFIG_PATH));
   await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
 
   return {
@@ -58,7 +58,7 @@ export async function executeRunner(): Promise<void> {
     : [];
   const checkResults = [...auditResults, ...outdatedResults];
 
-  await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
+  await ensureDirectoryExists(path.dirname(RUNNER_OUTPUT_PATH));
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(checkResults));
 }
 

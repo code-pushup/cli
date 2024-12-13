@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PluginConfig } from '@code-pushup/models';
 
 export const dummyPluginSlug = 'dummy-plugin';
@@ -32,7 +32,7 @@ export function create(): PluginConfig {
     description: 'A dummy plugin to test the cli.',
     runner: async () => {
       const itemCount = JSON.parse(
-        await readFile(join('src', 'items.json'), 'utf-8'),
+        await readFile(path.join('src', 'items.json'), 'utf-8'),
       ).length;
       return [
         {

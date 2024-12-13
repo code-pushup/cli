@@ -6,7 +6,7 @@ import {
   rename,
   writeFile,
 } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import type { MockInstance } from 'vitest';
@@ -26,37 +26,37 @@ import type { MonorepoTool } from './monorepo/index.js';
 import { runInCI } from './run.js';
 
 describe('runInCI', () => {
-  const fixturesDir = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const fixturesDir = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     '..',
     'mocks',
     'fixtures',
   );
-  const reportsDir = join(fixturesDir, 'outputs');
-  const workDir = join(process.cwd(), 'tmp', 'ci', 'run-test');
+  const reportsDir = path.join(fixturesDir, 'outputs');
+  const workDir = path.join(process.cwd(), 'tmp', 'ci', 'run-test');
 
   const fixturePaths = {
     reports: {
       before: {
-        json: join(reportsDir, 'report-before.json'),
-        md: join(reportsDir, 'report-before.md'),
+        json: path.join(reportsDir, 'report-before.json'),
+        md: path.join(reportsDir, 'report-before.md'),
       },
       after: {
-        json: join(reportsDir, 'report-after.json'),
-        md: join(reportsDir, 'report-after.md'),
+        json: path.join(reportsDir, 'report-after.json'),
+        md: path.join(reportsDir, 'report-after.md'),
       },
     },
     diffs: {
       project: {
-        json: join(reportsDir, 'diff-project.json'),
-        md: join(reportsDir, 'diff-project.md'),
+        json: path.join(reportsDir, 'diff-project.json'),
+        md: path.join(reportsDir, 'diff-project.md'),
       },
       merged: {
-        md: join(reportsDir, 'diff-merged.md'),
+        md: path.join(reportsDir, 'diff-merged.md'),
       },
     },
-    config: join(reportsDir, 'config.json'),
+    config: path.join(reportsDir, 'config.json'),
   };
 
   const logger: Logger = {
@@ -98,16 +98,16 @@ describe('runInCI', () => {
   }: utils.ProcessConfig): Promise<utils.ProcessResult> {
     const nxMatch = command.match(/nx run (\w+):code-pushup/);
     const outputDir = nxMatch
-      ? join(workDir, `packages/${nxMatch[1]}/.code-pushup`)
-      : join(cwd as string, '.code-pushup');
+      ? path.join(workDir, `packages/${nxMatch[1]}/.code-pushup`)
+      : path.join(cwd as string, '.code-pushup');
     await mkdir(outputDir, { recursive: true });
     let stdout = '';
 
     switch (args![0]) {
       case 'compare':
         const diffs = fixturePaths.diffs.project;
-        await copyFile(diffs.json, join(outputDir, 'report-diff.json'));
-        await copyFile(diffs.md, join(outputDir, 'report-diff.md'));
+        await copyFile(diffs.json, path.join(outputDir, 'report-diff.json'));
+        await copyFile(diffs.md, path.join(outputDir, 'report-diff.md'));
         break;
 
       case 'print-config':
@@ -124,7 +124,7 @@ describe('runInCI', () => {
       case 'merge-diffs':
         await copyFile(
           fixturePaths.diffs.merged.md,
-          join(
+          path.join(
             nxMatch ? workDir : (cwd as string),
             '.code-pushup/merged-report-diff.md',
           ),
@@ -138,17 +138,23 @@ describe('runInCI', () => {
         if (/workspaces|concurrency|parallel/.test(command)) {
           // eslint-disable-next-line functional/no-loop-statements
           for (const project of ['cli', 'core', 'utils']) {
-            const projectOutputDir = join(
+            const projectOutputDir = path.join(
               workDir,
               `packages/${project}/.code-pushup`,
             );
             await mkdir(projectOutputDir, { recursive: true });
-            await copyFile(reports.json, join(projectOutputDir, 'report.json'));
-            await copyFile(reports.json, join(projectOutputDir, 'report.md'));
+            await copyFile(
+              reports.json,
+              path.join(projectOutputDir, 'report.json'),
+            );
+            await copyFile(
+              reports.json,
+              path.join(projectOutputDir, 'report.md'),
+            );
           }
         } else {
-          await copyFile(reports.json, join(outputDir, 'report.json'));
-          await copyFile(reports.md, join(outputDir, 'report.md'));
+          await copyFile(reports.json, path.join(outputDir, 'report.json'));
+          await copyFile(reports.md, path.join(outputDir, 'report.md'));
         }
         break;
     }
@@ -181,7 +187,10 @@ describe('runInCI', () => {
     git = await initGitRepo(simpleGit, { baseDir: workDir });
     await simulateGitFetch(git);
 
-    await writeFile(join(workDir, 'index.js'), 'console.log("Hello, world!")');
+    await writeFile(
+      path.join(workDir, 'index.js'),
+      'console.log("Hello, world!")',
+    );
     await git.add('index.js');
     await git.commit('Initial commit');
   });
@@ -194,7 +203,7 @@ describe('runInCI', () => {
   });
 
   describe('standalone mode', () => {
-    const outputDir = join(workDir, '.code-pushup');
+    const outputDir = path.join(workDir, '.code-pushup');
 
     describe('push event', () => {
       beforeEach(async () => {
@@ -213,8 +222,8 @@ describe('runInCI', () => {
           mode: 'standalone',
           files: {
             report: {
-              json: join(outputDir, 'report.json'),
-              md: join(outputDir, 'report.md'),
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
             },
           },
         } satisfies RunResult);
@@ -245,7 +254,10 @@ describe('runInCI', () => {
       beforeEach(async () => {
         await git.checkoutLocalBranch('feature-1');
 
-        await rename(join(workDir, 'index.js'), join(workDir, 'index.ts'));
+        await rename(
+          path.join(workDir, 'index.js'),
+          path.join(workDir, 'index.ts'),
+        );
 
         await git.add('index.ts');
         await git.commit('Convert JS file to TS');
@@ -272,12 +284,12 @@ describe('runInCI', () => {
           newIssues: [],
           files: {
             report: {
-              json: join(outputDir, 'report.json'),
-              md: join(outputDir, 'report.md'),
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
             },
             diff: {
-              json: join(outputDir, 'report-diff.json'),
-              md: join(outputDir, 'report-diff.md'),
+              json: path.join(outputDir, 'report-diff.json'),
+              md: path.join(outputDir, 'report-diff.md'),
             },
           },
         } satisfies RunResult);
@@ -313,8 +325,8 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'compare',
-            `--before=${join(outputDir, 'prev-report.json')}`,
-            `--after=${join(outputDir, 'curr-report.json')}`,
+            `--before=${path.join(outputDir, 'prev-report.json')}`,
+            `--after=${path.join(outputDir, 'curr-report.json')}`,
             '--persist.format=json',
             '--persist.format=md',
           ],
@@ -334,7 +346,7 @@ describe('runInCI', () => {
           updateComment: vi.fn().mockResolvedValue(mockComment),
           listComments: vi.fn().mockResolvedValue([mockComment]),
           downloadReportArtifact: vi.fn().mockImplementation(async () => {
-            const downloadPath = join(workDir, 'downloaded-report.json');
+            const downloadPath = path.join(workDir, 'downloaded-report.json');
             await copyFile(fixturePaths.reports.before.json, downloadPath);
             return downloadPath;
           }),
@@ -346,12 +358,12 @@ describe('runInCI', () => {
           newIssues: [],
           files: {
             report: {
-              json: join(outputDir, 'report.json'),
-              md: join(outputDir, 'report.md'),
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
             },
             diff: {
-              json: join(outputDir, 'report-diff.json'),
-              md: join(outputDir, 'report-diff.md'),
+              json: path.join(outputDir, 'report-diff.json'),
+              md: path.join(outputDir, 'report-diff.md'),
             },
           },
         } satisfies RunResult);
@@ -379,8 +391,8 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'compare',
-            `--before=${join(outputDir, 'prev-report.json')}`,
-            `--after=${join(outputDir, 'curr-report.json')}`,
+            `--before=${path.join(outputDir, 'prev-report.json')}`,
+            `--after=${path.join(outputDir, 'curr-report.json')}`,
             '--persist.format=json',
             '--persist.format=md',
           ],
@@ -449,7 +461,7 @@ describe('runInCI', () => {
     },
   ])('monorepo mode - $name', ({ tool, run, runMany, setup }) => {
     beforeEach(async () => {
-      const monorepoDir = join(fixturesDir, 'monorepos', tool);
+      const monorepoDir = path.join(fixturesDir, 'monorepos', tool);
       await cp(monorepoDir, workDir, { recursive: true });
       await git.add('.');
       await git.commit(`Create packages in ${tool} monorepo`);
@@ -476,8 +488,11 @@ describe('runInCI', () => {
               name: 'cli',
               files: {
                 report: {
-                  json: join(workDir, 'packages/cli/.code-pushup/report.json'),
-                  md: join(workDir, 'packages/cli/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'packages/cli/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'packages/cli/.code-pushup/report.md'),
                 },
               },
             },
@@ -485,8 +500,14 @@ describe('runInCI', () => {
               name: 'core',
               files: {
                 report: {
-                  json: join(workDir, 'packages/core/.code-pushup/report.json'),
-                  md: join(workDir, 'packages/core/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'packages/core/.code-pushup/report.json',
+                  ),
+                  md: path.join(
+                    workDir,
+                    'packages/core/.code-pushup/report.md',
+                  ),
                 },
               },
             },
@@ -494,11 +515,14 @@ describe('runInCI', () => {
               name: 'utils',
               files: {
                 report: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'packages/utils/.code-pushup/report.json',
                   ),
-                  md: join(workDir, 'packages/utils/.code-pushup/report.md'),
+                  md: path.join(
+                    workDir,
+                    'packages/utils/.code-pushup/report.md',
+                  ),
                 },
               },
             },
@@ -535,7 +559,7 @@ describe('runInCI', () => {
       beforeEach(async () => {
         await git.checkoutLocalBranch('feature-1');
 
-        await writeFile(join(workDir, 'README.md'), '# Hello, world\n');
+        await writeFile(path.join(workDir, 'README.md'), '# Hello, world\n');
         await git.add('README.md');
         await git.commit('Create README');
 
@@ -558,8 +582,13 @@ describe('runInCI', () => {
               // simulates a project which has no cached report
               return null;
             }
-            const downloadPath = join(workDir, 'tmp', project, 'report.json');
-            await mkdir(dirname(downloadPath), { recursive: true });
+            const downloadPath = path.join(
+              workDir,
+              'tmp',
+              project,
+              'report.json',
+            );
+            await mkdir(path.dirname(downloadPath), { recursive: true });
             await copyFile(fixturePaths.reports.before.json, downloadPath);
             return downloadPath;
           }),
@@ -570,21 +599,27 @@ describe('runInCI', () => {
         ).resolves.toEqual({
           mode: 'monorepo',
           commentId: mockComment.id,
-          diffPath: join(workDir, '.code-pushup/merged-report-diff.md'),
+          diffPath: path.join(workDir, '.code-pushup/merged-report-diff.md'),
           projects: [
             {
               name: 'cli',
               files: {
                 report: {
-                  json: join(workDir, 'packages/cli/.code-pushup/report.json'),
-                  md: join(workDir, 'packages/cli/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'packages/cli/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'packages/cli/.code-pushup/report.md'),
                 },
                 diff: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'packages/cli/.code-pushup/report-diff.json',
                   ),
-                  md: join(workDir, 'packages/cli/.code-pushup/report-diff.md'),
+                  md: path.join(
+                    workDir,
+                    'packages/cli/.code-pushup/report-diff.md',
+                  ),
                 },
               },
               newIssues: [],
@@ -593,15 +628,21 @@ describe('runInCI', () => {
               name: 'core',
               files: {
                 report: {
-                  json: join(workDir, 'packages/core/.code-pushup/report.json'),
-                  md: join(workDir, 'packages/core/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'packages/core/.code-pushup/report.json',
+                  ),
+                  md: path.join(
+                    workDir,
+                    'packages/core/.code-pushup/report.md',
+                  ),
                 },
                 diff: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'packages/core/.code-pushup/report-diff.json',
                   ),
-                  md: join(
+                  md: path.join(
                     workDir,
                     'packages/core/.code-pushup/report-diff.md',
                   ),
@@ -613,18 +654,21 @@ describe('runInCI', () => {
               name: 'utils',
               files: {
                 report: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'packages/utils/.code-pushup/report.json',
                   ),
-                  md: join(workDir, 'packages/utils/.code-pushup/report.md'),
+                  md: path.join(
+                    workDir,
+                    'packages/utils/.code-pushup/report.md',
+                  ),
                 },
                 diff: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'packages/utils/.code-pushup/report-diff.json',
                   ),
-                  md: join(
+                  md: path.join(
                     workDir,
                     'packages/utils/.code-pushup/report-diff.md',
                   ),
@@ -636,7 +680,10 @@ describe('runInCI', () => {
         } satisfies RunResult);
 
         await expect(
-          readFile(join(workDir, '.code-pushup/merged-report-diff.md'), 'utf8'),
+          readFile(
+            path.join(workDir, '.code-pushup/merged-report-diff.md'),
+            'utf8',
+          ),
         ).resolves.toBe(diffMdString);
 
         expect(api.listComments).toHaveBeenCalledWith();
@@ -682,9 +729,9 @@ describe('runInCI', () => {
           command: run,
           args: [
             'merge-diffs',
-            `--files=${join(workDir, 'packages/cli/.code-pushup/report-diff.json')}`,
-            `--files=${join(workDir, 'packages/core/.code-pushup/report-diff.json')}`,
-            `--files=${join(workDir, 'packages/utils/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'packages/cli/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'packages/core/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'packages/utils/.code-pushup/report-diff.json')}`,
             expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
             '--persist.filename=merged-report',
           ],
@@ -715,7 +762,7 @@ describe('runInCI', () => {
     ],
   ])('monorepo mode - custom: %s', (_, monorepoOptions) => {
     beforeEach(async () => {
-      const monorepoDir = join(fixturesDir, 'monorepos', 'custom');
+      const monorepoDir = path.join(fixturesDir, 'monorepos', 'custom');
       await cp(monorepoDir, workDir, { recursive: true });
       await git.add('.');
       await git.commit('Create projects in monorepo');
@@ -741,8 +788,11 @@ describe('runInCI', () => {
               name: expect.stringContaining('api'),
               files: {
                 report: {
-                  json: join(workDir, 'backend/api/.code-pushup/report.json'),
-                  md: join(workDir, 'backend/api/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'backend/api/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'backend/api/.code-pushup/report.md'),
                 },
               },
             },
@@ -750,8 +800,11 @@ describe('runInCI', () => {
               name: expect.stringContaining('auth'),
               files: {
                 report: {
-                  json: join(workDir, 'backend/auth/.code-pushup/report.json'),
-                  md: join(workDir, 'backend/auth/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'backend/auth/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'backend/auth/.code-pushup/report.md'),
                 },
               },
             },
@@ -759,8 +812,8 @@ describe('runInCI', () => {
               name: 'frontend',
               files: {
                 report: {
-                  json: join(workDir, 'frontend/.code-pushup/report.json'),
-                  md: join(workDir, 'frontend/.code-pushup/report.md'),
+                  json: path.join(workDir, 'frontend/.code-pushup/report.json'),
+                  md: path.join(workDir, 'frontend/.code-pushup/report.md'),
                 },
               },
             },
@@ -797,7 +850,7 @@ describe('runInCI', () => {
       beforeEach(async () => {
         await git.checkoutLocalBranch('feature-1');
 
-        await writeFile(join(workDir, 'README.md'), '# Hello, world\n');
+        await writeFile(path.join(workDir, 'README.md'), '# Hello, world\n');
         await git.add('README.md');
         await git.commit('Create README');
 
@@ -816,8 +869,13 @@ describe('runInCI', () => {
           updateComment: vi.fn(),
           listComments: vi.fn().mockResolvedValue([]),
           downloadReportArtifact: vi.fn().mockImplementation(async project => {
-            const downloadPath = join(workDir, 'tmp', project, 'report.json');
-            await mkdir(dirname(downloadPath), { recursive: true });
+            const downloadPath = path.join(
+              workDir,
+              'tmp',
+              project,
+              'report.json',
+            );
+            await mkdir(path.dirname(downloadPath), { recursive: true });
             await copyFile(fixturePaths.reports.before.json, downloadPath);
             return downloadPath;
           }),
@@ -828,21 +886,27 @@ describe('runInCI', () => {
         ).resolves.toEqual({
           mode: 'monorepo',
           commentId: mockComment.id,
-          diffPath: join(workDir, '.code-pushup/merged-report-diff.md'),
+          diffPath: path.join(workDir, '.code-pushup/merged-report-diff.md'),
           projects: [
             {
               name: expect.stringContaining('api'),
               files: {
                 report: {
-                  json: join(workDir, 'backend/api/.code-pushup/report.json'),
-                  md: join(workDir, 'backend/api/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'backend/api/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'backend/api/.code-pushup/report.md'),
                 },
                 diff: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'backend/api/.code-pushup/report-diff.json',
                   ),
-                  md: join(workDir, 'backend/api/.code-pushup/report-diff.md'),
+                  md: path.join(
+                    workDir,
+                    'backend/api/.code-pushup/report-diff.md',
+                  ),
                 },
               },
               newIssues: [],
@@ -851,15 +915,21 @@ describe('runInCI', () => {
               name: expect.stringContaining('auth'),
               files: {
                 report: {
-                  json: join(workDir, 'backend/auth/.code-pushup/report.json'),
-                  md: join(workDir, 'backend/auth/.code-pushup/report.md'),
+                  json: path.join(
+                    workDir,
+                    'backend/auth/.code-pushup/report.json',
+                  ),
+                  md: path.join(workDir, 'backend/auth/.code-pushup/report.md'),
                 },
                 diff: {
-                  json: join(
+                  json: path.join(
                     workDir,
                     'backend/auth/.code-pushup/report-diff.json',
                   ),
-                  md: join(workDir, 'backend/auth/.code-pushup/report-diff.md'),
+                  md: path.join(
+                    workDir,
+                    'backend/auth/.code-pushup/report-diff.md',
+                  ),
                 },
               },
               newIssues: [],
@@ -868,12 +938,18 @@ describe('runInCI', () => {
               name: 'frontend',
               files: {
                 report: {
-                  json: join(workDir, 'frontend/.code-pushup/report.json'),
-                  md: join(workDir, 'frontend/.code-pushup/report.md'),
+                  json: path.join(workDir, 'frontend/.code-pushup/report.json'),
+                  md: path.join(workDir, 'frontend/.code-pushup/report.md'),
                 },
                 diff: {
-                  json: join(workDir, 'frontend/.code-pushup/report-diff.json'),
-                  md: join(workDir, 'frontend/.code-pushup/report-diff.md'),
+                  json: path.join(
+                    workDir,
+                    'frontend/.code-pushup/report-diff.json',
+                  ),
+                  md: path.join(
+                    workDir,
+                    'frontend/.code-pushup/report-diff.md',
+                  ),
                 },
               },
               newIssues: [],
@@ -882,7 +958,10 @@ describe('runInCI', () => {
         } satisfies RunResult);
 
         await expect(
-          readFile(join(workDir, '.code-pushup/merged-report-diff.md'), 'utf8'),
+          readFile(
+            path.join(workDir, '.code-pushup/merged-report-diff.md'),
+            'utf8',
+          ),
         ).resolves.toBe(diffMdString);
 
         expect(api.listComments).toHaveBeenCalledWith();
@@ -927,9 +1006,9 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'merge-diffs',
-            `--files=${join(workDir, 'backend/api/.code-pushup/report-diff.json')}`,
-            `--files=${join(workDir, 'backend/auth/.code-pushup/report-diff.json')}`,
-            `--files=${join(workDir, 'frontend/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'backend/api/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'backend/auth/.code-pushup/report-diff.json')}`,
+            `--files=${path.join(workDir, 'frontend/.code-pushup/report-diff.json')}`,
             expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
             '--persist.filename=merged-report',
           ],

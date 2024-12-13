@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeAll, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
@@ -8,7 +8,7 @@ import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI print-config', () => {
   const extensions = ['js', 'mjs', 'ts'] as const;
-  const fixtureDummyDir = join(
+  const fixtureDummyDir = path.join(
     'e2e',
     nxTargetProject(),
     'mocks',
@@ -16,15 +16,15 @@ describe('CLI print-config', () => {
     'dummy-setup',
   );
 
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
     'print-config',
   );
-  const testFileDummySetup = join(testFileDir, 'dummy-setup');
+  const testFileDummySetup = path.join(testFileDir, 'dummy-setup');
   const configFilePath = (ext: (typeof extensions)[number]) =>
-    join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
+    path.join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, testFileDummySetup, { recursive: true });

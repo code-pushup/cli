@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { fileExists } from '@code-pushup/utils';
 import {
   hasCodePushUpDependency,
@@ -13,7 +13,7 @@ export const npmHandler: MonorepoToolHandler = {
 
   async isConfigured(options) {
     return (
-      (await fileExists(join(options.cwd, 'package-lock.json'))) &&
+      (await fileExists(path.join(options.cwd, 'package-lock.json'))) &&
       (await hasWorkspacesEnabled(options.cwd))
     );
   },
