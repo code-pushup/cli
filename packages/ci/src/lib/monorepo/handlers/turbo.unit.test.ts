@@ -191,13 +191,13 @@ describe('turboHandler', () => {
       );
     });
 
-    it('should set parallel flag with default number of jobs', () => {
+    it('should leave default concurrency if parallel flag is true', () => {
       expect(
         turboHandler.createRunManyCommand(
           { ...options, parallel: true },
           projects,
         ),
-      ).toBe('npx turbo run code-pushup --concurrency=10 --');
+      ).toBe('npx turbo run code-pushup --');
     });
 
     it('should set parallel flag with custom number of jobs', () => {

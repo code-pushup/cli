@@ -7,9 +7,6 @@ import { yarnHandler } from './yarn.js';
 
 const WORKSPACE_HANDLERS = [pnpmHandler, yarnHandler, npmHandler];
 
-// https://turbo.build/repo/docs/reference/run#--concurrency-number--percentage
-const DEFAULT_CONCURRENCY = 10;
-
 type TurboConfig = {
   tasks: Record<string, object>;
 };
@@ -47,9 +44,10 @@ export const turboHandler: MonorepoToolHandler = {
   },
 
   createRunManyCommand(options, projects) {
-    const concurrency: number =
+    // https://turbo.build/repo/docs/reference/run#--concurrency-number--percentage
+    const concurrency: number | null =
       options.parallel === true
-        ? DEFAULT_CONCURRENCY
+        ? null
         : options.parallel === false
           ? 1
           : options.parallel;
@@ -59,7 +57,7 @@ export const turboHandler: MonorepoToolHandler = {
       'run',
       options.task,
       ...(projects.only?.map(project => `--filter=${project}`) ?? []),
-      `--concurrency=${concurrency}`,
+      ...(concurrency == null ? [] : [`--concurrency=${concurrency}`]),
       '--',
     ].join(' ');
   },

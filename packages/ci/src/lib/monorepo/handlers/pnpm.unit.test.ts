@@ -198,13 +198,13 @@ describe('pnpmHandler', () => {
       );
     });
 
-    it('should set parallel flag with default number of jobs', () => {
+    it('should leave default concurrency if parallel flag is true', () => {
       expect(
         pnpmHandler.createRunManyCommand(
           { ...options, parallel: true },
           projects,
         ),
-      ).toBe('pnpm --recursive --workspace-concurrency=4 code-pushup');
+      ).toBe('pnpm --recursive code-pushup');
     });
 
     it('should set parallel flag with custom number of jobs', () => {

@@ -11,9 +11,6 @@ import type { MonorepoToolHandler } from '../tools.js';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
-// https://pnpm.io/cli/recursive#--workspace-concurrency
-const DEFAULT_WORKSPACE_CONCURRENCY = 4;
-
 export const pnpmHandler: MonorepoToolHandler = {
   tool: 'pnpm',
 
@@ -46,16 +43,19 @@ export const pnpmHandler: MonorepoToolHandler = {
   },
 
   createRunManyCommand(options, projects) {
-    const workspaceConcurrency: number =
+    // https://pnpm.io/cli/recursive#--workspace-concurrency
+    const workspaceConcurrency: number | null =
       options.parallel === true
-        ? DEFAULT_WORKSPACE_CONCURRENCY
+        ? null
         : options.parallel === false
           ? 1
           : options.parallel;
     return [
       'pnpm',
       '--recursive',
-      `--workspace-concurrency=${workspaceConcurrency}`,
+      ...(workspaceConcurrency == null
+        ? []
+        : [`--workspace-concurrency=${workspaceConcurrency}`]),
       ...(projects.only?.map(project => `--filter=${project}`) ?? []),
       options.task,
     ].join(' ');
