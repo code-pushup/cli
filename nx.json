@@ -7,14 +7,9 @@
       "cache": true
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore"
-      ],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "options": {
-        "maxWarnings": 0,
-        "reportUnusedDisableDirectives": "warn"
+        "maxWarnings": 0
       },
       "cache": true
     },
@@ -42,7 +37,7 @@
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
-      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.?(c)js",
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.test.json",
       "!{projectRoot}/src/test-setup.[jt]s",
