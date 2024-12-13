@@ -1,0 +1,6 @@
+{
+  "name": "frontend",
+  "devDependencies": {
+    "@code-pushup/cli": "latest"
+  }
+}
