@@ -141,6 +141,7 @@ export function toNumberPrecision(
 }
 
 export function toOrdinal(value: number): string {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   if (value % 10 === 1 && value % 100 !== 11) {
     return `${value}st`;
   }
@@ -152,6 +153,7 @@ export function toOrdinal(value: number): string {
   if (value % 10 === 3 && value % 100 !== 13) {
     return `${value}rd`;
   }
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 
   return `${value}th`;
 }

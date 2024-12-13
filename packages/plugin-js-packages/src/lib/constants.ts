@@ -23,9 +23,11 @@ export const dependencyGroupToLong: Record<
 };
 
 export const dependencyGroupWeights: Record<DependencyGroup, number> = {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   prod: 80,
   dev: 15,
   optional: 5,
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 };
 
 export const dependencyDocs: Record<DependencyGroup, string> = {
