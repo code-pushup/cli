@@ -89,6 +89,8 @@ describe('runInCI', () => {
     Promise<utils.ProcessResult>
   >;
 
+  let yarnVersion: string;
+
   async function simulateCodePushUpExecution({
     command,
     args,
@@ -161,6 +163,13 @@ describe('runInCI', () => {
       .mockImplementation(cfg => {
         if (cfg.command.includes('code-pushup')) {
           return simulateCodePushUpExecution(cfg);
+        }
+        if (cfg.command === 'yarn' && cfg.args![0] === '-v') {
+          return Promise.resolve({
+            code: 0,
+            stdout: yarnVersion,
+            stderr: '',
+          } as utils.ProcessResult);
         }
         return originalExecuteProcess(cfg);
       });
@@ -386,18 +395,65 @@ describe('runInCI', () => {
     });
   });
 
-  describe.each<[MonorepoTool, string]>([
-    ['nx', expect.stringMatching(/^npx nx run \w+:code-pushup --$/)],
-    ['turbo', 'npx turbo run code-pushup --'],
-    ['pnpm', 'pnpm run code-pushup'],
-    ['yarn', 'yarn run code-pushup'],
-    ['npm', 'npm run code-pushup --'],
-  ])('monorepo mode - %s', (tool, bin) => {
+  describe.each<{
+    name: string;
+    tool: MonorepoTool;
+    run: string;
+    runMany: string;
+    setup?: () => void;
+  }>([
+    {
+      name: 'Nx',
+      tool: 'nx',
+      run: expect.stringMatching(
+        /^npx nx run (cli|core|utils):code-pushup --$/,
+      ),
+      runMany:
+        'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
+    },
+    {
+      name: 'Turborepo',
+      tool: 'turbo',
+      run: 'npx turbo run code-pushup --',
+      runMany: 'npx turbo run code-pushup --concurrency=1 --',
+    },
+    {
+      name: 'pnpm workspace',
+      tool: 'pnpm',
+      run: 'pnpm run code-pushup',
+      runMany: 'pnpm --recursive --workspace-concurrency=1 code-pushup',
+    },
+    {
+      name: 'Yarn workspaces (modern)',
+      tool: 'yarn',
+      run: 'yarn run code-pushup',
+      runMany: 'yarn workspaces foreach --all code-pushup',
+      setup: () => {
+        yarnVersion = '2.0.0';
+      },
+    },
+    {
+      name: 'Yarn workspaces (classic)',
+      tool: 'yarn',
+      run: 'yarn run code-pushup',
+      runMany: 'yarn workspaces run code-pushup',
+      setup: () => {
+        yarnVersion = '1.0.0';
+      },
+    },
+    {
+      name: 'npm workspaces',
+      tool: 'npm',
+      run: 'npm run code-pushup --',
+      runMany: 'npm run code-pushup --workspaces --if-present --',
+    },
+  ])('monorepo mode - $name', ({ tool, run, runMany, setup }) => {
     beforeEach(async () => {
       const monorepoDir = join(fixturesDir, 'monorepos', tool);
       await cp(monorepoDir, workDir, { recursive: true });
       await git.add('.');
       await git.commit(`Create packages in ${tool} monorepo`);
+      setup?.();
     });
 
     describe('push event', () => {
@@ -449,21 +505,21 @@ describe('runInCI', () => {
           ],
         } satisfies RunResult);
 
-        // expect(
-        //   executeProcessSpy.mock.calls.filter(([cfg]) =>
-        //     cfg.command.includes('code-pushup'),
-        //   ),
-        // ).toHaveLength(6); // 3 projects: 1 autorun, 1 print-config
+        expect(
+          executeProcessSpy.mock.calls.filter(([cfg]) =>
+            cfg.command.includes('code-pushup'),
+          ),
+        ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: bin,
+          command: run,
           args: ['print-config'],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
-        // expect(utils.executeProcess).toHaveBeenCalledWith({
-        //   command: bin,
-        //   args: ['--persist.format=json', '--persist.format=md'],
-        //   cwd: expect.stringContaining(workDir),
-        // } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: runMany,
+          args: ['--persist.format=json', '--persist.format=md'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
         expect(logger.warn).not.toHaveBeenCalled();
@@ -502,7 +558,8 @@ describe('runInCI', () => {
               // simulates a project which has no cached report
               return null;
             }
-            const downloadPath = join(workDir, 'downloaded-report.json');
+            const downloadPath = join(workDir, 'tmp', project, 'report.json');
+            await mkdir(dirname(downloadPath), { recursive: true });
             await copyFile(fixturePaths.reports.before.json, downloadPath);
             return downloadPath;
           }),
@@ -588,26 +645,29 @@ describe('runInCI', () => {
         );
         expect(api.updateComment).not.toHaveBeenCalled();
 
-        // 2 cached projects: 1 autorun, 1 print-config, 1 compare
-        // 1 uncached project: 2 autoruns, 2 print-configs, 1 compare
-        // 1 merge-diffs
-        // expect(
-        //   executeProcessSpy.mock.calls.filter(([cfg]) =>
-        //     cfg.command.includes('code-pushup'),
-        //   ),
-        // ).toHaveLength(12);
+        // 1 autorun for all projects
+        // 3 print-configs for each project
+        // 1 print-config for uncached project
+        // 1 autorun for uncached projects
+        // 3 compares for each project
+        // 1 merge-diffs for all projects
+        expect(
+          executeProcessSpy.mock.calls.filter(([cfg]) =>
+            cfg.command.includes('code-pushup'),
+          ),
+        ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: bin,
+          command: run,
           args: ['print-config'],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
-        // expect(utils.executeProcess).toHaveBeenCalledWith({
-        //   command: bin,
-        //   args: ['--persist.format=json', '--persist.format=md'],
-        //   cwd: expect.stringContaining(workDir),
-        // } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: bin,
+          command: runMany,
+          args: ['--persist.format=json', '--persist.format=md'],
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
           args: [
             'compare',
             expect.stringMatching(/^--before=.*prev-report.json$/),
@@ -619,7 +679,7 @@ describe('runInCI', () => {
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: bin,
+          command: run,
           args: [
             'merge-diffs',
             `--files=${join(workDir, 'packages/cli/.code-pushup/report-diff.json')}`,
