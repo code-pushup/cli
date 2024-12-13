@@ -1,7 +1,7 @@
-export { listMonorepoProjects } from './list-projects.js';
+export { listMonorepoProjects, type RunManyCommand } from './list-projects.js';
 export {
-  MONOREPO_TOOLS,
   isMonorepoTool,
+  MONOREPO_TOOLS,
   type MonorepoTool,
   type ProjectConfig,
 } from './tools.js';
