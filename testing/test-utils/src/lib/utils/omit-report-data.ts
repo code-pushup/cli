@@ -28,7 +28,6 @@ export function omitVariablePluginData(
   },
 ) {
   const { omitAuditData } = options ?? {};
-
   return {
     ...pluginReport,
     audits: audits.map(plugin =>

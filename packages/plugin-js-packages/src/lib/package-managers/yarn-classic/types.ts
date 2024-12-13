@@ -8,7 +8,6 @@ export type Yarnv1AuditAdvisory = {
       id: number;
       path: string;
     };
-
     advisory: {
       module_name: string;
       severity: PackageAuditLevel;

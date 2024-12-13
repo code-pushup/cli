@@ -9,7 +9,6 @@ vi.mock('node:child_process', async () => {
 
   return {
     ...actual,
-
     execSync: vi.fn((command: string) => {
       if (command.includes('THROW_ERROR')) {
         throw new Error(command);

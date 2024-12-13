@@ -14,8 +14,8 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
   T extends never
     ? Record<string, ArgumentValue | undefined> | { _: string }
     : T;
-// @TODO import from @code-pushup/utils => get rid of poppins for cjs support
 
+// @TODO import from @code-pushup/utils => get rid of poppins for cjs support
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
