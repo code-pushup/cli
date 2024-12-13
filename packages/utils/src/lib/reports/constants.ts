@@ -2,8 +2,10 @@
 export const TERMINAL_WIDTH = 80;
 
 export const SCORE_COLOR_RANGE = {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   GREEN_MIN: 0.9,
   YELLOW_MIN: 0.5,
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 };
 
 export const FOOTER_PREFIX = 'Made with ❤ by'; // replace ❤️ with ❤, because ❤️ has output issues in terminal

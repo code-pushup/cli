@@ -23,8 +23,8 @@ export default tseslint.config(
         {
           enforceBuildableLibDependency: true,
           allow: [
-            '^.*/eslint(\\.base)?\\.config\\.[cm]?js$',
-            '^.*/code-pushup\\.(config|preset)(\\.m?[jt]s)?$',
+            String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
+            String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
           ],
           depConstraints: [
@@ -87,7 +87,7 @@ export default tseslint.config(
     rules: {
       'vitest/consistent-test-filename': [
         'warn',
-        { pattern: '.*\\.(unit|integration|e2e)\\.test\\.[tj]sx?$' },
+        { pattern: String.raw`.*\.(unit|integration|e2e)\.test\.[tj]sx?$` },
       ],
     },
   },
@@ -98,7 +98,7 @@ export default tseslint.config(
   {
     files: ['**/perf/**/*.ts'],
     rules: {
-      'no-magic-numbers': 'off',
+      '@typescript-eslint/no-magic-numbers': 'off',
       'sonarjs/no-duplicate-string': 'off',
     },
   },
