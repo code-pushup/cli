@@ -9,8 +9,7 @@ import {
   eslintConfigFromNxProjectAndDeps,
 } from './nx/index.js';
 
-const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
-type Project = (typeof ALL_PROJECTS)[number];
+type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;

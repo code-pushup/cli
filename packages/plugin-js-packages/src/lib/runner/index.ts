@@ -129,7 +129,7 @@ async function processAudit(
 
   const rejected = auditResults.filter(isPromiseRejectedResult);
   if (rejected.length > 0) {
-    rejected.map(result => {
+    rejected.forEach(result => {
       console.error(result.reason);
     });
 

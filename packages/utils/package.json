@@ -23,6 +23,9 @@
     "access": "public"
   },
   "type": "module",
+  "engines": {
+    "node": ">=17.0.0"
+  },
   "dependencies": {
     "@code-pushup/models": "0.56.0",
     "@isaacs/cliui": "^8.0.2",
