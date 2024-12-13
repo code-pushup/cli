@@ -13,8 +13,12 @@ import type {
 export type MonorepoProjects = {
   tool: MonorepoTool | null;
   projects: ProjectConfig[];
-  runManyCommand?: (onlyProjects?: string[]) => string | Promise<string>;
+  runManyCommand?: RunManyCommand;
 };
+
+export type RunManyCommand = (
+  onlyProjects?: string[],
+) => string | Promise<string>;
 
 export async function listMonorepoProjects(
   settings: Settings,
