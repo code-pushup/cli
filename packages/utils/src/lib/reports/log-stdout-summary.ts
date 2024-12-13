@@ -81,14 +81,12 @@ function logRow(score: number, title: string, value?: string): void {
     },
     {
       text: title,
-
       padding: [0, 3, 0, 0],
     },
     ...(value
       ? [
           {
             text: cyanBright(value),
-
             width: 20,
             padding: [0, 0, 0, 0],
           },
@@ -109,7 +107,6 @@ export function logCategories({
     countCategoryAudits(refs, plugins),
   ]);
   const table = ui().table();
-
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
   table.head(
     REPORT_RAW_OVERVIEW_TABLE_HEADERS.map((heading, idx) => ({

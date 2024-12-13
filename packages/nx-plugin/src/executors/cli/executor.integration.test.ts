@@ -8,7 +8,6 @@ vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
   return {
     ...actual,
-
     execSync: vi.fn(),
   };
 });

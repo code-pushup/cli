@@ -60,7 +60,6 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
