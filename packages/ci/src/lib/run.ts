@@ -125,7 +125,7 @@ async function runInMonorepoMode(env: RunEnv): Promise<RunResult> {
       path.basename(tmpDiffPath),
     );
     if (tmpDiffPath !== diffPath) {
-      await fs.cp(tmpDiffPath, diffPath);
+      await fs.copyFile(tmpDiffPath, diffPath);
       logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
     }
     const commentId = await commentOnPR(tmpDiffPath, api, logger);
