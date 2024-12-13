@@ -25,6 +25,7 @@ describe('CI - monorepo mode (Nx)', () => {
     options = {
       monorepo: true,
       directory: repo.baseDir,
+      parallel: true,
       silent: true, // comment out for debugging
     };
   });
