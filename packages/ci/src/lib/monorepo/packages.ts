@@ -1,5 +1,5 @@
 import { glob } from 'glob';
-import { basename, dirname, join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { readJsonFile } from '@code-pushup/utils';
 
@@ -20,9 +20,9 @@ export async function listPackages(
 
   return Promise.all(
     files.toSorted().map(async (file): Promise<WorkspacePackage> => {
-      const packageJson = await readJsonFile<PackageJson>(join(cwd, file));
-      const directory = join(cwd, dirname(file));
-      const name = packageJson.name || basename(directory);
+      const packageJson = await readJsonFile<PackageJson>(path.join(cwd, file));
+      const directory = path.join(cwd, path.dirname(file));
+      const name = packageJson.name || path.basename(directory);
       return { name, directory, packageJson };
     }),
   );
@@ -56,7 +56,7 @@ export async function hasWorkspacesEnabled(cwd: string): Promise<boolean> {
 }
 
 export async function readRootPackageJson(cwd: string): Promise<PackageJson> {
-  return await readJsonFile<PackageJson>(join(cwd, 'package.json'));
+  return await readJsonFile<PackageJson>(path.join(cwd, 'package.json'));
 }
 
 export function hasDependency(packageJson: PackageJson, name: string): boolean {

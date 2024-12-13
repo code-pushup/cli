@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
@@ -119,22 +119,22 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'api',
-          directory: join(MEMFS_VOLUME, 'backend', 'api'),
+          directory: path.join(MEMFS_VOLUME, 'backend', 'api'),
           bin: 'npx turbo run code-pushup --',
         },
         {
           name: 'auth',
-          directory: join(MEMFS_VOLUME, 'backend', 'auth'),
+          directory: path.join(MEMFS_VOLUME, 'backend', 'auth'),
           bin: 'npx turbo run code-pushup --',
         },
         {
           name: 'cms',
-          directory: join(MEMFS_VOLUME, 'frontend', 'cms'),
+          directory: path.join(MEMFS_VOLUME, 'frontend', 'cms'),
           bin: 'npx turbo run code-pushup --',
         },
         {
           name: 'web',
-          directory: join(MEMFS_VOLUME, 'frontend', 'web'),
+          directory: path.join(MEMFS_VOLUME, 'frontend', 'web'),
           bin: 'npx turbo run code-pushup --',
         },
       ],
@@ -171,17 +171,17 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'pnpm run code-pushup',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontend'),
           bin: 'pnpm run code-pushup',
         },
         {
           name: '@repo/utils',
-          directory: join(MEMFS_VOLUME, 'libs', 'utils'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'utils'),
           bin: 'pnpm run code-pushup',
         },
       ],
@@ -217,12 +217,12 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'cli',
-          directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'cli'),
           bin: 'yarn exec code-pushup',
         },
         {
           name: 'core',
-          directory: join(MEMFS_VOLUME, 'packages', 'core'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'core'),
           bin: 'yarn exec code-pushup',
         },
       ],
@@ -254,12 +254,12 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'packages', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'backend'),
           bin: 'npm exec code-pushup --',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'packages', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'frontend'),
           bin: 'npm exec code-pushup --',
         },
       ],
@@ -296,19 +296,19 @@ describe('listMonorepoProjects', () => {
       tool: null,
       projects: [
         {
-          name: join('backend', 'api'),
+          name: path.join('backend', 'api'),
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'backend', 'api'),
+          directory: path.join(MEMFS_VOLUME, 'backend', 'api'),
         },
         {
-          name: join('backend', 'auth'),
+          name: path.join('backend', 'auth'),
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'backend', 'auth'),
+          directory: path.join(MEMFS_VOLUME, 'backend', 'auth'),
         },
         {
           name: 'frontend',
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'frontend'),
         },
       ],
     } satisfies MonorepoProjects);
@@ -340,22 +340,22 @@ describe('listMonorepoProjects', () => {
         {
           name: 'my-app',
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME),
+          directory: path.join(MEMFS_VOLUME),
         },
         {
           name: 'migrate',
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'scripts', 'db', 'migrate'),
+          directory: path.join(MEMFS_VOLUME, 'scripts', 'db', 'migrate'),
         },
         {
           name: 'seed',
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'scripts', 'db', 'seed'),
+          directory: path.join(MEMFS_VOLUME, 'scripts', 'db', 'seed'),
         },
         {
           name: 'generate-token',
           bin: 'npx --no-install code-pushup',
-          directory: join(MEMFS_VOLUME, 'scripts', 'generate-token'),
+          directory: path.join(MEMFS_VOLUME, 'scripts', 'generate-token'),
         },
       ],
     } satisfies MonorepoProjects);
@@ -396,22 +396,22 @@ describe('listMonorepoProjects', () => {
       projects: [
         {
           name: 'backoffice',
-          directory: join(MEMFS_VOLUME, 'apps', 'backoffice'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backoffice'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: 'frontoffice',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontoffice'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontoffice'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: '@repo/models',
-          directory: join(MEMFS_VOLUME, 'packages', 'models'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'models'),
           bin: 'pnpm exec code-pushup',
         },
         {
           name: '@repo/ui',
-          directory: join(MEMFS_VOLUME, 'packages', 'ui'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'ui'),
           bin: 'pnpm exec code-pushup',
         },
       ],

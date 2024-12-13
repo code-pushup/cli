@@ -1,4 +1,4 @@
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { ESLintTarget } from '../config.js';
@@ -6,8 +6,8 @@ import type { RuleData } from './parse.js';
 import { listRules } from './rules.js';
 
 describe('listRules', () => {
-  const fixturesDir = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const fixturesDir = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     '..',
     '..',
@@ -26,8 +26,8 @@ describe('listRules', () => {
   });
 
   describe('React app', () => {
-    const appRootDir = join(fixturesDir, 'todos-app');
-    const eslintrc = join(appRootDir, '.eslintrc.js');
+    const appRootDir = path.join(fixturesDir, 'todos-app');
+    const eslintrc = path.join(appRootDir, '.eslintrc.js');
 
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
@@ -89,8 +89,8 @@ describe('listRules', () => {
   });
 
   describe('Nx monorepo project', () => {
-    const nxRootDir = join(fixturesDir, 'nx-monorepo');
-    const eslintrc = join(nxRootDir, 'packages/utils/.eslintrc.json');
+    const nxRootDir = path.join(fixturesDir, 'nx-monorepo');
+    const eslintrc = path.join(nxRootDir, 'packages/utils/.eslintrc.json');
 
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];

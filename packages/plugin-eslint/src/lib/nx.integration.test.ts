@@ -1,4 +1,4 @@
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
@@ -17,8 +17,8 @@ describe('Nx helpers', () => {
   const originalWorkspaceRoot = workspaceRoot;
 
   beforeAll(() => {
-    const workspaceDir = join(
-      fileURLToPath(dirname(import.meta.url)),
+    const workspaceDir = path.join(
+      fileURLToPath(path.dirname(import.meta.url)),
       '..',
       '..',
       'mocks',

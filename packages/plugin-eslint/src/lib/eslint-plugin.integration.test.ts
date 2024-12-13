@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
@@ -7,9 +7,9 @@ import { toUnixPath } from '@code-pushup/utils';
 import { eslintPlugin } from './eslint-plugin.js';
 
 describe('eslintPlugin', () => {
-  const thisDir = fileURLToPath(dirname(import.meta.url));
+  const thisDir = fileURLToPath(path.dirname(import.meta.url));
 
-  const fixturesDir = join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
 
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
@@ -19,7 +19,7 @@ describe('eslintPlugin', () => {
     runner: {
       ...(plugin.runner as RunnerConfig),
       args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(arg.replace(dirname(thisDir), '<dirname>')),
+        toUnixPath(arg.replace(path.dirname(thisDir), '<dirname>')),
       ),
       outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },
@@ -37,7 +37,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for React application', async () => {
-    cwdSpy.mockReturnValue(join(fixturesDir, 'todos-app'));
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'todos-app'));
     const plugin = await eslintPlugin({
       eslintrc: '.eslintrc.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
@@ -49,7 +49,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
-    cwdSpy.mockReturnValue(join(fixturesDir, 'nx-monorepo'));
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
     const plugin = await eslintPlugin({
       eslintrc: './packages/utils/.eslintrc.json',
       patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],

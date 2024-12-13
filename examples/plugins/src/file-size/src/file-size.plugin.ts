@@ -1,5 +1,5 @@
 import { stat } from 'node:fs/promises';
-import { basename } from 'node:path';
+import path from 'node:path';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -59,7 +59,7 @@ export const recommendedRefs: CategoryRef[] = Object.values(auditsMap).map(
  *   },
  *   plugins: [
  *     await fileSizePlugin({
- *       directory: join(process.cwd(), './dist/packages/utils'),
+ *       directory: path.join(process.cwd(), './dist/packages/utils'),
  *       pattern: /\.js$/,
  *       budget: 4200
  *     })
@@ -136,7 +136,7 @@ export function fileSizeIssues(options: {
     pattern,
     fileTransform: async (file: string) => {
       // get size of file
-      // const filePath = join(directory, file);
+      // const filePath = path.join(directory, file);
       const stats = await stat(file);
 
       return assertFileSize(file, stats.size, budget);
@@ -145,14 +145,14 @@ export function fileSizeIssues(options: {
 }
 
 export function infoMessage(filePath: string, size: number) {
-  return `File ${basename(filePath)} is OK. (size: ${formatBytes(size)})`;
+  return `File ${path.basename(filePath)} is OK. (size: ${formatBytes(size)})`;
 }
 
 export function errorMessage(filePath: string, size: number, budget: number) {
   const sizeDifference = formatBytes(size - budget);
   const byteSize = formatBytes(size);
   const byteBudget = formatBytes(budget);
-  return `File ${basename(
+  return `File ${path.basename(
     filePath,
   )} has ${byteSize}, this is ${sizeDifference} too big. (budget: ${byteBudget})`;
 }

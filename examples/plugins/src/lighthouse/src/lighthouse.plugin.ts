@@ -1,5 +1,5 @@
 import type Result from 'lighthouse/types/lhr/lhr';
-import { dirname } from 'node:path';
+import path from 'node:path';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -60,7 +60,7 @@ export async function create(options: PluginOptions) {
 
   // ensure output dir
   if (outputPath !== undefined) {
-    await ensureDirectoryExists(dirname(outputPath));
+    await ensureDirectoryExists(path.dirname(outputPath));
   }
 
   return {

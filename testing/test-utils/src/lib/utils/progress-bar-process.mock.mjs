@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import path from 'node:path';
 
 /**
  * Custom runner implementation that simulates asynchronous situations.
@@ -52,7 +52,7 @@ let auditPostfix =
 const pluginSlug = 'progress-mock-plugin-' + pluginPostfix;
 const auditSlug = pluginSlug + '-a' + auditPostfix;
 const auditTitle = 'Async Audit ' + auditPostfix;
-const outputFile = './' + join(outputDir, `${pluginSlug}-output.json`);
+const outputFile = './' + path.join(outputDir, `${pluginSlug}-output.json`);
 
 (async () => {
   if (verbose) {

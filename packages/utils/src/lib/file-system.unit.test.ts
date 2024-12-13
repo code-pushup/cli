@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
@@ -19,7 +19,7 @@ describe('ensureDirectoryExists', () => {
   it('should create a nested folder', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
 
-    const dir = join(MEMFS_VOLUME, 'sub', 'dir');
+    const dir = path.join(MEMFS_VOLUME, 'sub', 'dir');
 
     await ensureDirectoryExists(dir);
     await expect(
@@ -73,8 +73,8 @@ describe('crawlFileSystem', () => {
       }),
     ).resolves.toEqual([
       expect.stringContaining('README.md'),
-      expect.stringContaining(join('src', 'README.md')),
-      expect.stringContaining(join('src', 'index.ts')),
+      expect.stringContaining(path.join('src', 'README.md')),
+      expect.stringContaining(path.join('src', 'index.ts')),
     ]);
   });
 
@@ -86,7 +86,7 @@ describe('crawlFileSystem', () => {
       }),
     ).resolves.toEqual([
       expect.stringContaining('README.md'),
-      expect.stringContaining(join('src', 'README.md')),
+      expect.stringContaining(path.join('src', 'README.md')),
     ]);
   });
 
@@ -120,7 +120,7 @@ describe('findNearestFile', () => {
       MEMFS_VOLUME,
     );
     await expect(findNearestFile(['eslint.config.js'])).resolves.toBe(
-      join(MEMFS_VOLUME, 'eslint.config.js'),
+      path.join(MEMFS_VOLUME, 'eslint.config.js'),
     );
   });
 
@@ -138,7 +138,7 @@ describe('findNearestFile', () => {
         'eslint.config.cjs',
         'eslint.config.mjs',
       ]),
-    ).resolves.toBe(join(MEMFS_VOLUME, 'eslint.config.cjs'));
+    ).resolves.toBe(path.join(MEMFS_VOLUME, 'eslint.config.cjs'));
   });
 
   it('should resolve to undefined if file not found', async () => {
@@ -163,9 +163,9 @@ describe('findNearestFile', () => {
     await expect(
       findNearestFile(
         ['eslint.config.js', 'eslint.config.cjs', 'eslint.config.mjs'],
-        join(MEMFS_VOLUME, 'e2e'),
+        path.join(MEMFS_VOLUME, 'e2e'),
       ),
-    ).resolves.toBe(join(MEMFS_VOLUME, 'eslint.config.js'));
+    ).resolves.toBe(path.join(MEMFS_VOLUME, 'eslint.config.js'));
   });
 
   it('should find file in directory multiple levels up', async () => {
@@ -179,9 +179,9 @@ describe('findNearestFile', () => {
     await expect(
       findNearestFile(
         ['eslint.config.js', 'eslint.config.cjs', 'eslint.config.mjs'],
-        join(MEMFS_VOLUME, 'packages/core'),
+        path.join(MEMFS_VOLUME, 'packages/core'),
       ),
-    ).resolves.toBe(join(MEMFS_VOLUME, 'eslint.config.cjs'));
+    ).resolves.toBe(path.join(MEMFS_VOLUME, 'eslint.config.cjs'));
   });
 
   it("should find file that's nearest to current folder", async () => {
@@ -196,9 +196,9 @@ describe('findNearestFile', () => {
     await expect(
       findNearestFile(
         ['eslint.config.js', 'eslint.config.cjs', 'eslint.config.mjs'],
-        join(MEMFS_VOLUME, 'packages/core'),
+        path.join(MEMFS_VOLUME, 'packages/core'),
       ),
-    ).resolves.toBe(join(MEMFS_VOLUME, 'packages/core/eslint.config.js'));
+    ).resolves.toBe(path.join(MEMFS_VOLUME, 'packages/core/eslint.config.js'));
   });
 
   it('should not find file in sub-folders of current folder', async () => {

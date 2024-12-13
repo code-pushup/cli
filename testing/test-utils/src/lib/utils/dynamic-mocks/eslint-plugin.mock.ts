@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type {
   Audit,
   AuditReport,
@@ -53,7 +53,7 @@ export function eslintPluginConfigMock(outputDir = 'tmp'): PluginConfig {
     ...ESLINT_PLUGIN_META,
     runner: echoRunnerConfigMock(
       Object.values(ESLINT_AUDITS_MAP),
-      join(outputDir, 'eslint-out.json'),
+      path.join(outputDir, 'eslint-out.json'),
     ),
     audits,
   };

@@ -1,5 +1,5 @@
 import { readFile, rename } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import { afterEach } from 'vitest';
 import {
@@ -47,14 +47,14 @@ describe('CI - standalone mode', () => {
         mode: 'standalone',
         files: {
           report: {
-            json: join(repo.baseDir, '.code-pushup/report.json'),
-            md: join(repo.baseDir, '.code-pushup/report.md'),
+            json: path.join(repo.baseDir, '.code-pushup/report.json'),
+            md: path.join(repo.baseDir, '.code-pushup/report.md'),
           },
         },
       } satisfies RunResult);
 
       const jsonPromise = readFile(
-        join(repo.baseDir, '.code-pushup/report.json'),
+        path.join(repo.baseDir, '.code-pushup/report.json'),
         'utf8',
       );
       await expect(jsonPromise).resolves.toBeTruthy();
@@ -84,8 +84,8 @@ describe('CI - standalone mode', () => {
       await git.checkoutLocalBranch('feature-1');
 
       await rename(
-        join(repo.baseDir, 'index.js'),
-        join(repo.baseDir, 'index.ts'),
+        path.join(repo.baseDir, 'index.js'),
+        path.join(repo.baseDir, 'index.ts'),
       );
 
       await git.add('index.ts');
@@ -104,25 +104,27 @@ describe('CI - standalone mode', () => {
         newIssues: [],
         files: {
           report: {
-            json: join(repo.baseDir, '.code-pushup/report.json'),
-            md: join(repo.baseDir, '.code-pushup/report.md'),
+            json: path.join(repo.baseDir, '.code-pushup/report.json'),
+            md: path.join(repo.baseDir, '.code-pushup/report.md'),
           },
           diff: {
-            json: join(repo.baseDir, '.code-pushup/report-diff.json'),
-            md: join(repo.baseDir, '.code-pushup/report-diff.md'),
+            json: path.join(repo.baseDir, '.code-pushup/report-diff.json'),
+            md: path.join(repo.baseDir, '.code-pushup/report-diff.md'),
           },
         },
       } satisfies RunResult);
 
       const mdPromise = readFile(
-        join(repo.baseDir, '.code-pushup/report-diff.md'),
+        path.join(repo.baseDir, '.code-pushup/report-diff.md'),
         'utf8',
       );
       await expect(mdPromise).resolves.toBeTruthy();
       const md = await mdPromise;
       await expect(
         md.replace(/[\da-f]{40}/g, '`<commit-sha>`'),
-      ).toMatchFileSnapshot(join(TEST_SNAPSHOTS_DIR, 'basic-report-diff.md'));
+      ).toMatchFileSnapshot(
+        path.join(TEST_SNAPSHOTS_DIR, 'basic-report-diff.md'),
+      );
     });
   });
 });

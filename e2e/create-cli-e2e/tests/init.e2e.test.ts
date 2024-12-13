@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
@@ -14,15 +14,15 @@ const fakeCacheFolderName = () =>
   `fake-cache-${new Date().toISOString().replace(/[:.]/g, '-')}`;
 
 describe('create-cli-init', () => {
-  const workspaceRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-  const testFileDir = join(workspaceRoot, TEST_OUTPUT_DIR, 'init');
+  const workspaceRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const testFileDir = path.join(workspaceRoot, TEST_OUTPUT_DIR, 'init');
 
   afterEach(async () => {
     await teardownTestFolder(testFileDir);
   });
 
   it('should execute package correctly over npm exec', async () => {
-    const cwd = join(testFileDir, 'npm-exec');
+    const cwd = path.join(testFileDir, 'npm-exec');
     await createNpmWorkspace(cwd);
     const { code, stdout } = await executeProcess({
       command: 'npm',
@@ -42,7 +42,7 @@ describe('create-cli-init', () => {
     );
 
     await expect(
-      readJsonFile(join(cwd, 'package.json')),
+      readJsonFile(path.join(cwd, 'package.json')),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         devDependencies: {
@@ -54,14 +54,14 @@ describe('create-cli-init', () => {
       }),
     );
     await expect(
-      readTextFile(join(cwd, 'code-pushup.config.ts')),
+      readTextFile(path.join(cwd, 'code-pushup.config.ts')),
     ).resolves.toContain(
       "import type { CoreConfig } from '@code-pushup/models';",
     );
   });
 
   it('should execute package correctly over npm init', async () => {
-    const cwd = join(testFileDir, 'npm-init-setup');
+    const cwd = path.join(testFileDir, 'npm-init-setup');
     await createNpmWorkspace(cwd);
 
     const { code, stdout } = await executeProcess({
@@ -82,7 +82,7 @@ describe('create-cli-init', () => {
     );
 
     await expect(
-      readJsonFile(join(cwd, 'package.json')),
+      readJsonFile(path.join(cwd, 'package.json')),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         devDependencies: {
@@ -94,14 +94,14 @@ describe('create-cli-init', () => {
       }),
     );
     await expect(
-      readTextFile(join(cwd, 'code-pushup.config.ts')),
+      readTextFile(path.join(cwd, 'code-pushup.config.ts')),
     ).resolves.toContain(
       "import type { CoreConfig } from '@code-pushup/models';",
     );
   });
 
   it('should produce an executable setup when running npm exec', async () => {
-    const cwd = join(testFileDir, 'npm-executable');
+    const cwd = path.join(testFileDir, 'npm-executable');
     await createNpmWorkspace(cwd);
 
     await executeProcess({

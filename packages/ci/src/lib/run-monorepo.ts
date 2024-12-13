@@ -1,5 +1,5 @@
 import { copyFile, readFile } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import path from 'node:path';
 import {
   type CoreConfig,
   DEFAULT_PERSIST_OUTPUT_DIR,
@@ -61,10 +61,10 @@ export async function runInMonorepoMode(
       createCommandContext(settings, projects[0]),
     );
     logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
-    const diffPath = join(
+    const diffPath = path.join(
       directory,
       DEFAULT_PERSIST_OUTPUT_DIR,
-      basename(tmpDiffPath),
+      path.basename(tmpDiffPath),
     );
     if (tmpDiffPath !== diffPath) {
       await copyFile(tmpDiffPath, diffPath);

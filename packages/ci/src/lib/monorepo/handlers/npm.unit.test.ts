@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -89,12 +89,12 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'npm run code-pushup --',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'npm run code-pushup --',
         },
       ] satisfies ProjectConfig[]);
@@ -127,12 +127,12 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'npm exec code-pushup --',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'npm exec code-pushup --',
         },
       ] satisfies ProjectConfig[]);
@@ -163,17 +163,17 @@ describe('npmHandler', () => {
       await expect(npmHandler.listProjects(options)).resolves.toEqual([
         {
           name: 'backend',
-          directory: join(MEMFS_VOLUME, 'apps', 'backend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'backend'),
           bin: 'npm exec code-pushup --',
         },
         {
           name: 'frontend',
-          directory: join(MEMFS_VOLUME, 'apps', 'frontend'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'frontend'),
           bin: 'npm exec code-pushup --',
         },
         {
           name: 'shared',
-          directory: join(MEMFS_VOLUME, 'libs', 'shared'),
+          directory: path.join(MEMFS_VOLUME, 'libs', 'shared'),
           bin: 'npm exec code-pushup --',
         },
       ] satisfies ProjectConfig[]);
@@ -185,12 +185,12 @@ describe('npmHandler', () => {
       all: [
         {
           name: 'api',
-          directory: join(MEMFS_VOLUME, 'api'),
+          directory: path.join(MEMFS_VOLUME, 'api'),
           bin: 'npm run code-pushup --',
         },
         {
           name: 'ui',
-          directory: join(MEMFS_VOLUME, 'ui'),
+          directory: path.join(MEMFS_VOLUME, 'ui'),
           bin: 'npm run code-pushup --',
         },
       ],

@@ -4,7 +4,7 @@ import {
   MarkdownDocument,
   md,
 } from 'build-md';
-import { posix as pathPosix } from 'node:path';
+import path from 'node:path';
 import type {
   AuditReport,
   SourceFileLocation,
@@ -143,7 +143,7 @@ export function formatFileLink(
   position: SourceFileLocation['position'],
   outputDir: string,
 ): string {
-  const relativePath = pathPosix.relative(outputDir, file);
+  const relativePath = path.posix.relative(outputDir, file);
   const env = getEnvironmentType();
 
   switch (env) {

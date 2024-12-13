@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   executeProcess,
   fileExists,
@@ -12,7 +12,7 @@ export const nxHandler: MonorepoToolHandler = {
 
   async isConfigured(options) {
     return (
-      (await fileExists(join(options.cwd, 'nx.json'))) &&
+      (await fileExists(path.join(options.cwd, 'nx.json'))) &&
       (
         await executeProcess({
           command: 'npx',

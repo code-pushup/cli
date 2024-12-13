@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { normalizeAuditOutputs, normalizeIssue } from './normalize.js';
@@ -56,10 +56,10 @@ describe('normalizeAuditOutputs', () => {
   });
 
   it('should normalize audit details with issues that have a source specified', async () => {
-    const path = '/Users/user/Projects/myProject/utils/index.js';
+    const file = '/Users/user/Projects/myProject/utils/index.js';
     const issues = [
       { source: undefined },
-      { source: { file: path } },
+      { source: { file } },
       { source: undefined },
     ] as Issue[];
     await expect(
@@ -84,11 +84,11 @@ describe('normalizeIssue', () => {
       message: 'file too big',
       severity: 'error',
     } as Issue;
-    expect(normalizeIssue(issue, join('User', 'code-pushup'))).toBe(issue);
+    expect(normalizeIssue(issue, path.join('User', 'code-pushup'))).toBe(issue);
   });
 
   it('should normalize filepath in issue if source file is given', () => {
-    const path = '/myProject/utils/index.js';
+    const file = '/myProject/utils/index.js';
     const gitRoot = '/myProject';
     expect(
       normalizeIssue(
@@ -96,7 +96,7 @@ describe('normalizeIssue', () => {
           message: 'file too big',
           severity: 'error',
           source: {
-            file: path,
+            file,
           },
         },
         gitRoot,

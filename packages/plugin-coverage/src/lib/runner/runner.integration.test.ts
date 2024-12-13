@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
 import type {
@@ -53,8 +53,8 @@ describe('executeRunner', () => {
   it('should successfully execute runner', async () => {
     const config: FinalCoveragePluginConfig = {
       reports: [
-        join(
-          fileURLToPath(dirname(import.meta.url)),
+        path.join(
+          fileURLToPath(path.dirname(import.meta.url)),
           '..',
           '..',
           '..',

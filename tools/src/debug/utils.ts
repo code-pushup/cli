@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import * as os from 'os';
 
 export type PID = string | number;
@@ -77,7 +77,7 @@ export function listProcess({ pid, commandMatch }: ProcessListOption = {}): {
       pid,
       command: command
         .replace(process.cwd(), '.')
-        .replace(`node ./${join('node_modules', '.bin')}/`, ''),
+        .replace(`node ./${path.join('node_modules', '.bin')}/`, ''),
     }))
     .filter(({ pid, command }) => {
       if (pids.length === 0 && commands.length === 0) {

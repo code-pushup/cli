@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type {
   OnProgress,
   RunnerConfig,
@@ -26,7 +26,7 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  const outputs = await readJsonFile(join(process.cwd(), outputFile));
+  const outputs = await readJsonFile(path.join(process.cwd(), outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
   const audits = outputTransform ? await outputTransform(outputs) : outputs;

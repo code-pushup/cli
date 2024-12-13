@@ -1,5 +1,5 @@
 import { glob } from 'glob';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { Logger, Settings } from '../models.js';
 import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
@@ -117,7 +117,7 @@ async function listProjectsByGlobs(args: {
   const { patterns, cwd, bin, logger } = args;
 
   const directories = await glob(
-    patterns.map(path => path.replace(/\/$/, '/')),
+    patterns.map(pattern => pattern.replace(/\/$/, '/')),
     { cwd },
   );
 
@@ -131,7 +131,7 @@ async function listProjectsByGlobs(args: {
   return directories.toSorted().map(directory => ({
     name: directory,
     bin,
-    directory: join(cwd, directory),
+    directory: path.join(cwd, directory),
   }));
 }
 

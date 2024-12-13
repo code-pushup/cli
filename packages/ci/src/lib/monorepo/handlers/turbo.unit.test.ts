@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type {
@@ -136,12 +136,12 @@ describe('turboHandler', () => {
         await expect(turboHandler.listProjects(options)).resolves.toEqual([
           {
             name: '@example/cli',
-            directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+            directory: path.join(MEMFS_VOLUME, 'packages', 'cli'),
             bin: 'npx turbo run code-pushup --',
           },
           {
             name: '@example/core',
-            directory: join(MEMFS_VOLUME, 'packages', 'core'),
+            directory: path.join(MEMFS_VOLUME, 'packages', 'core'),
             bin: 'npx turbo run code-pushup --',
           },
         ] satisfies ProjectConfig[]);
@@ -169,17 +169,17 @@ describe('turboHandler', () => {
       all: [
         {
           name: 'api',
-          directory: join(MEMFS_VOLUME, 'api'),
+          directory: path.join(MEMFS_VOLUME, 'api'),
           bin: 'npx turbo run code-pushup --',
         },
         {
           name: 'cms',
-          directory: join(MEMFS_VOLUME, 'cms'),
+          directory: path.join(MEMFS_VOLUME, 'cms'),
           bin: 'npx turbo run code-pushup --',
         },
         {
           name: 'web',
-          directory: join(MEMFS_VOLUME, 'web'),
+          directory: path.join(MEMFS_VOLUME, 'web'),
           bin: 'npx turbo run code-pushup --',
         },
       ],

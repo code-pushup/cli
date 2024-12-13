@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { simpleGit } from 'simple-git';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -14,12 +14,12 @@ import {
 export type TestRepo = Awaited<ReturnType<typeof setupTestRepo>>;
 
 export async function setupTestRepo(folder: string) {
-  const fixturesDir = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const fixturesDir = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     'fixtures',
     folder,
   );
-  const baseDir = join(
+  const baseDir = path.join(
     process.cwd(),
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),

@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
@@ -55,8 +55,8 @@ export async function coveragePlugin(
     })),
   };
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     'bin.js',
   );

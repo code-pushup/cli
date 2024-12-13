@@ -1,11 +1,11 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import coveragePlugin from '@code-pushup/coverage-plugin';
 import type { CoreConfig } from '@code-pushup/models';
 
 export default {
   plugins: [
     await coveragePlugin({
-      reports: [join('coverage', 'lcov.info')],
+      reports: [path.join('coverage', 'lcov.info')],
     }),
   ],
   categories: [

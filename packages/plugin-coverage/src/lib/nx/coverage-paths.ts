@@ -7,7 +7,7 @@ import type {
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { bold } from 'ansis';
-import { isAbsolute, join } from 'node:path';
+import path from 'node:path';
 import { importModule, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
@@ -149,12 +149,12 @@ export async function getCoveragePathForVitest(
     );
   }
 
-  if (isAbsolute(reportsDirectory)) {
-    return join(reportsDirectory, 'lcov.info');
+  if (path.isAbsolute(reportsDirectory)) {
+    return path.join(reportsDirectory, 'lcov.info');
   }
   return {
     pathToProject: project.root,
-    resultsPath: join(project.root, reportsDirectory, 'lcov.info'),
+    resultsPath: path.join(project.root, reportsDirectory, 'lcov.info'),
   };
 }
 
@@ -185,8 +185,8 @@ export async function getCoveragePathForJest(
     );
   }
 
-  if (isAbsolute(coverageDirectory)) {
-    return join(coverageDirectory, 'lcov.info');
+  if (path.isAbsolute(coverageDirectory)) {
+    return path.join(coverageDirectory, 'lcov.info');
   }
-  return join(project.root, coverageDirectory, 'lcov.info');
+  return path.join(project.root, coverageDirectory, 'lcov.info');
 }

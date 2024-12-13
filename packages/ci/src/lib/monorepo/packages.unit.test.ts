@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { basename, join } from 'node:path';
+import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
@@ -30,22 +30,22 @@ describe('listPackages', () => {
     await expect(listPackages(MEMFS_VOLUME)).resolves.toEqual([
       {
         name: 'e2e',
-        directory: join(MEMFS_VOLUME, 'e2e'),
+        directory: path.join(MEMFS_VOLUME, 'e2e'),
         packageJson: { name: 'e2e' },
       },
       {
         name: 'example-monorepo',
-        directory: join(MEMFS_VOLUME),
+        directory: path.join(MEMFS_VOLUME),
         packageJson: { name: 'example-monorepo' },
       },
       {
         name: '@example/cli',
-        directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+        directory: path.join(MEMFS_VOLUME, 'packages', 'cli'),
         packageJson: { name: '@example/cli' },
       },
       {
         name: '@example/core',
-        directory: join(MEMFS_VOLUME, 'packages', 'core'),
+        directory: path.join(MEMFS_VOLUME, 'packages', 'core'),
         packageJson: { name: '@example/core' },
       },
     ]);
@@ -105,7 +105,7 @@ describe('listPackages', () => {
 
     await expect(listPackages(MEMFS_VOLUME)).resolves.toEqual([
       expect.objectContaining({ name: 'e2e' }),
-      expect.objectContaining({ name: basename(MEMFS_VOLUME) }),
+      expect.objectContaining({ name: path.basename(MEMFS_VOLUME) }),
       expect.objectContaining({ name: '@example/cli' }),
       expect.objectContaining({ name: '@example/core' }),
       expect.objectContaining({ name: 'utils' }),
@@ -132,12 +132,12 @@ describe('listWorkspaces', () => {
       workspaces: [
         {
           name: 'api',
-          directory: join(MEMFS_VOLUME, 'api'),
+          directory: path.join(MEMFS_VOLUME, 'api'),
           packageJson: { name: 'api' },
         },
         {
           name: 'ui',
-          directory: join(MEMFS_VOLUME, 'ui'),
+          directory: path.join(MEMFS_VOLUME, 'ui'),
           packageJson: { name: 'ui' },
         },
       ],
@@ -166,12 +166,12 @@ describe('listWorkspaces', () => {
       workspaces: [
         {
           name: 'cli',
-          directory: join(MEMFS_VOLUME, 'packages', 'cli'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'cli'),
           packageJson: { name: 'cli' },
         },
         {
           name: 'core',
-          directory: join(MEMFS_VOLUME, 'packages', 'core'),
+          directory: path.join(MEMFS_VOLUME, 'packages', 'core'),
           packageJson: { name: 'core' },
         },
       ],
@@ -202,12 +202,12 @@ describe('listWorkspaces', () => {
       workspaces: [
         {
           name: 'desktop',
-          directory: join(MEMFS_VOLUME, 'apps', 'desktop'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'desktop'),
           packageJson: { name: 'desktop' },
         },
         {
           name: 'mobile',
-          directory: join(MEMFS_VOLUME, 'apps', 'mobile'),
+          directory: path.join(MEMFS_VOLUME, 'apps', 'mobile'),
           packageJson: { name: 'mobile' },
         },
       ],

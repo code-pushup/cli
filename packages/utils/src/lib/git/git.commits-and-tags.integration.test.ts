@@ -1,5 +1,5 @@
 import { mkdir, rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { commitFile, initGitRepo } from '@code-pushup/test-utils';
@@ -18,7 +18,7 @@ async function getAllCommits(git: SimpleGit) {
 }
 
 describe('getCurrentBranchOrTag', () => {
-  const baseDir = join(process.cwd(), 'tmp', 'git-tests');
+  const baseDir = path.join(process.cwd(), 'tmp', 'git-tests');
   let currentBranchOrTagGitMock: SimpleGit;
 
   beforeAll(async () => {
@@ -59,7 +59,7 @@ describe('getCurrentBranchOrTag', () => {
 });
 
 describe('getLatestCommit', () => {
-  const baseDir = join(process.cwd(), 'tmp', 'git', 'latest-commit');
+  const baseDir = path.join(process.cwd(), 'tmp', 'git', 'latest-commit');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
@@ -92,7 +92,7 @@ describe('getLatestCommit', () => {
 });
 
 describe('getHashes', () => {
-  const baseDir = join(process.cwd(), 'tmp', 'utils-git-get-hashes');
+  const baseDir = path.join(process.cwd(), 'tmp', 'utils-git-get-hashes');
   let gitMock: SimpleGit;
 
   beforeAll(async () => {
@@ -174,7 +174,7 @@ describe('getHashes', () => {
 });
 
 describe('getSemverTags', () => {
-  const baseDir = join(process.cwd(), 'tmp', 'git', 'get-semver-tags');
+  const baseDir = path.join(process.cwd(), 'tmp', 'git', 'get-semver-tags');
   let gitSemverTagsMock: SimpleGit;
 
   beforeAll(async () => {

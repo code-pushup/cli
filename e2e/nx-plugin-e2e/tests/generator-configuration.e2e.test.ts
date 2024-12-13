@@ -1,6 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
@@ -19,8 +19,8 @@ import { executeProcess } from '@code-pushup/utils';
 describe('nx-plugin g configuration', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const projectRoot = join('libs', project);
-  const testFileDir = join(
+  const projectRoot = path.join('libs', project);
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
@@ -36,7 +36,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should generate code-pushup.config.ts file and add target to project.json', async () => {
-    const cwd = join(testFileDir, 'configure');
+    const cwd = path.join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
     const { code, stdout, stderr } = await executeProcess({
@@ -67,7 +67,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
     const projectJson = await readFile(
-      join(cwd, 'libs', project, 'project.json'),
+      path.join(cwd, 'libs', project, 'project.json'),
       'utf8',
     );
 
@@ -81,12 +81,15 @@ describe('nx-plugin g configuration', () => {
       }),
     );
     await expect(
-      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+      readFile(
+        path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
+        'utf8',
+      ),
     ).resolves.not.toThrow();
   });
 
   it('should NOT create a code-pushup.config.ts file if one already exists', async () => {
-    const cwd = join(testFileDir, 'configure-config-existing');
+    const cwd = path.join(testFileDir, 'configure-config-existing');
     generateCodePushupConfig(tree, projectRoot);
     await materializeTree(tree, cwd);
 
@@ -111,7 +114,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
     const projectJson = await readFile(
-      join(cwd, 'libs', project, 'project.json'),
+      path.join(cwd, 'libs', project, 'project.json'),
       'utf8',
     );
     expect(JSON.parse(projectJson)).toStrictEqual(
@@ -126,7 +129,7 @@ describe('nx-plugin g configuration', () => {
   });
 
   it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
-    const cwd = join(testFileDir, 'configure-skip-config');
+    const cwd = path.join(testFileDir, 'configure-skip-config');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -152,7 +155,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
     const projectJson = await readFile(
-      join(cwd, 'libs', project, 'project.json'),
+      path.join(cwd, 'libs', project, 'project.json'),
       'utf8',
     );
     expect(JSON.parse(projectJson)).toStrictEqual(
@@ -166,12 +169,15 @@ describe('nx-plugin g configuration', () => {
     );
 
     await expect(
-      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+      readFile(
+        path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
+        'utf8',
+      ),
     ).rejects.toThrow('no such file or directory');
   });
 
   it('should NOT add target to project.json if skipTarget is given', async () => {
-    const cwd = join(testFileDir, 'configure-skip-target');
+    const cwd = path.join(testFileDir, 'configure-skip-target');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -196,7 +202,7 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
 
     const projectJson = await readFile(
-      join(cwd, 'libs', project, 'project.json'),
+      path.join(cwd, 'libs', project, 'project.json'),
       'utf8',
     );
     expect(JSON.parse(projectJson)).toStrictEqual(
@@ -210,12 +216,15 @@ describe('nx-plugin g configuration', () => {
     );
 
     await expect(
-      readFile(join(cwd, 'libs', project, 'code-pushup.config.ts'), 'utf8'),
+      readFile(
+        path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
+        'utf8',
+      ),
     ).resolves.toStrictEqual(expect.any(String));
   });
 
   it('should inform about dry run', async () => {
-    const cwd = join(testFileDir, 'configure');
+    const cwd = path.join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
     const { stderr } = await executeProcess({

@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
 import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
@@ -33,8 +33,8 @@ export async function eslintPlugin(
 
   const { audits, groups } = await listAuditsAndGroups(targets);
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     'bin.js',
   );

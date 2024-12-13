@@ -1,14 +1,14 @@
 import * as devKit from '@nx/devkit';
 import { formatFiles } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { generateCodePushupConfig } from './code-pushup-config.js';
 
 describe('generateCodePushupConfig options', () => {
   let tree: devKit.Tree;
   const project = 'test-app';
-  const projectRoot = join('libs', project);
+  const projectRoot = path.join('libs', project);
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
@@ -39,7 +39,7 @@ describe('generateCodePushupConfig options', () => {
     await formatFiles(tree);
 
     expect(
-      tree.read(join(projectRoot, 'code-pushup.config.ts'))?.toString(),
+      tree.read(path.join(projectRoot, 'code-pushup.config.ts'))?.toString(),
     ).toMatchFileSnapshot('__snapshots__/root-code-pushup.config.ts');
   });
 });
