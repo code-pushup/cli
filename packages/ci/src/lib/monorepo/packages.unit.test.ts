@@ -35,7 +35,7 @@ describe('listPackages', () => {
       },
       {
         name: 'example-monorepo',
-        directory: MEMFS_VOLUME,
+        directory: join(MEMFS_VOLUME),
         packageJson: { name: 'example-monorepo' },
       },
       {
