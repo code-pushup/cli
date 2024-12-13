@@ -1,15 +1,28 @@
-import { join } from 'node:path';
+import { bold } from 'ansis';
+import path, { join } from 'node:path';
+import { fromError, isZodErrorLike } from 'zod-validation-error';
 import {
   CONFIG_FILE_NAME,
   type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';
-import { fileExists, importModule } from '@code-pushup/utils';
+import {
+  fileExists,
+  importModule,
+  zodErrorMessageBuilder,
+} from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
     super(`Provided path '${configPath}' is not valid.`);
+  }
+}
+
+export class ConfigValidationError extends Error {
+  constructor(configPath: string, message: string) {
+    const relativePath = path.relative(process.cwd(), configPath);
+    super(`Failed parsing core config in ${bold(relativePath)}.\n\n${message}`);
   }
 }
 
@@ -27,7 +40,16 @@ export async function readRcByPath(
 
   const cfg = await importModule({ filepath, tsconfig, format: 'esm' });
 
-  return coreConfigSchema.parse(cfg);
+  try {
+    return coreConfigSchema.parse(cfg);
+  } catch (error) {
+    const validationError = fromError(error, {
+      messageBuilder: zodErrorMessageBuilder,
+    });
+    throw isZodErrorLike(error)
+      ? new ConfigValidationError(filepath, validationError.message)
+      : error;
+  }
 }
 
 export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
@@ -35,8 +57,8 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
   let ext = '';
   // eslint-disable-next-line functional/no-loop-statements
   for (const extension of SUPPORTED_CONFIG_FILE_FORMATS) {
-    const path = `${CONFIG_FILE_NAME}.${extension}`;
-    const exists = await fileExists(path);
+    const filePath = `${CONFIG_FILE_NAME}.${extension}`;
+    const exists = await fileExists(filePath);
 
     if (exists) {
       ext = extension;
