@@ -25,6 +25,7 @@ export default tseslint.config(
     files: ['**/*.test.ts'],
     rules: {
       'vitest/max-nested-describe': ['warn', { max: 3 }],
+      'n/no-unsupported-features/node-builtins': 'off',
     },
   },
 );
