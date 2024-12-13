@@ -9,6 +9,7 @@ describe('deriveYarnVersion', () => {
   beforeEach(() => {
     executeProcessSpy.mockClear();
   });
+
   afterAll(() => {
     executeProcessSpy.mockRestore();
   });

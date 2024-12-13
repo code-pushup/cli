@@ -47,7 +47,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toEqual({
-      ['code-pushup--configuration']: {
+      'code-pushup--configuration': {
         configurations: {},
         executor: 'nx:run-commands',
         options: {
@@ -99,7 +99,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['cp--configuration']: expect.any(Object),
+      'cp--configuration': expect.any(Object),
     });
   });
 
@@ -118,7 +118,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: expect.objectContaining({
+      'code-pushup--configuration': expect.objectContaining({
         options: {
           command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
@@ -139,7 +139,7 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual(
       expect.not.objectContaining({
-        ['code-pushup--configuration']: expect.any(Object),
+        'code-pushup--configuration': expect.any(Object),
       }),
     );
     expect(projectJson.targets).toMatchSnapshot();
@@ -156,7 +156,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: {
+      'code-pushup': {
         configurations: {},
         executor: `@code-pushup/nx-plugin:cli`,
         options: {},
@@ -222,7 +222,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+      'code-pushup': expect.objectContaining({
         executor: 'XYZ:cli',
       }),
     });
@@ -245,7 +245,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+      'code-pushup': expect.objectContaining({
         executor: `@code-pushup/nx-plugin:cli`,
         options: {
           projectPrefix: 'cli',

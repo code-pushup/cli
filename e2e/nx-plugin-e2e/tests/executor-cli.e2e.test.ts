@@ -27,7 +27,7 @@ async function addTargetToWorkspace(
     ...projectCfg,
     targets: {
       ...projectCfg.targets,
-      ['code-pushup']: {
+      'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
       },
     },

@@ -22,6 +22,7 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
   const defaultSetupDir = join(testFileDir, 'default-setup');
 
   const fixturesDir = join('e2e', nxTargetProject(), 'mocks/fixtures');
+
   beforeAll(async () => {
     await cp(fixturesDir, testFileDir, { recursive: true });
   });

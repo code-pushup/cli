@@ -34,7 +34,6 @@ const PROCESS_ARGUMENT_NUM_GROUPS_P2 = Number.parseInt(
   10,
 );
 
-// eslint-disable-next-line import/no-named-as-default-member
 const suite = new Benchmark.Suite('report-scoring');
 
 const AUDIT_PREFIX = 'a-';
@@ -53,7 +52,7 @@ const NUM_GROUPS_P2 = PROCESS_ARGUMENT_NUM_GROUPS_P2 || NUM_AUDITS_P2 / 2;
 
 // Add listener
 const listeners = {
-  cycle: function (event: Benchmark.Event) {
+  cycle(event: Benchmark.Event) {
     console.info(String(event.target));
   },
   complete: () => {
@@ -139,7 +138,7 @@ function minimalReport(opt?: MinimalReportOptions): Report {
     packageName: 'perf-benchmark',
     version: '0',
     commit: {
-      date: date,
+      date,
       message: 'perf: benchmark score report',
       author: 'me',
       hash: 'mock_hash',

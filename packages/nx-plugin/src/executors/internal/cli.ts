@@ -12,11 +12,10 @@ export function createCliCommand(options?: {
 type ArgumentValue = number | string | boolean | string[];
 export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
   T extends never
-    ? // eslint-disable-next-line @typescript-eslint/naming-convention
-      Record<string, ArgumentValue | undefined> | { _: string }
+    ? Record<string, ArgumentValue | undefined> | { _: string }
     : T;
 // @TODO import from @code-pushup/utils => get rid of poppins for cjs support
-// eslint-disable-next-line sonarjs/cognitive-complexity
+
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
@@ -24,11 +23,9 @@ export function objectToCliArgs<
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return (Array.isArray(value) ? value : [`${value}`]).filter(
         v => v != null,
       );

@@ -19,13 +19,16 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
   const existingDir = join(testFileDir, 'existing-report');
 
   const fixtureDir = join('e2e', nxTargetProject(), 'mocks', 'fixtures');
+
   beforeAll(async () => {
     await cp(fixtureDir, testFileDir, { recursive: true });
   });
+
   afterAll(async () => {
     await teardownTestFolder(basicDir);
     await teardownTestFolder(existingDir);
   });
+
   afterEach(async () => {
     await teardownTestFolder(join(basicDir, '.code-pushup'));
     await teardownTestFolder(join(existingDir, '.code-pushup'));

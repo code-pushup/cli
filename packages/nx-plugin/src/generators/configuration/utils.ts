@@ -32,7 +32,7 @@ export function formatObjectToFormattedJsString(
     | {
         [key: string]: unknown;
       }
-    | Array<unknown>,
+    | unknown[],
 ): string | undefined {
   if (!jsonObj) {
     return;

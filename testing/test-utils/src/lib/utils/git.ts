@@ -54,7 +54,6 @@ export async function commitFile(
 }
 
 export async function simulateGitFetch(git: SimpleGit) {
-  // eslint-disable-next-line functional/no-let
   let fetchHead: string = await git.branchLocal().then(resp => resp.current);
 
   vi.spyOn(git, 'fetch').mockImplementation((...args) => {

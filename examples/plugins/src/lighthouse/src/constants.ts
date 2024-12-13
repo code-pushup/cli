@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import type { Audit, CategoryRef, Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_OUTPUT_FILE_DEFAULT = 'lighthouse-report.json';

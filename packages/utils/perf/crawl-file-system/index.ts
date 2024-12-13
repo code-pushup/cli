@@ -30,7 +30,7 @@ const start = performance.now();
 
 // Add listener
 const listeners = {
-  cycle: function (event: Benchmark.Event) {
+  cycle(event: Benchmark.Event) {
     console.info(String(event.target));
   },
   complete: () => {
@@ -87,7 +87,7 @@ function wrapWithDefer<T>(
 ) {
   return {
     defer: true, // important for async functions
-    fn: function (deferred: { resolve: () => void }) {
+    fn(deferred: { resolve: () => void }) {
       return asyncFn(options)
         .catch(() => [])
         .then((result: unknown[]) => {

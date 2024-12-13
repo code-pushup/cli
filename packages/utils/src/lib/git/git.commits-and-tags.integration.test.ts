@@ -113,6 +113,7 @@ describe('getHashes', () => {
 
   describe('with a branch and commits clean', () => {
     let commits: { hash: string; message: string }[];
+
     beforeAll(async () => {
       await commitFile(gitMock, { baseDir, commitMsg: 'Create README' });
       await commitFile(gitMock, { baseDir, commitMsg: 'Update README 1' });

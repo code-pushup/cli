@@ -121,7 +121,7 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
         slug,
         score: score ?? 0, // score can be null
         value: Number.parseInt(value.toString(), 10),
-        displayValue: displayValue,
+        displayValue,
       };
 
       const issues = lhrDetailsToIssueDetails(details);

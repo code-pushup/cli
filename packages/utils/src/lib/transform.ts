@@ -47,8 +47,7 @@ export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
 type ArgumentValue = number | string | boolean | string[];
 export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
   T extends never
-    ? // eslint-disable-next-line @typescript-eslint/naming-convention
-      Record<string, ArgumentValue | undefined> | { _: string }
+    ? Record<string, ArgumentValue | undefined> | { _: string }
     : T;
 
 /**
@@ -61,7 +60,7 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity
+
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
@@ -69,11 +68,9 @@ export function objectToCliArgs<
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return Array.isArray(value) ? value : [`${value}`];
     }
     const prefix = key.length === 1 ? '-' : '--';
@@ -144,7 +141,6 @@ export function toNumberPrecision(
   );
 }
 
-/* eslint-disable no-magic-numbers */
 export function toOrdinal(value: number): string {
   if (value % 10 === 1 && value % 100 !== 11) {
     return `${value}st`;
@@ -160,5 +156,3 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
-
-/* eslint-enable no-magic-numbers */

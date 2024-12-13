@@ -1,5 +1,4 @@
 import type { Linter, Rule } from 'eslint';
-// eslint-disable-next-line import/no-deprecated
 import { builtinRules } from 'eslint/use-at-your-own-risk';
 import { isAbsolute, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -92,7 +91,7 @@ function findRuleMeta(
 }
 
 function findBuiltinRuleMeta(name: string): Rule.RuleMetaData | undefined {
-  // eslint-disable-next-line import/no-deprecated, deprecation/deprecation
+  // eslint-disable-next-line deprecation/deprecation
   const rule = builtinRules.get(name);
   return rule?.meta;
 }
