@@ -29,6 +29,11 @@ module.exports = tseslint.config(
         'warn',
         { fixMixedExportsWithInlineTypeSpecifier: true },
       ],
+      // `import path from 'node:path'` incompatible with CJS runtime, prefer `import * as path from 'node:path'`
+      'unicorn/import-style': [
+        'warn',
+        { styles: { 'node:path': { namespace: true } } },
+      ],
     },
   },
   {

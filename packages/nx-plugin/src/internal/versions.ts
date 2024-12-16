@@ -1,5 +1,5 @@
 import { readJsonFile } from '@nx/devkit';
-import path from 'node:path';
+import * as path from 'node:path';
 import type { PackageJson } from 'nx/src/utils/package-json';
 
 const workspaceRoot = path.join(__dirname, '../../');

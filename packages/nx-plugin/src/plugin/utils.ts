@@ -1,6 +1,6 @@
 import type { CreateNodesContext } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
+import * as path from 'node:path';
 import { CP_TARGET_NAME } from './constants.js';
 import type {
   CreateNodesOptions,

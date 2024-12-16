@@ -1,4 +1,4 @@
-import path from 'node:path';
+import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { parseEnv } from './env.js';
 import type {

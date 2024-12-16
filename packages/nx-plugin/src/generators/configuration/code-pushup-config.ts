@@ -1,5 +1,5 @@
 import { type Tree, generateFiles, logger } from '@nx/devkit';
-import path from 'node:path';
+import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { ItemOrArray } from '@code-pushup/utils';
 import type { ExecutableCode } from './types.js';
