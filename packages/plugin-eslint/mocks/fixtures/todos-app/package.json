@@ -12,8 +12,9 @@
   },
   "devDependencies": {
     "esbuild": "^0.19.2",
-    "eslint": "^8.48.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint": "^9.16.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.13.0"
   }
 }

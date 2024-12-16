@@ -45,7 +45,7 @@ describe('executeRunner', () => {
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
-    await createPluginConfig('.eslintrc.js');
+    await createPluginConfig('eslint.config.js');
     await executeRunner();
 
     const json = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
@@ -53,7 +53,7 @@ describe('executeRunner', () => {
   });
 
   it('should execute runner with custom config using @code-pushup/eslint-config', async () => {
-    await createPluginConfig('code-pushup.eslintrc.yml');
+    await createPluginConfig('code-pushup.eslint.config.mjs');
     await executeRunner();
 
     const json = await readJsonFile<AuditOutput[]>(RUNNER_OUTPUT_PATH);
