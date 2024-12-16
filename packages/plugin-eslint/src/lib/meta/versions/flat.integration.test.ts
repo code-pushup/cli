@@ -22,7 +22,7 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should load built-in rules from implicit flat config location', async () => {
-    const config: Linter.FlatConfig = {
+    const config: Linter.Config = {
       rules: {
         'no-unused-vars': 'error',
         'prefer-const': 'warn',
@@ -78,7 +78,7 @@ describe('loadRulesForFlatConfig', () => {
         } as Rule.RuleModule,
       },
     } as ESLint.Plugin;
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         plugins: {
           '@typescript-eslint': tseslint,
@@ -143,7 +143,7 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should load custom rule options', async () => {
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         rules: {
           complexity: ['warn', 30],
@@ -171,7 +171,7 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should create multiple rule instances when different options used', async () => {
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         rules: {
           'max-lines': ['warn', { max: 300 }],

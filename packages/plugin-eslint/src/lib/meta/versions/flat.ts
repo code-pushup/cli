@@ -33,7 +33,7 @@ export async function loadRulesForFlatConfig({
     .filter(exists);
 }
 
-type FlatConfig = Linter.FlatConfig | Linter.FlatConfig[];
+type FlatConfig = Linter.Config | Linter.Config[];
 
 async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
   const flatConfigFileNames = [
@@ -63,7 +63,7 @@ async function loadConfigByPath(configPath: string): Promise<FlatConfig> {
 }
 
 function findEnabledRulesWithOptions(
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Omit<RuleData, 'meta'>[] {
   const enabledRules = configs
     .flatMap(({ rules }) => Object.entries(rules ?? {}))
@@ -83,7 +83,7 @@ function findEnabledRulesWithOptions(
 
 function findRuleMeta(
   ruleId: string,
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Rule.RuleMetaData | undefined {
   const { plugin, name } = parseRuleId(ruleId);
   if (!plugin) {
@@ -100,7 +100,7 @@ function findBuiltinRuleMeta(name: string): Rule.RuleMetaData | undefined {
 function findPluginRuleMeta(
   plugin: string,
   name: string,
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Rule.RuleMetaData | undefined {
   const config = configs.find(({ plugins = {} }) => plugin in plugins);
   const rule = config?.plugins?.[plugin]?.rules?.[name];
