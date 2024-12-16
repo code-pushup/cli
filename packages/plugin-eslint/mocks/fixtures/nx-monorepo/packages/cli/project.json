@@ -2,7 +2,6 @@
   "name": "cli",
   "sourceRoot": "packages/cli/src",
   "projectType": "application",
-  "implicitDependencies": ["core"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

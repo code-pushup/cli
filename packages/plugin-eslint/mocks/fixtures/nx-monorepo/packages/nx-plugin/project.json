@@ -2,7 +2,6 @@
   "name": "nx-plugin",
   "sourceRoot": "packages/nx-plugin/src",
   "projectType": "library",
-  "implicitDependencies": ["utils"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

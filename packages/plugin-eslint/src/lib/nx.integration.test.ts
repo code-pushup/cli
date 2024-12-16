@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
+import { executeProcess } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
 import {
@@ -13,7 +14,7 @@ type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const workspaceDir = path.join(
       fileURLToPath(path.dirname(import.meta.url)),
       '..',
@@ -23,6 +24,12 @@ describe('Nx helpers', () => {
       'nx-monorepo',
     );
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(workspaceDir);
+
+    // HACK: somehow prevents "Failed to process project graph" errors
+    await executeProcess({
+      command: 'npx nx graph --file=.nx/graph.json',
+      cwd: workspaceDir,
+    });
   });
 
   afterAll(() => {
