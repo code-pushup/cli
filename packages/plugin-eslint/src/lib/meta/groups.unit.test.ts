@@ -4,7 +4,7 @@ import type { RuleData } from './parse.js';
 
 const eslintRules: RuleData[] = [
   {
-    ruleId: 'no-var',
+    id: 'no-var',
     meta: {
       docs: {
         description: 'Require `let` or `const` instead of `var`',
@@ -21,7 +21,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: 'no-const-assign',
+    id: 'no-const-assign',
     meta: {
       docs: {
         description: 'Disallow reassigning `const` variables',
@@ -37,7 +37,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: 'no-debugger',
+    id: 'no-debugger',
     meta: {
       type: 'problem',
       docs: {
@@ -53,7 +53,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: 'react/jsx-key',
+    id: 'react/jsx-key',
     meta: {
       docs: {
         category: 'Possible Errors',
@@ -66,7 +66,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: 'react/react-in-jsx-scope',
+    id: 'react/react-in-jsx-scope',
     meta: {
       docs: {
         description: 'Disallow missing React when using JSX',
@@ -82,7 +82,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: 'react/no-deprecated',
+    id: 'react/no-deprecated',
     meta: {
       docs: {
         description: 'Disallow usage of deprecated methods',
@@ -99,7 +99,7 @@ const eslintRules: RuleData[] = [
     options: [],
   },
   {
-    ruleId: '@typescript-eslint/no-array-constructor',
+    id: '@typescript-eslint/no-array-constructor',
     meta: {
       type: 'suggestion',
       docs: {

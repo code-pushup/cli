@@ -23,9 +23,9 @@ export async function loadRulesForFlatConfig({
   const rules = findEnabledRulesWithOptions(configs);
   return rules
     .map(rule => {
-      const meta = findRuleMeta(rule.ruleId, configs);
+      const meta = findRuleMeta(rule.id, configs);
       if (!meta) {
-        ui().logger.warning(`Cannot find metadata for rule ${rule.ruleId}`);
+        ui().logger.warning(`Cannot find metadata for rule ${rule.id}`);
         return null;
       }
       return { ...rule, meta };
@@ -68,14 +68,14 @@ function findEnabledRulesWithOptions(
   const enabledRules = configs
     .flatMap(({ rules }) => Object.entries(rules ?? {}))
     .filter(([, entry]) => entry != null && !isRuleOff(entry))
-    .map(([ruleId, entry]) => ({
-      ruleId,
+    .map(([id, entry]) => ({
+      id,
       options: entry ? optionsFromRuleEntry(entry) : [],
     }));
   const uniqueRulesMap = new Map(
-    enabledRules.map(({ ruleId, options }) => [
-      `${ruleId}::${jsonHash(options)}`,
-      { ruleId, options },
+    enabledRules.map(({ id, options }) => [
+      `${id}::${jsonHash(options)}`,
+      { id, options },
     ]),
   );
   return [...uniqueRulesMap.values()];
