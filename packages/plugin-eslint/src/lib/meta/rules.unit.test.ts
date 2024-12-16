@@ -27,7 +27,7 @@ describe('listRules', () => {
 
   describe('React app', () => {
     const appRootDir = path.join(fixturesDir, 'todos-app');
-    const eslintrc = path.join(appRootDir, '.eslintrc.js');
+    const eslintrc = path.join(appRootDir, 'eslint.config.js');
 
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
