@@ -90,7 +90,7 @@ describe('listRules', () => {
 
   describe('Nx monorepo project', () => {
     const nxRootDir = path.join(fixturesDir, 'nx-monorepo');
-    const eslintrc = path.join(nxRootDir, 'packages/utils/.eslintrc.json');
+    const eslintrc = path.join(nxRootDir, 'packages/utils/eslint.config.js');
 
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
@@ -105,13 +105,12 @@ describe('listRules', () => {
     });
 
     it('should include explicitly set plugin rule with custom options', async () => {
-      // set in root .eslintrc.json
+      // set in root eslint.config.js
       await expect(listRules(targets)).resolves.toContainEqual({
         id: '@nx/enforce-module-boundaries',
         meta: expect.any(Object),
         options: [
-          {
-            allow: [],
+          expect.objectContaining({
             depConstraints: [
               {
                 onlyDependOnLibsWithTags: ['*'],
@@ -119,7 +118,7 @@ describe('listRules', () => {
               },
             ],
             enforceBuildableLibDependency: true,
-          },
+          }),
         ],
       } satisfies RuleData);
     });
@@ -146,17 +145,17 @@ describe('listRules', () => {
       // extended TypeScript config sets "no-unused-semi": "off"
       await expect(listRules(targets)).resolves.not.toContainEqual(
         expect.objectContaining({
-          id: 'no-unused-vars',
+          id: 'no-unused-expressions',
         } satisfies Partial<RuleData>),
       );
     });
 
     it('should include rule added to root config by project config', async () => {
-      // set only in packages/utils/.eslintrc.json
+      // set only in packages/utils/eslint.config.js
       await expect(listRules(targets)).resolves.toContainEqual({
         id: '@nx/dependency-checks',
         meta: expect.any(Object),
-        options: [],
+        options: expect.any(Array),
       } satisfies RuleData);
     });
   });

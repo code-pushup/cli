@@ -4,11 +4,7 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/utils/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }
