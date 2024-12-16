@@ -35,11 +35,13 @@ export async function loadRulesForLegacyConfig({
       if (entry == null || isRuleOff(entry)) {
         return null;
       }
-      const meta = rulesMeta[id];
-      if (!meta) {
+      const ruleMeta = rulesMeta[id];
+      if (!ruleMeta) {
         ui().logger.warning(`Metadata not found for ESLint rule ${id}`);
         return null;
       }
+      // ignoring meta.defaultOptions to match legacy config handling in calculateConfigForFile
+      const { defaultOptions: _, ...meta } = ruleMeta;
       const options = optionsFromRuleEntry(entry);
       return { id, meta, options };
     })
