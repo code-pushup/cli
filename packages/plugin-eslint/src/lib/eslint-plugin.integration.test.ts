@@ -48,14 +48,14 @@ describe('eslintPlugin', () => {
     });
   });
 
-  it.skip('should initialize ESLint plugin for Nx project', async () => {
+  it('should initialize ESLint plugin for Nx project', async () => {
     cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
     const plugin = await eslintPlugin({
-      eslintrc: './packages/utils/.eslintrc.json',
-      patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
+      eslintrc: './packages/nx-plugin/eslint.config.js',
+      patterns: ['packages/nx-plugin/**/*.ts', 'packages/nx-plugin/**/*.json'],
     });
 
-    // expect rule from extended base .eslintrc.json
+    // expect rule from extended base eslint.config.js
     expect(plugin.audits).toContainEqual(
       expect.objectContaining<Audit>({
         slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
@@ -63,10 +63,10 @@ describe('eslintPlugin', () => {
         description: expect.stringContaining('sourceTag'),
       }),
     );
-    // expect rule from utils project's .eslintrc.json
+    // expect rule from nx-plugin project's eslint.config.js
     expect(plugin.audits).toContainEqual(
       expect.objectContaining<Partial<Audit>>({
-        slug: 'nx-dependency-checks',
+        slug: 'nx-nx-plugin-checks',
       }),
     );
   });
