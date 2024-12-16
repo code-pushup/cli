@@ -2,7 +2,6 @@
   "name": "core",
   "sourceRoot": "packages/core/src",
   "projectType": "library",
-  "implicitDependencies": ["utils"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
