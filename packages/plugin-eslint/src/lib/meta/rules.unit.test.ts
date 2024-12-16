@@ -42,7 +42,7 @@ describe('listRules', () => {
 
     it('should include explicitly set built-in rule', async () => {
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: 'no-const-assign',
+        id: 'no-const-assign',
         meta: {
           docs: {
             description: 'Disallow reassigning `const` variables',
@@ -61,7 +61,7 @@ describe('listRules', () => {
 
     it('should include explicitly set plugin rule', async () => {
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: 'react/jsx-key',
+        id: 'react/jsx-key',
         meta: {
           docs: {
             category: 'Possible Errors',
@@ -107,7 +107,7 @@ describe('listRules', () => {
     it('should include explicitly set plugin rule with custom options', async () => {
       // set in root .eslintrc.json
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: '@nx/enforce-module-boundaries',
+        id: '@nx/enforce-module-boundaries',
         meta: expect.any(Object),
         options: [
           {
@@ -127,7 +127,7 @@ describe('listRules', () => {
     it('should include built-in rule set implicitly by extending recommended config', async () => {
       // extended via @nx/typescript -> @typescript-eslint/eslint-recommended
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: 'no-var',
+        id: 'no-var',
         meta: expect.any(Object),
         options: [],
       } as RuleData);
@@ -136,7 +136,7 @@ describe('listRules', () => {
     it('should include plugin rule set implicitly by extending recommended config', async () => {
       // extended via @nx/typescript -> @typescript-eslint/recommended
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: '@typescript-eslint/no-unused-vars',
+        id: '@typescript-eslint/no-unused-vars',
         meta: expect.any(Object),
         options: [],
       } satisfies RuleData);
@@ -146,7 +146,7 @@ describe('listRules', () => {
       // extended TypeScript config sets "no-unused-semi": "off"
       await expect(listRules(targets)).resolves.not.toContainEqual(
         expect.objectContaining({
-          ruleId: 'no-unused-vars',
+          id: 'no-unused-vars',
         } satisfies Partial<RuleData>),
       );
     });
@@ -154,7 +154,7 @@ describe('listRules', () => {
     it('should include rule added to root config by project config', async () => {
       // set only in packages/utils/.eslintrc.json
       await expect(listRules(targets)).resolves.toContainEqual({
-        ruleId: '@nx/dependency-checks',
+        id: '@nx/dependency-checks',
         meta: expect.any(Object),
         options: [],
       } satisfies RuleData);

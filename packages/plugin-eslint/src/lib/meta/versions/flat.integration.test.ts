@@ -40,8 +40,8 @@ describe('loadRulesForFlatConfig', () => {
       }),
     });
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
-      { ruleId: 'no-unused-vars', meta: expectedMeta, options: [] },
-      { ruleId: 'prefer-const', meta: expectedMeta, options: [] },
+      { id: 'no-unused-vars', meta: expectedMeta, options: [] },
+      { id: 'prefer-const', meta: expectedMeta, options: [] },
     ] satisfies RuleData[]);
   });
 
@@ -110,7 +110,7 @@ describe('loadRulesForFlatConfig', () => {
       loadRulesForFlatConfig({ eslintrc: 'code-pushup.eslint.config.js' }),
     ).resolves.toEqual([
       {
-        ruleId: '@typescript-eslint/no-explicit-any',
+        id: '@typescript-eslint/no-explicit-any',
         meta: {
           docs: {
             description: 'Disallow the `any` type',
@@ -120,7 +120,7 @@ describe('loadRulesForFlatConfig', () => {
         options: [],
       },
       {
-        ruleId: 'react-hooks/rules-of-hooks',
+        id: 'react-hooks/rules-of-hooks',
         meta: {
           docs: {
             description: 'enforces the Rules of Hooks',
@@ -130,7 +130,7 @@ describe('loadRulesForFlatConfig', () => {
         options: [],
       },
       {
-        ruleId: '@typescript-eslint/no-unsafe-call',
+        id: '@typescript-eslint/no-unsafe-call',
         meta: {
           docs: {
             description: 'Disallow calling a value with type `any`',
@@ -158,12 +158,12 @@ describe('loadRulesForFlatConfig', () => {
 
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
       {
-        ruleId: 'complexity',
+        id: 'complexity',
         meta: expect.any(Object),
         options: [30],
       },
       {
-        ruleId: 'eqeqeq',
+        id: 'eqeqeq',
         meta: expect.any(Object),
         options: ['always', { null: 'never' }],
       },
@@ -191,12 +191,12 @@ describe('loadRulesForFlatConfig', () => {
 
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
       {
-        ruleId: 'max-lines',
+        id: 'max-lines',
         meta: expect.any(Object),
         options: [{ max: 300 }],
       },
       {
-        ruleId: 'max-lines',
+        id: 'max-lines',
         meta: expect.any(Object),
         options: [{ max: 500 }],
       },

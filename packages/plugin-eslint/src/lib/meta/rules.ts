@@ -21,8 +21,8 @@ export async function listRules(targets: ESLintTarget[]): Promise<RuleData[]> {
 function mergeRuleIntoMap(map: RulesMap, rule: RuleData): RulesMap {
   return {
     ...map,
-    [rule.ruleId]: {
-      ...map[rule.ruleId],
+    [rule.id]: {
+      ...map[rule.id],
       [jsonHash(rule.options)]: rule,
     },
   };

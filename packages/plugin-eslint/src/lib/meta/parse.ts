@@ -2,7 +2,7 @@ import type { Linter, Rule } from 'eslint';
 import { toArray } from '@code-pushup/utils';
 
 export type RuleData = {
-  ruleId: string;
+  id: string;
   meta: Rule.RuleMetaData;
   options: unknown[] | undefined;
 };
@@ -37,4 +37,11 @@ export function optionsFromRuleEntry(
   entry: Linter.RuleEntry<unknown[]>,
 ): unknown[] {
   return toArray(entry).slice(1);
+}
+
+export function resolveRuleOptions(rule: RuleData): unknown[] | undefined {
+  if (rule.options?.length) {
+    return rule.options;
+  }
+  return rule.meta.defaultOptions;
 }

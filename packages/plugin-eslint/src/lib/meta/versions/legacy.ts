@@ -31,21 +31,17 @@ export async function loadRulesForLegacyConfig({
 
   return configs
     .flatMap(config => Object.entries(config.rules ?? {}))
-    .map(([ruleId, ruleEntry]): RuleData | null => {
-      if (ruleEntry == null || isRuleOff(ruleEntry)) {
+    .map(([id, entry]): RuleData | null => {
+      if (entry == null || isRuleOff(entry)) {
         return null;
       }
-      const meta = rulesMeta[ruleId];
+      const meta = rulesMeta[id];
       if (!meta) {
-        ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
+        ui().logger.warning(`Metadata not found for ESLint rule ${id}`);
         return null;
       }
-      const options = optionsFromRuleEntry(ruleEntry);
-      return {
-        ruleId,
-        meta,
-        options,
-      };
+      const options = optionsFromRuleEntry(entry);
+      return { id, meta, options };
     })
     .filter(exists);
 }
