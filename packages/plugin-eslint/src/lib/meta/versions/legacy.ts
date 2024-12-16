@@ -13,9 +13,9 @@ export async function loadRulesForLegacyConfig({
   const configs = await toArray(patterns).reduce(
     async (acc, pattern) => [
       ...(await acc),
-      (await eslint.calculateConfigForFile(pattern)) as Linter.Config,
+      (await eslint.calculateConfigForFile(pattern)) as Linter.LegacyConfig,
     ],
-    Promise.resolve<Linter.Config[]>([]),
+    Promise.resolve<Linter.LegacyConfig[]>([]),
   );
 
   const rulesIds = distinct(
