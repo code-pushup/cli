@@ -8,7 +8,9 @@ export type RuleData = {
 };
 
 export function parseRuleId(ruleId: string): { plugin?: string; name: string } {
-  const i = ruleId.lastIndexOf('/');
+  const i = ruleId.startsWith('@')
+    ? ruleId.lastIndexOf('/')
+    : ruleId.indexOf('/');
   if (i === -1) {
     return { name: ruleId };
   }

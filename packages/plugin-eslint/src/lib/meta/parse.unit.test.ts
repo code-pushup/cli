@@ -32,6 +32,11 @@ describe('parseRuleId', () => {
       plugin: '@angular-eslint/template',
       name: 'no-negated-async',
     },
+    {
+      ruleId: 'n/prefer-promises/fs',
+      plugin: 'n',
+      name: 'prefer-promises/fs',
+    },
   ])('$ruleId => name: $name, plugin: $plugin', ({ ruleId, name, plugin }) => {
     expect(parseRuleId(ruleId)).toEqual({ name, plugin });
   });
