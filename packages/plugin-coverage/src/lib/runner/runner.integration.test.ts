@@ -8,13 +8,13 @@ import type {
   RunnerConfig,
 } from '@code-pushup/models';
 import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
-import { createRunnerConfig, executeRunner } from '.';
 import type { FinalCoveragePluginConfig } from '../config.js';
 import {
   PLUGIN_CONFIG_PATH,
   RUNNER_OUTPUT_PATH,
   WORKDIR,
 } from './constants.js';
+import { createRunnerConfig, executeRunner } from './index.js';
 
 describe('createRunnerConfig', () => {
   it('should create a valid runner config', async () => {
