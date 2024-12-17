@@ -1,4 +1,4 @@
-import { formatErrorPath } from './zod-validation';
+import { formatErrorPath } from './zod-validation.js';
 
 describe('formatErrorPath', () => {
   it.each([

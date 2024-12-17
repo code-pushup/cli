@@ -96,6 +96,12 @@ export default tseslint.config(
     languageOptions: { parser: jsoncParser },
   },
   {
+    files: ['**/*.ts', '**/*.js'],
+    rules: {
+      'n/file-extension-in-import': ['error', 'always'],
+    },
+  },
+  {
     files: ['**/perf/**/*.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
