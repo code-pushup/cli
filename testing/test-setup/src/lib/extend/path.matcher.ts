@@ -67,13 +67,13 @@ expect.extend({
     return pass
       ? {
           message: () =>
-            `expected ${actual} not to starts with path ${expected}`,
+            `expected ${actual} not to start with path ${expected}`,
           pass: true,
           actual,
           expected,
         }
       : {
-          message: () => `expected ${actual} to starts with path ${expected}`,
+          message: () => `expected ${actual} to start with path ${expected}`,
           pass: false,
           actual,
           expected,
