@@ -3,23 +3,21 @@ import { z } from 'zod';
 export type DocType = 'percentage-coverage';
 
 export const docCoveragePluginConfigSchema = z.object({
-  coverageToolCommand: z
-    .object({
-      command: z
-        .string({ description: 'Command to run coverage tool (compodoc).' })
-        .min(1),
-      args: z
-        .array(z.string(), {
-          description: 'Arguments to be passed to the coverage tool.',
-        })
-        .optional(),
+  language: z.enum(['javascript', 'typescript'], {
+    description: 'Programming language of the source code to analyze',
+  }),
+  sourceGlob: z
+    .string({
+      description: 'Glob pattern to find source files',
     })
     .optional(),
-  outputPath: z
-    .string({ description: 'Path to the documentation.json file.' })
-    .default('documentation/documentation.json'),
+  outputFolderPath: z
+    .string({
+      description: 'Path to the output folder',
+    })
+    .optional(),
 });
 
-export type DocCoveragePluginConfig = z.infer<
+export type DocCoveragePluginConfig = z.input<
   typeof docCoveragePluginConfigSchema
 >;

@@ -8,45 +8,57 @@ describe('docCoveragePluginConfigSchema', () => {
   it('accepts a documentation coverage configuration with all entities', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        coverageToolCommand: {
-          command: 'npx @compodoc/compodoc',
-          args: ['-p', 'tsconfig.json'],
-        },
-        outputPath: 'documentation/custom-doc.json',
+        language: 'typescript',
+        sourceGlob: 'src/**/*.{ts,tsx}',
       } satisfies DocCoveragePluginConfig),
     ).not.toThrow();
   });
 
-  it('accepts a minimal documentation coverage configuration', () => {
+  it('accepts minimal configuration with only language', () => {
     expect(() =>
-      docCoveragePluginConfigSchema.parse({} satisfies DocCoveragePluginConfig),
+      docCoveragePluginConfigSchema.parse({
+        language: 'javascript',
+      } satisfies DocCoveragePluginConfig),
     ).not.toThrow();
   });
 
-  it('uses default output path when not provided', () => {
-    const config = {} satisfies DocCoveragePluginConfig;
+  it('accepts configuration without sourceGlob', () => {
+    const config = {
+      language: 'typescript',
+    } satisfies DocCoveragePluginConfig;
     const parsed = docCoveragePluginConfigSchema.parse(config);
 
-    expect(parsed.outputPath).toBe('documentation/documentation.json');
+    expect(parsed.sourceGlob).toBeUndefined();
   });
 
-  it('throws for missing command in coverageToolCommand', () => {
+  it('throws for missing language', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        coverageToolCommand: {
-          args: ['-p', 'tsconfig.json'],
-        },
+        sourceGlob: 'src/**/*.ts',
       }),
     ).toThrow('invalid_type');
   });
 
-  it('accepts empty args in coverageToolCommand', () => {
+  it('throws for invalid language', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        coverageToolCommand: {
-          command: 'npx @compodoc/compodoc',
-        },
-      } satisfies DocCoveragePluginConfig),
+        language: 'python',
+        sourceGlob: 'src/**/*.py',
+      }),
+    ).toThrow('Invalid enum value');
+  });
+
+  it('accepts both typescript and javascript as valid languages', () => {
+    expect(() =>
+      docCoveragePluginConfigSchema.parse({
+        language: 'typescript',
+      }),
+    ).not.toThrow();
+
+    expect(() =>
+      docCoveragePluginConfigSchema.parse({
+        language: 'javascript',
+      }),
     ).not.toThrow();
   });
 });

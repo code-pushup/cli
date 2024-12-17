@@ -1,6 +1,4 @@
 import { writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
 import type {
   AuditOutput,
@@ -19,11 +17,9 @@ import { createRunnerConfig, executeRunner } from './index.js';
 describe('createRunnerConfig', () => {
   it('should create a valid runner config', async () => {
     const runnerConfig = await createRunnerConfig('executeRunner.ts', {
-      coverageToolCommand: {
-        command: 'npx',
-        args: ['@compodoc/compodoc', '-p', 'tsconfig.json'],
-      },
-      outputPath: 'documentation/documentation.json',
+      language: 'typescript',
+      sourceGlob: 'src/**/*.ts',
+      outputFolderPath: 'documentation',
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
@@ -36,11 +32,9 @@ describe('createRunnerConfig', () => {
     await removeDirectoryIfExists(WORKDIR);
 
     const pluginConfig: DocCoveragePluginConfig = {
-      coverageToolCommand: {
-        command: 'npx',
-        args: ['@compodoc/compodoc', '-p', 'tsconfig.json'],
-      },
-      outputPath: 'documentation/documentation.json',
+      language: 'typescript',
+      sourceGlob: 'src/**/*.ts',
+      outputFolderPath: 'documentation',
     };
 
     await createRunnerConfig('executeRunner.ts', pluginConfig);
@@ -52,29 +46,27 @@ describe('createRunnerConfig', () => {
 });
 
 describe('executeRunner', () => {
-  it('should successfully execute runner', async () => {
-    const config: DocCoveragePluginConfig = {
-      outputPath: path.join(
-        fileURLToPath(path.dirname(import.meta.url)),
-        '..',
-        '..',
-        '..',
-        'mocks',
-        'documentation.json',
-      ),
-    };
+  it(
+    'should successfully execute runner',
+    async () => {
+      const config: DocCoveragePluginConfig = {
+        language: 'typescript',
+        sourceGlob: '"packages/plugin-doc-coverage/mocks/component-mock.ts"',
+      };
 
-    await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
-    await executeRunner();
+      await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+      await executeRunner();
 
-    const results = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
-    expect(results).toStrictEqual([
-      expect.objectContaining({
-        slug: 'percentage-coverage',
-        score: 0.85,
-        value: 85,
-        displayValue: '85 %',
-      } satisfies AuditOutput),
-    ]);
-  });
+      const results = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
+      expect(results).toStrictEqual([
+        expect.objectContaining({
+          slug: 'percentage-coverage',
+          score: 1,
+          value: 100,
+          displayValue: '100 %',
+        } satisfies AuditOutput),
+      ]);
+    },
+    { timeout: 60 * 1000 },
+  );
 });

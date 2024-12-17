@@ -13,7 +13,7 @@ describe('docCoveragePlugin', () => {
   it('should initialise a Documentation coverage plugin', async () => {
     await expect(
       docCoveragePlugin({
-        outputPath: 'documentation/documentation.json',
+        language: 'typescript',
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -29,7 +29,7 @@ describe('docCoveragePlugin', () => {
   it('should generate percentage coverage audit', async () => {
     await expect(
       docCoveragePlugin({
-        outputPath: 'documentation/documentation.json',
+        language: 'typescript',
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -49,7 +49,7 @@ describe('docCoveragePlugin', () => {
   it('should provide a documentation coverage group', async () => {
     await expect(
       docCoveragePlugin({
-        outputPath: 'documentation/documentation.json',
+        language: 'typescript',
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -72,7 +72,7 @@ describe('docCoveragePlugin', () => {
   it('should include package metadata', async () => {
     await expect(
       docCoveragePlugin({
-        outputPath: 'documentation/documentation.json',
+        language: 'typescript',
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
