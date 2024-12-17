@@ -148,13 +148,13 @@ expect.extend({
     const pass = normalizedReceived.endsWith(normalizedExpected);
     return pass
       ? {
-          message: () => `expected ${actual} not to ends with path ${expected}`,
+          message: () => `expected ${actual} not to end with path ${expected}`,
           pass: true,
           actual,
           expected,
         }
       : {
-          message: () => `expected ${actual} to ends with path ${expected}`,
+          message: () => `expected ${actual} to end with path ${expected}`,
           pass: false,
           actual,
           expected,
