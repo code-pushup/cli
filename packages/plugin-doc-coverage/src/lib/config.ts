@@ -11,11 +11,6 @@ export const docCoveragePluginConfigSchema = z.object({
       description: 'Glob pattern to find source files',
     })
     .optional(),
-  outputFolderPath: z
-    .string({
-      description: 'Path to the output folder',
-    })
-    .optional(),
 });
 
 export type DocCoveragePluginConfig = z.input<

@@ -25,6 +25,9 @@
       "@code-pushup/core": ["packages/core/src/index.ts"],
       "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
       "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
+      "@code-pushup/doc-coverage-plugin": [
+        "packages/plugin-doc-coverage/src/index.ts"
+      ],
       "@code-pushup/js-packages-plugin": [
         "packages/plugin-js-packages/src/index.ts"
       ],

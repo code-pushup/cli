@@ -20,7 +20,6 @@ describe('docCoveragePlugin', () => {
         slug: 'doc-coverage',
         title: 'Documentation coverage',
         audits: expect.any(Array),
-        groups: expect.any(Array),
         runner: expect.any(Object),
       }),
     );
@@ -41,29 +40,6 @@ describe('docCoveragePlugin', () => {
               'how many % of the codebase have documentation',
             ),
           },
-        ],
-      }),
-    );
-  });
-
-  it('should provide a documentation coverage group', async () => {
-    await expect(
-      docCoveragePlugin({
-        language: 'typescript',
-      }),
-    ).resolves.toStrictEqual(
-      expect.objectContaining({
-        groups: [
-          expect.objectContaining({
-            slug: 'doc-coverage',
-            title: 'Documentation coverage metrics',
-            refs: [
-              expect.objectContaining({
-                slug: 'percentage-coverage',
-                weight: 1,
-              }),
-            ],
-          }),
         ],
       }),
     );

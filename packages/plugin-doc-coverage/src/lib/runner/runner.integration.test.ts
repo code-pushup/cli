@@ -19,7 +19,6 @@ describe('createRunnerConfig', () => {
     const runnerConfig = await createRunnerConfig('executeRunner.ts', {
       language: 'typescript',
       sourceGlob: 'src/**/*.ts',
-      outputFolderPath: 'documentation',
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
@@ -34,7 +33,6 @@ describe('createRunnerConfig', () => {
     const pluginConfig: DocCoveragePluginConfig = {
       language: 'typescript',
       sourceGlob: 'src/**/*.ts',
-      outputFolderPath: 'documentation',
     };
 
     await createRunnerConfig('executeRunner.ts', pluginConfig);
@@ -51,7 +49,7 @@ describe('executeRunner', () => {
     async () => {
       const config: DocCoveragePluginConfig = {
         language: 'typescript',
-        sourceGlob: '"packages/plugin-doc-coverage/mocks/component-mock.ts"',
+        sourceGlob: 'packages/plugin-doc-coverage/mocks/*.ts',
       };
 
       await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
