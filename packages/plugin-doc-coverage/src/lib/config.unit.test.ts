@@ -5,60 +5,23 @@ import {
 } from './config.js';
 
 describe('docCoveragePluginConfigSchema', () => {
-  it('accepts a documentation coverage configuration with all entities', () => {
+  it('accepts a valid source glob pattern', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        language: 'typescript',
         sourceGlob: 'src/**/*.{ts,tsx}',
       } satisfies DocCoveragePluginConfig),
     ).not.toThrow();
   });
 
-  it('accepts minimal configuration with only language', () => {
-    expect(() =>
-      docCoveragePluginConfigSchema.parse({
-        language: 'javascript',
-      } satisfies DocCoveragePluginConfig),
-    ).not.toThrow();
+  it('not throws for missing sourceGlob', () => {
+    expect(() => docCoveragePluginConfigSchema.parse({})).not.toThrow();
   });
 
-  it('accepts configuration without sourceGlob', () => {
-    const config = {
-      language: 'typescript',
-    } satisfies DocCoveragePluginConfig;
-    const parsed = docCoveragePluginConfigSchema.parse(config);
-
-    expect(parsed.sourceGlob).toBeUndefined();
-  });
-
-  it('throws for missing language', () => {
+  it('throws for invalid sourceGlob type', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        sourceGlob: 'src/**/*.ts',
+        sourceGlob: 123,
       }),
-    ).toThrow('invalid_type');
-  });
-
-  it('throws for invalid language', () => {
-    expect(() =>
-      docCoveragePluginConfigSchema.parse({
-        language: 'python',
-        sourceGlob: 'src/**/*.py',
-      }),
-    ).toThrow('Invalid enum value');
-  });
-
-  it('accepts both typescript and javascript as valid languages', () => {
-    expect(() =>
-      docCoveragePluginConfigSchema.parse({
-        language: 'typescript',
-      }),
-    ).not.toThrow();
-
-    expect(() =>
-      docCoveragePluginConfigSchema.parse({
-        language: 'javascript',
-      }),
-    ).not.toThrow();
+    ).toThrow('Expected string');
   });
 });

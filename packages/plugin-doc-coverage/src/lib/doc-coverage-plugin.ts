@@ -19,7 +19,7 @@ import { createRunnerConfig } from './runner/index.js';
  *   plugins: [
  *     // ... other plugins ...
  *     await docCoveragePlugin({
- *       language: 'typescript'
+ *       sourceGlob: 'src&#47;**&#47;*.{ts,tsx}'
  *     })
  *   ]
  * }

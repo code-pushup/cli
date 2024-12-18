@@ -3,16 +3,13 @@ import { z } from 'zod';
 export type DocType = 'percentage-coverage';
 
 export const docCoveragePluginConfigSchema = z.object({
-  language: z.enum(['javascript', 'typescript'], {
-    description: 'Programming language of the source code to analyze',
-  }),
   sourceGlob: z
     .string({
       description: 'Glob pattern to find source files',
     })
-    .optional(),
+    .default('src/**/*.{ts,tsx}'),
 });
 
-export type DocCoveragePluginConfig = z.input<
+export type DocCoveragePluginConfig = z.infer<
   typeof docCoveragePluginConfigSchema
 >;
