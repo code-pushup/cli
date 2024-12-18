@@ -5,6 +5,8 @@ import type {
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
+import docCoveragePlugin from './packages/plugin-doc-coverage/src/index.js';
+import { docCoverageAudits } from './packages/plugin-doc-coverage/src/lib/doc-coverage-plugin.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
@@ -82,6 +84,20 @@ export const eslintCategories: CategoryConfig[] = [
   },
 ];
 
+export const docCoverageCategories: CategoryConfig[] = [
+  {
+    slug: 'doc-coverage',
+    title: 'Documentation coverage',
+    description: 'Measures how much of your code is **documented**.',
+    refs: docCoverageAudits.map(audit => ({
+      weight: 1,
+      type: 'audit',
+      plugin: 'doc-coverage',
+      slug: audit.slug,
+    })),
+  },
+];
+
 export const coverageCategories: CategoryConfig[] = [
   {
     slug: 'code-coverage',
@@ -111,6 +127,18 @@ export const lighthouseCoreConfig = async (
   return {
     plugins: [await lighthousePlugin(url)],
     categories: lighthouseCategories,
+  };
+};
+
+export const docCoverageCoreConfig = async (): Promise<CoreConfig> => {
+  return {
+    plugins: [
+      await docCoveragePlugin({
+        language: 'typescript',
+        sourceGlob: 'packages/**/*.ts',
+      }),
+    ],
+    categories: docCoverageCategories,
   };
 };
 

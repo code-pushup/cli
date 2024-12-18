@@ -1,0 +1,11 @@
+{
+  "coverage": {
+    "count": 85,
+    "files": {
+      "src/app/services/my.service.ts": {
+        "documented": 17,
+        "total": 20
+      }
+    }
+  }
+}

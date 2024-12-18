@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { z } from 'zod';
 import {
   coverageCoreConfigNx,
+  docCoverageCoreConfig,
   eslintCoreConfigNx,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
@@ -39,4 +40,5 @@ export default mergeConfigs(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
   await eslintCoreConfigNx(),
+  await docCoverageCoreConfig(),
 );
