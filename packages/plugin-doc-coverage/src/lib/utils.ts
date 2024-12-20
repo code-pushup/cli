@@ -1,6 +1,6 @@
 import type { Audit, Group } from '@code-pushup/models';
-import type { DocCoveragePluginConfig } from './config';
-import { AUDITS_MAP } from './constants';
+import type { DocCoveragePluginConfig } from './config.js';
+import { AUDITS_MAP } from './constants.js';
 
 /**
  * Get audits based on the configuration.

@@ -1,6 +1,9 @@
 import type { Group } from '@code-pushup/models';
-import { AUDITS_MAP } from './constants';
-import { filterAuditsByPluginConfig, filterGroupsByOnlyAudits } from './utils';
+import { AUDITS_MAP } from './constants.js';
+import {
+  filterAuditsByPluginConfig,
+  filterGroupsByOnlyAudits,
+} from './utils.js';
 
 describe('filterAuditsByPluginConfig', () => {
   it('should return all audits when onlyAudits and skipAudits are not provided', () => {

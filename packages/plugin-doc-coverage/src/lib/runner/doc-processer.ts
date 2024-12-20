@@ -29,14 +29,14 @@ export function processDocCoverage(
  * @param sourceFiles - The source files to process
  * @returns {UnprocessedCoverageResult} The unprocessed coverage report
  */
-export function getUnprocessedCoverageReport(sourceFiles: SourceFile[]) {
+export function getUnprocessedCoverageReport(
+  sourceFiles: SourceFile[],
+): CoverageResult {
   const unprocessedCoverageReport = sourceFiles.reduce(
     (coverageReportOfAllFiles, sourceFile) => {
-      // Info of the file
       const filePath = sourceFile.getFilePath();
       const classes = sourceFile.getClasses();
 
-      // All nodes of the file
       const allNodesFromFile = [
         ...sourceFile.getFunctions(),
         ...classes,
@@ -44,22 +44,33 @@ export function getUnprocessedCoverageReport(sourceFiles: SourceFile[]) {
         ...sourceFile.getTypeAliases(),
         ...sourceFile.getEnums(),
         ...sourceFile.getInterfaces(),
-        // ...sourceFile.getVariableStatements().flatMap(statement => statement.getDeclarations())
       ];
 
       const coverageReportOfCurrentFile = allNodesFromFile.reduce(
         (acc, node) => {
           const nodeType = getCoverageTypeFromKind(node.getKind());
-          acc[nodeType].nodesCount++;
-          if (node.getJsDocs().length === 0) {
-            acc[nodeType].issues.push({
-              file: filePath,
-              type: nodeType,
-              name: node.getName() || '',
-              line: node.getStartLineNumber(),
-            });
-          }
-          return acc;
+          const currentTypeReport = acc[nodeType];
+
+          const updatedIssues =
+            node.getJsDocs().length === 0
+              ? [
+                  ...currentTypeReport.issues,
+                  {
+                    file: filePath,
+                    type: nodeType,
+                    name: node.getName() || '',
+                    line: node.getStartLineNumber(),
+                  },
+                ]
+              : currentTypeReport.issues;
+
+          return {
+            ...acc,
+            [nodeType]: {
+              nodesCount: currentTypeReport.nodesCount + 1,
+              issues: updatedIssues,
+            },
+          };
         },
         createEmptyUnprocessedCoverageReport(),
       );
@@ -84,22 +95,20 @@ export function getUnprocessedCoverageReport(sourceFiles: SourceFile[]) {
 export function mergeCoverageResults(
   results: UnprocessedCoverageResult,
   current: Partial<UnprocessedCoverageResult>,
-) {
-  return {
-    ...Object.fromEntries(
-      Object.entries(results).map(([key, value]) => {
-        const node = value as CoverageResult[CoverageType];
-        const type = key as CoverageType;
-        return [
-          type,
-          {
-            nodesCount: node.nodesCount + (current[type]?.nodesCount ?? 0),
-            issues: [...node.issues, ...(current[type]?.issues ?? [])],
-          },
-        ];
-      }),
-    ),
-  } as UnprocessedCoverageResult;
+): UnprocessedCoverageResult {
+  return Object.fromEntries(
+    Object.entries(results).map(([key, value]) => {
+      const node = value as CoverageResult[CoverageType];
+      const type = key as CoverageType;
+      return [
+        type,
+        {
+          nodesCount: node.nodesCount + (current[type]?.nodesCount ?? 0),
+          issues: [...node.issues, ...(current[type]?.issues ?? [])],
+        },
+      ];
+    }),
+  ) as UnprocessedCoverageResult;
 }
 
 /**

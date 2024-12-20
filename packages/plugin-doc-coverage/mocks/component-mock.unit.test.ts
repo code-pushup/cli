@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DUMMY_FUNCTION, DUMMY_FUNCTION_2 } from './component-mock';
+import { DUMMY_FUNCTION, DUMMY_FUNCTION_2 } from './component-mock.js';
 
 export function shouldnotBeHere() {
   return 'Hello World';

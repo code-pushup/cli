@@ -1,7 +1,7 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import type { DocCoveragePluginConfig } from '../config';
-import { processDocCoverage } from './doc-processer';
-import type { CoverageResult, CoverageType } from './models';
+import type { DocCoveragePluginConfig } from '../config.js';
+import { processDocCoverage } from './doc-processer.js';
+import type { CoverageResult, CoverageType } from './models.js';
 
 export function createRunnerFunction(
   config: DocCoveragePluginConfig,

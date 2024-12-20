@@ -1,11 +1,11 @@
 import type { ClassDeclaration } from 'ts-morph';
-import { nodeMock, sourceFileMock } from './../../../mocks/source-files.mock';
+import { nodeMock, sourceFileMock } from '../../../mocks/source-files.mock';
 import {
   getClassNodes,
   getUnprocessedCoverageReport,
   mergeCoverageResults,
-} from './doc-processer';
-import type { UnprocessedCoverageResult } from './models';
+} from './doc-processer.js';
+import type { UnprocessedCoverageResult } from './models.js';
 
 describe('getUnprocessedCoverageReport', () => {
   it('should produce a full report', () => {
@@ -43,7 +43,7 @@ describe('getUnprocessedCoverageReport', () => {
       sourceFileMock('test.ts', { functions: { 1: true, 2: false, 3: false } }),
     ]);
 
-    expect(results.functions.issues.length).toBe(2);
+    expect(results.functions.issues).toHaveLength(2);
   });
 
   it('should collect valid issues', () => {

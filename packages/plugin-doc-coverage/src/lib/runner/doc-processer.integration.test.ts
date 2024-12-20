@@ -1,4 +1,4 @@
-import { processDocCoverage } from './doc-processer';
+import { processDocCoverage } from './doc-processer.js';
 
 describe('processDocCoverage', () => {
   it('should succesfully get the right number of ts files', () => {

@@ -35,8 +35,6 @@
   "type": "module",
   "dependencies": {
     "@code-pushup/models": "0.57.0",
-    "@code-pushup/utils": "0.57.0",
-    "ansis": "^3.3.0",
     "zod": "^3.22.4",
     "ts-morph": "^24.0.0"
   },

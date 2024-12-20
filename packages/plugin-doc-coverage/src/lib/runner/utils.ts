@@ -3,7 +3,7 @@ import type {
   CoverageResult,
   CoverageType,
   UnprocessedCoverageResult,
-} from './models';
+} from './models.js';
 
 /**
  * Creates an empty unprocessed coverage report.

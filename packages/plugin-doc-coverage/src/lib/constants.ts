@@ -1,5 +1,5 @@
 import type { Audit, Group } from '@code-pushup/models';
-import type { AuditSlug } from './models';
+import type { AuditSlug } from './models.js';
 
 export const PLUGIN_SLUG = 'doc-coverage';
 
@@ -51,18 +51,15 @@ export const groups: Group[] = [
     slug: 'documentation-coverage',
     title: 'Documentation coverage',
     description: 'Documentation coverage',
-    refs: Object.keys(AUDITS_MAP).map(slug => {
-      switch (slug as AuditSlug) {
-        case 'classes-coverage':
-        case 'functions-coverage':
-        case 'methods-coverage':
-          return { slug, weight: 2 };
-        case 'interfaces-coverage':
-        case 'properties-coverage':
-        case 'types-coverage':
-        default:
-          return { slug, weight: 1 };
-      }
-    }),
+    refs: Object.keys(AUDITS_MAP).map(slug => ({
+      slug,
+      weight: [
+        'classes-coverage',
+        'functions-coverage',
+        'methods-coverage',
+      ].includes(slug)
+        ? 2
+        : 1,
+    })),
   },
 ];

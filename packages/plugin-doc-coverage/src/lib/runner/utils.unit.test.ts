@@ -1,10 +1,10 @@
 import { SyntaxKind } from 'ts-morph';
-import type { UnprocessedCoverageResult } from './models';
+import type { UnprocessedCoverageResult } from './models.js';
 import {
   calculateCoverage,
   createEmptyUnprocessedCoverageReport,
   getCoverageTypeFromKind,
-} from './utils';
+} from './utils.js';
 
 describe('createEmptyUnprocessedCoverageReport', () => {
   it('should create an empty report with all categories initialized', () => {

@@ -1,5 +1,5 @@
-import type { CoverageResult } from './models';
-import { trasformCoverageReportToAudits } from './runner';
+import type { CoverageResult } from './models.js';
+import { trasformCoverageReportToAudits } from './runner.js';
 
 describe('trasformCoverageReportToAudits', () => {
   const mockCoverageResult = {
