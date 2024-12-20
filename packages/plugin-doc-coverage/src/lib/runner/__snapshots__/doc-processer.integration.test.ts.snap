@@ -13,7 +13,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "nodesCount": 0,
   },
   "functions": {
-    "coverage": 33.333333333333336,
+    "coverage": 33.33,
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/app.component.spec.ts",

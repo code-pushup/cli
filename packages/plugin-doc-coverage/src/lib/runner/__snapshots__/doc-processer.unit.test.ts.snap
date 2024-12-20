@@ -3,7 +3,7 @@
 exports[`getUnprocessedCoverageReport > should produce a full report 1`] = `
 {
   "classes": {
-    "coverage": 33.333333333333336,
+    "coverage": 33.33,
     "issues": [
       {
         "file": "test.ts",
@@ -21,7 +21,7 @@ exports[`getUnprocessedCoverageReport > should produce a full report 1`] = `
     "nodesCount": 3,
   },
   "enums": {
-    "coverage": 33.333333333333336,
+    "coverage": 33.33,
     "issues": [
       {
         "file": "test.ts",
@@ -44,7 +44,7 @@ exports[`getUnprocessedCoverageReport > should produce a full report 1`] = `
     "nodesCount": 3,
   },
   "interfaces": {
-    "coverage": 66.66666666666667,
+    "coverage": 66.67,
     "issues": [
       {
         "file": "test.ts",

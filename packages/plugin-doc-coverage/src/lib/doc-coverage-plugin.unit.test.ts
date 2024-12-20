@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { RunnerConfig } from '@code-pushup/models';
-import { docCoveragePlugin } from './doc-coverage-plugin.js';
+import { PLUGIN_SLUG } from './constants.js';
+import {
+  PLUGIN_DESCRIPTION,
+  PLUGIN_DOCS_URL,
+  PLUGIN_TITLE,
+  docCoveragePlugin,
+} from './doc-coverage-plugin.js';
 
 vi.mock('./runner/index.ts', () => ({
   createRunnerConfig: vi.fn().mockReturnValue({
@@ -17,46 +23,14 @@ describe('docCoveragePlugin', () => {
       }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
-        slug: 'doc-coverage',
-        title: 'Documentation coverage',
-        audits: expect.any(Array),
-        runner: expect.any(Object),
-      }),
-    );
-  });
-
-  it('should generate percentage coverage audit', async () => {
-    await expect(
-      docCoveragePlugin({
-        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
-      }),
-    ).resolves.toStrictEqual(
-      expect.objectContaining({
-        audits: [
-          {
-            slug: 'percentage-coverage',
-            title: 'Percentage of codebase with documentation',
-            description: expect.stringContaining(
-              'how many % of the codebase have documentation',
-            ),
-          },
-        ],
-      }),
-    );
-  });
-
-  it('should include package metadata', async () => {
-    await expect(
-      docCoveragePlugin({
-        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
-      }),
-    ).resolves.toStrictEqual(
-      expect.objectContaining({
+        slug: PLUGIN_SLUG,
+        title: PLUGIN_TITLE,
         icon: 'folder-src',
-        description: expect.stringContaining('documentation coverage plugin'),
-        docsUrl: expect.stringContaining('npmjs.com'),
-        packageName: expect.any(String),
-        version: expect.any(String),
+        description: PLUGIN_DESCRIPTION,
+        docsUrl: PLUGIN_DOCS_URL,
+        groups: expect.any(Array),
+        audits: expect.any(Array),
+        runner: expect.any(Function),
       }),
     );
   });

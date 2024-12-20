@@ -10,12 +10,12 @@ import {
   filterGroupsByOnlyAudits,
 } from './utils.js';
 
-const PLUGIN_TITLE = 'Documentation coverage';
+export const PLUGIN_TITLE = 'Documentation coverage';
 
-const PLUGIN_DESCRIPTION =
+export const PLUGIN_DESCRIPTION =
   'Official Code PushUp documentation coverage plugin.';
 
-const PLUGIN_DOCS_URL =
+export const PLUGIN_DOCS_URL =
   'https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/';
 
 /**

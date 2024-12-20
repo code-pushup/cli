@@ -28,7 +28,11 @@ export function calculateCoverage(result: UnprocessedCoverageResult) {
           coverage:
             value.nodesCount === 0
               ? 100
-              : (1 - value.issues.length / value.nodesCount) * 100,
+              : Number(
+                  ((1 - value.issues.length / value.nodesCount) * 100).toFixed(
+                    2,
+                  ),
+                ),
           issues: value.issues,
           nodesCount: value.nodesCount,
         },
