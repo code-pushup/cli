@@ -12,7 +12,9 @@ vi.mock('./runner/index.ts', () => ({
 describe('docCoveragePlugin', () => {
   it('should initialise a Documentation coverage plugin', async () => {
     await expect(
-      docCoveragePlugin({ sourceGlob: 'src/**/*.ts' }),
+      docCoveragePlugin({
+        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
+      }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'doc-coverage',
@@ -25,7 +27,9 @@ describe('docCoveragePlugin', () => {
 
   it('should generate percentage coverage audit', async () => {
     await expect(
-      docCoveragePlugin({ sourceGlob: 'src/**/*.ts' }),
+      docCoveragePlugin({
+        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
+      }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         audits: [
@@ -43,7 +47,9 @@ describe('docCoveragePlugin', () => {
 
   it('should include package metadata', async () => {
     await expect(
-      docCoveragePlugin({ sourceGlob: 'src/**/*.ts' }),
+      docCoveragePlugin({
+        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
+      }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         icon: 'folder-src',

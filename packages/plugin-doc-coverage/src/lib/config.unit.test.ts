@@ -8,7 +8,7 @@ describe('docCoveragePluginConfigSchema', () => {
   it('accepts a valid source glob pattern', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
-        sourceGlob: 'src/**/*.{ts,tsx}',
+        sourceGlob: ['src/**/*.{ts,tsx}', '!**/*.spec.ts', '!**/*.test.ts'],
       } satisfies DocCoveragePluginConfig),
     ).not.toThrow();
   });

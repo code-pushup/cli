@@ -1,12 +1,22 @@
-import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
 import {
   type DocCoveragePluginConfig,
   docCoveragePluginConfigSchema,
 } from './config.js';
-import { createRunnerConfig } from './runner/index.js';
+import { PLUGIN_SLUG, groups } from './constants.js';
+import { createRunnerFunction } from './runner/runner.js';
+import {
+  filterAuditsByPluginConfig,
+  filterGroupsByOnlyAudits,
+} from './utils.js';
+
+const PLUGIN_TITLE = 'Documentation coverage';
+
+const PLUGIN_DESCRIPTION =
+  'Official Code PushUp documentation coverage plugin.';
+
+const PLUGIN_DOCS_URL =
+  'https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/';
 
 /**
  * Instantiates Code PushUp documentation coverage plugin for core config.
@@ -26,40 +36,19 @@ import { createRunnerConfig } from './runner/index.js';
  *
  * @returns Plugin configuration.
  */
-
-export const docCoverageAudits = [
-  {
-    slug: 'percentage-coverage',
-    title: 'Percentage of codebase with documentation',
-    description: 'Measures how many % of the codebase have documentation.',
-  },
-];
-
 export async function docCoveragePlugin(
   config: DocCoveragePluginConfig,
 ): Promise<PluginConfig> {
   const docCoverageConfig = docCoveragePluginConfigSchema.parse(config);
 
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
-  );
-
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
-
   return {
-    slug: 'doc-coverage',
-    title: 'Documentation coverage',
+    slug: PLUGIN_SLUG,
+    title: PLUGIN_TITLE,
     icon: 'folder-src',
-    description: 'Official Code PushUp documentation coverage plugin.',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits: docCoverageAudits,
-    // groups: [group],
-    runner: await createRunnerConfig(runnerScriptPath, docCoverageConfig),
+    description: PLUGIN_DESCRIPTION,
+    docsUrl: PLUGIN_DOCS_URL,
+    groups: filterGroupsByOnlyAudits(groups, docCoverageConfig),
+    audits: filterAuditsByPluginConfig(docCoverageConfig),
+    runner: createRunnerFunction(docCoverageConfig),
   };
 }

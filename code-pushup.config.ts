@@ -40,5 +40,22 @@ export default mergeConfigs(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
   await eslintCoreConfigNx(),
-  await docCoverageCoreConfig(),
+  await docCoverageCoreConfig({
+    sourceGlob: [
+      'packages/**/src/**/*.ts',
+      '!**/*.spec.ts',
+      '!**/*.test.ts',
+      '!**/implementation/**',
+      '!**/internal/**',
+    ],
+    onlyAudits: [
+      'methods-coverage',
+      'functions-coverage',
+      'types-coverage',
+      'classes-coverage',
+      'interfaces-coverage',
+      'enums-coverage',
+      'type-aliases-coverage',
+    ],
+  }),
 );

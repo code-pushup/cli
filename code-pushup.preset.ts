@@ -5,8 +5,14 @@ import type {
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
-import docCoveragePlugin from './packages/plugin-doc-coverage/src/index.js';
-import { docCoverageAudits } from './packages/plugin-doc-coverage/src/lib/doc-coverage-plugin.js';
+import docCoveragePlugin, {
+  DocCoveragePluginConfig,
+} from './packages/plugin-doc-coverage/src/index.js';
+import {
+  PLUGIN_SLUG,
+  groups,
+} from './packages/plugin-doc-coverage/src/lib/constants.js';
+import { filterGroupsByOnlyAudits } from './packages/plugin-doc-coverage/src/lib/utils.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
@@ -84,19 +90,23 @@ export const eslintCategories: CategoryConfig[] = [
   },
 ];
 
-export const docCoverageCategories: CategoryConfig[] = [
-  {
-    slug: 'doc-coverage',
-    title: 'Documentation coverage',
-    description: 'Measures how much of your code is **documented**.',
-    refs: docCoverageAudits.map(audit => ({
-      weight: 1,
-      type: 'audit',
-      plugin: 'doc-coverage',
-      slug: audit.slug,
-    })),
-  },
-];
+export function getDocCoverageCategories(
+  config: DocCoveragePluginConfig,
+): CategoryConfig[] {
+  return [
+    {
+      slug: 'doc-coverage-cat',
+      title: 'Documentation coverage',
+      description: 'Measures how much of your code is **documented**.',
+      refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
+        weight: 1,
+        type: 'group',
+        plugin: PLUGIN_SLUG,
+        slug: group.slug,
+      })),
+    },
+  ];
+}
 
 export const coverageCategories: CategoryConfig[] = [
   {
@@ -130,15 +140,12 @@ export const lighthouseCoreConfig = async (
   };
 };
 
-export const docCoverageCoreConfig = async (): Promise<CoreConfig> => {
+export const docCoverageCoreConfig = async (
+  config: DocCoveragePluginConfig,
+): Promise<CoreConfig> => {
   return {
-    plugins: [
-      await docCoveragePlugin({
-        language: 'typescript',
-        sourceGlob: 'packages/**/*.ts',
-      }),
-    ],
-    categories: docCoverageCategories,
+    plugins: [await docCoveragePlugin(config)],
+    categories: getDocCoverageCategories(config),
   };
 };
 
