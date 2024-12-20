@@ -1,0 +1,147 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`trasformCoverageReportToAudits > should filter audits when onlyAudits is provided 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test.ts",
+            "position": {
+              "startLine": 10,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "75 %",
+    "score": 0.75,
+    "slug": "functions-coverage",
+    "value": 75,
+  },
+]
+`;
+
+exports[`trasformCoverageReportToAudits > should filter audits when skipAudits is provided 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test.ts",
+            "position": {
+              "startLine": 10,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "75 %",
+    "score": 0.75,
+    "slug": "functions-coverage",
+    "value": 75,
+  },
+]
+`;
+
+exports[`trasformCoverageReportToAudits > should handle coverage result with multiple issues 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test1.ts",
+            "position": {
+              "startLine": 10,
+            },
+          },
+        },
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test2.ts",
+            "position": {
+              "startLine": 20,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "50 %",
+    "score": 0.5,
+    "slug": "functions-coverage",
+    "value": 50,
+  },
+]
+`;
+
+exports[`trasformCoverageReportToAudits > should handle empty coverage result 1`] = `[]`;
+
+exports[`trasformCoverageReportToAudits > should prioritize onlyAudits over skipAudits when both are provided 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test.ts",
+            "position": {
+              "startLine": 10,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "75 %",
+    "score": 0.75,
+    "slug": "functions-coverage",
+    "value": 75,
+  },
+]
+`;
+
+exports[`trasformCoverageReportToAudits > should transform coverage report to audit outputs with no filters 1`] = `
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "Missing documentation",
+          "severity": "warning",
+          "source": {
+            "file": "test.ts",
+            "position": {
+              "startLine": 10,
+            },
+          },
+        },
+      ],
+    },
+    "displayValue": "75 %",
+    "score": 0.75,
+    "slug": "functions-coverage",
+    "value": 75,
+  },
+  {
+    "details": {
+      "issues": [],
+    },
+    "displayValue": "100 %",
+    "score": 1,
+    "slug": "classes-coverage",
+    "value": 100,
+  },
+]
+`;

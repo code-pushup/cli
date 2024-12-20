@@ -15,19 +15,24 @@ export function createRunnerFunction(
 /**
  * Transforms the coverage report into audit outputs.
  * @param coverageResult - The coverage result containing undocumented items and coverage statistics
- * @param options - Configuration options specifying which audits to include
+ * @param options - Configuration options specifying which audits to include and exclude
  * @returns Audit outputs with coverage scores and details about undocumented items
  */
 export function trasformCoverageReportToAudits(
   coverageResult: CoverageResult,
-  options: Pick<DocCoveragePluginConfig, 'onlyAudits'>,
+  options: Pick<DocCoveragePluginConfig, 'onlyAudits' | 'skipAudits'>,
 ): AuditOutputs {
   return Object.entries(coverageResult)
-    .filter(
-      ([type]) =>
-        !options.onlyAudits?.length ||
-        options.onlyAudits.includes(`${type}-coverage`),
-    )
+    .filter(([type]) => {
+      const auditSlug = `${type}-coverage`;
+      if (options.onlyAudits?.length) {
+        return options.onlyAudits.includes(auditSlug);
+      }
+      if (options.skipAudits?.length) {
+        return !options.skipAudits.includes(auditSlug);
+      }
+      return true;
+    })
     .map(([type, items]) => {
       const coverageType = type as CoverageType;
       const coverage = items.coverage;

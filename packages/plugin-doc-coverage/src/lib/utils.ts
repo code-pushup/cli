@@ -10,29 +10,35 @@ import { AUDITS_MAP } from './constants';
  * @returns The audits.
  */
 export function filterAuditsByPluginConfig(
-  config: Pick<DocCoveragePluginConfig, 'onlyAudits'>,
+  config: Pick<DocCoveragePluginConfig, 'onlyAudits' | 'skipAudits'>,
 ): Audit[] {
-  const { onlyAudits } = config;
+  const { onlyAudits, skipAudits } = config;
 
-  if (!onlyAudits || onlyAudits.length === 0) {
-    return Object.values(AUDITS_MAP);
+  if (onlyAudits && onlyAudits.length > 0) {
+    return Object.values(AUDITS_MAP).filter(audit =>
+      onlyAudits.includes(audit.slug),
+    );
   }
 
-  return Object.values(AUDITS_MAP).filter(audit =>
-    onlyAudits.includes(audit.slug),
-  );
+  if (skipAudits && skipAudits.length > 0) {
+    return Object.values(AUDITS_MAP).filter(
+      audit => !skipAudits.includes(audit.slug),
+    );
+  }
+
+  return Object.values(AUDITS_MAP);
 }
 
 /**
  * Filter groups by the audits that are specified in the configuration.
  * The groups refs are filtered to only include the audits that are specified in the configuration.
  * @param groups - The groups to filter.
- * @param options - The configuration object.
+ * @param options - The configuration object containing either onlyAudits or skipAudits.
  * @returns The filtered groups.
  */
 export function filterGroupsByOnlyAudits(
   groups: Group[],
-  options: Pick<DocCoveragePluginConfig, 'onlyAudits'>,
+  options: Pick<DocCoveragePluginConfig, 'onlyAudits' | 'skipAudits'>,
 ): Group[] {
   const audits = filterAuditsByPluginConfig(options);
   return groups

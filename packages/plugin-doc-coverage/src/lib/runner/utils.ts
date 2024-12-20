@@ -5,6 +5,10 @@ import type {
   UnprocessedCoverageResult,
 } from './models';
 
+/**
+ * Creates an empty unprocessed coverage report.
+ * @returns The empty unprocessed coverage report.
+ */
 export function createEmptyUnprocessedCoverageReport(): UnprocessedCoverageResult {
   return {
     enums: { nodesCount: 0, issues: [] },
@@ -18,6 +22,11 @@ export function createEmptyUnprocessedCoverageReport(): UnprocessedCoverageResul
   };
 }
 
+/**
+ * Calculates the coverage percentage for each coverage type.
+ * @param result - The unprocessed coverage result.
+ * @returns The processed coverage result.
+ */
 export function calculateCoverage(result: UnprocessedCoverageResult) {
   return Object.fromEntries(
     Object.entries(result).map(([key, value]) => {
@@ -41,6 +50,11 @@ export function calculateCoverage(result: UnprocessedCoverageResult) {
   ) as CoverageResult;
 }
 
+/**
+ * Maps the SyntaxKind from the library ts-morph to the coverage type.
+ * @param kind - The SyntaxKind from the library ts-morph.
+ * @returns The coverage type.
+ */
 export function getCoverageTypeFromKind(kind: SyntaxKind): CoverageType {
   switch (kind) {
     case SyntaxKind.ClassDeclaration:

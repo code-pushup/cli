@@ -5,6 +5,15 @@ import {
 } from './config.js';
 
 describe('docCoveragePluginConfigSchema', () => {
+  it('throws when skipAudits and onlyAudits are defined', () => {
+    expect(() =>
+      docCoveragePluginConfigSchema.parse({
+        skipAudits: ['functions-coverage'],
+        onlyAudits: ['classes-coverage'],
+      }),
+    ).toThrow("You can't define 'skipAudits' and 'onlyAudits' simultaneously");
+  });
+
   describe('sourceGlob', () => {
     it('accepts a valid source glob pattern', () => {
       expect(() =>
@@ -30,6 +39,15 @@ describe('docCoveragePluginConfigSchema', () => {
         }),
       ).toThrow('Expected array');
     });
+  });
+
+  it('accepts a complete valid configuration', () => {
+    expect(() =>
+      docCoveragePluginConfigSchema.parse({
+        sourceGlob: ['src/**/*.ts'],
+        onlyAudits: ['functions-coverage'],
+      } satisfies DocCoveragePluginConfig),
+    ).not.toThrow();
   });
 
   describe('onlyAudits', () => {
@@ -73,12 +91,22 @@ describe('docCoveragePluginConfigSchema', () => {
     });
   });
 
-  it('accepts a complete valid configuration', () => {
-    expect(() =>
-      docCoveragePluginConfigSchema.parse({
-        sourceGlob: ['src/**/*.ts'],
-        onlyAudits: ['functions-coverage'],
-      } satisfies DocCoveragePluginConfig),
-    ).not.toThrow();
+  describe('skipAudits', () => {
+    it('accepts valid audit slugs array', () => {
+      expect(() =>
+        docCoveragePluginConfigSchema.parse({
+          skipAudits: ['functions-coverage', 'classes-coverage'],
+          sourceGlob: ['src/**/*.ts'],
+        }),
+      ).not.toThrow();
+    });
+
+    it('throws for array with non-string elements', () => {
+      expect(() =>
+        docCoveragePluginConfigSchema.parse({
+          skipAudits: [123, true],
+        }),
+      ).toThrow('Expected string');
+    });
   });
 });

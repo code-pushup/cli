@@ -3,13 +3,16 @@ import { AUDITS_MAP } from './constants';
 import { filterAuditsByPluginConfig, filterGroupsByOnlyAudits } from './utils';
 
 describe('filterAuditsByPluginConfig', () => {
-  it('should return all audits when onlyAudits is not provided', () => {
+  it('should return all audits when onlyAudits and skipAudits are not provided', () => {
     const result = filterAuditsByPluginConfig({});
     expect(result).toStrictEqual(Object.values(AUDITS_MAP));
   });
 
-  it('should return all audits when onlyAudits is empty array', () => {
-    const result = filterAuditsByPluginConfig({ onlyAudits: [] });
+  it('should return all audits when onlyAudits is empty array and skipAudits is also empty array', () => {
+    const result = filterAuditsByPluginConfig({
+      onlyAudits: [],
+      skipAudits: [],
+    });
     expect(result).toStrictEqual(Object.values(AUDITS_MAP));
   });
 
@@ -20,6 +23,16 @@ describe('filterAuditsByPluginConfig', () => {
     expect(result).toStrictEqual(
       Object.values(AUDITS_MAP).filter(audit =>
         onlyAudits.includes(audit.slug),
+      ),
+    );
+  });
+
+  it('should return only specified audits when skipAudits is provided', () => {
+    const skipAudits = ['functions-coverage', 'classes-coverage'];
+    const result = filterAuditsByPluginConfig({ skipAudits });
+    expect(result).toStrictEqual(
+      Object.values(AUDITS_MAP).filter(
+        audit => !skipAudits.includes(audit.slug),
       ),
     );
   });
