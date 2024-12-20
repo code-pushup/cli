@@ -1,6 +1,12 @@
 import 'dotenv/config';
 import { z } from 'zod';
-import { docCoverageCoreConfig } from './code-pushup.preset.js';
+import {
+  coverageCoreConfigNx,
+  docCoverageCoreConfig,
+  eslintCoreConfigNx,
+  jsPackagesCoreConfig,
+  lighthouseCoreConfig,
+} from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
 import { mergeConfigs } from './packages/utils/src/index.js';
 
@@ -27,13 +33,13 @@ const config: CoreConfig = {
 };
 
 export default mergeConfigs(
-  // config,
-  // await coverageCoreConfigNx(),
-  // await jsPackagesCoreConfig(),
-  // await lighthouseCoreConfig(
-  //   'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
-  // ),
-  // await eslintCoreConfigNx(),
+  config,
+  await coverageCoreConfigNx(),
+  await jsPackagesCoreConfig(),
+  await lighthouseCoreConfig(
+    'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
+  ),
+  await eslintCoreConfigNx(),
   await docCoverageCoreConfig({
     sourceGlob: [
       'packages/**/src/**/*.ts',
@@ -43,14 +49,5 @@ export default mergeConfigs(
       '!**/internal/**',
     ],
     skipAudits: ['methods-coverage'],
-    // onlyAudits: [
-    //   'methods-coverage',
-    //   'functions-coverage',
-    //   'types-coverage',
-    //   'classes-coverage',
-    //   'interfaces-coverage',
-    //   'enums-coverage',
-    //   'type-aliases-coverage',
-    // ],
   }),
 );
