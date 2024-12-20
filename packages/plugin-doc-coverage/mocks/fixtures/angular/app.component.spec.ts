@@ -1,0 +1,3 @@
+function notRealisticFunction() {
+  return 'notRealisticFunction';
+}

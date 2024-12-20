@@ -5,6 +5,14 @@ import type {
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
+import docCoveragePlugin, {
+  DocCoveragePluginConfig,
+} from './packages/plugin-doc-coverage/src/index.js';
+import {
+  PLUGIN_SLUG,
+  groups,
+} from './packages/plugin-doc-coverage/src/lib/constants.js';
+import { filterGroupsByOnlyAudits } from './packages/plugin-doc-coverage/src/lib/utils.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
@@ -82,6 +90,24 @@ export const eslintCategories: CategoryConfig[] = [
   },
 ];
 
+export function getDocCoverageCategories(
+  config: DocCoveragePluginConfig,
+): CategoryConfig[] {
+  return [
+    {
+      slug: 'doc-coverage-cat',
+      title: 'Documentation coverage',
+      description: 'Measures how much of your code is **documented**.',
+      refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
+        weight: 1,
+        type: 'group',
+        plugin: PLUGIN_SLUG,
+        slug: group.slug,
+      })),
+    },
+  ];
+}
+
 export const coverageCategories: CategoryConfig[] = [
   {
     slug: 'code-coverage',
@@ -111,6 +137,15 @@ export const lighthouseCoreConfig = async (
   return {
     plugins: [await lighthousePlugin(url)],
     categories: lighthouseCategories,
+  };
+};
+
+export const docCoverageCoreConfig = async (
+  config: DocCoveragePluginConfig,
+): Promise<CoreConfig> => {
+  return {
+    plugins: [await docCoveragePlugin(config)],
+    categories: getDocCoverageCategories(config),
   };
 };
 
