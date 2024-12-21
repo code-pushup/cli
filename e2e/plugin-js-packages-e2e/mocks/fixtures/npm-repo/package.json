@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express": "3.0.0"
+  },
+  "devDependencies": {
+    "@code-pushup/cli": "latest",
+    "@code-pushup/js-packages-plugin": "latest",
+    "@code-pushup/models": "latest"
+  }
+}
