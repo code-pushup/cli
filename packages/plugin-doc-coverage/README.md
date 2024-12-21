@@ -33,12 +33,14 @@ Measured documentation types are mapped to Code PushUp audits in the following w
    pnpm add --save-dev @code-pushup/doc-coverage-plugin
    ```
 
-3. Add Compodoc to your project. You can follow the instructions [here](https://compodoc.app/guides/installation.html).
-
-4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
+3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
    Pass the target files to analyze and optionally specify which types of documentation you want to track.
-   All documentation types are measured by default. If you wish to focus on a subset of offered types, define them in `docTypes`.
+   You can skip for example tests by defining in the sourceGlob the path to the tests folder or pattern to match the tests files with the `!` symbol.
+   All documentation types are measured by default.
+   If you wish to focus on a subset of offered types, define them in `onlyAudits`.
+   Also you can skip some types by defining them in `skipAudits`.
+   You can only define or `onlyAudits` or `skipAudits`, not both.
 
    The configuration will look similarly to the following:
 
@@ -50,16 +52,13 @@ Measured documentation types are mapped to Code PushUp audits in the following w
      plugins: [
        // ...
        await docCoveragePlugin({
-         coverageToolCommand: {
-           command: 'npx',
-           args: ['compodoc', '-p', 'tsconfig.doc.json', '-e', 'json'],
-         },
+         sourceGlob: ['**/*.ts'],
        }),
      ],
    };
    ```
 
-5. (Optional) Reference individual audits or the provided plugin group which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+4. (Optional) Reference individual audits or the provided plugin group which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
    💡 Assign weights based on what influence each documentation type should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
@@ -85,7 +84,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
    };
    ```
 
-6. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
 ## About documentation coverage
 
