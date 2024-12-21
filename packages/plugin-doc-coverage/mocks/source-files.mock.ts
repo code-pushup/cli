@@ -6,70 +6,37 @@ import {
   SourceFile,
   SyntaxKind,
   TypeAliasDeclaration,
+  VariableStatement,
 } from 'ts-morph';
-import type { CoverageType } from '../src/lib/models';
+import type { CoverageType } from '../src/lib/runner/models';
 
 export function sourceFileMock(
   file: string,
   nodes: Partial<Record<CoverageType, Record<number, boolean>>>,
 ): SourceFile {
+  const createNodeGetter = <T>(
+    coverageType: CoverageType,
+    nodeData?: Record<number, boolean>,
+  ) => {
+    if (!nodeData) return [];
+    return Object.entries(nodeData).map(([line, isCommented]) =>
+      nodeMock({ coverageType, line: Number(line), file, isCommented }),
+    ) as unknown as T[];
+  };
+
   return {
     getFilePath: () => file as any,
     getClasses: () =>
-      nodes.classes
-        ? (Object.entries(nodes.classes).map(([line, isCommented]) =>
-            nodeMock({
-              coverageType: 'classes',
-              line: Number(line),
-              file,
-              isCommented,
-            }),
-          ) as unknown as ClassDeclaration[])
-        : [],
+      createNodeGetter<ClassDeclaration>('classes', nodes.classes),
     getFunctions: () =>
-      nodes.functions
-        ? (Object.entries(nodes.functions).map(([line, isCommented]) =>
-            nodeMock({
-              coverageType: 'functions',
-              line: Number(line),
-              file,
-              isCommented,
-            }),
-          ) as unknown as FunctionDeclaration[])
-        : [],
-    getEnums: () =>
-      nodes.enums
-        ? (Object.entries(nodes.enums).map(([line, isCommented]) =>
-            nodeMock({
-              coverageType: 'enums',
-              line: Number(line),
-              file,
-              isCommented,
-            }),
-          ) as unknown as EnumDeclaration[])
-        : [],
+      createNodeGetter<FunctionDeclaration>('functions', nodes.functions),
+    getEnums: () => createNodeGetter<EnumDeclaration>('enums', nodes.enums),
     getTypeAliases: () =>
-      nodes.types
-        ? (Object.entries(nodes.types).map(([line, isCommented]) =>
-            nodeMock({
-              coverageType: 'types',
-              line: Number(line),
-              file,
-              isCommented,
-            }),
-          ) as unknown as TypeAliasDeclaration[])
-        : [],
+      createNodeGetter<TypeAliasDeclaration>('types', nodes.types),
     getInterfaces: () =>
-      nodes.interfaces
-        ? (Object.entries(nodes.interfaces).map(([line, isCommented]) =>
-            nodeMock({
-              coverageType: 'interfaces',
-              line: Number(line),
-              file,
-              isCommented,
-            }),
-          ) as unknown as InterfaceDeclaration[])
-        : [],
+      createNodeGetter<InterfaceDeclaration>('interfaces', nodes.interfaces),
+    getVariableStatements: () =>
+      createNodeGetter<VariableStatement>('variables', nodes.variables),
   } as SourceFile;
 }
 
@@ -84,6 +51,7 @@ export function nodeMock(options: {
     getJsDocs: () => (options.isCommented ? ['Comment'] : []),
     getName: () => 'test',
     getStartLineNumber: () => options.line,
+    getDeclarations: () => [],
     // Only for classes
     getMethods: () => [],
     getProperties: () => [],

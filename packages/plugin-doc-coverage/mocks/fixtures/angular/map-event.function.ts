@@ -1,3 +1,5 @@
+export const someVariable = 'Hello World 1';
+
 export function mapEventToCustomEvent(event: string) {
   return event;
 }

@@ -1,8 +1,9 @@
-import type { ClassDeclaration } from 'ts-morph';
+import type { ClassDeclaration, VariableStatement } from 'ts-morph';
 import { nodeMock, sourceFileMock } from '../../../mocks/source-files.mock';
 import {
   getClassNodes,
   getUnprocessedCoverageReport,
+  getVariablesInformation,
   mergeCoverageResults,
 } from './doc-processer.js';
 import type { UnprocessedCoverageResult } from './models.js';
@@ -194,5 +195,81 @@ describe('getClassNodes', () => {
 
     expect(classNodeSpy).toHaveBeenCalledTimes(1);
     expect(propertyNodeSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getVariablesInformation', () => {
+  it('should process variable statements correctly', () => {
+    const mockDeclaration = {
+      getName: () => 'testVariable',
+    };
+
+    const mockVariableStatement = {
+      getKind: () => 'const',
+      getJsDocs: () => ['some docs'],
+      getStartLineNumber: () => 42,
+      getDeclarations: () => [mockDeclaration],
+    };
+
+    const result = getVariablesInformation([
+      mockVariableStatement as unknown as VariableStatement,
+    ]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({
+      getKind: expect.any(Function),
+      getJsDocs: expect.any(Function),
+      getStartLineNumber: expect.any(Function),
+      getName: expect.any(Function),
+    });
+    // It must be defined
+    expect(result[0]!.getName()).toBe('testVariable');
+    expect(result[0]!.getKind()).toBe('const');
+    expect(result[0]!.getJsDocs()).toEqual(['some docs']);
+    expect(result[0]!.getStartLineNumber()).toBe(42);
+  });
+
+  it('should handle multiple declarations in a single variable statement', () => {
+    const mockDeclarations = [
+      { getName: () => 'var1' },
+      { getName: () => 'var2' },
+    ];
+
+    const mockVariableStatement = {
+      getKind: () => 'let',
+      getJsDocs: () => [],
+      getStartLineNumber: () => 10,
+      getDeclarations: () => mockDeclarations,
+    };
+
+    const result = getVariablesInformation([
+      mockVariableStatement as unknown as VariableStatement,
+    ]);
+
+    expect(result).toHaveLength(2);
+    // They must be defined
+    expect(result[0]!.getName()).toBe('var1');
+    expect(result[1]!.getName()).toBe('var2');
+    expect(result[0]!.getKind()).toBe('let');
+    expect(result[1]!.getKind()).toBe('let');
+  });
+
+  it('should handle empty variable statements array', () => {
+    const result = getVariablesInformation([]);
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle variable statements without declarations', () => {
+    const mockVariableStatement = {
+      getKind: () => 'const',
+      getJsDocs: () => [],
+      getStartLineNumber: () => 1,
+      getDeclarations: () => [],
+    };
+
+    const result = getVariablesInformation([
+      mockVariableStatement as unknown as VariableStatement,
+    ]);
+    expect(result).toHaveLength(0);
   });
 });

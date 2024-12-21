@@ -23,7 +23,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
       },
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/map-event.function.ts",
-        "line": 1,
+        "line": 3,
         "name": "mapEventToCustomEvent",
         "type": "functions",
       },
@@ -40,7 +40,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/app.component.ts",
-        "line": 15,
+        "line": 17,
         "name": "sendEvent",
         "type": "methods",
       },
@@ -52,7 +52,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/app.component.ts",
-        "line": 5,
+        "line": 7,
         "name": "title",
         "type": "properties",
       },
@@ -65,9 +65,16 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "nodesCount": 0,
   },
   "variables": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 0,
+    "coverage": 0,
+    "issues": [
+      {
+        "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/map-event.function.ts",
+        "line": 1,
+        "name": "someVariable",
+        "type": "variables",
+      },
+    ],
+    "nodesCount": 1,
   },
 }
 `;
@@ -89,7 +96,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/map-event.function.ts",
-        "line": 1,
+        "line": 3,
         "name": "mapEventToCustomEvent",
         "type": "functions",
       },
@@ -106,7 +113,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/app.component.ts",
-        "line": 15,
+        "line": 17,
         "name": "sendEvent",
         "type": "methods",
       },
@@ -118,7 +125,7 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "issues": [
       {
         "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/app.component.ts",
-        "line": 5,
+        "line": 7,
         "name": "title",
         "type": "properties",
       },
@@ -131,9 +138,16 @@ exports[`processDocCoverage > should succesfully get the right number of ts file
     "nodesCount": 0,
   },
   "variables": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 0,
+    "coverage": 0,
+    "issues": [
+      {
+        "file": "/home/alejandro/dev/code-pushup-cli/packages/plugin-doc-coverage/mocks/fixtures/angular/map-event.function.ts",
+        "line": 1,
+        "name": "someVariable",
+        "type": "variables",
+      },
+    ],
+    "nodesCount": 1,
   },
 }
 `;

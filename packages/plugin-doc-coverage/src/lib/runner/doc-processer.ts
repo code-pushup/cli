@@ -1,4 +1,9 @@
-import { ClassDeclaration, Project, SourceFile } from 'ts-morph';
+import {
+  ClassDeclaration,
+  Project,
+  SourceFile,
+  VariableStatement,
+} from 'ts-morph';
 import type { DocCoveragePluginConfig } from '../config.js';
 import type {
   CoverageResult,
@@ -10,6 +15,30 @@ import {
   createEmptyUnprocessedCoverageReport,
   getCoverageTypeFromKind,
 } from './utils.js';
+
+/**
+ * Gets the variables information from the variable statements
+ * @param variableStatements - The variable statements to process
+ * @returns {Node[]} The variables information with the right methods to get the information
+ */
+export function getVariablesInformation(
+  variableStatements: VariableStatement[],
+) {
+  return variableStatements.flatMap(variable => {
+    // Get parent-level information
+    const parentInfo = {
+      getKind: () => variable.getKind(),
+      getJsDocs: () => variable.getJsDocs(),
+      getStartLineNumber: () => variable.getStartLineNumber(),
+    };
+
+    // Map each declaration to combine parent info with declaration-specific info
+    return variable.getDeclarations().map(declaration => ({
+      ...parentInfo,
+      getName: () => declaration.getName(),
+    }));
+  });
+}
 
 /**
  * Processes documentation coverage for TypeScript files in the specified path
@@ -44,6 +73,7 @@ export function getUnprocessedCoverageReport(
         ...sourceFile.getTypeAliases(),
         ...sourceFile.getEnums(),
         ...sourceFile.getInterfaces(),
+        ...getVariablesInformation(sourceFile.getVariableStatements()),
       ];
 
       const coverageReportOfCurrentFile = allNodesFromFile.reduce(

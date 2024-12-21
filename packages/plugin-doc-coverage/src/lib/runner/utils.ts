@@ -67,6 +67,7 @@ export function getCoverageTypeFromKind(kind: SyntaxKind): CoverageType {
       return 'interfaces';
     case SyntaxKind.EnumDeclaration:
       return 'enums';
+    case SyntaxKind.VariableStatement:
     case SyntaxKind.VariableDeclaration:
       return 'variables';
     case SyntaxKind.PropertyDeclaration:
